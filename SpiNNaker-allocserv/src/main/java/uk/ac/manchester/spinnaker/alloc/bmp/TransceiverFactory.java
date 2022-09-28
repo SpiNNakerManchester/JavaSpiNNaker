@@ -22,6 +22,8 @@ import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,10 @@ import javax.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.google.errorprone.annotations.Immutable;
+import com.google.errorprone.annotations.RestrictedApi;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
@@ -65,6 +71,7 @@ public class TransceiverFactory
 		implements TransceiverFactoryAPI<BMPTransceiverInterface> {
 	private static final Logger log = getLogger(TransceiverFactory.class);
 
+	@Immutable
 	private static final class Key {
 		final String machine;
 
@@ -77,18 +84,22 @@ public class TransceiverFactory
 
 		@Override
 		public boolean equals(Object o) {
-			var other = (Key) o;
-			return Objects.equals(machine, other.machine)
-					&& Objects.equals(bmp, other.bmp);
+			if (o instanceof Key) {
+				var other = (Key) o;
+				return Objects.equals(machine, other.machine)
+						&& Objects.equals(bmp, other.bmp);
+			}
+			return false;
 		}
 
 		@Override
 		public int hashCode() {
-			return machine.hashCode() ^ bmp.hashCode() * 7;
+			return Objects.hash(machine, bmp);
 		}
 	}
 
-	private Map<Key, BMPTransceiverInterface> txrxMap = new HashMap<>();
+	@GuardedBy("itself")
+	private final Map<Key, BMPTransceiverInterface> txrxMap = new HashMap<>();
 
 	@Autowired
 	private ServiceMasterControl control;
@@ -201,17 +212,21 @@ public class TransceiverFactory
 					throw e;
 				}
 				log.error("failed to connect to BMP; will ping and retry", e);
-				ping(data.ipAddress);
+				log.debug("ping result was {}", ping(data.ipAddress));
 			}
+		}
+	}
+
+	private Collection<BMPTransceiverInterface> transceivers() {
+		synchronized (txrxMap) {
+			return new ArrayList<>(txrxMap.values());
 		}
 	}
 
 	@PreDestroy
 	void closeTransceivers() throws Exception {
-		for (var txrx : txrxMap.values()) {
-			if (txrx instanceof AutoCloseable) {
-				((AutoCloseable) txrx).close();
-			}
+		for (var txrx : transceivers()) {
+			txrx.close();
 		}
 	}
 
@@ -255,6 +270,8 @@ public class TransceiverFactory
 	 * @deprecated This interface is just for testing.
 	 */
 	@ForTestingOnly
+	@RestrictedApi(explanation = "just for testing", link = "index.html",
+			allowedOnPath = ".*/src/test/java/.*")
 	@Deprecated
 	public final TestAPI getTestAPI() {
 		ForTestingOnly.Utils.checkForTestClassOnStack();

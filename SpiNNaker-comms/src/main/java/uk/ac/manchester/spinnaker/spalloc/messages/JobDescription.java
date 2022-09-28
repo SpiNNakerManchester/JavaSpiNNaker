@@ -22,7 +22,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -189,8 +189,8 @@ public final class JobDescription {
 		var builder = new StringBuilder("Job: ").append(jobID);
 		builder.append(" owner: ").append(owner);
 		if (nonNull(startTime)) {
-			builder.append(" startTime: ")
-					.append(new Date((long) (startTime * MSEC_PER_SEC)));
+			var time = Instant.ofEpochMilli((long) (startTime * MSEC_PER_SEC));
+			builder.append(" startTime: ").append(time);
 		}
 		builder.append(" power: ").append(power);
 		builder.append(" reason: ").append(reason);

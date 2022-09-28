@@ -28,7 +28,7 @@ import uk.ac.manchester.spinnaker.alloc.model.DownLink;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 
 /**
- * A machine that just throws {@link UnsupportedOperationException} for every
+ * A machine that just throws {@link UnsupportedOperationException} for every
  * operation. Subclass to add the behaviours you want.
  *
  * @author Donal Fellows

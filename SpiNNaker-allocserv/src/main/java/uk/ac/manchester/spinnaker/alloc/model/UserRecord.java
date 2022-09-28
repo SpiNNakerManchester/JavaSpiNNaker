@@ -31,11 +31,10 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
-import org.springframework.beans.NotReadablePropertyException;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
@@ -199,7 +198,6 @@ public final class UserRecord {
 	 *         to {@code false} to force an unlock.
 	 */
 	public Boolean getLocked() {
-		NotReadablePropertyException.class.getCanonicalName();
 		return isLocked;
 	}
 
@@ -329,6 +327,7 @@ public final class UserRecord {
 	 *
 	 * @return the object (for convenience)
 	 */
+	@CanIgnoreReturnValue
 	public UserRecord sanitise() {
 		// Make SURE that the password doesn't go back
 		if (nonNull(password)) {

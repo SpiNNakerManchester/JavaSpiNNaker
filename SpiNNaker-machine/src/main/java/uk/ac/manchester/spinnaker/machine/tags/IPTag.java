@@ -237,23 +237,14 @@ public final class IPTag extends Tag {
 
 	@Override
 	public boolean equals(Object o) {
-		return (o instanceof IPTag) && equals((IPTag) o);
-	}
-
-	/**
-	 * An optimised test for whether two {@link IPTag}s are equal.
-	 *
-	 * @param otherTag
-	 *            The other tag
-	 * @return whether they are equal
-	 */
-	public boolean equals(IPTag otherTag) {
-		if (isNull(otherTag)) {
-			return false;
+		if (o instanceof IPTag) {
+			var otherTag = (IPTag) o;
+			return partialEquals(otherTag)
+					&& ipAddress.equals(otherTag.ipAddress)
+					&& stripSDP == otherTag.stripSDP
+					&& destination.equals(otherTag.destination);
 		}
-		return partialEquals(otherTag) && ipAddress.equals(otherTag.ipAddress)
-				&& stripSDP == otherTag.stripSDP
-				&& destination.equals(otherTag.destination);
+		return false;
 	}
 
 	@Override

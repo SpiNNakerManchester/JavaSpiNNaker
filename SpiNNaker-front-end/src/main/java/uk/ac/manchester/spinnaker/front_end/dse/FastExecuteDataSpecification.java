@@ -29,7 +29,6 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
-import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInProtocol.computeNumPackets;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
@@ -44,14 +43,17 @@ import java.io.PrintWriter;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
+
+import com.google.errorprone.annotations.CheckReturnValue;
+import com.google.errorprone.annotations.MustBeClosed;
 
 import difflib.ChangeDelta;
 import difflib.Chunk;
@@ -61,8 +63,6 @@ import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReal;
-import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
-import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.front_end.NoDropPacketContext;
 import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
@@ -80,8 +80,6 @@ import uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.utils.MathUtils;
 
 /**
@@ -91,8 +89,7 @@ import uk.ac.manchester.spinnaker.utils.MathUtils;
  * @author Donal Fellows
  * @author Alan Stokes
  */
-public class FastExecuteDataSpecification extends BoardLocalSupport
-		implements AutoCloseable {
+public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	private static final Logger log =
 			getLogger(FastExecuteDataSpecification.class);
 
@@ -116,17 +113,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	/** Sequence number that marks the end of a sequence number stream. */
 	private static final int MISSING_SEQS_END = -1;
 
-	private final Transceiver txrx;
-
 	private final Map<ChipLocation, Gather> gathererForChip;
 
 	private final Map<ChipLocation, Monitor> monitorForChip;
 
 	private final Map<ChipLocation, CoreSubsets> monitorsForBoard;
-
-	private final BasicExecutor executor;
-
-	private final Machine machine;
 
 	private boolean writeReports = false;
 
@@ -150,6 +141,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	 *             If something really strange occurs with talking to the BMP;
 	 *             this constructor should not be doing that!
 	 */
+	@MustBeClosed
 	public FastExecuteDataSpecification(Machine machine, List<Gather> gatherers,
 			File reportDir) throws IOException, ProcessException {
 		super(machine);
@@ -157,8 +149,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			log.warn("detailed comparison of uploaded data enabled; "
 					+ "this may destabilize the protocol");
 		}
-		this.machine = machine;
-		executor = new BasicExecutor(PARALLEL_SIZE);
 
 		if (nonNull(reportDir)) {
 			writeReports = true;
@@ -168,15 +158,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		gathererForChip = new HashMap<>();
 		monitorForChip = new HashMap<>();
 		monitorsForBoard = new HashMap<>();
-
-		try {
-			txrx = new Transceiver(machine);
-		} catch (ProcessException e) {
-			throw e;
-		} catch (SpinnmanException e) {
-			throw new IllegalStateException("failed to talk to BMP, "
-					+ "but that shouldn't have happened at all", e);
-		}
 
 		buildMaps(gatherers);
 	}
@@ -224,14 +205,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		var ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
 		try (var bar = new Progress(opsToRun, LOADING_MSG)) {
-			executor.submitTasks(ethernets, board -> {
+			processTasksInParallel(ethernets, board -> {
 				return () -> loadBoard(board, storage, bar);
-			}).awaitAndCombineExceptions();
-		} catch (StorageException | IOException | ProcessException
-				| DataSpecificationException | RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new IllegalStateException("unexpected exception", e);
+			});
 		}
 	}
 
@@ -272,17 +248,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		return txrx.mallocSDRAM(ctl.core.getScampCore(), bytesUsed,
 				new AppID(ctl.appID),
 				ctl.core.getP() + CORE_DATA_SDRAM_BASE_TAG);
-	}
-
-	@Override
-	public void close() throws IOException {
-		try {
-			txrx.close();
-		} catch (IOException | RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new IllegalStateException("unexpected failure in close", e);
-		}
 	}
 
 	private static MemoryRegionReal getRealRegionOrNull(MemoryRegion reg) {
@@ -428,6 +393,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 		private ExecutionContext execContext;
 
+		@MustBeClosed
+		@SuppressWarnings("MustBeClosed")
 		BoardWorker(Ethernet board, DSEStorage storage, Progress bar)
 				throws IOException, ProcessException {
 			this.board = board;
@@ -453,8 +420,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 * @param ctl
 		 *            The definition of what to run and where to send the
 		 *            results.
-		 * @param transactionId
-		 *            The transaction id for the stream.
+		 * @param gather
+		 *            Where the relevant packet gatherer is that we will be
+		 *            routing data via.
+		 * @param start
+		 *            Start of the memory chunk to put the data in.
 		 * @throws IOException
 		 *             If anything goes wrong with I/O.
 		 * @throws ProcessException
@@ -542,7 +512,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 * @author Donal Fellows
 		 */
 		@SuppressWarnings("serial")
-		private class MissingRecorder extends LinkedList<BitSet>
+		private class MissingRecorder extends ArrayDeque<BitSet>
 				implements AutoCloseable {
 			MissingRecorder() {
 				missingSequenceNumbers = this;
@@ -599,8 +569,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *            The region to write.
 		 * @param baseAddress
 		 *            Where to write the region.
-		 * @param transactionId
-		 *            the transaction id for the stream
+		 * @param gather
+		 *            The information about where messages are routed via.
 		 * @return How many bytes were actually written.
 		 * @throws IOException
 		 *             If anything goes wrong with I/O.
@@ -636,6 +606,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 * @throws ProcessException
 		 *             If SpiNNaker rejects a message.
 		 */
+		@MustBeClosed
 		NoDropPacketContext dontDropPackets(Gather core)
 				throws IOException, ProcessException {
 			return new NoDropPacketContext(txrx,
@@ -652,6 +623,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 * @throws ProcessException
 		 *             If SpiNNaker rejects a message.
 		 */
+		@MustBeClosed
 		SystemRouterTableContext systemRouterTables()
 				throws IOException, ProcessException {
 			return new SystemRouterTableContext(txrx,
@@ -667,9 +639,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *            Whether the data will be written.
 		 * @param data
 		 *            The data to be written.
-		 *
-		 * @param trasnactionId
-		 *            The transaction id for this stream.
+		 * @param gather
+		 *            The information about packet routing. In particular,
+		 *            responsible for Fast Data In transaction ID issuing.
 		 * @throws IOException
 		 *             If IO fails.
 		 */
@@ -786,6 +758,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			}
 		}
 
+		@CheckReturnValue
 		private SeenFlags addMissedSeqNums(IntBuffer received, BitSet seqNums,
 				int expectedMax) {
 			var flags = new SeenFlags();

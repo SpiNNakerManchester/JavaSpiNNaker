@@ -23,6 +23,7 @@ import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static java.util.Objects.requireNonNullElse;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -48,6 +49,9 @@ import java.util.List;
 import java.util.function.IntFunction;
 
 import org.slf4j.Logger;
+
+import com.google.errorprone.annotations.ForOverride;
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.connections.model.MessageReceiver;
@@ -143,8 +147,23 @@ public abstract class UDPConnection<T>
 		socket = initialiseSocket(localHost, localPort, remoteHost, remotePort,
 				trafficClass);
 		if (log.isDebugEnabled()) {
-			logInitialCreation();
+			log.debug("{} socket created ({} <--> {})", getClass().getName(),
+					localAddr(), remoteAddr());
 		}
+	}
+
+	/**
+	 * Make a connection where actual operations on the socket will be
+	 * delegated. If you use this constructor, you <strong>must</strong>
+	 * override {@link #isClosed()}, and possibly {@link #isConnected()} as
+	 * well.
+	 *
+	 * @param canSend
+	 *            Whether this is a connection that can send messages.
+	 */
+	UDPConnection(boolean canSend) {
+		this.canSend = canSend;
+		socket = null;
 	}
 
 	/**
@@ -159,26 +178,8 @@ public abstract class UDPConnection<T>
 		this.receivePacketSize = receivePacketSize;
 	}
 
-	private void logInitialCreation() {
-		InetSocketAddress us = null;
-		try {
-			us = getLocalAddress();
-		} catch (Exception ignore) {
-		}
-		if (isNull(us)) {
-			us = new InetSocketAddress((InetAddress) null, 0);
-		}
-		InetSocketAddress them = null;
-		try {
-			them = getRemoteAddress();
-		} catch (Exception ignore) {
-		}
-		if (isNull(them)) {
-			them = new InetSocketAddress((InetAddress) null, 0);
-		}
-		log.debug("{} socket created ({} <--> {})", getClass().getName(), us,
-				them);
-	}
+	private static final InetSocketAddress ANY =
+			new InetSocketAddress((InetAddress) null, 0);
 
 	/**
 	 * Set up a UDP/IPv4 socket.
@@ -198,6 +199,7 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If anything fails.
 	 */
+	@ForOverride
 	DatagramSocket initialiseSocket(InetAddress localHost, Integer localPort,
 			InetAddress remoteHost, Integer remotePort,
 			TrafficClass trafficClass) throws IOException {
@@ -245,8 +247,17 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If the socket is closed.
 	 */
+	@ForOverride
 	protected InetSocketAddress getLocalAddress() throws IOException {
 		return (InetSocketAddress) socket.getLocalSocketAddress();
+	}
+
+	private InetSocketAddress localAddr() {
+		try {
+			return requireNonNullElse(getLocalAddress(), ANY);
+		} catch (IOException e) {
+			return ANY;
+		}
 	}
 
 	/**
@@ -260,8 +271,17 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If the socket is closed.
 	 */
+	@ForOverride
 	protected InetSocketAddress getRemoteAddress() throws IOException {
 		return (InetSocketAddress) socket.getRemoteSocketAddress();
+	}
+
+	private InetSocketAddress remoteAddr() {
+		try {
+			return requireNonNullElse(getRemoteAddress(), ANY);
+		} catch (IOException e) {
+			return ANY;
+		}
 	}
 
 	/** @return The local IP address to which the connection is bound. */
@@ -373,6 +393,7 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
+	@ForOverride
 	protected ByteBuffer doReceive(int timeout)
 			throws SocketTimeoutException, IOException {
 		socket.setSoTimeout(timeout);
@@ -422,6 +443,7 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
+	@ForOverride
 	protected UDPPacket doReceiveWithAddress(int timeout)
 			throws SocketTimeoutException, IOException {
 		socket.setSoTimeout(timeout);
@@ -488,6 +510,7 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If there is an error sending the data
 	 */
+	@ForOverride
 	protected void doSend(ByteBuffer data) throws IOException {
 		if (log.isDebugEnabled()) {
 			logSend(data, getRemoteAddress());
@@ -616,6 +639,7 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If there is an error sending the data
 	 */
+	@ForOverride
 	protected void doSendTo(ByteBuffer data, InetAddress address, int port)
 			throws IOException {
 		var addr = new InetSocketAddress(address, port);
@@ -655,11 +679,15 @@ public abstract class UDPConnection<T>
 	}
 
 	@Override
+	@OverridingMethodsMustInvokeSuper
 	public void close() throws IOException {
+		if (isNull(socket)) {
+			return;
+		}
 		try {
 			socket.disconnect();
 		} catch (Exception e) {
-			// Ignore any possible exception here
+			log.debug("failed to disconnect prior to close", e);
 		}
 		socket.close();
 	}
@@ -694,17 +722,8 @@ public abstract class UDPConnection<T>
 
 	@Override
 	public String toString() {
-		InetSocketAddress la = null, ra = null;
-		try {
-			la = getLocalAddress();
-		} catch (IOException ignore) {
-		}
-		try {
-			ra = getRemoteAddress();
-		} catch (IOException ignore) {
-		}
 		return format("%s(%s <-%s-> %s)",
-				getClass().getSimpleName().replaceAll("^.*\\.", ""), la,
-				isClosed() ? "|" : "", ra);
+				getClass().getSimpleName().replaceAll("^.*\\.", ""),
+				localAddr(), isClosed() ? "|" : "", remoteAddr());
 	}
 }

@@ -153,10 +153,11 @@ class TestConvert {
 		var dst = createTempFile("dst", ".json");
 		try {
 			// Can't test command line parse errors; System.exit() is called
+			// TODO check out https://stefanbirkner.github.io/system-rules/
 			main(src.getAbsolutePath(), dst.getAbsolutePath());
 
 			assertTrue(dst.exists());
-			try (var r = new BufferedReader(new FileReader(dst))) {
+			try (var r = new BufferedReader(new FileReader(dst, UTF_8))) {
 				JSONAssert.assertEquals(expectedJson, r.readLine(), true);
 			}
 		} finally {

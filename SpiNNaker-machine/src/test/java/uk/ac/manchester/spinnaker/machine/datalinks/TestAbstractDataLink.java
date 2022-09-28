@@ -16,39 +16,54 @@
  */
 package uk.ac.manchester.spinnaker.machine.datalinks;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
+import static uk.ac.manchester.spinnaker.machine.Direction.NORTHEAST;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
+
 import uk.ac.manchester.spinnaker.machine.Direction;
+import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 /**
  *
  * @author Christian-B
  */
 public class TestAbstractDataLink {
-
-	private ChipLocation location00 = new ChipLocation(0, 0);
-
-	private InetAddress createInetAddress() throws UnknownHostException {
+	private static InetAddress createInetAddress() throws UnknownHostException {
 		byte[] bytes = {127, 0, 0, 0};
 		return InetAddress.getByAddress(bytes);
 	}
 
-	public TestAbstractDataLink() {
-	}
-
 	@Test
 	public void testEquals() throws UnknownHostException {
-		var link1 = new AbstractDataLink(location00,
-				Direction.NORTHEAST, createInetAddress());
-		var link2 = new AbstractDataLink(location00,
-				Direction.NORTHEAST, createInetAddress());
+		var link1 = new ADL(ZERO_ZERO, NORTHEAST, createInetAddress());
+		var link2 = new ADL(ZERO_ZERO, NORTHEAST, createInetAddress());
 		assertEquals(link1, link2);
 		assertEquals(link1, link1);
 		assertNotEquals(link1, null);
 		assertNotEquals(link1, "link1");
 	}
 
+	/** Can't use abstract class instances directly. */
+	static class ADL extends AbstractDataLink {
+		ADL(HasChipLocation location, Direction linkId,
+				InetAddress boardAddress) {
+			super(location, linkId, boardAddress);
+		}
+
+		@Override
+		public int hashCode() {
+			return hash();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			return (obj instanceof AbstractDataLink)
+					&& sameAs((AbstractDataLink) obj);
+		}
+	}
 }

@@ -27,6 +27,8 @@ import javax.annotation.PreDestroy;
 
 import org.springframework.stereotype.Component;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
+
 import uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore;
 
 /**
@@ -38,6 +40,7 @@ import uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore;
  */
 @Component
 class ProxyRememberer {
+	@GuardedBy("itself")
 	private final Map<Integer, List<ProxyCore>> proxies = new HashMap<>();
 
 	/**

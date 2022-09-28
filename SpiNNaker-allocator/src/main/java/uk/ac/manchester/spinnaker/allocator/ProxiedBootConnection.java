@@ -22,11 +22,15 @@ import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.google.errorprone.annotations.DoNotCall;
+
 import uk.ac.manchester.spinnaker.connections.BootConnection;
+import uk.ac.manchester.spinnaker.connections.UDPPacket;
 
 /** A boot connection that routes messages across the proxy. */
 final class ProxiedBootConnection extends BootConnection {
@@ -35,7 +39,7 @@ final class ProxiedBootConnection extends BootConnection {
 
 	private final ProxyProtocolClient.ConnectedChannel channel;
 
-	private final BlockingQueue<ByteBuffer> received;
+	private final BlockingQueue<ByteBuffer> receiveQueue;
 
 	private ProxyProtocolClient ws;
 
@@ -50,11 +54,12 @@ final class ProxiedBootConnection extends BootConnection {
 	ProxiedBootConnection(ProxyProtocolClient ws)
 			throws IOException, InterruptedException {
 		this.ws = requireNonNull(ws);
-		received = new LinkedBlockingQueue<>();
-		channel = ws.openChannel(ZERO_ZERO, BOOT_PORT, received::add);
+		receiveQueue = new LinkedBlockingQueue<>();
+		channel = ws.openChannel(ZERO_ZERO, BOOT_PORT, receiveQueue);
 	}
 
 	@Override
+	@SuppressWarnings("MissingSuperCall")
 	public void close() throws IOException {
 		channel.close();
 		ws = null;
@@ -66,16 +71,35 @@ final class ProxiedBootConnection extends BootConnection {
 	}
 
 	@Override
+	public boolean isConnected() {
+		return !isClosed();
+	}
+
+	@Override
 	protected void doSend(ByteBuffer buffer) throws IOException {
 		channel.send(buffer);
 	}
 
 	@Override
+	@DoNotCall
+	protected void doSendTo(ByteBuffer data, InetAddress address, int port) {
+		throw new UnsupportedOperationException(
+				"sendTo() not supported by this connection type");
+	}
+
+	@Override
 	protected ByteBuffer doReceive(int timeout)
 			throws IOException {
-		if (isClosed() && received.isEmpty()) {
+		if (isClosed() && receiveQueue.isEmpty()) {
 			throw new EOFException("connection closed");
 		}
-		return ClientUtils.receiveHelper(received, timeout);
+		return ClientUtils.receiveHelper(receiveQueue, timeout);
+	}
+
+	@Override
+	@DoNotCall
+	protected UDPPacket doReceiveWithAddress(int timeout) {
+		throw new UnsupportedOperationException(
+				"receiveWithAddress() not supported by this connection type");
 	}
 }

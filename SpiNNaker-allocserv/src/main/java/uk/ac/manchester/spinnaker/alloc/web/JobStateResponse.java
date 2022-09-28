@@ -19,6 +19,8 @@ package uk.ac.manchester.spinnaker.alloc.web;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
+import static uk.ac.manchester.spinnaker.alloc.model.JobState.POWER;
+import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_BOARD_BY_CHIP;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_KEEPALIVE;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_MACHINE;
@@ -129,24 +131,17 @@ public class JobStateResponse {
 		powerRef =
 				b.path("{subresource}").build(JOB_MACHINE, JOB_MACHINE_POWER);
 
-		switch (state) {
-		case POWER:
-		case READY:
-			if (nonNull(servletPath)) {
-				proxyRef = makeProxyURI(job, ui, servletPath);
-				break;
-			}
-		default:
-			// Not telling the user the proxy URL if queued or destroyed
+		if ((state == POWER || state == READY) && nonNull(servletPath)) {
+			proxyRef = makeProxyURI(job, ui, servletPath);
+		} else {
 			proxyRef = null;
 		}
 	}
 
 	private static URI makeProxyURI(Job job, UriInfo ui, String servletPath) {
 		// Messy; needs to refer to the other half of the application
-		var u = ui.getBaseUriBuilder().scheme("wss").replacePath(servletPath)
+		return ui.getBaseUriBuilder().scheme("wss").replacePath(servletPath)
 				.path(SpinWSHandler.PATH).build(job.getId());
-		return u;
 	}
 
 	/** @return The formal state of the job */

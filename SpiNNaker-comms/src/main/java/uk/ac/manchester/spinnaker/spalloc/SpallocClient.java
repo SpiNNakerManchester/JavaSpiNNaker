@@ -44,6 +44,7 @@ import org.slf4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
@@ -116,6 +117,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	 * @param hostname
 	 *            The hostname of the server.
 	 */
+	@MustBeClosed
 	public SpallocClient(String hostname) {
 		super(hostname, PORT_DEFAULT, DEFAULT_TIMEOUT);
 	}
@@ -129,6 +131,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	 * @param timeout
 	 *            The default timeout.
 	 */
+	@MustBeClosed
 	public SpallocClient(String hostname, Integer timeout) {
 		super(hostname, PORT_DEFAULT, timeout);
 	}
@@ -142,6 +145,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	 * @param port
 	 *            The port to use.
 	 */
+	@MustBeClosed
 	public SpallocClient(String hostname, int port) {
 		super(hostname, port, DEFAULT_TIMEOUT);
 	}
@@ -157,6 +161,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	 * @param timeout
 	 *            The default timeout.
 	 */
+	@MustBeClosed
 	public SpallocClient(String hostname, Integer port, Integer timeout) {
 		super(hostname, isNull(port) ? PORT_DEFAULT : port, timeout);
 	}
@@ -227,8 +232,9 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 		return parseInt(result);
 	}
 
-	@Deprecated(forRemoval = true)
+	@Deprecated(forRemoval = true) // TODO remove this
 	@Override
+	@SuppressWarnings("removal")
 	public int createJob(List<Integer> args, Map<String, Object> kwargs,
 			Integer timeout) throws IOException, SpallocServerException {
 		// If no owner, don't bother with the call

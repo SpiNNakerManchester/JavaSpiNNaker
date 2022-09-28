@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.util.Objects.nonNull;
+
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -191,7 +193,7 @@ public abstract class SCPRequest<T extends SCPResponse>
 		buffer.putInt(argument1);
 		buffer.putInt(argument2);
 		buffer.putInt(argument3);
-		if (data != NO_DATA) {
+		if (nonNull(data) && data.hasRemaining()) {
 			buffer.put(data.duplicate());
 		}
 	}

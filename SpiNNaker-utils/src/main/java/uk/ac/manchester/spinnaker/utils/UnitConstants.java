@@ -17,7 +17,8 @@
 package uk.ac.manchester.spinnaker.utils;
 
 import static java.lang.String.format;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import java.time.Duration;
 
 /**
  *
@@ -58,10 +59,11 @@ public final class UnitConstants {
 	 * @return A formatted String with only the relative units.
 	 */
 	public static String formatDuration(long durationInMillis) {
-		long hr = MILLISECONDS.toHours(durationInMillis);
-		long min = MILLISECONDS.toMinutes(durationInMillis) % MINUTE_PER_HOUR;
-		long sec = MILLISECONDS.toSeconds(durationInMillis) % SEC_PER_MINUTE;
-		long ms = MILLISECONDS.toMillis(durationInMillis) % MSEC_PER_SEC;
+		var d = Duration.ofMillis(durationInMillis);
+		long hr = d.toHours();
+		long min = d.toMinutesPart();
+		long sec = d.toSecondsPart();
+		long ms = d.toMillisPart();
 		if (hr > 0) {
 			return format("%d:%02d:%02d.%03d h", hr, min, sec, ms);
 		}
@@ -71,6 +73,6 @@ public final class UnitConstants {
 		if (sec > 0) {
 			return format("%d.%03d s", sec, ms);
 		}
-		return durationInMillis + " ms";
+		return ms + " ms";
 	}
 }

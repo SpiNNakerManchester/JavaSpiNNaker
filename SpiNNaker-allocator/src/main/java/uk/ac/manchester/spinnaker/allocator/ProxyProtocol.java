@@ -33,7 +33,7 @@ enum ProxyProtocol {
 	/** Send a message on an unconnected channel. Never received. One-way. */
 	MSG_TO(1600);
 
-	private int size;
+	private final int size;
 
 	ProxyProtocol(int size) {
 		this.size = size;

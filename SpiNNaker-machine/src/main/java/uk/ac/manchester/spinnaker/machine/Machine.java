@@ -1007,7 +1007,7 @@ public class Machine implements MappableIterable<Chip> {
 				return null;
 			}
 			var diff = c1.difference(c2);
-			if (diff != "userProcessors") {
+			if (!"userProcessors".equals(diff)) {
 				return c1 + " != " + c2 + "(diff = " + diff + ")";
 			}
 			if (c1.userProcessors().size() == c2.userProcessors().size() + 1) {

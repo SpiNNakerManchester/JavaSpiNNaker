@@ -194,8 +194,7 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 					response -> addRoutes(response.data, offset, routes,
 							appID));
 		}
-		finish();
-		checkForError();
+		finishBatch();
 		return new ArrayList<>(routes.values());
 	}
 

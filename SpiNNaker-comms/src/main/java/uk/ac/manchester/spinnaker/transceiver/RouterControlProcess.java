@@ -96,8 +96,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 		for (var core : monitorCoreSubsets) {
 			sendRequest(new ClearReinjectionQueue(core));
 		}
-		finish();
-		checkForError();
+		finishBatch();
 	}
 
 	/**
@@ -130,8 +129,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 		for (var core : coreSubsets) {
 			sendRequest(new ResetReinjectionCounters(core));
 		}
-		finish();
-		checkForError();
+		finishBatch();
 	}
 
 	/**
@@ -184,8 +182,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 			sendRequest(new SetReinjectionPacketTypes(core, multicast,
 					pointToPoint, fixedRoute, nearestNeighbour));
 		}
-		finish();
-		checkForError();
+		finishBatch();
 	}
 
 	/**
@@ -228,8 +225,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 			sendRequest(new SetRouterTimeout(core, timeoutMantissa,
 					timeoutExponent));
 		}
-		finish();
-		checkForError();
+		finishBatch();
 	}
 
 	/**
@@ -273,8 +269,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 			sendRequest(new SetRouterEmergencyTimeout(core, timeoutMantissa,
 					timeoutExponent));
 		}
-		finish();
-		checkForError();
+		finishBatch();
 	}
 
 	/**
@@ -308,8 +303,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 		for (var core : monitorCoreSubsets) {
 			sendRequest(new RouterTableSaveApplicationRoutes(core));
 		}
-		finish();
-		checkForError();
+		finishBatch();
 	}
 
 	/**
@@ -344,8 +338,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 		for (var core : monitorCoreSubsets) {
 			sendRequest(new RouterTableLoadSystemRoutes(core));
 		}
-		finish();
-		checkForError();
+		finishBatch();
 	}
 
 	/**
@@ -380,8 +373,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 		for (var core : monitorCoreSubsets) {
 			sendRequest(new RouterTableLoadApplicationRoutes(core));
 		}
-		finish();
-		checkForError();
+		finishBatch();
 	}
 
 	/**
@@ -420,8 +412,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 			sendRequest(new GetReinjectionStatus(core),
 					response -> status.put(core, response.reinjectionStatus));
 		}
-		finish();
-		checkForError();
+		finishBatch();
 		return unmodifiableMap(status);
 	}
 
@@ -453,8 +444,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 						NUM_REGISTERS * REGISTER),
 				response -> response.data.asIntBuffer().get(reg));
 
-		finish();
-		checkForError();
+		finishBatch();
 		return new RouterDiagnostics(cr.getValue(), es.getValue(), reg);
 	}
 }

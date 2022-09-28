@@ -94,7 +94,7 @@ public class TestChipLocation {
 		});
 	}
 
-	private class MockChipLocation implements HasChipLocation {
+	private static class MockChipLocation implements HasChipLocation {
 
 		@Override
 		public int getX() {

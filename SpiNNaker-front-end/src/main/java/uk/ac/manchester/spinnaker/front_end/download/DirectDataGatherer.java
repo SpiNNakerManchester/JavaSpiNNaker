@@ -27,6 +27,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.errorprone.annotations.MustBeClosed;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
+
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.front_end.download.request.Vertex;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
@@ -62,6 +65,7 @@ public class DirectDataGatherer extends DataGatherer {
 
 	private final BufferManagerStorage database;
 
+	@GuardedBy("itself")
 	private final Map<CoreLocation,
 			Map<MemoryLocation, ByteBuffer>> coreTableCache;
 
@@ -80,6 +84,7 @@ public class DirectDataGatherer extends DataGatherer {
 	 * @throws IOException
 	 *             If we can't discover the machine details due to I/O problems
 	 */
+	@MustBeClosed
 	public DirectDataGatherer(TransceiverInterface transceiver, Machine machine,
 			BufferManagerStorage database)
 			throws IOException, ProcessException {

@@ -67,4 +67,9 @@ public final class AppID {
 	public int hashCode() {
 		return (appID << 5) ^ 1236984681;
 	}
+
+	@Override
+	public String toString() {
+		return "App#" + appID;
+	}
 }

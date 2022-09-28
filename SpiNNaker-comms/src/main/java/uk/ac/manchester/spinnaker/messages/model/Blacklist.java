@@ -20,11 +20,10 @@ import static java.lang.Integer.parseInt;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
-import static java.util.EnumSet.copyOf;
-import static java.util.EnumSet.noneOf;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
@@ -52,16 +51,17 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.util.EnumSet;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.slf4j.Logger;
 
@@ -125,7 +125,7 @@ public final class Blacklist implements Serializable {
 	 *            The raw data to parse.
 	 */
 	public Blacklist(ByteBuffer buffer) {
-		var buf = buffer.duplicate().order(LITTLE_ENDIAN);
+		var buf = requireNonNull(buffer).duplicate().order(LITTLE_ENDIAN);
 		rawData = buf.duplicate();
 		decodeBlacklist(buf);
 	}
@@ -147,12 +147,12 @@ public final class Blacklist implements Serializable {
 	public Blacklist(Set<ChipLocation> deadChips,
 			Map<ChipLocation, ? extends Set<Integer>> deadCores,
 			Map<ChipLocation, ? extends Set<Direction>> deadLinks) {
-		chips = deadChips;
+		chips = requireNonNull(deadChips);
 		// Sort the elements in each sub-collection
-		cores = deadCores.entrySet().stream().collect(
+		cores = requireNonNull(deadCores).entrySet().stream().collect(
 				toMap(Entry::getKey, e -> new TreeSet<>(e.getValue())));
-		links = deadLinks.entrySet().stream()
-				.collect(toMap(Entry::getKey, e -> copyOf(e.getValue())));
+		links = requireNonNull(deadLinks).entrySet().stream().collect(
+				toMap(Entry::getKey, e -> EnumSet.copyOf(e.getValue())));
 		rawData = encodeBlacklist();
 	}
 
@@ -245,7 +245,8 @@ public final class Blacklist implements Serializable {
 	 *             If the string is badly formatted.
 	 */
 	public Blacklist(String blacklistText) {
-		blacklistText.lines().map(String::strip)
+		requireNonNull(blacklistText, "blacklist text should not be null")
+				.lines().map(String::strip)
 				// Remove blank and comment lines
 				.filter(Blacklist::isRelevantLine)
 				// Parse the remaining lines
@@ -264,7 +265,11 @@ public final class Blacklist implements Serializable {
 	 *             If the string is badly formatted.
 	 */
 	public Blacklist(File blacklistFile) throws IOException {
-		try (var r = buffer(new FileReader(requireNonNull(blacklistFile)))) {
+		try (var r =
+				buffer(new FileReader(
+						requireNonNull(blacklistFile,
+								"blacklist filename should not be null"),
+						UTF_8))) {
 			r.lines().map(String::strip)
 					// Remove blank and comment lines
 					.filter(Blacklist::isRelevantLine)
@@ -383,8 +388,8 @@ public final class Blacklist implements Serializable {
 						.addAll(deadCores);
 			}
 			if (nonNull(deadLinks) && !deadLinks.isEmpty()) {
-				links.computeIfAbsent(chip, k -> noneOf(Direction.class))
-						.addAll(deadLinks);
+				links.computeIfAbsent(chip,
+						k -> EnumSet.noneOf(Direction.class)).addAll(deadLinks);
 			}
 		}
 	}
@@ -489,18 +494,12 @@ public final class Blacklist implements Serializable {
 
 	@Override
 	public boolean equals(Object object) {
-		if (this == object) {
-			return true;
-		}
-		if (nonNull(object) && object instanceof Blacklist) {
-			return equals((Blacklist) object);
+		if (object instanceof Blacklist) {
+			var other = (Blacklist) object;
+			return chips.equals(other.chips) && cores.equals(other.cores)
+					&& links.equals(other.links);
 		}
 		return false;
-	}
-
-	private boolean equals(Blacklist other) {
-		return chips.equals(other.chips) && cores.equals(other.cores)
-				&& links.equals(other.links);
 	}
 
 	@Override

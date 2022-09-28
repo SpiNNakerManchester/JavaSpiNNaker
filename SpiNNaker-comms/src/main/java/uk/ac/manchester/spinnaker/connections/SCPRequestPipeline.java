@@ -160,6 +160,7 @@ public class SCPRequestPipeline {
 	private int numTimeouts;
 
 	/** A dictionary of sequence number &rarr; requests in progress. */
+	// @GuardedBy("itself") // Not needed: synchronized map
 	private final Map<Integer, Request<?>> outstandingRequests;
 
 	/**
@@ -253,7 +254,7 @@ public class SCPRequestPipeline {
 		/**
 		 * Handle the reception of a message.
 		 *
-		 * @param responseData
+		 * @param msg
 		 *            the content of the message, in a little-endian buffer.
 		 */
 		private void parseReceivedResponse(SCPResultMessage msg)

@@ -172,9 +172,6 @@ final class ChipMemoryIO {
 		var data = txrx().readMemory(core, currentAddress, numBytes);
 		currentAddress = currentAddress.add(numBytes);
 		writeAddress = currentAddress;
-		if (data.position() == 0 && data.hasArray()) {
-			return data.array();
-		}
 		var bytes = new byte[data.remaining()];
 		data.get(bytes);
 		return bytes;

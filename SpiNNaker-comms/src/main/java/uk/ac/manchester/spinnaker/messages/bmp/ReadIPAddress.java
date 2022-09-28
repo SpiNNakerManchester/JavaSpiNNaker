@@ -44,7 +44,7 @@ public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
 	}
 
 	/** An SCP response to a request for IP address information. */
-	public final class Response extends BMPRequest.BMPResponse {
+	public static final class Response extends BMPRequest.BMPResponse {
 		/** The IP address of the BMP. */
 		public final InetAddress bmpIPAddress;
 

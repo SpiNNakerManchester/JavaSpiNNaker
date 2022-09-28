@@ -45,6 +45,8 @@ import org.slf4j.Logger;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
+
 import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
@@ -223,6 +225,7 @@ public class ProxyCore implements AutoCloseable {
 
 	private final Map<ChipLocation, InetAddress> hosts = new HashMap<>();
 
+	@GuardedBy("itself")
 	private final Map<Integer, ProxyUDPConnection> conns = new HashMap<>();
 
 	private final Set<InetAddress> recvFrom;

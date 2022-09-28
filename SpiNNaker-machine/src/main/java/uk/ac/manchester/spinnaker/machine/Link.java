@@ -23,6 +23,8 @@ import java.util.Objects;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.Immutable;
+
 /**
  * Represents a directional link between SpiNNaker chips in the machine.
  *
@@ -31,6 +33,7 @@ import org.slf4j.Logger;
  *      Python Version</a>
  * @author Christian-B
  */
+@Immutable
 public final class Link {
 	private static final Logger log = getLogger(Link.class);
 

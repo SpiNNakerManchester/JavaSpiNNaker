@@ -49,6 +49,7 @@ import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
@@ -87,6 +88,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * <p>
 	 * Note that synchronisation will be performed on this object.
 	 */
+	@GuardedBy("itself")
 	private final PrintWriter out;
 
 	/**
@@ -158,7 +160,9 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 					sock.close();
 				} else {
 					in.close();
-					out.close();
+					synchronized (out) {
+						out.close();
+					}
 				}
 			} catch (IOException e) {
 				log.error("problem closing socket {}", sock, e);

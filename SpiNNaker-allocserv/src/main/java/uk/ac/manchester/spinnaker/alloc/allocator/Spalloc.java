@@ -54,6 +54,8 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
 import uk.ac.manchester.spinnaker.alloc.admin.ReportMailSender;
@@ -117,9 +119,11 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	@Autowired
 	private ProxyRememberer rememberer;
 
+	@GuardedBy("this")
 	private transient Map<String, List<BoardCoords>> downBoardsCache =
 			new HashMap<>();
 
+	@GuardedBy("this")
 	private transient Map<String, List<DownLink>> downLinksCache =
 			new HashMap<>();
 
@@ -506,7 +510,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (var getGroup = conn.query(GET_GROUP_BY_NAME_AND_MEMBER)) {
 				return getGroup.call1(user, groupName).map(integer("group_id"))
 						.orElseThrow(() -> new NoSuchGroupException(
-								"group {} does not exist or {} "
+								"group %s does not exist or %s "
 										+ "is not a member of it",
 								groupName, user));
 			}
@@ -518,7 +522,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 							|| r.getLong("quota") > 0L)
 					.map(integer("group_id")).first()
 					.orElseThrow(() -> new NoSuchGroupException(
-							"user {} is not a member of any "
+							"user %s is not a member of any "
 									+ "groups with quota left",
 							user));
 		}
@@ -656,7 +660,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		var email = new EmailBuilder(row.getInt("job_id"));
 		email.header(description, 1, permit.name);
 		int userId = getUser(sql.getConnection(), permit.name).orElseThrow(
-				() -> new ReportRollbackExn("no such user: " + permit.name));
+				() -> new ReportRollbackExn("no such user: %s", permit.name));
 		sql.insertReport.key(row.getInt("board_id"), row.getInt("job_id"),
 				description, userId).ifPresent(email::issue);
 		return takeBoardsOutOfService(sql, email).map(acted -> {
@@ -1058,7 +1062,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 		void serviceActionDone(Row r) {
 			b.format(
-					"\tAction: board (X:%d,Y:%d,Z:) (IP: %s) "
+					"\tAction: board (X:%d,Y:%d,Z:%d) (IP: %s) "
 							+ "taken out of service once not in use "
 							+ "(%d problems reported)\n",
 					r.getInt("x"), r.getInt("y"), r.getInt("z"),
@@ -1291,7 +1295,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			email.header(report.issue, report.boards.size(), permit.name);
 			int userId = getUser(q.getConnection(), permit.name)
 					.orElseThrow(() -> new ReportRollbackExn(
-							"no such user: " + permit.name));
+							"no such user: %s", permit.name));
 			for (var board : report.boards) {
 				addIssueReport(q, getJobBoardForReport(q, board, email),
 						report.issue, userId, email);
@@ -1658,6 +1662,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 class ReportRollbackExn extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
+	@FormatMethod
 	ReportRollbackExn(String msg, Object... args) {
 		super(format(msg, args));
 	}
@@ -1683,6 +1688,7 @@ abstract class GroupsException extends RuntimeException {
 class NoSuchGroupException extends GroupsException {
 	private static final long serialVersionUID = 5193818294198205503L;
 
+	@FormatMethod
 	NoSuchGroupException(String msg, Object... args) {
 		super(format(msg, args));
 	}
@@ -1691,6 +1697,7 @@ class NoSuchGroupException extends GroupsException {
 class MultipleGroupsException extends GroupsException {
 	private static final long serialVersionUID = 6284332340565334236L;
 
+	@FormatMethod
 	MultipleGroupsException(String msg, Object... args) {
 		super(format(msg, args));
 	}

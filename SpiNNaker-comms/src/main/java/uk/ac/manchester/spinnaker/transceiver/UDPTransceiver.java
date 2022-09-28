@@ -149,7 +149,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	}
 
 	@Override
-	public void close() throws Exception {
+	public void close() throws IOException {
 		for (var connections : connectionsByPort.values()) {
 			for (var p : connections.values()) {
 				if (nonNull(p.listener)) {
@@ -295,7 +295,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		// Launch a listener if one is required
 		if (isNull(pair.listener)) {
 			// Caller has guaranteed the type constraint
-			@SuppressWarnings("resource")
+			@SuppressWarnings({"resource", "MustBeClosed"})
 			var listener = new ConnectionListener<>(pair.connection);
 			log.info("launching listener for {}:{}",
 					pair.connection.getLocalIPAddress(),

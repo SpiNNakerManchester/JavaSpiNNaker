@@ -37,6 +37,8 @@ import java.util.Map;
 
 import org.opentest4j.TestAbortedException;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.spalloc.CreateJob;
@@ -110,7 +112,7 @@ public class BoardTestConfiguration {
 		}
 	}
 
-	public void setUpLocalVirtualBoard() throws UnknownHostException {
+	public void setUpLocalVirtualBoard() {
 		localhost = LOCALHOST;
 		localport = PORT;
 		initRemoteHost(LOCALHOST, false);
@@ -144,6 +146,7 @@ public class BoardTestConfiguration {
 		return new CreateJob(size).owner(OWNER).keepAlive(keepAlive).tags(tag);
 	}
 
+	@MustBeClosed
 	public SpallocJob setUpSpallocedBoard()
 			throws IOException, SpallocServerException, JobDestroyedException,
 			SpallocStateChangeTimeoutException {
@@ -155,7 +158,7 @@ public class BoardTestConfiguration {
 		var port = config.getInt(SPSEC, "port");
 		var timeout = config.getInt(SPSEC, "timeout");
 		var tag = config.get(SPSEC, "tag");
-		@SuppressWarnings("resource")
+		@SuppressWarnings({"resource", "MustBeClosed"})
 		var job = new SpallocJob(spalloc, port, timeout,
 				jobDesc(1, KEEPALIVE_SECS, tag));
 		job.waitUntilReady(null);

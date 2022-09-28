@@ -95,6 +95,7 @@ class TestClient {
 	}
 
 	@Test
+	@SuppressWarnings("MustBeClosed")
 	void testClose() throws Exception {
 		withConnection((s, c, bgAccept) -> {
 			c.connect();

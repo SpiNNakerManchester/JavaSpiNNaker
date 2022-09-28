@@ -217,11 +217,11 @@ public class AdminImpl implements AdminAPI {
 	}
 
 	@Override
-	public Response deleteUser(int id, SecurityContext security) {
+	public String deleteUser(int id, SecurityContext security) {
 		log.warn("CALLED deleteUser({})", id);
 		var adminUser = security.getUserPrincipal().getName();
-		userManager.deleteUser(id, adminUser).orElseThrow(AdminImpl::noUser);
-		return noContent().build();
+		return "deleted user " + userManager.deleteUser(id, adminUser)
+				.orElseThrow(AdminImpl::noUser);
 	}
 
 	@Override
@@ -261,10 +261,10 @@ public class AdminImpl implements AdminAPI {
 	}
 
 	@Override
-	public Response deleteGroup(int groupId) {
+	public String deleteGroup(int groupId) {
 		log.warn("CALLED deleteGroup({})", groupId);
-		userManager.deleteGroup(groupId).orElseThrow(AdminImpl::noGroup);
-		return noContent().build();
+		return "deleted group " + userManager.deleteGroup(groupId)
+				.orElseThrow(AdminImpl::noGroup);
 	}
 
 	@Override

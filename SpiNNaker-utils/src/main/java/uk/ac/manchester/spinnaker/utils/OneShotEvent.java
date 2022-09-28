@@ -20,16 +20,20 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
+
 /**
  * An asynchronous event that can be fired exactly once.
  *
  * @author Donal Fellows
  */
 public final class OneShotEvent {
+	@GuardedBy("lock")
 	private boolean flag;
 
 	private final Lock lock = new ReentrantLock();
 
+	@GuardedBy("lock")
 	private final Condition cond = lock.newCondition();
 
 	/**

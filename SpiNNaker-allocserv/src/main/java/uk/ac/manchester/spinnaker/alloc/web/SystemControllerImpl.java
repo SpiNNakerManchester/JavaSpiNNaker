@@ -48,6 +48,8 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.errorprone.annotations.Keep;
+
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
 import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
@@ -145,6 +147,7 @@ public class SystemControllerImpl implements SystemController {
 	 *            The result of validation.
 	 * @return How to render this to the user.
 	 */
+	@Keep
 	@ExceptionHandler(BindException.class)
 	@UsedInJavadocOnly(Valid.class)
 	private ModelAndView bindingError(BindException result) {
@@ -169,6 +172,7 @@ public class SystemControllerImpl implements SystemController {
 	 *            What was happening to cause a problem.
 	 * @return View to describe what's going on to the user.
 	 */
+	@Keep
 	@ExceptionHandler({
 		AuthenticationException.class, DataAccessException.class
 	})

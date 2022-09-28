@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static testconfig.BoardTestConfiguration.OWNER;
@@ -70,9 +71,9 @@ class SpallocMachineTest {
 
 			// InetAddress host = InetAddress.getByName("spinn-2.cs.man.ac.uk");
 			try (var txrx = new Transceiver(host, FIVE)) {
-				txrx.ensureBoardIsReady();
-				txrx.getMachineDimensions();
-				txrx.getScampVersion();
+				assertNotNull(txrx.ensureBoardIsReady());
+				assertNotNull(txrx.getMachineDimensions());
+				assertNotNull(txrx.getScampVersion());
 				var machine = txrx.getMachineDetails();
 				assertNull(jsonMachine.difference(machine));
 			}

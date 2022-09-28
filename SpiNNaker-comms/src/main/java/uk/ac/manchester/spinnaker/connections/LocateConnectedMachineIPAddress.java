@@ -25,6 +25,9 @@ import java.net.InetAddress;
 import java.util.Calendar;
 import java.util.HashSet;
 
+import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.FormatString;
+
 /**
  * Locate any SpiNNaker machines IP addresses from the auto-transmitted packets
  * from non-booted SpiNNaker machines.
@@ -84,7 +87,9 @@ public abstract class LocateConnectedMachineIPAddress {
 				throws Exception;
 	}
 
-	private static void print(String formatString, Object... args) {
+	@FormatMethod
+	private static void print(@FormatString String formatString,
+			Object... args) {
 		out.println(format(formatString, args));
 	}
 

@@ -20,6 +20,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.nio.ByteBuffer;
 
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+
 /**
  * An EIEIO message containing a command.
  *
@@ -58,6 +60,7 @@ public class EIEIOCommandMessage
 	}
 
 	@Override
+	@OverridingMethodsMustInvokeSuper
 	public void addToBuffer(ByteBuffer buffer) {
 		header.addToBuffer(buffer);
 	}

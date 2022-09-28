@@ -36,7 +36,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
  *            The type of connection used by this process.
  */
 abstract class SingleConnectionProcess<T extends SCPConnection>
-		extends Process {
+		extends TxrxProcess {
 	private final ConnectionSelector<T> connectionSelector;
 
 	private SCPRequestPipeline requestPipeline;

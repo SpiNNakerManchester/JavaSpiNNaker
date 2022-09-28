@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.machine.tags;
 
 import static java.lang.Integer.rotateLeft;
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import java.net.InetAddress;
@@ -93,22 +92,12 @@ public final class ReverseIPTag extends Tag {
 
 	@Override
 	public boolean equals(Object o) {
-		return (o instanceof ReverseIPTag) && equals((ReverseIPTag) o);
-	}
-
-	/**
-	 * An optimised test for whether two {@link ReverseIPTag}s are equal.
-	 *
-	 * @param otherTag
-	 *            The other tag
-	 * @return whether they are equal
-	 */
-	public boolean equals(ReverseIPTag otherTag) {
-		if (isNull(otherTag)) {
-			return false;
+		if (o instanceof ReverseIPTag) {
+			var otherTag = (ReverseIPTag) o;
+			return partialEquals(otherTag) && (sdpPort == otherTag.sdpPort)
+					&& destination.equals(otherTag.destination);
 		}
-		return partialEquals(otherTag) && sdpPort == otherTag.sdpPort
-				&& destination.equals(otherTag.destination);
+		return false;
 	}
 
 	@Override

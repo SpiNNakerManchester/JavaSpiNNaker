@@ -36,5 +36,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<groupId>org.hamcrest</groupId>
 			<artifactId>java-hamcrest</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.google.errorprone</groupId>
+			<artifactId>error_prone_annotations</artifactId>
+		</dependency>
 	</dependencies>
 </project>

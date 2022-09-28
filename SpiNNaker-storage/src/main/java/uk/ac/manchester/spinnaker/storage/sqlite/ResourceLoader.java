@@ -25,6 +25,8 @@ import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 /**
  * Factoring out of correct resource loading pattern.
  */
@@ -32,6 +34,7 @@ public abstract class ResourceLoader {
 	private ResourceLoader() {
 	}
 
+	@MustBeClosed
 	private static InputStream open(String name) throws FileNotFoundException {
 		var stream = ResourceLoader.class.getResourceAsStream(name);
 		if (isNull(stream)) {

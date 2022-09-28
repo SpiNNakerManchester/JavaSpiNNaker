@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.machine;
 
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableSet;
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import java.util.Collection;
@@ -291,17 +290,11 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
+		if (obj instanceof CoreSubsets) {
+			var other = (CoreSubsets) obj;
+			return Objects.equals(locations, other.locations);
 		}
-		if (isNull(obj)) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		var other = (CoreSubsets) obj;
-		return Objects.equals(locations, other.locations);
+		return false;
 	}
 
 	@Override

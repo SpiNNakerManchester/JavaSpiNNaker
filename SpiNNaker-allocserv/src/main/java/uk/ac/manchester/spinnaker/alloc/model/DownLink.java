@@ -19,12 +19,14 @@ package uk.ac.manchester.spinnaker.alloc.model;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.google.errorprone.annotations.Immutable;
 
 /**
  * Describes a link that is disabled.
  *
  * @author Donal Fellows
  */
+@Immutable
 @JsonFormat(shape = ARRAY)
 public final class DownLink {
 	/**
@@ -32,6 +34,7 @@ public final class DownLink {
 	 *
 	 * @author Donal Fellows
 	 */
+	@Immutable
 	public static final class End {
 		private End(BoardCoords board, Direction direction) {
 			this.board = board;

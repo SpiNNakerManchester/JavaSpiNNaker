@@ -42,6 +42,8 @@ import java.util.Collection;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /**
@@ -74,6 +76,7 @@ public class Executor implements Closeable {
 	 * @throws IOException
 	 *             If a problem happens when reading the file
 	 */
+	@MustBeClosed
 	public Executor(File inputFile, int memorySpace) throws IOException {
 		this(openInputStream(inputFile), memorySpace);
 	}
@@ -88,6 +91,7 @@ public class Executor implements Closeable {
 	 * @throws IOException
 	 *             If a problem happens when reading the input stream
 	 */
+	@MustBeClosed
 	public Executor(InputStream inputStream, int memorySpace)
 			throws IOException {
 		this(wrap(toByteArray(inputStream)), memorySpace);

@@ -69,8 +69,7 @@ class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 				}
 			});
 		}
-		finish();
-		checkForError();
+		finishBatch();
 		return tags.values();
 	}
 
@@ -114,8 +113,7 @@ class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 				}
 			});
 		}
-		finish();
-		checkForError();
+		finishBatch();
 		return tagUsages;
 	}
 }

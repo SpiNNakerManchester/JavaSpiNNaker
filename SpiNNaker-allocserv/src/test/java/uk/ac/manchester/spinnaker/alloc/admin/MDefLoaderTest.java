@@ -24,9 +24,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +35,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BMPCoords;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BoardPhysicalCoords;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
+import uk.ac.manchester.spinnaker.alloc.db.MemDBTestBase;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
 import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 
@@ -53,7 +49,7 @@ import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 @SpringBootTest
 @TestInstance(PER_CLASS)
 @ActiveProfiles("unittest")
-class MDefLoaderTest {
+class MDefLoaderTest extends MemDBTestBase {
 	@ResultColumn("c")
 	@SingleRowResult
 	private static final String COUNT_LIVE_BOARDS =
@@ -72,27 +68,6 @@ class MDefLoaderTest {
 
 	@Value("classpath:three-board-example.json")
 	private Resource threeBoard;
-
-	private DatabaseEngine memdb;
-
-	private Connection c;
-
-	@BeforeAll
-	void makeMemoryDatabase(@Autowired DatabaseEngine mainDBEngine) {
-		assumeTrue(mainDBEngine != null, "spring-configured DB engine absent");
-		memdb = mainDBEngine.getInMemoryDB();
-	}
-
-	@BeforeEach
-	void getConnection() {
-		c = memdb.getConnection();
-		assumeTrue(c != null, "connection not generated");
-	}
-
-	@AfterEach
-	void closeConnection() {
-		c.close();
-	}
 
 	@Test
 	void readSingleBoardExample() throws IOException {
@@ -115,8 +90,7 @@ class MDefLoaderTest {
 	@SuppressWarnings("deprecation")
 	void loadSingleBoardExample() throws IOException {
 		var machines = loader.readMachineDefinitions(singleBoard.getFile());
-		assumeTrue(machines != null && machines.size() == 1);
-		//@SuppressWarnings("null")
+		assumeTrue(machines.size() == 1);
 		var machine = machines.get(0);
 		assumeTrue(machine != null);
 
@@ -155,8 +129,7 @@ class MDefLoaderTest {
 	@SuppressWarnings("deprecation")
 	void loadThreeBoardExample() throws IOException {
 		var machines = loader.readMachineDefinitions(threeBoard.getFile());
-		assumeTrue(machines != null && machines.size() == 1);
-		@SuppressWarnings("null")
+		assumeTrue(machines.size() == 1);
 		var machine = machines.get(0);
 		assumeTrue(machine != null);
 

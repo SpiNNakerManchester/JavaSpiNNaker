@@ -142,7 +142,7 @@ public class TestMachine {
 		for (var c : instance.chips()) {
 			assertEquals(address, c.ipAddress);
 			assertEquals(SDRAM, c.sdram);
-			assert (c.router.links().containsAll(LINKS));
+			assertTrue(c.router.links().containsAll(LINKS));
 			for (var p : c.userProcessors()) {
 				assertFalse(p.isMonitor);
 			}

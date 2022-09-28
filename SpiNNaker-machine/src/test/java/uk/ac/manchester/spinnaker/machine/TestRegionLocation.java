@@ -52,6 +52,7 @@ public class TestRegionLocation {
 	}
 
 	@Test
+	@SuppressWarnings("SelfComparison")
 	public void testCompare() {
 		var core001 = new CoreLocation(0, 0, 1);
 		var r0012 = new RegionLocation(core001, 2);

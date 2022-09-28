@@ -19,6 +19,8 @@ package uk.ac.manchester.spinnaker.front_end;
 import static java.lang.Boolean.getBoolean;
 import static java.util.Objects.nonNull;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
+
 import uk.ac.manchester.spinnaker.utils.progress.ProgressBar;
 
 /**
@@ -29,6 +31,7 @@ import uk.ac.manchester.spinnaker.utils.progress.ProgressBar;
  * @see ProgressBar
  */
 public final class Progress implements AutoCloseable {
+	@GuardedBy("this")
 	private final ProgressBar bar;
 
 	/**
@@ -61,11 +64,9 @@ public final class Progress implements AutoCloseable {
 	/**
 	 * Advances the progress bar by one step.
 	 */
-	public void update() {
+	public synchronized void update() {
 		if (nonNull(bar)) {
-			synchronized (bar) {
-				bar.update();
-			}
+			bar.update();
 		}
 	}
 
@@ -75,20 +76,16 @@ public final class Progress implements AutoCloseable {
 	 * @param numSteps
 	 *            The number of steps to advance.
 	 */
-	public void update(int numSteps) {
+	public synchronized void update(int numSteps) {
 		if (nonNull(bar)) {
-			synchronized (bar) {
-				bar.update(numSteps);
-			}
+			bar.update(numSteps);
 		}
 	}
 
 	@Override
-	public void close() {
+	public synchronized void close() {
 		if (nonNull(bar)) {
-			synchronized (bar) {
-				bar.close();
-			}
+			bar.close();
 		}
 	}
 }
