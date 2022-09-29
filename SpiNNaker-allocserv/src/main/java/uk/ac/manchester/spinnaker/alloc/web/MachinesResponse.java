@@ -71,7 +71,7 @@ public final class MachinesResponse {
 			this.uri = uri;
 			this.width = width;
 			this.height = height;
-			this.tags = unmodifiableList(new ArrayList<>(tags));
+			this.tags = List.copyOf(tags);
 			this.deadBoards = unmodifiableList(deadBoards);
 			this.deadLinks = unmodifiableList(deadLinks);
 		}

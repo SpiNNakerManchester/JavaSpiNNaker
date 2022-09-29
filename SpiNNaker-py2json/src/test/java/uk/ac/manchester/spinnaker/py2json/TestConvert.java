@@ -28,9 +28,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.EnumSet;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
@@ -128,7 +127,7 @@ class TestConvert {
 			assertEquals(1, machine.bmpIPs.size());
 			assertEquals(3, machine.spinnakerIPs.size());
 			assertEquals(Set.of("10.11.193.1", "10.11.193.17", "10.11.193.9"),
-					new HashSet<>(machine.spinnakerIPs.values()));
+					Set.copyOf(machine.spinnakerIPs.values()));
 			assertEquals(machine.boardLocations.keySet(),
 					machine.spinnakerIPs.keySet());
 		}

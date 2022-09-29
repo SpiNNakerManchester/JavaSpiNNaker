@@ -476,7 +476,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 		private void handleReceiveTimeout() {
 			// If there is a timeout, all packets remaining are resent
 			var toRemove = new BitSet(SEQUENCE_LENGTH);
-			for (int seq : new ArrayList<>(requests.keySet())) {
+			for (int seq : List.copyOf(requests.keySet())) {
 				var req = requests.get(seq);
 				if (req == null) {
 					// Shouldn't happen, but if it does we should nuke it.

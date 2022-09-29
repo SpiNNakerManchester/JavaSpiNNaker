@@ -35,8 +35,8 @@ public class TestSpinnakerLinkData {
 
 	private static final ChipLocation CHIP01 = new ChipLocation(0, 1);
 
-	private static InetAddress createInetAddress() throws UnknownHostException {
-		byte[] bytes = {127, 0, 0, 0};
+	private static InetAddress localhost() throws UnknownHostException {
+		byte[] bytes = {127, 0, 0, 1};
 		return InetAddress.getByAddress(bytes);
 	}
 
@@ -55,10 +55,8 @@ public class TestSpinnakerLinkData {
 
 	@Test
 	public void testEquals() throws UnknownHostException {
-		var link1 = new SpinnakerLinkData(34, CHIP00, NORTHEAST,
-				createInetAddress());
-		var link2 = new SpinnakerLinkData(34, CHIP00, NORTHEAST,
-				createInetAddress());
+		var link1 = new SpinnakerLinkData(34, CHIP00, NORTHEAST, localhost());
+		var link2 = new SpinnakerLinkData(34, CHIP00, NORTHEAST, localhost());
 		assertTrue(link1.sameAs(link2));
 		checkSame(link1, link2);
 		assertEquals(link1, link1);
@@ -66,15 +64,11 @@ public class TestSpinnakerLinkData {
 
 	@Test
 	public void testDifferent() throws UnknownHostException {
-		var link1 = new SpinnakerLinkData(34, CHIP00, NORTHEAST,
-				createInetAddress());
-		var link2 = new SpinnakerLinkData(33, CHIP00, NORTHEAST,
-				createInetAddress());
-		var link3 = new SpinnakerLinkData(34, CHIP01, NORTHEAST,
-				createInetAddress());
-		var link4 =
-				new SpinnakerLinkData(34, CHIP00, NORTH, createInetAddress());
-		byte[] bytes = {127, 0, 0, 1};
+		var link1 = new SpinnakerLinkData(34, CHIP00, NORTHEAST, localhost());
+		var link2 = new SpinnakerLinkData(33, CHIP00, NORTHEAST, localhost());
+		var link3 = new SpinnakerLinkData(34, CHIP01, NORTHEAST, localhost());
+		var link4 = new SpinnakerLinkData(34, CHIP00, NORTH, localhost());
+		byte[] bytes = {127, 0, 0, 2};
 		var address2 = InetAddress.getByAddress(bytes);
 		var link5 = new SpinnakerLinkData(34, CHIP00, NORTHEAST, address2);
 
@@ -89,16 +83,13 @@ public class TestSpinnakerLinkData {
 	}
 
 	@Test
-	@SuppressWarnings("unused")
-	public void testBad() throws UnknownHostException {
+	public void testBad() {
 		assertThrows(IllegalArgumentException.class, () -> {
-			var link1 = new SpinnakerLinkData(34, null, NORTHEAST,
-					createInetAddress());
+			new SpinnakerLinkData(34, null, NORTHEAST, localhost());
 		});
 		assertThrows(IllegalArgumentException.class, () -> {
-			var link1 = new SpinnakerLinkData(34, CHIP00, null,
-					createInetAddress());
+			new SpinnakerLinkData(34, CHIP00, null, localhost());
 		});
-		var link1 = new SpinnakerLinkData(34, CHIP00, NORTHEAST, null);
+		assertNotNull(new SpinnakerLinkData(34, CHIP00, NORTHEAST, null));
 	}
 }

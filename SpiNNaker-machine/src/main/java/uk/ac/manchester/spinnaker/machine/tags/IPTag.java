@@ -16,12 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.machine.tags;
 
-import static java.lang.Integer.rotateLeft;
 import static java.net.InetAddress.getByName;
 import static uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier.DEFAULT;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -248,12 +248,7 @@ public final class IPTag extends Tag {
 	@Override
 	public int hashCode() {
 		int h = partialHashCode();
-		h ^= rotateLeft(ipAddress.hashCode(), 9);
-		if (stripSDP) {
-			h ^= 1;
-		}
-		h ^= rotateLeft(destination.hashCode(), 19);
-		return h;
+		return h ^ Objects.hash(ipAddress, stripSDP, destination);
 	}
 
 	@Override

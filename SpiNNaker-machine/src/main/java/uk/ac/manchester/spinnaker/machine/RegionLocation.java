@@ -31,7 +31,7 @@ import com.google.errorprone.annotations.Immutable;
  * @author Christian
  */
 @Immutable
-public class RegionLocation
+public final class RegionLocation
 		implements HasCoreLocation, Comparable<RegionLocation> {
 	/** The Chip / Core's X value. */
 	public final int x;

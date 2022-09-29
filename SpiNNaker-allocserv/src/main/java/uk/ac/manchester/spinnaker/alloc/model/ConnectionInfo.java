@@ -19,15 +19,14 @@ package uk.ac.manchester.spinnaker.alloc.model;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import static java.util.Objects.nonNull;
-
-import java.util.Objects;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 /**
@@ -46,6 +45,9 @@ public final class ConnectionInfo {
 	private ChipLocation chip;
 
 	private String hostname;
+
+	@JsonIgnore
+	private transient boolean immutable;
 
 	/**
 	 * Create with defaults.
@@ -74,6 +76,9 @@ public final class ConnectionInfo {
 	}
 
 	void setChip(ChipLocation chip) {
+		if (immutable) {
+			throw new UnsupportedOperationException("object is immutable");
+		}
 		this.chip = chip;
 	}
 
@@ -83,6 +88,9 @@ public final class ConnectionInfo {
 	}
 
 	void setHostname(String hostname) {
+		if (immutable) {
+			throw new UnsupportedOperationException("object is immutable");
+		}
 		this.hostname = hostname;
 	}
 
@@ -98,14 +106,8 @@ public final class ConnectionInfo {
 
 	@Override
 	public int hashCode() {
-		int hashcode = 0;
-		if (nonNull(hostname)) {
-			hashcode += 5 * hostname.hashCode();
-		}
-		if (nonNull(chip)) {
-			hashcode += 7 * chip.hashCode();
-		}
-		return hashcode;
+		immutable = true;
+		return Objects.hash(hostname, chip);
 	}
 
 	@Override
