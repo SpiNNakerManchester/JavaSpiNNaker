@@ -49,7 +49,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.google.errorprone.annotations.CompileTimeConstant;
-import com.google.errorprone.annotations.Immutable;
 import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
@@ -122,7 +121,6 @@ public class MachineStateControl extends DatabaseAwareBean {
 	/**
 	 * Access to the enablement-state of a board.
 	 */
-	@Immutable
 	public final class BoardState {
 		/** The name of the containing SpiNNaker machine. */
 		public final String machineName;
