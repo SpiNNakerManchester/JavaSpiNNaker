@@ -60,7 +60,8 @@ public final class FPGALinkData extends AbstractDataLink {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(boardAddress, direction, fpgaLinkId, fpgaId);
+		return Objects.hash(location, boardAddress, direction, fpgaLinkId,
+				fpgaId);
 	}
 
 	@Override

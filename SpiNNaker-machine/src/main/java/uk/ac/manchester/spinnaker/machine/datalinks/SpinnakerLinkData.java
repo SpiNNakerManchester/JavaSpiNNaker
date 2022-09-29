@@ -55,7 +55,7 @@ public final class SpinnakerLinkData extends AbstractDataLink {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(boardAddress, direction, spinnakerLinkId);
+		return Objects.hash(location, boardAddress, direction, spinnakerLinkId);
 	}
 
 	@Override
