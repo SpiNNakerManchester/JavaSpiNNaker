@@ -16,9 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.machine.tags;
 
-import static java.lang.Integer.rotateLeft;
-
 import java.net.InetAddress;
+import java.util.Objects;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -101,10 +100,7 @@ public final class ReverseIPTag extends Tag {
 
 	@Override
 	public int hashCode() {
-		int h = partialHashCode();
-		h ^= rotateLeft(sdpPort, 11);
-		h ^= rotateLeft(destination.hashCode(), 19);
-		return h;
+		return partialHashCode() ^ Objects.hash(sdpPort, destination);
 	}
 
 	@Override

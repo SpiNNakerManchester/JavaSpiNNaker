@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
+import static java.util.Objects.hash;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
@@ -90,7 +91,7 @@ public class TransceiverFactory
 
 		@Override
 		public int hashCode() {
-			return machine.hashCode() ^ bmp.hashCode() * 7;
+			return hash(machine, bmp);
 		}
 	}
 

@@ -94,14 +94,7 @@ public final class Connection {
 
 	@Override
 	public int hashCode() {
-		int hashcode = 0;
-		if (hostname != null) {
-			hashcode += 5 * hostname.hashCode();
-		}
-		if (chip != null) {
-			hashcode += 7 * chip.hashCode();
-		}
-		return hashcode;
+		return Objects.hash(hostname, chip);
 	}
 
 	@Override

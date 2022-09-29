@@ -23,6 +23,8 @@ import static uk.ac.manchester.spinnaker.machine.MachineDefaults.PROCESSOR_CLOCK
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGAHERTZ_PER_HERTZ;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGAHERTZ_PER_KILOHERTZ;
 
+import java.util.Objects;
+
 import com.google.errorprone.annotations.Immutable;
 
 /**
@@ -112,12 +114,7 @@ public final class Processor implements Comparable<Processor> {
 
 	@Override
 	public int hashCode() {
-		int hash = 3;
-		hash = 47 * hash + processorId;
-		hash = 47 * hash + clockSpeed;
-		hash = 47 * hash + (isMonitor ? 1 : 0);
-		hash = 47 * hash + dtcmAvailable;
-		return hash;
+		return Objects.hash(processorId, clockSpeed, isMonitor, dtcmAvailable);
 	}
 
 	@Override

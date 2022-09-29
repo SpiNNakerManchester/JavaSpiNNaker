@@ -49,10 +49,7 @@ public final class InetIdTuple {
 
 	@Override
 	public int hashCode() {
-		int hash = 5;
-		hash = 29 * hash + Objects.hashCode(address);
-		hash = 29 * hash + id;
-		return hash;
+		return Objects.hash(address, id);
 	}
 
 	@Override

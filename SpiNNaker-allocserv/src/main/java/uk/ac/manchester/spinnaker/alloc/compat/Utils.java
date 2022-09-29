@@ -133,6 +133,8 @@ abstract class Utils {
 	/**
 	 * Get an argument from an argument list.
 	 *
+	 * @param <T>
+	 *            The type of values in the list.
 	 * @param args
 	 *            The list containing the value.
 	 * @param index
@@ -141,7 +143,7 @@ abstract class Utils {
 	 * @throws Oops
 	 *             If the list doesn't have a value at that index.
 	 */
-	static Object getArgument(List<Object> args, int index) {
+	static <T> T getArgument(List<T> args, int index) {
 		if (isNull(args) || index < 0 || index >= args.size()) {
 			throw new Oops("missing argument at index " + index);
 		}
@@ -151,6 +153,8 @@ abstract class Utils {
 	/**
 	 * Get an argument from an argument map.
 	 *
+	 * @param <T>
+	 *            The type of values in the map.
 	 * @param kwargs
 	 *            The map containing the value.
 	 * @param index
@@ -159,7 +163,7 @@ abstract class Utils {
 	 * @throws Oops
 	 *             If the map doesn't have a value with that key.
 	 */
-	static Object getArgument(Map<String, Object> kwargs, String index) {
+	static <T> T getArgument(Map<String, T> kwargs, String index) {
 		if (isNull(kwargs) || !kwargs.containsKey(index)) {
 			throw new Oops("missing keyword argument: " + index);
 		}
@@ -169,28 +173,32 @@ abstract class Utils {
 	/**
 	 * Parse a value as decimal.
 	 *
+	 * @param <T>
+	 *            The type of the values in the list (must actually be a
+	 *            string or a number or a supertype thereof).
 	 * @param args
-	 *            The list containing the value to parse (must actually be a
-	 *            string).
+	 *            The list containing the value to parse.
 	 * @param index
 	 *            The index into the list.
 	 * @return The decimal value.
 	 */
-	static int parseDec(List<Object> args, int index) {
+	static <T> int parseDec(List<T> args, int index) {
 		return parseDec(getArgument(args, index));
 	}
 
 	/**
 	 * Parse a value as decimal.
 	 *
+	 * @param <T>
+	 *            The type of the values in the map (must actually be a
+	 *            string or a number or a supertype thereof).
 	 * @param kwargs
-	 *            The map containing the value to parse (must actually be a
-	 *            string).
+	 *            The map containing the value to parse.
 	 * @param index
 	 *            The index into the map.
 	 * @return The decimal value.
 	 */
-	static int parseDec(Map<String, Object> kwargs, String index) {
+	static <T> int parseDec(Map<String, T> kwargs, String index) {
 		return parseDec(getArgument(kwargs, index));
 	}
 

@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static java.util.Objects.hash;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Objects;
@@ -88,11 +89,7 @@ public final class Link {
 
 	@Override
 	public int hashCode() {
-		int hash = 7;
-		hash = 47 * hash + Objects.hashCode(source);
-		hash = 47 * hash + Objects.hashCode(sourceLinkDirection);
-		hash = 47 * hash + Objects.hashCode(destination);
-		return hash;
+		return hash(source, sourceLinkDirection, destination);
 	}
 
 	/**

@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.machine.datalinks;
 
 import java.net.InetAddress;
+import java.util.Objects;
 
 import com.google.errorprone.annotations.Immutable;
 
@@ -54,7 +55,7 @@ public final class SpinnakerLinkData extends AbstractDataLink {
 
 	@Override
 	public int hashCode() {
-		return 53 * hash() + spinnakerLinkId;
+		return Objects.hash(boardAddress, direction, spinnakerLinkId);
 	}
 
 	@Override

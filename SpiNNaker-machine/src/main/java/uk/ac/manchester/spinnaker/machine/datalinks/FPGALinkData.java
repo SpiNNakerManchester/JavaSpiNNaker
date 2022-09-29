@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.machine.datalinks;
 
 import java.net.InetAddress;
+import java.util.Objects;
 
 import com.google.errorprone.annotations.Immutable;
 
@@ -59,7 +60,7 @@ public final class FPGALinkData extends AbstractDataLink {
 
 	@Override
 	public int hashCode() {
-		return 53 * (53 * hash() + fpgaLinkId) + fpgaId.id;
+		return Objects.hash(boardAddress, direction, fpgaLinkId, fpgaId);
 	}
 
 	@Override

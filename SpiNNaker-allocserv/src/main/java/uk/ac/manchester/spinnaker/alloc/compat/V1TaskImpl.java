@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.compat;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.isAsciiPrintable;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.Constants.NS_PER_S;
 import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.triad;
@@ -261,16 +262,12 @@ class V1TaskImpl extends V1CompatTask {
 
 	private static String getOwner(Map<String, Object> kwargs)
 			throws TaskException {
-		var ownerObj = kwargs.get("owner");
-		if (!(ownerObj instanceof String)) {
-			throw new TaskException("owner must be supplied as a string");
-		}
-		var owner = (String) ownerObj;
+		var owner = Objects.toString(kwargs.get("owner"), "").strip();
 		if (owner.isBlank()) {
 			throw new TaskException(
 					"invalid owner identifier; must be non-empty");
 		}
-		if (owner.matches(".*[^\\x21-\\x7e].*")) {
+		if (!isAsciiPrintable(owner)) {
 			throw new TaskException(
 					"invalid owner identifier; must be printable ASCII");
 		}
