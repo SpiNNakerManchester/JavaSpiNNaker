@@ -96,7 +96,7 @@ loadScripts(document, 'script');</script>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&gt;</code>, <code><a href="http://spinnakermanchester.github.io/SpiNNaker-utils/apidocs/uk/ac/manchester/spinnaker/utils/MappableIterable.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.utils" class="externalLink">MappableIterable</a>&lt;<a href="CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&gt;</code></dd>
 </dl>
 <hr>
-<pre>public class <span class="typeNameLabel">CoreSubsets</span>
+<pre>public final class <span class="typeNameLabel">CoreSubsets</span>
 extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>
 implements <a href="http://spinnakermanchester.github.io/SpiNNaker-utils/apidocs/uk/ac/manchester/spinnaker/utils/MappableIterable.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.utils" class="externalLink">MappableIterable</a>&lt;<a href="CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&gt;</pre>
 <div class="block">Represents a set of of <a href="CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine"><code>CoreLocation</code></a>s organized by Chip.</div>
@@ -533,7 +533,7 @@ int&nbsp;y,
 <li class="blockList">
 <section class="detail">
 <h3><a id="hashCode()">hashCode</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">hashCode</span>()</div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">hashCode</span>()</div>
 <div class="block">Generate a hashcode for these subsets.
  <p>
  Two CoreSubsets that have the same subsets (and are therefore considered
@@ -553,7 +553,7 @@ int&nbsp;y,
 <li class="blockList">
 <section class="detail">
 <h3><a id="equals(java.lang.Object)">equals</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">equals</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&nbsp;obj)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">equals</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&nbsp;obj)</span></div>
 <div class="block">Indicates whether some other object is "equal to" this one. It is
  reflexive, symmetric and transitive. It is consistent provided no core or
  subset has been added.

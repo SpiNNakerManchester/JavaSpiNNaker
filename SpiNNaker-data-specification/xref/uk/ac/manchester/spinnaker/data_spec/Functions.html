@@ -376,7 +376,7 @@
 <a class="jxr_linenumber" name="L368" href="#L368">368</a> 		}
 <a class="jxr_linenumber" name="L369" href="#L369">369</a> 
 <a class="jxr_linenumber" name="L370" href="#L370">370</a> 		<strong class="jxr_keyword">var</strong> reg = getRegion();
-<a class="jxr_linenumber" name="L371" href="#L371">371</a> 		<strong class="jxr_keyword">if</strong> (reg == <strong class="jxr_keyword">null</strong> || !(reg instanceof <a name="MemoryRegionReal" href="../../../../../uk/ac/manchester/spinnaker/data_spec/MemoryRegionReal.html#MemoryRegionReal">MemoryRegionReal</a>)) {
+<a class="jxr_linenumber" name="L371" href="#L371">371</a> 		<strong class="jxr_keyword">if</strong> (!(reg instanceof <a name="MemoryRegionReal" href="../../../../../uk/ac/manchester/spinnaker/data_spec/MemoryRegionReal.html#MemoryRegionReal">MemoryRegionReal</a>)) {
 <a class="jxr_linenumber" name="L372" href="#L372">372</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="NoRegionSelectedException" href="../../../../../uk/ac/manchester/spinnaker/data_spec/NoRegionSelectedException.html#NoRegionSelectedException">NoRegionSelectedException</a>(
 <a class="jxr_linenumber" name="L373" href="#L373">373</a> 					<span class="jxr_string">"no current region has been selected"</span>);
 <a class="jxr_linenumber" name="L374" href="#L374">374</a> 		}
@@ -447,7 +447,7 @@
 <a class="jxr_linenumber" name="L439" href="#L439">439</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="NoRegionSelectedException" href="../../../../../uk/ac/manchester/spinnaker/data_spec/NoRegionSelectedException.html#NoRegionSelectedException">NoRegionSelectedException</a>(command);
 <a class="jxr_linenumber" name="L440" href="#L440">440</a> 		}
 <a class="jxr_linenumber" name="L441" href="#L441">441</a> 		<strong class="jxr_keyword">var</strong> reg = getRegion();
-<a class="jxr_linenumber" name="L442" href="#L442">442</a> 		<strong class="jxr_keyword">if</strong> (reg == <strong class="jxr_keyword">null</strong> || !(reg instanceof <a name="MemoryRegionReal" href="../../../../../uk/ac/manchester/spinnaker/data_spec/MemoryRegionReal.html#MemoryRegionReal">MemoryRegionReal</a>)) {
+<a class="jxr_linenumber" name="L442" href="#L442">442</a> 		<strong class="jxr_keyword">if</strong> (!(reg instanceof <a name="MemoryRegionReal" href="../../../../../uk/ac/manchester/spinnaker/data_spec/MemoryRegionReal.html#MemoryRegionReal">MemoryRegionReal</a>)) {
 <a class="jxr_linenumber" name="L443" href="#L443">443</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="RegionNotAllocatedException" href="../../../../../uk/ac/manchester/spinnaker/data_spec/RegionNotAllocatedException.html#RegionNotAllocatedException">RegionNotAllocatedException</a>(currentRegion, command);
 <a class="jxr_linenumber" name="L444" href="#L444">444</a> 		}
 <a class="jxr_linenumber" name="L445" href="#L445">445</a> 

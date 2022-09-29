@@ -46,7 +46,7 @@
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment"> *      Python Version&lt;/a&gt;</em>
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment"> * @author Christian-B</em>
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="CoreSubsets" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreSubsets.html#CoreSubsets">CoreSubsets</a> <strong class="jxr_keyword">implements</strong> MappableIterable&lt;CoreLocation&gt; {
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a name="CoreSubsets" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreSubsets.html#CoreSubsets">CoreSubsets</a> <strong class="jxr_keyword">implements</strong> MappableIterable&lt;CoreLocation&gt; {
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Map&lt;ChipLocation, Map&lt;Integer, CoreLocation&gt;&gt; locations;
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> immutable;
@@ -271,7 +271,7 @@
 <a class="jxr_linenumber" name="L263" href="#L263">263</a> <em class="jxr_javadoccomment">	 * @return integer to use as the hashcode.</em>
 <a class="jxr_linenumber" name="L264" href="#L264">264</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L265" href="#L265">265</a> 	@Override
-<a class="jxr_linenumber" name="L266" href="#L266">266</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> hashCode() {
+<a class="jxr_linenumber" name="L266" href="#L266">266</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> hashCode() {
 <a class="jxr_linenumber" name="L267" href="#L267">267</a> 		immutable = <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L268" href="#L268">268</a> 		<strong class="jxr_keyword">int</strong> hash = 7;
 <a class="jxr_linenumber" name="L269" href="#L269">269</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> subset : locations.values()) {
@@ -296,7 +296,7 @@
 <a class="jxr_linenumber" name="L288" href="#L288">288</a> <em class="jxr_javadoccomment">	 *         exactly the same subsets.</em>
 <a class="jxr_linenumber" name="L289" href="#L289">289</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L290" href="#L290">290</a> 	@Override
-<a class="jxr_linenumber" name="L291" href="#L291">291</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> equals(Object obj) {
+<a class="jxr_linenumber" name="L291" href="#L291">291</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> equals(Object obj) {
 <a class="jxr_linenumber" name="L292" href="#L292">292</a> 		<strong class="jxr_keyword">if</strong> (obj instanceof <a name="CoreSubsets" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreSubsets.html#CoreSubsets">CoreSubsets</a>) {
 <a class="jxr_linenumber" name="L293" href="#L293">293</a> 			<strong class="jxr_keyword">var</strong> other = (<a name="CoreSubsets" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreSubsets.html#CoreSubsets">CoreSubsets</a>) obj;
 <a class="jxr_linenumber" name="L294" href="#L294">294</a> 			<strong class="jxr_keyword">return</strong> Objects.equals(locations, other.locations);

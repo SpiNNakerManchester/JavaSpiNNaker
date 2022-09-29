@@ -566,9 +566,9 @@
 <a class="jxr_linenumber" name="L558" href="#L558">558</a> 
 <a class="jxr_linenumber" name="L559" href="#L559">559</a> 		<em class="jxr_comment">// If there is a timeout, all packets remaining are resent</em>
 <a class="jxr_linenumber" name="L560" href="#L560">560</a> 		<strong class="jxr_keyword">var</strong> toRemove = <strong class="jxr_keyword">new</strong> BitSet(SEQUENCE_LENGTH);
-<a class="jxr_linenumber" name="L561" href="#L561">561</a> 		ArrayList&lt;Integer&gt; currentSeqs;
+<a class="jxr_linenumber" name="L561" href="#L561">561</a> 		List&lt;Integer&gt; currentSeqs;
 <a class="jxr_linenumber" name="L562" href="#L562">562</a> 		<strong class="jxr_keyword">synchronized</strong> (outstandingRequests) {
-<a class="jxr_linenumber" name="L563" href="#L563">563</a> 			currentSeqs = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;(outstandingRequests.keySet());
+<a class="jxr_linenumber" name="L563" href="#L563">563</a> 			currentSeqs = List.copyOf(outstandingRequests.keySet());
 <a class="jxr_linenumber" name="L564" href="#L564">564</a> 		}
 <a class="jxr_linenumber" name="L565" href="#L565">565</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> seq : currentSeqs) {
 <a class="jxr_linenumber" name="L566" href="#L566">566</a> 			log.debug(<span class="jxr_string">"resending seq {}"</span>, seq);

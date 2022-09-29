@@ -101,6 +101,7 @@ loadScripts(document, 'script');</script>
 <pre><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/Immutable.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@Immutable</a>
 public final class <span class="typeNameLabel">SpinnakerLinkData</span>
 extends <a href="AbstractDataLink.html" title="class in uk.ac.manchester.spinnaker.machine.datalinks">AbstractDataLink</a></pre>
+<div class="block">A description of a data link that uses the SpiNNaker-link protocol.</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
 <dd>Christian-B</dd>
@@ -129,7 +130,7 @@ extends <a href="AbstractDataLink.html" title="class in uk.ac.manchester.spinnak
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#spinnakerLinkId">spinnakerLinkId</a></span></code></th>
 <td class="colLast">
-<div class="block">The link ID from the spinnaker prospective.</div>
+<div class="block">The link ID from the SpiNNaker perspective.</div>
 </td>
 </tr>
 </tbody>
@@ -164,7 +165,7 @@ extends <a href="AbstractDataLink.html" title="class in uk.ac.manchester.spinnak
 <a href="../Direction.html" title="enum in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;linkId,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;boardAddress)</code></th>
 <td class="colLast">
-<div class="block">Main Constructor of an FPGALinkData.</div>
+<div class="block">Build an instance.</div>
 </td>
 </tr>
 </tbody>
@@ -240,7 +241,7 @@ extends <a href="AbstractDataLink.html" title="class in uk.ac.manchester.spinnak
 <section class="detail">
 <h3><a id="spinnakerLinkId">spinnakerLinkId</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">spinnakerLinkId</span></div>
-<div class="block">The link ID from the spinnaker prospective.</div>
+<div class="block">The link ID from the SpiNNaker perspective.</div>
 </section>
 </li>
 </ul>
@@ -260,10 +261,10 @@ extends <a href="AbstractDataLink.html" title="class in uk.ac.manchester.spinnak
 <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;location,
 <a href="../Direction.html" title="enum in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;linkId,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;boardAddress)</span></div>
-<div class="block">Main Constructor of an FPGALinkData.</div>
+<div class="block">Build an instance.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>spinnakerLinkId</code> - The link ID from the spinnaker prospective.</dd>
+<dd><code>spinnakerLinkId</code> - The link ID from the SpiNNaker perspective.</dd>
 <dd><code>location</code> - The location/Chip being linked to</dd>
 <dd><code>linkId</code> - The ID/Direction coming out of the Chip</dd>
 <dd><code>boardAddress</code> - IP address of the Datalink on the board.</dd>

@@ -24,13 +24,13 @@
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">package</strong> uk.ac.manchester.spinnaker.alloc.bmp;
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.slf4j.LoggerFactory.getLogger;
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.utils.Ping.ping;
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.util.Objects.hash;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.slf4j.LoggerFactory.getLogger;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.utils.Ping.ping;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> java.util.Collection;
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> java.util.HashMap;
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> java.util.List;
@@ -98,7 +98,7 @@
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  		@Override
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>  		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> hashCode() {
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>  			<strong class="jxr_keyword">return</strong> machine.hashCode() ^ bmp.hashCode() * 7;
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>  			<strong class="jxr_keyword">return</strong> hash(machine, bmp);
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>  		}
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>  	}
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>  
@@ -223,7 +223,7 @@
 <a class="jxr_linenumber" name="L215" href="#L215">215</a> 
 <a class="jxr_linenumber" name="L216" href="#L216">216</a> 	<strong class="jxr_keyword">private</strong> Collection&lt;BMPTransceiverInterface&gt; transceivers() {
 <a class="jxr_linenumber" name="L217" href="#L217">217</a> 		<strong class="jxr_keyword">synchronized</strong> (txrxMap) {
-<a class="jxr_linenumber" name="L218" href="#L218">218</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;(txrxMap.values());
+<a class="jxr_linenumber" name="L218" href="#L218">218</a> 			<strong class="jxr_keyword">return</strong> List.copyOf(txrxMap.values());
 <a class="jxr_linenumber" name="L219" href="#L219">219</a> 		}
 <a class="jxr_linenumber" name="L220" href="#L220">220</a> 	}
 <a class="jxr_linenumber" name="L221" href="#L221">221</a> 

@@ -800,7 +800,7 @@ boolean&nbsp;wantNotify)</span>
 <div class="block">Request notification of job status changes. Best effort only.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>jobId</code> - Job identifier.</dd>
+<dd><code>jobId</code> - Job identifier. May be <code>null</code> to talk about any job.</dd>
 <dd><code>wantNotify</code> - Whether to enable or disable these notifications.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>uk.ac.manchester.spinnaker.alloc.compat.TaskException</code> - If anything goes wrong.</dd>
@@ -816,7 +816,8 @@ boolean&nbsp;wantNotify)</span>
 <div class="block">Request notification of machine status changes. Best effort only.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>machineName</code> - Name of the machine.</dd>
+<dd><code>machineName</code> - Name of the machine. May be <code>null</code> to talk about any
+            machine.</dd>
 <dd><code>wantNotify</code> - Whether to enable or disable these notifications.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>uk.ac.manchester.spinnaker.alloc.compat.TaskException</code> - If anything goes wrong.</dd>

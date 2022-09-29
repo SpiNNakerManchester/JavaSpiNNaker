@@ -3577,7 +3577,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/datalinks/AbstractDataLink.html#direction">direction</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.datalinks.<a href="uk/ac/manchester/spinnaker/machine/datalinks/AbstractDataLink.html" title="class in uk.ac.manchester.spinnaker.machine.datalinks">AbstractDataLink</a></dt>
 <dd>
-<div class="block">link Direction/id for this link.</div>
+<div class="block">Direction/id for this link.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/datalinks/FpgaEnum.html#direction">direction</a></span> - Variable in enum uk.ac.manchester.spinnaker.machine.datalinks.<a href="uk/ac/manchester/spinnaker/machine/datalinks/FpgaEnum.html" title="enum in uk.ac.manchester.spinnaker.machine.datalinks">FpgaEnum</a></dt>
 <dd>
@@ -4936,16 +4936,20 @@ loadScripts(document, 'script');</script>
 <div class="block">The ID of the FPGA port being used.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/datalinks/FpgaId.html" title="enum in uk.ac.manchester.spinnaker.machine.datalinks"><span class="typeNameLink">FpgaId</span></a> - Enum in <a href="uk/ac/manchester/spinnaker/machine/datalinks/package-summary.html">uk.ac.manchester.spinnaker.machine.datalinks</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The FPGAs that manage inter-board links.</div>
+</dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/datalinks/FPGALinkData.html" title="class in uk.ac.manchester.spinnaker.machine.datalinks"><span class="typeNameLink">FPGALinkData</span></a> - Class in <a href="uk/ac/manchester/spinnaker/machine/datalinks/package-summary.html">uk.ac.manchester.spinnaker.machine.datalinks</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A description of a particular inter-board link.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/datalinks/FPGALinkData.html#%3Cinit%3E(int,uk.ac.manchester.spinnaker.machine.datalinks.FpgaId,uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.Direction,java.net.InetAddress)">FPGALinkData(int, FpgaId, HasChipLocation, Direction, InetAddress)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.datalinks.<a href="uk/ac/manchester/spinnaker/machine/datalinks/FPGALinkData.html" title="class in uk.ac.manchester.spinnaker.machine.datalinks">FPGALinkData</a></dt>
 <dd>
-<div class="block">Main Constructor of an FPGALinkData.</div>
+<div class="block">Build an instance.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/datalinks/FPGALinkData.html#fpgaLinkId">fpgaLinkId</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.datalinks.<a href="uk/ac/manchester/spinnaker/machine/datalinks/FPGALinkData.html" title="class in uk.ac.manchester.spinnaker.machine.datalinks">FPGALinkData</a></dt>
 <dd>
-<div class="block">The link ID from the FPGA prospective.</div>
+<div class="block">The link ID from the FPGA perspective.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/model/FPGALinkRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model"><span class="typeNameLink">FPGALinkRegisters</span></a> - Enum in <a href="uk/ac/manchester/spinnaker/messages/model/package-summary.html">uk.ac.manchester.spinnaker.messages.model</a></dt>
 <dd>
@@ -8857,10 +8861,12 @@ loadScripts(document, 'script');</script>
 <div class="block">Specific Exception to show IPv6 is not supported.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/datalinks/InetIdTuple.html" title="class in uk.ac.manchester.spinnaker.machine.datalinks"><span class="typeNameLink">InetIdTuple</span></a> - Class in <a href="uk/ac/manchester/spinnaker/machine/datalinks/package-summary.html">uk.ac.manchester.spinnaker.machine.datalinks</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A tuple of an IP address and a SpiNNaker link ID.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/datalinks/InetIdTuple.html#%3Cinit%3E(java.net.InetAddress,int)">InetIdTuple(InetAddress, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.datalinks.<a href="uk/ac/manchester/spinnaker/machine/datalinks/InetIdTuple.html" title="class in uk.ac.manchester.spinnaker.machine.datalinks">InetIdTuple</a></dt>
 <dd>
-<div class="block">The main Constructor which sets all values.</div>
+<div class="block">Make an instance.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/RouterTimeout.html#INF">INF</a></span> - Static variable in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/RouterTimeout.html" title="class in uk.ac.manchester.spinnaker.messages.model">RouterTimeout</a></dt>
 <dd>
@@ -15817,14 +15823,16 @@ loadScripts(document, 'script');</script>
 <div class="block">The IP addresses of the boards.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/datalinks/SpinnakerLinkData.html" title="class in uk.ac.manchester.spinnaker.machine.datalinks"><span class="typeNameLink">SpinnakerLinkData</span></a> - Class in <a href="uk/ac/manchester/spinnaker/machine/datalinks/package-summary.html">uk.ac.manchester.spinnaker.machine.datalinks</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A description of a data link that uses the SpiNNaker-link protocol.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/datalinks/SpinnakerLinkData.html#%3Cinit%3E(int,uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.Direction,java.net.InetAddress)">SpinnakerLinkData(int, HasChipLocation, Direction, InetAddress)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.datalinks.<a href="uk/ac/manchester/spinnaker/machine/datalinks/SpinnakerLinkData.html" title="class in uk.ac.manchester.spinnaker.machine.datalinks">SpinnakerLinkData</a></dt>
 <dd>
-<div class="block">Main Constructor of an FPGALinkData.</div>
+<div class="block">Build an instance.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/datalinks/SpinnakerLinkData.html#spinnakerLinkId">spinnakerLinkId</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.datalinks.<a href="uk/ac/manchester/spinnaker/machine/datalinks/SpinnakerLinkData.html" title="class in uk.ac.manchester.spinnaker.machine.datalinks">SpinnakerLinkData</a></dt>
 <dd>
-<div class="block">The link ID from the spinnaker prospective.</div>
+<div class="block">The link ID from the SpiNNaker perspective.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Machine.html#spinnakerLinks()">spinnakerLinks()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></dt>
 <dd>
