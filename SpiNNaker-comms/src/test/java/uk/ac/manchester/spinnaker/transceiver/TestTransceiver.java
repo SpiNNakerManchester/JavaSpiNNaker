@@ -17,7 +17,13 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static testconfig.BoardTestConfiguration.NOHOST;
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
@@ -29,8 +35,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -83,7 +89,7 @@ class TestTransceiver {
 
 		try (var txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
-			assertEquals(new HashSet<>(connections), txrx.getConnections());
+			assertEquals(Set.copyOf(connections), txrx.getConnections());
 		}
 	}
 
@@ -102,7 +108,7 @@ class TestTransceiver {
 			for (var c : txrx.getConnections()) {
 				assertTrue(connections.contains(c));
 			}
-			assertEquals(new HashSet<>(connections), txrx.getConnections());
+			assertEquals(Set.copyOf(connections), txrx.getConnections());
 		}
 	}
 

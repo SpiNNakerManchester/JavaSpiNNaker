@@ -23,7 +23,6 @@ import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -216,7 +215,7 @@ public class TransceiverFactory
 
 	private Collection<BMPTransceiverInterface> transceivers() {
 		synchronized (txrxMap) {
-			return new ArrayList<>(txrxMap.values());
+			return List.copyOf(txrxMap.values());
 		}
 	}
 

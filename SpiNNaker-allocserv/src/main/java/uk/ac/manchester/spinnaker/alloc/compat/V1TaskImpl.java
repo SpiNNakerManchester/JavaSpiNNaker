@@ -387,7 +387,7 @@ class V1TaskImpl extends V1CompatTask {
 		private static void buildMachineDescription(SpallocAPI.Machine m,
 				Machine md) {
 			md.setName(m.getName());
-			md.setTags(new ArrayList<>(m.getTags()));
+			md.setTags(List.copyOf(m.getTags()));
 			md.setWidth(m.getWidth());
 			md.setHeight(m.getHeight());
 			md.setDeadBoards(m.getDeadBoards().stream().map(Utils::board)

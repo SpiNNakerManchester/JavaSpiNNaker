@@ -18,7 +18,10 @@ package uk.ac.manchester.spinnaker.py2json;
 
 import static java.io.File.createTempFile;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 import static uk.ac.manchester.spinnaker.py2json.MachineDefinitionConverter.getJsonWriter;
 import static uk.ac.manchester.spinnaker.py2json.MachineDefinitionConverter.main;
@@ -28,9 +31,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.EnumSet;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
@@ -128,7 +130,7 @@ class TestConvert {
 			assertEquals(1, machine.bmpIPs.size());
 			assertEquals(3, machine.spinnakerIPs.size());
 			assertEquals(Set.of("10.11.193.1", "10.11.193.17", "10.11.193.9"),
-					new HashSet<>(machine.spinnakerIPs.values()));
+					Set.copyOf(machine.spinnakerIPs.values()));
 			assertEquals(machine.boardLocations.keySet(),
 					machine.spinnakerIPs.keySet());
 		}
