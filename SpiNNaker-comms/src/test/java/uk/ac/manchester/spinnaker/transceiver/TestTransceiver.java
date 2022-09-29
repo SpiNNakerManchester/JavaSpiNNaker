@@ -17,13 +17,7 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static testconfig.BoardTestConfiguration.NOHOST;
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;

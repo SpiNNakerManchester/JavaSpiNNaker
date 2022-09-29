@@ -21,6 +21,7 @@ import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Collections.unmodifiableSortedMap;
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn5Geometry;
@@ -948,7 +949,7 @@ public class Machine implements MappableIterable<Chip> {
 		if (this == obj) {
 			return true;
 		}
-		return (obj instanceof Machine) && (difference((Machine) obj) == null);
+		return (obj instanceof Machine) && isNull(difference((Machine) obj));
 	}
 
 	/**

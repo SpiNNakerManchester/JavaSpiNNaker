@@ -18,10 +18,7 @@ package uk.ac.manchester.spinnaker.py2json;
 
 import static java.io.File.createTempFile;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 import static uk.ac.manchester.spinnaker.py2json.MachineDefinitionConverter.getJsonWriter;
 import static uk.ac.manchester.spinnaker.py2json.MachineDefinitionConverter.main;
