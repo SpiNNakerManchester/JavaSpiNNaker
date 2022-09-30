@@ -69,7 +69,7 @@
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.model.Prototype;
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.MemoryLocation;
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.model.FPGA;
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters;
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters;
@@ -154,7 +154,7 @@
 <a class="jxr_linenumber" name="L146" href="#L146">146</a> 
 <a class="jxr_linenumber" name="L147" href="#L147">147</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> BIG_SLEEP = 12.0;
 <a class="jxr_linenumber" name="L148" href="#L148">148</a> 
-<a class="jxr_linenumber" name="L149" href="#L149">149</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="BMPBoard" href="../../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board;
+<a class="jxr_linenumber" name="L149" href="#L149">149</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="BMPBoard" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/BMPBoard.html#BMPBoard">BMPBoard</a> board;
 <a class="jxr_linenumber" name="L150" href="#L150">150</a> 
 <a class="jxr_linenumber" name="L151" href="#L151">151</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="BMPTransceiverInterface" href="../../../../../../uk/ac/manchester/spinnaker/transceiver/BMPTransceiverInterface.html#BMPTransceiverInterface">BMPTransceiverInterface</a> txrx;
 <a class="jxr_linenumber" name="L152" href="#L152">152</a> 
@@ -168,7 +168,7 @@
 <a class="jxr_linenumber" name="L160" href="#L160">160</a> <em class="jxr_javadoccomment">	 * @param board</em>
 <a class="jxr_linenumber" name="L161" href="#L161">161</a> <em class="jxr_javadoccomment">	 *            Which board's BMP are we really working with.</em>
 <a class="jxr_linenumber" name="L162" href="#L162">162</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L163" href="#L163">163</a> 	<strong class="jxr_keyword">public</strong> <a name="FirmwareLoader" href="../../../../../../uk/ac/manchester/spinnaker/alloc/bmp/FirmwareLoader.html#FirmwareLoader">FirmwareLoader</a>(<a name="BMPTransceiverInterface" href="../../../../../../uk/ac/manchester/spinnaker/transceiver/BMPTransceiverInterface.html#BMPTransceiverInterface">BMPTransceiverInterface</a> txrx, <a name="BMPBoard" href="../../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board) {
+<a class="jxr_linenumber" name="L163" href="#L163">163</a> 	<strong class="jxr_keyword">public</strong> <a name="FirmwareLoader" href="../../../../../../uk/ac/manchester/spinnaker/alloc/bmp/FirmwareLoader.html#FirmwareLoader">FirmwareLoader</a>(<a name="BMPTransceiverInterface" href="../../../../../../uk/ac/manchester/spinnaker/transceiver/BMPTransceiverInterface.html#BMPTransceiverInterface">BMPTransceiverInterface</a> txrx, <a name="BMPBoard" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/BMPBoard.html#BMPBoard">BMPBoard</a> board) {
 <a class="jxr_linenumber" name="L164" href="#L164">164</a> 		<strong class="jxr_keyword">this</strong>.txrx = txrx;
 <a class="jxr_linenumber" name="L165" href="#L165">165</a> 		<strong class="jxr_keyword">this</strong>.board = board;
 <a class="jxr_linenumber" name="L166" href="#L166">166</a> 	}

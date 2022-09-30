@@ -113,16 +113,16 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/ReadFPGARegister.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">ReadFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/ReadFPGARegister.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">ReadFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;register,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/WriteFPGARegister.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">WriteFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/WriteFPGARegister.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">WriteFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;register,
 int&nbsp;value,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
@@ -184,10 +184,10 @@ the order they are declared.</div>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>default int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGARecevingLinkCounters,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGALinkCounter</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGARecevingLinkCounters,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGALinkCounter</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 int&nbsp;linkNumber,
 <a href="../FPGARecevingLinkCounters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGARecevingLinkCounters</a>&nbsp;counter,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a link counter on a FPGA of a board, assuming the standard FPGA
  configuration.</div>
@@ -195,11 +195,11 @@ int&nbsp;linkNumber,
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>default int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGARecevingLinkCounters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGALinkCounter</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGARecevingLinkCounters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGALinkCounter</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 int&nbsp;linkNumber,
 <a href="../FPGARecevingLinkCounters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGARecevingLinkCounters</a>&nbsp;counter,
 <a href="../../bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a register on a FPGA of a board, assuming the standard FPGA
  configuration.</div>
@@ -207,10 +207,10 @@ int&nbsp;linkNumber,
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>default int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGASendingLinkCounters,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGALinkCounter</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGASendingLinkCounters,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGALinkCounter</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 int&nbsp;linkNumber,
 <a href="../FPGASendingLinkCounters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGASendingLinkCounters</a>&nbsp;counter,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a link counter on a FPGA of a board, assuming the standard FPGA
  configuration.</div>
@@ -218,11 +218,11 @@ int&nbsp;linkNumber,
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>default int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGASendingLinkCounters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGALinkCounter</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGASendingLinkCounters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGALinkCounter</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 int&nbsp;linkNumber,
 <a href="../FPGASendingLinkCounters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGASendingLinkCounters</a>&nbsp;counter,
 <a href="../../bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a register on a FPGA of a board, assuming the standard FPGA
  configuration.</div>
@@ -230,10 +230,10 @@ int&nbsp;linkNumber,
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>default int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 int&nbsp;registerBank,
 <a href="../FPGALinkRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGALinkRegisters</a>&nbsp;register,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a register on a FPGA of a board, assuming the standard FPGA
  configuration.</div>
@@ -241,11 +241,11 @@ int&nbsp;registerBank,
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>default int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 int&nbsp;registerBank,
 <a href="../FPGALinkRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGALinkRegisters</a>&nbsp;register,
 <a href="../../bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a register on a FPGA of a board, assuming the standard FPGA
  configuration.</div>
@@ -253,28 +253,28 @@ int&nbsp;registerBank,
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>default int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;register,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a register on a FPGA of a board.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;register,
 <a href="../../bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a register on a FPGA of a board.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>default int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 <a href="../FPGAMainRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a>&nbsp;register,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a register on a FPGA of a board, assuming the standard FPGA
  configuration.</div>
@@ -282,10 +282,10 @@ int&nbsp;registerBank,
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>default int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 <a href="../FPGAMainRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a>&nbsp;register,
 <a href="../../bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a register on a FPGA of a board, assuming the standard FPGA
  configuration.</div>
@@ -293,27 +293,27 @@ int&nbsp;registerBank,
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;register,
 <a href="../../bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;register,
 <a href="../../bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,int,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,int,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 int&nbsp;registerBank,
 <a href="../FPGALinkRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGALinkRegisters</a>&nbsp;register,
 int&nbsp;value,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Write a register on a FPGA of a board, assuming the standard FPGA
  configuration.</div>
@@ -321,12 +321,12 @@ int&nbsp;value,
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 int&nbsp;registerBank,
 <a href="../FPGALinkRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGALinkRegisters</a>&nbsp;register,
 int&nbsp;value,
 <a href="../../bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Write a register on a FPGA of a board, assuming the standard FPGA
  configuration.</div>
@@ -334,31 +334,31 @@ int&nbsp;value,
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;register,
 int&nbsp;value,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Write a register on a FPGA of a board.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;register,
 int&nbsp;value,
 <a href="../../bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Write a register on a FPGA of a board.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,int,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,int,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 <a href="../FPGAMainRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a>&nbsp;register,
 int&nbsp;value,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Write a register on a FPGA of a board, assuming the standard FPGA
  configuration.</div>
@@ -366,11 +366,11 @@ int&nbsp;value,
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 <a href="../FPGAMainRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a>&nbsp;register,
 int&nbsp;value,
 <a href="../../bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Write a register on a FPGA of a board, assuming the standard FPGA
  configuration.</div>
@@ -378,20 +378,20 @@ int&nbsp;value,
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;register,
 int&nbsp;value,
 <a href="../../bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;register,
 int&nbsp;value,
 <a href="../../bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>

@@ -116,10 +116,10 @@
 <a class="jxr_linenumber" name="L108" href="#L108">108</a> <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.MemoryLocation;
 <a class="jxr_linenumber" name="L109" href="#L109">109</a> <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
 <a class="jxr_linenumber" name="L110" href="#L110">110</a> <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.RoutingEntry;
-<a class="jxr_linenumber" name="L111" href="#L111">111</a> <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.tags.IPTag;
-<a class="jxr_linenumber" name="L112" href="#L112">112</a> <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
-<a class="jxr_linenumber" name="L113" href="#L113">113</a> <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.tags.Tag;
-<a class="jxr_linenumber" name="L114" href="#L114">114</a> <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
+<a class="jxr_linenumber" name="L111" href="#L111">111</a> <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.board.BMPBoard;
+<a class="jxr_linenumber" name="L112" href="#L112">112</a> <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.tags.IPTag;
+<a class="jxr_linenumber" name="L113" href="#L113">113</a> <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
+<a class="jxr_linenumber" name="L114" href="#L114">114</a> <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.tags.Tag;
 <a class="jxr_linenumber" name="L115" href="#L115">115</a> <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 <a class="jxr_linenumber" name="L116" href="#L116">116</a> <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 <a class="jxr_linenumber" name="L117" href="#L117">117</a> <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.bmp.BMPSetLED;
@@ -1690,7 +1690,7 @@
 <a class="jxr_linenumber" name="L1682" href="#L1682">1682</a> 	@CheckReturnValue
 <a class="jxr_linenumber" name="L1683" href="#L1683">1683</a> 	@ParallelUnsafe
 <a class="jxr_linenumber" name="L1684" href="#L1684">1684</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> readFPGARegister(<a name="FPGA" href="../../../../../uk/ac/manchester/spinnaker/messages/model/FPGA.html#FPGA">FPGA</a> fpga, MemoryLocation register,
-<a class="jxr_linenumber" name="L1685" href="#L1685">1685</a> 			BMPCoords bmp, <a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board)
+<a class="jxr_linenumber" name="L1685" href="#L1685">1685</a> 			BMPCoords bmp, BMPBoard board)
 <a class="jxr_linenumber" name="L1686" href="#L1686">1686</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
 <a class="jxr_linenumber" name="L1687" href="#L1687">1687</a> 		<strong class="jxr_keyword">return</strong> bmpCall(bmp,
 <a class="jxr_linenumber" name="L1688" href="#L1688">1688</a> 				<strong class="jxr_keyword">new</strong> <a name="ReadFPGARegister" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/ReadFPGARegister.html#ReadFPGARegister">ReadFPGARegister</a>(fpga, register, board)).fpgaRegister;
@@ -1699,7 +1699,7 @@
 <a class="jxr_linenumber" name="L1691" href="#L1691">1691</a> 	@Override
 <a class="jxr_linenumber" name="L1692" href="#L1692">1692</a> 	@ParallelUnsafe
 <a class="jxr_linenumber" name="L1693" href="#L1693">1693</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeFPGARegister(<a name="FPGA" href="../../../../../uk/ac/manchester/spinnaker/messages/model/FPGA.html#FPGA">FPGA</a> fpga, MemoryLocation register, <strong class="jxr_keyword">int</strong> value,
-<a class="jxr_linenumber" name="L1694" href="#L1694">1694</a> 			BMPCoords bmp, <a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board)
+<a class="jxr_linenumber" name="L1694" href="#L1694">1694</a> 			BMPCoords bmp, BMPBoard board)
 <a class="jxr_linenumber" name="L1695" href="#L1695">1695</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
 <a class="jxr_linenumber" name="L1696" href="#L1696">1696</a> 		bmpCall(bmp, <strong class="jxr_keyword">new</strong> <a name="WriteFPGARegister" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/WriteFPGARegister.html#WriteFPGARegister">WriteFPGARegister</a>(fpga, register, value, board));
 <a class="jxr_linenumber" name="L1697" href="#L1697">1697</a> 	}
@@ -1707,7 +1707,7 @@
 <a class="jxr_linenumber" name="L1699" href="#L1699">1699</a> 	@Override
 <a class="jxr_linenumber" name="L1700" href="#L1700">1700</a> 	@CheckReturnValue
 <a class="jxr_linenumber" name="L1701" href="#L1701">1701</a> 	@ParallelUnsafe
-<a class="jxr_linenumber" name="L1702" href="#L1702">1702</a> 	<strong class="jxr_keyword">public</strong> <a name="ADCInfo" href="../../../../../uk/ac/manchester/spinnaker/messages/model/ADCInfo.html#ADCInfo">ADCInfo</a> readADCData(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, <a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board)
+<a class="jxr_linenumber" name="L1702" href="#L1702">1702</a> 	<strong class="jxr_keyword">public</strong> <a name="ADCInfo" href="../../../../../uk/ac/manchester/spinnaker/messages/model/ADCInfo.html#ADCInfo">ADCInfo</a> readADCData(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, BMPBoard board)
 <a class="jxr_linenumber" name="L1703" href="#L1703">1703</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
 <a class="jxr_linenumber" name="L1704" href="#L1704">1704</a> 		<strong class="jxr_keyword">return</strong> bmpCall(bmp, <strong class="jxr_keyword">new</strong> <a name="ReadADC" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/ReadADC.html#ReadADC">ReadADC</a>(board)).adcInfo;
 <a class="jxr_linenumber" name="L1705" href="#L1705">1705</a> 	}
@@ -1715,7 +1715,7 @@
 <a class="jxr_linenumber" name="L1707" href="#L1707">1707</a> 	@Override
 <a class="jxr_linenumber" name="L1708" href="#L1708">1708</a> 	@CheckReturnValue
 <a class="jxr_linenumber" name="L1709" href="#L1709">1709</a> 	@ParallelUnsafe
-<a class="jxr_linenumber" name="L1710" href="#L1710">1710</a> 	<strong class="jxr_keyword">public</strong> <a name="VersionInfo" href="../../../../../uk/ac/manchester/spinnaker/messages/model/VersionInfo.html#VersionInfo">VersionInfo</a> readBMPVersion(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, <a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board)
+<a class="jxr_linenumber" name="L1710" href="#L1710">1710</a> 	<strong class="jxr_keyword">public</strong> <a name="VersionInfo" href="../../../../../uk/ac/manchester/spinnaker/messages/model/VersionInfo.html#VersionInfo">VersionInfo</a> readBMPVersion(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, BMPBoard board)
 <a class="jxr_linenumber" name="L1711" href="#L1711">1711</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
 <a class="jxr_linenumber" name="L1712" href="#L1712">1712</a> 		<strong class="jxr_keyword">return</strong> bmpCall(bmp, <strong class="jxr_keyword">new</strong> <a name="GetBMPVersion" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/GetBMPVersion.html#GetBMPVersion">GetBMPVersion</a>(board)).versionInfo;
 <a class="jxr_linenumber" name="L1713" href="#L1713">1713</a> 	}
@@ -1723,7 +1723,7 @@
 <a class="jxr_linenumber" name="L1715" href="#L1715">1715</a> 	@Override
 <a class="jxr_linenumber" name="L1716" href="#L1716">1716</a> 	@CheckReturnValue
 <a class="jxr_linenumber" name="L1717" href="#L1717">1717</a> 	@ParallelSafeWithCare
-<a class="jxr_linenumber" name="L1718" href="#L1718">1718</a> 	<strong class="jxr_keyword">public</strong> ByteBuffer readBMPMemory(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, <a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board,
+<a class="jxr_linenumber" name="L1718" href="#L1718">1718</a> 	<strong class="jxr_keyword">public</strong> ByteBuffer readBMPMemory(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, BMPBoard board,
 <a class="jxr_linenumber" name="L1719" href="#L1719">1719</a> 			MemoryLocation baseAddress, <strong class="jxr_keyword">int</strong> length)
 <a class="jxr_linenumber" name="L1720" href="#L1720">1720</a> 			<strong class="jxr_keyword">throws</strong> ProcessException, IOException {
 <a class="jxr_linenumber" name="L1721" href="#L1721">1721</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="BMPReadMemoryProcess" href="../../../../../uk/ac/manchester/spinnaker/transceiver/BMPReadMemoryProcess.html#BMPReadMemoryProcess">BMPReadMemoryProcess</a>(bmpConnection(bmp), <strong class="jxr_keyword">this</strong>).read(board,
@@ -1731,7 +1731,7 @@
 <a class="jxr_linenumber" name="L1723" href="#L1723">1723</a> 	}
 <a class="jxr_linenumber" name="L1724" href="#L1724">1724</a> 
 <a class="jxr_linenumber" name="L1725" href="#L1725">1725</a> 	@Override
-<a class="jxr_linenumber" name="L1726" href="#L1726">1726</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeBMPMemory(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, <a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board,
+<a class="jxr_linenumber" name="L1726" href="#L1726">1726</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeBMPMemory(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, BMPBoard board,
 <a class="jxr_linenumber" name="L1727" href="#L1727">1727</a> 			MemoryLocation baseAddress, ByteBuffer data)
 <a class="jxr_linenumber" name="L1728" href="#L1728">1728</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
 <a class="jxr_linenumber" name="L1729" href="#L1729">1729</a> 		<strong class="jxr_keyword">new</strong> <a name="BMPWriteMemoryProcess" href="../../../../../uk/ac/manchester/spinnaker/transceiver/BMPWriteMemoryProcess.html#BMPWriteMemoryProcess">BMPWriteMemoryProcess</a>(bmpConnection(bmp), <strong class="jxr_keyword">this</strong>).writeMemory(board,
@@ -1739,7 +1739,7 @@
 <a class="jxr_linenumber" name="L1731" href="#L1731">1731</a> 	}
 <a class="jxr_linenumber" name="L1732" href="#L1732">1732</a> 
 <a class="jxr_linenumber" name="L1733" href="#L1733">1733</a> 	@Override
-<a class="jxr_linenumber" name="L1734" href="#L1734">1734</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeBMPMemory(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, <a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board,
+<a class="jxr_linenumber" name="L1734" href="#L1734">1734</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeBMPMemory(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, BMPBoard board,
 <a class="jxr_linenumber" name="L1735" href="#L1735">1735</a> 			MemoryLocation baseAddress, File file)
 <a class="jxr_linenumber" name="L1736" href="#L1736">1736</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
 <a class="jxr_linenumber" name="L1737" href="#L1737">1737</a> 		<strong class="jxr_keyword">var</strong> wmp = <strong class="jxr_keyword">new</strong> <a name="BMPWriteMemoryProcess" href="../../../../../uk/ac/manchester/spinnaker/transceiver/BMPWriteMemoryProcess.html#BMPWriteMemoryProcess">BMPWriteMemoryProcess</a>(bmpConnection(bmp), <strong class="jxr_keyword">this</strong>);
@@ -1750,14 +1750,14 @@
 <a class="jxr_linenumber" name="L1742" href="#L1742">1742</a> 	}
 <a class="jxr_linenumber" name="L1743" href="#L1743">1743</a> 
 <a class="jxr_linenumber" name="L1744" href="#L1744">1744</a> 	@Override
-<a class="jxr_linenumber" name="L1745" href="#L1745">1745</a> 	<strong class="jxr_keyword">public</strong> MemoryLocation getSerialFlashBuffer(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, <a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board)
+<a class="jxr_linenumber" name="L1745" href="#L1745">1745</a> 	<strong class="jxr_keyword">public</strong> MemoryLocation getSerialFlashBuffer(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, BMPBoard board)
 <a class="jxr_linenumber" name="L1746" href="#L1746">1746</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
 <a class="jxr_linenumber" name="L1747" href="#L1747">1747</a> 		<strong class="jxr_keyword">return</strong> bmpCall(bmp, <strong class="jxr_keyword">new</strong> <a name="ReadSerialVector" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/ReadSerialVector.html#ReadSerialVector">ReadSerialVector</a>(board)).vector
 <a class="jxr_linenumber" name="L1748" href="#L1748">1748</a> 				.getFlashBuffer();
 <a class="jxr_linenumber" name="L1749" href="#L1749">1749</a> 	}
 <a class="jxr_linenumber" name="L1750" href="#L1750">1750</a> 
 <a class="jxr_linenumber" name="L1751" href="#L1751">1751</a> 	@Override
-<a class="jxr_linenumber" name="L1752" href="#L1752">1752</a> 	<strong class="jxr_keyword">public</strong> String readBoardSerialNumber(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, <a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board)
+<a class="jxr_linenumber" name="L1752" href="#L1752">1752</a> 	<strong class="jxr_keyword">public</strong> String readBoardSerialNumber(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, BMPBoard board)
 <a class="jxr_linenumber" name="L1753" href="#L1753">1753</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
 <a class="jxr_linenumber" name="L1754" href="#L1754">1754</a> 		<strong class="jxr_keyword">var</strong> serialNumber = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[SERIAL_LENGTH];
 <a class="jxr_linenumber" name="L1755" href="#L1755">1755</a> 		bmpCall(bmp, <strong class="jxr_keyword">new</strong> <a name="ReadSerialVector" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/ReadSerialVector.html#ReadSerialVector">ReadSerialVector</a>(board)).vector.getSerialNumber()
@@ -1768,7 +1768,7 @@
 <a class="jxr_linenumber" name="L1760" href="#L1760">1760</a> 
 <a class="jxr_linenumber" name="L1761" href="#L1761">1761</a> 	@Override
 <a class="jxr_linenumber" name="L1762" href="#L1762">1762</a> 	@CheckReturnValue
-<a class="jxr_linenumber" name="L1763" href="#L1763">1763</a> 	<strong class="jxr_keyword">public</strong> ByteBuffer readSerialFlash(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, <a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board,
+<a class="jxr_linenumber" name="L1763" href="#L1763">1763</a> 	<strong class="jxr_keyword">public</strong> ByteBuffer readSerialFlash(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, BMPBoard board,
 <a class="jxr_linenumber" name="L1764" href="#L1764">1764</a> 			MemoryLocation baseAddress, <strong class="jxr_keyword">int</strong> length)
 <a class="jxr_linenumber" name="L1765" href="#L1765">1765</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
 <a class="jxr_linenumber" name="L1766" href="#L1766">1766</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="BMPReadSerialFlashProcess" href="../../../../../uk/ac/manchester/spinnaker/transceiver/BMPReadSerialFlashProcess.html#BMPReadSerialFlashProcess">BMPReadSerialFlashProcess</a>(bmpConnection(bmp), <strong class="jxr_keyword">this</strong>)
@@ -1780,7 +1780,7 @@
 <a class="jxr_linenumber" name="L1772" href="#L1772">1772</a> 
 <a class="jxr_linenumber" name="L1773" href="#L1773">1773</a> 	@Override
 <a class="jxr_linenumber" name="L1774" href="#L1774">1774</a> 	@CheckReturnValue
-<a class="jxr_linenumber" name="L1775" href="#L1775">1775</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> readSerialFlashCRC(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, <a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board,
+<a class="jxr_linenumber" name="L1775" href="#L1775">1775</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> readSerialFlashCRC(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, BMPBoard board,
 <a class="jxr_linenumber" name="L1776" href="#L1776">1776</a> 			MemoryLocation address, <strong class="jxr_keyword">int</strong> length)
 <a class="jxr_linenumber" name="L1777" href="#L1777">1777</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
 <a class="jxr_linenumber" name="L1778" href="#L1778">1778</a> 		<strong class="jxr_keyword">return</strong> bmpCall(bmp, CRC_TIMEOUT, BMP_RETRIES <em class="jxr_comment">/* =default */</em>,
@@ -1788,7 +1788,7 @@
 <a class="jxr_linenumber" name="L1780" href="#L1780">1780</a> 	}
 <a class="jxr_linenumber" name="L1781" href="#L1781">1781</a> 
 <a class="jxr_linenumber" name="L1782" href="#L1782">1782</a> 	@Override
-<a class="jxr_linenumber" name="L1783" href="#L1783">1783</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeSerialFlash(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, <a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board,
+<a class="jxr_linenumber" name="L1783" href="#L1783">1783</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeSerialFlash(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, BMPBoard board,
 <a class="jxr_linenumber" name="L1784" href="#L1784">1784</a> 			MemoryLocation baseAddress, ByteBuffer data)
 <a class="jxr_linenumber" name="L1785" href="#L1785">1785</a> 			<strong class="jxr_keyword">throws</strong> ProcessException, IOException {
 <a class="jxr_linenumber" name="L1786" href="#L1786">1786</a> 		<strong class="jxr_keyword">new</strong> <a name="BMPWriteSerialFlashProcess" href="../../../../../uk/ac/manchester/spinnaker/transceiver/BMPWriteSerialFlashProcess.html#BMPWriteSerialFlashProcess">BMPWriteSerialFlashProcess</a>(bmpConnection(bmp), <strong class="jxr_keyword">this</strong>).write(board,
@@ -1796,7 +1796,7 @@
 <a class="jxr_linenumber" name="L1788" href="#L1788">1788</a> 	}
 <a class="jxr_linenumber" name="L1789" href="#L1789">1789</a> 
 <a class="jxr_linenumber" name="L1790" href="#L1790">1790</a> 	@Override
-<a class="jxr_linenumber" name="L1791" href="#L1791">1791</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeSerialFlash(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, <a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board,
+<a class="jxr_linenumber" name="L1791" href="#L1791">1791</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeSerialFlash(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, BMPBoard board,
 <a class="jxr_linenumber" name="L1792" href="#L1792">1792</a> 			MemoryLocation baseAddress, <strong class="jxr_keyword">int</strong> size, InputStream stream)
 <a class="jxr_linenumber" name="L1793" href="#L1793">1793</a> 			<strong class="jxr_keyword">throws</strong> ProcessException, IOException {
 <a class="jxr_linenumber" name="L1794" href="#L1794">1794</a> 		<strong class="jxr_keyword">new</strong> <a name="BMPWriteSerialFlashProcess" href="../../../../../uk/ac/manchester/spinnaker/transceiver/BMPWriteSerialFlashProcess.html#BMPWriteSerialFlashProcess">BMPWriteSerialFlashProcess</a>(bmpConnection(bmp), <strong class="jxr_keyword">this</strong>).write(board,
@@ -1804,7 +1804,7 @@
 <a class="jxr_linenumber" name="L1796" href="#L1796">1796</a> 	}
 <a class="jxr_linenumber" name="L1797" href="#L1797">1797</a> 
 <a class="jxr_linenumber" name="L1798" href="#L1798">1798</a> 	@Override
-<a class="jxr_linenumber" name="L1799" href="#L1799">1799</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeSerialFlash(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, <a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board,
+<a class="jxr_linenumber" name="L1799" href="#L1799">1799</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeSerialFlash(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, BMPBoard board,
 <a class="jxr_linenumber" name="L1800" href="#L1800">1800</a> 			MemoryLocation baseAddress, File file)
 <a class="jxr_linenumber" name="L1801" href="#L1801">1801</a> 			<strong class="jxr_keyword">throws</strong> ProcessException, IOException {
 <a class="jxr_linenumber" name="L1802" href="#L1802">1802</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> f = buffer(<strong class="jxr_keyword">new</strong> FileInputStream(file))) {
@@ -1815,14 +1815,14 @@
 <a class="jxr_linenumber" name="L1807" href="#L1807">1807</a> 	}
 <a class="jxr_linenumber" name="L1808" href="#L1808">1808</a> 
 <a class="jxr_linenumber" name="L1809" href="#L1809">1809</a> 	@Override
-<a class="jxr_linenumber" name="L1810" href="#L1810">1810</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeBMPFlash(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, <a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board,
+<a class="jxr_linenumber" name="L1810" href="#L1810">1810</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeBMPFlash(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, BMPBoard board,
 <a class="jxr_linenumber" name="L1811" href="#L1811">1811</a> 			MemoryLocation address) <strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
 <a class="jxr_linenumber" name="L1812" href="#L1812">1812</a> 		bmpCall(bmp, <strong class="jxr_keyword">new</strong> <a name="WriteFlashBuffer" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/WriteFlashBuffer.html#WriteFlashBuffer">WriteFlashBuffer</a>(board, address, <strong class="jxr_keyword">true</strong>));
 <a class="jxr_linenumber" name="L1813" href="#L1813">1813</a> 	}
 <a class="jxr_linenumber" name="L1814" href="#L1814">1814</a> 
 <a class="jxr_linenumber" name="L1815" href="#L1815">1815</a> 	@Deprecated
 <a class="jxr_linenumber" name="L1816" href="#L1816">1816</a> 	@Override
-<a class="jxr_linenumber" name="L1817" href="#L1817">1817</a> 	<strong class="jxr_keyword">public</strong> MemoryLocation eraseBMPFlash(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, <a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board,
+<a class="jxr_linenumber" name="L1817" href="#L1817">1817</a> 	<strong class="jxr_keyword">public</strong> MemoryLocation eraseBMPFlash(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, BMPBoard board,
 <a class="jxr_linenumber" name="L1818" href="#L1818">1818</a> 			MemoryLocation baseAddress, <strong class="jxr_keyword">int</strong> size)
 <a class="jxr_linenumber" name="L1819" href="#L1819">1819</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
 <a class="jxr_linenumber" name="L1820" href="#L1820">1820</a> 		<strong class="jxr_keyword">return</strong> bmpCall(bmp, <strong class="jxr_keyword">new</strong> <a name="EraseFlash" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/EraseFlash.html#EraseFlash">EraseFlash</a>(board, baseAddress, size)).address;
@@ -1830,14 +1830,14 @@
 <a class="jxr_linenumber" name="L1822" href="#L1822">1822</a> 
 <a class="jxr_linenumber" name="L1823" href="#L1823">1823</a> 	@Deprecated
 <a class="jxr_linenumber" name="L1824" href="#L1824">1824</a> 	@Override
-<a class="jxr_linenumber" name="L1825" href="#L1825">1825</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> chunkBMPFlash(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, <a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board,
+<a class="jxr_linenumber" name="L1825" href="#L1825">1825</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> chunkBMPFlash(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, BMPBoard board,
 <a class="jxr_linenumber" name="L1826" href="#L1826">1826</a> 			MemoryLocation address) <strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
 <a class="jxr_linenumber" name="L1827" href="#L1827">1827</a> 		bmpCall(bmp, <strong class="jxr_keyword">new</strong> <a name="WriteFlashBuffer" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/WriteFlashBuffer.html#WriteFlashBuffer">WriteFlashBuffer</a>(board, address, false));
 <a class="jxr_linenumber" name="L1828" href="#L1828">1828</a> 	}
 <a class="jxr_linenumber" name="L1829" href="#L1829">1829</a> 
 <a class="jxr_linenumber" name="L1830" href="#L1830">1830</a> 	@Deprecated
 <a class="jxr_linenumber" name="L1831" href="#L1831">1831</a> 	@Override
-<a class="jxr_linenumber" name="L1832" href="#L1832">1832</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> copyBMPFlash(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, <a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board,
+<a class="jxr_linenumber" name="L1832" href="#L1832">1832</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> copyBMPFlash(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, BMPBoard board,
 <a class="jxr_linenumber" name="L1833" href="#L1833">1833</a> 			MemoryLocation baseAddress, <strong class="jxr_keyword">int</strong> size)
 <a class="jxr_linenumber" name="L1834" href="#L1834">1834</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
 <a class="jxr_linenumber" name="L1835" href="#L1835">1835</a> 		<em class="jxr_comment">// NB: no retries of this! Not idempotent!</em>
@@ -1847,14 +1847,14 @@
 <a class="jxr_linenumber" name="L1839" href="#L1839">1839</a> 
 <a class="jxr_linenumber" name="L1840" href="#L1840">1840</a> 	@Override
 <a class="jxr_linenumber" name="L1841" href="#L1841">1841</a> 	@ParallelSafe
-<a class="jxr_linenumber" name="L1842" href="#L1842">1842</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> getResetStatus(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, <a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board)
+<a class="jxr_linenumber" name="L1842" href="#L1842">1842</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> getResetStatus(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, BMPBoard board)
 <a class="jxr_linenumber" name="L1843" href="#L1843">1843</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
 <a class="jxr_linenumber" name="L1844" href="#L1844">1844</a> 		<strong class="jxr_keyword">return</strong> bmpCall(bmp, <strong class="jxr_keyword">new</strong> <a name="GetFPGAResetStatus" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/GetFPGAResetStatus.html#GetFPGAResetStatus">GetFPGAResetStatus</a>(board)).isReset();
 <a class="jxr_linenumber" name="L1845" href="#L1845">1845</a> 	}
 <a class="jxr_linenumber" name="L1846" href="#L1846">1846</a> 
 <a class="jxr_linenumber" name="L1847" href="#L1847">1847</a> 	@Override
 <a class="jxr_linenumber" name="L1848" href="#L1848">1848</a> 	@ParallelSafe
-<a class="jxr_linenumber" name="L1849" href="#L1849">1849</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> resetFPGA(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, <a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board,
+<a class="jxr_linenumber" name="L1849" href="#L1849">1849</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> resetFPGA(<a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp, BMPBoard board,
 <a class="jxr_linenumber" name="L1850" href="#L1850">1850</a> 			FPGAResetType resetType) <strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
 <a class="jxr_linenumber" name="L1851" href="#L1851">1851</a> 		bmpCall(bmp, <strong class="jxr_keyword">new</strong> <a name="ResetFPGA" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/ResetFPGA.html#ResetFPGA">ResetFPGA</a>(board, resetType));
 <a class="jxr_linenumber" name="L1852" href="#L1852">1852</a> 	}

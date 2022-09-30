@@ -35,7 +35,7 @@
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.connections.BMPConnection;
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.MemoryLocation;
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.bmp.ReadSerialFlash;
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.transceiver.Accumulator.BufferAccumulator;
@@ -76,7 +76,7 @@
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>  <em class="jxr_javadoccomment">	 * @throws ProcessException</em>
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>  <em class="jxr_javadoccomment">	 *             If SpiNNaker rejects a message.</em>
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>  	<strong class="jxr_keyword">private</strong> &lt;T&gt; T read(<a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board, <a name="MemoryLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/MemoryLocation.html#MemoryLocation">MemoryLocation</a> address, <strong class="jxr_keyword">int</strong> size,
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  	<strong class="jxr_keyword">private</strong> &lt;T&gt; T read(<a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/machine/board/BMPBoard.html#BMPBoard">BMPBoard</a> board, <a name="MemoryLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/MemoryLocation.html#MemoryLocation">MemoryLocation</a> address, <strong class="jxr_keyword">int</strong> size,
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  			Accumulator&lt;T&gt; accum) <strong class="jxr_keyword">throws</strong> ProcessException, IOException {
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>  		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> offset = 0, chunk; offset &lt; size; offset += chunk) {
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
@@ -101,7 +101,7 @@
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>  <em class="jxr_javadoccomment">	 * @throws ProcessException</em>
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>  <em class="jxr_javadoccomment">	 *             If SpiNNaker rejects a message.</em>
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>  	<strong class="jxr_keyword">void</strong> read(<a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board, <a name="MemoryLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/MemoryLocation.html#MemoryLocation">MemoryLocation</a> baseAddress,
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>  	<strong class="jxr_keyword">void</strong> read(<a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/machine/board/BMPBoard.html#BMPBoard">BMPBoard</a> board, <a name="MemoryLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/MemoryLocation.html#MemoryLocation">MemoryLocation</a> baseAddress,
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>  			ByteBuffer receivingBuffer) <strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>  		read(board, baseAddress, receivingBuffer.remaining(),
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>  				<strong class="jxr_keyword">new</strong> BufferAccumulator(receivingBuffer));
@@ -123,7 +123,7 @@
 <a class="jxr_linenumber" name="L115" href="#L115">115</a> <em class="jxr_javadoccomment">	 * @throws ProcessException</em>
 <a class="jxr_linenumber" name="L116" href="#L116">116</a> <em class="jxr_javadoccomment">	 *             If SpiNNaker rejects a message.</em>
 <a class="jxr_linenumber" name="L117" href="#L117">117</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L118" href="#L118">118</a> 	ByteBuffer read(<a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board, <a name="MemoryLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/MemoryLocation.html#MemoryLocation">MemoryLocation</a> baseAddress, <strong class="jxr_keyword">int</strong> size)
+<a class="jxr_linenumber" name="L118" href="#L118">118</a> 	ByteBuffer read(<a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/machine/board/BMPBoard.html#BMPBoard">BMPBoard</a> board, <a name="MemoryLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/MemoryLocation.html#MemoryLocation">MemoryLocation</a> baseAddress, <strong class="jxr_keyword">int</strong> size)
 <a class="jxr_linenumber" name="L119" href="#L119">119</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
 <a class="jxr_linenumber" name="L120" href="#L120">120</a> 		<strong class="jxr_keyword">return</strong> read(board, baseAddress, size, <strong class="jxr_keyword">new</strong> BufferAccumulator(size));
 <a class="jxr_linenumber" name="L121" href="#L121">121</a> 	}
@@ -146,7 +146,7 @@
 <a class="jxr_linenumber" name="L138" href="#L138">138</a> <em class="jxr_javadoccomment">	 * @throws ProcessException</em>
 <a class="jxr_linenumber" name="L139" href="#L139">139</a> <em class="jxr_javadoccomment">	 *             If SpiNNaker rejects a message.</em>
 <a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L141" href="#L141">141</a> 	<strong class="jxr_keyword">void</strong> read(<a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board, <a name="MemoryLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/MemoryLocation.html#MemoryLocation">MemoryLocation</a> baseAddress, <strong class="jxr_keyword">int</strong> size,
+<a class="jxr_linenumber" name="L141" href="#L141">141</a> 	<strong class="jxr_keyword">void</strong> read(<a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/machine/board/BMPBoard.html#BMPBoard">BMPBoard</a> board, <a name="MemoryLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/MemoryLocation.html#MemoryLocation">MemoryLocation</a> baseAddress, <strong class="jxr_keyword">int</strong> size,
 <a class="jxr_linenumber" name="L142" href="#L142">142</a> 			RandomAccessFile dataFile) <strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
 <a class="jxr_linenumber" name="L143" href="#L143">143</a> 		read(board, baseAddress, size, <strong class="jxr_keyword">new</strong> FileAccumulator(dataFile));
 <a class="jxr_linenumber" name="L144" href="#L144">144</a> 	}
@@ -168,7 +168,7 @@
 <a class="jxr_linenumber" name="L160" href="#L160">160</a> <em class="jxr_javadoccomment">	 * @throws ProcessException</em>
 <a class="jxr_linenumber" name="L161" href="#L161">161</a> <em class="jxr_javadoccomment">	 *             If SpiNNaker rejects a message.</em>
 <a class="jxr_linenumber" name="L162" href="#L162">162</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L163" href="#L163">163</a> 	<strong class="jxr_keyword">void</strong> read(<a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board, <a name="MemoryLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/MemoryLocation.html#MemoryLocation">MemoryLocation</a> baseAddress, <strong class="jxr_keyword">int</strong> size,
+<a class="jxr_linenumber" name="L163" href="#L163">163</a> 	<strong class="jxr_keyword">void</strong> read(<a name="BMPBoard" href="../../../../../uk/ac/manchester/spinnaker/machine/board/BMPBoard.html#BMPBoard">BMPBoard</a> board, <a name="MemoryLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/MemoryLocation.html#MemoryLocation">MemoryLocation</a> baseAddress, <strong class="jxr_keyword">int</strong> size,
 <a class="jxr_linenumber" name="L164" href="#L164">164</a> 			File dataFile) <strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
 <a class="jxr_linenumber" name="L165" href="#L165">165</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> s = <strong class="jxr_keyword">new</strong> RandomAccessFile(dataFile, <span class="jxr_string">"rw"</span>)) {
 <a class="jxr_linenumber" name="L166" href="#L166">166</a> 			read(board, baseAddress, size, <strong class="jxr_keyword">new</strong> FileAccumulator(s));
