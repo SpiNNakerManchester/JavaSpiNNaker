@@ -23,6 +23,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_SF;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /** An SCP request to read a region of serial flash from a BMP. */

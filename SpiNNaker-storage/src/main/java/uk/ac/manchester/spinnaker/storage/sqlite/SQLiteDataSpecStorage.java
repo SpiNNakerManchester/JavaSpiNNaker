@@ -17,6 +17,12 @@
 package uk.ac.manchester.spinnaker.storage.sqlite;
 
 import static java.nio.ByteBuffer.wrap;
+import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FIFTH;
+import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FIRST;
+import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FOURTH;
+import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.SECOND;
+import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.SIXTH;
+import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.THIRD;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_LOADING_METADATA;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.COUNT_WORK;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_CORE_DATA_SPEC;
@@ -42,18 +48,6 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  */
 public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 		implements DSEStorage {
-	private static final int FIRST = 1;
-
-	private static final int SECOND = 2;
-
-	private static final int THIRD = 3;
-
-	private static final int FOURTH = 4;
-
-	private static final int FIFTH = 5;
-
-	private static final int SIXTH = 6;
-
 	/**
 	 * Create an instance.
 	 *

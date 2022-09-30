@@ -14,7 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.messages.bmp;
+package uk.ac.manchester.spinnaker.machine.board;
+
+import javax.validation.constraints.PositiveOrZero;
 
 /**
  * Wrapper for a board number so that it can't get mixed up with other integers.
@@ -23,6 +25,7 @@ package uk.ac.manchester.spinnaker.messages.bmp;
  */
 public final class BMPBoard {
 	/** The board number. */
+	@PositiveOrZero
 	public final int board;
 
 	/** @param board The board number. */

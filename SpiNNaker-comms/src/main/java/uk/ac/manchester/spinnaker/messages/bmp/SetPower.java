@@ -22,6 +22,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_POWER;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
+import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 
 /**

@@ -21,6 +21,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_FLASH_COPY;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 
 /**
  * A request to update flash memory on a BMP. Must have already been prepared
