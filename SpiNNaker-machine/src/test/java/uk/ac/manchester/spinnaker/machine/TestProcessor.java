@@ -17,9 +17,13 @@
 package uk.ac.manchester.spinnaker.machine;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.DTCM_AVAILABLE;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.PROCESSOR_CLOCK_SPEED;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGAHERTZ_PER_HERTZ;
+
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -57,7 +61,7 @@ public class TestProcessor {
 	}
 
 	private static final int FAST_PROCESSOR =
-			MachineDefaults.PROCESSOR_CLOCK_SPEED + 10000000;
+			PROCESSOR_CLOCK_SPEED + 10 * MEGAHERTZ_PER_HERTZ;
 
 	@Test
 	public void testEquals() {
@@ -70,28 +74,26 @@ public class TestProcessor {
 		checkDifferent(p1, p1m);
 		assertNotEquals(p1, null);
 		assertNotEquals(p1, "p1");
-		var faster = Processor.factory(1, FAST_PROCESSOR,
-				MachineDefaults.DTCM_AVAILABLE, false);
-		var faster2 = Processor.factory(1, FAST_PROCESSOR,
-				MachineDefaults.DTCM_AVAILABLE, false);
+		var faster =
+				Processor.factory(1, FAST_PROCESSOR, DTCM_AVAILABLE, false);
+		var faster2 =
+				Processor.factory(1, FAST_PROCESSOR, DTCM_AVAILABLE, false);
 		checkSame(faster, faster2);
 	}
 
 	@Test
 	public void testComparesTo() {
 		var p1 = Processor.factory(1);
-		var standard =
-				Processor.factory(1, MachineDefaults.PROCESSOR_CLOCK_SPEED,
-						MachineDefaults.DTCM_AVAILABLE, false);
-		var two = Processor.factory(2, MachineDefaults.PROCESSOR_CLOCK_SPEED,
+		var standard = Processor.factory(1, PROCESSOR_CLOCK_SPEED,
 				MachineDefaults.DTCM_AVAILABLE, false);
-		var monitor =
-				Processor.factory(1, MachineDefaults.PROCESSOR_CLOCK_SPEED,
-						MachineDefaults.DTCM_AVAILABLE, true);
+		var two = Processor.factory(2, PROCESSOR_CLOCK_SPEED, DTCM_AVAILABLE,
+				false);
+		var monitor = Processor.factory(1, PROCESSOR_CLOCK_SPEED,
+				DTCM_AVAILABLE, true);
 		var faster = Processor.factory(1, FAST_PROCESSOR,
 				MachineDefaults.DTCM_AVAILABLE, false);
-		var more = Processor.factory(1, MachineDefaults.PROCESSOR_CLOCK_SPEED,
-				MachineDefaults.DTCM_AVAILABLE + 10, false);
+		var more = Processor.factory(1, PROCESSOR_CLOCK_SPEED,
+				DTCM_AVAILABLE + 10, false);
 		assertThat(p1, lessThanOrEqualTo(standard));
 		checkLess(standard, two);
 		checkLess(standard, monitor);
@@ -105,12 +107,10 @@ public class TestProcessor {
 		var p1m = Processor.factory(1, true);
 		var clone = p1.cloneAsSystemProcessor();
 		checkSame(p1m, clone);
-		var faster =
-				Processor.factory(1, MachineDefaults.PROCESSOR_CLOCK_SPEED + 10,
-						MachineDefaults.DTCM_AVAILABLE, false);
-		var fasterM =
-				Processor.factory(1, MachineDefaults.PROCESSOR_CLOCK_SPEED + 10,
-						MachineDefaults.DTCM_AVAILABLE, true);
+		var faster = Processor.factory(1, PROCESSOR_CLOCK_SPEED + 10,
+				DTCM_AVAILABLE, false);
+		var fasterM = Processor.factory(1, PROCESSOR_CLOCK_SPEED + 10,
+				DTCM_AVAILABLE, true);
 		clone = faster.cloneAsSystemProcessor();
 		checkSame(fasterM, clone);
 	}
@@ -125,12 +125,10 @@ public class TestProcessor {
 	@SuppressWarnings("unused")
 	public void testBad() {
 		assertThrows(IllegalArgumentException.class, () -> {
-			var bad = Processor.factory(1, -10,
-					MachineDefaults.DTCM_AVAILABLE, false);
+			var bad = Processor.factory(1, -10, DTCM_AVAILABLE, false);
 		});
 		assertThrows(IllegalArgumentException.class, () -> {
-			var bad = Processor.factory(1,
-					MachineDefaults.PROCESSOR_CLOCK_SPEED, -10, false);
+			var bad = Processor.factory(1, PROCESSOR_CLOCK_SPEED, -10, false);
 		});
 	}
 
