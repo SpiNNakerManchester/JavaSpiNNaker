@@ -47,17 +47,17 @@
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.sqlite.SQLiteConfig.TransactionMode.DEFERRED;
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.Constants.NS_PER_MS;
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.Constants.NS_PER_US;
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.IOUtils.serialize;
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.db.Row.integer;
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_DIRECTONLY;
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_INNOCUOUS;
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.db.Utils.trimSQL;
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.storage.threading.OneThread.threadBound;
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseableThreadBound;
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.IOUtils.serialize;
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.db.Row.integer;
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_DIRECTONLY;
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_INNOCUOUS;
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.db.Utils.trimSQL;
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.storage.threading.OneThread.threadBound;
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseableThreadBound;
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_MSEC;
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_USEC;
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  <strong class="jxr_keyword">import</strong> java.io.File;
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  <strong class="jxr_keyword">import</strong> java.io.FileNotFoundException;
@@ -263,7 +263,7 @@
 <a class="jxr_linenumber" name="L255" href="#L255">255</a> 			<strong class="jxr_keyword">long</strong> delta = post - pre;
 <a class="jxr_linenumber" name="L256" href="#L256">256</a> 			<strong class="jxr_keyword">synchronized</strong> (statementLengths) {
 <a class="jxr_linenumber" name="L257" href="#L257">257</a> 				<strong class="jxr_keyword">var</strong> stats = statementLengths.get(s.toString());
-<a class="jxr_linenumber" name="L258" href="#L258">258</a> 				stats.addValue(delta / NS_PER_US);
+<a class="jxr_linenumber" name="L258" href="#L258">258</a> 				stats.addValue(delta / NSEC_PER_USEC);
 <a class="jxr_linenumber" name="L259" href="#L259">259</a> 			}
 <a class="jxr_linenumber" name="L260" href="#L260">260</a> 		}
 <a class="jxr_linenumber" name="L261" href="#L261">261</a> 	}
@@ -749,7 +749,7 @@
 <a class="jxr_linenumber" name="L741" href="#L741">741</a> 				<strong class="jxr_keyword">long</strong> dt = unlockTimestamp - lockTimestamp;
 <a class="jxr_linenumber" name="L742" href="#L742">742</a> 				<strong class="jxr_keyword">if</strong> (dt &gt; noteThreshold) {
 <a class="jxr_linenumber" name="L743" href="#L743">743</a> 					log.info(<span class="jxr_string">"transaction lock was held for {}ms"</span>,
-<a class="jxr_linenumber" name="L744" href="#L744">744</a> 							dt / NS_PER_MS);
+<a class="jxr_linenumber" name="L744" href="#L744">744</a> 							dt / NSEC_PER_MSEC);
 <a class="jxr_linenumber" name="L745" href="#L745">745</a> 				}
 <a class="jxr_linenumber" name="L746" href="#L746">746</a> 			}
 <a class="jxr_linenumber" name="L747" href="#L747">747</a> 
@@ -762,7 +762,7 @@
 <a class="jxr_linenumber" name="L754" href="#L754">754</a> 				log.warn(
 <a class="jxr_linenumber" name="L755" href="#L755">755</a> 						<span class="jxr_string">"transaction lock being held excessively by "</span>
 <a class="jxr_linenumber" name="L756" href="#L756">756</a> 								+ <span class="jxr_string">"{} (&gt; {}ms); current transactions are {}"</span>,
-<a class="jxr_linenumber" name="L757" href="#L757">757</a> 						lockingContext, dt / NS_PER_MS,
+<a class="jxr_linenumber" name="L757" href="#L757">757</a> 						lockingContext, dt / NSEC_PER_MSEC,
 <a class="jxr_linenumber" name="L758" href="#L758">758</a> 						currentTransactionHolders());
 <a class="jxr_linenumber" name="L759" href="#L759">759</a> 			}
 <a class="jxr_linenumber" name="L760" href="#L760">760</a> 		}
