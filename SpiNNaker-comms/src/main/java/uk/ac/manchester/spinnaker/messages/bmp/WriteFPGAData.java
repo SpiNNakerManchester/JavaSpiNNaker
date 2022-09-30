@@ -21,6 +21,8 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_XILINX;
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
+
 /**
  * Upload a chunk of FPGA initialisation data. Must have been set up by
  * {@link InitFPGA}. Upload process will be terminated by {@link ResetFPGA}.
