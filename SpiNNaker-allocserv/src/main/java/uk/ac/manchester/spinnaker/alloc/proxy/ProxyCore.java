@@ -447,7 +447,7 @@ public class ProxyCore implements AutoCloseable {
 		// Arrange for values to be sent out
 		localAddress.setValue(who);
 		localPort.setValue(port);
-		return 0;
+		return id;
 	}
 
 	/**
