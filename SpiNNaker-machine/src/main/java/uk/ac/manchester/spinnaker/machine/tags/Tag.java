@@ -44,7 +44,7 @@ public abstract class Tag implements Comparable<Tag> {
 	 *            The port of the tag.
 	 */
 	Tag(InetAddress boardAddress, int tagID, Integer port) {
-		this.boardAddress = boardAddress;
+		this.boardAddress = Objects.requireNonNull(boardAddress);
 		this.tagID = tagID;
 		this.port = port;
 	}
@@ -109,10 +109,6 @@ public abstract class Tag implements Comparable<Tag> {
 				&& Objects.equals(port, otherTag.port);
 	}
 
-	private static final int MAGIC1 = 43;
-
-	private static final int MAGIC2 = 17;
-
 	/**
 	 * Partial hash code of a tag. Used to make implementing a full hash
 	 * simpler.
@@ -120,11 +116,7 @@ public abstract class Tag implements Comparable<Tag> {
 	 * @return The hash of this class's fields.
 	 */
 	protected final int partialHashCode() {
-		int h = (tagID * MAGIC1) ^ boardAddress.hashCode();
-		if (nonNull(port)) {
-			h ^= port * MAGIC2;
-		}
-		return h;
+		return Objects.hash(tagID, boardAddress, port);
 	}
 
 	/**

@@ -26,10 +26,6 @@ import org.junit.jupiter.api.Test;
  * @author Christian-B
  */
 public class TestInetIdTuple {
-
-	public TestInetIdTuple() {
-	}
-
 	@Test
 	public void testEquals() throws UnknownHostException {
 		byte[] bytes1 = {127, 0, 0, 0};

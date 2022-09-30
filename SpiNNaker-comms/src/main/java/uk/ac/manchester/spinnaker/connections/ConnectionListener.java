@@ -24,7 +24,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -178,7 +177,7 @@ public class ConnectionListener<MessageType> extends Thread
 	private List<MessageHandler<MessageType>> checkpointCallbacks() {
 		synchronized (callbacks) {
 			if (isNull(callbacksCheckpointed)) {
-				callbacksCheckpointed = new ArrayList<>(callbacks);
+				callbacksCheckpointed = List.copyOf(callbacks);
 			}
 			return callbacksCheckpointed;
 		}

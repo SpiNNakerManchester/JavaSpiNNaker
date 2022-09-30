@@ -107,7 +107,7 @@ public class Configuration {
 
 	/** @return a clone of the map of configurationMap. */
 	public Map<String, Object> getDefaults() {
-		return new HashMap<>(configurationMap);
+		return Map.copyOf(configurationMap);
 	}
 
 	/** @return The spalloc host. */

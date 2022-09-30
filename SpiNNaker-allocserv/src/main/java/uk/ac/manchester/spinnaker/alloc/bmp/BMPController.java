@@ -1086,7 +1086,7 @@ public class BMPController extends DatabaseAwareBean {
 	 * @return List of requests to pass to the {@link WorkerThread}s.
 	 */
 	private List<Request> takeRequests() {
-		var machines = new ArrayList<>(spallocCore.getMachines(true).values());
+		var machines = List.copyOf(spallocCore.getMachines(true).values());
 		try (var sql = new TakeReqsSQL()) {
 			return sql.transaction(() -> {
 				var requestCollector = new ArrayList<Request>();
@@ -1334,7 +1334,7 @@ public class BMPController extends DatabaseAwareBean {
 
 	private List<WorkerState> listWorkers() {
 		synchronized (state) {
-			return new ArrayList<>(state.values());
+			return List.copyOf(state.values());
 		}
 	}
 
@@ -1419,12 +1419,10 @@ public class BMPController extends DatabaseAwareBean {
 					 * this queue.
 					 */
 					var r = requests.poll();
-					if (nonNull(r)) {
-						if (r instanceof PowerRequest) {
-							processRequest((PowerRequest) r);
-						} else {
-							processRequest((BlacklistRequest) r);
-						}
+					if (r instanceof PowerRequest) {
+						processRequest((PowerRequest) r);
+					} else if (r instanceof BlacklistRequest) {
+						processRequest((BlacklistRequest) r);
 					}
 
 					/*

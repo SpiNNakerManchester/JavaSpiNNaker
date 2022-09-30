@@ -28,7 +28,6 @@ import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,12 +124,11 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		var region = getRegions(placement).get(index);
 		log.debug("got region of {} R:{} as {}", placement.asCoreLocation(),
 				index, region);
-		var regionPieces = new ArrayList<Region>(1);
 		if (region.size > 0) {
-			regionPieces.add(new Region(placement, index, region.data,
+			return List.of(new Region(placement, index, region.data,
 					(int) region.size));
 		}
-		return regionPieces;
+		return List.of();
 	}
 
 	@Override

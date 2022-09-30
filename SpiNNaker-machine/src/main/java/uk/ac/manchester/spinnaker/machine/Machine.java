@@ -950,10 +950,7 @@ public class Machine implements MappableIterable<Chip> {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof Machine)) {
-			return false;
-		}
-		return isNull(difference((Machine) obj));
+		return (obj instanceof Machine) && isNull(difference((Machine) obj));
 	}
 
 	/**

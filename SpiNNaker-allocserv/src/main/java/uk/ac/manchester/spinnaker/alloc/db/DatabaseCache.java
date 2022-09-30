@@ -157,7 +157,7 @@ abstract class DatabaseCache<Conn extends Connection> {
 	private void shutdown() {
 		log.info("waiting for all database connections to close");
 		long before = currentTimeMillis();
-		for (var t : new ArrayList<>(closerThreads)) {
+		for (var t : List.copyOf(closerThreads)) {
 			try {
 				t.join();
 			} catch (InterruptedException e) {

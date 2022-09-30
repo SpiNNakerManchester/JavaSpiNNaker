@@ -30,8 +30,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -84,7 +84,7 @@ class TestTransceiver {
 
 		try (var txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
-			assertEquals(new HashSet<>(connections), txrx.getConnections());
+			assertEquals(Set.copyOf(connections), txrx.getConnections());
 		}
 	}
 
@@ -103,7 +103,7 @@ class TestTransceiver {
 			for (var c : txrx.getConnections()) {
 				assertTrue(connections.contains(c));
 			}
-			assertEquals(new HashSet<>(connections), txrx.getConnections());
+			assertEquals(Set.copyOf(connections), txrx.getConnections());
 		}
 	}
 

@@ -166,8 +166,7 @@ public final class SpiNNakerTriadGeometry {
 	 *            ones.
 	 * @return The nearest root found hopefully on the same board.
 	 */
-	private Location locateNearestRoot(int x, int y,
-			ArrayList<Location> roots) {
+	private Location locateNearestRoot(int x, int y, List<Location> roots) {
 		/*
 		 * Find the coordinates of the closest root chip by measuring the
 		 * distance to the nominal centre of each board; the closest root is the

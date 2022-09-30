@@ -32,9 +32,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -272,7 +270,7 @@ public class ProxyCore implements AutoCloseable {
 						ci.getHostname(), e);
 			}
 		}
-		recvFrom = new HashSet<>(hosts.values());
+		recvFrom = Set.copyOf(hosts.values());
 	}
 
 	@FunctionalInterface
@@ -586,9 +584,9 @@ public class ProxyCore implements AutoCloseable {
 		}
 	}
 
-	private ArrayList<ProxyUDPConnection> listConnections() {
+	private List<ProxyUDPConnection> listConnections() {
 		synchronized (conns) {
-			return new ArrayList<>(conns.values());
+			return List.copyOf(conns.values());
 		}
 	}
 

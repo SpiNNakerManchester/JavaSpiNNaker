@@ -57,6 +57,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
@@ -485,11 +486,9 @@ public final class Blacklist implements Serializable {
 		return rawData.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 	}
 
-	private static final int MAGIC = 0x600dBeef;
-
 	@Override
 	public int hashCode() {
-		return MAGIC ^ chips.hashCode() ^ cores.hashCode() ^ links.hashCode();
+		return Objects.hash(chips, cores, links);
 	}
 
 	@Override

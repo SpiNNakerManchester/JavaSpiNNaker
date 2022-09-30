@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.machine.datalinks;
 
 import java.net.InetAddress;
+import java.util.Objects;
 
 import com.google.errorprone.annotations.Immutable;
 
@@ -24,23 +25,23 @@ import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 /**
+ * A description of a particular inter-board link.
  *
  * @author Christian-B
  */
 @Immutable
 public final class FPGALinkData extends AbstractDataLink {
-
-	/** The link ID from the FPGA prospective. */
+	/** The link ID from the FPGA perspective. */
 	public final int fpgaLinkId;
 
 	/** The ID of the FPGA port being used. */
 	public final FpgaId fpgaId;
 
 	/**
-	 * Main Constructor of an FPGALinkData.
+	 * Build an instance.
 	 *
 	 * @param fpgaLinkId
-	 *            The link ID from the FPGA prospective.
+	 *            The link ID from the FPGA perspective.
 	 * @param fpgaId
 	 *            The ID if the FPGA port being used.
 	 * @param location
@@ -59,7 +60,8 @@ public final class FPGALinkData extends AbstractDataLink {
 
 	@Override
 	public int hashCode() {
-		return 53 * (53 * hash() + fpgaLinkId) + fpgaId.id;
+		return Objects.hash(location, boardAddress, direction, fpgaLinkId,
+				fpgaId);
 	}
 
 	@Override
@@ -78,5 +80,4 @@ public final class FPGALinkData extends AbstractDataLink {
 				+ ", boardAddress=" + boardAddress + ", linkId=" + direction
 				+ ", fpgaLinkId=" + fpgaLinkId + ", fpgaId=" + fpgaId + "}";
 	}
-
 }

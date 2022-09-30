@@ -35,7 +35,6 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -269,7 +268,7 @@ public abstract class SpallocConnection implements Closeable {
 		List<Thread> keys;
 		synchronized (socksLock) {
 			// Copy so we can safely remove asynchronously
-			keys = new ArrayList<>(socks.keySet());
+			keys = List.copyOf(socks.keySet());
 		}
 		for (var key : keys) {
 			closeThreadConnection(key);

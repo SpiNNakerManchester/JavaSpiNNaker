@@ -153,7 +153,7 @@ public class BoardCoords {
 
 	@Override
 	public boolean equals(Object other) {
-		if (Objects.isNull(other) || !(other instanceof BoardCoords)) {
+		if (!(other instanceof BoardCoords)) {
 			return false;
 		}
 		var o = (BoardCoords) other;

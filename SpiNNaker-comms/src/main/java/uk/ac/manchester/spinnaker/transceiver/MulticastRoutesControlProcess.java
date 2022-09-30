@@ -27,7 +27,6 @@ import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTI
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -195,7 +194,7 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 							appID));
 		}
 		finishBatch();
-		return new ArrayList<>(routes.values());
+		return List.copyOf(routes.values());
 	}
 
 	private void addRoutes(ByteBuffer data, int offset,

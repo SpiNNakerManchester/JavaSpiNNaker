@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.machine.datalinks;
 
 import java.net.InetAddress;
+import java.util.Objects;
 
 import com.google.errorprone.annotations.Immutable;
 
@@ -24,20 +25,21 @@ import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 /**
+ * A description of a data link that uses the SpiNNaker-link protocol.
  *
  * @author Christian-B
  */
 @Immutable
 public final class SpinnakerLinkData extends AbstractDataLink {
 
-	/** The link ID from the spinnaker prospective. */
+	/** The link ID from the SpiNNaker perspective. */
 	public final int spinnakerLinkId;
 
 	/**
-	 * Main Constructor of an FPGALinkData.
+	 * Build an instance.
 	 *
 	 * @param spinnakerLinkId
-	 *            The link ID from the spinnaker prospective.
+	 *            The link ID from the SpiNNaker perspective.
 	 * @param location
 	 *            The location/Chip being linked to
 	 * @param linkId
@@ -53,7 +55,7 @@ public final class SpinnakerLinkData extends AbstractDataLink {
 
 	@Override
 	public int hashCode() {
-		return 53 * hash() + spinnakerLinkId;
+		return Objects.hash(location, boardAddress, direction, spinnakerLinkId);
 	}
 
 	@Override
@@ -71,5 +73,4 @@ public final class SpinnakerLinkData extends AbstractDataLink {
 				+ ", boardAddress=" + boardAddress + ", linkId=" + direction
 				+ ", SpinnakerLinkId=" + spinnakerLinkId + "}";
 	}
-
 }

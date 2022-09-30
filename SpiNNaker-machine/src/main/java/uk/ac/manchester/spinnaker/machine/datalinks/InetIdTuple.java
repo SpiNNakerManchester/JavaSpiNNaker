@@ -22,6 +22,7 @@ import java.util.Objects;
 import com.google.errorprone.annotations.Immutable;
 
 /**
+ * A tuple of an IP address and a SpiNNaker link ID.
  *
  * @author Christian-B
  */
@@ -34,10 +35,10 @@ public final class InetIdTuple {
 	public final int id;
 
 	/**
-	 * The main Constructor which sets all values.
+	 * Make an instance.
 	 *
 	 * @param address
-	 *            The InetAddress of this tuple, which may be {@code null}.
+	 *            The IP address of this tuple, which may be {@code null}.
 	 * @param id
 	 *            The ID of this tuple.
 	 */
@@ -48,10 +49,7 @@ public final class InetIdTuple {
 
 	@Override
 	public int hashCode() {
-		int hash = 5;
-		hash = 29 * hash + Objects.hashCode(address);
-		hash = 29 * hash + id;
-		return hash;
+		return Objects.hash(address, id);
 	}
 
 	@Override

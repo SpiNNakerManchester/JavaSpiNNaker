@@ -694,7 +694,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * Request notification of job status changes. Best effort only.
 	 *
 	 * @param jobId
-	 *            Job identifier.
+	 *            Job identifier. May be {@code null} to talk about any job.
 	 * @param wantNotify
 	 *            Whether to enable or disable these notifications.
 	 * @throws TaskException
@@ -707,7 +707,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * Request notification of machine status changes. Best effort only.
 	 *
 	 * @param machineName
-	 *            Name of the machine.
+	 *            Name of the machine. May be {@code null} to talk about any
+	 *            machine.
 	 * @param wantNotify
 	 *            Whether to enable or disable these notifications.
 	 * @throws TaskException
@@ -825,12 +826,12 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	protected abstract WhereIs whereIsMachinePhysicalBoard(String machineName,
 			int cabinet, int frame, int board) throws TaskException;
 
-	private static Integer optInt(List<Object> args) {
+	private static Integer optInt(List<?> args) {
 		return args.isEmpty() ? null : parseDec(args, 0);
 	}
 
-	private static String optStr(List<Object> args) {
-		return args.isEmpty() ? null : args.get(0).toString();
+	private static String optStr(List<?> args) {
+		return args.isEmpty() ? null : Objects.toString(args.get(0), null);
 	}
 }
 

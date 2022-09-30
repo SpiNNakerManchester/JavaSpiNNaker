@@ -370,7 +370,7 @@ class Functions implements FunctionAPI {
 		}
 
 		var reg = getRegion();
-		if (isNull(reg) || !(reg instanceof MemoryRegionReal)) {
+		if (!(reg instanceof MemoryRegionReal)) {
 			throw new NoRegionSelectedException(
 					"no current region has been selected");
 		}
@@ -441,7 +441,7 @@ class Functions implements FunctionAPI {
 			throw new NoRegionSelectedException(command);
 		}
 		var reg = getRegion();
-		if (isNull(reg) || !(reg instanceof MemoryRegionReal)) {
+		if (!(reg instanceof MemoryRegionReal)) {
 			throw new RegionNotAllocatedException(currentRegion, command);
 		}
 

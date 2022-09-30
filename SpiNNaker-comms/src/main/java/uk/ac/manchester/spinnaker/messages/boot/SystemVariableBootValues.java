@@ -38,6 +38,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 	/** The size of the boot variable block, in bytes. */
 	static final int BOOT_VARIABLE_SIZE = 256;
 
+	/** This <em>must</em> be mutable. */
 	private final Map<SystemVariableDefinition, Object> values;
 
 	private boolean unmodifiable;

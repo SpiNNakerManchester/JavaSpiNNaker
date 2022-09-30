@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.machine.datalinks;
 
 import static java.util.Objects.isNull;
-import static uk.ac.manchester.spinnaker.machine.MachineDefaults.COORD_SHIFT;
 
 import java.net.InetAddress;
 import java.util.Objects;
@@ -41,7 +40,7 @@ public abstract class AbstractDataLink implements HasChipLocation {
 	/** Coordinates of the location/Chip being linked to. */
 	public final ChipLocation location;
 
-	/** link Direction/id for this link. */
+	/** Direction/id for this link. */
 	public final Direction direction;
 
 	/**
@@ -85,15 +84,6 @@ public abstract class AbstractDataLink implements HasChipLocation {
 	@Override
 	public abstract int hashCode();
 
-	private static final int MAGIC = 41;
-
-	int hash() {
-		int hash = MAGIC * (getX() << COORD_SHIFT) ^ getY();
-		hash = MAGIC * hash + Objects.hashCode(boardAddress);
-		hash = MAGIC * hash + direction.hashCode();
-		return hash;
-	}
-
 	/** {@inheritDoc} */
 	@Override
 	public abstract boolean equals(Object obj);
@@ -111,12 +101,8 @@ public abstract class AbstractDataLink implements HasChipLocation {
 	 *         links are on the same chip
 	 */
 	boolean sameAs(AbstractDataLink other) {
-		if (!direction.equals(other.direction)) {
-			return false;
-		}
-		if (!Objects.equals(boardAddress, other.boardAddress)) {
-			return false;
-		}
-		return location.onSameChipAs(other.location);
+		return Objects.equals(direction, other.direction)
+				&& Objects.equals(boardAddress, other.boardAddress)
+				&& location.onSameChipAs(other.location);
 	}
 }
