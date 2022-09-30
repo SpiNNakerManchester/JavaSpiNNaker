@@ -38,7 +38,7 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.bmp.FirmwareLoader.FirmwareLoaderException;
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
+import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.messages.model.FPGA;

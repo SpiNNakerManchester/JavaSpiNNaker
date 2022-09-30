@@ -21,6 +21,8 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_XILINX;
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
+
 /** Start an initialisation of the FPGAs. Terminated by {@link ResetFPGA}. */
 public class InitFPGA extends BMPRequest<BMPRequest.BMPResponse> {
 	/**

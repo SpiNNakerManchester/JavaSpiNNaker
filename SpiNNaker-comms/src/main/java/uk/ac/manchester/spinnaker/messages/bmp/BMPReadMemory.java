@@ -24,6 +24,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.TransferUnit.efficientTran
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /** An SCP request to read a region of memory from a BMP. */

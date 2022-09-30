@@ -27,7 +27,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
+import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadSerialFlash;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.transceiver.Accumulator.BufferAccumulator;

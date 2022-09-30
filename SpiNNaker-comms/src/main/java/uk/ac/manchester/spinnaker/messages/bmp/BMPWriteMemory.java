@@ -22,6 +22,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.TransferUnit.efficientTran
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 
 /** A request to write memory on a BMP. */
 public class BMPWriteMemory extends BMPRequest<BMPRequest.BMPResponse> {

@@ -22,6 +22,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_INFO;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
+import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
