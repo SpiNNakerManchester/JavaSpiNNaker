@@ -21,6 +21,7 @@ import static java.lang.String.format;
 import java.time.Duration;
 
 /**
+ * Constants relating to physical units.
  *
  * @author Christian-B
  * @author Donal Fellows
@@ -49,6 +50,9 @@ public final class UnitConstants {
 
 	/** The number of nanoseconds per microsecond. */
 	public static final double NSEC_PER_USEC = 1000.0;
+
+	/** The number of nanoseconds per millisecond. */
+	public static final double NSEC_PER_MSEC = 1000000.0;
 
 	/**
 	 * Formats a duration with hours, minutes seconds and milliseconds as

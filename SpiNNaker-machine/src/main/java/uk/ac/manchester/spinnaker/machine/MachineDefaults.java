@@ -20,6 +20,7 @@ import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
 import static uk.ac.manchester.spinnaker.machine.Direction.NORTHEAST;
 import static uk.ac.manchester.spinnaker.machine.Direction.SOUTHWEST;
 import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGAHERTZ_PER_HERTZ;
 
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +39,7 @@ public final class MachineDefaults {
 	public static final int SDRAM_PER_CHIP = 117 * 1024 * 1024;
 
 	/** Clock speed in MHz of a standard Processor. */
-	public static final int PROCESSOR_CLOCK_SPEED = 200 * 1000 * 1000;
+	public static final int PROCESSOR_CLOCK_SPEED = 200 * MEGAHERTZ_PER_HERTZ;
 
 	/** DTCM available on each standard Processor. */
 	public static final int DTCM_AVAILABLE = 65536; // 2 ** 16;
