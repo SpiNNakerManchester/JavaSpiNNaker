@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc.model;
+package uk.ac.manchester.spinnaker.machine.tags;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
@@ -26,6 +26,8 @@ import static java.util.Objects.isNull;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.regex.Pattern;
 
 import javax.validation.Constraint;
@@ -34,7 +36,8 @@ import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 
 /**
- * Validates that a string looks like an IP address.
+ * Validates that a string looks like an IP address. A string is considered to
+ * be a valid IP address if it looks like a dotted quad.
  *
  * @author Donal Fellows
  */
@@ -43,7 +46,7 @@ import javax.validation.Payload;
 @Target({
 	METHOD, FIELD, PARAMETER, TYPE_USE
 })
-@Constraint(validatedBy = IPAddressValidator.class)
+@Constraint(validatedBy = IPAddress.Validator.class)
 public @interface IPAddress {
 	/**
 	 * Whether the empty string is allowed. It defaults to being disallowed.
@@ -72,29 +75,40 @@ public @interface IPAddress {
 	 * @return Payloads, if any.
 	 */
 	Class<? extends Payload>[] payload() default {};
-}
 
-class IPAddressValidator implements ConstraintValidator<IPAddress, String> {
-	private Pattern pattern;
+	/** Validator for {@link IPAddress} constraints. */
+	class Validator implements ConstraintValidator<IPAddress, String> {
+		private Pattern pattern;
 
-	private boolean emptyOK;
+		private boolean emptyOK;
 
-	@Override
-	public void initialize(IPAddress annotation) {
-		if (isNull(pattern)) {
-			pattern = Pattern.compile("^\\d+[.]\\d+[.]\\d+[.]\\d+$");
+		@Override
+		public void initialize(IPAddress annotation) {
+			if (isNull(pattern)) {
+				pattern = Pattern.compile("^\\d+[.]\\d+[.]\\d+[.]\\d+$");
+			}
+			emptyOK = annotation.emptyOK();
 		}
-		emptyOK = annotation.emptyOK();
-	}
 
-	@Override
-	public boolean isValid(String value, ConstraintValidatorContext context) {
-		if (isNull(value)) {
-			return false;
+		@Override
+		public boolean isValid(String value,
+				ConstraintValidatorContext context) {
+			if (isNull(value)) {
+				return false;
+			}
+			if (emptyOK && value.isEmpty()) {
+				return true;
+			}
+			if (!pattern.matcher(value).matches()) {
+				return false;
+			}
+			// Cheap checks succeeded; use the real parser now!
+			try {
+				InetAddress.getByName(value);
+				return true;
+			} catch (UnknownHostException e) {
+				return false;
+			}
 		}
-		if (emptyOK && value.isBlank()) {
-			return true;
-		}
-		return pattern.matcher(value).matches();
 	}
 }
