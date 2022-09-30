@@ -17,11 +17,12 @@
 package uk.ac.manchester.spinnaker.machine.datalinks;
 
 /**
+ * The FPGAs that manage inter-board links.
  *
  * @author Christian-B
+ * @see FpgaEnum
  */
 public enum FpgaId {
-
 	/** The FGPA link that connects to the bottom and bottom right chips. */
 	BOTTOM(0),
 	/** The FGPA link that connects to the left and top left chips. */

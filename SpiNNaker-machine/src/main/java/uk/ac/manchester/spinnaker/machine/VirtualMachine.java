@@ -202,22 +202,22 @@ public class VirtualMachine extends Machine {
 
 	private Inet4Address getIpaddress(ChipLocation location,
 			Set<ChipLocation> roots) {
-		if (roots.contains(location)) {
-			// Addr is 127.0.X.Y
-			byte[] bytes = {
-				// Fixed prefix
-				LOCAL_HOST_ONE, 0,
-				// Variable suffix
-				(byte) location.getX(), (byte) location.getY()
-			};
-			try {
-				return getByAddress(bytes);
-			} catch (UnknownHostException ex) {
-				// Should never happen so convert to none catchable
-				throw new Error(ex);
-			}
-		} else {
+		if (!roots.contains(location)) {
 			return null;
+		}
+
+		// Addr is 127.0.X.Y
+		byte[] bytes = {
+			// Fixed prefix
+			LOCAL_HOST_ONE, 0,
+			// Variable suffix
+			(byte) location.getX(), (byte) location.getY()
+		};
+		try {
+			return getByAddress(bytes);
+		} catch (UnknownHostException ex) {
+			// Should never happen so convert to non-catchable
+			throw new Error(ex);
 		}
 	}
 }

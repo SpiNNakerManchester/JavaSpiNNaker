@@ -22,6 +22,7 @@ import static uk.ac.manchester.spinnaker.machine.Direction.NORTHEAST;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
 
@@ -33,15 +34,15 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  * @author Christian-B
  */
 public class TestAbstractDataLink {
-	private static InetAddress createInetAddress() throws UnknownHostException {
-		byte[] bytes = {127, 0, 0, 0};
+	private static InetAddress localhost() throws UnknownHostException {
+		byte[] bytes = {127, 0, 0, 1};
 		return InetAddress.getByAddress(bytes);
 	}
 
 	@Test
 	public void testEquals() throws UnknownHostException {
-		var link1 = new ADL(ZERO_ZERO, NORTHEAST, createInetAddress());
-		var link2 = new ADL(ZERO_ZERO, NORTHEAST, createInetAddress());
+		var link1 = new ADL(ZERO_ZERO, NORTHEAST, localhost());
+		var link2 = new ADL(ZERO_ZERO, NORTHEAST, localhost());
 		assertEquals(link1, link2);
 		assertEquals(link1, link1);
 		assertNotEquals(link1, null);
@@ -57,7 +58,7 @@ public class TestAbstractDataLink {
 
 		@Override
 		public int hashCode() {
-			return hash();
+			return Objects.hash(location, direction);
 		}
 
 		@Override

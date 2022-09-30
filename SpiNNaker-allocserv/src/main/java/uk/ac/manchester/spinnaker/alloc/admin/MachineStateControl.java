@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Function;
@@ -78,14 +79,17 @@ public class MachineStateControl extends DatabaseAwareBean {
 	@Autowired
 	private BlacklistStore blacklistStore;
 
+	/** Just for {@link #launchBackground()}. */
 	@Autowired
 	private ScheduledExecutorService executor;
 
+	/** Just for {@link #launchBackground()}. */
 	@Autowired
 	private SpallocProperties properties;
 
 	private StateControlProperties props;
 
+	/** Calls {@link #readAllBoardSerialNumbers()} after a delay. */
 	private ScheduledFuture<?> readAllTask;
 
 	@PostConstruct
@@ -100,12 +104,14 @@ public class MachineStateControl extends DatabaseAwareBean {
 
 	@PreDestroy
 	private void stopBackground() {
-		if (readAllTask != null) {
-			readAllTask.cancel(true);
+		var t = readAllTask;
+		if (t != null) {
+			readAllTask = null;
 			try {
-				readAllTask.get();
-			} catch (InterruptedException e) {
-				log.trace("interrupted background loader", e);
+				t.cancel(true);
+				t.get();
+			} catch (InterruptedException | CancellationException e) {
+				log.trace("stopped background loader", e);
 			} catch (Exception e) {
 				log.info("failure in background board serial number fetch", e);
 			}
@@ -494,19 +500,27 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @param machineName
 	 *            Which machine to read the serial numbers of.
 	 */
-	@SuppressWarnings("MustBeClosed")
 	public void readAllBoardSerialNumbers(String machineName) {
-		batchReqs(requireNonNull(machineName), "retrieving serial numbers",
-				props.getSerialReadBatchSize(),
-				id -> new Op(CREATE_SERIAL_READ_REQ, id), Op::completed);
+		scheduleSerialNumberReads(requireNonNull(machineName));
 	}
 
 	/**
 	 * Ensure that the database has the actual serial numbers of all known
 	 * boards.
 	 */
-	@SuppressWarnings("MustBeClosed")
 	private void readAllBoardSerialNumbers() {
+		scheduleSerialNumberReads(null);
+	}
+
+	/**
+	 * Common core of {@link #readAllBoardSerialNumbers(String)} and
+	 * {@link #readAllBoardSerialNumbers()}.
+	 *
+	 * @param machineName
+	 *            The machine name, or {@code null} for all.
+	 */
+	@SuppressWarnings("MustBeClosed")
+	private void scheduleSerialNumberReads(String machineName) {
 		batchReqs(null, "retrieving serial numbers",
 				props.getSerialReadBatchSize(),
 				id -> new Op(CREATE_SERIAL_READ_REQ, id), Op::completed);
@@ -555,17 +569,20 @@ public class MachineStateControl extends DatabaseAwareBean {
 			 */
 			var ops = lmap(batch, opGenerator);
 			boolean stop = false;
-			for (var op : ops) {
-				try {
-					opResultsHandler.accept(op);
-				} catch (RuntimeException e) {
-					log.warn("failed while {}", action, e);
-				} catch (InterruptedException e) {
-					log.info("interrupted while {}", action, e);
-					stop = true;
+			try {
+				for (var op : ops) {
+					try {
+						opResultsHandler.accept(op);
+					} catch (RuntimeException e) {
+						log.warn("failed while {}", action, e);
+					} catch (InterruptedException e) {
+						log.info("interrupted while {}", action, e);
+						stop = true;
+					}
 				}
+			} finally {
+				ops.forEach(Op::close);
 			}
-			ops.forEach(Op::close);
 			if (stop) {
 				// Mark as interrupted
 				currentThread().interrupt();

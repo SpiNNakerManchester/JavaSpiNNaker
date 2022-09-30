@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.machine;
 import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.PROCESSORS_PER_CHIP;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SDRAM_PER_CHIP;
 
@@ -440,10 +441,7 @@ public class Chip implements HasChipLocation {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof Chip)) {
-			return false;
-		}
-		return difference((Chip) obj) == null;
+		return (obj instanceof Chip) && isNull(difference((Chip) obj));
 	}
 
 	/**

@@ -558,9 +558,9 @@ public class SCPRequestPipeline {
 
 		// If there is a timeout, all packets remaining are resent
 		var toRemove = new BitSet(SEQUENCE_LENGTH);
-		ArrayList<Integer> currentSeqs;
+		List<Integer> currentSeqs;
 		synchronized (outstandingRequests) {
-			currentSeqs = new ArrayList<>(outstandingRequests.keySet());
+			currentSeqs = List.copyOf(outstandingRequests.keySet());
 		}
 		for (int seq : currentSeqs) {
 			log.debug("resending seq {}", seq);

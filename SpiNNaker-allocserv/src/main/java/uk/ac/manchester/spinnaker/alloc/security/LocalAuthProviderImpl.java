@@ -336,7 +336,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 		PerformedUsernamePasswordAuthenticationToken(String name,
 				String password, List<GrantedAuthority> authorities) {
-			super(name, password, authorities);
+			super(name, password, List.copyOf(authorities));
 		}
 	}
 

@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -64,7 +63,7 @@ public class TestMappableIterable {
 		MappableIterable<Integer> mi = values2::iterator;
 
 		assertEquals(values2, mi.toList());
-		assertEquals(List.of(1, 2, 3), new ArrayList<>(mi.toSet()));
+		assertEquals(List.of(1, 2, 3), List.copyOf(mi.toSet()));
 	}
 
 	@Test

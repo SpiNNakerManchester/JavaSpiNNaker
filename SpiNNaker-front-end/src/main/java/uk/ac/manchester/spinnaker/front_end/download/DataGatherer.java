@@ -519,6 +519,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 * @param regionID
 	 *            The region ID.
 	 * @return The region descriptors that are the actual download instructions.
+	 *         May be unmodifiable.
 	 * @throws IOException
 	 *             If communication fails.
 	 * @throws ProcessException

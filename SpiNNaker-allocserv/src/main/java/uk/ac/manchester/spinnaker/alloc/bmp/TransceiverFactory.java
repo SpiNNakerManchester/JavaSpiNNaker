@@ -16,13 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
+import static java.util.Objects.hash;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -90,7 +90,7 @@ public class TransceiverFactory
 
 		@Override
 		public int hashCode() {
-			return machine.hashCode() ^ bmp.hashCode() * 7;
+			return hash(machine, bmp);
 		}
 	}
 
@@ -215,7 +215,7 @@ public class TransceiverFactory
 
 	private Collection<BMPTransceiverInterface> transceivers() {
 		synchronized (txrxMap) {
-			return new ArrayList<>(txrxMap.values());
+			return List.copyOf(txrxMap.values());
 		}
 	}
 

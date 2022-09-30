@@ -24,7 +24,6 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_PHYSICAL;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.core.UriInfo;
@@ -85,7 +84,7 @@ public final class MachineResponse {
 	 */
 	public MachineResponse(SpallocAPI.Machine machine, UriInfo ui) {
 		name = machine.getName();
-		tags = new ArrayList<>(machine.getTags());
+		tags = List.copyOf(machine.getTags());
 		width = machine.getWidth();
 		height = machine.getHeight();
 		downBoards = machine.getDeadBoards();

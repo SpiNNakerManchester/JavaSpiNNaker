@@ -16,12 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -83,7 +83,7 @@ class MDefLoaderTest extends MemDBTestBase {
 				m.getSpinnakerIPs().keySet());
 		assertEquals(Set.of(new BMPCoords(0, 0)), m.getBmpIPs().keySet());
 		assertEquals(Set.of(new BoardPhysicalCoords(0, 0, 0)),
-				new HashSet<>(m.getBoardLocations().values()));
+				Set.copyOf(m.getBoardLocations().values()));
 	}
 
 	@Test
