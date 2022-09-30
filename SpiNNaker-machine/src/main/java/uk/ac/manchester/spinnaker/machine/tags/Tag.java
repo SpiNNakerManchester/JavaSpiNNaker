@@ -23,6 +23,8 @@ import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
 
+import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
+
 /** Common properties of SpiNNaker IP tags and reverse IP tags. */
 public abstract class Tag implements Comparable<Tag> {
 	/** The board address associated with this tagID. */

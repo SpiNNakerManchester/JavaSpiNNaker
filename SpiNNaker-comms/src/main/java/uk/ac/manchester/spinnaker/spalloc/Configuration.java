@@ -56,7 +56,7 @@ import org.apache.commons.configuration2.io.CombinedLocationStrategy;
 import org.apache.commons.configuration2.io.HomeDirectoryLocationStrategy;
 import org.apache.commons.configuration2.io.ProvidedURLLocationStrategy;
 
-import uk.ac.manchester.spinnaker.machine.tags.TCPPort;
+import uk.ac.manchester.spinnaker.utils.validation.TCPPort;
 
 /** A spalloc configuration loaded from a file. */
 public class Configuration {

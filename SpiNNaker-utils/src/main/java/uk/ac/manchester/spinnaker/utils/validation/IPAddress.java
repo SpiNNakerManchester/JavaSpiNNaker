@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.machine.tags;
+package uk.ac.manchester.spinnaker.utils.validation;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
@@ -46,7 +46,7 @@ import javax.validation.Payload;
 @Target({
 	METHOD, FIELD, PARAMETER, TYPE_USE
 })
-@Constraint(validatedBy = IPAddress.Validator.class)
+@Constraint(validatedBy = IPAddressValidator.class)
 public @interface IPAddress {
 	/**
 	 * Whether the empty string is allowed. It defaults to being disallowed.
@@ -75,40 +75,40 @@ public @interface IPAddress {
 	 * @return Payloads, if any.
 	 */
 	Class<? extends Payload>[] payload() default {};
+}
 
-	/** Validator for {@link IPAddress} constraints. */
-	class Validator implements ConstraintValidator<IPAddress, String> {
-		private Pattern pattern;
+/** Validator for {@link IPAddress} constraints. */
+class IPAddressValidator implements ConstraintValidator<IPAddress, String> {
+	private Pattern pattern;
 
-		private boolean emptyOK;
+	private boolean emptyOK;
 
-		@Override
-		public void initialize(IPAddress annotation) {
-			if (isNull(pattern)) {
-				pattern = Pattern.compile("^\\d+[.]\\d+[.]\\d+[.]\\d+$");
-			}
-			emptyOK = annotation.emptyOK();
+	@Override
+	public void initialize(IPAddress annotation) {
+		if (isNull(pattern)) {
+			pattern = Pattern.compile("^\\d+[.]\\d+[.]\\d+[.]\\d+$");
 		}
+		emptyOK = annotation.emptyOK();
+	}
 
-		@Override
-		public boolean isValid(String value,
-				ConstraintValidatorContext context) {
-			if (isNull(value)) {
-				return false;
-			}
-			if (emptyOK && value.isEmpty()) {
-				return true;
-			}
-			if (!pattern.matcher(value).matches()) {
-				return false;
-			}
-			// Cheap checks succeeded; use the real parser now!
-			try {
-				InetAddress.getByName(value);
-				return true;
-			} catch (UnknownHostException e) {
-				return false;
-			}
+	@Override
+	public boolean isValid(String value,
+			ConstraintValidatorContext context) {
+		if (isNull(value)) {
+			return false;
+		}
+		if (emptyOK && value.isEmpty()) {
+			return true;
+		}
+		if (!pattern.matcher(value).matches()) {
+			return false;
+		}
+		// Cheap checks succeeded; use the real parser now!
+		try {
+			InetAddress.getByName(value);
+			return true;
+		} catch (UnknownHostException e) {
+			return false;
 		}
 	}
 }

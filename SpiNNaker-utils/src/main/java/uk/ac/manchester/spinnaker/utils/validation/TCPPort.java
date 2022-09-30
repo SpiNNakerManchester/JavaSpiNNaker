@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.machine.tags;
+package uk.ac.manchester.spinnaker.utils.validation;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
@@ -33,20 +33,21 @@ import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 
 /**
- * Validates that a number looks like a UDP port. Always accepts {@code null}.
+ * Validates that a number looks like a TCP port. Always accepts {@code null}.
  *
  * @author Donal Fellows
+ * @see UDPPort
  */
 @Documented
 @Retention(RUNTIME)
 @Target({ METHOD, FIELD, PARAMETER, TYPE_USE })
-@Constraint(validatedBy = UDPPort.Validator.class)
-public @interface UDPPort {
-	/** The minimum ordinary UDP port number. */
-	int MIN_UDP_PORT = 1024;
+@Constraint(validatedBy = TCPPortValidator.class)
+public @interface TCPPort {
+	/** The minimum ordinary TCP port number. */
+	int MIN_TCP_PORT = 1024;
 
-	/** The maximum UDP port number. */
-	int MAX_UDP_PORT = 65535;
+	/** The maximum TCP port number. */
+	int MAX_TCP_PORT = 65535;
 
 	/**
 	 * Whether to allow the "any" port. Note that this is not the same as
@@ -76,7 +77,7 @@ public @interface UDPPort {
 	 *
 	 * @return Message
 	 */
-	String message() default "${validatedValue} is a bad UDP port";
+	String message() default "${validatedValue} is a bad TCP port";
 
 	/**
 	 * Group of constraints. Required by validation spec.
@@ -91,33 +92,33 @@ public @interface UDPPort {
 	 * @return Payloads, if any.
 	 */
 	Class<? extends Payload>[] payload() default {};
+}
 
-	class Validator implements ConstraintValidator<UDPPort, Integer> {
-		private static final int MAX_STD_PORT = 32767;
+class TCPPortValidator implements ConstraintValidator<TCPPort, Integer> {
+	private static final int MAX_STD_PORT = 32767;
 
-		private boolean acceptZero;
+	private boolean acceptZero;
 
-		private int min;
+	private int min;
 
-		private int max;
+	private int max;
 
-		@Override
-		public void initialize(UDPPort annotation) {
-			acceptZero = annotation.any();
-			min = annotation.system() ? 1 : MIN_UDP_PORT;
-			max = annotation.ephemeral() ? MAX_UDP_PORT : MAX_STD_PORT;
+	@Override
+	public void initialize(TCPPort annotation) {
+		acceptZero = annotation.any();
+		min = annotation.system() ? 1 : TCPPort.MIN_TCP_PORT;
+		max = annotation.ephemeral() ? TCPPort.MAX_TCP_PORT : MAX_STD_PORT;
+	}
+
+	@Override
+	public boolean isValid(Integer value,
+			ConstraintValidatorContext context) {
+		if (isNull(value)) {
+			return true;
 		}
-
-		@Override
-		public boolean isValid(Integer value,
-				ConstraintValidatorContext context) {
-			if (isNull(value)) {
-				return true;
-			}
-			if (value == 0) {
-				return acceptZero;
-			}
-			return (value >= min) && (value <= max);
+		if (value == 0) {
+			return acceptZero;
 		}
+		return (value >= min) && (value <= max);
 	}
 }

@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.errorprone.annotations.Keep;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.machine.tags.IPAddress;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * A request to report an issue with some boards.

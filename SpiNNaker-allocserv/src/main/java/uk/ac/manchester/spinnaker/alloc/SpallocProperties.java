@@ -41,8 +41,8 @@ import org.springframework.validation.annotation.Validated;
 
 import com.google.errorprone.annotations.Keep;
 
-import uk.ac.manchester.spinnaker.machine.tags.IPAddress;
-import uk.ac.manchester.spinnaker.machine.tags.TCPPort;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
+import uk.ac.manchester.spinnaker.utils.validation.TCPPort;
 
 /**
  * Spalloc service management properties. These are all intended to be set via

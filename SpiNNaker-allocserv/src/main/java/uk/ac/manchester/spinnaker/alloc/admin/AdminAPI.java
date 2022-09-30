@@ -56,7 +56,7 @@ import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.MemberRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
-import uk.ac.manchester.spinnaker.machine.tags.IPAddress;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * Administration interface.

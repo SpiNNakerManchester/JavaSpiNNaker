@@ -34,7 +34,7 @@ import javax.validation.constraints.PositiveOrZero;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.errorprone.annotations.Keep;
 
-import uk.ac.manchester.spinnaker.machine.tags.IPAddress;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * A request to create a job.

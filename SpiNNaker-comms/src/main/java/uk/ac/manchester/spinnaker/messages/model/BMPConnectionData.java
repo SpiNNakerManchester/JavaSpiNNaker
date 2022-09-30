@@ -31,7 +31,7 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 
-import uk.ac.manchester.spinnaker.machine.tags.UDPPort;
+import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
 
 /**
  * Contains the details of a connection to a SpiNNaker Board Management
