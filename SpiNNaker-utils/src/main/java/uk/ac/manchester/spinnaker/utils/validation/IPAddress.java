@@ -49,6 +49,13 @@ import javax.validation.Payload;
 @Constraint(validatedBy = IPAddressValidator.class)
 public @interface IPAddress {
 	/**
+	 * Whether {@code null} is allowed. It defaults to being disallowed.
+	 *
+	 * @return Whether to accept {@code null}.
+	 */
+	boolean nullOK() default false;
+
+	/**
 	 * Whether the empty string is allowed. It defaults to being disallowed.
 	 *
 	 * @return Whether to accept the empty string.
@@ -83,21 +90,23 @@ class IPAddressValidator implements ConstraintValidator<IPAddress, String> {
 
 	private boolean emptyOK;
 
+	private boolean nullOK;
+
 	@Override
 	public void initialize(IPAddress annotation) {
 		if (isNull(pattern)) {
 			pattern = Pattern.compile("^\\d+[.]\\d+[.]\\d+[.]\\d+$");
 		}
 		emptyOK = annotation.emptyOK();
+		nullOK = annotation.nullOK();
 	}
 
 	@Override
 	public boolean isValid(String value, ConstraintValidatorContext context) {
 		if (isNull(value)) {
-			return false;
-		}
-		if (emptyOK && value.isEmpty()) {
-			return true;
+			return nullOK;
+		} else if (value.isEmpty()) {
+			return emptyOK;
 		}
 		if (!pattern.matcher(value).matches()) {
 			return false;

@@ -177,10 +177,13 @@ public interface AdminAPI {
 	default boolean getBoardState(
 			@NotBlank(message = "machine name is required")
 			@QueryParam("machine") String machineName,
-			@QueryParam("x") Integer x, @QueryParam("y") Integer y,
-			@QueryParam("z") Integer z, @QueryParam("cabinet") Integer c,
-			@QueryParam("frame") Integer f, @QueryParam("board") Integer b,
-			@QueryParam("address") String address) {
+			@QueryParam("x") @PositiveOrZero Integer x,
+			@QueryParam("y") @PositiveOrZero Integer y,
+			@QueryParam("z") @PositiveOrZero Integer z,
+			@QueryParam("cabinet") @PositiveOrZero Integer c,
+			@QueryParam("frame") @PositiveOrZero Integer f,
+			@QueryParam("board") @ValidBoardNumber Integer b,
+			@QueryParam("address") @IPAddress(nullOK = true) String address) {
 		if (nonNull(x) && nonNull(y) && nonNull(z)) {
 			return getBoardStateXYZ(machineName, x, y, z);
 		}
@@ -270,10 +273,14 @@ public interface AdminAPI {
 	default boolean setBoardState(
 			@NotBlank(message = "machine name is required")
 			@QueryParam("machine") String machineName,
-			@QueryParam("x") Integer x, @QueryParam("y") Integer y,
-			@QueryParam("z") Integer z, @QueryParam("cabinet") Integer c,
-			@QueryParam("frame") Integer f, @QueryParam("board") Integer b,
-			@QueryParam("address") String address, boolean enabled) {
+			@QueryParam("x") @PositiveOrZero Integer x,
+			@QueryParam("y") @PositiveOrZero Integer y,
+			@QueryParam("z") @PositiveOrZero Integer z,
+			@QueryParam("cabinet") @PositiveOrZero Integer c,
+			@QueryParam("frame") @PositiveOrZero Integer f,
+			@QueryParam("board") @ValidBoardNumber Integer b,
+			@QueryParam("address") @IPAddress(nullOK = true) String address,
+			boolean enabled) {
 		if (nonNull(x) && nonNull(y) && nonNull(z)) {
 			return setBoardStateXYZ(machineName, x, y, z, enabled);
 		}
@@ -324,7 +331,7 @@ public interface AdminAPI {
 	 */
 	boolean setBoardStateCFB(@NotBlank String name,
 			@NotNull @PositiveOrZero int c, @NotNull @PositiveOrZero int f,
-			@NotNull @PositiveOrZero int b, boolean enabled);
+			@NotNull @ValidBoardNumber int b, boolean enabled);
 
 	/**
 	 * Enable or disable a board. Find by IP address.

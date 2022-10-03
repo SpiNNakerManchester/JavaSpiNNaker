@@ -34,6 +34,7 @@ import javax.validation.constraints.PositiveOrZero;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.errorprone.annotations.Keep;
 
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
@@ -193,11 +194,11 @@ public class CreateJobRequest {
 		public Integer frame;
 
 		/** The physical board number of the board. */
-		@PositiveOrZero(message = "board must be at least 0")
+		@ValidBoardNumber
 		public Integer board;
 
 		/** The IP address of the board. */
-		@IPAddress(message = "address must be an IP address")
+		@IPAddress(nullOK = true, message = "address must be an IP address")
 		public String address;
 
 		@JsonIgnore
