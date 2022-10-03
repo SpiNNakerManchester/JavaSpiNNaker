@@ -25,7 +25,12 @@ import java.util.List;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 
+import com.google.errorprone.annotations.Keep;
+
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * Model of a board, for configuration purposes.
@@ -131,6 +136,7 @@ public class BoardRecord {
 	}
 
 	/** @return The cabinet number, if known. */
+	@ValidCabinetNumber
 	public Integer getCabinet() {
 		return cabinet;
 	}
@@ -141,6 +147,7 @@ public class BoardRecord {
 	}
 
 	/** @return The frame number, if known. */
+	@ValidFrameNumber
 	public Integer getFrame() {
 		return frame;
 	}
@@ -151,12 +158,12 @@ public class BoardRecord {
 	}
 
 	/** @return The board number, if known. */
+	@ValidBoardNumber
 	public Integer getBoard() {
 		return board;
 	}
 
 	/** @param board The board number. */
-	@ValidBoardNumber
 	public void setBoard(Integer board) {
 		this.board = board;
 	}
@@ -167,6 +174,7 @@ public class BoardRecord {
 	}
 
 	/** @return The board's IP address, if known. */
+	@IPAddress(nullOK = true)
 	public String getIpAddress() {
 		return ipAddress;
 	}
@@ -186,6 +194,7 @@ public class BoardRecord {
 	 *         or the name of a machine and at least one set of coordinates for
 	 *         a board on that machine.
 	 */
+	@Keep
 	@AssertTrue
 	boolean isValidBoardLocator() {
 		return isIdPresent() || (nonNull(machineName) && (isTriadCoordPresent()

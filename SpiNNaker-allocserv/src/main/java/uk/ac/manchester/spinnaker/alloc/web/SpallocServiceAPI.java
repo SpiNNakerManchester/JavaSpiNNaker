@@ -78,6 +78,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
@@ -341,12 +343,9 @@ public interface SpallocServiceAPI {
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse whereIsPhysicalPosition(
 				@Description("Cabinet number") @QueryParam("cabinet")
-				@DefaultValue("0")
-				@PositiveOrZero(
-						message = "cabinet must be at least 0") int cabinet,
+				@DefaultValue("0") @ValidCabinetNumber int cabinet,
 				@Description("Frame number") @QueryParam("frame")
-				@DefaultValue("0")
-				@PositiveOrZero(message = "frame must be at least 0") int frame,
+				@DefaultValue("0") @ValidFrameNumber int frame,
 				@Description("Board number") @QueryParam("board")
 				@ValidBoardNumber int board);
 

@@ -57,6 +57,8 @@ import uk.ac.manchester.spinnaker.alloc.model.MemberRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
@@ -180,8 +182,8 @@ public interface AdminAPI {
 			@QueryParam("x") @PositiveOrZero Integer x,
 			@QueryParam("y") @PositiveOrZero Integer y,
 			@QueryParam("z") @PositiveOrZero Integer z,
-			@QueryParam("cabinet") @PositiveOrZero Integer c,
-			@QueryParam("frame") @PositiveOrZero Integer f,
+			@QueryParam("cabinet") @ValidCabinetNumber Integer c,
+			@QueryParam("frame") @ValidFrameNumber Integer f,
 			@QueryParam("board") @ValidBoardNumber Integer b,
 			@QueryParam("address") @IPAddress(nullOK = true) String address) {
 		if (nonNull(x) && nonNull(y) && nonNull(z)) {
@@ -227,8 +229,8 @@ public interface AdminAPI {
 	 *            The board number
 	 * @return Whether the board is enabled
 	 */
-	boolean getBoardStateCFB(String name, @PositiveOrZero int c,
-			@PositiveOrZero int f, @ValidBoardNumber int b);
+	boolean getBoardStateCFB(String name, @ValidCabinetNumber int c,
+			@ValidFrameNumber int f, @ValidBoardNumber int b);
 
 	/**
 	 * Find board by IP address and return its state.
@@ -276,8 +278,8 @@ public interface AdminAPI {
 			@QueryParam("x") @PositiveOrZero Integer x,
 			@QueryParam("y") @PositiveOrZero Integer y,
 			@QueryParam("z") @PositiveOrZero Integer z,
-			@QueryParam("cabinet") @PositiveOrZero Integer c,
-			@QueryParam("frame") @PositiveOrZero Integer f,
+			@QueryParam("cabinet") @ValidCabinetNumber Integer c,
+			@QueryParam("frame") @ValidFrameNumber Integer f,
 			@QueryParam("board") @ValidBoardNumber Integer b,
 			@QueryParam("address") @IPAddress(nullOK = true) String address,
 			boolean enabled) {
@@ -330,7 +332,8 @@ public interface AdminAPI {
 	 * @return Whether the board is enabled
 	 */
 	boolean setBoardStateCFB(@NotBlank String name,
-			@NotNull @PositiveOrZero int c, @NotNull @PositiveOrZero int f,
+			@NotNull @ValidCabinetNumber int c,
+			@NotNull @ValidFrameNumber int f,
 			@NotNull @ValidBoardNumber int b, boolean enabled);
 
 	/**

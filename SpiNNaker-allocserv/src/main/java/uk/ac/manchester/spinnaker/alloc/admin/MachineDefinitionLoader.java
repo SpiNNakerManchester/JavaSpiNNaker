@@ -77,6 +77,8 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 import uk.ac.manchester.spinnaker.utils.validation.TCPPort;
 
@@ -349,11 +351,11 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	public static final class BoardPhysicalCoords
 			implements Comparable<BoardPhysicalCoords> {
 		/** Cabinet number. */
-		@PositiveOrZero(message = "cabinet number must not be negative")
+		@ValidCabinetNumber
 		public final int c;
 
 		/** Frame number. */
-		@PositiveOrZero(message = "frame number must not be negative")
+		@ValidFrameNumber
 		public final int f;
 
 		/** Board number. */

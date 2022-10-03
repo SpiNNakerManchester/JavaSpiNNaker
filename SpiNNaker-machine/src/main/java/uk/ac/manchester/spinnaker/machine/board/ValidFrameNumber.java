@@ -22,7 +22,6 @@ import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.ElementType.TYPE_USE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.Objects.isNull;
-import static uk.ac.manchester.spinnaker.machine.board.BMPBoard.MAX_BOARD_NUMBER;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -34,22 +33,22 @@ import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 
 /**
- * Validates that a board number is in a sane range.
+ * Validates that a frame number is in a sane range.
  *
  * @author Donal Fellows
  */
 @Documented
 @Retention(RUNTIME)
 @Target({ METHOD, FIELD, PARAMETER, TYPE_USE })
-@Constraint(validatedBy = BoardNumberValidator.class)
-public @interface ValidBoardNumber {
+@Constraint(validatedBy = FrameNumberValidator.class)
+public @interface ValidFrameNumber {
 	/**
 	 * Message on constraint violated.
 	 *
 	 * @return Message
 	 */
-	String message() default "board number (${validatedValue}) "
-			+ "must be in range 0-23";
+	String message() default "frame number (${validatedValue}) "
+			+ "must be in range 0-31";
 
 	/**
 	 * Group of constraints. Required by validation spec.
@@ -66,14 +65,16 @@ public @interface ValidBoardNumber {
 	Class<? extends Payload>[] payload() default {};
 }
 
-class BoardNumberValidator
-		implements ConstraintValidator<ValidBoardNumber, Integer> {
+class FrameNumberValidator
+		implements ConstraintValidator<ValidFrameNumber, Integer> {
+	private static final int MAX_FRAME = 31;
+
 	@Override
-	public void initialize(ValidBoardNumber annotation) {
+	public void initialize(ValidFrameNumber annotation) {
 	}
 
 	@Override
 	public boolean isValid(Integer value, ConstraintValidatorContext context) {
-		return isNull(value) || ((value >= 0) && (value <= MAX_BOARD_NUMBER));
+		return isNull(value) || ((value >= 0) && (value <= MAX_FRAME));
 	}
 }
