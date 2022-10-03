@@ -60,7 +60,7 @@ public @interface IPAddress {
 	 *
 	 * @return Message
 	 */
-	String message() default "${validatedValue} is a bad IPv4 address";
+	String message() default "'${validatedValue}' is a bad IPv4 address";
 
 	/**
 	 * Group of constraints. Required by validation spec.
@@ -92,8 +92,7 @@ class IPAddressValidator implements ConstraintValidator<IPAddress, String> {
 	}
 
 	@Override
-	public boolean isValid(String value,
-			ConstraintValidatorContext context) {
+	public boolean isValid(String value, ConstraintValidatorContext context) {
 		if (isNull(value)) {
 			return false;
 		}

@@ -110,8 +110,7 @@ class UDPPortValidator implements ConstraintValidator<UDPPort, Integer> {
 	}
 
 	@Override
-	public boolean isValid(Integer value,
-			ConstraintValidatorContext context) {
+	public boolean isValid(Integer value, ConstraintValidatorContext context) {
 		if (isNull(value)) {
 			return true;
 		}
