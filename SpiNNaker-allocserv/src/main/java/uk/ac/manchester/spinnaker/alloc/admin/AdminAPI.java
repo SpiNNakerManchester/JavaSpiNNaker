@@ -56,6 +56,7 @@ import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.MemberRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
@@ -224,7 +225,7 @@ public interface AdminAPI {
 	 * @return Whether the board is enabled
 	 */
 	boolean getBoardStateCFB(String name, @PositiveOrZero int c,
-			@PositiveOrZero int f, @PositiveOrZero int b);
+			@PositiveOrZero int f, @ValidBoardNumber int b);
 
 	/**
 	 * Find board by IP address and return its state.

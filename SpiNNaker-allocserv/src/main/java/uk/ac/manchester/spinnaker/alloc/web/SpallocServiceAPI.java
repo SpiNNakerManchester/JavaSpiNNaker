@@ -77,6 +77,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
@@ -347,8 +348,7 @@ public interface SpallocServiceAPI {
 				@DefaultValue("0")
 				@PositiveOrZero(message = "frame must be at least 0") int frame,
 				@Description("Board number") @QueryParam("board")
-				@PositiveOrZero(
-						message = "board must be at least 0") int board);
+				@ValidBoardNumber int board);
 
 		/**
 		 * Get the location description of a board given the global coordinates

@@ -25,6 +25,8 @@ import java.util.List;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+
 /**
  * Model of a board, for configuration purposes.
  *
@@ -154,6 +156,7 @@ public class BoardRecord {
 	}
 
 	/** @param board The board number. */
+	@ValidBoardNumber
 	public void setBoard(Integer board) {
 		this.board = board;
 	}
