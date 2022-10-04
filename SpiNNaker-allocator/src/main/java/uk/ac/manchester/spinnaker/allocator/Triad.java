@@ -20,21 +20,21 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRI
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 import static java.lang.String.format;
 
-import javax.validation.constraints.PositiveOrZero;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 
 /** Logical coordinates of a board. */
 @JsonFormat(shape = ARRAY)
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class Triad {
-	@PositiveOrZero
+	@ValidTriadX
 	private int x;
 
-	@PositiveOrZero
+	@ValidTriadY
 	private int y;
 
 	@ValidTriadZ

@@ -44,7 +44,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.PositiveOrZero;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +67,8 @@ import uk.ac.manchester.spinnaker.alloc.model.MachineTagging;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
@@ -304,7 +305,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @return Board state manager
 	 */
 	public Optional<BoardState> findTriad(@NotBlank String machine,
-			@PositiveOrZero int x, @PositiveOrZero int y, @ValidTriadZ int z) {
+			@ValidTriadX int x, @ValidTriadY int y, @ValidTriadZ int z) {
 		return executeRead(conn -> {
 			try (var q = conn.query(FIND_BOARD_BY_NAME_AND_XYZ)) {
 				return q.call1(machine, x, y, z).map(BoardState::new);

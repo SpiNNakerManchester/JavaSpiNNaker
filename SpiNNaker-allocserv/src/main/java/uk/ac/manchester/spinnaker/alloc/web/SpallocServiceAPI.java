@@ -44,7 +44,6 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.WAIT
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -80,6 +79,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
@@ -313,13 +315,12 @@ public interface SpallocServiceAPI {
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse whereIsLogicalPosition(
 				@Description("Triad X coordinate") @QueryParam("x")
-				@PositiveOrZero(message = "x must be at least 0") int x,
+				@ValidTriadX int x,
 				@Description("Triad Y coordinate") @QueryParam("y")
-				@PositiveOrZero(message = "y must be at least 0") int y,
+				@ValidTriadY int y,
 				@Description("Triad Z (internal member select) coordinate")
 				@QueryParam("z") @DefaultValue("0")
-				@PositiveOrZero(message = "z must be 0, 1 or 2")
-				@Max(value = 2, message = "z must be 0, 1 or 2") int z);
+				@ValidTriadZ int z);
 
 		/**
 		 * Get the location description of a board given its physical coords.

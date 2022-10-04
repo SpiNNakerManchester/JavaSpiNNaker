@@ -48,12 +48,12 @@ import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.sqlite.SQLiteException;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -77,6 +77,8 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 import uk.ac.manchester.spinnaker.utils.validation.TCPPort;
@@ -110,17 +112,18 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 *
 	 * @author Donal Fellows
 	 */
+	@Validated
 	public static final class TriadCoords implements Comparable<TriadCoords> {
 		/** X coordinate. */
-		@PositiveOrZero(message = "x coordinate must not be negative")
+		@ValidTriadX
 		public final int x;
 
 		/** Y coordinate. */
-		@PositiveOrZero(message = "y coordinate must not be negative")
+		@ValidTriadY
 		public final int y;
 
 		/** Z coordinate. */
-		@ValidTriadZ(message = "z coordinate must be in range 0 to 2")
+		@ValidTriadZ
 		public final int z;
 
 		/**
@@ -491,43 +494,44 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 */
 	@JsonDeserialize(builder = Machine.Builder.class)
 	public static final class Machine {
+		@NotBlank(message = "machines must have real names")
 		private String name;
 
-		private Set<String> tags;
+		private Set<@NotBlank String> tags;
 
+		@Positive(message = "machine width must be greater than zero")
 		private int width;
 
+		@Positive(message = "machine height must be greater than zero")
 		private int height;
 
-		private Set<TriadCoords> deadBoards;
+		private Set<@Valid TriadCoords> deadBoards;
 
-		private Map<TriadCoords, EnumSet<Link>> deadLinks;
+		private Map<@Valid TriadCoords, @NotNull EnumSet<Link>> deadLinks;
 
-		private Map<TriadCoords, BoardPhysicalCoords> boardLocations;
+		private Map<@Valid TriadCoords,
+				@Valid BoardPhysicalCoords> boardLocations;
 
-		private Map<BMPCoords, String> bmpIPs;
+		private Map<@Valid BMPCoords, @IPAddress String> bmpIPs;
 
-		private Map<TriadCoords, String> spinnakerIPs;
+		private Map<@Valid TriadCoords, @IPAddress String> spinnakerIPs;
 
 		/** @return The name of the machine. */
-		@NotBlank(message = "machines must have real names")
 		public String getName() {
 			return name;
 		}
 
 		/** @return The tags of the machine. */
-		public Set<@NotBlank String> getTags() {
+		public Set<String> getTags() {
 			return unmodifiableSet(tags);
 		}
 
 		/** @return The width of the machine, in triads. */
-		@Positive(message = "machine width must be greater than zero")
 		public int getWidth() {
 			return width;
 		}
 
 		/** @return The height of the machine, in triads. */
-		@Positive(message = "machine height must be greater than zero")
 		public int getHeight() {
 			return height;
 		}
@@ -538,7 +542,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		}
 
 		/** @return The dead boards of the machine. */
-		public Set<@Valid TriadCoords> getDeadBoards() {
+		public Set<TriadCoords> getDeadBoards() {
 			return unmodifiableSet(deadBoards);
 		}
 
@@ -546,23 +550,22 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		 * @return The extra dead links of the machine. Doesn't include links to
 		 *         dead boards.
 		 */
-		public Map<@Valid TriadCoords, @NotNull EnumSet<Link>> getDeadLinks() {
+		public Map<TriadCoords, EnumSet<Link>> getDeadLinks() {
 			return unmodifiableMap(deadLinks);
 		}
 
 		/** @return The logical-to-physical board location map. */
-		public Map<@Valid TriadCoords, @Valid BoardPhysicalCoords>
-				getBoardLocations() {
+		public Map<TriadCoords, BoardPhysicalCoords> getBoardLocations() {
 			return unmodifiableMap(boardLocations);
 		}
 
 		/** @return The IP addresses of the BMPs. */
-		public Map<@Valid BMPCoords, @IPAddress String> getBmpIPs() {
+		public Map<BMPCoords, String> getBmpIPs() {
 			return unmodifiableMap(bmpIPs);
 		}
 
 		/** @return The IP addresses of the boards. */
-		public Map<@Valid TriadCoords, @IPAddress String> getSpinnakerIPs() {
+		public Map<TriadCoords, String> getSpinnakerIPs() {
 			return unmodifiableMap(spinnakerIPs);
 		}
 
@@ -746,21 +749,25 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 * @author Donal Fellows
 	 */
 	static final class Configuration {
-		private List<Machine> machines;
+		private @NotNull List<@Valid Machine> machines;
 
+		@TCPPort
 		private int port;
 
+		@IPAddress
 		private String ip;
 
+		@Positive
 		private double timeoutCheckInterval;
 
+		@Positive
 		private int maxRetiredJobs;
 
+		@Positive
 		private int secondsBeforeFree;
 
 		/** @return The machines to manage. */
-		@NotNull
-		public List<@Valid Machine> getMachines() {
+		public List<Machine> getMachines() {
 			return unmodifiableList(machines);
 		}
 
@@ -769,7 +776,6 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		}
 
 		/** @return The port for the service to listen on. (Ignored) */
-		@TCPPort
 		public int getPort() {
 			return port;
 		}
@@ -782,7 +788,6 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		 * @return The host address for the service to listen on. Empty = all
 		 *         interfaces. (Ignored)
 		 */
-		@IPAddress
 		public String getIp() {
 			return ip;
 		}
@@ -792,7 +797,6 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		}
 
 		/** @return How often (in seconds) to check for timeouts. (Ignored) */
-		@Positive
 		public double getTimeoutCheckInterval() {
 			return timeoutCheckInterval;
 		}
@@ -802,7 +806,6 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		}
 
 		/** @return How many retired jobs to retain. (Ignored) */
-		@Positive
 		public int getMaxRetiredJobs() {
 			return maxRetiredJobs;
 		}
@@ -812,7 +815,6 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		}
 
 		/** @return Time to wait before freeing. (Ignored) */
-		@Positive
 		public int getSecondsBeforeFree() {
 			return secondsBeforeFree;
 		}

@@ -59,6 +59,8 @@ import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
@@ -646,8 +648,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 *             If anything goes wrong.
 	 */
 	protected abstract BoardPhysicalCoordinates getBoardAtLogicalPosition(
-			@NotBlank String machineName, @PositiveOrZero int x,
-			@PositiveOrZero int y, @ValidTriadZ int z) throws TaskException;
+			@NotBlank String machineName, @ValidTriadX int x,
+			@ValidTriadY int y, @ValidTriadZ int z) throws TaskException;
 
 	/**
 	 * Get information about the machine allocated to a job.
@@ -798,7 +800,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
-	protected abstract WhereIs whereIsMachineChip(String machineName,
+	protected abstract WhereIs whereIsMachineChip(@NotBlank String machineName,
 			@PositiveOrZero int x, @PositiveOrZero int y) throws TaskException;
 
 	/**
@@ -816,9 +818,9 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
-	protected abstract WhereIs whereIsMachineLogicalBoard(String machineName,
-			@PositiveOrZero int x, @PositiveOrZero int y, @ValidTriadZ int z)
-			throws TaskException;
+	protected abstract WhereIs whereIsMachineLogicalBoard(
+			@NotBlank String machineName, @ValidTriadX int x,
+			@ValidTriadY int y, @ValidTriadZ int z) throws TaskException;
 
 	/**
 	 * Describe where a board is within a machine.

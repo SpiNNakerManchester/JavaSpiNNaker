@@ -28,7 +28,6 @@ import java.util.stream.Stream;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
 
 import com.google.errorprone.annotations.MustBeClosed;
 
@@ -38,6 +37,8 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
@@ -202,7 +203,7 @@ public interface SpallocClient {
 		 * @throws IOException
 		 *             If communication with the server fails
 		 */
-		WhereIs getBoardByTriad(@PositiveOrZero int x, @PositiveOrZero int y,
+		WhereIs getBoardByTriad(@ValidTriadX int x, @ValidTriadY int y,
 				@ValidTriadZ int z) throws FileNotFoundException, IOException;
 
 		/**

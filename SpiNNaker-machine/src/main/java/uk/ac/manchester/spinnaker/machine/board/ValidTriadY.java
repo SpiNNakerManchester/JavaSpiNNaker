@@ -33,7 +33,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.PositiveOrZero;
 
 /**
- * Validates that a triad Z coordinate is in a sane range.
+ * Validates that a triad Y coordinate is in a sane range.
  *
  * @author Donal Fellows
  */
@@ -41,17 +41,17 @@ import javax.validation.constraints.PositiveOrZero;
 @Retention(RUNTIME)
 @Target({ METHOD, FIELD, PARAMETER, TYPE_USE })
 @PositiveOrZero
-@Max(Limits.MAX_TRIAD_Z)
+@Max(Limits.MAX_TRIAD_Y)
 @Constraint(validatedBy = {})
 @ReportAsSingleViolation
-public @interface ValidTriadZ {
+public @interface ValidTriadY {
 	/**
 	 * Message on constraint violated.
 	 *
 	 * @return Message
 	 */
-	String message() default "Z coordinate (${validatedValue}) "
-			+ "must be 0, 1, or 2";
+	String message() default "Y coordinate (${validatedValue}) "
+			+ "must be at least 0 and no more than 63";
 
 	/**
 	 * Group of constraints. Required by validation spec.

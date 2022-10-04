@@ -34,10 +34,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.spalloc.messages.CreateJobCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
@@ -100,7 +101,7 @@ public class CreateJob {
 	 * @see WhereIs
 	 */
 	@UsedInJavadocOnly(WhereIs.class)
-	public CreateJob(@PositiveOrZero int x, @PositiveOrZero int y,
+	public CreateJob(@ValidTriadX int x, @ValidTriadY int y,
 			@ValidTriadZ int z) {
 		args.add(x);
 		args.add(y);
@@ -142,7 +143,7 @@ public class CreateJob {
 	 * @return {@code this} (fluent interface)
 	 */
 	@CanIgnoreReturnValue
-	public CreateJob keepAlive(Double keepalive) {
+	public CreateJob keepAlive(@Positive Double keepalive) {
 		kwargs.put(KEEPALIVE_PROPERTY, keepalive);
 		return this;
 	}
@@ -155,7 +156,7 @@ public class CreateJob {
 	 * @return {@code this} (fluent interface)
 	 */
 	@CanIgnoreReturnValue
-	public CreateJob keepAlive(double keepalive) {
+	public CreateJob keepAlive(@Positive double keepalive) {
 		kwargs.put(KEEPALIVE_PROPERTY, keepalive);
 		return this;
 	}
@@ -166,10 +167,16 @@ public class CreateJob {
 	 *            this job before it is automatically destroyed. (Default: 60
 	 *            seconds)
 	 * @return {@code this} (fluent interface)
+	 * @throws IllegalArgumentException
+	 *             If the duration is negative.
 	 */
 	@CanIgnoreReturnValue
 	public CreateJob keepAlive(Duration keepalive) {
 		double t = keepalive.getSeconds();
+		if (t < 0.0) {
+			throw new IllegalArgumentException(
+					"negative durations not supported");
+		}
 		t += keepalive.getNano() / (double) NSEC_PER_SEC;
 		kwargs.put(KEEPALIVE_PROPERTY, t);
 		return this;

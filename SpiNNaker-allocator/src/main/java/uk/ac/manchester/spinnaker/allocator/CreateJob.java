@@ -33,6 +33,8 @@ import com.google.errorprone.annotations.Keep;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
@@ -105,10 +107,10 @@ public final class CreateJob {
 	 * Used when asking for a specific board.
 	 */
 	public static final class SpecificBoard {
-		@PositiveOrZero
+		@ValidTriadX
 		private Integer x;
 
-		@PositiveOrZero
+		@ValidTriadY
 		private Integer y;
 
 		@ValidTriadZ

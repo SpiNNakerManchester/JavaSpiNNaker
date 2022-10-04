@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
@@ -30,11 +31,14 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
 import org.springframework.security.access.prepost.PostFilter;
+
+import com.google.errorprone.annotations.Keep;
 
 import uk.ac.manchester.spinnaker.alloc.compat.V1CompatService;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
@@ -55,6 +59,8 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
@@ -233,7 +239,7 @@ public interface SpallocAPI {
 		 * The maximum number of dead boards tolerated in the allocation.
 		 * Ignored when asking for a single board.
 		 */
-		@PositiveOrZero
+		@PositiveOrZero(message = "maxDeadBoards must not be negative")
 		public final int maxDead;
 
 		/**
@@ -243,7 +249,7 @@ public interface SpallocAPI {
 		 *            The maximum number of dead boards. {@code null} is
 		 *            equivalent to 0.
 		 */
-		private CreateDescriptor(@PositiveOrZero Integer maxDeadBoards) {
+		private CreateDescriptor(Integer maxDeadBoards) {
 			this.maxDead = isNull(maxDeadBoards) ? 0 : maxDeadBoards;
 		}
 
@@ -275,7 +281,7 @@ public interface SpallocAPI {
 	 */
 	final class CreateNumBoards extends CreateDescriptor {
 		/** The number of boards requested. */
-		@Positive
+		@Positive(message = "number of boards to request must be positive")
 		public final int numBoards;
 
 		/**
@@ -287,8 +293,7 @@ public interface SpallocAPI {
 		 *            The number of dead boards that can be tolerated within
 		 *            that.
 		 */
-		public CreateNumBoards(@Positive int numBoards,
-				@PositiveOrZero Integer maxDeadBoards) {
+		public CreateNumBoards(int numBoards, Integer maxDeadBoards) {
 			super(maxDeadBoards);
 			this.numBoards = numBoards;
 		}
@@ -313,11 +318,11 @@ public interface SpallocAPI {
 	@UsedInJavadocOnly(V1CompatService.class)
 	final class CreateDimensions extends CreateDescriptor {
 		/** Width requested, in boards. */
-		@Positive
+		@Positive(message = "width of request must be positive")
 		public final int width;
 
 		/** Height requested, in boards. */
-		@Positive
+		@Positive(message = "height of request must be positive")
 		public final int height;
 
 		/**
@@ -332,8 +337,7 @@ public interface SpallocAPI {
 		 *            The number of dead boards that can be tolerated in that
 		 *            rectangle.
 		 */
-		public CreateDimensions(@Positive int width, @Positive int height,
-				@PositiveOrZero Integer maxDeadBoards) {
+		public CreateDimensions(int width, int height, Integer maxDeadBoards) {
 			super(maxDeadBoards);
 			this.width = width;
 			this.height = height;
@@ -364,9 +368,8 @@ public interface SpallocAPI {
 		@IPAddress(nullOK = true)
 		public final String ip;
 
-		private HasBoardCoords(@Valid Triad triad, @Valid Phys physical,
-				@IPAddress(nullOK = true) String ip,
-				@PositiveOrZero Integer maxDeadBoards) {
+		private HasBoardCoords(Triad triad, Phys physical, String ip,
+				Integer maxDeadBoards) {
 			super(maxDeadBoards);
 			this.triad = triad;
 			this.physical = physical;
@@ -376,6 +379,12 @@ public interface SpallocAPI {
 		private static int get(Integer value) {
 			return Objects.nonNull(value) ? value : 0;
 		}
+
+		@Keep
+		@AssertTrue(message = "a method of locating a board must be provided")
+		private boolean isLocated() {
+			return nonNull(triad) || nonNull(physical) || nonNull(ip);
+		}
 	}
 
 	/**
@@ -384,11 +393,11 @@ public interface SpallocAPI {
 	 */
 	final class CreateDimensionsAt extends HasBoardCoords {
 		/** Width requested, in triads. */
-		@Positive
+		@Positive(message = "width of request must be positive")
 		public final int width;
 
 		/** Height requested, in triads. */
-		@Positive
+		@Positive(message = "height of request must be positive")
 		public final int height;
 
 		/**
@@ -407,8 +416,8 @@ public interface SpallocAPI {
 		 *            The maximum number of dead boards tolerated in the
 		 *            allocation. Ignored when asking for a single board.
 		 */
-		public CreateDimensionsAt(@Positive int width, @Positive int height,
-				int x, int y, @PositiveOrZero Integer maxDeadBoards) {
+		public CreateDimensionsAt(int width, int height, int x, int y,
+				Integer maxDeadBoards) {
 			super(new Triad(x, y, 0), null, null, maxDeadBoards);
 			this.width = width;
 			this.height = height;
@@ -430,8 +439,8 @@ public interface SpallocAPI {
 		 *            The maximum number of dead boards tolerated in the
 		 *            allocation. Ignored when asking for a single board.
 		 */
-		public CreateDimensionsAt(@Positive int width, @Positive int height,
-				Integer x, Integer y, @PositiveOrZero Integer maxDeadBoards) {
+		public CreateDimensionsAt(int width, int height, Integer x, Integer y,
+				Integer maxDeadBoards) {
 			super(new Triad(HasBoardCoords.get(x), HasBoardCoords.get(y), 0),
 					null, null, maxDeadBoards);
 			this.width = width;
@@ -456,9 +465,8 @@ public interface SpallocAPI {
 		 *            The maximum number of dead boards tolerated in the
 		 *            allocation. Ignored when asking for a single board.
 		 */
-		public CreateDimensionsAt(@Positive int width, @Positive int height,
-				@PositiveOrZero int x, @PositiveOrZero int y,
-				@ValidTriadZ int z, @PositiveOrZero Integer maxDeadBoards) {
+		public CreateDimensionsAt(int width, int height, int x, int y, int z,
+				Integer maxDeadBoards) {
 			super(new Triad(x, y, z), null, null, maxDeadBoards);
 			this.width = width;
 			this.height = height;
@@ -482,9 +490,8 @@ public interface SpallocAPI {
 		 *            The maximum number of dead boards tolerated in the
 		 *            allocation. Ignored when asking for a single board.
 		 */
-		public CreateDimensionsAt(@Positive int width, @Positive int height,
-				@PositiveOrZero Integer x, @PositiveOrZero Integer y,
-				@ValidTriadZ Integer z, @PositiveOrZero Integer maxDeadBoards) {
+		public CreateDimensionsAt(int width, int height, Integer x, Integer y,
+				Integer z, Integer maxDeadBoards) {
 			super(new Triad(HasBoardCoords.get(x), HasBoardCoords.get(y),
 					HasBoardCoords.get(z)), null, null, maxDeadBoards);
 			this.width = width;
@@ -505,8 +512,8 @@ public interface SpallocAPI {
 		 *            The maximum number of dead boards tolerated in the
 		 *            allocation. Ignored when asking for a single board.
 		 */
-		public CreateDimensionsAt(@Positive int width, @Positive int height,
-				@IPAddress String ip, @PositiveOrZero Integer maxDeadBoards) {
+		public CreateDimensionsAt(int width, int height, String ip,
+				Integer maxDeadBoards) {
 			super(null, null, ip, maxDeadBoards);
 			this.width = width;
 			this.height = height;
@@ -538,10 +545,8 @@ public interface SpallocAPI {
 		 *            allocation. Ignored when asking for a single board.
 		 * @return Descriptor
 		 */
-		public static CreateDimensionsAt physical(@Positive int width,
-				@Positive int height, @ValidCabinetNumber int cabinet,
-				@ValidFrameNumber int frame, @ValidBoardNumber int board,
-				@Positive Integer maxDeadBoards) {
+		public static CreateDimensionsAt physical(int width, int height,
+				int cabinet, int frame, int board, Integer maxDeadBoards) {
 			// Done like this to avoid syntactic ambiguity
 			return new CreateDimensionsAt(width, height,
 					new Phys(cabinet, frame, board), maxDeadBoards);
@@ -566,11 +571,9 @@ public interface SpallocAPI {
 		 *            allocation. Ignored when asking for a single board.
 		 * @return Descriptor
 		 */
-		public static CreateDimensionsAt physical(@Positive int width,
-				@Positive int height, @ValidCabinetNumber Integer cabinet,
-				@ValidFrameNumber Integer frame,
-				@ValidBoardNumber Integer board,
-				@PositiveOrZero Integer maxDeadBoards) {
+		public static CreateDimensionsAt physical(int width, int height,
+				Integer cabinet, Integer frame, Integer board,
+				Integer maxDeadBoards) {
 			// Done like this to avoid syntactic ambiguity
 			return new CreateDimensionsAt(width, height,
 					new Phys(HasBoardCoords.get(cabinet),
@@ -598,11 +601,11 @@ public interface SpallocAPI {
 		}
 
 		/** X coordinate. */
-		@PositiveOrZero
+		@ValidTriadX
 		public final int x;
 
 		/** Y coordinate. */
-		@PositiveOrZero
+		@ValidTriadY
 		public final int y;
 
 		/** Z coordinate. */
@@ -650,8 +653,7 @@ public interface SpallocAPI {
 		 *            The Z coordinate of the board.
 		 * @return Descriptor
 		 */
-		public static CreateBoard triad(@PositiveOrZero int x,
-				@PositiveOrZero int y, @ValidTriadZ int z) {
+		public static CreateBoard triad(int x, int y, int z) {
 			return new CreateBoard(new Triad(x, y, z), null, null);
 		}
 
@@ -666,8 +668,7 @@ public interface SpallocAPI {
 		 *            The board number of the board.
 		 * @return Descriptor
 		 */
-		public static CreateBoard physical(@ValidCabinetNumber int cabinet,
-				@ValidFrameNumber int frame, @ValidBoardNumber int board) {
+		public static CreateBoard physical(int cabinet, int frame, int board) {
 			return new CreateBoard(null, new Phys(cabinet, frame, board), null);
 		}
 
@@ -1005,8 +1006,8 @@ public interface SpallocAPI {
 		 *            Triad Z coordinate.
 		 * @return Board location description
 		 */
-		Optional<BoardLocation> getBoardByLogicalCoords(@PositiveOrZero int x,
-				@PositiveOrZero int y, @ValidTriadZ int z);
+		Optional<BoardLocation> getBoardByLogicalCoords(@ValidTriadX int x,
+				@ValidTriadY int y, @ValidTriadZ int z);
 
 		/**
 		 * Get a description of the location of a board given the address of its

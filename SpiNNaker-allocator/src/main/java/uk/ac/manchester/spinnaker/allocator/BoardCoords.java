@@ -20,14 +20,14 @@ import static java.lang.String.format;
 
 import java.util.Objects;
 
-import javax.validation.constraints.PositiveOrZero;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.errorprone.annotations.Immutable;
 
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
@@ -35,11 +35,11 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 @Immutable
 public class BoardCoords {
 	/** Logical triad X coordinate. */
-	@PositiveOrZero
+	@ValidTriadX
 	private final int x;
 
 	/** Logical triad Y coordinate. */
-	@PositiveOrZero
+	@ValidTriadY
 	private final int y;
 
 	/** Logical triad Z coordinate. */
