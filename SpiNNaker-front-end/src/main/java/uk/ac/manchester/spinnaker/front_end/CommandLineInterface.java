@@ -233,12 +233,12 @@ public final class CommandLineInterface {
 	 * @throws DataSpecificationException
 	 *             If an invalid data specification file is executed.
 	 */
-	public static void dseRun(String machineJsonFile, String runFolder,
+	public static void dseRun(String machineJsonFile, String dsgFolder,
 			Boolean filterSystemCores) throws IOException, SpinnmanException,
 			StorageException, ExecutionException, InterruptedException,
 			DataSpecificationException {
 		var machine = getMachine(machineJsonFile);
-		var db = new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
+		var db = new DSEDatabaseEngine(new File(dsgFolder, DSE_DB_FILE));
 
 		try (var dseExec = new HostExecuteDataSpecification(machine)) {
 			if (filterSystemCores == null) {
@@ -278,13 +278,13 @@ public final class CommandLineInterface {
 	 *             If an invalid data specification file is executed.
 	 */
 	public static void dseAppMonRun(String gatherersJsonFile,
-			String machineJsonFile, String runFolder, String reportFolder)
+			String machineJsonFile, String dsgFolder, String reportFolder)
 			throws IOException, SpinnmanException, StorageException,
 			ExecutionException, InterruptedException,
 			DataSpecificationException {
 		var gathers = getGatherers(gatherersJsonFile);
 		var machine = getMachine(machineJsonFile);
-		var db = new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
+		var db = new DSEDatabaseEngine(new File(dsgFolder, DSE_DB_FILE));
 		var reportDir = reportFolder == null ? null : new File(reportFolder);
 
 		try (var dseExec = new FastExecuteDataSpecification(
