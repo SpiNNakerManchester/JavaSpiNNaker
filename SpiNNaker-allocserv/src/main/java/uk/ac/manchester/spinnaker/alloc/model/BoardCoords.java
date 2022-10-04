@@ -28,6 +28,7 @@ import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
@@ -82,7 +83,7 @@ public final class BoardCoords {
 	 *            IP address of ethernet chip, or {@code null}
 	 */
 	public BoardCoords(@PositiveOrZero int x, @PositiveOrZero int y,
-			@PositiveOrZero int z, @ValidCabinetNumber int cabinet,
+			@ValidTriadZ int z, @ValidCabinetNumber int cabinet,
 			@ValidFrameNumber int frame, @ValidBoardNumber Integer board,
 			@IPAddress(nullOK = true) String address) {
 		this.x = x;

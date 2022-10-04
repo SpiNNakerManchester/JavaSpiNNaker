@@ -45,8 +45,6 @@ import javax.validation.Valid;
 import javax.validation.ValidatorFactory;
 import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -79,6 +77,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 import uk.ac.manchester.spinnaker.utils.validation.TCPPort;
 
@@ -121,8 +120,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		public final int y;
 
 		/** Z coordinate. */
-		@Min(value = 0, message = "z coordinate must not be negative")
-		@Max(value = 2, message = "z coordinate must not be more than 2")
+		@ValidTriadZ(message = "z coordinate must be in range 0 to 2")
 		public final int z;
 
 		/**

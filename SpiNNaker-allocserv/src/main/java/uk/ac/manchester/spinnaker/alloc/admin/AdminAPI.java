@@ -59,6 +59,7 @@ import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
@@ -181,7 +182,7 @@ public interface AdminAPI {
 			@QueryParam("machine") String machineName,
 			@QueryParam("x") @PositiveOrZero Integer x,
 			@QueryParam("y") @PositiveOrZero Integer y,
-			@QueryParam("z") @PositiveOrZero Integer z,
+			@QueryParam("z") @ValidTriadZ Integer z,
 			@QueryParam("cabinet") @ValidCabinetNumber Integer c,
 			@QueryParam("frame") @ValidFrameNumber Integer f,
 			@QueryParam("board") @ValidBoardNumber Integer b,
@@ -214,7 +215,7 @@ public interface AdminAPI {
 	 * @return Whether the board is enabled
 	 */
 	boolean getBoardStateXYZ(String name, @PositiveOrZero int x,
-			@PositiveOrZero int y, @PositiveOrZero int z);
+			@PositiveOrZero int y, @ValidTriadZ int z);
 
 	/**
 	 * Find board by physical coordinates and return its state.
@@ -277,7 +278,7 @@ public interface AdminAPI {
 			@QueryParam("machine") String machineName,
 			@QueryParam("x") @PositiveOrZero Integer x,
 			@QueryParam("y") @PositiveOrZero Integer y,
-			@QueryParam("z") @PositiveOrZero Integer z,
+			@QueryParam("z") @ValidTriadZ Integer z,
 			@QueryParam("cabinet") @ValidCabinetNumber Integer c,
 			@QueryParam("frame") @ValidFrameNumber Integer f,
 			@QueryParam("board") @ValidBoardNumber Integer b,
@@ -314,7 +315,7 @@ public interface AdminAPI {
 	 */
 	boolean setBoardStateXYZ(@NotBlank String name,
 			@NotNull @PositiveOrZero int x, @NotNull @PositiveOrZero int y,
-			@NotNull @PositiveOrZero int z, boolean enabled);
+			@NotNull @ValidTriadZ int z, boolean enabled);
 
 	/**
 	 * Enable or disable a board. Find by physical coordinates.

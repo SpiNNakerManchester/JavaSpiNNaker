@@ -33,8 +33,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.spalloc.messages.CreateJobCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
@@ -67,7 +71,7 @@ public class CreateJob {
 	 * @param numBoards
 	 *            How many boards to request.
 	 */
-	public CreateJob(int numBoards) {
+	public CreateJob(@Positive int numBoards) {
 		args.add(numBoards);
 	}
 
@@ -79,7 +83,7 @@ public class CreateJob {
 	 * @param height
 	 *            Vertical size of rectangle
 	 */
-	public CreateJob(int width, int height) {
+	public CreateJob(@Positive int width, @Positive int height) {
 		args.add(width);
 		args.add(height);
 	}
@@ -96,7 +100,8 @@ public class CreateJob {
 	 * @see WhereIs
 	 */
 	@UsedInJavadocOnly(WhereIs.class)
-	public CreateJob(int x, int y, int z) {
+	public CreateJob(@PositiveOrZero int x, @PositiveOrZero int y,
+			@ValidTriadZ int z) {
 		args.add(x);
 		args.add(y);
 		args.add(z);

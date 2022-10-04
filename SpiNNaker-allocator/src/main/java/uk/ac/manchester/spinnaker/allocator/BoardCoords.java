@@ -20,34 +20,49 @@ import static java.lang.String.format;
 
 import java.util.Objects;
 
+import javax.validation.constraints.PositiveOrZero;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.errorprone.annotations.Immutable;
+
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /** Generalised coordinates of a board. */
 @Immutable
 public class BoardCoords {
 	/** Logical triad X coordinate. */
+	@PositiveOrZero
 	private final int x;
 
 	/** Logical triad Y coordinate. */
+	@PositiveOrZero
 	private final int y;
 
 	/** Logical triad Z coordinate. */
+	@ValidTriadZ
 	private final int z;
 
 	/** Physical cabinet number. */
+	@ValidCabinetNumber
 	private final int cabinet;
 
 	/** Physical frame number. */
+	@ValidFrameNumber
 	private final int frame;
 
 	/** Physical board number. */
+	@ValidBoardNumber
 	private final Integer board;
 
 	/**
 	 * IP address of ethernet chip. May be {@code null} if the current user
 	 * doesn't have permission to see the board address at this point.
 	 */
+	@IPAddress(nullOK = true)
 	private final String address;
 
 	/**

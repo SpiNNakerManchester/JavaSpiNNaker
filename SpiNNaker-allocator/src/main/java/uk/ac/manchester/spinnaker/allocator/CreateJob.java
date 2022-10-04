@@ -17,11 +17,24 @@
 package uk.ac.manchester.spinnaker.allocator;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
+import static java.util.Objects.nonNull;
 
 import java.time.Duration;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.google.errorprone.annotations.Keep;
+
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * A request to create a job.
@@ -31,16 +44,20 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 public final class CreateJob {
 	private Duration keepaliveInterval;
 
+	@Positive
 	private Integer numBoards;
 
+	@Valid
 	private Dimensions dimensions;
 
+	@Valid
 	private SpecificBoard board;
 
 	private String machineName;
 
 	private List<String> tags;
 
+	@PositiveOrZero
 	private Integer maxDeadBoards;
 
 	/**
@@ -48,8 +65,10 @@ public final class CreateJob {
 	 */
 	@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 	public static final class Dimensions {
+		@Positive
 		private int width;
 
+		@Positive
 		private int height;
 
 		/**
@@ -86,18 +105,25 @@ public final class CreateJob {
 	 * Used when asking for a specific board.
 	 */
 	public static final class SpecificBoard {
+		@PositiveOrZero
 		private Integer x;
 
+		@PositiveOrZero
 		private Integer y;
 
+		@ValidTriadZ
 		private Integer z;
 
+		@ValidCabinetNumber
 		private Integer cabinet;
 
+		@ValidFrameNumber
 		private Integer frame;
 
+		@ValidBoardNumber
 		private Integer board;
 
+		@IPAddress(nullOK = true)
 		private String address;
 
 		/**
@@ -391,6 +417,12 @@ public final class CreateJob {
 	public void setTags(List<String> tags) {
 		this.tags = tags;
 		this.machineName = null;
+	}
+
+	@Keep
+	@AssertTrue(message = "either machineName or tags must be given")
+	private boolean isTargetted() {
+		return nonNull(machineName) || (nonNull(tags) && !tags.isEmpty());
 	}
 
 	/**

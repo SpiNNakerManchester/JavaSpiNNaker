@@ -55,6 +55,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
@@ -456,7 +457,8 @@ public interface SpallocAPI {
 		 *            allocation. Ignored when asking for a single board.
 		 */
 		public CreateDimensionsAt(@Positive int width, @Positive int height,
-				int x, int y, int z, @PositiveOrZero Integer maxDeadBoards) {
+				@PositiveOrZero int x, @PositiveOrZero int y,
+				@ValidTriadZ int z, @PositiveOrZero Integer maxDeadBoards) {
 			super(new Triad(x, y, z), null, null, maxDeadBoards);
 			this.width = width;
 			this.height = height;
@@ -481,8 +483,8 @@ public interface SpallocAPI {
 		 *            allocation. Ignored when asking for a single board.
 		 */
 		public CreateDimensionsAt(@Positive int width, @Positive int height,
-				Integer x, Integer y, Integer z,
-				@PositiveOrZero Integer maxDeadBoards) {
+				@PositiveOrZero Integer x, @PositiveOrZero Integer y,
+				@ValidTriadZ Integer z, @PositiveOrZero Integer maxDeadBoards) {
 			super(new Triad(HasBoardCoords.get(x), HasBoardCoords.get(y),
 					HasBoardCoords.get(z)), null, null, maxDeadBoards);
 			this.width = width;
@@ -604,7 +606,7 @@ public interface SpallocAPI {
 		public final int y;
 
 		/** Z coordinate. */
-		@PositiveOrZero
+		@ValidTriadZ
 		public final int z;
 	}
 
@@ -648,7 +650,8 @@ public interface SpallocAPI {
 		 *            The Z coordinate of the board.
 		 * @return Descriptor
 		 */
-		public static CreateBoard triad(int x, int y, int z) {
+		public static CreateBoard triad(@PositiveOrZero int x,
+				@PositiveOrZero int y, @ValidTriadZ int z) {
 			return new CreateBoard(new Triad(x, y, z), null, null);
 		}
 
@@ -837,7 +840,8 @@ public interface SpallocAPI {
 		 *            The Y coordinate of a chip on the board of interest.
 		 * @return The location, if resources allocated and the location maps.
 		 */
-		Optional<BoardLocation> whereIs(int x, int y);
+		Optional<BoardLocation> whereIs(@PositiveOrZero int x,
+				@PositiveOrZero int y);
 
 		/**
 		 * @return The absolute location of root chip. {@code null} if no
@@ -970,7 +974,8 @@ public interface SpallocAPI {
 		 *            Global chip Y coordinate.
 		 * @return Board location description
 		 */
-		Optional<BoardLocation> getBoardByChip(int x, int y);
+		Optional<BoardLocation> getBoardByChip(@PositiveOrZero int x,
+				@PositiveOrZero int y);
 
 		/**
 		 * Get a description of the location of a board given the physical
@@ -1000,7 +1005,8 @@ public interface SpallocAPI {
 		 *            Triad Z coordinate.
 		 * @return Board location description
 		 */
-		Optional<BoardLocation> getBoardByLogicalCoords(int x, int y, int z);
+		Optional<BoardLocation> getBoardByLogicalCoords(@PositiveOrZero int x,
+				@PositiveOrZero int y, @ValidTriadZ int z);
 
 		/**
 		 * Get a description of the location of a board given the address of its
