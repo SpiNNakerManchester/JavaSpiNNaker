@@ -16,8 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
@@ -69,6 +68,9 @@ class MDefLoaderTest extends MemDBTestBase {
 	@Value("classpath:three-board-example.json")
 	private Resource threeBoard;
 
+	@Value("classpath:bad-board-example.json")
+	private Resource badBoard;
+
 	@Test
 	void readSingleBoardExample() throws IOException {
 		var machines = loader.readMachineDefinitions(singleBoard.getFile());
@@ -84,6 +86,16 @@ class MDefLoaderTest extends MemDBTestBase {
 		assertEquals(Set.of(new BMPCoords(0, 0)), m.getBmpIPs().keySet());
 		assertEquals(Set.of(new BoardPhysicalCoords(0, 0, 0)),
 				Set.copyOf(m.getBoardLocations().values()));
+	}
+
+	@Test
+	void readBadBoardExample() throws IOException {
+		var e = assertThrows(IOException.class,
+				() -> loader.readMachineDefinitions(badBoard.getFile()));
+		assertEquals(
+				"failed to validate configuration: "
+						+ "'1.2.3.4.5.not-an-ip' is a bad IPv4 address",
+				e.getMessage());
 	}
 
 	@Test
