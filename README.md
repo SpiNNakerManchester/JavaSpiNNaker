@@ -2,7 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/SpiNNakerManchester/JavaSpiNNaker/badge.svg?branch=master)](https://coveralls.io/github/SpiNNakerManchester/JavaSpiNNaker?branch=master)
 
 # JavaSpiNNaker
-This is an implementation of the SpiNNaker host software in Java. It requires at least Java 8. We test regularly with OpenJDK 8, 11 and 14.
+This is an implementation of the SpiNNaker host software in Java. It requires at least Java 11. We test regularly with OpenJDK 11, 14 and 17. It also includes the new implementation of the Spalloc (SpiNNaker Allocator) service and associated support tools.
 
 This code currently supports these operations:
 

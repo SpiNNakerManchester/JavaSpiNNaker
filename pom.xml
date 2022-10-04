@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<javadoc.version>3.4.1</javadoc.version>
 		<testing.version>3.0.0-M7</testing.version>
 
-		<slf4j.version>2.0.2</slf4j.version>
+		<slf4j.version>2.0.3</slf4j.version>
 		<log4j.version>2.19.0</log4j.version>
 
 		<spring.version>5.3.23</spring.version>
@@ -60,7 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<jackson.version>2.13.4</jackson.version>
 		<sqlite.version>3.39.3.0</sqlite.version>
 		<keycloak.version>19.0.2</keycloak.version>
-		<swagger.version>4.14.0</swagger.version>
+		<swagger.version>4.14.2</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.3</jython.version>
 		<error-prone.version>2.15.0</error-prone.version>
@@ -254,7 +254,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-text</artifactId>
-				<version>1.9</version>
+				<version>1.10.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.xerial</groupId>
