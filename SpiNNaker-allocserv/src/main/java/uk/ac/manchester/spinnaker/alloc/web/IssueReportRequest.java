@@ -31,6 +31,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.errorprone.annotations.Keep;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
@@ -66,19 +69,19 @@ public class IssueReportRequest {
 		public Integer z;
 
 		/** The physical cabinet number of the board. */
-		@PositiveOrZero(message = "cabinet must be at least 0")
+		@ValidCabinetNumber
 		public Integer cabinet;
 
 		/** The physical frame number of the board. */
-		@PositiveOrZero(message = "frame must be at least 0")
+		@ValidFrameNumber
 		public Integer frame;
 
 		/** The physical board number of the board. */
-		@PositiveOrZero(message = "board must be at least 0")
+		@ValidBoardNumber
 		public Integer board;
 
 		/** The IP address of the board. */
-		@IPAddress(message = "address must be an IP address")
+		@IPAddress(nullOK = true, message = "address must be an IP address")
 		public String address;
 
 		@JsonIgnore

@@ -20,9 +20,15 @@ import static java.lang.String.format;
 
 import java.util.Objects;
 
+import javax.validation.constraints.PositiveOrZero;
+
 import com.google.errorprone.annotations.Immutable;
 
 import uk.ac.manchester.spinnaker.alloc.db.Row;
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * Basic coordinates of a board.
@@ -71,12 +77,14 @@ public final class BoardCoords {
 	 * @param frame
 	 *            Physical frame number
 	 * @param board
-	 *            Physical board number
+	 *            Physical board number, or {@code null}
 	 * @param address
-	 *            IP address of ethernet chip
+	 *            IP address of ethernet chip, or {@code null}
 	 */
-	public BoardCoords(int x, int y, int z, int cabinet, int frame,
-			Integer board, String address) {
+	public BoardCoords(@PositiveOrZero int x, @PositiveOrZero int y,
+			@PositiveOrZero int z, @ValidCabinetNumber int cabinet,
+			@ValidFrameNumber int frame, @ValidBoardNumber Integer board,
+			@IPAddress(nullOK = true) String address) {
 		this.x = x;
 		this.y = y;
 		this.z = z;

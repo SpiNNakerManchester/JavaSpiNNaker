@@ -28,9 +28,11 @@ import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
 
 /**
@@ -42,18 +44,18 @@ public class BMPConnectionData {
 	public final Collection<@PositiveOrZero Integer> boards;
 
 	/** The ID of the cabinet that contains the frame that contains the BMPs. */
-	@PositiveOrZero
+	@ValidCabinetNumber
 	public final int cabinet;
 
 	/**
 	 * The ID of the frame that contains the BMPs. Frames are contained within a
 	 * cabinet.
 	 */
-	@PositiveOrZero
+	@ValidFrameNumber
 	public final int frame;
 
 	/** The IP address of the BMP. */
-	@NotNull
+	@IPAddress
 	public final InetAddress ipAddress;
 
 	/**

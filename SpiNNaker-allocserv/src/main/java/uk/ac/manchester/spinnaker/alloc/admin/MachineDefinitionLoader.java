@@ -269,11 +269,11 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 */
 	public static final class BMPCoords implements Comparable<BMPCoords> {
 		/** Cabinet number. */
-		@PositiveOrZero(message = "cabinet number must not be negative")
+		@ValidCabinetNumber
 		public final int c;
 
 		/** Frame number. */
-		@PositiveOrZero(message = "frame number must not be negative")
+		@ValidFrameNumber
 		public final int f;
 
 		/**
