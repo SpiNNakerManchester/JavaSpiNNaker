@@ -17,14 +17,12 @@
 package uk.ac.manchester.spinnaker.alloc.compat;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
-import static java.util.Collections.unmodifiableList;
-import static java.util.Collections.unmodifiableMap;
-import static java.util.Objects.isNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
@@ -34,11 +32,16 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public final class Command {
+	private static final int MAX_SIZE = 10;
+
+	@NotBlank
 	private String command;
 
-	private List<Object> args = new ArrayList<>();
+	@Size(max = MAX_SIZE, message = "crazy number of arguments")
+	private List<@SaneParameter Object> args = List.of();
 
-	private Map<String, Object> kwargs = new HashMap<>();
+	@Size(max = MAX_SIZE, message = "crazy number of keyword arguments")
+	private Map<@NotBlank String, @SaneParameter Object> kwargs = Map.of();
 
 	/** @return The name of the command. */
 	public String getCommand() {
@@ -51,19 +54,19 @@ public final class Command {
 
 	/** @return The positional arguments to the command. */
 	public List<Object> getArgs() {
-		return isNull(args) ? List.of() : unmodifiableList(args);
+		return args;
 	}
 
 	void setArgs(List<Object> args) {
-		this.args = args;
+		this.args = List.copyOf(args);
 	}
 
 	/** @return The keyword arguments to the command. */
 	public Map<String, Object> getKwargs() {
-		return isNull(kwargs) ? Map.of() : unmodifiableMap(kwargs);
+		return kwargs;
 	}
 
 	void setKwargs(Map<String, Object> kwargs) {
-		this.kwargs = kwargs;
+		this.kwargs = Map.copyOf(kwargs);
 	}
 }

@@ -337,6 +337,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<artifactId>error_prone_annotations</artifactId>
 				<version>${error-prone.version}</version>
 			</dependency>
+			<dependency>
+				<!-- Has to be this old version for Spring Boot to find it -->
+				<groupId>org.glassfish</groupId>
+				<artifactId>javax.el</artifactId>
+				<version>3.0.0</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 

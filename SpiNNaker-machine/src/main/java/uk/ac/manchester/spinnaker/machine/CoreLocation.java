@@ -39,12 +39,15 @@ public final class CoreLocation
 	private static final long serialVersionUID = 2930811082362121057L;
 
 	/** The X coordinate. */
+	@ValidX
 	private final int x;
 
 	/** The Y coordinate. */
+	@ValidY
 	private final int y;
 
 	/** The P coordinate. */
+	@ValidP
 	private final int p;
 
 	/**

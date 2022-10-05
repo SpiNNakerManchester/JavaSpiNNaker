@@ -62,11 +62,14 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry;
+import uk.ac.manchester.spinnaker.machine.ValidP;
 import uk.ac.manchester.spinnaker.utils.CollectionUtils;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
@@ -109,13 +112,14 @@ public final class Blacklist implements Serializable {
 	private transient ByteBuffer rawData;
 
 	/** The blacklisted chips. */
-	private Set<ChipLocation> chips = new HashSet<>();
+	private Set<@Valid ChipLocation> chips = new HashSet<>();
 
 	/** The blacklisted cores. */
-	private Map<ChipLocation, Set<Integer>> cores = new HashMap<>();
+	private Map<@Valid ChipLocation, Set<@ValidP Integer>> cores =
+			new HashMap<>();
 
 	/** The blacklisted links. */
-	private Map<ChipLocation, Set<Direction>> links = new HashMap<>();
+	private Map<@Valid ChipLocation, Set<Direction>> links = new HashMap<>();
 
 	/**
 	 * Create a blacklist from raw data.

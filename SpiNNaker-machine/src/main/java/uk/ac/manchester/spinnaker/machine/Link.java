@@ -21,6 +21,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Objects;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.Immutable;
@@ -38,12 +40,14 @@ public final class Link {
 	private static final Logger log = getLogger(Link.class);
 
 	/** The coordinates of the source chip of the link. */
+	@Valid
 	public final ChipLocation source;
 
 	/** The ID/Direction of the link in the source chip. */
 	public final Direction sourceLinkDirection;
 
 	/** The coordinate of the destination chip of the link. */
+	@Valid
 	public final ChipLocation destination;
 
 	// Note: multicast_default_from and multicast_default_to not implemented

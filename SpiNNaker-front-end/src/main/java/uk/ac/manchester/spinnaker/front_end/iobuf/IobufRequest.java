@@ -26,6 +26,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -49,7 +53,7 @@ import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 @JsonFormat(shape = OBJECT)
 @JsonAutoDetect(fieldVisibility = NONE)
 public class IobufRequest {
-	private Map<File, CoreSubsets> requestMap;
+	private Map<@NotNull File, @Valid CoreSubsets> requestMap;
 
 	/**
 	 * @param map
@@ -69,15 +73,20 @@ public class IobufRequest {
 			map.get(name).forEach(node -> parseCore(cores, node));
 		}
 
+		if (!isSaneCores()) {
+			throw new IllegalArgumentException("overlapping uses of core");
+		}
+	}
+
+	@AssertTrue(message = "core must not have two binaries mapped to it")
+	private boolean isSaneCores() {
 		int expectedSize = 0;
 		var validator = new CoreSubsets();
 		for (var s : requestMap.values()) {
 			validator.addCores(s);
 			expectedSize += s.size();
 		}
-		if (validator.size() != expectedSize) {
-			throw new IllegalArgumentException("overlapping uses of core");
-		}
+		return validator.size() == expectedSize;
 	}
 
 	private static void parseCore(CoreSubsets cores, List<Integer> a) {

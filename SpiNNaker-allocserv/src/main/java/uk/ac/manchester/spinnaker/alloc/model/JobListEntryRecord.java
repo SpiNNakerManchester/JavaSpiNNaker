@@ -21,6 +21,11 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+
 /**
  * Entry in a table of machines. The table is like this:
  *
@@ -71,14 +76,18 @@ public class JobListEntryRecord {
 
 	private URI detailsUrl;
 
+	@NotNull
 	private JobState state;
 
 	private boolean powered;
 
+	@Positive
 	private Integer numBoards;
 
+	@PositiveOrZero
 	private int machineId;
 
+	@NotBlank
 	private String machineName;
 
 	private URI machineUrl;
