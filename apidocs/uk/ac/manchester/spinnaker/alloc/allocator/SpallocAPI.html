@@ -249,9 +249,9 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Job</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJob(java.lang.String,java.lang.String,uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDescriptor,java.lang.String,java.util.List,java.time.Duration,byte%5B%5D)">createJob</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJob(java.lang.String,java.lang.String,uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDescriptor,java.lang.String,java.util.List,java.time.Duration,byte%5B%5D)">createJob</a></span>&#8203;(@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;group,
-<a href="SpallocAPI.CreateDescriptor.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.CreateDescriptor</a>&nbsp;descriptor,
+@Valid <a href="SpallocAPI.CreateDescriptor.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.CreateDescriptor</a>&nbsp;descriptor,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;&nbsp;tags,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;keepaliveInterval,
@@ -287,7 +287,7 @@ int&nbsp;start)</code></th>
 </tr>
 <tr class="altColor" id="i4">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.Machine.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Machine</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMachine(java.lang.String,boolean)">getMachine</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMachine(java.lang.String,boolean)">getMachine</a></span>&#8203;(@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
 boolean&nbsp;allowOutOfService)</code></th>
 <td class="colLast">
 <div class="block">Get a specific machine.</div>
@@ -295,7 +295,7 @@ boolean&nbsp;allowOutOfService)</code></th>
 </tr>
 <tr class="rowColor" id="i5">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../model/MachineDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model">MachineDescription</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMachineInfo(java.lang.String,boolean,uk.ac.manchester.spinnaker.alloc.security.Permit)">getMachineInfo</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMachineInfo(java.lang.String,boolean,uk.ac.manchester.spinnaker.alloc.security.Permit)">getMachineInfo</a></span>&#8203;(@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
 boolean&nbsp;allowOutOfService,
 <a href="../security/Permit.html" title="class in uk.ac.manchester.spinnaker.alloc.security">Permit</a>&nbsp;permit)</code></th>
 <td class="colLast">
@@ -332,7 +332,7 @@ boolean&nbsp;allowOutOfService,
 </tr>
 <tr class="altColor" id="i10">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#reportProblem(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.String,uk.ac.manchester.spinnaker.alloc.security.Permit)">reportProblem</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#reportProblem(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.String,uk.ac.manchester.spinnaker.alloc.security.Permit)">reportProblem</a></span>&#8203;(<a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address,
 <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;coreLocation,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;description,
 <a href="../security/Permit.html" title="class in uk.ac.manchester.spinnaker.alloc.security">Permit</a>&nbsp;permit)</code></th>
@@ -387,7 +387,8 @@ boolean&nbsp;allowOutOfService,
 <li class="blockList">
 <section class="detail">
 <h3><a id="getMachine(java.lang.String,boolean)">getMachine</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.Machine.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Machine</a>&gt;</span>&nbsp;<span class="memberName">getMachine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.Machine.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Machine</a>&gt;</span>&nbsp;<span class="memberName">getMachine</span>&#8203;(<span class="arguments">@NotNull
+@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
 boolean&nbsp;allowOutOfService)</span></div>
 <div class="block">Get a specific machine.</div>
 <dl>
@@ -402,7 +403,8 @@ boolean&nbsp;allowOutOfService)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getMachineInfo(java.lang.String,boolean,uk.ac.manchester.spinnaker.alloc.security.Permit)">getMachineInfo</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../model/MachineDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model">MachineDescription</a>&gt;</span>&nbsp;<span class="memberName">getMachineInfo</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../model/MachineDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model">MachineDescription</a>&gt;</span>&nbsp;<span class="memberName">getMachineInfo</span>&#8203;(<span class="arguments">@NotNull
+@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
 boolean&nbsp;allowOutOfService,
 <a href="../security/Permit.html" title="class in uk.ac.manchester.spinnaker.alloc.security">Permit</a>&nbsp;permit)</span></div>
 <div class="block">Get info about a specific machine.</div>
@@ -485,9 +487,11 @@ int&nbsp;id)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="createJob(java.lang.String,java.lang.String,uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDescriptor,java.lang.String,java.util.List,java.time.Duration,byte[])">createJob</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Job</a>&gt;</span>&nbsp;<span class="memberName">createJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner,
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Job</a>&gt;</span>&nbsp;<span class="memberName">createJob</span>&#8203;(<span class="arguments">@NotNull
+@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;group,
-<a href="SpallocAPI.CreateDescriptor.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.CreateDescriptor</a>&nbsp;descriptor,
+@Valid
+@Valid <a href="SpallocAPI.CreateDescriptor.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.CreateDescriptor</a>&nbsp;descriptor,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;&nbsp;tags,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;keepaliveInterval,
@@ -528,7 +532,8 @@ byte[]&nbsp;originalRequest)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="reportProblem(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.String,uk.ac.manchester.spinnaker.alloc.security.Permit)">reportProblem</a></h3>
-<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">reportProblem</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address,
+<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">reportProblem</span>&#8203;(<span class="arguments"><a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a>
+<a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address,
 <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;coreLocation,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;description,
 <a href="../security/Permit.html" title="class in uk.ac.manchester.spinnaker.alloc.security">Permit</a>&nbsp;permit)</span></div>

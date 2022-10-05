@@ -146,10 +146,10 @@ extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,int,int)">ReverseIPTagSet</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;destination,
-int&nbsp;port,
-int&nbsp;tag,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.HasCoreLocation,@uk.ac.manchester.spinnaker.utils.validation.UDPPortint,@uk.ac.manchester.spinnaker.machine.tags.TagIDint,int)">ReverseIPTagSet</a></span>&#8203;(@Valid @NotNull <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+@Valid @NotNull <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;destination,
+@uk.ac.manchester.spinnaker.utils.validation.UDPPort int&nbsp;port,
+@uk.ac.manchester.spinnaker.machine.tags.TagID int&nbsp;tag,
 int&nbsp;sdpPort)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -217,11 +217,15 @@ int&nbsp;sdpPort)</code></th>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,int,int)">ReverseIPTagSet</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">ReverseIPTagSet</span>&#8203;(<span class="arguments"><a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;destination,
-int&nbsp;port,
-int&nbsp;tag,
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.HasCoreLocation,@uk.ac.manchester.spinnaker.utils.validation.UDPPortint,@uk.ac.manchester.spinnaker.machine.tags.TagIDint,int)">ReverseIPTagSet</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">ReverseIPTagSet</span>&#8203;(<span class="arguments">@Valid @NotNull
+@Valid @NotNull <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+@Valid @NotNull
+@Valid @NotNull <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;destination,
+<a href="../../utils/validation/UDPPort.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@UDPPort</a>
+@uk.ac.manchester.spinnaker.utils.validation.UDPPort int&nbsp;port,
+<a href="../../machine/tags/TagID.html" title="annotation in uk.ac.manchester.spinnaker.machine.tags">@TagID</a>
+@uk.ac.manchester.spinnaker.machine.tags.TagID int&nbsp;tag,
 int&nbsp;sdpPort)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>

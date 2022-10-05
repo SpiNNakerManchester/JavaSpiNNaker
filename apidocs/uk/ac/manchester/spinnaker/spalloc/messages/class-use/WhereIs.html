@@ -109,38 +109,38 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>protected abstract <a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">V1CompatTask.</span><code><span class="memberNameLink"><a href="../../../alloc/compat/V1CompatTask.html#whereIsJobChip(int,int,int)">whereIsJobChip</a></span>&#8203;(int&nbsp;jobId,
-int&nbsp;x,
-int&nbsp;y)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">V1CompatTask.</span><code><span class="memberNameLink"><a href="../../../alloc/compat/V1CompatTask.html#whereIsJobChip(int,@uk.ac.manchester.spinnaker.machine.ValidXint,@uk.ac.manchester.spinnaker.machine.ValidYint)">whereIsJobChip</a></span>&#8203;(int&nbsp;jobId,
+@uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;y)</code></th>
 <td class="colLast">
 <div class="block">Describe where a chip is within a job.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>protected abstract <a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">V1CompatTask.</span><code><span class="memberNameLink"><a href="../../../alloc/compat/V1CompatTask.html#whereIsMachineChip(java.lang.String,int,int)">whereIsMachineChip</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-int&nbsp;x,
-int&nbsp;y)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">V1CompatTask.</span><code><span class="memberNameLink"><a href="../../../alloc/compat/V1CompatTask.html#whereIsMachineChip(java.lang.String,@uk.ac.manchester.spinnaker.machine.ValidXint,@uk.ac.manchester.spinnaker.machine.ValidYint)">whereIsMachineChip</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;y)</code></th>
 <td class="colLast">
 <div class="block">Describe where a chip is within a machine.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>protected abstract <a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">V1CompatTask.</span><code><span class="memberNameLink"><a href="../../../alloc/compat/V1CompatTask.html#whereIsMachineLogicalBoard(java.lang.String,int,int,int)">whereIsMachineLogicalBoard</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-int&nbsp;x,
-int&nbsp;y,
-int&nbsp;z)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">V1CompatTask.</span><code><span class="memberNameLink"><a href="../../../alloc/compat/V1CompatTask.html#whereIsMachineLogicalBoard(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">whereIsMachineLogicalBoard</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z)</code></th>
 <td class="colLast">
 <div class="block">Describe where a board is within a machine.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>protected abstract <a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">V1CompatTask.</span><code><span class="memberNameLink"><a href="../../../alloc/compat/V1CompatTask.html#whereIsMachinePhysicalBoard(java.lang.String,int,int,int)">whereIsMachinePhysicalBoard</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-int&nbsp;cabinet,
-int&nbsp;frame,
-int&nbsp;board)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">V1CompatTask.</span><code><span class="memberNameLink"><a href="../../../alloc/compat/V1CompatTask.html#whereIsMachinePhysicalBoard(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">whereIsMachinePhysicalBoard</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;cabinet,
+@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;frame,
+@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Describe where a board is within a machine.</div>
 </td>

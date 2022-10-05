@@ -120,10 +120,17 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>@javax.validation.constraints.PositiveOrZero int</code></td>
+<td class="colFirst"><code>@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#board">board</a></span></code></th>
 <td class="colLast">
 <div class="block">The board number.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#MAX_BOARD_NUMBER">MAX_BOARD_NUMBER</a></span></code></th>
+<td class="colLast">
+<div class="block">The maximum board number.</div>
 </td>
 </tr>
 </tbody>
@@ -213,9 +220,20 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
+<h3><a id="MAX_BOARD_NUMBER">MAX_BOARD_NUMBER</a></h3>
+<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">MAX_BOARD_NUMBER</span></div>
+<div class="block">The maximum board number. There can be only up to 24 boards per frame.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.machine.board.BMPBoard.MAX_BOARD_NUMBER">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
 <h3><a id="board">board</a></h3>
-<div class="memberSignature"><span class="annotations">@PositiveOrZero
-</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.PositiveOrZero int</span>&nbsp;<span class="memberName">board</span></div>
+<div class="memberSignature"><span class="annotations"><a href="ValidBoardNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidBoardNumber</a>
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int</span>&nbsp;<span class="memberName">board</span></div>
 <div class="block">The board number.</div>
 </section>
 </li>

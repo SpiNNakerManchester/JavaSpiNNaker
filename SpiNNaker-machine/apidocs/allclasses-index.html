@@ -19,8 +19,8 @@
 <script type="text/javascript" src="script-dir/jquery-ui.js"></script>
 </head>
 <body class="all-classes-index">
-<script type="text/javascript">var data = {"i0":2,"i1":2,"i2":2,"i3":2,"i4":2,"i5":2,"i6":2,"i7":2,"i8":2,"i9":4,"i10":4,"i11":4,"i12":2,"i13":1,"i14":1,"i15":2,"i16":2,"i17":2,"i18":2,"i19":2,"i20":2,"i21":2,"i22":2,"i23":4,"i24":2,"i25":2,"i26":2,"i27":2,"i28":2,"i29":2,"i30":2,"i31":2,"i32":2,"i33":2,"i34":2,"i35":2,"i36":2,"i37":2};
-var tabs = {65535:["t0","All Classes"],1:["t1","Interface Summary"],2:["t2","Class Summary"],4:["t3","Enum Summary"]};
+<script type="text/javascript">var data = {"i0":2,"i1":2,"i2":2,"i3":2,"i4":2,"i5":2,"i6":2,"i7":2,"i8":2,"i9":4,"i10":4,"i11":4,"i12":2,"i13":1,"i14":1,"i15":2,"i16":2,"i17":2,"i18":2,"i19":2,"i20":2,"i21":2,"i22":2,"i23":4,"i24":2,"i25":2,"i26":2,"i27":2,"i28":2,"i29":2,"i30":2,"i31":2,"i32":2,"i33":2,"i34":2,"i35":2,"i36":32,"i37":2,"i38":32,"i39":32,"i40":32,"i41":32,"i42":32,"i43":32,"i44":32,"i45":32,"i46":32,"i47":2};
+var tabs = {65535:["t0","All Classes"],1:["t1","Interface Summary"],2:["t2","Class Summary"],4:["t3","Enum Summary"],32:["t6","Annotation Types Summary"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
@@ -71,7 +71,7 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="allClassesContainer">
 <div class="typeSummary">
-<div role="tablist" aria-orientation="horizontal"><button role="tab" aria-selected="true" aria-controls="typeSummary_tabpanel" tabindex="0" onkeydown="switchTab(event)" id="t0" class="activeTableTab">All Classes</button><button role="tab" aria-selected="false" aria-controls="typeSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t1" class="tableTab" onclick="show(1);">Interface Summary</button><button role="tab" aria-selected="false" aria-controls="typeSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t2" class="tableTab" onclick="show(2);">Class Summary</button><button role="tab" aria-selected="false" aria-controls="typeSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t3" class="tableTab" onclick="show(4);">Enum Summary</button></div>
+<div role="tablist" aria-orientation="horizontal"><button role="tab" aria-selected="true" aria-controls="typeSummary_tabpanel" tabindex="0" onkeydown="switchTab(event)" id="t0" class="activeTableTab">All Classes</button><button role="tab" aria-selected="false" aria-controls="typeSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t1" class="tableTab" onclick="show(1);">Interface Summary</button><button role="tab" aria-selected="false" aria-controls="typeSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t2" class="tableTab" onclick="show(2);">Class Summary</button><button role="tab" aria-selected="false" aria-controls="typeSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t3" class="tableTab" onclick="show(4);">Enum Summary</button><button role="tab" aria-selected="false" aria-controls="typeSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t6" class="tableTab" onclick="show(32);">Annotation Types Summary</button></div>
 <div id="typeSummary_tabpanel" role="tabpanel">
 <table aria-labelledby="t0">
 <thead>
@@ -301,12 +301,72 @@ loadScripts(document, 'script');</script>
 </th>
 </tr>
 <tr class="altColor" id="i36">
+<td class="colFirst"><a href="uk/ac/manchester/spinnaker/machine/tags/TagID.html" title="annotation in uk.ac.manchester.spinnaker.machine.tags">TagID</a></td>
+<th class="colLast" scope="row">
+<div class="block">Validates that a number looks like a tag identifier.</div>
+</th>
+</tr>
+<tr class="rowColor" id="i37">
 <td class="colFirst"><a href="uk/ac/manchester/spinnaker/machine/tags/TrafficIdentifier.html" title="class in uk.ac.manchester.spinnaker.machine.tags">TrafficIdentifier</a></td>
 <th class="colLast" scope="row">
 <div class="block">The types of traffic an IpTag can handle.</div>
 </th>
 </tr>
-<tr class="rowColor" id="i37">
+<tr class="altColor" id="i38">
+<td class="colFirst"><a href="uk/ac/manchester/spinnaker/machine/board/ValidBoardNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidBoardNumber</a></td>
+<th class="colLast" scope="row">
+<div class="block">Validates that a board number is in a sane range.</div>
+</th>
+</tr>
+<tr class="rowColor" id="i39">
+<td class="colFirst"><a href="uk/ac/manchester/spinnaker/machine/board/ValidCabinetNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidCabinetNumber</a></td>
+<th class="colLast" scope="row">
+<div class="block">Validates that a cabinet number is in a sane range.</div>
+</th>
+</tr>
+<tr class="altColor" id="i40">
+<td class="colFirst"><a href="uk/ac/manchester/spinnaker/machine/board/ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidFrameNumber</a></td>
+<th class="colLast" scope="row">
+<div class="block">Validates that a frame number is in a sane range.</div>
+</th>
+</tr>
+<tr class="rowColor" id="i41">
+<td class="colFirst"><a href="uk/ac/manchester/spinnaker/machine/ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine">ValidP</a></td>
+<th class="colLast" scope="row">
+<div class="block">Validates that a chip processor number is in a sane range.</div>
+</th>
+</tr>
+<tr class="altColor" id="i42">
+<td class="colFirst"><a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadX.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidTriadX</a></td>
+<th class="colLast" scope="row">
+<div class="block">Validates that a triad X coordinate is in a sane range.</div>
+</th>
+</tr>
+<tr class="rowColor" id="i43">
+<td class="colFirst"><a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadY.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidTriadY</a></td>
+<th class="colLast" scope="row">
+<div class="block">Validates that a triad Y coordinate is in a sane range.</div>
+</th>
+</tr>
+<tr class="altColor" id="i44">
+<td class="colFirst"><a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadZ.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidTriadZ</a></td>
+<th class="colLast" scope="row">
+<div class="block">Validates that a triad Z coordinate is in a sane range.</div>
+</th>
+</tr>
+<tr class="rowColor" id="i45">
+<td class="colFirst"><a href="uk/ac/manchester/spinnaker/machine/ValidX.html" title="annotation in uk.ac.manchester.spinnaker.machine">ValidX</a></td>
+<th class="colLast" scope="row">
+<div class="block">Validates that a chip X coordinate is in a sane range.</div>
+</th>
+</tr>
+<tr class="altColor" id="i46">
+<td class="colFirst"><a href="uk/ac/manchester/spinnaker/machine/ValidY.html" title="annotation in uk.ac.manchester.spinnaker.machine">ValidY</a></td>
+<th class="colLast" scope="row">
+<div class="block">Validates that a chip Y coordinate is in a sane range.</div>
+</th>
+</tr>
+<tr class="rowColor" id="i47">
 <td class="colFirst"><a href="uk/ac/manchester/spinnaker/machine/VirtualMachine.html" title="class in uk.ac.manchester.spinnaker.machine">VirtualMachine</a></td>
 <th class="colLast" scope="row">
 <div class="block">A representation of a SpiNNaker Machine with a number of <a href="uk/ac/manchester/spinnaker/machine/Chip.html" title="class in uk.ac.manchester.spinnaker.machine"><code>Chip</code></a>s.</div>

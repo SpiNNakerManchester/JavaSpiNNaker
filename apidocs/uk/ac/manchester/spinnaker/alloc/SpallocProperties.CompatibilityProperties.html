@@ -170,7 +170,7 @@ int&nbsp;port,
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i3">
-<td class="colFirst"><code>@javax.validation.constraints.Min(1024L),@javax.validation.constraints.Max(65535L) int</code></td>
+<td class="colFirst"><code>@uk.ac.manchester.spinnaker.utils.validation.TCPPort(ephemeral=false) int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getPort()">getPort</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -265,7 +265,7 @@ int&nbsp;port,
             means no limit.</dd>
 <dd><code>host</code> - What hostname to run the spalloc v1 compatibility service
             on.</dd>
-<dd><code>port</code> - What UDP port to run the spalloc v1 compatibility service
+<dd><code>port</code> - What TCP port to run the spalloc v1 compatibility service
             on.</dd>
 <dd><code>serviceUser</code> - What user to run jobs submitted through the spalloc v1
             compatibility service with. We recommend that this user
@@ -335,12 +335,11 @@ int&nbsp;port,
 <li class="blockList">
 <section class="detail">
 <h3><a id="getPort()">getPort</a></h3>
-<div class="memberSignature"><span class="annotations">@Min(1024L)
-@Max(65535L)
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@javax.validation.constraints.Min(1024L),@javax.validation.constraints.Max(65535L) int</span>&nbsp;<span class="memberName">getPort</span>()</div>
+<div class="memberSignature"><span class="annotations"><a href="../utils/validation/TCPPort.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@TCPPort</a>(<a href="../utils/validation/TCPPort.html#ephemeral()">ephemeral</a>=false)
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@uk.ac.manchester.spinnaker.utils.validation.TCPPort(ephemeral=false) int</span>&nbsp;<span class="memberName">getPort</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>What port to run the spalloc v1 compatibility service on.</dd>
+<dd>What TCP port to run the spalloc v1 compatibility service on.</dd>
 </dl>
 </section>
 </li>

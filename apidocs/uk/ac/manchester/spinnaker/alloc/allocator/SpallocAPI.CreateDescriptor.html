@@ -131,7 +131,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>int</code></td>
+<td class="colFirst"><code>@javax.validation.constraints.PositiveOrZero(message="maxDeadBoards must not be negative") int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#maxDead">maxDead</a></span></code></th>
 <td class="colLast">
 <div class="block">The maximum number of dead boards tolerated in the allocation.</div>
@@ -199,7 +199,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="maxDead">maxDead</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">maxDead</span></div>
+<div class="memberSignature"><span class="annotations">@PositiveOrZero(message="maxDeadBoards must not be negative")
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.PositiveOrZero(message="maxDeadBoards must not be negative") int</span>&nbsp;<span class="memberName">maxDead</span></div>
 <div class="block">The maximum number of dead boards tolerated in the allocation.
  Ignored when asking for a single board.</div>
 </section>

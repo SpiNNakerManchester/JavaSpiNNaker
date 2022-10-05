@@ -436,8 +436,8 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#executeApplication(uk.ac.manchester.spinnaker.messages.model.ExecutableTargets,uk.ac.manchester.spinnaker.messages.model.AppID)">executeApplication</a></span>&#8203;(<a href="../../messages/model/ExecutableTargets.html" title="class in uk.ac.manchester.spinnaker.messages.model">ExecutableTargets</a>&nbsp;executableTargets,
-<a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#executeApplication(uk.ac.manchester.spinnaker.messages.model.ExecutableTargets,uk.ac.manchester.spinnaker.messages.model.AppID)">executeApplication</a></span>&#8203;(@Valid <a href="../../messages/model/ExecutableTargets.html" title="class in uk.ac.manchester.spinnaker.messages.model">ExecutableTargets</a>&nbsp;executableTargets,
+@NotNull <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></th>
 <td class="colLast">
 <div class="block">Execute a set of binaries that make up a complete application on
  specified cores, wait for them to be ready and then start all of the
@@ -457,9 +457,9 @@ int&nbsp;countBetweenFullChecks)</code></th>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#waitForCoresToBeInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.messages.model.AppID,java.util.Set)">waitForCoresToBeInState</a></span>&#8203;(<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;coreSubsets,
-<a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="../../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;cpuStates)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#waitForCoresToBeInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.messages.model.AppID,java.util.Set)">waitForCoresToBeInState</a></span>&#8203;(@Valid <a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;coreSubsets,
+@NotNull <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;@NotNull <a href="../../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;cpuStates)</code></th>
 <td class="colLast">
 <div class="block">Waits for the specified cores running the given application to be in some
  target state or states.</div>
@@ -467,13 +467,13 @@ int&nbsp;countBetweenFullChecks)</code></th>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#waitForCoresToBeInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.messages.model.AppID,java.util.Set,java.lang.Integer,int,java.util.Set,int)">waitForCoresToBeInState</a></span>&#8203;(<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;allCoreSubsets,
-<a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="../../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;cpuStates,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
-int&nbsp;timeBetweenPolls,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="../../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;errorStates,
-int&nbsp;countsBetweenFullCheck)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#waitForCoresToBeInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.messages.model.AppID,java.util.Set,java.lang.Integer,@javax.validation.constraints.Positiveint,java.util.Set,@javax.validation.constraints.Positiveint)">waitForCoresToBeInState</a></span>&#8203;(@Valid <a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;allCoreSubsets,
+@NotNull <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;@NotNull <a href="../../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;cpuStates,
+@PositiveOrZero <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
+@javax.validation.constraints.Positive int&nbsp;timeBetweenPolls,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;@NotNull <a href="../../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;errorStates,
+@javax.validation.constraints.Positive int&nbsp;countsBetweenFullCheck)</code></th>
 <td class="colLast">
 <div class="block">Waits for the specified cores running the given application to be in some
  target state or states.</div>

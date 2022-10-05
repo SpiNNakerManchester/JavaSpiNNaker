@@ -120,21 +120,21 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></td>
+<td class="colFirst"><code>@Valid <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Machine.</span><code><span class="memberNameLink"><a href="../Machine.html#boot">boot</a></span></code></th>
 <td class="colLast">
 <div class="block">The coordinates of the chip used to boot the machine.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></td>
+<td class="colFirst"><code>@Valid <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Link.</span><code><span class="memberNameLink"><a href="../Link.html#destination">destination</a></span></code></th>
 <td class="colLast">
 <div class="block">The coordinate of the destination chip of the link.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></td>
+<td class="colFirst"><code>@Valid <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Chip.</span><code><span class="memberNameLink"><a href="../Chip.html#nearestEthernet">nearestEthernet</a></span></code></th>
 <td class="colLast">
 <div class="block">The nearest Ethernet coordinates, or <code>null</code> if none known.</div>
@@ -149,7 +149,7 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></td>
+<td class="colFirst"><code>@Valid <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Link.</span><code><span class="memberNameLink"><a href="../Link.html#source">source</a></span></code></th>
 <td class="colLast">
 <div class="block">The coordinates of the source chip of the link.</div>
@@ -603,21 +603,21 @@ int&nbsp;sdram,
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></td>
+<td class="colFirst"><code>@Valid <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">LinkBean.</span><code><span class="memberNameLink"><a href="../bean/LinkBean.html#destination">destination</a></span></code></th>
 <td class="colLast">
 <div class="block">Where the link is going.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></td>
+<td class="colFirst"><code>@Valid <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">ChipDetails.</span><code><span class="memberNameLink"><a href="../bean/ChipDetails.html#ethernet">ethernet</a></span></code></th>
 <td class="colLast">
 <div class="block">Location of the nearest Ethernet-enabled chip.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></td>
+<td class="colFirst"><code>@Valid <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">ChipBean.</span><code><span class="memberNameLink"><a href="../bean/ChipBean.html#location">location</a></span></code></th>
 <td class="colLast">
 <div class="block">The location of this Chip.</div>
@@ -718,7 +718,7 @@ int&nbsp;width,
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></td>
+<td class="colFirst"><code>@Valid <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">AbstractDataLink.</span><code><span class="memberNameLink"><a href="../datalinks/AbstractDataLink.html#location">location</a></span></code></th>
 <td class="colLast">
 <div class="block">Coordinates of the location/Chip being linked to.</div>
@@ -809,7 +809,7 @@ boolean&nbsp;stripSDP)</code></th>
 <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;destination,
 int&nbsp;tagID,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;targetAddress,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;port)</code></th>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;udpPort)</code></th>
 <td class="colLast">
 <div class="block">Create an IP tag.</div>
 </td>
@@ -819,7 +819,7 @@ int&nbsp;tagID,
 <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;destination,
 int&nbsp;tagID,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;targetAddress,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;port,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;udpPort,
 boolean&nbsp;stripSDP)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -828,7 +828,7 @@ boolean&nbsp;stripSDP)</code></th>
 <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;destination,
 int&nbsp;tagID,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;targetAddress,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;port,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;udpPort,
 boolean&nbsp;stripSDP,
 <a href="../tags/TrafficIdentifier.html" title="class in uk.ac.manchester.spinnaker.machine.tags">TrafficIdentifier</a>&nbsp;trafficIdentifier)</code></th>
 <td class="colLast">&nbsp;</td>

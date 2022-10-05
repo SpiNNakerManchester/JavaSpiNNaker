@@ -156,7 +156,7 @@ int&nbsp;tagID,
 int&nbsp;x,
 int&nbsp;y,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;targetAddress,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;port,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;udpPort,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a>&nbsp;stripSDP,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;trafficIdentifier)</code></th>
 <td class="colLast">
@@ -185,7 +185,7 @@ boolean&nbsp;stripSDP)</code></th>
 <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;destination,
 int&nbsp;tagID,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;targetAddress,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;port)</code></th>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;udpPort)</code></th>
 <td class="colLast">
 <div class="block">Create an IP tag.</div>
 </td>
@@ -195,7 +195,7 @@ int&nbsp;tagID,
 <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;destination,
 int&nbsp;tagID,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;targetAddress,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;port,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;udpPort,
 boolean&nbsp;stripSDP)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -204,7 +204,7 @@ boolean&nbsp;stripSDP)</code></th>
 <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;destination,
 int&nbsp;tagID,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;targetAddress,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;port,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;udpPort,
 boolean&nbsp;stripSDP,
 <a href="TrafficIdentifier.html" title="class in uk.ac.manchester.spinnaker.machine.tags">TrafficIdentifier</a>&nbsp;trafficIdentifier)</code></th>
 <td class="colLast">&nbsp;</td>
@@ -333,7 +333,7 @@ int&nbsp;tagID,
 <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;destination,
 int&nbsp;tagID,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;targetAddress,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;port)</span></div>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;udpPort)</span></div>
 <div class="block">Create an IP tag.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -341,7 +341,7 @@ int&nbsp;tagID,
 <dd><code>destination</code> - The coordinates where users of this tag should send packets to</dd>
 <dd><code>tagID</code> - The ID of the tag (0..7)</dd>
 <dd><code>targetAddress</code> - The IP address to which SDP packets with the tag will be sent</dd>
-<dd><code>port</code> - The port to which the SDP packets with the tag will be sent,
+<dd><code>udpPort</code> - The port to which the SDP packets with the tag will be sent,
             or <code>null</code> if not yet assigned.</dd>
 </dl>
 </section>
@@ -371,7 +371,7 @@ boolean&nbsp;stripSDP)</span></div>
 <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;destination,
 int&nbsp;tagID,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;targetAddress,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;port,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;udpPort,
 boolean&nbsp;stripSDP)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -379,7 +379,7 @@ boolean&nbsp;stripSDP)</span></div>
 <dd><code>destination</code> - The coordinates where users of this tag should send packets to</dd>
 <dd><code>tagID</code> - The ID of the tag (0..7)</dd>
 <dd><code>targetAddress</code> - The IP address to which SDP packets with the tag will be sent</dd>
-<dd><code>port</code> - The port to which the SDP packets with the tag will be sent,
+<dd><code>udpPort</code> - The port to which the SDP packets with the tag will be sent,
             or <code>null</code> if not yet assigned.</dd>
 <dd><code>stripSDP</code> - Indicates whether the SDP header should be removed</dd>
 </dl>
@@ -392,7 +392,7 @@ boolean&nbsp;stripSDP)</span></div>
 <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;destination,
 int&nbsp;tagID,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;targetAddress,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;port,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;udpPort,
 boolean&nbsp;stripSDP,
 <a href="TrafficIdentifier.html" title="class in uk.ac.manchester.spinnaker.machine.tags">TrafficIdentifier</a>&nbsp;trafficIdentifier)</span></div>
 <dl>
@@ -401,7 +401,7 @@ boolean&nbsp;stripSDP,
 <dd><code>destination</code> - The coordinates where users of this tag should send packets to</dd>
 <dd><code>tagID</code> - The ID of the tag (0..7)</dd>
 <dd><code>targetAddress</code> - The IP address to which SDP packets with the tag will be sent</dd>
-<dd><code>port</code> - The port to which the SDP packets with the tag will be sent,
+<dd><code>udpPort</code> - The port to which the SDP packets with the tag will be sent,
             or <code>null</code> if not yet assigned.</dd>
 <dd><code>stripSDP</code> - Indicates whether the SDP header should be removed</dd>
 <dd><code>trafficIdentifier</code> - The identifier for traffic transmitted using this tag</dd>
@@ -416,7 +416,7 @@ int&nbsp;tagID,
 int&nbsp;x,
 int&nbsp;y,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;targetAddress,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;port,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;udpPort,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a>&nbsp;stripSDP,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;trafficIdentifier)</span>
       throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a></span></div>
@@ -428,7 +428,7 @@ int&nbsp;y,
 <dd><code>x</code> - The X coordinate of the destination.</dd>
 <dd><code>y</code> - The Y coordinate of the destination.</dd>
 <dd><code>targetAddress</code> - The IP address to which SDP packets with the tag will be sent</dd>
-<dd><code>port</code> - The port to which the SDP packets with the tag will be sent,
+<dd><code>udpPort</code> - The port to which the SDP packets with the tag will be sent,
             or <code>null</code> if not yet assigned.</dd>
 <dd><code>stripSDP</code> - Indicates whether the SDP header should be removed</dd>
 <dd><code>trafficIdentifier</code> - The identifier for traffic transmitted using this tag</dd>

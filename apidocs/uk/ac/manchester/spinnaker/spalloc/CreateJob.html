@@ -125,22 +125,22 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(int)">CreateJob</a></span>&#8203;(int&nbsp;numBoards)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(@javax.validation.constraints.Positiveint)">CreateJob</a></span>&#8203;(@javax.validation.constraints.Positive int&nbsp;numBoards)</code></th>
 <td class="colLast">
 <div class="block">Build a request for a number of boards.</div>
 </td>
 </tr>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(int,int)">CreateJob</a></span>&#8203;(int&nbsp;width,
-int&nbsp;height)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(@javax.validation.constraints.Positiveint,@javax.validation.constraints.Positiveint)">CreateJob</a></span>&#8203;(@javax.validation.constraints.Positive int&nbsp;width,
+@javax.validation.constraints.Positive int&nbsp;height)</code></th>
 <td class="colLast">
 <div class="block">Build a request for a rectangle of boards.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(int,int,int)">CreateJob</a></span>&#8203;(int&nbsp;x,
-int&nbsp;y,
-int&nbsp;z)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">CreateJob</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z)</code></th>
 <td class="colLast">
 <div class="block">Build a request for a specific board.</div>
 </td>
@@ -182,12 +182,12 @@ int&nbsp;z)</code></th>
 </tr>
 <tr class="altColor" id="i2">
 <td class="colFirst"><code><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#keepAlive(double)">keepAlive</a></span>&#8203;(double&nbsp;keepalive)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#keepAlive(@javax.validation.constraints.Positivedouble)">keepAlive</a></span>&#8203;(@javax.validation.constraints.Positive double&nbsp;keepalive)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#keepAlive(java.lang.Double)">keepAlive</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Double.html?is-external=true" title="class or interface in java.lang" class="externalLink">Double</a>&nbsp;keepalive)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#keepAlive(java.lang.Double)">keepAlive</a></span>&#8203;(@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Double.html?is-external=true" title="class or interface in java.lang" class="externalLink">Double</a>&nbsp;keepalive)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i4">
@@ -276,8 +276,9 @@ int&nbsp;z)</code></th>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(int)">CreateJob</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">CreateJob</span>&#8203;(<span class="arguments">int&nbsp;numBoards)</span></div>
+<h3><a id="&lt;init&gt;(@javax.validation.constraints.Positiveint)">CreateJob</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">CreateJob</span>&#8203;(<span class="arguments">@Positive
+@javax.validation.constraints.Positive int&nbsp;numBoards)</span></div>
 <div class="block">Build a request for a number of boards.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -287,9 +288,11 @@ int&nbsp;z)</code></th>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(int,int)">CreateJob</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">CreateJob</span>&#8203;(<span class="arguments">int&nbsp;width,
-int&nbsp;height)</span></div>
+<h3><a id="&lt;init&gt;(@javax.validation.constraints.Positiveint,@javax.validation.constraints.Positiveint)">CreateJob</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">CreateJob</span>&#8203;(<span class="arguments">@Positive
+@javax.validation.constraints.Positive int&nbsp;width,
+@Positive
+@javax.validation.constraints.Positive int&nbsp;height)</span></div>
 <div class="block">Build a request for a rectangle of boards.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -300,10 +303,13 @@ int&nbsp;height)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(int,int,int)">CreateJob</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">CreateJob</span>&#8203;(<span class="arguments">int&nbsp;x,
-int&nbsp;y,
-int&nbsp;z)</span></div>
+<h3><a id="&lt;init&gt;(@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">CreateJob</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">CreateJob</span>&#8203;(<span class="arguments"><a href="../machine/board/ValidTriadX.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadX</a>
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
+<a href="../machine/board/ValidTriadY.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadY</a>
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
+<a href="../machine/board/ValidTriadZ.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadZ</a>
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z)</span></div>
 <div class="block">Build a request for a specific board.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -355,7 +361,8 @@ int&nbsp;z)</span></div>
 <section class="detail">
 <h3><a id="keepAlive(java.lang.Double)">keepAlive</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CanIgnoreReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CanIgnoreReturnValue</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">keepAlive</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Double.html?is-external=true" title="class or interface in java.lang" class="externalLink">Double</a>&nbsp;keepalive)</span></div>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">keepAlive</span>&#8203;(<span class="arguments">@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Double.html?is-external=true" title="class or interface in java.lang" class="externalLink">Double</a>&nbsp;keepalive)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>keepalive</code> - The maximum number of seconds which may elapse between a query
@@ -368,9 +375,10 @@ int&nbsp;z)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="keepAlive(double)">keepAlive</a></h3>
+<h3><a id="keepAlive(@javax.validation.constraints.Positivedouble)">keepAlive</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CanIgnoreReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CanIgnoreReturnValue</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">keepAlive</span>&#8203;(<span class="arguments">double&nbsp;keepalive)</span></div>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">keepAlive</span>&#8203;(<span class="arguments">@Positive
+@javax.validation.constraints.Positive double&nbsp;keepalive)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>keepalive</code> - The maximum number of seconds which may elapse between a query
@@ -393,6 +401,8 @@ int&nbsp;z)</span></div>
             seconds)</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd><code>this</code> (fluent interface)</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If the duration is negative.</dd>
 </dl>
 </section>
 </li>

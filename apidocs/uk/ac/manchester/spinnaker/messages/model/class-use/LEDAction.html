@@ -212,7 +212,7 @@ the order they are declared.</div>
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#setLED(java.util.Collection,uk.ac.manchester.spinnaker.messages.model.LEDAction,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">setLED</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;leds,
 <a href="../LEDAction.html" title="enum in uk.ac.manchester.spinnaker.messages.model">LEDAction</a>&nbsp;action,
-<a href="../../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
+@Valid <a href="../../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Set the LED state of a board in the machine.</div>
 </td>
@@ -221,8 +221,8 @@ the order they are declared.</div>
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#setLED(java.util.Collection,uk.ac.manchester.spinnaker.messages.model.LEDAction,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">setLED</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;leds,
 <a href="../LEDAction.html" title="enum in uk.ac.manchester.spinnaker.messages.model">LEDAction</a>&nbsp;action,
-<a href="../../bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;&nbsp;boards)</code></th>
+@Valid <a href="../../bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;@Valid <a href="../../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;&nbsp;boards)</code></th>
 <td class="colLast">
 <div class="block">Set the LED state of a board in the machine.</div>
 </td>
@@ -265,7 +265,7 @@ the order they are declared.</div>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/TransceiverInterface.html#setLEDs(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Map)">setLEDs</a></span>&#8203;(<a href="../../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/TransceiverInterface.html#setLEDs(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Map)">setLEDs</a></span>&#8203;(@Valid <a href="../../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>,&#8203;<a href="../LEDAction.html" title="enum in uk.ac.manchester.spinnaker.messages.model">LEDAction</a>&gt;&nbsp;ledStates)</code></th>
 <td class="colLast">
 <div class="block">Set LED states.</div>
@@ -273,7 +273,7 @@ the order they are declared.</div>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/TransceiverInterface.html#setLEDs(uk.ac.manchester.spinnaker.machine.HasCoreLocation,java.util.Map)">setLEDs</a></span>&#8203;(<a href="../../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/TransceiverInterface.html#setLEDs(uk.ac.manchester.spinnaker.machine.HasCoreLocation,java.util.Map)">setLEDs</a></span>&#8203;(@Valid <a href="../../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>,&#8203;<a href="../LEDAction.html" title="enum in uk.ac.manchester.spinnaker.messages.model">LEDAction</a>&gt;&nbsp;ledStates)</code></th>
 <td class="colLast">
 <div class="block">Set LED states.</div>

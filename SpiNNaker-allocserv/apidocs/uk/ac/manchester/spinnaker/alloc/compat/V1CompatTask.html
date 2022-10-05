@@ -211,20 +211,20 @@ byte[]&nbsp;cmd)</code></th>
 </tr>
 <tr class="altColor" id="i6">
 <td class="colFirst"><code>protected abstract <a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/spalloc/messages/BoardPhysicalCoordinates.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.spalloc.messages" class="externalLink">BoardPhysicalCoordinates</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardAtLogicalPosition(java.lang.String,int,int,int)">getBoardAtLogicalPosition</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-int&nbsp;x,
-int&nbsp;y,
-int&nbsp;z)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardAtLogicalPosition(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">getBoardAtLogicalPosition</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z)</code></th>
 <td class="colLast">
 <div class="block">Get the physical location of a board at given coordinates.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i7">
 <td class="colFirst"><code>protected abstract <a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/spalloc/messages/BoardCoordinates.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.spalloc.messages" class="externalLink">BoardCoordinates</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardAtPhysicalPosition(java.lang.String,int,int,int)">getBoardAtPhysicalPosition</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-int&nbsp;cabinet,
-int&nbsp;frame,
-int&nbsp;board)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardAtPhysicalPosition(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">getBoardAtPhysicalPosition</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;cabinet,
+@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;frame,
+@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Get the coordinates of a board at a physical location.</div>
 </td>
@@ -326,10 +326,10 @@ boolean&nbsp;wantNotify)</code></th>
 </tr>
 <tr class="altColor" id="i22">
 <td class="colFirst"><code>protected abstract void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#reportProblem(java.lang.String,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.String)">reportProblem</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;x,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;y,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;p,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#reportProblem(java.lang.String,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.String)">reportProblem</a></span>&#8203;(@IPAddress <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address,
+@ValidX <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;x,
+@ValidY <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;y,
+@ValidP <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;p,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;description)</code></th>
 <td class="colLast">
 <div class="block">Report a problem with a board, chip or core.</div>
@@ -344,38 +344,38 @@ boolean&nbsp;wantNotify)</code></th>
 </tr>
 <tr class="altColor" id="i24">
 <td class="colFirst"><code>protected abstract <a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.spalloc.messages" class="externalLink">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIsJobChip(int,int,int)">whereIsJobChip</a></span>&#8203;(int&nbsp;jobId,
-int&nbsp;x,
-int&nbsp;y)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIsJobChip(int,@uk.ac.manchester.spinnaker.machine.ValidXint,@uk.ac.manchester.spinnaker.machine.ValidYint)">whereIsJobChip</a></span>&#8203;(int&nbsp;jobId,
+@uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;y)</code></th>
 <td class="colLast">
 <div class="block">Describe where a chip is within a job.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i25">
 <td class="colFirst"><code>protected abstract <a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.spalloc.messages" class="externalLink">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIsMachineChip(java.lang.String,int,int)">whereIsMachineChip</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-int&nbsp;x,
-int&nbsp;y)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIsMachineChip(java.lang.String,@uk.ac.manchester.spinnaker.machine.ValidXint,@uk.ac.manchester.spinnaker.machine.ValidYint)">whereIsMachineChip</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;y)</code></th>
 <td class="colLast">
 <div class="block">Describe where a chip is within a machine.</div>
 </td>
 </tr>
 <tr class="altColor" id="i26">
 <td class="colFirst"><code>protected abstract <a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.spalloc.messages" class="externalLink">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIsMachineLogicalBoard(java.lang.String,int,int,int)">whereIsMachineLogicalBoard</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-int&nbsp;x,
-int&nbsp;y,
-int&nbsp;z)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIsMachineLogicalBoard(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">whereIsMachineLogicalBoard</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z)</code></th>
 <td class="colLast">
 <div class="block">Describe where a board is within a machine.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i27">
 <td class="colFirst"><code>protected abstract <a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.spalloc.messages" class="externalLink">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIsMachinePhysicalBoard(java.lang.String,int,int,int)">whereIsMachinePhysicalBoard</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-int&nbsp;cabinet,
-int&nbsp;frame,
-int&nbsp;board)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIsMachinePhysicalBoard(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">whereIsMachinePhysicalBoard</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;cabinet,
+@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;frame,
+@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Describe where a board is within a machine.</div>
 </td>
@@ -675,11 +675,15 @@ byte[]&nbsp;cmd)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="getBoardAtPhysicalPosition(java.lang.String,int,int,int)">getBoardAtPhysicalPosition</a></h3>
-<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/spalloc/messages/BoardCoordinates.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.spalloc.messages" class="externalLink">BoardCoordinates</a></span>&nbsp;<span class="memberName">getBoardAtPhysicalPosition</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-int&nbsp;cabinet,
-int&nbsp;frame,
-int&nbsp;board)</span>
+<h3><a id="getBoardAtPhysicalPosition(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">getBoardAtPhysicalPosition</a></h3>
+<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/spalloc/messages/BoardCoordinates.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.spalloc.messages" class="externalLink">BoardCoordinates</a></span>&nbsp;<span class="memberName">getBoardAtPhysicalPosition</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@ValidCabinetNumber
+@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;cabinet,
+@ValidFrameNumber
+@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;frame,
+@ValidBoardNumber
+@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;board)</span>
                                                         throws <span class="exceptions">uk.ac.manchester.spinnaker.alloc.compat.TaskException</span></div>
 <div class="block">Get the coordinates of a board at a physical location.</div>
 <dl>
@@ -697,11 +701,15 @@ int&nbsp;board)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="getBoardAtLogicalPosition(java.lang.String,int,int,int)">getBoardAtLogicalPosition</a></h3>
-<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/spalloc/messages/BoardPhysicalCoordinates.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.spalloc.messages" class="externalLink">BoardPhysicalCoordinates</a></span>&nbsp;<span class="memberName">getBoardAtLogicalPosition</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-int&nbsp;x,
-int&nbsp;y,
-int&nbsp;z)</span>
+<h3><a id="getBoardAtLogicalPosition(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">getBoardAtLogicalPosition</a></h3>
+<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/spalloc/messages/BoardPhysicalCoordinates.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.spalloc.messages" class="externalLink">BoardPhysicalCoordinates</a></span>&nbsp;<span class="memberName">getBoardAtLogicalPosition</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@ValidTriadX
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
+@ValidTriadY
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
+@ValidTriadZ
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z)</span>
                                                                throws <span class="exceptions">uk.ac.manchester.spinnaker.alloc.compat.TaskException</span></div>
 <div class="block">Get the physical location of a board at given coordinates.</div>
 <dl>
@@ -843,10 +851,14 @@ boolean&nbsp;wantNotify)</span>
 <li class="blockList">
 <section class="detail">
 <h3><a id="reportProblem(java.lang.String,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.String)">reportProblem</a></h3>
-<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">reportProblem</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;x,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;y,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;p,
+<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">reportProblem</span>&#8203;(<span class="arguments">@IPAddress
+@IPAddress <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address,
+@ValidX
+@ValidX <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;x,
+@ValidY
+@ValidY <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;y,
+@ValidP
+@ValidP <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;p,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;description)</span></div>
 <div class="block">Report a problem with a board, chip or core. If a whole chip has a
  problem, <code>p</code> will be <code>null</code>. If a whole board has a problem,
@@ -877,10 +889,12 @@ boolean&nbsp;wantNotify)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="whereIsJobChip(int,int,int)">whereIsJobChip</a></h3>
+<h3><a id="whereIsJobChip(int,@uk.ac.manchester.spinnaker.machine.ValidXint,@uk.ac.manchester.spinnaker.machine.ValidYint)">whereIsJobChip</a></h3>
 <div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.spalloc.messages" class="externalLink">WhereIs</a></span>&nbsp;<span class="memberName">whereIsJobChip</span>&#8203;(<span class="arguments">int&nbsp;jobId,
-int&nbsp;x,
-int&nbsp;y)</span>
+@ValidX
+@uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;x,
+@ValidY
+@uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;y)</span>
                                    throws <span class="exceptions">uk.ac.manchester.spinnaker.alloc.compat.TaskException</span></div>
 <div class="block">Describe where a chip is within a job.</div>
 <dl>
@@ -897,10 +911,13 @@ int&nbsp;y)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="whereIsMachineChip(java.lang.String,int,int)">whereIsMachineChip</a></h3>
-<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.spalloc.messages" class="externalLink">WhereIs</a></span>&nbsp;<span class="memberName">whereIsMachineChip</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-int&nbsp;x,
-int&nbsp;y)</span>
+<h3><a id="whereIsMachineChip(java.lang.String,@uk.ac.manchester.spinnaker.machine.ValidXint,@uk.ac.manchester.spinnaker.machine.ValidYint)">whereIsMachineChip</a></h3>
+<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.spalloc.messages" class="externalLink">WhereIs</a></span>&nbsp;<span class="memberName">whereIsMachineChip</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@ValidX
+@uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;x,
+@ValidY
+@uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;y)</span>
                                        throws <span class="exceptions">uk.ac.manchester.spinnaker.alloc.compat.TaskException</span></div>
 <div class="block">Describe where a chip is within a machine.</div>
 <dl>
@@ -917,11 +934,15 @@ int&nbsp;y)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="whereIsMachineLogicalBoard(java.lang.String,int,int,int)">whereIsMachineLogicalBoard</a></h3>
-<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.spalloc.messages" class="externalLink">WhereIs</a></span>&nbsp;<span class="memberName">whereIsMachineLogicalBoard</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-int&nbsp;x,
-int&nbsp;y,
-int&nbsp;z)</span>
+<h3><a id="whereIsMachineLogicalBoard(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">whereIsMachineLogicalBoard</a></h3>
+<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.spalloc.messages" class="externalLink">WhereIs</a></span>&nbsp;<span class="memberName">whereIsMachineLogicalBoard</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@ValidTriadX
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
+@ValidTriadY
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
+@ValidTriadZ
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z)</span>
                                                throws <span class="exceptions">uk.ac.manchester.spinnaker.alloc.compat.TaskException</span></div>
 <div class="block">Describe where a board is within a machine.</div>
 <dl>
@@ -939,11 +960,14 @@ int&nbsp;z)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="whereIsMachinePhysicalBoard(java.lang.String,int,int,int)">whereIsMachinePhysicalBoard</a></h3>
+<h3><a id="whereIsMachinePhysicalBoard(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">whereIsMachinePhysicalBoard</a></h3>
 <div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.spalloc.messages" class="externalLink">WhereIs</a></span>&nbsp;<span class="memberName">whereIsMachinePhysicalBoard</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-int&nbsp;cabinet,
-int&nbsp;frame,
-int&nbsp;board)</span>
+@ValidCabinetNumber
+@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;cabinet,
+@ValidFrameNumber
+@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;frame,
+@ValidBoardNumber
+@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;board)</span>
                                                 throws <span class="exceptions">uk.ac.manchester.spinnaker.alloc.compat.TaskException</span></div>
 <div class="block">Describe where a board is within a machine.</div>
 <dl>

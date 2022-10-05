@@ -239,13 +239,13 @@ javax.ws.rs.core.UriInfo&nbsp;ui)</code></th>
 <tr class="altColor" id="i10">
 <td class="colFirst"><code>default boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardState(java.lang.String,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.String)">getBoardState</a></span>&#8203;(@NotBlank(message="machine name is required") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;x,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;y,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;z,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;c,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;f,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;b,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</code></th>
+<a href="../../machine/board/ValidTriadX.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadX</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;x,
+<a href="../../machine/board/ValidTriadY.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadY</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;y,
+<a href="../../machine/board/ValidTriadZ.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadZ</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;z,
+<a href="../../machine/board/ValidCabinetNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidCabinetNumber</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;c,
+<a href="../../machine/board/ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidFrameNumber</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;f,
+<a href="../../machine/board/ValidBoardNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidBoardNumber</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;b,
+<a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a>(<a href="../../utils/validation/IPAddress.html#nullOK()">nullOK</a>=true) <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</code></th>
 <td class="colLast">
 <div class="block">Describe the enable state of a board.</div>
 </td>
@@ -253,27 +253,27 @@ javax.ws.rs.core.UriInfo&nbsp;ui)</code></th>
 <tr class="rowColor" id="i11">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardStateAddress(java.lang.String,java.lang.String)">getBoardStateAddress</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
-<a href="../model/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.alloc.model">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</code></th>
+<a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</code></th>
 <td class="colLast">
 <div class="block">Find board by IP address and return its state.</div>
 </td>
 </tr>
 <tr class="altColor" id="i12">
 <td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardStateCFB(java.lang.String,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint)">getBoardStateCFB</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
-@javax.validation.constraints.PositiveOrZero int&nbsp;c,
-@javax.validation.constraints.PositiveOrZero int&nbsp;f,
-@javax.validation.constraints.PositiveOrZero int&nbsp;b)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardStateCFB(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">getBoardStateCFB</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
+@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;c,
+@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;f,
+@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;b)</code></th>
 <td class="colLast">
 <div class="block">Find board by physical coordinates and return its state.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i13">
 <td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardStateXYZ(java.lang.String,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint)">getBoardStateXYZ</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
-@javax.validation.constraints.PositiveOrZero int&nbsp;x,
-@javax.validation.constraints.PositiveOrZero int&nbsp;y,
-@javax.validation.constraints.PositiveOrZero int&nbsp;z)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardStateXYZ(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">getBoardStateXYZ</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z)</code></th>
 <td class="colLast">
 <div class="block">Find board by logical triad coordinates and return its state.</div>
 </td>
@@ -310,13 +310,13 @@ int&nbsp;memberId)</code></th>
 <tr class="altColor" id="i18">
 <td class="colFirst"><code>default boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setBoardState(java.lang.String,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.String,boolean)">setBoardState</a></span>&#8203;(@NotBlank(message="machine name is required") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;x,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;y,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;z,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;c,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;f,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;b,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address,
+<a href="../../machine/board/ValidTriadX.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadX</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;x,
+<a href="../../machine/board/ValidTriadY.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadY</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;y,
+<a href="../../machine/board/ValidTriadZ.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadZ</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;z,
+<a href="../../machine/board/ValidCabinetNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidCabinetNumber</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;c,
+<a href="../../machine/board/ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidFrameNumber</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;f,
+<a href="../../machine/board/ValidBoardNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidBoardNumber</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;b,
+<a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a>(<a href="../../utils/validation/IPAddress.html#nullOK()">nullOK</a>=true) <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address,
 boolean&nbsp;enabled)</code></th>
 <td class="colLast">
 <div class="block">Enable or disable a board.</div>
@@ -325,7 +325,7 @@ boolean&nbsp;enabled)</code></th>
 <tr class="rowColor" id="i19">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setBoardStateAddress(java.lang.String,java.lang.String,boolean)">setBoardStateAddress</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
-<a href="../model/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.alloc.model">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address,
+<a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address,
 boolean&nbsp;enabled)</code></th>
 <td class="colLast">
 <div class="block">Enable or disable a board.</div>
@@ -333,10 +333,10 @@ boolean&nbsp;enabled)</code></th>
 </tr>
 <tr class="altColor" id="i20">
 <td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setBoardStateCFB(java.lang.String,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,boolean)">setBoardStateCFB</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
-@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZero int&nbsp;c,
-@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZero int&nbsp;f,
-@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZero int&nbsp;b,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setBoardStateCFB(java.lang.String,@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint,boolean)">setBoardStateCFB</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
+@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;c,
+@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;f,
+@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;b,
 boolean&nbsp;enabled)</code></th>
 <td class="colLast">
 <div class="block">Enable or disable a board.</div>
@@ -344,10 +344,10 @@ boolean&nbsp;enabled)</code></th>
 </tr>
 <tr class="rowColor" id="i21">
 <td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setBoardStateXYZ(java.lang.String,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,boolean)">setBoardStateXYZ</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
-@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZero int&nbsp;x,
-@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZero int&nbsp;y,
-@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZero int&nbsp;z,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setBoardStateXYZ(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint,boolean)">setBoardStateXYZ</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z,
 boolean&nbsp;enabled)</code></th>
 <td class="colLast">
 <div class="block">Enable or disable a board.</div>
@@ -443,20 +443,20 @@ uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Configuration&nbs
 @Path("board")
 </span><span class="modifiers">default</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">getBoardState</span>&#8203;(<span class="arguments">@NotBlank(message="machine name is required") @QueryParam("machine")
 @NotBlank(message="machine name is required") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-@QueryParam("x")
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;x,
-@QueryParam("y")
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;y,
-@QueryParam("z")
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;z,
-@QueryParam("cabinet")
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;c,
-@QueryParam("frame")
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;f,
-@QueryParam("board")
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;b,
-@QueryParam("address")
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</span></div>
+@QueryParam("x") <a href="../../machine/board/ValidTriadX.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadX</a>
+<a href="../../machine/board/ValidTriadX.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadX</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;x,
+@QueryParam("y") <a href="../../machine/board/ValidTriadY.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadY</a>
+<a href="../../machine/board/ValidTriadY.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadY</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;y,
+@QueryParam("z") <a href="../../machine/board/ValidTriadZ.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadZ</a>
+<a href="../../machine/board/ValidTriadZ.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadZ</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;z,
+@QueryParam("cabinet") <a href="../../machine/board/ValidCabinetNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidCabinetNumber</a>
+<a href="../../machine/board/ValidCabinetNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidCabinetNumber</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;c,
+@QueryParam("frame") <a href="../../machine/board/ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidFrameNumber</a>
+<a href="../../machine/board/ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidFrameNumber</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;f,
+@QueryParam("board") <a href="../../machine/board/ValidBoardNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidBoardNumber</a>
+<a href="../../machine/board/ValidBoardNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidBoardNumber</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;b,
+@QueryParam("address") <a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a>(<a href="../../utils/validation/IPAddress.html#nullOK()">nullOK</a>=true)
+<a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a>(<a href="../../utils/validation/IPAddress.html#nullOK()">nullOK</a>=true) <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</span></div>
 <div class="block">Describe the enable state of a board.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -477,14 +477,14 @@ uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Configuration&nbs
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="getBoardStateXYZ(java.lang.String,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint)">getBoardStateXYZ</a></h3>
+<h3><a id="getBoardStateXYZ(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">getBoardStateXYZ</a></h3>
 <div class="memberSignature"><span class="returnType">boolean</span>&nbsp;<span class="memberName">getBoardStateXYZ</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
-@PositiveOrZero
-@javax.validation.constraints.PositiveOrZero int&nbsp;x,
-@PositiveOrZero
-@javax.validation.constraints.PositiveOrZero int&nbsp;y,
-@PositiveOrZero
-@javax.validation.constraints.PositiveOrZero int&nbsp;z)</span></div>
+<a href="../../machine/board/ValidTriadX.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadX</a>
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
+<a href="../../machine/board/ValidTriadY.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadY</a>
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
+<a href="../../machine/board/ValidTriadZ.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadZ</a>
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z)</span></div>
 <div class="block">Find board by logical triad coordinates and return its state.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -499,14 +499,14 @@ uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Configuration&nbs
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="getBoardStateCFB(java.lang.String,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint)">getBoardStateCFB</a></h3>
+<h3><a id="getBoardStateCFB(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">getBoardStateCFB</a></h3>
 <div class="memberSignature"><span class="returnType">boolean</span>&nbsp;<span class="memberName">getBoardStateCFB</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
-@PositiveOrZero
-@javax.validation.constraints.PositiveOrZero int&nbsp;c,
-@PositiveOrZero
-@javax.validation.constraints.PositiveOrZero int&nbsp;f,
-@PositiveOrZero
-@javax.validation.constraints.PositiveOrZero int&nbsp;b)</span></div>
+<a href="../../machine/board/ValidCabinetNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidCabinetNumber</a>
+@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;c,
+<a href="../../machine/board/ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidFrameNumber</a>
+@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;f,
+<a href="../../machine/board/ValidBoardNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidBoardNumber</a>
+@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;b)</span></div>
 <div class="block">Find board by physical coordinates and return its state.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -523,8 +523,8 @@ uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Configuration&nbs
 <section class="detail">
 <h3><a id="getBoardStateAddress(java.lang.String,java.lang.String)">getBoardStateAddress</a></h3>
 <div class="memberSignature"><span class="returnType">boolean</span>&nbsp;<span class="memberName">getBoardStateAddress</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
-<a href="../model/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.alloc.model">@IPAddress</a>
-<a href="../model/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.alloc.model">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</span></div>
+<a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a>
+<a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</span></div>
 <div class="block">Find board by IP address and return its state.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -544,20 +544,20 @@ uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Configuration&nbs
 @Path("board")
 </span><span class="modifiers">default</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">setBoardState</span>&#8203;(<span class="arguments">@NotBlank(message="machine name is required") @QueryParam("machine")
 @NotBlank(message="machine name is required") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-@QueryParam("x")
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;x,
-@QueryParam("y")
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;y,
-@QueryParam("z")
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;z,
-@QueryParam("cabinet")
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;c,
-@QueryParam("frame")
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;f,
-@QueryParam("board")
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;b,
-@QueryParam("address")
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address,
+@QueryParam("x") <a href="../../machine/board/ValidTriadX.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadX</a>
+<a href="../../machine/board/ValidTriadX.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadX</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;x,
+@QueryParam("y") <a href="../../machine/board/ValidTriadY.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadY</a>
+<a href="../../machine/board/ValidTriadY.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadY</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;y,
+@QueryParam("z") <a href="../../machine/board/ValidTriadZ.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadZ</a>
+<a href="../../machine/board/ValidTriadZ.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadZ</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;z,
+@QueryParam("cabinet") <a href="../../machine/board/ValidCabinetNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidCabinetNumber</a>
+<a href="../../machine/board/ValidCabinetNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidCabinetNumber</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;c,
+@QueryParam("frame") <a href="../../machine/board/ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidFrameNumber</a>
+<a href="../../machine/board/ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidFrameNumber</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;f,
+@QueryParam("board") <a href="../../machine/board/ValidBoardNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidBoardNumber</a>
+<a href="../../machine/board/ValidBoardNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidBoardNumber</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;b,
+@QueryParam("address") <a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a>(<a href="../../utils/validation/IPAddress.html#nullOK()">nullOK</a>=true)
+<a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a>(<a href="../../utils/validation/IPAddress.html#nullOK()">nullOK</a>=true) <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address,
 boolean&nbsp;enabled)</span></div>
 <div class="block">Enable or disable a board.</div>
 <dl>
@@ -580,15 +580,15 @@ boolean&nbsp;enabled)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setBoardStateXYZ(java.lang.String,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,boolean)">setBoardStateXYZ</a></h3>
+<h3><a id="setBoardStateXYZ(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint,boolean)">setBoardStateXYZ</a></h3>
 <div class="memberSignature"><span class="returnType">boolean</span>&nbsp;<span class="memberName">setBoardStateXYZ</span>&#8203;(<span class="arguments">@NotBlank
 @NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
-@NotNull @PositiveOrZero
-@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZero int&nbsp;x,
-@NotNull @PositiveOrZero
-@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZero int&nbsp;y,
-@NotNull @PositiveOrZero
-@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZero int&nbsp;z,
+<a href="../../machine/board/ValidTriadX.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadX</a>
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
+<a href="../../machine/board/ValidTriadY.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadY</a>
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
+<a href="../../machine/board/ValidTriadZ.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadZ</a>
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z,
 boolean&nbsp;enabled)</span></div>
 <div class="block">Enable or disable a board. Find by logical triad coordinates.</div>
 <dl>
@@ -605,15 +605,15 @@ boolean&nbsp;enabled)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setBoardStateCFB(java.lang.String,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,boolean)">setBoardStateCFB</a></h3>
+<h3><a id="setBoardStateCFB(java.lang.String,@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint,boolean)">setBoardStateCFB</a></h3>
 <div class="memberSignature"><span class="returnType">boolean</span>&nbsp;<span class="memberName">setBoardStateCFB</span>&#8203;(<span class="arguments">@NotBlank
 @NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
-@NotNull @PositiveOrZero
-@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZero int&nbsp;c,
-@NotNull @PositiveOrZero
-@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZero int&nbsp;f,
-@NotNull @PositiveOrZero
-@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZero int&nbsp;b,
+@NotNull <a href="../../machine/board/ValidCabinetNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidCabinetNumber</a>
+@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;c,
+@NotNull <a href="../../machine/board/ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidFrameNumber</a>
+@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;f,
+@NotNull <a href="../../machine/board/ValidBoardNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidBoardNumber</a>
+@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;b,
 boolean&nbsp;enabled)</span></div>
 <div class="block">Enable or disable a board. Find by physical coordinates.</div>
 <dl>
@@ -633,8 +633,8 @@ boolean&nbsp;enabled)</span></div>
 <h3><a id="setBoardStateAddress(java.lang.String,java.lang.String,boolean)">setBoardStateAddress</a></h3>
 <div class="memberSignature"><span class="returnType">boolean</span>&nbsp;<span class="memberName">setBoardStateAddress</span>&#8203;(<span class="arguments">@NotBlank
 @NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
-<a href="../model/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.alloc.model">@IPAddress</a>
-<a href="../model/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.alloc.model">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address,
+<a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a>
+<a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address,
 boolean&nbsp;enabled)</span></div>
 <div class="block">Enable or disable a board. Find by IP address.</div>
 <dl>

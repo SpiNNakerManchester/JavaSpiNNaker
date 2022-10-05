@@ -119,14 +119,14 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code><a href="BoardCoords.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardCoords</a></code></td>
+<td class="colFirst"><code>@Valid <a href="BoardCoords.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardCoords</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#board">board</a></span></code></th>
 <td class="colLast">
 <div class="block">On what board is this end of the link.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="Direction.html" title="enum in uk.ac.manchester.spinnaker.alloc.model">Direction</a></code></td>
+<td class="colFirst"><code>@NotNull <a href="Direction.html" title="enum in uk.ac.manchester.spinnaker.alloc.model">Direction</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#direction">direction</a></span></code></th>
 <td class="colLast">
 <div class="block">In which direction does this end of the link go?</div>
@@ -164,14 +164,16 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="board">board</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="BoardCoords.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardCoords</a></span>&nbsp;<span class="memberName">board</span></div>
+<div class="memberSignature"><span class="annotations">@Valid
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@Valid <a href="BoardCoords.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardCoords</a></span>&nbsp;<span class="memberName">board</span></div>
 <div class="block">On what board is this end of the link.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="direction">direction</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="Direction.html" title="enum in uk.ac.manchester.spinnaker.alloc.model">Direction</a></span>&nbsp;<span class="memberName">direction</span></div>
+<div class="memberSignature"><span class="annotations">@NotNull
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@NotNull <a href="Direction.html" title="enum in uk.ac.manchester.spinnaker.alloc.model">Direction</a></span>&nbsp;<span class="memberName">direction</span></div>
 <div class="block">In which direction does this end of the link go?</div>
 </section>
 </li>

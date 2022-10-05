@@ -402,11 +402,11 @@ javax.ws.rs.core.SecurityContext&nbsp;security)</code></th>
 int&nbsp;x,
 int&nbsp;y,
 int&nbsp;z)</span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminAPI.html#getBoardStateXYZ(java.lang.String,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint)">AdminAPI</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminAPI.html#getBoardStateXYZ(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">AdminAPI</a></code></span></div>
 <div class="block">Find board by logical triad coordinates and return its state.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="AdminAPI.html#getBoardStateXYZ(java.lang.String,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint)">getBoardStateXYZ</a></code>&nbsp;in interface&nbsp;<code><a href="AdminAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminAPI</a></code></dd>
+<dd><code><a href="AdminAPI.html#getBoardStateXYZ(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">getBoardStateXYZ</a></code>&nbsp;in interface&nbsp;<code><a href="AdminAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminAPI</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>name</code> - The name of the machine</dd>
 <dd><code>x</code> - The X coordinate</dd>
@@ -426,11 +426,11 @@ int&nbsp;x,
 int&nbsp;y,
 int&nbsp;z,
 boolean&nbsp;enabled)</span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminAPI.html#setBoardStateXYZ(java.lang.String,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,boolean)">AdminAPI</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminAPI.html#setBoardStateXYZ(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint,boolean)">AdminAPI</a></code></span></div>
 <div class="block">Enable or disable a board. Find by logical triad coordinates.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="AdminAPI.html#setBoardStateXYZ(java.lang.String,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,boolean)">setBoardStateXYZ</a></code>&nbsp;in interface&nbsp;<code><a href="AdminAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminAPI</a></code></dd>
+<dd><code><a href="AdminAPI.html#setBoardStateXYZ(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint,boolean)">setBoardStateXYZ</a></code>&nbsp;in interface&nbsp;<code><a href="AdminAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminAPI</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>name</code> - The name of the machine</dd>
 <dd><code>x</code> - The X coordinate</dd>
@@ -449,11 +449,11 @@ boolean&nbsp;enabled)</span></div>
 int&nbsp;c,
 int&nbsp;f,
 int&nbsp;b)</span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminAPI.html#getBoardStateCFB(java.lang.String,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint)">AdminAPI</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminAPI.html#getBoardStateCFB(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">AdminAPI</a></code></span></div>
 <div class="block">Find board by physical coordinates and return its state.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="AdminAPI.html#getBoardStateCFB(java.lang.String,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint)">getBoardStateCFB</a></code>&nbsp;in interface&nbsp;<code><a href="AdminAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminAPI</a></code></dd>
+<dd><code><a href="AdminAPI.html#getBoardStateCFB(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">getBoardStateCFB</a></code>&nbsp;in interface&nbsp;<code><a href="AdminAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminAPI</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>name</code> - The name of the machine</dd>
 <dd><code>c</code> - The cabinet number</dd>
@@ -473,11 +473,11 @@ int&nbsp;c,
 int&nbsp;f,
 int&nbsp;b,
 boolean&nbsp;enabled)</span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminAPI.html#setBoardStateCFB(java.lang.String,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,boolean)">AdminAPI</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminAPI.html#setBoardStateCFB(java.lang.String,@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint,boolean)">AdminAPI</a></code></span></div>
 <div class="block">Enable or disable a board. Find by physical coordinates.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="AdminAPI.html#setBoardStateCFB(java.lang.String,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.NotNull,@javax.validation.constraints.PositiveOrZeroint,boolean)">setBoardStateCFB</a></code>&nbsp;in interface&nbsp;<code><a href="AdminAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminAPI</a></code></dd>
+<dd><code><a href="AdminAPI.html#setBoardStateCFB(java.lang.String,@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint,boolean)">setBoardStateCFB</a></code>&nbsp;in interface&nbsp;<code><a href="AdminAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminAPI</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>name</code> - The name of the machine</dd>
 <dd><code>c</code> - The cabinet number</dd>

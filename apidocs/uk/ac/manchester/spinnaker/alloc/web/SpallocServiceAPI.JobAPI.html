@@ -130,8 +130,8 @@ public static interface <span class="typeNameLabel">SpallocServiceAPI.JobAPI</sp
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getJobChipLocation(@javax.validation.constraints.PositiveOrZero(message=%22xmustbeatleast0%22)int,@javax.validation.constraints.PositiveOrZero(message=%22ymustbeatleast0%22)int)">getJobChipLocation</a></span>&#8203;(@javax.validation.constraints.PositiveOrZero(message="x must be at least 0") int&nbsp;x,
-@javax.validation.constraints.PositiveOrZero(message="y must be at least 0") int&nbsp;y)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getJobChipLocation(@uk.ac.manchester.spinnaker.machine.ValidXint,@uk.ac.manchester.spinnaker.machine.ValidYint)">getJobChipLocation</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;y)</code></th>
 <td class="colLast">
 <div class="block">Get the location description of a board given the job-local
  coordinates of a chip on that board.</div>
@@ -301,14 +301,14 @@ javax.ws.rs.container.AsyncResponse&nbsp;response)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="getJobChipLocation(@javax.validation.constraints.PositiveOrZero(message="xmustbeatleast0")int,@javax.validation.constraints.PositiveOrZero(message="ymustbeatleast0")int)">getJobChipLocation</a></h3>
+<h3><a id="getJobChipLocation(@uk.ac.manchester.spinnaker.machine.ValidXint,@uk.ac.manchester.spinnaker.machine.ValidYint)">getJobChipLocation</a></h3>
 <div class="memberSignature"><span class="annotations">@GET
 @Path("chip")
 @Produces("application/json")
-</span><span class="returnType"><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></span>&nbsp;<span class="memberName">getJobChipLocation</span>&#8203;(<span class="arguments">@QueryParam("x") @DefaultValue("0") @PositiveOrZero(message="x must be at least 0")
-@javax.validation.constraints.PositiveOrZero(message="x must be at least 0") int&nbsp;x,
-@QueryParam("y") @DefaultValue("0") @PositiveOrZero(message="y must be at least 0")
-@javax.validation.constraints.PositiveOrZero(message="y must be at least 0") int&nbsp;y)</span></div>
+</span><span class="returnType"><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></span>&nbsp;<span class="memberName">getJobChipLocation</span>&#8203;(<span class="arguments">@QueryParam("x") @DefaultValue("0") <a href="../../machine/ValidX.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidX</a>
+@uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;x,
+@QueryParam("y") @DefaultValue("0") <a href="../../machine/ValidY.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidY</a>
+@uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;y)</span></div>
 <div class="block">Get the location description of a board given the job-local
  coordinates of a chip on that board.</div>
 <dl>

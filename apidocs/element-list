@@ -43,3 +43,4 @@ uk.ac.manchester.spinnaker.storage.threading
 uk.ac.manchester.spinnaker.transceiver
 uk.ac.manchester.spinnaker.utils
 uk.ac.manchester.spinnaker.utils.progress
+uk.ac.manchester.spinnaker.utils.validation

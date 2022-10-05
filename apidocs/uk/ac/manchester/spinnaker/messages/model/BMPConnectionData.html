@@ -117,35 +117,35 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../machine/board/ValidBoardNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidBoardNumber</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#boards">boards</a></span></code></th>
 <td class="colLast">
 <div class="block">The boards to be addressed.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>int</code></td>
+<td class="colFirst"><code>@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#cabinet">cabinet</a></span></code></th>
 <td class="colLast">
 <div class="block">The ID of the cabinet that contains the frame that contains the BMPs.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>int</code></td>
+<td class="colFirst"><code>@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#frame">frame</a></span></code></th>
 <td class="colLast">
 <div class="block">The ID of the frame that contains the BMPs.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a></code></td>
+<td class="colFirst"><code><a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#ipAddress">ipAddress</a></span></code></th>
 <td class="colLast">
 <div class="block">The IP address of the BMP.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></code></td>
+<td class="colFirst"><code><a href="../../utils/validation/UDPPort.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@UDPPort</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#portNumber">portNumber</a></span></code></th>
 <td class="colLast">
 <div class="block">The port number associated with the BMP connection, or <code>null</code> for
@@ -241,21 +241,23 @@ int&nbsp;numBoards)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="boards">boards</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</span>&nbsp;<span class="memberName">boards</span></div>
+<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../machine/board/ValidBoardNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidBoardNumber</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</span>&nbsp;<span class="memberName">boards</span></div>
 <div class="block">The boards to be addressed. Unmodifiable.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="cabinet">cabinet</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">cabinet</span></div>
+<div class="memberSignature"><span class="annotations"><a href="../../machine/board/ValidCabinetNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidCabinetNumber</a>
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int</span>&nbsp;<span class="memberName">cabinet</span></div>
 <div class="block">The ID of the cabinet that contains the frame that contains the BMPs.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="frame">frame</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">frame</span></div>
+<div class="memberSignature"><span class="annotations"><a href="../../machine/board/ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidFrameNumber</a>
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int</span>&nbsp;<span class="memberName">frame</span></div>
 <div class="block">The ID of the frame that contains the BMPs. Frames are contained within a
  cabinet.</div>
 </section>
@@ -263,14 +265,16 @@ int&nbsp;numBoards)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="ipAddress">ipAddress</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a></span>&nbsp;<span class="memberName">ipAddress</span></div>
+<div class="memberSignature"><span class="annotations"><a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a>
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a></span>&nbsp;<span class="memberName">ipAddress</span></div>
 <div class="block">The IP address of the BMP.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="portNumber">portNumber</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></span>&nbsp;<span class="memberName">portNumber</span></div>
+<div class="memberSignature"><span class="annotations"><a href="../../utils/validation/UDPPort.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@UDPPort</a>
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="../../utils/validation/UDPPort.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@UDPPort</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></span>&nbsp;<span class="memberName">portNumber</span></div>
 <div class="block">The port number associated with the BMP connection, or <code>null</code> for
  the default.</div>
 </section>

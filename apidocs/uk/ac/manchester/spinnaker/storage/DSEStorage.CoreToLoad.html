@@ -131,14 +131,14 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a></code></td>
+<td class="colFirst"><code>@Valid <a href="../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#core">core</a></span></code></th>
 <td class="colLast">
 <div class="block">The core that the load is to be done on.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>int</code></td>
+<td class="colFirst"><code>@javax.validation.constraints.Positive int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#sizeToWrite">sizeToWrite</a></span></code></th>
 <td class="colLast">
 <div class="block">The size of region to allocate and write into.</div>
@@ -230,14 +230,16 @@ int&nbsp;sizeToWrite)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="core">core</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a></span>&nbsp;<span class="memberName">core</span></div>
+<div class="memberSignature"><span class="annotations">@Valid
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@Valid <a href="../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a></span>&nbsp;<span class="memberName">core</span></div>
 <div class="block">The core that the load is to be done on.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="sizeToWrite">sizeToWrite</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">sizeToWrite</span></div>
+<div class="memberSignature"><span class="annotations">@Positive
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive int</span>&nbsp;<span class="memberName">sizeToWrite</span></div>
 <div class="block">The size of region to allocate and write into.</div>
 </section>
 </li>

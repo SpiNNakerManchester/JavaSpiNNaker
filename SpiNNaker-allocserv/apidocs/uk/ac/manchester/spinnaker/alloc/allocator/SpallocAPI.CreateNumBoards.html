@@ -122,7 +122,7 @@ extends <a href="SpallocAPI.CreateDescriptor.html" title="class in uk.ac.manches
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>int</code></td>
+<td class="colFirst"><code>@javax.validation.constraints.Positive(message="number of boards to request must be positive") int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#numBoards">numBoards</a></span></code></th>
 <td class="colLast">
 <div class="block">The number of boards requested.</div>
@@ -221,7 +221,8 @@ extends <a href="SpallocAPI.CreateDescriptor.html" title="class in uk.ac.manches
 <li class="blockList">
 <section class="detail">
 <h3><a id="numBoards">numBoards</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">numBoards</span></div>
+<div class="memberSignature"><span class="annotations">@Positive(message="number of boards to request must be positive")
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive(message="number of boards to request must be positive") int</span>&nbsp;<span class="memberName">numBoards</span></div>
 <div class="block">The number of boards requested.</div>
 </section>
 </li>

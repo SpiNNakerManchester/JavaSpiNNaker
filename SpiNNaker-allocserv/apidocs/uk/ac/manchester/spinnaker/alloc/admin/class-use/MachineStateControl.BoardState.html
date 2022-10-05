@@ -110,28 +110,28 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">MachineStateControl.</span><code><span class="memberNameLink"><a href="../MachineStateControl.html#findIP(java.lang.String,java.lang.String)">findIP</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">MachineStateControl.</span><code><span class="memberNameLink"><a href="../MachineStateControl.html#findIP(java.lang.String,java.lang.String)">findIP</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@IPAddress <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</code></th>
 <td class="colLast">
 <div class="block">Look up a board for management.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">MachineStateControl.</span><code><span class="memberNameLink"><a href="../MachineStateControl.html#findPhysical(java.lang.String,int,int,int)">findPhysical</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-int&nbsp;c,
-int&nbsp;f,
-int&nbsp;b)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">MachineStateControl.</span><code><span class="memberNameLink"><a href="../MachineStateControl.html#findPhysical(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">findPhysical</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;c,
+@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;f,
+@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;b)</code></th>
 <td class="colLast">
 <div class="block">Look up a board for management.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">MachineStateControl.</span><code><span class="memberNameLink"><a href="../MachineStateControl.html#findTriad(java.lang.String,int,int,int)">findTriad</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-int&nbsp;x,
-int&nbsp;y,
-int&nbsp;z)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">MachineStateControl.</span><code><span class="memberNameLink"><a href="../MachineStateControl.html#findTriad(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">findTriad</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z)</code></th>
 <td class="colLast">
 <div class="block">Look up a board for management.</div>
 </td>
@@ -198,7 +198,7 @@ int&nbsp;z)</code></th>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">MachineStateControl.</span><code><span class="memberNameLink"><a href="../MachineStateControl.html#writeBlacklistToDB(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklistToDB</a></span>&#8203;(<a href="../MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&nbsp;board,
-<a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/messages/model/Blacklist.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.messages.model" class="externalLink">Blacklist</a>&nbsp;blacklist)</code></th>
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/messages/model/Blacklist.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.messages.model" class="externalLink">Blacklist</a>&nbsp;blacklist)</code></th>
 <td class="colLast">
 <div class="block">Given a board, write a blacklist for it to the database.</div>
 </td>
@@ -206,7 +206,7 @@ int&nbsp;z)</code></th>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">MachineStateControl.</span><code><span class="memberNameLink"><a href="../MachineStateControl.html#writeBlacklistToMachine(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklistToMachine</a></span>&#8203;(<a href="../MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&nbsp;board,
-<a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/messages/model/Blacklist.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.messages.model" class="externalLink">Blacklist</a>&nbsp;blacklist)</code></th>
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/messages/model/Blacklist.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.messages.model" class="externalLink">Blacklist</a>&nbsp;blacklist)</code></th>
 <td class="colLast">
 <div class="block">Write a blacklist to a board on the machine.</div>
 </td>

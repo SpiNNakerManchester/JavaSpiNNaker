@@ -127,7 +127,7 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#access(java.lang.String)">access</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;keepaliveAddress)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#access(java.lang.String)">access</a></span>&#8203;(@NotNull <a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;keepaliveAddress)</code></th>
 <td class="colLast">
 <div class="block">Update the keepalive.</div>
 </td>
@@ -234,8 +234,8 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 </tr>
 <tr class="rowColor" id="i19">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.BoardLocation.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.BoardLocation</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(int,int)">whereIs</a></span>&#8203;(int&nbsp;x,
-int&nbsp;y)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(@uk.ac.manchester.spinnaker.machine.ValidXint,@uk.ac.manchester.spinnaker.machine.ValidYint)">whereIs</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;y)</code></th>
 <td class="colLast">
 <div class="block">Locate a board within the allocation.</div>
 </td>
@@ -275,7 +275,8 @@ int&nbsp;y)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="access(java.lang.String)">access</a></h3>
-<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">access</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;keepaliveAddress)</span></div>
+<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">access</span>&#8203;(<span class="arguments">@NotNull <a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a>
+@NotNull <a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;keepaliveAddress)</span></div>
 <div class="block">Update the keepalive.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -389,9 +390,11 @@ int&nbsp;y)</code></th>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="whereIs(int,int)">whereIs</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.BoardLocation.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.BoardLocation</a>&gt;</span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments">int&nbsp;x,
-int&nbsp;y)</span></div>
+<h3><a id="whereIs(@uk.ac.manchester.spinnaker.machine.ValidXint,@uk.ac.manchester.spinnaker.machine.ValidYint)">whereIs</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.BoardLocation.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.BoardLocation</a>&gt;</span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments"><a href="../../machine/ValidX.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidX</a>
+@uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;x,
+<a href="../../machine/ValidY.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidY</a>
+@uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;y)</span></div>
 <div class="block">Locate a board within the allocation.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>

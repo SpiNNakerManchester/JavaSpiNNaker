@@ -269,8 +269,8 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../GetBoardAtPositionCommand.html#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">GetBoardAtPositionCommand</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="../BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../GetBoardAtPositionCommand.html#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">GetBoardAtPositionCommand</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="../BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Create a request.</div>
 </td>
@@ -288,8 +288,8 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../WhereIsMachineBoardPhysicalCommand.html#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">WhereIsMachineBoardPhysicalCommand</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="../BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../WhereIsMachineBoardPhysicalCommand.html#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">WhereIsMachineBoardPhysicalCommand</a></span>&#8203;(@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid @NotNull <a href="../BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Create a request to locate a board on a machine.</div>
 </td>

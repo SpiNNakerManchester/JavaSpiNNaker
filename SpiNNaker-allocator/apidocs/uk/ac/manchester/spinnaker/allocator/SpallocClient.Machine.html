@@ -117,7 +117,7 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code><a href="WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardByChip(uk.ac.manchester.spinnaker.machine.HasChipLocation)">getBoardByChip</a></span>&#8203;(uk.ac.manchester.spinnaker.machine.HasChipLocation&nbsp;chip)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardByChip(uk.ac.manchester.spinnaker.machine.HasChipLocation)">getBoardByChip</a></span>&#8203;(@NotNull @Valid uk.ac.manchester.spinnaker.machine.HasChipLocation&nbsp;chip)</code></th>
 <td class="colLast">
 <div class="block">Given a <em>global</em> chip location, return more info about the
  board that contains it.</div>
@@ -125,25 +125,25 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code><a href="WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardByIPAddress(java.lang.String)">getBoardByIPAddress</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardByIPAddress(java.lang.String)">getBoardByIPAddress</a></span>&#8203;(@IPAddress <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</code></th>
 <td class="colLast">
 <div class="block">Given an IP address, return more info about a board.</div>
 </td>
 </tr>
 <tr class="altColor" id="i2">
 <td class="colFirst"><code><a href="WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardByPhysicalCoords(int,int,int)">getBoardByPhysicalCoords</a></span>&#8203;(int&nbsp;cabinet,
-int&nbsp;frame,
-int&nbsp;board)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardByPhysicalCoords(@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">getBoardByPhysicalCoords</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;cabinet,
+@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;frame,
+@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Given physical coordinates, return more info about a board.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code><a href="WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardByTriad(int,int,int)">getBoardByTriad</a></span>&#8203;(int&nbsp;x,
-int&nbsp;y,
-int&nbsp;z)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardByTriad(@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">getBoardByTriad</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z)</code></th>
 <td class="colLast">
 <div class="block">Given logical triad coordinates, return more info about a board.</div>
 </td>
@@ -317,10 +317,13 @@ int&nbsp;z)</code></th>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="getBoardByTriad(int,int,int)">getBoardByTriad</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></span>&nbsp;<span class="memberName">getBoardByTriad</span>&#8203;(<span class="arguments">int&nbsp;x,
-int&nbsp;y,
-int&nbsp;z)</span>
+<h3><a id="getBoardByTriad(@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">getBoardByTriad</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></span>&nbsp;<span class="memberName">getBoardByTriad</span>&#8203;(<span class="arguments">@ValidTriadX
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
+@ValidTriadY
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
+@ValidTriadZ
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z)</span>
                  throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/FileNotFoundException.html?is-external=true" title="class or interface in java.io" class="externalLink">FileNotFoundException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">Given logical triad coordinates, return more info about a board.</div>
@@ -339,10 +342,13 @@ int&nbsp;z)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="getBoardByPhysicalCoords(int,int,int)">getBoardByPhysicalCoords</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></span>&nbsp;<span class="memberName">getBoardByPhysicalCoords</span>&#8203;(<span class="arguments">int&nbsp;cabinet,
-int&nbsp;frame,
-int&nbsp;board)</span>
+<h3><a id="getBoardByPhysicalCoords(@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">getBoardByPhysicalCoords</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></span>&nbsp;<span class="memberName">getBoardByPhysicalCoords</span>&#8203;(<span class="arguments">@ValidCabinetNumber
+@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;cabinet,
+@ValidFrameNumber
+@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;frame,
+@ValidBoardNumber
+@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;board)</span>
                           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/FileNotFoundException.html?is-external=true" title="class or interface in java.io" class="externalLink">FileNotFoundException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">Given physical coordinates, return more info about a board.</div>
@@ -362,7 +368,8 @@ int&nbsp;board)</span>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getBoardByChip(uk.ac.manchester.spinnaker.machine.HasChipLocation)">getBoardByChip</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></span>&nbsp;<span class="memberName">getBoardByChip</span>&#8203;(<span class="arguments">uk.ac.manchester.spinnaker.machine.HasChipLocation&nbsp;chip)</span>
+<div class="memberSignature"><span class="returnType"><a href="WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></span>&nbsp;<span class="memberName">getBoardByChip</span>&#8203;(<span class="arguments">@NotNull @Valid
+@NotNull @Valid uk.ac.manchester.spinnaker.machine.HasChipLocation&nbsp;chip)</span>
                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/FileNotFoundException.html?is-external=true" title="class or interface in java.io" class="externalLink">FileNotFoundException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">Given a <em>global</em> chip location, return more info about the
@@ -381,7 +388,8 @@ int&nbsp;board)</span>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getBoardByIPAddress(java.lang.String)">getBoardByIPAddress</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></span>&nbsp;<span class="memberName">getBoardByIPAddress</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</span>
+<div class="memberSignature"><span class="returnType"><a href="WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></span>&nbsp;<span class="memberName">getBoardByIPAddress</span>&#8203;(<span class="arguments">@IPAddress
+@IPAddress <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</span>
                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/FileNotFoundException.html?is-external=true" title="class or interface in java.io" class="externalLink">FileNotFoundException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">Given an IP address, return more info about a board.</div>

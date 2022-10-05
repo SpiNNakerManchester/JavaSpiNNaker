@@ -103,8 +103,8 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../SpallocAPI.BoardLocation.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.BoardLocation</a>&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Machine.</span><code><span class="memberNameLink"><a href="../SpallocAPI.Machine.html#getBoardByChip(int,int)">getBoardByChip</a></span>&#8203;(int&nbsp;x,
-int&nbsp;y)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Machine.</span><code><span class="memberNameLink"><a href="../SpallocAPI.Machine.html#getBoardByChip(@uk.ac.manchester.spinnaker.machine.ValidXint,@uk.ac.manchester.spinnaker.machine.ValidYint)">getBoardByChip</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;y)</code></th>
 <td class="colLast">
 <div class="block">Get a description of the location of a board given the global
  coordinates of a chip on it.</div>
@@ -112,7 +112,7 @@ int&nbsp;y)</code></th>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../SpallocAPI.BoardLocation.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.BoardLocation</a>&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Machine.</span><code><span class="memberNameLink"><a href="../SpallocAPI.Machine.html#getBoardByIPAddress(java.lang.String)">getBoardByIPAddress</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Machine.</span><code><span class="memberNameLink"><a href="../SpallocAPI.Machine.html#getBoardByIPAddress(java.lang.String)">getBoardByIPAddress</a></span>&#8203;(<a href="../../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</code></th>
 <td class="colLast">
 <div class="block">Get a description of the location of a board given the address of its
  ethernet chip.</div>
@@ -120,9 +120,9 @@ int&nbsp;y)</code></th>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../SpallocAPI.BoardLocation.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.BoardLocation</a>&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Machine.</span><code><span class="memberNameLink"><a href="../SpallocAPI.Machine.html#getBoardByLogicalCoords(int,int,int)">getBoardByLogicalCoords</a></span>&#8203;(int&nbsp;x,
-int&nbsp;y,
-int&nbsp;z)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Machine.</span><code><span class="memberNameLink"><a href="../SpallocAPI.Machine.html#getBoardByLogicalCoords(@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">getBoardByLogicalCoords</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z)</code></th>
 <td class="colLast">
 <div class="block">Get a description of the location of a board given the triad
  coordinates of the board.</div>
@@ -130,9 +130,9 @@ int&nbsp;z)</code></th>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../SpallocAPI.BoardLocation.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.BoardLocation</a>&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Machine.</span><code><span class="memberNameLink"><a href="../SpallocAPI.Machine.html#getBoardByPhysicalCoords(int,int,int)">getBoardByPhysicalCoords</a></span>&#8203;(int&nbsp;cabinet,
-int&nbsp;frame,
-int&nbsp;board)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Machine.</span><code><span class="memberNameLink"><a href="../SpallocAPI.Machine.html#getBoardByPhysicalCoords(@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">getBoardByPhysicalCoords</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;cabinet,
+@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;frame,
+@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Get a description of the location of a board given the physical
  coordinates of the board.</div>
@@ -140,8 +140,8 @@ int&nbsp;board)</code></th>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../SpallocAPI.BoardLocation.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.BoardLocation</a>&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Job.</span><code><span class="memberNameLink"><a href="../SpallocAPI.Job.html#whereIs(int,int)">whereIs</a></span>&#8203;(int&nbsp;x,
-int&nbsp;y)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Job.</span><code><span class="memberNameLink"><a href="../SpallocAPI.Job.html#whereIs(@uk.ac.manchester.spinnaker.machine.ValidXint,@uk.ac.manchester.spinnaker.machine.ValidYint)">whereIs</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;y)</code></th>
 <td class="colLast">
 <div class="block">Locate a board within the allocation.</div>
 </td>

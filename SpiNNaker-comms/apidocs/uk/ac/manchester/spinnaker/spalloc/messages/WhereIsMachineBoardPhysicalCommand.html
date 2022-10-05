@@ -116,17 +116,17 @@ extends <a href="Command.html" title="class in uk.ac.manchester.spinnaker.spallo
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,int,int,int)">WhereIsMachineBoardPhysicalCommand</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-int&nbsp;cabinet,
-int&nbsp;frame,
-int&nbsp;board)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">WhereIsMachineBoardPhysicalCommand</a></span>&#8203;(@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;cabinet,
+@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;frame,
+@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Create a request to locate a board on a machine.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">WhereIsMachineBoardPhysicalCommand</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">WhereIsMachineBoardPhysicalCommand</a></span>&#8203;(@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid @NotNull <a href="BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Create a request to locate a board on a machine.</div>
 </td>
@@ -167,11 +167,15 @@ int&nbsp;board)</code></th>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(java.lang.String,int,int,int)">WhereIsMachineBoardPhysicalCommand</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">WhereIsMachineBoardPhysicalCommand</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-int&nbsp;cabinet,
-int&nbsp;frame,
-int&nbsp;board)</span></div>
+<h3><a id="&lt;init&gt;(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">WhereIsMachineBoardPhysicalCommand</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">WhereIsMachineBoardPhysicalCommand</span>&#8203;(<span class="arguments">@NotNull
+@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/ValidCabinetNumber.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">@ValidCabinetNumber</a>
+@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;cabinet,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/ValidFrameNumber.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">@ValidFrameNumber</a>
+@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;frame,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/ValidBoardNumber.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">@ValidBoardNumber</a>
+@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;board)</span></div>
 <div class="block">Create a request to locate a board on a machine.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -185,8 +189,10 @@ int&nbsp;board)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">WhereIsMachineBoardPhysicalCommand</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">WhereIsMachineBoardPhysicalCommand</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">WhereIsMachineBoardPhysicalCommand</span>&#8203;(<span class="arguments">@NotNull
+@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid @NotNull
+@Valid @NotNull <a href="BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords)</span></div>
 <div class="block">Create a request to locate a board on a machine.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>

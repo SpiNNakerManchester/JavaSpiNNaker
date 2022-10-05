@@ -103,8 +103,8 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code><a href="../WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocServiceAPI.JobAPI.</span><code><span class="memberNameLink"><a href="../SpallocServiceAPI.JobAPI.html#getJobChipLocation(@javax.validation.constraints.PositiveOrZero(message=%22xmustbeatleast0%22)int,@javax.validation.constraints.PositiveOrZero(message=%22ymustbeatleast0%22)int)">getJobChipLocation</a></span>&#8203;(@javax.validation.constraints.PositiveOrZero(message="x must be at least 0") int&nbsp;x,
-@javax.validation.constraints.PositiveOrZero(message="y must be at least 0") int&nbsp;y)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocServiceAPI.JobAPI.</span><code><span class="memberNameLink"><a href="../SpallocServiceAPI.JobAPI.html#getJobChipLocation(@uk.ac.manchester.spinnaker.machine.ValidXint,@uk.ac.manchester.spinnaker.machine.ValidYint)">getJobChipLocation</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;y)</code></th>
 <td class="colLast">
 <div class="block">Get the location description of a board given the job-local
  coordinates of a chip on that board.</div>
@@ -112,7 +112,7 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocServiceAPI.MachineAPI.</span><code><span class="memberNameLink"><a href="../SpallocServiceAPI.MachineAPI.html#whereIsIPAddress(java.lang.String)">whereIsIPAddress</a></span>&#8203;(<a href="../../model/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.alloc.model">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocServiceAPI.MachineAPI.</span><code><span class="memberNameLink"><a href="../SpallocServiceAPI.MachineAPI.html#whereIsIPAddress(java.lang.String)">whereIsIPAddress</a></span>&#8203;(@IPAddress <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</code></th>
 <td class="colLast">
 <div class="block">Get the location description of a board given its ethernet chip's IP
  address.</div>
@@ -120,17 +120,17 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code><a href="../WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocServiceAPI.MachineAPI.</span><code><span class="memberNameLink"><a href="../SpallocServiceAPI.MachineAPI.html#whereIsLogicalPosition(@javax.validation.constraints.PositiveOrZero(message=%22xmustbeatleast0%22)int,@javax.validation.constraints.PositiveOrZero(message=%22ymustbeatleast0%22)int,@javax.validation.constraints.PositiveOrZero(message=%22zmustbe0,1or2%22),@javax.validation.constraints.Max(value=2L,message=%22zmustbe0,1or2%22)int)">whereIsLogicalPosition</a></span>&#8203;(@javax.validation.constraints.PositiveOrZero(message="x must be at least 0") int&nbsp;x,
-@javax.validation.constraints.PositiveOrZero(message="y must be at least 0") int&nbsp;y,
-@javax.validation.constraints.PositiveOrZero(message="z must be 0, 1 or 2"),@javax.validation.constraints.Max(value=2L, message="z must be 0, 1 or 2") int&nbsp;z)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocServiceAPI.MachineAPI.</span><code><span class="memberNameLink"><a href="../SpallocServiceAPI.MachineAPI.html#whereIsLogicalPosition(@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">whereIsLogicalPosition</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z)</code></th>
 <td class="colLast">
 <div class="block">Get the location description of a board given its logical coords.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocServiceAPI.MachineAPI.</span><code><span class="memberNameLink"><a href="../SpallocServiceAPI.MachineAPI.html#whereIsMachineChipLocation(@javax.validation.constraints.PositiveOrZero(message=%22xmustbeatleast0%22)int,@javax.validation.constraints.PositiveOrZero(message=%22ymustbeatleast0%22)int)">whereIsMachineChipLocation</a></span>&#8203;(@javax.validation.constraints.PositiveOrZero(message="x must be at least 0") int&nbsp;x,
-@javax.validation.constraints.PositiveOrZero(message="y must be at least 0") int&nbsp;y)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocServiceAPI.MachineAPI.</span><code><span class="memberNameLink"><a href="../SpallocServiceAPI.MachineAPI.html#whereIsMachineChipLocation(@uk.ac.manchester.spinnaker.machine.ValidXint,@uk.ac.manchester.spinnaker.machine.ValidYint)">whereIsMachineChipLocation</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;y)</code></th>
 <td class="colLast">
 <div class="block">Get the location description of a board given the global coordinates
  of a chip on the board.</div>
@@ -138,9 +138,9 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code><a href="../WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocServiceAPI.MachineAPI.</span><code><span class="memberNameLink"><a href="../SpallocServiceAPI.MachineAPI.html#whereIsPhysicalPosition(@javax.validation.constraints.PositiveOrZero(message=%22cabinetmustbeatleast0%22)int,@javax.validation.constraints.PositiveOrZero(message=%22framemustbeatleast0%22)int,@javax.validation.constraints.PositiveOrZero(message=%22boardmustbeatleast0%22)int)">whereIsPhysicalPosition</a></span>&#8203;(@javax.validation.constraints.PositiveOrZero(message="cabinet must be at least 0") int&nbsp;cabinet,
-@javax.validation.constraints.PositiveOrZero(message="frame must be at least 0") int&nbsp;frame,
-@javax.validation.constraints.PositiveOrZero(message="board must be at least 0") int&nbsp;board)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocServiceAPI.MachineAPI.</span><code><span class="memberNameLink"><a href="../SpallocServiceAPI.MachineAPI.html#whereIsPhysicalPosition(@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">whereIsPhysicalPosition</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;cabinet,
+@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;frame,
+@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Get the location description of a board given its physical coords.</div>
 </td>
