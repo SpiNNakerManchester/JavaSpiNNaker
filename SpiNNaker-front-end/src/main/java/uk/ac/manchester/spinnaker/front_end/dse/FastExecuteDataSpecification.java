@@ -439,19 +439,15 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 				MemoryLocation start) throws IOException, ProcessException,
 				DataSpecificationException, StorageException,
 				InterruptedException {
-			ByteBuffer ds;
-			try {
-				ds = ctl.getDataSpec();
-			} catch (StorageException e) {
-				throw new DataSpecificationException(format(
-						"failed to read data specification on "
-								+ "core %s of board %s (%s)",
-						ctl.core, board.location, board.ethernetAddress), e);
-			}
-			try (var executor = new Executor(ds,
+			// Get what we're going to run...
+			var dataSpec = getDataSpec(ctl);
+
+			try (var executor = new Executor(dataSpec,
 					machine.getChipAt(ctl.core).sdram)) {
-				int writes = loadCoreFromExecutor(ctl, gather, start, executor,
-						execContext);
+				// ... run it...
+				execContext.execute(executor, ctl.core, start);
+				// ... and write the results to the machine
+				int writes = loadCoreFromExecutor(ctl, gather, start, executor);
 				log.info("loaded {} memory regions (including metadata "
 						+ "pseudoregion) for {}", writes, ctl.core);
 			} catch (DataSpecificationException e) {
@@ -472,12 +468,31 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 			}
 		}
 
+		/**
+		 * Wrap {@link CoreToLoad#getDataSpec()} with core location info on
+		 * failure.
+		 *
+		 * @param ctl
+		 *            Record from the database describing a core to be loaded.
+		 * @return The data specification for the given core.
+		 * @throws DataSpecificationException
+		 *             If something goes wrong.
+		 */
+		private ByteBuffer getDataSpec(CoreToLoad ctl)
+				throws DataSpecificationException {
+			try {
+				return ctl.getDataSpec();
+			} catch (StorageException | RuntimeException e) {
+				throw new DataSpecificationException(format(
+						"failed to read data specification on "
+								+ "core %s of board %s (%s)",
+						ctl.core, board.location, board.ethernetAddress), e);
+			}
+		}
+
 		private int loadCoreFromExecutor(CoreToLoad ctl, Gather gather,
-				MemoryLocation start, Executor executor,
-				ExecutionContext execContext)
-				throws DataSpecificationException, IOException,
+				MemoryLocation start, Executor executor) throws IOException,
 				ProcessException, StorageException, InterruptedException {
-			execContext.execute(executor, ctl.core, start);
 			int size = executor.getConstructedDataSize();
 			if (log.isInfoEnabled()) {
 				log.info("generated {} bytes to load onto {} into memory "
