@@ -23,13 +23,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 import com.google.errorprone.annotations.Keep;
 
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
@@ -40,20 +43,28 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 public class BoardRecord {
 	private Integer id;
 
+	@NotBlank
 	private String machineName;
 
+	@ValidTriadX
 	private Integer x;
 
+	@ValidTriadY
 	private Integer y;
 
+	@ValidTriadZ
 	private Integer z;
 
+	@ValidCabinetNumber
 	private Integer cabinet;
 
+	@ValidFrameNumber
 	private Integer frame;
 
+	@ValidBoardNumber
 	private Integer board;
 
+	@IPAddress(nullOK = true)
 	private String ipAddress;
 
 	private Boolean enabled;
@@ -90,7 +101,6 @@ public class BoardRecord {
 	}
 
 	/** @return The machine name. */
-	@NotNull
 	public String getMachineName() {
 		return machineName;
 	}
@@ -136,7 +146,6 @@ public class BoardRecord {
 	}
 
 	/** @return The cabinet number, if known. */
-	@ValidCabinetNumber
 	public Integer getCabinet() {
 		return cabinet;
 	}
@@ -147,7 +156,6 @@ public class BoardRecord {
 	}
 
 	/** @return The frame number, if known. */
-	@ValidFrameNumber
 	public Integer getFrame() {
 		return frame;
 	}
@@ -158,7 +166,6 @@ public class BoardRecord {
 	}
 
 	/** @return The board number, if known. */
-	@ValidBoardNumber
 	public Integer getBoard() {
 		return board;
 	}
@@ -174,7 +181,6 @@ public class BoardRecord {
 	}
 
 	/** @return The board's IP address, if known. */
-	@IPAddress(nullOK = true)
 	public String getIpAddress() {
 		return ipAddress;
 	}
@@ -195,8 +201,8 @@ public class BoardRecord {
 	 *         a board on that machine.
 	 */
 	@Keep
-	@AssertTrue
-	boolean isValidBoardLocator() {
+	@AssertTrue(message = "board must have some mechanism for being located")
+	private boolean isValidBoardLocator() {
 		return isIdPresent() || (nonNull(machineName) && (isTriadCoordPresent()
 				|| isPhysicalCoordPresent() || isAddressPresent()));
 	}
@@ -251,15 +257,17 @@ public class BoardRecord {
 		this.lastPowerOff = lastPowerOff;
 	}
 
-	/** @return The reports associated with this board. */
-	@NotNull
+	/**
+	 * @return The reports associated with this board. The list is not
+	 *         modifiable.
+	 */
 	public List<BoardIssueReport> getReports() {
 		return reports;
 	}
 
 	/** @param reports The reports associated with this board. */
 	public void setReports(List<BoardIssueReport> reports) {
-		this.reports = nonNull(reports) ? reports : new ArrayList<>();
+		this.reports = nonNull(reports) ? List.copyOf(reports) : List.of();
 	}
 
 	/** @return Whether this board is powered on. */

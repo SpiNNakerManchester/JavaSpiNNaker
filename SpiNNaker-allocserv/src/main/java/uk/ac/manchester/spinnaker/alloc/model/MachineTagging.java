@@ -23,6 +23,8 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.validation.constraints.NotBlank;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import uk.ac.manchester.spinnaker.alloc.db.Row;
@@ -37,13 +39,14 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class MachineTagging {
+	@NotBlank
 	private String name;
 
 	private int id;
 
 	private URI url;
 
-	private Set<String> tags = new HashSet<>();
+	private Set<@NotBlank String> tags = new HashSet<>();
 
 	MachineTagging() {
 	}

@@ -48,7 +48,7 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 @SuppressWarnings("checkstyle:visibilitymodifier")
 public class CreateJobRequest {
 	/**
-	 * Who owns the job.
+	 * Who owns the job. Ignored when the job is submitted by a non-admin.
 	 */
 	public String owner;
 
