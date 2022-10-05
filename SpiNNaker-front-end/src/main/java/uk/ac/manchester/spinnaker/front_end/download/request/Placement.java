@@ -16,15 +16,18 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.ValidP;
+import uk.ac.manchester.spinnaker.machine.ValidX;
+import uk.ac.manchester.spinnaker.machine.ValidY;
 
 /**
  * Vertex placement information.
@@ -42,12 +45,15 @@ public class Placement implements HasCoreLocation {
 	}
 
 	/** The X coordinate of the core this vertex is placed on. */
+	@ValidX
 	private final int x;
 
 	/** The Y coordinate of the core this vertex is placed on. */
+	@ValidY
 	private final int y;
 
 	/** The processor ID of the core this vertex is placed on. */
+	@ValidP
 	private final int p;
 
 	/** Minimal vertex info. */

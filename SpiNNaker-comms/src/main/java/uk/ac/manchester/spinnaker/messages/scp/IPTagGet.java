@@ -31,6 +31,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.tags.TagID;
 import uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
@@ -46,7 +47,8 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 	 * @param tag
 	 *            The tag to get the details of.
 	 */
-	public IPTagGet(HasChipLocation chip, int tag) {
+	public IPTagGet(HasChipLocation chip,
+			@TagID(scamp = true, ephemeral = true) int tag) {
 		super(chip.getScampCore(), CMD_IPTAG, argument1(tag), 1);
 	}
 

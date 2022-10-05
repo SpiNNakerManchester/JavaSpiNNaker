@@ -19,6 +19,11 @@ package uk.ac.manchester.spinnaker.storage;
 import java.nio.ByteBuffer;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
@@ -118,6 +123,7 @@ public interface BufferManagerStorage extends DatabaseAPI {
 		 * What core owned the region? Note that the region might be retrieved
 		 * from another core of the same chip.
 		 */
+		@Valid
 		public final CoreLocation core;
 
 		/**
@@ -130,29 +136,34 @@ public interface BufferManagerStorage extends DatabaseAPI {
 		 * Where should the data be downloaded from? <em>This is not necessarily
 		 * the start of the region.</em>
 		 */
+		@NotNull
 		public final MemoryLocation startAddress;
 
 		/**
 		 * How much data should be downloaded? <em>This is not necessarily the
 		 * size of the region.</em>
 		 */
+		@Positive
 		public final int size;
 
 		/**
 		 * How much data was originally requested?
 		 */
+		@Positive
 		public final int realSize;
 
 		/**
 		 * How many extra bytes are being read at the start of the region in
 		 * order to get an aligned read?
 		 */
+		@PositiveOrZero
 		public final int initialIgnore;
 
 		/**
 		 * How many extra bytes are being read at the end of the region in order
 		 * to get an aligned read?
 		 */
+		@PositiveOrZero
 		public final int finalIgnore;
 
 		/**

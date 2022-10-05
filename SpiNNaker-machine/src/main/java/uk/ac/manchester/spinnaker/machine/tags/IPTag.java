@@ -23,6 +23,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Objects;
 
+import javax.validation.Valid;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -49,6 +51,7 @@ public final class IPTag extends Tag {
 	private final TrafficIdentifier trafficIdentifier;
 
 	/** The coordinates where users of this tag should send packets to. */
+	@Valid
 	private final ChipLocation destination;
 
 	/**

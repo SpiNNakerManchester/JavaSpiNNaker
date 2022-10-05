@@ -46,7 +46,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.PositiveOrZero;
 
 import org.slf4j.Logger;
 
@@ -56,6 +55,9 @@ import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
+import uk.ac.manchester.spinnaker.machine.ValidP;
+import uk.ac.manchester.spinnaker.machine.ValidX;
+import uk.ac.manchester.spinnaker.machine.ValidY;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
@@ -759,8 +761,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 *            Optional descriptive text about the problem.
 	 */
 	protected abstract void reportProblem(@IPAddress String address,
-			@PositiveOrZero Integer x, @PositiveOrZero Integer y,
-			@PositiveOrZero Integer p, String description);
+			@ValidX Integer x, @ValidY Integer y, @ValidP Integer p,
+			String description);
 
 	/**
 	 * Get the service version.
@@ -784,8 +786,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
-	protected abstract WhereIs whereIsJobChip(int jobId, @PositiveOrZero int x,
-			@PositiveOrZero int y) throws TaskException;
+	protected abstract WhereIs whereIsJobChip(int jobId, @ValidX int x,
+			@ValidY int y) throws TaskException;
 
 	/**
 	 * Describe where a chip is within a machine.
@@ -801,7 +803,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 *             If anything goes wrong.
 	 */
 	protected abstract WhereIs whereIsMachineChip(@NotBlank String machineName,
-			@PositiveOrZero int x, @PositiveOrZero int y) throws TaskException;
+			@ValidX int x, @ValidY int y) throws TaskException;
 
 	/**
 	 * Describe where a board is within a machine.

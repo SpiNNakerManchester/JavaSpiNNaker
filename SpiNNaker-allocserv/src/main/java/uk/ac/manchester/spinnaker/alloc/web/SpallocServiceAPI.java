@@ -76,6 +76,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import uk.ac.manchester.spinnaker.machine.ValidX;
+import uk.ac.manchester.spinnaker.machine.ValidY;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
@@ -371,9 +373,9 @@ public interface SpallocServiceAPI {
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse whereIsMachineChipLocation(
 				@Description("Global chip X coordinate") @QueryParam(CHIP_X)
-				@PositiveOrZero(message = "x must be at least 0") int x,
+				@ValidX int x,
 				@Description("Global chip Y coordinate") @QueryParam(CHIP_Y)
-				@PositiveOrZero(message = "y must be at least 0") int y);
+				@ValidY int y);
 
 		/**
 		 * Get the location description of a board given its ethernet chip's IP
@@ -543,11 +545,9 @@ public interface SpallocServiceAPI {
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse getJobChipLocation(
 				@Description("X coordinate of chip within job's allocation.")
-				@QueryParam(CHIP_X) @DefaultValue("0")
-				@PositiveOrZero(message = "x must be at least 0") int x,
+				@QueryParam(CHIP_X) @DefaultValue("0") @ValidX int x,
 				@Description("Y coordinate of chip within job's allocation.")
-				@QueryParam(CHIP_Y) @DefaultValue("0")
-				@PositiveOrZero(message = "y must be at least 0") int y);
+				@QueryParam(CHIP_Y) @DefaultValue("0") @ValidY int y);
 
 		/**
 		 * Report an issue with some boards.

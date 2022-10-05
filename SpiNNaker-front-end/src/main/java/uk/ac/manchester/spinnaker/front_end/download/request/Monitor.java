@@ -22,10 +22,16 @@ import static java.util.Collections.unmodifiableList;
 import java.io.IOException;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.ValidP;
+import uk.ac.manchester.spinnaker.machine.ValidX;
+import uk.ac.manchester.spinnaker.machine.ValidY;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
@@ -38,16 +44,19 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 @JsonFormat(shape = OBJECT)
 public class Monitor implements HasCoreLocation {
 	/** The X coordinate of the core this monitor is placed on. */
+	@ValidX
 	private final int x;
 
 	/** The Y coordinate of the core this monitor is placed on. */
+	@ValidY
 	private final int y;
 
 	/** The processor ID of the core this monitor is placed on. */
+	@ValidP
 	private final int p;
 
 	/** The vertex placements that this monitor will read. */
-	private final List<Placement> placements;
+	private final List<@Valid @NotNull Placement> placements;
 
 	/** The transaction id for this extra monitor. */
 	private int transactionId = 0;

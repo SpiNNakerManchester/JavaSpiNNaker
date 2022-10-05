@@ -56,6 +56,8 @@ import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.ValidX;
+import uk.ac.manchester.spinnaker.machine.ValidY;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
@@ -841,8 +843,7 @@ public interface SpallocAPI {
 		 *            The Y coordinate of a chip on the board of interest.
 		 * @return The location, if resources allocated and the location maps.
 		 */
-		Optional<BoardLocation> whereIs(@PositiveOrZero int x,
-				@PositiveOrZero int y);
+		Optional<BoardLocation> whereIs(@ValidX int x, @ValidY int y);
 
 		/**
 		 * @return The absolute location of root chip. {@code null} if no
@@ -975,8 +976,7 @@ public interface SpallocAPI {
 		 *            Global chip Y coordinate.
 		 * @return Board location description
 		 */
-		Optional<BoardLocation> getBoardByChip(@PositiveOrZero int x,
-				@PositiveOrZero int y);
+		Optional<BoardLocation> getBoardByChip(@ValidX int x, @ValidY int y);
 
 		/**
 		 * Get a description of the location of a board given the physical

@@ -32,6 +32,7 @@ public abstract class Tag implements Comparable<Tag> {
 	private final InetAddress boardAddress;
 
 	/** The tagID ID associated with this tagID. */
+	@TagID
 	private final int tagID;
 
 	/** The port number associated with this tagID. */

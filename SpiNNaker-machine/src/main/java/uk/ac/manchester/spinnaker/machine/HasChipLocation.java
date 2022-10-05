@@ -27,11 +27,13 @@ public interface HasChipLocation {
 	/**
 	 * @return The X coordinate of the chip.
 	 */
+	@ValidX
 	int getX();
 
 	/**
 	 * @return The X coordinate of the chip.
 	 */
+	@ValidY
 	int getY();
 
 	/**

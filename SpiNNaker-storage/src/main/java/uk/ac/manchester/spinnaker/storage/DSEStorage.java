@@ -19,9 +19,13 @@ package uk.ac.manchester.spinnaker.storage;
 import java.nio.ByteBuffer;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * The interface supported by the DSE part of the storage system.
@@ -101,11 +105,13 @@ public interface DSEStorage extends DatabaseAPI {
 		/**
 		 * The virtual location of this ethernet.
 		 */
+		@Valid
 		public final ChipLocation location;
 
 		/**
 		 * The network address of this ethernet.
 		 */
+		@IPAddress
 		public final String ethernetAddress;
 
 		/**
@@ -133,11 +139,13 @@ public interface DSEStorage extends DatabaseAPI {
 		/**
 		 * The core that the load is to be done on.
 		 */
+		@Valid
 		public final CoreLocation core;
 
 		/**
 		 * The size of region to allocate and write into.
 		 */
+		@Positive
 		public final int sizeToWrite;
 
 		/**

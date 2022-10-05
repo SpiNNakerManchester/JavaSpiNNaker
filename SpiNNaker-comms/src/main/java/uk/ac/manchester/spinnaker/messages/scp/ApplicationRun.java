@@ -22,7 +22,10 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_AR;
 
 import java.nio.ByteBuffer;
 
+import javax.validation.Valid;
+
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.ValidP;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 
 /**
@@ -39,8 +42,8 @@ public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 	 * @param processors
 	 *            The processors of the chip to run on, between 1 and 17
 	 */
-	public ApplicationRun(AppID appID, HasChipLocation chip,
-			Iterable<Integer> processors) {
+	public ApplicationRun(AppID appID, @Valid HasChipLocation chip,
+			Iterable<@ValidP Integer> processors) {
 		this(appID, chip, processors, false);
 	}
 
@@ -54,8 +57,8 @@ public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 	 * @param wait
 	 *            True if the processors should enter a "wait" state on starting
 	 */
-	public ApplicationRun(AppID appId, HasChipLocation chip,
-			Iterable<Integer> processors, boolean wait) {
+	public ApplicationRun(AppID appId, @Valid HasChipLocation chip,
+			Iterable<@ValidP Integer> processors, boolean wait) {
 		super(chip.getScampCore(), CMD_AR, argument1(appId, processors, wait));
 	}
 

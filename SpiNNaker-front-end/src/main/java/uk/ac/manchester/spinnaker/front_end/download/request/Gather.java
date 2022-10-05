@@ -22,11 +22,16 @@ import static java.util.Collections.unmodifiableList;
 import java.io.IOException;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.ValidP;
+import uk.ac.manchester.spinnaker.machine.ValidX;
+import uk.ac.manchester.spinnaker.machine.ValidY;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
@@ -48,19 +53,23 @@ public class Gather implements HasCoreLocation {
 	}
 
 	/** The x value of the core this placement is on. */
+	@ValidX
 	private final int x;
 
 	/** The y value of the core this placement is on. */
+	@ValidY
 	private final int y;
 
 	/** The p value of the core this placement is on. */
+	@ValidP
 	private final int p;
 
 	/** The IPTag of the package gatherer. */
+	@Valid
 	private final IPTag iptag;
 
 	/** The extra monitor cores, and what to retrieve from them. */
-	private final List<Monitor> monitors;
+	private final List<@Valid Monitor> monitors;
 
 	/** The current transaction id for the board. */
 	private int transactionId;
