@@ -44,10 +44,12 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import com.google.errorprone.annotations.CompileTimeConstant;
@@ -64,12 +66,8 @@ import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.BoardIssueReport;
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
 import uk.ac.manchester.spinnaker.alloc.model.MachineTagging;
-import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
-import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
-import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
-import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
-import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
-import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
@@ -296,19 +294,16 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *
 	 * @param machine
 	 *            The name of the machine.
-	 * @param x
-	 *            X coordinate
-	 * @param y
-	 *            Y coordinate
-	 * @param z
-	 *            Z coordinate
+	 * @param coords
+	 *            Triad coordinates
 	 * @return Board state manager
 	 */
 	public Optional<BoardState> findTriad(@NotBlank String machine,
-			@ValidTriadX int x, @ValidTriadY int y, @ValidTriadZ int z) {
+			@Valid @NonNull TriadCoords coords) {
 		return executeRead(conn -> {
 			try (var q = conn.query(FIND_BOARD_BY_NAME_AND_XYZ)) {
-				return q.call1(machine, x, y, z).map(BoardState::new);
+				return q.call1(machine, coords.x, coords.y, coords.z)
+						.map(BoardState::new);
 			}
 		});
 	}
@@ -318,20 +313,16 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *
 	 * @param machine
 	 *            The name of the machine.
-	 * @param c
-	 *            Cabinet number
-	 * @param f
-	 *            Frame number
-	 * @param b
-	 *            Board number
+	 * @param coords
+	 *            Physical coordinates
 	 * @return Board state manager
 	 */
 	public Optional<BoardState> findPhysical(@NotBlank String machine,
-			@ValidCabinetNumber int c, @ValidFrameNumber int f,
-			@ValidBoardNumber int b) {
+			@Valid @NotNull PhysicalCoords coords) {
 		return executeRead(conn -> {
 			try (var q = conn.query(FIND_BOARD_BY_NAME_AND_CFB)) {
-				return q.call1(machine, c, f, b).map(BoardState::new);
+				return q.call1(machine, coords.c, coords.f, coords.b)
+						.map(BoardState::new);
 			}
 		});
 	}

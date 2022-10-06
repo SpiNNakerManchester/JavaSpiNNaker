@@ -53,7 +53,9 @@ import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest.ReportedBoard;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 
@@ -180,22 +182,22 @@ class SpallocCoreTest extends TestSupport {
 
 		@Test
 		void getBoardByChip() {
-			assertEquals(new BoardPhysicalCoordinates(1, 1, 0),
-					machine.getBoardByChip(0, 0).orElseThrow().getPhysical());
+			assertEquals(new BoardPhysicalCoordinates(1, 1, 0), machine
+					.getBoardByChip(ZERO_ZERO).orElseThrow().getPhysical());
 		}
 
 		@Test
 		void getBoardByPhysicalCoords() {
-			assertEquals(new BoardCoordinates(0, 0, 0),
-					machine.getBoardByPhysicalCoords(1, 1, 0).orElseThrow()
-							.getLogical());
+			assertEquals(new BoardCoordinates(0, 0, 0), machine
+					.getBoardByPhysicalCoords(new PhysicalCoords(1, 1, 0))
+					.orElseThrow().getLogical());
 		}
 
 		@Test
 		void getBoardByLogicalCoords() {
 			assertEquals(new BoardPhysicalCoordinates(1, 1, 0),
-					machine.getBoardByLogicalCoords(0, 0, 0).orElseThrow()
-							.getPhysical());
+					machine.getBoardByLogicalCoords(new TriadCoords(0, 0, 0))
+							.orElseThrow().getPhysical());
 		}
 
 		@Test

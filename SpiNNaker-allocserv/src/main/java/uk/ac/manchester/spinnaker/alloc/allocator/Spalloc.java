@@ -83,7 +83,9 @@ import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest.ReportedBoard;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
@@ -753,32 +755,33 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 
 		@Override
-		public Optional<BoardLocation> getBoardByChip(int x, int y) {
+		public Optional<BoardLocation> getBoardByChip(HasChipLocation chip) {
 			try (var conn = getConnection();
 					var findBoard = conn.query(findBoardByGlobalChip)) {
-				return conn.transaction(false, () -> findBoard.call1(id, x, y)
-						.map(row -> new BoardLocationImpl(row, this)));
-			}
-		}
-
-		@Override
-		public Optional<BoardLocation> getBoardByPhysicalCoords(int cabinet,
-				int frame, int board) {
-			try (var conn = getConnection();
-					var findBoard = conn.query(findBoardByPhysicalCoords)) {
 				return conn.transaction(false,
-						() -> findBoard.call1(id, cabinet, frame, board)
+						() -> findBoard.call1(id, chip.getX(), chip.getY())
 								.map(row -> new BoardLocationImpl(row, this)));
 			}
 		}
 
 		@Override
-		public Optional<BoardLocation> getBoardByLogicalCoords(int x, int y,
-				int z) {
+		public Optional<BoardLocation> getBoardByPhysicalCoords(
+				PhysicalCoords coords) {
+			try (var conn = getConnection();
+					var findBoard = conn.query(findBoardByPhysicalCoords)) {
+				return conn.transaction(false,
+						() -> findBoard.call1(id, coords.c, coords.f, coords.b)
+								.map(row -> new BoardLocationImpl(row, this)));
+			}
+		}
+
+		@Override
+		public Optional<BoardLocation> getBoardByLogicalCoords(
+				TriadCoords coords) {
 			try (var conn = getConnection();
 					var findBoard = conn.query(findBoardByLogicalCoords)) {
 				return conn.transaction(false,
-						() -> findBoard.call1(id, x, y, z)
+						() -> findBoard.call1(id, coords.x, coords.y, coords.z)
 								.map(row -> new BoardLocationImpl(row, this)));
 			}
 		}

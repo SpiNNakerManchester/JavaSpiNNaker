@@ -58,15 +58,9 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.ValidX;
 import uk.ac.manchester.spinnaker.machine.ValidY;
+import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
-import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
-import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
-import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
-import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
-import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
-import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
@@ -933,44 +927,34 @@ public interface SpallocAPI {
 		 * Get a description of the location of a board given the global
 		 * coordinates of a chip on it.
 		 *
-		 * @param x
-		 *            Global chip X coordinate.
-		 * @param y
-		 *            Global chip Y coordinate.
+		 * @param chipLocation
+		 *            Global chip coordinates.
 		 * @return Board location description
 		 */
-		Optional<BoardLocation> getBoardByChip(@ValidX int x, @ValidY int y);
+		Optional<BoardLocation> getBoardByChip(
+				@Valid @NotNull HasChipLocation chipLocation);
 
 		/**
 		 * Get a description of the location of a board given the physical
 		 * coordinates of the board.
 		 *
-		 * @param cabinet
-		 *            Cabinet number
-		 * @param frame
-		 *            Frame number
-		 * @param board
-		 *            Board number
+		 * @param coords
+		 *            PhysicalCoordinates
 		 * @return Board location description
 		 */
 		Optional<BoardLocation> getBoardByPhysicalCoords(
-				@ValidCabinetNumber int cabinet, @ValidFrameNumber int frame,
-				@ValidBoardNumber int board);
+				@Valid @NotNull PhysicalCoords coords);
 
 		/**
 		 * Get a description of the location of a board given the triad
 		 * coordinates of the board.
 		 *
-		 * @param x
-		 *            Triad X coordinate.
-		 * @param y
-		 *            Triad Y coordinate.
-		 * @param z
-		 *            Triad Z coordinate.
+		 * @param coords
+		 *            Triad coordinates.
 		 * @return Board location description
 		 */
-		Optional<BoardLocation> getBoardByLogicalCoords(@ValidTriadX int x,
-				@ValidTriadY int y, @ValidTriadZ int z);
+		Optional<BoardLocation> getBoardByLogicalCoords(
+				@Valid @NotNull TriadCoords coords);
 
 		/**
 		 * Get a description of the location of a board given the address of its

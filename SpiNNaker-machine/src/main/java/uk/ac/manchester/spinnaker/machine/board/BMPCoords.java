@@ -22,6 +22,7 @@ import static java.lang.Integer.parseInt;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.google.errorprone.annotations.Immutable;
 
 /**
  * A simple description of a BMP to talk to. Supports equality and being used as
@@ -33,6 +34,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
  *
  * @author Donal Fellows
  */
+@Immutable
 public final class BMPCoords implements Comparable<BMPCoords> {
 	/** Parses the result of {@link #toString()}. */
 	private static final Pattern PATTERN =
@@ -40,14 +42,14 @@ public final class BMPCoords implements Comparable<BMPCoords> {
 
 	/** The ID of the cabinet that contains the frame that contains the BMPs. */
 	@ValidCabinetNumber
-	public final int c; // TODO rename
+	public final int cabinet;
 
 	/**
 	 * The ID of the frame that contains the master BMP. Frames are contained
 	 * within a cabinet.
 	 */
 	@ValidFrameNumber
-	public final int f; // TODO rename
+	public final int frame;
 
 	/**
 	 * Create an instance.
@@ -58,8 +60,8 @@ public final class BMPCoords implements Comparable<BMPCoords> {
 	 *            Frame number.
 	 */
 	public BMPCoords(int cabinet, int frame) {
-		this.c = cabinet;
-		this.f = frame;
+		this.cabinet = cabinet;
+		this.frame = frame;
 	}
 
 	/**
@@ -82,35 +84,51 @@ public final class BMPCoords implements Comparable<BMPCoords> {
 			throw new IllegalArgumentException("bad argument: " + serialForm);
 		}
 		int idx = 0;
-		c = parseInt(m.group(++idx));
-		f = parseInt(m.group(++idx));
+		cabinet = parseInt(m.group(++idx));
+		frame = parseInt(m.group(++idx));
+	}
+
+	/**
+	 * @return The ID of the cabinet that contains the frame that contains the
+	 *         BMPs.
+	 */
+	public int getCabinet() {
+		return cabinet;
+	}
+
+	/**
+	 * @return The ID of the frame that contains the master BMP. Frames are
+	 *         contained within a cabinet.
+	 */
+	public int getFrame() {
+		return frame;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof BMPCoords) {
 			var other = (BMPCoords) obj;
-			return c == other.c && f == other.f;
+			return cabinet == other.cabinet && frame == other.frame;
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return c * 5 + f;
+		return cabinet * 5 + frame;
 	}
 
 	@Override
 	public String toString() {
-		return "[c:" + c + ",f:" + f + "]";
+		return "[c:" + cabinet + ",f:" + frame + "]";
 	}
 
 	@Override
 	public int compareTo(BMPCoords other) {
-		int cmp = compare(c, other.c);
+		int cmp = compare(cabinet, other.cabinet);
 		if (cmp != 0) {
 			return cmp;
 		}
-		return compare(f, other.f);
+		return compare(frame, other.frame);
 	}
 }

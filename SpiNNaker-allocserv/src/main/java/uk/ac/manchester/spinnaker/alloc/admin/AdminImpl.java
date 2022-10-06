@@ -49,6 +49,8 @@ import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.MemberRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 
 /**
  * Implements the service administration interface.
@@ -118,7 +120,7 @@ public class AdminImpl implements AdminAPI {
 	@Override
 	public boolean getBoardStateXYZ(String name, int x, int y, int z) {
 		log.info("CALLED boardState({}:XYZ=({},{},{}))", name, x, y, z);
-		var board = machineController.findTriad(name, x, y, z)
+		var board = machineController.findTriad(name, new TriadCoords(x, y, z))
 				.orElseThrow(AdminImpl::noBoard);
 		return board.getState();
 	}
@@ -129,7 +131,7 @@ public class AdminImpl implements AdminAPI {
 			boolean enabled) {
 		log.warn("CALLED boardState({}:XYZ=({},{},{})) := {}", name, x, y, z,
 				enabled);
-		var board = machineController.findTriad(name, x, y, z)
+		var board = machineController.findTriad(name, new TriadCoords(x, y, z))
 				.orElseThrow(AdminImpl::noBoard);
 		board.setState(enabled);
 		return board.getState();
@@ -138,7 +140,8 @@ public class AdminImpl implements AdminAPI {
 	@Override
 	public boolean getBoardStateCFB(String name, int c, int f, int b) {
 		log.info("CALLED boardState({}:CFB=({},{},{}))", name, c, f, b);
-		var board = machineController.findPhysical(name, c, f, b)
+		var board = machineController
+				.findPhysical(name, new PhysicalCoords(c, f, b))
 				.orElseThrow(AdminImpl::noBoard);
 		return board.getState();
 	}
@@ -149,7 +152,8 @@ public class AdminImpl implements AdminAPI {
 			boolean enabled) {
 		log.warn("CALLED boardState({}:CFB=({},{},{})) := {}", name, c, f, b,
 				enabled);
-		var board = machineController.findPhysical(name, c, f, b)
+		var board = machineController
+				.findPhysical(name, new PhysicalCoords(c, f, b))
 				.orElseThrow(AdminImpl::noBoard);
 		board.setState(enabled);
 		return board.getState();

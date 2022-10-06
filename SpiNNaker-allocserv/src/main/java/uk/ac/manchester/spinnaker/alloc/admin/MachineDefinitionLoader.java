@@ -722,7 +722,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			int machineId) {
 		var bmpIds = new HashMap<BMPCoords, Integer>();
 		machine.bmpIPs.forEach(
-				(bmp, ip) -> sql.makeBMP.key(machineId, ip, bmp.c, bmp.f)
+				(bmp, ip) -> sql.makeBMP.key(machineId, ip, bmp.cabinet, bmp.frame)
 						.ifPresent(id -> bmpIds.put(bmp, id)));
 		return bmpIds;
 	}

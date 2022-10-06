@@ -68,6 +68,7 @@ import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
@@ -301,7 +302,8 @@ class V1TaskImpl extends V1CompatTask {
 			String machineName, int cabinet, int frame, int board)
 			throws TaskException {
 		return getMachine(machineName)
-				.getBoardByPhysicalCoords(cabinet, frame, board)
+				.getBoardByPhysicalCoords(
+						new PhysicalCoords(cabinet, frame, board))
 				.orElseThrow(() -> new TaskException("no such board"))
 				.getLogical();
 	}
@@ -309,7 +311,8 @@ class V1TaskImpl extends V1CompatTask {
 	@Override
 	protected final BoardPhysicalCoordinates getBoardAtLogicalPosition(
 			String machineName, int x, int y, int z) throws TaskException {
-		return getMachine(machineName).getBoardByLogicalCoords(x, y, z)
+		return getMachine(machineName)
+				.getBoardByLogicalCoords(new TriadCoords(x, y, z))
 				.orElseThrow(() -> new TaskException("no such board"))
 				.getPhysical();
 	}
@@ -502,7 +505,7 @@ class V1TaskImpl extends V1CompatTask {
 	@Override
 	protected final WhereIs whereIsMachineChip(String machineName, int x, int y)
 			throws TaskException {
-		return getMachine(machineName).getBoardByChip(x, y)
+		return getMachine(machineName).getBoardByChip(new ChipLocation(x, y))
 				.map(V1TaskImpl::makeWhereIs)
 				.orElseThrow(() -> new TaskException("no such board"));
 	}
@@ -510,7 +513,8 @@ class V1TaskImpl extends V1CompatTask {
 	@Override
 	protected final WhereIs whereIsMachineLogicalBoard(String machineName,
 			int x, int y, int z) throws TaskException {
-		return getMachine(machineName).getBoardByLogicalCoords(x, y, z)
+		return getMachine(machineName)
+				.getBoardByLogicalCoords(new TriadCoords(x, y, z))
 				.map(V1TaskImpl::makeWhereIs)
 				.orElseThrow(() -> new TaskException("no such board"));
 	}
@@ -518,7 +522,8 @@ class V1TaskImpl extends V1CompatTask {
 	@Override
 	protected final WhereIs whereIsMachinePhysicalBoard(String machineName,
 			int c, int f, int b) throws TaskException {
-		return getMachine(machineName).getBoardByPhysicalCoords(c, f, b)
+		return getMachine(machineName)
+				.getBoardByPhysicalCoords(new PhysicalCoords(c, f, b))
 				.map(V1TaskImpl::makeWhereIs)
 				.orElseThrow(() -> new TaskException("no such board"));
 	}

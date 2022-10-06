@@ -24,12 +24,14 @@ import java.util.regex.Pattern;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.errorprone.annotations.Immutable;
 
 /**
  * Physical board coordinates.
  *
  * @author Donal Fellows
  */
+@Immutable
 public final class PhysicalCoords implements Comparable<PhysicalCoords> {
 	/** Cabinet number. */
 	@ValidCabinetNumber
