@@ -53,11 +53,11 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
-import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.machine.ValidP;
 import uk.ac.manchester.spinnaker.machine.ValidX;
 import uk.ac.manchester.spinnaker.machine.ValidY;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;

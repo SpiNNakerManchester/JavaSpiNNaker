@@ -33,8 +33,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BMPCoords;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BoardPhysicalCoords;
-import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
 import uk.ac.manchester.spinnaker.alloc.db.MemDBTestBase;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
 import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 

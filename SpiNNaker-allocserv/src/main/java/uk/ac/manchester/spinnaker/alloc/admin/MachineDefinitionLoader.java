@@ -53,7 +53,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 import org.sqlite.SQLiteException;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -73,13 +72,10 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
-import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
-import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
-import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 import uk.ac.manchester.spinnaker.utils.validation.TCPPort;
 
@@ -105,162 +101,6 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 */
 	private static int parseDec(String string) throws NumberFormatException {
 		return parseInt(string, DECIMAL);
-	}
-
-	/**
-	 * Triad coordinates.
-	 *
-	 * @author Donal Fellows
-	 */
-	@Validated
-	public static final class TriadCoords implements Comparable<TriadCoords> {
-		/** X coordinate. */
-		@ValidTriadX
-		public final int x;
-
-		/** Y coordinate. */
-		@ValidTriadY
-		public final int y;
-
-		/** Z coordinate. */
-		@ValidTriadZ
-		public final int z;
-
-		/**
-		 * Create an instance.
-		 * @param x X coordinate.
-		 * @param y Y coordinate.
-		 * @param z Z coordinate.
-		 */
-		@JsonCreator
-		public TriadCoords(@JsonProperty("x") int x, @JsonProperty("y") int y,
-				@JsonProperty("z") int z) {
-			this.x = x;
-			this.y = y;
-			this.z = z;
-		}
-
-		private static final Pattern PATTERN =
-				Pattern.compile("^\\[x:(\\d+),y:(\\d+),z:(\\d+)\\]$");
-
-		/**
-		 * Create an instance from its serial form. The serial form (where the
-		 * numbers may vary) is:
-		 *
-		 * <pre>
-		 * [x:34,y:56,z:2]
-		 * </pre>
-		 *
-		 * @param serialForm
-		 *            The form to deserialise.
-		 * @throws IllegalArgumentException
-		 *             If the string is not in the right form.
-		 */
-		@JsonCreator
-		public TriadCoords(String serialForm) {
-			var m = PATTERN.matcher(serialForm);
-			if (!m.matches()) {
-				throw new IllegalArgumentException(
-						"bad argument: " + serialForm);
-			}
-			int idx = 0;
-			x = parseDec(m.group(++idx));
-			y = parseDec(m.group(++idx));
-			z = parseDec(m.group(++idx));
-		}
-
-		private static final int TRIAD_MAJOR_OFFSET = 8;
-
-		private static final int TRIAD_MINOR_OFFSET = 4;
-
-		ChipLocation chipLocation() {
-			int rootX = x * TRIAD_CHIP_SIZE;
-			int rootY = y * TRIAD_CHIP_SIZE;
-			switch (z) {
-			case 0:
-				break;
-			case 1:
-				rootX += TRIAD_MAJOR_OFFSET;
-				rootY += TRIAD_MINOR_OFFSET;
-				break;
-			case 2:
-				rootX += TRIAD_MINOR_OFFSET;
-				rootY += TRIAD_MAJOR_OFFSET;
-				break;
-			default:
-				throw new IllegalArgumentException("bad Z coordinate");
-			}
-			return new ChipLocation(rootX, rootY);
-		}
-
-		/**
-		 * Applies a wraparound rule in a particular direction, turning
-		 * coordinate space into something of a modular field.
-		 *
-		 * @param value
-		 *            The value to wrap.
-		 * @param limit
-		 *            The upper limit. (Lower limits are always zero.)
-		 * @return The potentially wrapped value.
-		 */
-		private static int limit(int value, int limit) {
-			if (value < 0) {
-				return value + limit;
-			} else if (value >= limit) {
-				return value - limit;
-			} else {
-				return value;
-			}
-		}
-
-		/**
-		 * Get the triad coordinate that you arrive at when you move from the
-		 * current location in the indicated direction on the given machine.
-		 * This ignores dead links and dead boards.
-		 *
-		 * @param direction
-		 *            Which way to move
-		 * @param machine
-		 *            Used to determine where wraparounds are
-		 * @return The new location
-		 */
-		TriadCoords move(Direction direction, Machine machine) {
-			var di = DirInfo.get(z, direction);
-			return new TriadCoords(limit(x + di.dx, machine.getWidth()),
-					limit(y + di.dy, machine.getHeight()), z + di.dz);
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj instanceof TriadCoords) {
-				var other = (TriadCoords) obj;
-				return x == other.x && y == other.y && z == other.z;
-			}
-			return false;
-		}
-
-		@Override
-		public int hashCode() {
-			return x * 25 + y * 5 + z;
-		}
-
-		@Override
-		public String toString() {
-			return "[x:" + x + ",y:" + y + ",z:" + z + "]";
-		}
-
-		@Override
-		public int compareTo(TriadCoords other) {
-			int cmp = compare(x, other.x);
-			if (cmp != 0) {
-				return cmp;
-			}
-			cmp = compare(y, other.y);
-			if (cmp != 0) {
-				return cmp;
-			}
-			return compare(z, other.z);
-		}
 	}
 
 	/**
@@ -643,6 +483,43 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			}
 			return deadLinks.getOrDefault(board, EnumSet.noneOf(Link.class))
 					.contains(Link.of(direction));
+		}
+
+		/**
+		 * Applies a wraparound rule in a particular direction, turning
+		 * coordinate space into something of a modular field.
+		 *
+		 * @param value
+		 *            The value to wrap.
+		 * @param limit
+		 *            The upper limit. (Lower limits are always zero.)
+		 * @return The potentially wrapped value.
+		 */
+		private static int limit(int value, int limit) {
+			if (value < 0) {
+				return value + limit;
+			} else if (value >= limit) {
+				return value - limit;
+			} else {
+				return value;
+			}
+		}
+
+		/**
+		 * Get the triad coordinate that you arrive at when you move from a
+		 * given location in the indicated direction. This ignores dead links
+		 * and dead boards, but respects wraparounds.
+		 *
+		 * @param here
+		 *            Where to move from
+		 * @param direction
+		 *            Which way to move
+		 * @return The new location
+		 */
+		private TriadCoords move(TriadCoords here, Direction direction) {
+			var di = DirInfo.get(here.z, direction);
+			return new TriadCoords(limit(here.x + di.dx, width),
+					limit(here.y + di.dy, height), here.z + di.dz);
 		}
 
 		@JsonPOJOBuilder
@@ -1059,7 +936,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			var phys = machine.boardLocations.get(triad);
 			int bmpID = bmpIds.get(phys.bmp());
 			var addr = machine.spinnakerIPs.get(triad);
-			var root = triad.chipLocation();
+			var root = triad.asChipLocation();
 			log.debug("making {} board {}",
 					machine.deadBoards.contains(triad) ? "dead" : "live",
 					triad);
@@ -1083,7 +960,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			// Fake with the machine root if no real coords available
 			var phys = machine.boardLocations.getOrDefault(triad, rootPhys);
 			int bmpID = bmpIds.get(phys.bmp());
-			var root = triad.chipLocation();
+			var root = triad.asChipLocation();
 			log.debug("making {} board {}", "dead", triad);
 			sql.makeBoard
 					.key(machineId, null, bmpID, null, triad.x, triad.y,
@@ -1097,7 +974,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			Map<TriadCoords, Integer> boardIds) {
 		for (var here : boardIds.keySet()) {
 			for (var d : Direction.values()) {
-				var there = here.move(d, machine);
+				var there = machine.move(here, d);
 				if (boardIds.containsKey(there)) {
 					makeLink(sql, machine, boardIds, here, d, there,
 							d.opposite());

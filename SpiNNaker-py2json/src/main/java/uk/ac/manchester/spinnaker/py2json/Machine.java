@@ -40,6 +40,7 @@ import org.python.core.PyObject;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.errorprone.annotations.Keep;
 
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /** A machine description. JSON-serializable. */
@@ -61,18 +62,18 @@ public final class Machine {
 	public final int height;
 
 	/** The dead boards of the machine. */
-	public final Set<@Valid XYZ> deadBoards;
+	public final Set<@Valid TriadCoords> deadBoards;
 
 	/**
 	 * The extra dead links of the machine. Doesn't include links to dead
 	 * boards.
 	 */
 	@NotNull
-	public final Map<@Valid XYZ, @NotEmpty EnumSet<Link>> deadLinks;
+	public final Map<@Valid TriadCoords, @NotEmpty EnumSet<Link>> deadLinks;
 
 	/** The logical-to-physical board location map. */
 	@NotNull
-	public final Map<@Valid XYZ, @Valid CFB> boardLocations;
+	public final Map<@Valid TriadCoords, @Valid CFB> boardLocations;
 
 	/** The IP addresses of the BMPs. */
 	@JsonProperty("bmp-ips")
@@ -82,7 +83,7 @@ public final class Machine {
 	/** The IP addresses of the boards. */
 	@JsonProperty("spinnaker-ips")
 	@NotNull
-	public final Map<@Valid XYZ, @IPAddress String> spinnakerIPs;
+	public final Map<@Valid TriadCoords, @IPAddress String> spinnakerIPs;
 
 	private static final int IDX = 3;
 
@@ -91,16 +92,24 @@ public final class Machine {
 		tags = toSet(getattr(machine, "tags"), PyObject::asString);
 		width = getattr(machine, "width").asInt();
 		height = getattr(machine, "height").asInt();
-		deadBoards = toSet(getattr(machine, "dead_boards"), XYZ::new);
-		deadLinks = toCollectingMap(getattr(machine, "dead_links"), XYZ::new,
-				() -> noneOf(Link.class),
+		deadBoards = toSet(getattr(machine, "dead_boards"), Machine::xyz);
+		deadLinks = toCollectingMap(getattr(machine, "dead_links"),
+				Machine::xyz, () -> noneOf(Link.class),
 				key -> Link.values()[item(key, IDX).asInt()]);
-		boardLocations =
-				toMap(getattr(machine, "board_locations"), XYZ::new, CFB::new);
+		boardLocations = toMap(getattr(machine, "board_locations"),
+				Machine::xyz, CFB::new);
 		bmpIPs = toMap(getattr(machine, "bmp_ips"), CF::new,
 				PyObject::asString);
-		spinnakerIPs = toMap(getattr(machine, "spinnaker_ips"), XYZ::new,
+		spinnakerIPs = toMap(getattr(machine, "spinnaker_ips"), Machine::xyz,
 				PyObject::asString);
+	}
+
+	private static TriadCoords xyz(PyObject tuple) {
+		int index = 0;
+		int x = item(tuple, index++).asInt();
+		int y = item(tuple, index++).asInt();
+		int z = item(tuple, index++).asInt();
+		return new TriadCoords(x, y, z);
 	}
 
 	@Override

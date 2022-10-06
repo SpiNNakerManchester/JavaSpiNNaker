@@ -54,7 +54,6 @@ import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
-import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
@@ -69,6 +68,7 @@ import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
