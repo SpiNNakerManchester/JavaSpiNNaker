@@ -16,16 +16,19 @@
  */
 package uk.ac.manchester.spinnaker.machine.board;
 
-import javax.validation.constraints.PositiveOrZero;
-
 /**
  * Wrapper for a board number so that it can't get mixed up with other integers.
  *
  * @author Donal Fellows
  */
 public final class BMPBoard {
+	/**
+	 * The maximum board number. There can be only up to 24 boards per frame.
+	 */
+	public static final int MAX_BOARD_NUMBER = 23;
+
 	/** The board number. */
-	@PositiveOrZero
+	@ValidBoardNumber
 	public final int board;
 
 	/** @param board The board number. */

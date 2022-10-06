@@ -16,9 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 
 /**
  * A combination of x, y,z and a Link.
@@ -32,10 +37,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class BoardLink {
 	// TODO verify format and meaning.
 
+	@ValidTriadX
 	private int x;
 
+	@ValidTriadY
 	private int y;
 
+	@ValidTriadZ
 	private int z;
 
 	private int link;

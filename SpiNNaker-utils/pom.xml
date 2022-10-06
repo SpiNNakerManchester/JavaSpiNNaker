@@ -37,8 +37,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<artifactId>java-hamcrest</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.google.errorprone</groupId>
 			<artifactId>error_prone_annotations</artifactId>
+		</dependency>
+		<dependency>
+			<!-- Enable processing of template substitutions in validation messages. -->
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.el</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 </project>

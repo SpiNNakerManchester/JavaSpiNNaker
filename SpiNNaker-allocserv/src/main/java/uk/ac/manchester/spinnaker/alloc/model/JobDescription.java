@@ -26,6 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+
 /**
  * Descriptive detail for a job. Used for HTML generation, something like:
  *
@@ -65,17 +69,20 @@ public class JobDescription {
 
 	private String request;
 
+	@Positive
 	private Integer width;
 
+	@Positive
 	private Integer height;
 
 	private boolean powered;
 
+	@NotBlank
 	private String machine;
 
 	private URI machineUrl;
 
-	private List<BoardCoords> boards = new ArrayList<>();
+	private List<@Valid BoardCoords> boards = new ArrayList<>();
 
 	private byte[] requestBytes;
 

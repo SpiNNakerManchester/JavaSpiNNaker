@@ -38,7 +38,7 @@ public abstract class GatherProtocolMessage extends SDPMessage {
 	 * @param destination
 	 *            Where to send the message
 	 * @param destPort
-	 *            Which port to send the message to
+	 *            Which SDP port to send the message to
 	 * @param payload
 	 *            What the contents of the message should be.
 	 */

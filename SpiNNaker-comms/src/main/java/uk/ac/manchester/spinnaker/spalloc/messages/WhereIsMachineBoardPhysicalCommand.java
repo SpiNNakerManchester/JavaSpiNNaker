@@ -16,6 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+
 /**
  * Request to get the location of a board in a machine by physical location.
  *
@@ -37,8 +44,9 @@ public class WhereIsMachineBoardPhysicalCommand extends Command<Integer> {
 	 * @param board
 	 *            The board (within the cabinet and frame) to ask about.
 	 */
-	public WhereIsMachineBoardPhysicalCommand(String machine, int cabinet,
-			int frame, int board) {
+	public WhereIsMachineBoardPhysicalCommand(@NotNull String machine,
+			@ValidCabinetNumber int cabinet, @ValidFrameNumber int frame,
+			@ValidBoardNumber int board) {
 		super("where_is");
 		addKwArg("machine", machine);
 		addKwArg("cabinet", cabinet);
@@ -54,8 +62,8 @@ public class WhereIsMachineBoardPhysicalCommand extends Command<Integer> {
 	 * @param coords
 	 *            The physical coordinates of the board to ask about.
 	 */
-	public WhereIsMachineBoardPhysicalCommand(String machine,
-			BoardPhysicalCoordinates coords) {
+	public WhereIsMachineBoardPhysicalCommand(@NotNull String machine,
+			@Valid @NotNull BoardPhysicalCoordinates coords) {
 		super("where_is");
 		addKwArg("machine", machine);
 		addKwArg("cabinet", coords.getCabinet());

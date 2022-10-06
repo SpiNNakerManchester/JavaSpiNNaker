@@ -34,19 +34,22 @@ import com.google.errorprone.annotations.Immutable;
 public final class RegionLocation
 		implements HasCoreLocation, Comparable<RegionLocation> {
 	/** The Chip / Core's X value. */
+	@ValidX
 	public final int x;
 
 	/** The Chip / Core's Y value. */
+	@ValidY
 	public final int y;
 
 	/** The Core's P value. */
+	@ValidP
 	public final int p;
 
 	/** The recording Region. */
 	public final int region;
 
 	/** Precalculated hashcode. */
-	public final int hashcode;
+	private final int hashcode;
 
 	/**
 	 * Creates the Region based on a Core and a region.

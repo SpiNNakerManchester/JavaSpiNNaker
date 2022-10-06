@@ -42,6 +42,8 @@ import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +64,14 @@ import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.BoardIssueReport;
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
 import uk.ac.manchester.spinnaker.alloc.model.MachineTagging;
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * How to manage the state of a machine and boards in it.
@@ -122,6 +131,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * Access to the enablement-state of a board.
 	 */
 	public final class BoardState {
+		// No validity definitions; instances originate in DB
 		/** The name of the containing SpiNNaker machine. */
 		public final String machineName;
 
@@ -294,7 +304,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *            Z coordinate
 	 * @return Board state manager
 	 */
-	public Optional<BoardState> findTriad(String machine, int x, int y, int z) {
+	public Optional<BoardState> findTriad(@NotBlank String machine,
+			@ValidTriadX int x, @ValidTriadY int y, @ValidTriadZ int z) {
 		return executeRead(conn -> {
 			try (var q = conn.query(FIND_BOARD_BY_NAME_AND_XYZ)) {
 				return q.call1(machine, x, y, z).map(BoardState::new);
@@ -315,8 +326,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *            Board number
 	 * @return Board state manager
 	 */
-	public Optional<BoardState> findPhysical(String machine, int c, int f,
-			int b) {
+	public Optional<BoardState> findPhysical(@NotBlank String machine,
+			@ValidCabinetNumber int c, @ValidFrameNumber int f,
+			@ValidBoardNumber int b) {
 		return executeRead(conn -> {
 			try (var q = conn.query(FIND_BOARD_BY_NAME_AND_CFB)) {
 				return q.call1(machine, c, f, b).map(BoardState::new);
@@ -333,7 +345,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *            Board IP address
 	 * @return Board state manager
 	 */
-	public Optional<BoardState> findIP(String machine, String address) {
+	public Optional<BoardState> findIP(@NotBlank String machine,
+			@IPAddress String address) {
 		return executeRead(conn -> {
 			try (var q = conn.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
 				return q.call1(machine, address).map(BoardState::new);
@@ -384,7 +397,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @throws IllegalArgumentException
 	 *             If the machine with that name doesn't exist.
 	 */
-	public void updateTags(String machineName, Set<String> tags) {
+	public void updateTags(@NotBlank String machineName,
+			Set<@NotBlank String> tags) {
 		execute(conn -> {
 			try (var getMachine = conn.query(GET_NAMED_MACHINE);
 					var deleteTags = conn.update(DELETE_MACHINE_TAGS);
@@ -409,7 +423,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @param inService
 	 *            Whether to put the machine in or out of service.
 	 */
-	public void setMachineState(String machineName, boolean inService) {
+	public void setMachineState(@NotBlank String machineName,
+			boolean inService) {
 		execute(conn -> {
 			try (var setState = conn.update(SET_MACHINE_STATE)) {
 				setState.call(inService, machineName);
@@ -500,7 +515,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @param machineName
 	 *            Which machine to read the serial numbers of.
 	 */
-	public void readAllBoardSerialNumbers(String machineName) {
+	public void readAllBoardSerialNumbers(@NotBlank String machineName) {
 		scheduleSerialNumberReads(requireNonNull(machineName));
 	}
 
@@ -598,7 +613,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *            Which machine to get the blacklists of.
 	 */
 	@SuppressWarnings("MustBeClosed")
-	public void updateAllBlacklists(String machineName) {
+	public void updateAllBlacklists(@NotBlank String machineName) {
 		batchReqs(requireNonNull(machineName), "retrieving blacklists",
 				props.getBlacklistReadBatchSize(),
 				id -> new Op(CREATE_BLACKLIST_READ, id),
@@ -652,7 +667,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @throws DataAccessException
 	 *             If access to the DB fails.
 	 */
-	public void writeBlacklistToDB(BoardState board, Blacklist blacklist) {
+	public void writeBlacklistToDB(BoardState board,
+			@Valid Blacklist blacklist) {
 		blacklistStore.writeBlacklist(board.id, blacklist);
 		execute(c -> changed(c, board.id)); // Unimportant result
 	}
@@ -692,8 +708,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *             If interrupted. Note that interrupting the thread does
 	 *             <em>not</em> necessarily halt the write of the blacklist.
 	 */
-	public void writeBlacklistToMachine(BoardState board, Blacklist blacklist)
-			throws InterruptedException {
+	public void writeBlacklistToMachine(BoardState board,
+			@Valid Blacklist blacklist) throws InterruptedException {
 		try (var op = new Op(CREATE_BLACKLIST_WRITE, board.id, blacklist)) {
 			op.completed();
 		}

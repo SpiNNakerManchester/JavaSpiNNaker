@@ -18,6 +18,9 @@ package uk.ac.manchester.spinnaker.messages.bmp;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -28,10 +31,13 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @UsedInJavadocOnly(CoreLocation.class)
 public final class BMPLocation implements HasCoreLocation {
+	@ValidCabinetNumber
 	private final int cabinet;
 
+	@ValidFrameNumber
 	private final int frame;
 
+	@ValidBoardNumber
 	private final int board;
 
 	/**

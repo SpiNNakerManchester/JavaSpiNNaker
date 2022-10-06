@@ -26,6 +26,10 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+
 /**
  * The physical coordinates of a board.
  */
@@ -35,10 +39,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonFormat(shape = ARRAY)
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class BoardPhysicalCoordinates {
+	@ValidCabinetNumber
 	private int cabinet;
 
+	@ValidFrameNumber
 	private int frame;
 
+	@ValidBoardNumber
 	private Integer board;
 
 	/**

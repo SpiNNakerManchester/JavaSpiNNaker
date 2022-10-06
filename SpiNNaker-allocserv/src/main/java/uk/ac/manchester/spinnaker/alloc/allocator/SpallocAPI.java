@@ -17,6 +17,8 @@
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
 
@@ -28,7 +30,15 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+
 import org.springframework.security.access.prepost.PostFilter;
+
+import com.google.errorprone.annotations.Keep;
 
 import uk.ac.manchester.spinnaker.alloc.compat.V1CompatService;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
@@ -46,10 +56,19 @@ import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.ValidX;
+import uk.ac.manchester.spinnaker.machine.ValidY;
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * The API of the core service that interacts with the database.
@@ -84,7 +103,8 @@ public interface SpallocAPI {
 	 *            Whether to include machines marked as out of service.
 	 * @return A machine, on which more operations can be done.
 	 */
-	Optional<Machine> getMachine(String name, boolean allowOutOfService);
+	Optional<Machine> getMachine(@NotNull String name,
+			boolean allowOutOfService);
 
 	/**
 	 * Get info about a specific machine.
@@ -97,7 +117,7 @@ public interface SpallocAPI {
 	 *            Encodes what the caller may do.
 	 * @return A machine description model.
 	 */
-	Optional<MachineDescription> getMachineInfo(String machine,
+	Optional<MachineDescription> getMachineInfo(@NotNull String machine,
 			boolean allowOutOfService, Permit permit);
 
 	/**
@@ -180,9 +200,10 @@ public interface SpallocAPI {
 	 *            database for later retrieval.
 	 * @return Handle to the job, or {@code empty} if the job couldn't be made.
 	 */
-	Optional<Job> createJob(String owner, String group,
-			CreateDescriptor descriptor, String machineName, List<String> tags,
-			Duration keepaliveInterval, byte[] originalRequest);
+	Optional<Job> createJob(@NotNull String owner, String group,
+			@Valid CreateDescriptor descriptor, String machineName,
+			List<String> tags, Duration keepaliveInterval,
+			byte[] originalRequest);
 
 	/** Purge the cache of what boards are down. */
 	void purgeDownCache();
@@ -204,7 +225,7 @@ public interface SpallocAPI {
 	 *            Who is making the request.
 	 */
 	@UsedInJavadocOnly(HasCoreLocation.class)
-	void reportProblem(String address, HasChipLocation coreLocation,
+	void reportProblem(@IPAddress String address, HasChipLocation coreLocation,
 			String description, Permit permit);
 
 	/**
@@ -220,6 +241,7 @@ public interface SpallocAPI {
 		 * The maximum number of dead boards tolerated in the allocation.
 		 * Ignored when asking for a single board.
 		 */
+		@PositiveOrZero(message = "maxDeadBoards must not be negative")
 		public final int maxDead;
 
 		/**
@@ -243,7 +265,7 @@ public interface SpallocAPI {
 		 * @return The result computed by the visitor.
 		 */
 		public final <T> T visit(CreateVisitor<T> visitor) {
-			return doVisit(visitor);
+			return doVisit(requireNonNull(visitor));
 		}
 
 		/**
@@ -261,6 +283,7 @@ public interface SpallocAPI {
 	 */
 	final class CreateNumBoards extends CreateDescriptor {
 		/** The number of boards requested. */
+		@Positive(message = "number of boards to request must be positive")
 		public final int numBoards;
 
 		/**
@@ -297,9 +320,11 @@ public interface SpallocAPI {
 	@UsedInJavadocOnly(V1CompatService.class)
 	final class CreateDimensions extends CreateDescriptor {
 		/** Width requested, in boards. */
+		@Positive(message = "width of request must be positive")
 		public final int width;
 
 		/** Height requested, in boards. */
+		@Positive(message = "height of request must be positive")
 		public final int height;
 
 		/**
@@ -334,12 +359,15 @@ public interface SpallocAPI {
 	/** Some requests have the locations of boards. */
 	abstract class HasBoardCoords extends CreateDescriptor {
 		/** The logical coordinates, or {@code null}. */
+		@Valid
 		public final Triad triad;
 
 		/** The physical coordinates, or {@code null}. */
+		@Valid
 		public final Phys physical;
 
 		/** The network coordinates, or {@code null}. */
+		@IPAddress(nullOK = true)
 		public final String ip;
 
 		private HasBoardCoords(Triad triad, Phys physical, String ip,
@@ -353,6 +381,12 @@ public interface SpallocAPI {
 		private static int get(Integer value) {
 			return Objects.nonNull(value) ? value : 0;
 		}
+
+		@Keep
+		@AssertTrue(message = "a method of locating a board must be provided")
+		private boolean isLocated() {
+			return nonNull(triad) || nonNull(physical) || nonNull(ip);
+		}
 	}
 
 	/**
@@ -361,9 +395,11 @@ public interface SpallocAPI {
 	 */
 	final class CreateDimensionsAt extends HasBoardCoords {
 		/** Width requested, in triads. */
+		@Positive(message = "width of request must be positive")
 		public final int width;
 
 		/** Height requested, in triads. */
+		@Positive(message = "height of request must be positive")
 		public final int height;
 
 		/**
@@ -567,12 +603,15 @@ public interface SpallocAPI {
 		}
 
 		/** X coordinate. */
+		@ValidTriadX
 		public final int x;
 
 		/** Y coordinate. */
+		@ValidTriadY
 		public final int y;
 
 		/** Z coordinate. */
+		@ValidTriadZ
 		public final int z;
 	}
 
@@ -585,12 +624,15 @@ public interface SpallocAPI {
 		}
 
 		/** Cabinet number. */
+		@ValidCabinetNumber
 		public final int cabinet;
 
 		/** Frame number. */
+		@ValidFrameNumber
 		public final int frame;
 
 		/** Board number. */
+		@ValidBoardNumber
 		public final int board;
 	}
 
@@ -639,7 +681,7 @@ public interface SpallocAPI {
 		 *            The network address of the board.
 		 * @return Descriptor
 		 */
-		public static CreateBoard address(String ip) {
+		public static CreateBoard address(@IPAddress String ip) {
 			return new CreateBoard(null, null, ip);
 		}
 
@@ -668,7 +710,7 @@ public interface SpallocAPI {
 		 *            The descriptor.
 		 * @return The result of the visiting.
 		 */
-		T numBoards(CreateNumBoards createNumBoards);
+		T numBoards(@NotNull CreateNumBoards createNumBoards);
 
 		/**
 		 * Visit a descriptor.
@@ -677,7 +719,7 @@ public interface SpallocAPI {
 		 *            The descriptor.
 		 * @return The result of the visiting.
 		 */
-		T dimensionsAt(CreateDimensionsAt createDimensionsAt);
+		T dimensionsAt(@NotNull CreateDimensionsAt createDimensionsAt);
 
 		/**
 		 * Visit a descriptor.
@@ -686,7 +728,7 @@ public interface SpallocAPI {
 		 *            The descriptor.
 		 * @return The result of the visiting.
 		 */
-		T dimensions(CreateDimensions createDimensions);
+		T dimensions(@NotNull CreateDimensions createDimensions);
 
 		/**
 		 * Visit a descriptor.
@@ -695,7 +737,7 @@ public interface SpallocAPI {
 		 *            The descriptor.
 		 * @return The result of the visiting.
 		 */
-		T board(CreateBoard createBoard);
+		T board(@NotNull CreateBoard createBoard);
 	}
 
 	/**
@@ -716,7 +758,7 @@ public interface SpallocAPI {
 		 * @param timeout
 		 *            How long to wait.
 		 */
-		void waitForChange(Duration timeout);
+		void waitForChange(@NotNull Duration timeout);
 	}
 
 	/**
@@ -734,7 +776,7 @@ public interface SpallocAPI {
 		 * @param keepaliveAddress
 		 *            Where was the access from.
 		 */
-		void access(String keepaliveAddress);
+		void access(@NotNull @IPAddress String keepaliveAddress);
 
 		/**
 		 * Mark the job as destroyed. To do this to an already destroyed job is
@@ -801,7 +843,7 @@ public interface SpallocAPI {
 		 *            The Y coordinate of a chip on the board of interest.
 		 * @return The location, if resources allocated and the location maps.
 		 */
-		Optional<BoardLocation> whereIs(int x, int y);
+		Optional<BoardLocation> whereIs(@ValidX int x, @ValidY int y);
 
 		/**
 		 * @return The absolute location of root chip. {@code null} if no
@@ -934,7 +976,7 @@ public interface SpallocAPI {
 		 *            Global chip Y coordinate.
 		 * @return Board location description
 		 */
-		Optional<BoardLocation> getBoardByChip(int x, int y);
+		Optional<BoardLocation> getBoardByChip(@ValidX int x, @ValidY int y);
 
 		/**
 		 * Get a description of the location of a board given the physical
@@ -948,8 +990,9 @@ public interface SpallocAPI {
 		 *            Board number
 		 * @return Board location description
 		 */
-		Optional<BoardLocation> getBoardByPhysicalCoords(int cabinet, int frame,
-				int board);
+		Optional<BoardLocation> getBoardByPhysicalCoords(
+				@ValidCabinetNumber int cabinet, @ValidFrameNumber int frame,
+				@ValidBoardNumber int board);
 
 		/**
 		 * Get a description of the location of a board given the triad
@@ -963,7 +1006,8 @@ public interface SpallocAPI {
 		 *            Triad Z coordinate.
 		 * @return Board location description
 		 */
-		Optional<BoardLocation> getBoardByLogicalCoords(int x, int y, int z);
+		Optional<BoardLocation> getBoardByLogicalCoords(@ValidTriadX int x,
+				@ValidTriadY int y, @ValidTriadZ int z);
 
 		/**
 		 * Get a description of the location of a board given the address of its
@@ -974,7 +1018,7 @@ public interface SpallocAPI {
 		 *            matched exactly by the values in the DB).
 		 * @return Board location description
 		 */
-		Optional<BoardLocation> getBoardByIPAddress(String address);
+		Optional<BoardLocation> getBoardByIPAddress(@IPAddress String address);
 
 		/**
 		 * @return The IP address of the BMP of the root board of the machine.
@@ -998,7 +1042,7 @@ public interface SpallocAPI {
 		 *            The BMP coordinates (cabinet, frame).
 		 * @return The IP address of the BMP.
 		 */
-		String getBMPAddress(BMPCoords bmp);
+		String getBMPAddress(@Valid BMPCoords bmp);
 
 		/**
 		 * Get the board numbers managed by a particular BMP of a machine.
@@ -1007,7 +1051,7 @@ public interface SpallocAPI {
 		 *            The BMP coordinates( cabinet, frame).
 		 * @return The board numbers managed by that BMP.
 		 */
-		List<Integer> getBoardNumbers(BMPCoords bmp);
+		List<Integer> getBoardNumbers(@Valid BMPCoords bmp);
 	}
 
 	/**
@@ -1035,7 +1079,7 @@ public interface SpallocAPI {
 		 *            we are converting this board location to be relative to.
 		 * @return chip location, in <em>relative</em> (single job) coordinates
 		 */
-		ChipLocation getChipRelativeTo(ChipLocation rootChip);
+		ChipLocation getChipRelativeTo(@NotNull ChipLocation rootChip);
 
 		/**
 		 * What machine is the board on?
@@ -1117,6 +1161,6 @@ public interface SpallocAPI {
 		 * @param powerState
 		 *            What to set the power state to.
 		 */
-		void setPower(PowerState powerState);
+		void setPower(@NotNull PowerState powerState);
 	}
 }

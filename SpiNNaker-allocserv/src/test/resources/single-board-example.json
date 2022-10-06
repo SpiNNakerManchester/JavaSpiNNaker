@@ -29,7 +29,7 @@
     }
   } ],
   "port" : 22244,
-  "ip" : "",
+  "ip" : "127.0.0.1",
   "timeout-check-interval" : 5.0,
   "max-retired-jobs" : 1200,
   "seconds-before-free" : 30

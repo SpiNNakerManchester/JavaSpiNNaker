@@ -23,6 +23,13 @@ import java.util.Objects;
 import com.google.errorprone.annotations.Immutable;
 
 import uk.ac.manchester.spinnaker.alloc.db.Row;
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * Basic coordinates of a board.
@@ -32,24 +39,30 @@ import uk.ac.manchester.spinnaker.alloc.db.Row;
 @Immutable
 public final class BoardCoords {
 	/** Logical triad X coordinate. */
+	@ValidTriadX
 	private final int x;
 
 	/** Logical triad Y coordinate. */
+	@ValidTriadY
 	private final int y;
 
 	/** Logical triad Z coordinate. */
+	@ValidTriadZ
 	private final int z;
 
 	/** Physical cabinet number. */
+	@ValidCabinetNumber
 	private final int cabinet;
 
 	/** Physical frame number. */
+	@ValidFrameNumber
 	private final int frame;
 
 	/**
 	 * Physical board number. May be {@code null} if the board is dead (e.g.,
 	 * because it is outright absent from the machine).
 	 */
+	@ValidBoardNumber
 	private final Integer board;
 
 	/**
@@ -57,6 +70,7 @@ public final class BoardCoords {
 	 * doesn't have permission to see the board address at this point, or the
 	 * board is dead (e.g., because it is outright absent from the machine).
 	 */
+	@IPAddress(nullOK = true)
 	private final String address;
 
 	/**
@@ -71,9 +85,9 @@ public final class BoardCoords {
 	 * @param frame
 	 *            Physical frame number
 	 * @param board
-	 *            Physical board number
+	 *            Physical board number, or {@code null}
 	 * @param address
-	 *            IP address of ethernet chip
+	 *            IP address of ethernet chip, or {@code null}
 	 */
 	public BoardCoords(int x, int y, int z, int cabinet, int frame,
 			Integer board, String address) {
