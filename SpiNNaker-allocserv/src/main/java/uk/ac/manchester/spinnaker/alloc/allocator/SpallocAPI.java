@@ -58,6 +58,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.ValidX;
 import uk.ac.manchester.spinnaker.machine.ValidY;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
@@ -365,14 +366,14 @@ public interface SpallocAPI {
 
 		/** The physical coordinates, or {@code null}. */
 		@Valid
-		public final Phys physical;
+		public final PhysicalCoords physical;
 
 		/** The network coordinates, or {@code null}. */
 		@IPAddress(nullOK = true)
 		public final String ip;
 
-		private HasBoardCoords(TriadCoords triad, Phys physical, String ip,
-				Integer maxDeadBoards) {
+		private HasBoardCoords(TriadCoords triad, PhysicalCoords physical,
+				String ip, Integer maxDeadBoards) {
 			super(maxDeadBoards);
 			this.triad = triad;
 			this.physical = physical;
@@ -522,8 +523,8 @@ public interface SpallocAPI {
 			this.height = height;
 		}
 
-		private CreateDimensionsAt(int width, int height, Phys physical,
-				Integer maxDeadBoards) {
+		private CreateDimensionsAt(int width, int height,
+				PhysicalCoords physical, Integer maxDeadBoards) {
 			super(null, physical, null, maxDeadBoards);
 			this.width = width;
 			this.height = height;
@@ -552,7 +553,7 @@ public interface SpallocAPI {
 				int cabinet, int frame, int board, Integer maxDeadBoards) {
 			// Done like this to avoid syntactic ambiguity
 			return new CreateDimensionsAt(width, height,
-					new Phys(cabinet, frame, board), maxDeadBoards);
+					new PhysicalCoords(cabinet, frame, board), maxDeadBoards);
 		}
 
 		/**
@@ -579,9 +580,10 @@ public interface SpallocAPI {
 				Integer maxDeadBoards) {
 			// Done like this to avoid syntactic ambiguity
 			return new CreateDimensionsAt(width, height,
-					new Phys(HasBoardCoords.get(cabinet),
+					new PhysicalCoords(HasBoardCoords.get(cabinet),
 							HasBoardCoords.get(frame),
-							HasBoardCoords.get(board)), maxDeadBoards);
+							HasBoardCoords.get(board)),
+					maxDeadBoards);
 		}
 
 		@Override
@@ -595,32 +597,12 @@ public interface SpallocAPI {
 		}
 	}
 
-	/** A physical coordinate. */
-	final class Phys {
-		private Phys(int cabinet, int frame, int board) {
-			this.cabinet = cabinet;
-			this.frame = frame;
-			this.board = board;
-		}
-
-		/** Cabinet number. */
-		@ValidCabinetNumber
-		public final int cabinet;
-
-		/** Frame number. */
-		@ValidFrameNumber
-		public final int frame;
-
-		/** Board number. */
-		@ValidBoardNumber
-		public final int board;
-	}
-
 	/**
 	 * A request for a specific board.
 	 */
 	final class CreateBoard extends HasBoardCoords {
-		private CreateBoard(TriadCoords triad, Phys physical, String ip) {
+		private CreateBoard(TriadCoords triad, PhysicalCoords physical,
+				String ip) {
 			super(triad, physical, ip, null);
 		}
 
@@ -651,7 +633,8 @@ public interface SpallocAPI {
 		 * @return Descriptor
 		 */
 		public static CreateBoard physical(int cabinet, int frame, int board) {
-			return new CreateBoard(null, new Phys(cabinet, frame, board), null);
+			return new CreateBoard(null,
+					new PhysicalCoords(cabinet, frame, board), null);
 		}
 
 		/**

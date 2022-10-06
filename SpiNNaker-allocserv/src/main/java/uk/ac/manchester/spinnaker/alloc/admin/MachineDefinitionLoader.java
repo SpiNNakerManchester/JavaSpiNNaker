@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
-import static java.lang.Integer.compare;
-import static java.lang.Integer.parseInt;
 import static java.lang.Math.max;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
@@ -38,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
@@ -55,7 +52,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.sqlite.SQLiteException;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -72,10 +68,9 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
+import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
-import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
-import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
-import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 import uk.ac.manchester.spinnaker.utils.validation.TCPPort;
 
@@ -87,201 +82,6 @@ import uk.ac.manchester.spinnaker.utils.validation.TCPPort;
 @Service
 public class MachineDefinitionLoader extends DatabaseAwareBean {
 	private static final Logger log = getLogger(MachineDefinitionLoader.class);
-
-	private static final int DECIMAL = 10;
-
-	/**
-	 * Parse a <em>decimal</em> integer.
-	 *
-	 * @param string
-	 *            The string containing the number to parse.
-	 * @return The parsed number.
-	 * @throws NumberFormatExeption
-	 *             If the string doesn't contain such a number.
-	 */
-	private static int parseDec(String string) throws NumberFormatException {
-		return parseInt(string, DECIMAL);
-	}
-
-	/**
-	 * Frame/BMP coordinates.
-	 *
-	 * @author Donal Fellows
-	 */
-	public static final class BMPCoords implements Comparable<BMPCoords> {
-		/** Cabinet number. */
-		@ValidCabinetNumber
-		public final int c;
-
-		/** Frame number. */
-		@ValidFrameNumber
-		public final int f;
-
-		/**
-		 * Create an instance.
-		 * @param c Cabinet number.
-		 * @param f Frame number.
-		 */
-		public BMPCoords(int c, int f) {
-			this.c = c;
-			this.f = f;
-		}
-
-		private static final Pattern PATTERN =
-				Pattern.compile("^\\[c:(\\d+),f:(\\d+)\\]$");
-
-		/**
-		 * Create an instance from its serial form. The serial form (where the
-		 * numbers may vary) is:
-		 *
-		 * <pre>
-		 * [c:34,f:12]
-		 * </pre>
-		 *
-		 * @param serialForm
-		 *            The form to deserialise.
-		 * @throws IllegalArgumentException
-		 *             If the string is not in the right form.
-		 */
-		@JsonCreator
-		public BMPCoords(String serialForm) {
-			var m = PATTERN.matcher(serialForm);
-			if (!m.matches()) {
-				throw new IllegalArgumentException(
-						"bad argument: " + serialForm);
-			}
-			int idx = 0;
-			c = parseDec(m.group(++idx));
-			f = parseDec(m.group(++idx));
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj instanceof BMPCoords) {
-				var other = (BMPCoords) obj;
-				return c == other.c && f == other.f;
-			}
-			return false;
-		}
-
-		@Override
-		public int hashCode() {
-			return c * 5 + f;
-		}
-
-		@Override
-		public String toString() {
-			return "[c:" + c + ",f:" + f + "]";
-		}
-
-		@Override
-		public int compareTo(BMPCoords other) {
-			int cmp = compare(c, other.c);
-			if (cmp != 0) {
-				return cmp;
-			}
-			return compare(f, other.f);
-		}
-	}
-
-	/**
-	 * Physical board coordinates.
-	 *
-	 * @author Donal Fellows
-	 */
-	public static final class BoardPhysicalCoords
-			implements Comparable<BoardPhysicalCoords> {
-		/** Cabinet number. */
-		@ValidCabinetNumber
-		public final int c;
-
-		/** Frame number. */
-		@ValidFrameNumber
-		public final int f;
-
-		/** Board number. */
-		@ValidBoardNumber
-		public final int b;
-
-		/**
-		 * Create an instance.
-		 * @param c Cabinet number.
-		 * @param f Frame number.
-		 * @param b Board number.
-		 */
-		@JsonCreator
-		public BoardPhysicalCoords(@JsonProperty("c") int c,
-				@JsonProperty("f") int f, @JsonProperty("b") int b) {
-			this.c = c;
-			this.f = f;
-			this.b = b;
-		}
-
-		private static final Pattern PATTERN =
-				Pattern.compile("^\\[c:(\\d+),f:(\\d+),b:(\\d+)\\]$");
-
-		/**
-		 * Create an instance from its serial form. The serial form (where the
-		 * numbers may vary) is:
-		 *
-		 * <pre>
-		 * [c:34,f:12,b:23]
-		 * </pre>
-		 *
-		 * @param serialForm
-		 *            The form to deserialise.
-		 * @throws IllegalArgumentException
-		 *             If the string is not in the right form.
-		 */
-		@JsonCreator
-		public BoardPhysicalCoords(String serialForm) {
-			var m = PATTERN.matcher(serialForm);
-			if (!m.matches()) {
-				throw new IllegalArgumentException(
-						"bad argument: " + serialForm);
-			}
-			int idx = 0;
-			c = parseDec(m.group(++idx));
-			f = parseDec(m.group(++idx));
-			b = parseDec(m.group(++idx));
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj instanceof BoardPhysicalCoords) {
-				var other = (BoardPhysicalCoords) obj;
-				return c == other.c && f == other.f && b == other.b;
-			}
-			return false;
-		}
-
-		@Override
-		public int hashCode() {
-			return c * 25 + f * 5 + b;
-		}
-
-		@Override
-		public String toString() {
-			return "[c:" + c + ",f:" + f + ",b:" + b + "]";
-		}
-
-		BMPCoords bmp() {
-			return new BMPCoords(c, f);
-		}
-
-		@Override
-		public int compareTo(BoardPhysicalCoords other) {
-			int cmp = compare(c, other.c);
-			if (cmp != 0) {
-				return cmp;
-			}
-			cmp = compare(f, other.f);
-			if (cmp != 0) {
-				return cmp;
-			}
-			return compare(b, other.b);
-		}
-	}
 
 	/**
 	 * Enumeration of links from a SpiNNaker chip, as used in the old spalloc.
@@ -349,8 +149,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 		private Map<@Valid TriadCoords, @NotNull EnumSet<Link>> deadLinks;
 
-		private Map<@Valid TriadCoords,
-				@Valid BoardPhysicalCoords> boardLocations;
+		private Map<@Valid TriadCoords, @Valid PhysicalCoords> boardLocations;
 
 		private Map<@Valid BMPCoords, @IPAddress String> bmpIPs;
 
@@ -395,7 +194,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		}
 
 		/** @return The logical-to-physical board location map. */
-		public Map<TriadCoords, BoardPhysicalCoords> getBoardLocations() {
+		public Map<TriadCoords, PhysicalCoords> getBoardLocations() {
 			return unmodifiableMap(boardLocations);
 		}
 
@@ -463,7 +262,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		@AssertTrue(message = "all boards must have BMPs")
 		private boolean isBMPSane() {
 			return boardLocations.values().stream()
-					.allMatch(loc -> bmpIPs.containsKey(loc.bmp()));
+					.map(PhysicalCoords::getBmpCoords)
+					.allMatch(bmpIPs::containsKey);
 		}
 
 		/**
@@ -536,8 +336,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 			private Map<TriadCoords, EnumSet<Link>> deadLinks = Map.of();
 
-			private Map<TriadCoords, BoardPhysicalCoords> boardLocations =
-					Map.of();
+			private Map<TriadCoords, PhysicalCoords> boardLocations = Map.of();
 
 			private Map<BMPCoords, String> bmpAddrs = Map.of();
 
@@ -582,7 +381,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 			@CanIgnoreReturnValue
 			public Builder withBoardLocations(
-					Map<TriadCoords, BoardPhysicalCoords> boardLocations) {
+					Map<TriadCoords, PhysicalCoords> boardLocations) {
 				this.boardLocations = boardLocations;
 				return this;
 			}
@@ -934,7 +733,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		int maxX = 0, maxY = 0;
 		for (var triad : machine.boardLocations.keySet()) {
 			var phys = machine.boardLocations.get(triad);
-			int bmpID = bmpIds.get(phys.bmp());
+			int bmpID = bmpIds.get(phys.getBmpCoords());
 			var addr = machine.spinnakerIPs.get(triad);
 			var root = triad.asChipLocation();
 			log.debug("making {} board {}",
@@ -959,7 +758,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		for (var triad : machine.deadBoards) {
 			// Fake with the machine root if no real coords available
 			var phys = machine.boardLocations.getOrDefault(triad, rootPhys);
-			int bmpID = bmpIds.get(phys.bmp());
+			int bmpID = bmpIds.get(phys.getBmpCoords());
 			var root = triad.asChipLocation();
 			log.debug("making {} board {}", "dead", triad);
 			sql.makeBoard

@@ -564,8 +564,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 								NO_BOARD_MSG));
 			} else if (nonNull(b.physical)) {
 				return findPhysical
-						.call1(machineName, b.physical.cabinet,
-								b.physical.frame, b.physical.board)
+						.call1(machineName, b.physical.c,
+								b.physical.f, b.physical.b)
 						.filter(r -> !requireTriadRoot || r.getInt("z") == 0)
 						.map(integer("board_id"))
 						.orElseThrow(() -> new IllegalArgumentException(

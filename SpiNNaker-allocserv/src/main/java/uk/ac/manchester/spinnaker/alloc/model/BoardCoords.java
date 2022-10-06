@@ -38,6 +38,7 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  */
 @Immutable
 public final class BoardCoords {
+	// TODO convert to structured form
 	/** Logical triad X coordinate. */
 	@ValidTriadX
 	private final int x;

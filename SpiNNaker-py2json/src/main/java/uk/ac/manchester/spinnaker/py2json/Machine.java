@@ -40,6 +40,8 @@ import org.python.core.PyObject;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.errorprone.annotations.Keep;
 
+import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
@@ -73,12 +75,12 @@ public final class Machine {
 
 	/** The logical-to-physical board location map. */
 	@NotNull
-	public final Map<@Valid TriadCoords, @Valid CFB> boardLocations;
+	public final Map<@Valid TriadCoords, @Valid PhysicalCoords> boardLocations;
 
 	/** The IP addresses of the BMPs. */
 	@JsonProperty("bmp-ips")
 	@NotNull
-	public final Map<@Valid CF, @IPAddress String> bmpIPs;
+	public final Map<@Valid BMPCoords, @IPAddress String> bmpIPs;
 
 	/** The IP addresses of the boards. */
 	@JsonProperty("spinnaker-ips")
@@ -97,8 +99,8 @@ public final class Machine {
 				Machine::xyz, () -> noneOf(Link.class),
 				key -> Link.values()[item(key, IDX).asInt()]);
 		boardLocations = toMap(getattr(machine, "board_locations"),
-				Machine::xyz, CFB::new);
-		bmpIPs = toMap(getattr(machine, "bmp_ips"), CF::new,
+				Machine::xyz, Machine::cfb);
+		bmpIPs = toMap(getattr(machine, "bmp_ips"), Machine::cf,
 				PyObject::asString);
 		spinnakerIPs = toMap(getattr(machine, "spinnaker_ips"), Machine::xyz,
 				PyObject::asString);
@@ -110,6 +112,21 @@ public final class Machine {
 		int y = item(tuple, index++).asInt();
 		int z = item(tuple, index++).asInt();
 		return new TriadCoords(x, y, z);
+	}
+
+	private static PhysicalCoords cfb(PyObject tuple) {
+		int index = 0;
+		int c = item(tuple, index++).asInt();
+		int f = item(tuple, index++).asInt();
+		int b = item(tuple, index++).asInt();
+		return new PhysicalCoords(c, f, b);
+	}
+
+	private static BMPCoords cf(PyObject tuple) {
+		int index = 0;
+		int c = item(tuple, index++).asInt();
+		int f = item(tuple, index++).asInt();
+		return new BMPCoords(c, f);
 	}
 
 	@Override
@@ -153,7 +170,8 @@ public final class Machine {
 	@Keep
 	@AssertTrue(message = "every board's BMP must be addressable")
 	private boolean isEveryBoardManaged() {
-		return boardLocations.values().stream().map(CFB::asCF)
+		return boardLocations.values().stream()
+				.map(PhysicalCoords::getBmpCoords)
 				.allMatch(bmpIPs::containsKey);
 	}
 }
