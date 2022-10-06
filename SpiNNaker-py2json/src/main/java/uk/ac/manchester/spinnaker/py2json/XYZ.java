@@ -22,16 +22,23 @@ import org.python.core.PyObject;
 
 import com.google.errorprone.annotations.Immutable;
 
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
+
 /** Triad coordinates. May be a hash table key. */
 @Immutable
 public final class XYZ {
 	/** X coordinate. */
+	@ValidTriadX
 	public final int x;
 
 	/** Y coordinate. */
+	@ValidTriadY
 	public final int y;
 
 	/** Z coordinate. */
+	@ValidTriadZ
 	public final int z;
 
 	/**

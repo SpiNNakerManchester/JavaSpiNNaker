@@ -22,13 +22,18 @@ import org.python.core.PyObject;
 
 import com.google.errorprone.annotations.Immutable;
 
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+
 /** Frame/BMP coordinates. May be a hash table key. */
 @Immutable
 public final class CF {
 	/** Cabinet number. */
+	@ValidCabinetNumber
 	public final int c;
 
 	/** Frame number. */
+	@ValidFrameNumber
 	public final int f;
 
 	/**

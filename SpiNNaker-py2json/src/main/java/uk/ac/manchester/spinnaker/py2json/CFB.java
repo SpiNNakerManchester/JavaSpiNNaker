@@ -22,16 +22,23 @@ import org.python.core.PyObject;
 
 import com.google.errorprone.annotations.Immutable;
 
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+
 /** Physical board coordinates. May be a hash table key. */
 @Immutable
 public final class CFB {
 	/** Cabinet number. */
+	@ValidCabinetNumber
 	public final int c;
 
 	/** Frame number. */
+	@ValidFrameNumber
 	public final int f;
 
 	/** Board number. */
+	@ValidBoardNumber
 	public final int b;
 
 	/**
@@ -69,5 +76,9 @@ public final class CFB {
 	@Override
 	public String toString() {
 		return "[c:" + c + ",f:" + f + ",b:" + b + "]";
+	}
+
+	CF asCF() {
+		return new CF(c, f);
 	}
 }
