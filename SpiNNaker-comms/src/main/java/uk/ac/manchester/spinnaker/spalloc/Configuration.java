@@ -26,7 +26,6 @@ import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MACHINE_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MACHINE_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MAX_DEAD_BOARDS_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MAX_DEAD_BOARDS_PROPERTY;
-import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MAX_DEAD_LINKS_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MAX_DEAD_LINKS_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MIN_RATIO_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MIN_RATIO_PROPERTY;
@@ -179,13 +178,13 @@ public class Configuration {
 		return (Integer) configurationMap.get(MAX_DEAD_BOARDS_PROPERTY);
 	}
 
-	/** @return The maximum number of dead links wanted. */
+	/** @return The maximum number of dead links desired. Often ignored. */
 	@PositiveOrZero
 	public Integer getMaxDeadLinks() {
 		return (Integer) configurationMap.get(MAX_DEAD_LINKS_PROPERTY);
 	}
 
-	/** @return Whether a torus is required. Ignored by spalloc! */
+	/** @return Whether a torus is required. Not normally useful. */
 	public boolean getRequireTorus() {
 		return (Boolean) configurationMap.get(REQUIRE_TORUS_PROPERTY);
 	}
@@ -202,7 +201,6 @@ public class Configuration {
 			entry(TAGS_PROPERTY, TAGS_DEFAULT),
 			entry(MIN_RATIO_PROPERTY, MIN_RATIO_DEFAULT),
 			entry(MAX_DEAD_BOARDS_PROPERTY, MAX_DEAD_BOARDS_DEFAULT),
-			entry(MAX_DEAD_LINKS_PROPERTY, MAX_DEAD_LINKS_DEFAULT),
 			entry(REQUIRE_TORUS_PROPERTY, REQUIRE_TORUS_DEFAULT));
 
 	private static final String NULL_MARKER = "None";
