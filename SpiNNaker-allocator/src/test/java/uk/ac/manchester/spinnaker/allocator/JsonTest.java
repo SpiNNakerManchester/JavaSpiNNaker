@@ -20,9 +20,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.JSON_MAPPER;
 
 import java.io.IOException;
+import java.net.URI;
 
 import org.junit.jupiter.api.Test;
 
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 
 class JsonTest {
@@ -78,14 +82,6 @@ class JsonTest {
 	}
 
 	@Test
-	void physical() throws Exception {
-		var p = new Physical(1, 2, 3);
-		assertEquals("[1,2,3]", serialize(p));
-		assertEquals(p.toString(),
-				deserialize(serialize(p), Physical.class).toString());
-	}
-
-	@Test
 	void power() throws Exception {
 		var power = "{\"power\":\"OFF\"}";
 		assertNotNull(deserialize(power, Power.class));
@@ -106,11 +102,33 @@ class JsonTest {
 	}
 
 	@Test
-	void triad() throws Exception {
-		var t = new Triad(1, 2, 3);
+	void whereis() throws Exception {
+		var t = new WhereIs.Triad(1, 2, 3);
 		assertEquals("[1,2,3]", serialize(t));
-		assertEquals(t.toString(),
-				deserialize(serialize(t), Triad.class).toString());
-	}
+		assertEquals(t.toStd(),
+				deserialize("[1,2,3]", WhereIs.Triad.class).toStd());
 
+		var p = new WhereIs.Physical(1, 2, 3);
+		assertEquals("[1,2,3]", serialize(p));
+		assertEquals(p.toStd(),
+				deserialize("[1,2,3]", WhereIs.Physical.class).toStd());
+
+		var whereIs = "{\"job-id\":123,\"job-ref\":\"http:/0\","
+				+ "\"job-chip\":[0,0],\"chip\":[1,1],"
+				+ "\"machine-name\":\"gorp\",\"machine-ref\":\"http:/1\","
+				+ "\"board-chip\":[2,2],\"logical-board-coordinates\":[0,1,2],"
+				+ "\"physical-board-coordinates\":[3,4,5]}";
+		var wi = deserialize(whereIs, WhereIs.class);
+
+		assertNotNull(wi);
+		assertEquals("gorp", wi.getMachineName());
+		assertEquals(URI.create("http:/1"), wi.getMachineRef());
+		assertEquals(123, wi.getJobId());
+		assertEquals(URI.create("http:/0"), wi.getJobRef());
+		assertEquals(new ChipLocation(0, 0), wi.getJobChip());
+		assertEquals(new ChipLocation(1, 1), wi.getChip());
+		assertEquals(new ChipLocation(2, 2), wi.getBoardChip());
+		assertEquals(new TriadCoords(0, 1, 2), wi.getLogicalCoords());
+		assertEquals(new PhysicalCoords(3, 4, 5), wi.getPhysicalCoords());
+	}
 }

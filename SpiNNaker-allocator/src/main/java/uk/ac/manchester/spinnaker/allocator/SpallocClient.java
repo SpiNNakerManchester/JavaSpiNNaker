@@ -34,6 +34,8 @@ import com.google.errorprone.annotations.MustBeClosed;
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
@@ -207,6 +209,22 @@ public interface SpallocClient {
 				@ValidTriadZ int z) throws FileNotFoundException, IOException;
 
 		/**
+		 * Given logical triad coordinates, return more info about a board.
+		 *
+		 * @param coords
+		 *            Triad coordinates
+		 * @return Board information
+		 * @throws FileNotFoundException
+		 *             If the board doesn't exist.
+		 * @throws IOException
+		 *             If communication with the server fails
+		 */
+		default WhereIs getBoardByTriad(@Valid TriadCoords coords)
+				throws FileNotFoundException, IOException {
+			return getBoardByTriad(coords.x, coords.y, coords.z);
+		}
+
+		/**
 		 * Given physical coordinates, return more info about a board.
 		 *
 		 * @param cabinet
@@ -224,6 +242,22 @@ public interface SpallocClient {
 		WhereIs getBoardByPhysicalCoords(@ValidCabinetNumber int cabinet,
 				@ValidFrameNumber int frame, @ValidBoardNumber int board)
 				throws FileNotFoundException, IOException;
+
+		/**
+		 * Given physical coordinates, return more info about a board.
+		 *
+		 * @param coords
+		 *            Physical coordinates.
+		 * @return Board information
+		 * @throws FileNotFoundException
+		 *             If the board doesn't exist.
+		 * @throws IOException
+		 *             If communication with the server fails
+		 */
+		default WhereIs getBoardByPhysicalCoords(@Valid PhysicalCoords coords)
+				throws FileNotFoundException, IOException {
+			return getBoardByPhysicalCoords(coords.c, coords.f, coords.b);
+		}
 
 		/**
 		 * Given a <em>global</em> chip location, return more info about the

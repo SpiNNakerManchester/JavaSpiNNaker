@@ -30,6 +30,8 @@ import javax.validation.constraints.PositiveOrZero;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.google.errorprone.annotations.Keep;
 
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
@@ -290,9 +292,8 @@ public final class CreateJob {
 	 *            Which board of the machine to request? This is the logical
 	 *            coordinates.
 	 */
-	public CreateJob(String machine, Triad triad) {
-		board = new SpecificBoard(true, triad.getX(), triad.getY(),
-				triad.getZ());
+	public CreateJob(String machine, TriadCoords triad) {
+		board = new SpecificBoard(true, triad.x, triad.y, triad.z);
 		machineName = machine;
 	}
 
@@ -307,9 +308,8 @@ public final class CreateJob {
 	 * @param coords
 	 *            The physical coordinates of the board to request.
 	 */
-	public CreateJob(String machine, Physical coords) {
-		this.board = new SpecificBoard(false, coords.getCabinet(),
-				coords.getFrame(), coords.getBoard());
+	public CreateJob(String machine, PhysicalCoords coords) {
+		this.board = new SpecificBoard(false, coords.c, coords.f, coords.b);
 		machineName = machine;
 	}
 
