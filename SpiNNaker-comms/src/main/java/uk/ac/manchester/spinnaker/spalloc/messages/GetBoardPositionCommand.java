@@ -16,6 +16,11 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
+
 /**
  * Request the physical location of a board.
  *
@@ -34,11 +39,12 @@ public class GetBoardPositionCommand extends Command<Integer> {
 	 * @param coords
 	 *            The logical coordinates of the board.
 	 */
-	public GetBoardPositionCommand(String machine, BoardCoordinates coords) {
+	public GetBoardPositionCommand(@NotBlank String machine,
+			@Valid TriadCoords coords) {
 		super("get_board_position");
 		addKwArg("machine_name", machine);
-		addKwArg("x", coords.getX());
-		addKwArg("y", coords.getY());
-		addKwArg("z", coords.getZ());
+		addKwArg("x", coords.x);
+		addKwArg("y", coords.y);
+		addKwArg("z", coords.z);
 	}
 }

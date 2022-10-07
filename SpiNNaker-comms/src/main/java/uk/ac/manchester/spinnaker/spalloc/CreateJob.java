@@ -33,7 +33,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
@@ -50,9 +53,11 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * @author Donal Fellows
  */
 public class CreateJob {
-	private final List<Integer> args = new ArrayList<>();
+	private final List<@NotNull @PositiveOrZero Integer> args =
+			new ArrayList<>();
 
-	private final Map<String, Object> kwargs = new HashMap<>();
+	private final Map<@NotBlank String, @NotNull Object> kwargs =
+			new HashMap<>();
 
 	private boolean setTags = false;
 
@@ -129,7 +134,7 @@ public class CreateJob {
 	 * @return {@code this} (fluent interface)
 	 */
 	@CanIgnoreReturnValue
-	public CreateJob owner(String owner) {
+	public CreateJob owner(@NotBlank String owner) {
 		kwargs.put(USER_PROPERTY, owner);
 		setOwner = true;
 		return this;
@@ -171,7 +176,7 @@ public class CreateJob {
 	 *             If the duration is negative.
 	 */
 	@CanIgnoreReturnValue
-	public CreateJob keepAlive(Duration keepalive) {
+	public CreateJob keepAlive(@NotNull Duration keepalive) {
 		double t = keepalive.getSeconds();
 		if (t < 0.0) {
 			throw new IllegalArgumentException(
@@ -193,7 +198,7 @@ public class CreateJob {
 	 *             If tags are already given
 	 */
 	@CanIgnoreReturnValue
-	public CreateJob machine(String machine) {
+	public CreateJob machine(@NotBlank String machine) {
 		if (setTags) {
 			throw new IllegalStateException("tags already set");
 		}
@@ -213,7 +218,7 @@ public class CreateJob {
 	 *             If machine is already given
 	 */
 	@CanIgnoreReturnValue
-	public CreateJob tags(String... tags) {
+	public CreateJob tags(@NotBlank String... tags) {
 		if (setMachine) {
 			throw new IllegalStateException("machine already set");
 		}
@@ -231,7 +236,7 @@ public class CreateJob {
 	 * @return {@code this} (fluent interface)
 	 */
 	@CanIgnoreReturnValue
-	public CreateJob minRatio(double minRatio) {
+	public CreateJob minRatio(@PositiveOrZero double minRatio) {
 		kwargs.put(MIN_RATIO_PROPERTY, minRatio);
 		return this;
 	}
@@ -245,7 +250,7 @@ public class CreateJob {
 	 * @return {@code this} (fluent interface)
 	 */
 	@CanIgnoreReturnValue
-	public CreateJob maxDeadBoards(int maxDeadBoards) {
+	public CreateJob maxDeadBoards(@PositiveOrZero int maxDeadBoards) {
 		kwargs.put(MAX_DEAD_BOARDS_PROPERTY, maxDeadBoards);
 		return this;
 	}
@@ -259,7 +264,7 @@ public class CreateJob {
 	 * @return {@code this} (fluent interface)
 	 */
 	@CanIgnoreReturnValue
-	public CreateJob maxDeadLinks(int maxDeadLinks) {
+	public CreateJob maxDeadLinks(@PositiveOrZero int maxDeadLinks) {
 		kwargs.put(MAX_DEAD_LINKS_PROPERTY, maxDeadLinks);
 		return this;
 	}

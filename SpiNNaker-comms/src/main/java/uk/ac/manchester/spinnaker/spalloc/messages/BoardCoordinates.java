@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
@@ -111,5 +112,14 @@ public final class BoardCoordinates {
 	@Override
 	public String toString() {
 		return "Board@(" + x + "," + y + "," + z + ")";
+	}
+
+	/**
+	 * Convert to the standard coordinate scheme.
+	 *
+	 * @return the coordinates
+	 */
+	public TriadCoords toStandardCoords() {
+		return new TriadCoords(x, y, z);
 	}
 }

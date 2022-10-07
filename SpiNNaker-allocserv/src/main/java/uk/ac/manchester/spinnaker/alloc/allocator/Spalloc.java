@@ -698,6 +698,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	private static DownLink makeDownLinkFromRow(Row row) {
+		// Non-standard column names to reduce number of queries
 		var board1 = new BoardCoords(row.getInt("board_1_x"),
 				row.getInt("board_1_y"), row.getInt("board_1_z"),
 				row.getInt("board_1_c"), row.getInt("board_1_f"),
@@ -825,14 +826,10 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			}
 			try (var conn = getConnection();
 					var boardNumbers = conn.query(GET_DEAD_BOARDS)) {
-				var downBoards = conn.transaction(false, () -> boardNumbers
-						.call(id)
-						.map(row -> new BoardCoords(row.getInt("x"),
-								row.getInt("y"), row.getInt("z"),
-								row.getInt("cabinet"), row.getInt("frame"),
-								row.getInteger("board_num"),
-								row.getString("address")))
-						.toList());
+				var downBoards = conn.transaction(false,
+						() -> boardNumbers.call(id)
+								.map(row -> new BoardCoords(row, false))
+								.toList());
 				synchronized (Spalloc.this) {
 					downBoardsCache.putIfAbsent(name, downBoards);
 				}

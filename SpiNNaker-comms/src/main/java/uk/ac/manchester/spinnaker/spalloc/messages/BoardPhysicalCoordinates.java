@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
@@ -116,5 +117,15 @@ public class BoardPhysicalCoordinates {
 	@Override
 	public String toString() {
 		return "Board{" + cabinet + "," + frame + "," + board + "}";
+	}
+
+	/**
+	 * Convert to the standard coordinate scheme. Assumes that the {@code board}
+	 * field is defined.
+	 *
+	 * @return the coordinates
+	 */
+	public PhysicalCoords toStandardCoords() {
+		return new PhysicalCoords(cabinet, frame, board);
 	}
 }

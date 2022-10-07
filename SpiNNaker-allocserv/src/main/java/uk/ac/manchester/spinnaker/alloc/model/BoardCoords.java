@@ -32,13 +32,12 @@ import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
- * Basic coordinates of a board.
+ * Basic coordinates of a board. The result of a DB query.
  *
  * @author Donal Fellows
  */
 @Immutable
 public final class BoardCoords {
-	// TODO convert to structured form
 	/** Logical triad X coordinate. */
 	@ValidTriadX
 	private final int x;
@@ -75,6 +74,8 @@ public final class BoardCoords {
 	private final String address;
 
 	/**
+	 * Make an instance from raw results. Uncommon.
+	 *
 	 * @param x
 	 *            Logical triad X coordinate
 	 * @param y
@@ -103,7 +104,7 @@ public final class BoardCoords {
 
 	/**
 	 * Construct a set of board coordinates from a database row that describes
-	 * them.
+	 * them. The common constructor.
 	 *
 	 * @param row
 	 *            Database row
