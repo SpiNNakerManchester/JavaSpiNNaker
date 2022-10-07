@@ -35,6 +35,7 @@ import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 
@@ -311,8 +312,21 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	public SpallocJob(String hostname, Integer port, Integer timeout,
 			CreateJob builder)
 			throws IOException, SpallocServerException {
-		if (builder == null) {
+		if (Objects.isNull(builder)) {
 			throw new IllegalArgumentException("a builder must be specified");
+		}
+		if (!builder.isTargetDefined()) {
+			var machine = config.getMachine();
+			var tags = config.getTags();
+			if (Objects.nonNull(machine)) {
+				builder.machine(machine);
+			} else if (Objects.nonNull(tags)) {
+				builder.tags(tags);
+			} else {
+				throw new IllegalArgumentException(
+						"must have either machine or tags specified or able "
+								+ "to be looked up from the configuration");
+			}
 		}
 		this.client = new SpallocClient(hostname, port, timeout);
 		this.timeout = timeout;

@@ -227,6 +227,11 @@ public class CreateJob {
 		return this;
 	}
 
+	/** @return Whether either the machine or the tags are set. */
+	boolean isTargetDefined() {
+		return setMachine || setTags;
+	}
+
 	/**
 	 * @param minRatio
 	 *            The aspect ratio (h/w) which the allocated region must be ‘at

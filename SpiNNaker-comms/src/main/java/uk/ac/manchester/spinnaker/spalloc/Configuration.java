@@ -22,7 +22,6 @@ import static java.util.Map.entry;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.HOSTNAME_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_PROPERTY;
-import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MACHINE_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MACHINE_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MAX_DEAD_BOARDS_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MAX_DEAD_BOARDS_PROPERTY;
@@ -35,7 +34,6 @@ import static uk.ac.manchester.spinnaker.spalloc.JobConstants.RECONNECT_DELAY_DE
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.RECONNECT_DELAY_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.REQUIRE_TORUS_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.REQUIRE_TORUS_PROPERTY;
-import static uk.ac.manchester.spinnaker.spalloc.JobConstants.TAGS_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.TAGS_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.TIMEOUT_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.TIMEOUT_PROPERTY;
@@ -117,7 +115,7 @@ public class Configuration {
 
 	/** @return a clone of the map of the configuration. */
 	public Map<String, Object> getDefaults() {
-		return Map.copyOf(configurationMap);
+		return new HashMap<String, Object>(configurationMap);
 	}
 
 	/** @return The spalloc TCP/IP host. */
@@ -197,8 +195,6 @@ public class Configuration {
 			entry(PORT_PROPERTY, PORT_DEFAULT),
 			entry(KEEPALIVE_PROPERTY, KEEPALIVE_DEFAULT),
 			entry(TIMEOUT_PROPERTY, TIMEOUT_DEFAULT),
-			entry(MACHINE_PROPERTY, MACHINE_DEFAULT),
-			entry(TAGS_PROPERTY, TAGS_DEFAULT),
 			entry(MIN_RATIO_PROPERTY, MIN_RATIO_DEFAULT),
 			entry(MAX_DEAD_BOARDS_PROPERTY, MAX_DEAD_BOARDS_DEFAULT),
 			entry(REQUIRE_TORUS_PROPERTY, REQUIRE_TORUS_DEFAULT));
