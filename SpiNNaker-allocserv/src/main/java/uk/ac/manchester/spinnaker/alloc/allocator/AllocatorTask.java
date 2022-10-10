@@ -656,6 +656,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		int maxDeadBoards = task.getInt("max_dead_boards");
 		var numBoards = task.getInteger("num_boards");
 		if (nonNull(numBoards) && numBoards > 0) {
+			// Single-board case gets its own allocator that's better at that
 			if (numBoards == 1) {
 				return allocateOneBoard(sql, jobId, machineId);
 			}
@@ -674,7 +675,9 @@ public class AllocatorTask extends DatabaseAwareBean
 		}
 
 		if (nonNull(width) && nonNull(height) && width > 0 && height > 0) {
-			if (height == 1 && width == 1) {
+			// Special case; user is really just asking for one board
+			if (height == 1 && width == 1 && nonNull(maxDeadBoards)
+					&& maxDeadBoards == 2) {
 				return allocateOneBoard(sql, jobId, machineId);
 			}
 			var estimate = new DimensionEstimate(width, height, max);
