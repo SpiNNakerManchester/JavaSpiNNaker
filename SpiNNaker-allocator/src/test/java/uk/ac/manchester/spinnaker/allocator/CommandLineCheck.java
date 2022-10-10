@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.URI;
 
 import picocli.CommandLine.Parameters;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 
 public final class CommandLineCheck {
 	private CommandLineCheck() {
@@ -55,7 +56,7 @@ public final class CommandLineCheck {
 		System.out.println(client.listMachines().stream()
 				.map(m -> m.getName()).collect(toList()));
 		for (var m : client.listMachines()) {
-			var where = m.getBoardByTriad(0, 0, 1);
+			var where = m.getBoard(new TriadCoords(0, 0, 1));
 			if (where == null) {
 				System.out.println(
 						"board (0,0,1) not in machine " + m.getName());
