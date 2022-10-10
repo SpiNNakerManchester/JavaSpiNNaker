@@ -213,7 +213,7 @@ public final class CommandLineInterface {
 	 *
 	 * @param machineJsonFile
 	 *            Name of file containing JSON description of overall machine.
-	 * @param runFolder
+	 * @param dsgFolder
 	 *            Name of directory containing per-run information (i.e., the
 	 *            database that holds the data specifications to execute).
 	 * @param filterSystemCores
@@ -258,7 +258,7 @@ public final class CommandLineInterface {
 	 *            Name of file containing JSON description of gatherers.
 	 * @param machineJsonFile
 	 *            Name of file containing JSON description of overall machine.
-	 * @param runFolder
+	 * @param dsgFolder
 	 *            Name of directory containing per-run information (i.e., the
 	 *            database that holds the data specifications to execute).
 	 * @param reportFolder
