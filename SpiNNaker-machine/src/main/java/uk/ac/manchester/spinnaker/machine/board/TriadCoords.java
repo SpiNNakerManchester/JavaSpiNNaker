@@ -19,20 +19,43 @@ package uk.ac.manchester.spinnaker.machine.board;
 import static java.lang.Integer.compare;
 import static java.lang.Integer.parseInt;
 
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JacksonException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 /**
- * Triad coordinates. Triads are addressed using (X,Y,Z) cooordinates, where Z
- * selects the member of a group of three (hence a range 0-2) and X and Y locate
- * that group within a rectangular grid across the machine.
+ * Triad coordinates.
+ * Boards are in groups of three (triads) that group together in a rectangular
+ * grid. The {@code x} and {@code y} coordinates say which group of three in the
+ * grid, and the {@code z} coordinate says which board within the group. The
+ * group is not itself rectangular, but tesselates on a rectangular grid.
+ * <p>
+ * To understand how the triad coordinate system works, consider this board
+ * layout (a classic 24 board machine, with wrap-arounds not shown):
+ * <p>
+ * <img src="doc-files/DirInfo1.png" width="450" alt="24-board layout">
+ * <h2>Serialisation Formats</h2>
+ * Defaults to being serialised as a JSON object:
+ * <pre>{"x": 3, "y": 2, "z": 1}</pre>
+ * and can also be deserialized from that, but can also accept being
+ * deserialised from a JSON array:
+ * <pre>[3, 2, 1]</pre>
+ * and can also be deserialized from its {@linkplain #toString() string form}:
+ * <pre>[x:3,y:2,z:1]</pre>
  *
  * @author Donal Fellows
  */
+@JsonDeserialize(using = TriadCoords.Deserializer.class)
 public final class TriadCoords implements Comparable<TriadCoords> {
 	/** The width and height of a triad, in chips. */
 	private static final int TRIAD_CHIP_SIZE = 12;
@@ -155,5 +178,91 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 			return cmp;
 		}
 		return compare(z, other.z);
+	}
+
+	/** JSON deserializer for {@link TriadCoords}. */
+	static class Deserializer extends StdDeserializer<TriadCoords> {
+		private static final long serialVersionUID = 1L;
+
+		protected Deserializer() {
+			super(TriadCoords.class);
+		}
+
+		@Override
+		public TriadCoords deserialize(JsonParser p,
+				DeserializationContext ctxt)
+				throws IOException, JacksonException {
+			switch (p.currentToken()) {
+			case START_ARRAY:
+				return deserializeArray(p, ctxt);
+			case START_OBJECT:
+				return deserializeObject(p, ctxt);
+			case VALUE_STRING:
+				return new TriadCoords(p.getValueAsString());
+			default:
+				ctxt.handleUnexpectedToken(_valueClass, p);
+				return null;
+			}
+		}
+
+		private TriadCoords deserializeArray(JsonParser p,
+				DeserializationContext ctxt) throws IOException {
+			if (!p.nextToken().isNumeric()) {
+				ctxt.handleUnexpectedToken(int.class, p);
+			}
+			int x = p.getIntValue();
+			if (!p.nextToken().isNumeric()) {
+				ctxt.handleUnexpectedToken(int.class, p);
+			}
+			int y = p.getIntValue();
+			if (!p.nextToken().isNumeric()) {
+				ctxt.handleUnexpectedToken(int.class, p);
+			}
+			int z = p.getIntValue();
+			if (!p.nextToken().isStructEnd()) {
+				ctxt.handleUnexpectedToken(_valueClass, p);
+			}
+			return new TriadCoords(x, y, z);
+		}
+
+		private TriadCoords deserializeObject(JsonParser p,
+				DeserializationContext ctxt) throws IOException {
+			Integer x = null, y = null, z = null;
+			while (true) {
+				String name = p.nextFieldName();
+				if (name == null) {
+					if (p.currentToken() != JsonToken.END_OBJECT) {
+						ctxt.handleUnexpectedToken(_valueClass, p);
+					}
+					break;
+				}
+				switch (name) {
+				case "x":
+					if (x != null) {
+						ctxt.handleUnknownProperty(p, this, _valueClass, name);
+					}
+					x = p.nextIntValue(0);
+					break;
+				case "y":
+					if (y != null) {
+						ctxt.handleUnknownProperty(p, this, _valueClass, name);
+					}
+					y = p.nextIntValue(0);
+					break;
+				case "z":
+					if (z != null) {
+						ctxt.handleUnknownProperty(p, this, _valueClass, name);
+					}
+					z = p.nextIntValue(0);
+					break;
+				default:
+					ctxt.handleUnknownProperty(p, this, _valueClass, name);
+				}
+			}
+			if (x == null || y == null || z == null) {
+				ctxt.handleUnexpectedToken(_valueClass, p);
+			}
+			return new TriadCoords(x, y, z);
+		}
 	}
 }

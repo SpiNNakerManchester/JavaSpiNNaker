@@ -19,19 +19,43 @@ package uk.ac.manchester.spinnaker.machine.board;
 import static java.lang.Integer.compare;
 import static java.lang.Integer.parseInt;
 
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JacksonException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.google.errorprone.annotations.Immutable;
 
 /**
- * Physical board coordinates.
+ * Physical board coordinates. The {@code cabinet} and {@code frame} (with
+ * multiple frames per cabinet) describe where a board is located within the
+ * physical layout of the machine (and also which BMP is managing it, as there
+ * is one managing BMP per frame). The {@code board} number says which board
+ * within the frame is being referred to.
+ *
+ * <h2>Serialisation Formats</h2>
+ * Defaults to being serialised as a JSON object:
+ * <pre>{"cabinet": 3, "frame": 2, "board": 1}</pre>
+ * and can be deserialized from that, or:
+ * <pre>{"c": 3, "f": 2, "b": 1}</pre>
+ * It can also accept being deserialised from a JSON array, for a more compact
+ * notation:
+ * <pre>[3, 2, 1]</pre>
+ * Finally, it can also be deserialised from the string form created by the
+ * {@link #toString()} method:
+ * <pre>[c:3,f:2,b:1]</pre>
  *
  * @author Donal Fellows
  */
 @Immutable
+@JsonDeserialize(using = PhysicalCoords.Deserializer.class)
 public final class PhysicalCoords implements Comparable<PhysicalCoords> {
 	/** Cabinet number. */
 	@ValidCabinetNumber
@@ -129,5 +153,94 @@ public final class PhysicalCoords implements Comparable<PhysicalCoords> {
 			return cmp;
 		}
 		return compare(b, other.b);
+	}
+
+	/** JSON deserializer for {@link PhysicalCoords}. */
+	static class Deserializer extends StdDeserializer<PhysicalCoords> {
+		private static final long serialVersionUID = 1L;
+
+		protected Deserializer() {
+			super(PhysicalCoords.class);
+		}
+
+		@Override
+		public PhysicalCoords deserialize(JsonParser p,
+				DeserializationContext ctxt)
+				throws IOException, JacksonException {
+			switch (p.currentToken()) {
+			case START_ARRAY:
+				return deserializeArray(p, ctxt);
+			case START_OBJECT:
+				return deserializeObject(p, ctxt);
+			case VALUE_STRING:
+				return new PhysicalCoords(p.getValueAsString());
+			default:
+				ctxt.handleUnexpectedToken(_valueClass, p);
+				return null;
+			}
+		}
+
+		private PhysicalCoords deserializeArray(JsonParser p,
+				DeserializationContext ctxt) throws IOException {
+			if (!p.nextToken().isNumeric()) {
+				ctxt.handleUnexpectedToken(int.class, p);
+			}
+			int c = p.getIntValue();
+			if (!p.nextToken().isNumeric()) {
+				ctxt.handleUnexpectedToken(int.class, p);
+			}
+			int f = p.getIntValue();
+			if (!p.nextToken().isNumeric()) {
+				ctxt.handleUnexpectedToken(int.class, p);
+			}
+			int b = p.getIntValue();
+			if (!p.nextToken().isStructEnd()) {
+				ctxt.handleUnexpectedToken(_valueClass, p);
+			}
+			return new PhysicalCoords(c, f, b);
+		}
+
+		private PhysicalCoords deserializeObject(JsonParser p,
+				DeserializationContext ctxt) throws IOException {
+			Integer c = null, f = null, b = null;
+			while (true) {
+				String name = p.nextFieldName();
+				if (name == null) {
+					if (p.currentToken() != JsonToken.END_OBJECT) {
+						ctxt.handleUnexpectedToken(_valueClass, p);
+					}
+					break;
+				}
+				switch (name) {
+				case "cabinet":
+				case "c":
+					if (c != null) {
+						ctxt.handleUnknownProperty(p, this, _valueClass, name);
+					}
+					c = p.nextIntValue(0);
+					break;
+				case "frame":
+				case "f":
+					if (f != null) {
+						ctxt.handleUnknownProperty(p, this, _valueClass, name);
+					}
+					f = p.nextIntValue(0);
+					break;
+				case "board":
+				case "b":
+					if (b != null) {
+						ctxt.handleUnknownProperty(p, this, _valueClass, name);
+					}
+					b = p.nextIntValue(0);
+					break;
+				default:
+					ctxt.handleUnknownProperty(p, this, _valueClass, name);
+				}
+			}
+			if (c == null || f == null || b == null) {
+				ctxt.handleUnexpectedToken(_valueClass, p);
+			}
+			return new PhysicalCoords(c, f, b);
+		}
 	}
 }

@@ -19,9 +19,16 @@ package uk.ac.manchester.spinnaker.machine.board;
 import static java.lang.Integer.compare;
 import static java.lang.Integer.parseInt;
 
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.core.JacksonException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.google.errorprone.annotations.Immutable;
 
 /**
@@ -32,9 +39,22 @@ import com.google.errorprone.annotations.Immutable;
  * a frame (when a sufficient quantity of boards is used, typically but not
  * necessarily 24). Cabinets contain frames.
  *
+ * <h2>Serialisation Formats</h2>
+ * Defaults to being serialised as a JSON object:
+ * <pre>{"cabinet": 3, "frame": 2}</pre>
+ * and can be deserialized from that, or:
+ * <pre>{"c": 3, "f": 2}</pre>
+ * It can also accept being deserialised from a JSON array, for a more compact
+ * notation:
+ * <pre>[3, 2]</pre>
+ * Finally, it can also be deserialised from the string form created by the
+ * {@link #toString()} method:
+ * <pre>[c:3,f:2]</pre>
+ *
  * @author Donal Fellows
  */
 @Immutable
+@JsonDeserialize(using = BMPCoords.Deserializer.class)
 public final class BMPCoords implements Comparable<BMPCoords> {
 	/** Parses the result of {@link #toString()}. */
 	private static final Pattern PATTERN =
@@ -130,5 +150,82 @@ public final class BMPCoords implements Comparable<BMPCoords> {
 			return cmp;
 		}
 		return compare(frame, other.frame);
+	}
+
+	/** JSON deserializer for {@link BMPCoords}. */
+	static class Deserializer extends StdDeserializer<BMPCoords> {
+		private static final long serialVersionUID = 1L;
+
+		protected Deserializer() {
+			super(BMPCoords.class);
+		}
+
+		@Override
+		public BMPCoords deserialize(JsonParser p, DeserializationContext ctxt)
+				throws IOException, JacksonException {
+			switch (p.currentToken()) {
+			case START_ARRAY:
+				return deserializeArray(p, ctxt);
+			case START_OBJECT:
+				return deserializeObject(p, ctxt);
+			case VALUE_STRING:
+				return new BMPCoords(p.getValueAsString());
+			default:
+				ctxt.handleUnexpectedToken(_valueClass, p);
+				return null;
+			}
+		}
+
+		private BMPCoords deserializeArray(JsonParser p,
+				DeserializationContext ctxt) throws IOException {
+			if (!p.nextToken().isNumeric()) {
+				ctxt.handleUnexpectedToken(int.class, p);
+			}
+			int c = p.getIntValue();
+			if (!p.nextToken().isNumeric()) {
+				ctxt.handleUnexpectedToken(int.class, p);
+			}
+			int f = p.getIntValue();
+			if (!p.nextToken().isStructEnd()) {
+				ctxt.handleUnexpectedToken(_valueClass, p);
+			}
+			return new BMPCoords(c, f);
+		}
+
+		private BMPCoords deserializeObject(JsonParser p,
+				DeserializationContext ctxt) throws IOException {
+			Integer c = null, f = null;
+			while (true) {
+				String name = p.nextFieldName();
+				if (name == null) {
+					if (p.currentToken() != JsonToken.END_OBJECT) {
+						ctxt.handleUnexpectedToken(_valueClass, p);
+					}
+					break;
+				}
+				switch (name) {
+				case "cabinet":
+				case "c":
+					if (c != null) {
+						ctxt.handleUnknownProperty(p, this, _valueClass, name);
+					}
+					c = p.nextIntValue(0);
+					break;
+				case "frame":
+				case "f":
+					if (f != null) {
+						ctxt.handleUnknownProperty(p, this, _valueClass, name);
+					}
+					f = p.nextIntValue(0);
+					break;
+				default:
+					ctxt.handleUnknownProperty(p, this, _valueClass, name);
+				}
+			}
+			if (c == null || f == null) {
+				ctxt.handleUnexpectedToken(_valueClass, p);
+			}
+			return new BMPCoords(c, f);
+		}
 	}
 }
