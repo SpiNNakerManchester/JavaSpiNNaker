@@ -50,7 +50,7 @@ public class AllocatedMachine {
 
 	private List<BoardCoordinates> boards;
 
-	/** @return Rectangle width. */
+	/** @return Rectangle width, in triads. */
 	public int getWidth() {
 		return width;
 	}
@@ -59,7 +59,7 @@ public class AllocatedMachine {
 		this.width = width;
 	}
 
-	/** @return Rectangle height. */
+	/** @return Rectangle height, in triads. */
 	public int getHeight() {
 		return height;
 	}
@@ -68,7 +68,10 @@ public class AllocatedMachine {
 		this.height = height;
 	}
 
-	/** @return Depth of rectangle. 1 or 3. */
+	/**
+	 * @return Depth of rectangle. 1 or 3. Only the single-board case uses a
+	 *         depth of 1.
+	 */
 	public int getDepth() {
 		return depth;
 	}

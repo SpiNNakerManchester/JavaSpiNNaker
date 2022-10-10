@@ -35,6 +35,8 @@ import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
@@ -69,24 +71,24 @@ public final class CreateJob {
 	 */
 	@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 	public static final class Dimensions {
-		@Positive
+		@ValidTriadWidth
 		private int width;
 
-		@Positive
+		@ValidTriadHeight
 		private int height;
 
 		/**
 		 * @param width
-		 *            The width of rectangle to ask for, in boards.
+		 *            The width of rectangle to ask for, in triads.
 		 * @param height
-		 *            The height of rectangle to ask for, in boards.
+		 *            The height of rectangle to ask for, in triads.
 		 */
 		public Dimensions(int width, int height) {
 			this.width = width;
 			this.height = height;
 		}
 
-		/** @return The width of the allocation, in boards. */
+		/** @return The width of the allocation, in triads. */
 		public int getWidth() {
 			return width;
 		}
@@ -95,7 +97,7 @@ public final class CreateJob {
 			this.width = width;
 		}
 
-		/** @return The height of the allocation, in boards. */
+		/** @return The height of the allocation, in triads. */
 		public int getHeight() {
 			return height;
 		}
@@ -259,15 +261,15 @@ public final class CreateJob {
 	}
 
 	/**
-	 * Create a request to run on rectangle of boards using the default machine
-	 * operated by the Spalloc service.
+	 * Create a request to run on rectangle of triads of boards using the
+	 * default machine operated by the Spalloc service.
 	 * <p>
 	 * Note that you can configure this request further.
 	 *
 	 * @param width
-	 *            The width of the rectangle
+	 *            The width of the rectangle, in triads
 	 * @param height
-	 *            The height of the rectangle
+	 *            The height of the rectangle, in triads
 	 * @throws IllegalArgumentException
 	 *             If either of the dimensions is less than 1
 	 */

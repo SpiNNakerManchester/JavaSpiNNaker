@@ -40,6 +40,8 @@ import javax.validation.constraints.PositiveOrZero;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
@@ -85,11 +87,11 @@ public class CreateJob {
 	 * Build a request for a rectangle of boards.
 	 *
 	 * @param width
-	 *            Horizontal size of rectangle
+	 *            Horizontal size of rectangle, in triads
 	 * @param height
-	 *            Vertical size of rectangle
+	 *            Vertical size of rectangle, in triads
 	 */
-	public CreateJob(@Positive int width, @Positive int height) {
+	public CreateJob(@ValidTriadWidth int width, @ValidTriadHeight int height) {
 		args.add(width);
 		args.add(height);
 	}

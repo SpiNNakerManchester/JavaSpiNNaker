@@ -28,7 +28,9 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
+
+import uk.ac.manchester.spinnaker.machine.ValidMachineHeight;
+import uk.ac.manchester.spinnaker.machine.ValidMachineWidth;
 
 /**
  * Descriptive detail for a job. Used for HTML generation, something like:
@@ -69,10 +71,10 @@ public class JobDescription {
 
 	private String request;
 
-	@Positive
+	@ValidMachineWidth
 	private Integer width;
 
-	@Positive
+	@ValidMachineHeight
 	private Integer height;
 
 	private boolean powered;

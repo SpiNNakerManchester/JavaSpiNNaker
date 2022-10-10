@@ -31,15 +31,19 @@ import java.util.Set;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
+import uk.ac.manchester.spinnaker.machine.ValidMachineHeight;
+import uk.ac.manchester.spinnaker.machine.ValidMachineWidth;
 
 /** Represents a P2P routing table read from the machine. */
 public class P2PTable {
 	private final Map<ChipLocation, P2PTableRoute> routes;
 
 	/** The width of the machine that this table represents. */
+	@ValidMachineWidth
 	public final int width;
 
 	/** The height of the machine that this table represents. */
+	@ValidMachineHeight
 	public final int height;
 
 	private static final int ROUTE_CHUNK = 8;

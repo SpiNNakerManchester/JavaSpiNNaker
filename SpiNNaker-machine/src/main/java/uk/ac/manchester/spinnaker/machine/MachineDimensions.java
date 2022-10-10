@@ -16,19 +16,17 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import javax.validation.constraints.Positive;
-
 import com.google.errorprone.annotations.Immutable;
 
 /** Represents the size of a machine in chips. */
 @Immutable
 public final class MachineDimensions {
 	/** The width of the machine in chips. */
-	@Positive(message = "machines must have sensible widths")
+	@ValidMachineWidth
 	public final int width;
 
 	/** The height of the machine in chips. */
-	@Positive(message = "machines must have sensible heights")
+	@ValidMachineHeight
 	public final int height;
 
 	/**

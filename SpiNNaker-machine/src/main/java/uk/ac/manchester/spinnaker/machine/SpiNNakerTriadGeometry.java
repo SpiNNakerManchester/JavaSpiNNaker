@@ -286,7 +286,7 @@ public final class SpiNNakerTriadGeometry {
 	 * @return All the Locations on one board.
 	 */
 	public Iterator<ChipLocation> singleBoardIterator() {
-		return singleBoardCoordinates.iterator();
+		return singleBoard().iterator();
 	}
 
 	/**

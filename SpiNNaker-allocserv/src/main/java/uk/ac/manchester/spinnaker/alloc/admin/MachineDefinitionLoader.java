@@ -71,6 +71,8 @@ import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 import uk.ac.manchester.spinnaker.utils.validation.TCPPort;
 
@@ -139,10 +141,10 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 		private Set<@NotBlank String> tags;
 
-		@Positive(message = "machine width must be greater than zero")
+		@ValidTriadWidth
 		private int width;
 
-		@Positive(message = "machine height must be greater than zero")
+		@ValidTriadHeight
 		private int height;
 
 		private Set<@Valid TriadCoords> deadBoards;

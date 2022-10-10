@@ -45,7 +45,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 import org.slf4j.Logger;
 
@@ -61,6 +64,8 @@ import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
@@ -562,16 +567,18 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
-	protected abstract Optional<Integer> createJobNumBoards(int numBoards,
-			Map<String, Object> kwargs, byte[] cmd) throws TaskException;
+	protected abstract Optional<Integer> createJobNumBoards(
+			@Positive int numBoards,
+			Map<@NotBlank String, @NotNull Object> kwargs, byte[] cmd)
+			throws TaskException;
 
 	/**
 	 * Create a job asking for a rectangle of boards.
 	 *
 	 * @param width
-	 *            Width of rectangle in boards.
+	 *            Width of rectangle in triads.
 	 * @param height
-	 *            Height of rectangle in boards.
+	 *            Height of rectangle in triads.
 	 * @param kwargs
 	 *            Keyword argument map.
 	 * @param cmd
@@ -580,8 +587,9 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
-	protected abstract Optional<Integer> createJobRectangle(int width,
-			int height, Map<String, Object> kwargs, byte[] cmd)
+	protected abstract Optional<Integer> createJobRectangle(
+			@ValidTriadWidth int width, @ValidTriadHeight int height,
+			Map<@NotBlank String, @NotNull Object> kwargs, byte[] cmd)
 			throws TaskException;
 
 	/**
@@ -598,7 +606,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 *             If anything goes wrong.
 	 */
 	protected abstract Optional<Integer> createJobSpecificBoard(
-			TriadCoords coords, Map<String, Object> kwargs, byte[] cmd)
+			@Valid TriadCoords coords,
+			Map<@NotBlank String, @NotNull Object> kwargs, byte[] cmd)
 			throws TaskException;
 
 	/**

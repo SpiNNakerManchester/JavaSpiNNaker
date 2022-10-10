@@ -225,9 +225,9 @@ CREATE TABLE IF NOT EXISTS jobs (
 		CONSTRAINT "jobs.owner -> user_info.user_id"
 		REFERENCES user_info(user_id) ON DELETE RESTRICT,
 	create_timestamp INTEGER NOT NULL,
-	width INTEGER				-- set after allocation
+	width INTEGER				-- set after allocation, in triads
 		CONSTRAINT "jobs.width sane" CHECK (width > 0),
-	height INTEGER				-- set after allocation
+	height INTEGER				-- set after allocation, in triads
 		CONSTRAINT "jobs.height sane" CHECK (height > 0),
 	"depth" INTEGER				-- set after allocation
 		CONSTRAINT "jobs.depth sane" CHECK ("depth" > 0),
@@ -349,9 +349,9 @@ CREATE TABLE IF NOT EXISTS job_request (
 		REFERENCES jobs(job_id) ON DELETE CASCADE,
 	num_boards INTEGER
 		CONSTRAINT "job_request.num_boards sane" CHECK (num_boards > 0),
-	width INTEGER
+	width INTEGER -- in triads
 		CONSTRAINT "job_request.width sane" CHECK (width > 0),
-	height INTEGER
+	height INTEGER -- in triads
 		CONSTRAINT "job_request.height sane" CHECK (height > 0),
 	board_id INTEGER
 		CONSTRAINT "job_request.board_id -> boards.board_id"

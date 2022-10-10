@@ -33,7 +33,6 @@ import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 
 import org.python.core.PyObject;
 
@@ -43,6 +42,8 @@ import com.google.errorprone.annotations.Keep;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /** A machine description. JSON-serializable. */
@@ -56,11 +57,11 @@ public final class Machine {
 	public final Set<@NotBlank String> tags;
 
 	/** The width of the machine, in triads. */
-	@Positive
+	@ValidTriadWidth
 	public final int width;
 
 	/** The height of the machine, in triads. */
-	@Positive
+	@ValidTriadHeight
 	public final int height;
 
 	/** The dead boards of the machine. */

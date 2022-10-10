@@ -61,6 +61,8 @@ import uk.ac.manchester.spinnaker.machine.ValidY;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
@@ -315,12 +317,12 @@ public interface SpallocAPI {
 	 */
 	@UsedInJavadocOnly(V1CompatService.class)
 	final class CreateDimensions extends CreateDescriptor {
-		/** Width requested, in boards. */
-		@Positive(message = "width of request must be positive")
+		/** Width requested, in triads. */
+		@ValidTriadWidth
 		public final int width;
 
-		/** Height requested, in boards. */
-		@Positive(message = "height of request must be positive")
+		/** Height requested, in triads. */
+		@ValidTriadHeight
 		public final int height;
 
 		/**
@@ -328,9 +330,9 @@ public interface SpallocAPI {
 		 * over-allocate.
 		 *
 		 * @param width
-		 *            The width of rectangle to request, in boards.
+		 *            The width of rectangle to request, in triads.
 		 * @param height
-		 *            The height of rectangle to request, in boards.
+		 *            The height of rectangle to request, in triads.
 		 * @param maxDeadBoards
 		 *            The number of dead boards that can be tolerated in that
 		 *            rectangle.
@@ -391,11 +393,11 @@ public interface SpallocAPI {
 	 */
 	final class CreateDimensionsAt extends HasBoardCoords {
 		/** Width requested, in triads. */
-		@Positive(message = "width of request must be positive")
+		@ValidTriadWidth
 		public final int width;
 
 		/** Height requested, in triads. */
-		@Positive(message = "height of request must be positive")
+		@ValidTriadHeight
 		public final int height;
 
 		/**

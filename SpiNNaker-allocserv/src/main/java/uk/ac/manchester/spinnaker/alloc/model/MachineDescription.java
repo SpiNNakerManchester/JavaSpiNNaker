@@ -25,9 +25,10 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
@@ -39,10 +40,10 @@ public class MachineDescription {
 	@NotBlank
 	private String name;
 
-	@Positive
+	@ValidTriadWidth
 	private int width;
 
-	@Positive
+	@ValidTriadHeight
 	private int height;
 
 	@PositiveOrZero
