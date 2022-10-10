@@ -31,7 +31,10 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.TreeMap;
 
+import javax.validation.Valid;
+
 import uk.ac.manchester.spinnaker.machine.bean.ChipBean;
+import uk.ac.manchester.spinnaker.machine.tags.TagID;
 
 /**
  * A Description of a Spinnaker Chip including its Router.
@@ -46,12 +49,12 @@ import uk.ac.manchester.spinnaker.machine.bean.ChipBean;
  * @author Christian-B
  */
 public class Chip implements HasChipLocation {
-
+	@Valid
 	private final ChipLocation location;
 
-	private TreeMap<Integer, Processor> monitorProcessors;
+	private TreeMap<@ValidP Integer, @Valid Processor> monitorProcessors;
 
-	private TreeMap<Integer, Processor> userProcessors;
+	private TreeMap<@ValidP Integer, @Valid Processor> userProcessors;
 
 	/** A router for the chip. */
 	public final Router router;
@@ -64,9 +67,10 @@ public class Chip implements HasChipLocation {
 	public final InetAddress ipAddress;
 
 	/** List of SDP identifiers available. */
-	private final List<Integer> tagIds;
+	private final List<@TagID Integer> tagIds;
 
 	/** The nearest Ethernet coordinates, or {@code null} if none known. */
+	@Valid
 	public final ChipLocation nearestEthernet;
 
 	private static final TreeMap<Integer, Processor> DEFAULT_USER_PROCESSORS =

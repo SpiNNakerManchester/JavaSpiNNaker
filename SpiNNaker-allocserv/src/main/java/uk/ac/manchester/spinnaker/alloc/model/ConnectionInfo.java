@@ -21,6 +21,8 @@ import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
 import java.util.Objects;
 
+import javax.validation.Valid;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -28,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * Describes a connection by its chip and hostname.
@@ -42,8 +45,10 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  * because that name was too confusing with SQL about!
  */
 public final class ConnectionInfo {
+	@Valid
 	private ChipLocation chip;
 
+	@IPAddress
 	private String hostname;
 
 	@JsonIgnore

@@ -17,6 +17,9 @@
 package uk.ac.manchester.spinnaker.machine.bean;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import uk.ac.manchester.spinnaker.machine.tags.TagID;
+
 import java.util.List;
 
 /**
@@ -38,7 +41,7 @@ public class ChipResources {
 
 	private int sdram;
 
-	private List<Integer> tags;
+	private List<@TagID Integer> tags;
 
 	private int routerEntries;
 

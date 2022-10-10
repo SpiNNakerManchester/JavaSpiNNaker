@@ -18,11 +18,17 @@ package uk.ac.manchester.spinnaker.machine.bean;
 
 import static java.net.InetAddress.getByName;
 import static java.util.stream.Collectors.toUnmodifiableSet;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_NUM_CORES;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Set;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -42,16 +48,19 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 @UsedInJavadocOnly(Chip.class)
 public class ChipDetails {
 	/** Total number of working core on this chip. */
+	@PositiveOrZero
+	@Max(MAX_NUM_CORES)
 	public final int cores;
 
 	/** Location of the nearest Ethernet-enabled chip. */
+	@Valid
 	public final ChipLocation ethernet;
 
 	private final InetAddress ipAddress;
 
-	private final Set<Direction> deadDirections;
+	private final Set<@NotNull Direction> deadDirections;
 
-	private final List<LinkBean> links;
+	private final List<@Valid LinkBean> links;
 
 	/**
 	 * Creates a Chip Details bean with the required fields leaving optional

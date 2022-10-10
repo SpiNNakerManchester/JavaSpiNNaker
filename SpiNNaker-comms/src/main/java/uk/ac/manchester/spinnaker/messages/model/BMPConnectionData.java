@@ -28,30 +28,40 @@ import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.List;
 
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
+import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
+
 /**
  * Contains the details of a connection to a SpiNNaker Board Management
  * Processor (BMP).
  */
 public class BMPConnectionData {
 	/** The boards to be addressed. Unmodifiable. */
-	public final Collection<Integer> boards;
+	public final Collection<@ValidBoardNumber Integer> boards;
 
 	/** The ID of the cabinet that contains the frame that contains the BMPs. */
+	@ValidCabinetNumber
 	public final int cabinet;
 
 	/**
 	 * The ID of the frame that contains the BMPs. Frames are contained within a
 	 * cabinet.
 	 */
+	@ValidFrameNumber
 	public final int frame;
 
 	/** The IP address of the BMP. */
+	@IPAddress
 	public final InetAddress ipAddress;
 
 	/**
 	 * The port number associated with the BMP connection, or {@code null} for
 	 * the default.
 	 */
+	@UDPPort
 	public final Integer portNumber;
 
 	/**

@@ -23,6 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
@@ -31,21 +36,25 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
 public class MachineDescription {
 	private int id;
 
+	@NotBlank
 	private String name;
 
+	@Positive
 	private int width;
 
+	@Positive
 	private int height;
 
+	@PositiveOrZero
 	private int numInUse;
 
-	private List<JobInfo> jobs = new ArrayList<>();
+	private List<@Valid JobInfo> jobs = new ArrayList<>();
 
-	private List<String> tags = new ArrayList<>();
+	private List<@NotBlank String> tags = new ArrayList<>();
 
-	private List<BoardCoords> dead = new ArrayList<>();
+	private List<@Valid BoardCoords> dead = new ArrayList<>();
 
-	private List<BoardCoords> live;
+	private List<@Valid BoardCoords> live;
 
 	private Optional<Long> quota = Optional.empty();
 
@@ -180,7 +189,7 @@ public class MachineDescription {
 
 		private Optional<String> owner = Optional.empty();
 
-		private List<BoardCoords> boards = new ArrayList<>();
+		private List<@Valid BoardCoords> boards = new ArrayList<>();
 
 		/** @return the job ID */
 		public int getId() {

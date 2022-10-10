@@ -23,6 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+
 /**
  * Entry in a table of machines. The table is like this:
  *
@@ -59,17 +63,21 @@ import java.util.Optional;
 public class MachineListEntryRecord {
 	private int id;
 
+	@NotBlank
 	private String name;
 
 	private URI detailsUrl;
 
+	@Positive
 	private int numBoards;
 
+	@PositiveOrZero
 	private int numInUse;
 
+	@PositiveOrZero
 	private int numJobs;
 
-	private List<String> tags = new ArrayList<>();
+	private List<@NotBlank String> tags = new ArrayList<>();
 
 	/** @return the machine ID */
 	public int getId() {

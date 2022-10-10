@@ -19,6 +19,9 @@ package uk.ac.manchester.spinnaker.machine.bean;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
+
+import javax.validation.Valid;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.manchester.spinnaker.machine.Chip;
@@ -34,9 +37,11 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 @UsedInJavadocOnly(Chip.class)
 public class ChipBean {
 	/** The location of this Chip. */
+	@Valid
 	public final ChipLocation location;
 
 	/** The details for this Chip. */
+	@Valid
 	public final ChipDetails details;
 
 	/**
@@ -44,6 +49,7 @@ public class ChipBean {
 	 *
 	 * Not final as will be filled in with the defaults.
 	 */
+	@Valid
 	private ChipResources resources;
 
 	/**

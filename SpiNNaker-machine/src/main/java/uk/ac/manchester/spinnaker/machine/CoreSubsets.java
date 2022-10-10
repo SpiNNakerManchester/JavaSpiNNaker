@@ -27,6 +27,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 
+import javax.validation.Valid;
+
 import uk.ac.manchester.spinnaker.utils.DoubleMapIterator;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
@@ -39,7 +41,8 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * @author Christian-B
  */
 public final class CoreSubsets implements MappableIterable<CoreLocation> {
-	private final Map<ChipLocation, Map<Integer, CoreLocation>> locations;
+	private final Map<@Valid ChipLocation,
+			Map<@ValidP Integer, @Valid CoreLocation>> locations;
 
 	private boolean immutable;
 

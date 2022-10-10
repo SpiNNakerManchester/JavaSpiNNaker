@@ -47,6 +47,7 @@ public final class Processor implements Comparable<Processor> {
 			new Processor[PROCESSORS_PER_CHIP];
 
 	/** The ID of the processor. */
+	@ValidP
 	public final int processorId;
 
 	/** The clock speed of the processor in cycles per second. */

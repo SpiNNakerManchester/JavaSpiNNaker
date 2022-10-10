@@ -50,9 +50,11 @@ public final class ChipLocation
 	private static final long serialVersionUID = -2343484354316378507L;
 
 	/** The X coordinate. */
+	@ValidX
 	private final int x;
 
 	/** The Y coordinate. */
+	@ValidY
 	private final int y;
 
 	/**

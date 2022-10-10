@@ -23,6 +23,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Objects;
 
+import javax.validation.Valid;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -49,6 +51,7 @@ public final class IPTag extends Tag {
 	private final TrafficIdentifier trafficIdentifier;
 
 	/** The coordinates where users of this tag should send packets to. */
+	@Valid
 	private final ChipLocation destination;
 
 	/**
@@ -80,13 +83,13 @@ public final class IPTag extends Tag {
 	 *            The ID of the tag (0..7)
 	 * @param targetAddress
 	 *            The IP address to which SDP packets with the tag will be sent
-	 * @param port
+	 * @param udpPort
 	 *            The port to which the SDP packets with the tag will be sent,
 	 *            or {@code null} if not yet assigned.
 	 */
 	public IPTag(InetAddress boardAddress, ChipLocation destination, int tagID,
-			InetAddress targetAddress, Integer port) {
-		this(boardAddress, destination, tagID, targetAddress, port,
+			InetAddress targetAddress, Integer udpPort) {
+		this(boardAddress, destination, tagID, targetAddress, udpPort,
 				DEFAULT_STRIP_SDP, DEFAULT_TRAFFIC_IDENTIFIER);
 	}
 
@@ -117,15 +120,15 @@ public final class IPTag extends Tag {
 	 *            The ID of the tag (0..7)
 	 * @param targetAddress
 	 *            The IP address to which SDP packets with the tag will be sent
-	 * @param port
+	 * @param udpPort
 	 *            The port to which the SDP packets with the tag will be sent,
 	 *            or {@code null} if not yet assigned.
 	 * @param stripSDP
 	 *            Indicates whether the SDP header should be removed
 	 */
 	public IPTag(InetAddress boardAddress, ChipLocation destination, int tagID,
-			InetAddress targetAddress, Integer port, boolean stripSDP) {
-		this(boardAddress, destination, tagID, targetAddress, port, stripSDP,
+			InetAddress targetAddress, Integer udpPort, boolean stripSDP) {
+		this(boardAddress, destination, tagID, targetAddress, udpPort, stripSDP,
 				DEFAULT_TRAFFIC_IDENTIFIER);
 	}
 
@@ -138,7 +141,7 @@ public final class IPTag extends Tag {
 	 *            The ID of the tag (0..7)
 	 * @param targetAddress
 	 *            The IP address to which SDP packets with the tag will be sent
-	 * @param port
+	 * @param udpPort
 	 *            The port to which the SDP packets with the tag will be sent,
 	 *            or {@code null} if not yet assigned.
 	 * @param stripSDP
@@ -147,9 +150,9 @@ public final class IPTag extends Tag {
 	 *            The identifier for traffic transmitted using this tag
 	 */
 	public IPTag(InetAddress boardAddress, ChipLocation destination, int tagID,
-			InetAddress targetAddress, Integer port, boolean stripSDP,
+			InetAddress targetAddress, Integer udpPort, boolean stripSDP,
 			TrafficIdentifier trafficIdentifier) {
-		super(boardAddress, tagID, port);
+		super(boardAddress, tagID, udpPort);
 		this.destination = destination;
 		this.ipAddress = targetAddress;
 		this.stripSDP = stripSDP;
@@ -169,7 +172,7 @@ public final class IPTag extends Tag {
 	 *            The Y coordinate of the destination.
 	 * @param targetAddress
 	 *            The IP address to which SDP packets with the tag will be sent
-	 * @param port
+	 * @param udpPort
 	 *            The port to which the SDP packets with the tag will be sent,
 	 *            or {@code null} if not yet assigned.
 	 * @param stripSDP
@@ -187,13 +190,13 @@ public final class IPTag extends Tag {
 			@JsonProperty(value = "y", required = true) int y,
 			@JsonProperty(value = "targetAddress", required = true)
 			String targetAddress,
-			@JsonProperty(value = "port") Integer port,
+			@JsonProperty(value = "port") Integer udpPort,
 			@JsonProperty(value = "stripSDP") Boolean stripSDP,
 			@JsonProperty(value = "trafficIdentifier")
 			String trafficIdentifier)
 			throws UnknownHostException {
 		super(getByName(boardAddress), tagID,
-				(port == null ? DEFAULT_PORT : port));
+				(udpPort == null ? DEFAULT_PORT : udpPort));
 		destination = new ChipLocation(x, y);
 		ipAddress = getByName(targetAddress);
 		if (stripSDP == null) {
