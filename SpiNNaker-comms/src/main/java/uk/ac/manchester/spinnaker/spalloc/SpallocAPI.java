@@ -16,11 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
-/*
- * Disable style check for these imports; we use some extra imports here just
- * to support Javadoc (cross-referencing the notification message classes).
- */
-// CHECKSTYLE:OFF
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -48,13 +43,17 @@ import uk.ac.manchester.spinnaker.spalloc.messages.Machine;
 import uk.ac.manchester.spinnaker.spalloc.messages.MachinesChangedNotification;
 import uk.ac.manchester.spinnaker.spalloc.messages.Notification;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
-// CHECKSTYLE:ON
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * The interface exposed by the low-level Spalloc Client.
  *
  * @author Donal Fellows
  */
+@UsedInJavadocOnly({
+	JobsChangedNotification.class,
+	MachinesChangedNotification.class
+})
 public interface SpallocAPI {
 	/**
 	 * Request the version of the spalloc server.

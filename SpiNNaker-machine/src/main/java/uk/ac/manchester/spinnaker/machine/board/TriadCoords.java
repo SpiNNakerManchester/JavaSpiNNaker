@@ -103,7 +103,7 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 	 * numbers may vary) is:
 	 *
 	 * <pre>
-	 * [x:34,y:56,z:2]
+	 * [x:3,y:5,z:2]
 	 * </pre>
 	 *
 	 * @param serialForm
