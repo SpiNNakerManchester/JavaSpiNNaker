@@ -42,7 +42,7 @@ jobs:
         cache: 'maven'
 
     - name: Resolve Dependencies
-      run: mvn dependency:resolve-plugin dependency:resolve --settings $SETTINGS_FILE -B -P "CheckForFIXME,ErrorProne,KeycloakClient,devtools"
+      run: mvn dependency:resolve-plugins dependency:resolve --settings $SETTINGS_FILE -B -P "CheckForFIXME,ErrorProne,KeycloakClient,devtools"
     - name: Compile
       run: mvn clean install --settings $SETTINGS_FILE -B -DskipTests=true -Dmaven.javadoc.skip=true -P "!jsp-precompile"
 
