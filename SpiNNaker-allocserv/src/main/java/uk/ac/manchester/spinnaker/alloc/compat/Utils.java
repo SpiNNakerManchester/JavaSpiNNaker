@@ -219,7 +219,7 @@ abstract class Utils {
 			return null;
 		}
 		double ts = instant.getEpochSecond();
-		ts += instant.getNano() / NSEC_PER_SEC;
+		ts += instant.getNano() / (double) NSEC_PER_SEC;
 		return ts;
 	}
 

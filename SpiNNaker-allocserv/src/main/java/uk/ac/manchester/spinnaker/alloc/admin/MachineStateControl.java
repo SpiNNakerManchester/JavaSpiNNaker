@@ -527,7 +527,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	@SuppressWarnings("MustBeClosed")
 	private void scheduleSerialNumberReads(String machineName) {
-		batchReqs(null, "retrieving serial numbers",
+		batchReqs(machineName, "retrieving serial numbers",
 				props.getSerialReadBatchSize(),
 				id -> new Op(CREATE_SERIAL_READ_REQ, id), Op::completed);
 	}
