@@ -28,6 +28,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 /**
  * A description of the state of a job.
@@ -219,55 +220,65 @@ public final class JobDescription {
 
 		private String keepAliveHost;
 
+		@CanIgnoreReturnValue
 		@JsonProperty("job_id")
 		public Builder withJobID(int jobID) {
 			this.jobID = jobID;
 			return this;
 		}
 
+		@CanIgnoreReturnValue
 		public Builder withOwner(String owner) {
 			this.owner = owner;
 			return this;
 		}
 
+		@CanIgnoreReturnValue
 		@JsonProperty("start_time")
 		public Builder withStartTime(Double startTime) {
 			this.startTime = startTime;
 			return this;
 		}
 
+		@CanIgnoreReturnValue
 		public Builder withState(State state) {
 			this.state = state;
 			return this;
 		}
 
+		@CanIgnoreReturnValue
 		public Builder withPower(Boolean power) {
 			this.power = power;
 			return this;
 		}
 
+		@CanIgnoreReturnValue
 		@JsonProperty("keepalive")
 		public Builder withKeepAlive(double keepAlive) {
 			this.keepAlive = keepAlive;
 			return this;
 		}
 
+		@CanIgnoreReturnValue
 		public Builder withReason(String reason) {
 			this.reason = reason;
 			return this;
 		}
 
+		@CanIgnoreReturnValue
 		@JsonProperty("allocated_machine_name")
 		public Builder withMachine(String machine) {
 			this.machine = machine;
 			return this;
 		}
 
+		@CanIgnoreReturnValue
 		public Builder withArgs(List<Integer> args) {
 			this.args = isNull(args) ? List.of() : List.copyOf(args);
 			return this;
 		}
 
+		@CanIgnoreReturnValue
 		public Builder withKwargs(Map<String, Object> kwargs) {
 			this.kwargs = isNull(args) ? Map.of()
 					// Careful: could be null values in map!
@@ -275,11 +286,13 @@ public final class JobDescription {
 			return this;
 		}
 
+		@CanIgnoreReturnValue
 		public Builder withBoards(List<BoardCoordinates> boards) {
 			this.boards = isNull(boards) ? List.of() : List.copyOf(boards);
 			return this;
 		}
 
+		@CanIgnoreReturnValue
 		@JsonProperty("keepalivehost")
 		public Builder withKeepAliveHost(String keepAliveHost) {
 			this.keepAliveHost = keepAliveHost;
