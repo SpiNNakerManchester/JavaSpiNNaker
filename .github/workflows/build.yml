@@ -45,11 +45,7 @@ jobs:
       run: mvn clean install --settings $SETTINGS_FILE -B -DskipTests=true -Dmaven.javadoc.skip=true -P "!jsp-precompile"
     - name: Resolve Remaining Dependencies
       # Explicit get of error_prone_core because of MDEP-830
-      run: |
-        mvn dependency:resolve-plugins dependency:resolve --settings $SETTINGS_FILE -B -P "CheckForFIXME,ErrorProne,KeycloakClient,devtools"
-        mvn dependency:get --settings $SETTINGS_FILE -B -Dartifact=$EXTRA_ARTIFACT
-      env:
-        EXTRA_ARTIFACT: com.google.errorprone:error_prone_core:2.15.0
+      run: mvn dependency:resolve-plugins dependency:resolve dependency:get@fetch-error-prone --settings $SETTINGS_FILE -B -P "CheckForFIXME,ErrorProne,KeycloakClient,devtools"
 
   test:
     needs: compile
