@@ -44,7 +44,6 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
@@ -52,7 +51,6 @@ import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.model.DownLink;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
-import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.Version;
@@ -175,7 +173,7 @@ class JsonTest {
 		}
 	}
 
-	private static class SM implements SpallocAPI.SubMachine {
+	private static class SM extends StubSubMachine {
 		@Override
 		public Machine getMachine() {
 			return new M();
@@ -219,16 +217,6 @@ class JsonTest {
 		@Override
 		public List<BoardCoordinates> getBoards() {
 			return List.of(new BoardCoordinates(0, 0, 0));
-		}
-
-		@Override
-		public PowerState getPower() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public void setPower(PowerState powerState) {
-			throw new UnsupportedOperationException();
 		}
 	}
 
