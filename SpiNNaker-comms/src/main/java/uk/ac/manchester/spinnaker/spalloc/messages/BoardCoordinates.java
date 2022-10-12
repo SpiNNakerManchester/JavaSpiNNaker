@@ -21,7 +21,9 @@ import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.google.errorprone.annotations.Immutable;
 
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
@@ -29,28 +31,24 @@ import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 
 /**
- * The logical coordinates of a board.
+ * The logical coordinates of a board. This would be {@link TriadCoords} except
+ * it has a different serialization form for backward-compatibility.
  */
 @JsonPropertyOrder({
 	"x", "y", "z"
 })
 @JsonFormat(shape = ARRAY)
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
+@Immutable
 public final class BoardCoordinates {
 	@ValidTriadX
-	private int x;
+	private final int x;
 
 	@ValidTriadY
-	private int y;
+	private final int y;
 
 	@ValidTriadZ
-	private int z;
-
-	/**
-	 * Create with default coordinates.
-	 */
-	public BoardCoordinates() {
-	}
+	private final int z;
 
 	/**
 	 * Create with given coordinates.
@@ -62,10 +60,25 @@ public final class BoardCoordinates {
 	 * @param z
 	 *            the Z coordinate
 	 */
-	public BoardCoordinates(int x, int y, int z) {
+	public BoardCoordinates(
+			@JsonProperty(value = "x", defaultValue = "0") int x,
+			@JsonProperty(value = "y", defaultValue = "0") int y,
+			@JsonProperty(value = "z", defaultValue = "0") int z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+	}
+
+	/**
+	 * Create with given coordinates.
+	 *
+	 * @param triad
+	 *            the coordinates in standard form
+	 */
+	public BoardCoordinates(TriadCoords triad) {
+		this.x = triad.x;
+		this.y = triad.y;
+		this.z = triad.z;
 	}
 
 	/** @return the X coordinate */
@@ -73,26 +86,14 @@ public final class BoardCoordinates {
 		return x;
 	}
 
-	void setX(int x) {
-		this.x = x;
-	}
-
 	/** @return the Y coordinate */
 	public int getY() {
 		return y;
 	}
 
-	void setY(int y) {
-		this.y = y;
-	}
-
 	/** @return the Z coordinate */
 	public int getZ() {
 		return z;
-	}
-
-	void setZ(int z) {
-		this.z = z;
 	}
 
 	@Override

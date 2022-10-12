@@ -22,11 +22,11 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isAsciiPrintable;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.triad;
-import static uk.ac.manchester.spinnaker.alloc.compat.Utils.mapToArray;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.parseDec;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.state;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.timestamp;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.collectToArray;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
 
 import java.io.IOException;
@@ -35,15 +35,12 @@ import java.io.Writer;
 import java.net.Socket;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Future;
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
 
@@ -175,10 +172,10 @@ class V1TaskImpl extends V1CompatTask {
 	protected final JobState getJobState(int jobId) throws TaskException {
 		var job = getJob(jobId);
 		job.access(host());
-		var js = new JobState();
-		js.setKeepalive(timestamp(job.getKeepaliveTimestamp()));
-		js.setKeepalivehost(job.getKeepaliveHost().orElse(""));
-		js.setPower(job.getMachine().map(m -> {
+		var js = new JobState.Builder();
+		js.withKeepalive(timestamp(job.getKeepaliveTimestamp()));
+		js.withKeepalivehost(job.getKeepaliveHost().orElse(""));
+		js.withPower(job.getMachine().map(m -> {
 			try {
 				return m.getPower() == ON;
 			} catch (DataAccessException e) {
@@ -186,10 +183,10 @@ class V1TaskImpl extends V1CompatTask {
 				return false;
 			}
 		}).orElse(false));
-		js.setReason(job.getReason().orElse(""));
-		js.setStartTime(timestamp(job.getStartTime()));
-		js.setState(state(job));
-		return js;
+		js.withReason(job.getReason().orElse(""));
+		js.withStartTime(timestamp(job.getStartTime()));
+		js.withState(state(job));
+		return js.build();
 	}
 
 	@Override
@@ -323,40 +320,19 @@ class V1TaskImpl extends V1CompatTask {
 		@Autowired
 		private SpallocAPI spalloc;
 
-		/**
-		 * Map a collection of items to an array within a transaction.
-		 *
-		 * @param <T>
-		 *            The type of source items.
-		 * @param <U>
-		 *            The type of target items.
-		 * @param srcItems
-		 *            How to get the collection of source items.
-		 * @param targetCls
-		 *            The type of target items created. Needed so we can make
-		 *            them and make an array of them.
-		 * @param itemMapper
-		 *            How to fill out a target item given a source item.
-		 * @return Array of items of target type.
-		 */
-		private <T, U> U[] mapArrayTx(Supplier<Collection<T>> srcItems,
-				Class<U> targetCls, BiConsumer<T, U> itemMapper) {
-			return executeRead(
-					c -> mapToArray(srcItems.get(), targetCls, itemMapper));
-		}
-
 		private JobDescription[] listJobs(V1TaskImpl task) {
 			// Messy; hits the database many times
-			return mapArrayTx(() -> spalloc.getJobs(false, LOTS, 0).jobs(),
-					JobDescription.class,
-					// NB: convert partial job description to full
-					(job, jd) -> buildJobDescription(task, jd, spalloc
-							.getJob(task.permit, job.getId())
-							.orElseThrow(IllegalStateException::new)));
+			return spalloc.getJobs(false, LOTS, 0).jobs().stream()
+					.map(job -> buildJobDescription(task,
+							// NB: convert partial job description to full
+							spalloc.getJob(task.permit, job.getId())
+									.orElseThrow(IllegalStateException::new)))
+					.collect(collectToArray(JobDescription[]::new));
 		}
 
-		private static void buildJobDescription(V1TaskImpl task,
-				JobDescription jd, Job job) {
+		private static JobDescription buildJobDescription(V1TaskImpl task,
+				Job job) {
+			var jd = new JobDescription();
 			jd.setJobID(job.getId());
 			jd.setOwner(""); // Default to information shrouded
 			jd.setKeepAlive(timestamp(job.getKeepaliveTimestamp()));
@@ -379,24 +355,23 @@ class V1TaskImpl extends V1CompatTask {
 				jd.setBoards(sm.getBoards());
 				jd.setPower(sm.getPower() == ON);
 			});
+			return jd;
 		}
 
 		private Machine[] listMachines() {
 			// Messy; hits the database many times
-			return mapArrayTx(() -> spalloc.getMachines(false).values(),
-					Machine.class, (m, md) -> buildMachineDescription(m, md));
+			return executeRead(c -> spalloc.getMachines(false).values().stream()
+					.map(CompatHelper::buildMachineDescription)
+					.collect(collectToArray(Machine[]::new)));
 		}
 
-		private static void buildMachineDescription(SpallocAPI.Machine m,
-				Machine md) {
-			md.setName(m.getName());
-			md.setTags(List.copyOf(m.getTags()));
-			md.setWidth(m.getWidth());
-			md.setHeight(m.getHeight());
-			md.setDeadBoards(m.getDeadBoards().stream().map(Utils::board)
-					.collect(toList()));
-			md.setDeadLinks(m.getDownLinks().stream().flatMap(Utils::boardLinks)
-					.collect(toList()));
+		private static Machine buildMachineDescription(SpallocAPI.Machine m) {
+			return new Machine(m.getName(), List.copyOf(m.getTags()),
+					m.getWidth(), m.getHeight(),
+					m.getDeadBoards().stream().map(Utils::board)
+							.collect(toList()),
+					m.getDownLinks().stream().flatMap(Utils::boardLinks)
+							.collect(toList()));
 		}
 	}
 
@@ -479,18 +454,18 @@ class V1TaskImpl extends V1CompatTask {
 	}
 
 	private static WhereIs makeWhereIs(BoardLocation bl) {
-		var wi = new WhereIs();
-		wi.setMachine(bl.getMachine());
-		wi.setLogical(bl.getLogical());
-		wi.setPhysical(bl.getPhysical());
-		wi.setChip(bl.getChip());
-		wi.setBoardChip(bl.getBoardChip());
+		var wi = new WhereIs.Builder() //
+				.withMachine(bl.getMachine()) //
+				.withLogical(bl.getLogical()) //
+				.withPhysical(bl.getPhysical()) //
+				.withChip(bl.getChip()) //
+				.withBoardChip(bl.getBoardChip());
 		var j = bl.getJob();
 		if (nonNull(j)) {
-			wi.setJobId(j.getId());
-			wi.setJobChip(bl.getChipRelativeTo(j.getRootChip().orElseThrow()));
+			wi.withJobId(j.getId()).withJobChip(
+					bl.getChipRelativeTo(j.getRootChip().orElseThrow()));
 		}
-		return wi;
+		return wi.build();
 	}
 
 	@Override

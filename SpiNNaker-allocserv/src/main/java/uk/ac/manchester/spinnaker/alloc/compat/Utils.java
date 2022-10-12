@@ -265,17 +265,13 @@ abstract class Utils {
 	 * @return A stream of ends of the link.
 	 */
 	static Stream<BoardLink> boardLinks(DownLink downLink) {
-		var bl1 = new BoardLink();
-		bl1.setX(downLink.end1.board.getX());
-		bl1.setY(downLink.end1.board.getY());
-		bl1.setZ(downLink.end1.board.getZ());
-		bl1.setLink(downLink.end1.direction.ordinal());
+		var bl1 = new BoardLink(downLink.end1.board.getX(),
+				downLink.end1.board.getY(), downLink.end1.board.getZ(),
+				downLink.end1.direction.ordinal());
 
-		var bl2 = new BoardLink();
-		bl2.setX(downLink.end2.board.getX());
-		bl2.setY(downLink.end2.board.getY());
-		bl2.setZ(downLink.end2.board.getZ());
-		bl2.setLink(downLink.end2.direction.ordinal());
+		var bl2 = new BoardLink(downLink.end2.board.getX(),
+				downLink.end2.board.getY(), downLink.end2.board.getZ(),
+				downLink.end2.direction.ordinal());
 
 		return List.of(bl1, bl2).stream();
 	}

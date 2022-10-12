@@ -17,31 +17,33 @@
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
 import java.util.Objects;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.Immutable;
+
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 /**
  * The description of where some resource is on a SpiNNaker system.
  */
-public class WhereIs {
-	private ChipLocation jobChip;
+@Immutable
+@JsonDeserialize(builder = WhereIs.Builder.class)
+public final class WhereIs {
+	private final ChipLocation jobChip;
 
-	private Integer jobId;
+	private final Integer jobId;
 
-	private ChipLocation chip;
+	private final ChipLocation chip;
 
-	private BoardCoordinates logical;
+	private final BoardCoordinates logical;
 
-	private String machine;
+	private final String machine;
 
-	private ChipLocation boardChip;
+	private final ChipLocation boardChip;
 
-	private BoardPhysicalCoordinates physical;
-
-	/**
-	 * Default constructor for unmarshaller use only.
-	 */
-	public WhereIs() {
-	}
+	private final BoardPhysicalCoordinates physical;
 
 	/**
 	 * Create.
@@ -83,32 +85,12 @@ public class WhereIs {
 	}
 
 	/**
-	 * Sets the chip location relative to the job's allocation.
-	 *
-	 * @param jobChip
-	 *            the job-relative chip location to set
-	 */
-	public void setJobChip(ChipLocation jobChip) {
-		this.jobChip = jobChip;
-	}
-
-	/**
 	 * Get the job id.
 	 *
 	 * @return the job id
 	 */
 	public Integer getJobId() {
 		return jobId;
-	}
-
-	/**
-	 * Sets the job id.
-	 *
-	 * @param jobId
-	 *            the job id to set
-	 */
-	public void setJobId(Integer jobId) {
-		this.jobId = jobId;
 	}
 
 	/**
@@ -121,32 +103,12 @@ public class WhereIs {
 	}
 
 	/**
-	 * Sets the chip.
-	 *
-	 * @param chip
-	 *            the chip to set
-	 */
-	public void setChip(ChipLocation chip) {
-		this.chip = chip;
-	}
-
-	/**
 	 * Get the logical board coordinates.
 	 *
 	 * @return the logical board coordinates
 	 */
 	public BoardCoordinates getLogical() {
 		return logical;
-	}
-
-	/**
-	 * Sets the logical board coordinates.
-	 *
-	 * @param logical
-	 *            the logical board coordinates to set
-	 */
-	public void setLogical(BoardCoordinates logical) {
-		this.logical = logical;
 	}
 
 	/**
@@ -159,16 +121,6 @@ public class WhereIs {
 	}
 
 	/**
-	 * Sets the machine.
-	 *
-	 * @param machine
-	 *            the machine to set
-	 */
-	public void setMachine(String machine) {
-		this.machine = machine;
-	}
-
-	/**
 	 * Get the chip location relative to the board.
 	 *
 	 * @return the board chip location
@@ -178,32 +130,12 @@ public class WhereIs {
 	}
 
 	/**
-	 * Sets the chip location relative to the board.
-	 *
-	 * @param boardChip
-	 *            the board chip location to set
-	 */
-	public void setBoardChip(ChipLocation boardChip) {
-		this.boardChip = boardChip;
-	}
-
-	/**
 	 * Get the physical board coordinates.
 	 *
 	 * @return the physical board coordinates
 	 */
 	public BoardPhysicalCoordinates getPhysical() {
 		return physical;
-	}
-
-	/**
-	 * Sets the physical board coordinates.
-	 *
-	 * @param physical
-	 *            the physical board coordinates to set
-	 */
-	public void setPhysical(BoardPhysicalCoordinates physical) {
-		this.physical = physical;
 	}
 
 	@Override
@@ -231,5 +163,69 @@ public class WhereIs {
 		return "jobChip: " + jobChip + " jobId: " + jobId + " chip: " + chip
 				+ " logical: " + logical + " machine: " + machine
 				+ " boardChip: " + boardChip + " physical: " + physical;
+	}
+
+	@JsonPOJOBuilder
+	public static class Builder {
+		private ChipLocation jobChip;
+
+		private Integer jobId;
+
+		private ChipLocation chip;
+
+		private BoardCoordinates logical;
+
+		private String machine;
+
+		private ChipLocation boardChip;
+
+		private BoardPhysicalCoordinates physical;
+
+		@CanIgnoreReturnValue
+		public Builder withJobChip(ChipLocation jobChip) {
+			this.jobChip = jobChip;
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		public Builder withJobId(Integer jobId) {
+			this.jobId = jobId;
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		public Builder withChip(ChipLocation chip) {
+			this.chip = chip;
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		public Builder withLogical(BoardCoordinates logical) {
+			this.logical = logical;
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		public Builder withMachine(String machine) {
+			this.machine = machine;
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		public Builder withBoardChip(ChipLocation boardChip) {
+			this.boardChip = boardChip;
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		public Builder withPhysical(BoardPhysicalCoordinates physical) {
+			this.physical = physical;
+			return this;
+		}
+
+		public WhereIs build() {
+			return new WhereIs(jobChip, jobId, chip, logical, machine,
+					boardChip, physical);
+		}
 	}
 }

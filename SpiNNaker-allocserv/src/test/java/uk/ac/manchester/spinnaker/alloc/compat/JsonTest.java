@@ -90,13 +90,14 @@ class JsonTest {
 
 		@Test
 		void testJobState() throws IOException, JSONException {
-			var r = new JobState();
-			r.setPower(false);
-			r.setReason("gorp");
-			r.setState(State.POWER);
-			r.setKeepalivehost("127.0.0.1");
-			r.setStartTime(123);
-			r.setKeepalive(321);
+			var r = new JobState.Builder() //
+					.withState(State.POWER) //
+					.withStartTime(123) //
+					.withPower(false) //
+					.withReason("gorp") //
+					.withKeepalive(321) //
+					.withKeepalivehost("127.0.0.1") //
+					.build();
 			JSONAssert.assertEquals(
 					"{ 'state': 2, "
 							+ "'start_time': 123, "
@@ -141,9 +142,7 @@ class JsonTest {
 		@Test
 		void testMachine() throws IOException, JSONException {
 			var r = new Machine[1];
-			r[0] = new Machine();
-			r[0].setName("gorp");
-			r[0].setTags(List.of("foo", "bar"));
+			r[0] = new Machine("gorp", List.of("foo", "bar"), 0, 0, null, null);
 			JSONAssert
 					.assertEquals(
 							"[{ 'name': 'gorp', 'tags': ['foo', 'bar'], "

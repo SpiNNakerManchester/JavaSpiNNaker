@@ -26,14 +26,19 @@ import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Collectors.toUnmodifiableMap;
 import static java.util.stream.IntStream.range;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.IntBinaryOperator;
+import java.util.function.IntFunction;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 
@@ -174,5 +179,52 @@ public abstract class CollectionUtils {
 			E[] enumMembers, Function<E, K> valueExtractor) {
 		return stream(enumMembers)
 				.collect(toUnmodifiableMap(valueExtractor, v -> v));
+	}
+
+	/**
+	 * Create a collector that produces an array from a stream. The order of the
+	 * elements in the array will be the inherent order of the elements in the
+	 * stream.
+	 *
+	 * @param <T>
+	 *            The type of the elements.
+	 * @param generator
+	 *            How to make the array. Typically something like
+	 *            {@code T[]::new}.
+	 * @return A collector.
+	 */
+	public static <
+			T> Collector<T, ?, T[]> collectToArray(IntFunction<T[]> generator) {
+		return new Collector<T, List<T>, T[]>() {
+			@Override
+			public Supplier<List<T>> supplier() {
+				return ArrayList::new;
+			}
+
+			@Override
+			public BiConsumer<List<T>, T> accumulator() {
+				return List::add;
+			}
+
+			@Override
+			public BinaryOperator<List<T>> combiner() {
+				return (left, right) -> {
+					left.addAll(right);
+					return left;
+				};
+			}
+
+			@Override
+			public Function<List<T>, T[]> finisher() {
+				// We know the size right now; use it!
+				// Also, we assume that the generator is non-crazy
+				return l -> l.toArray(generator.apply(l.size()));
+			}
+
+			@Override
+			public Set<Characteristics> characteristics() {
+				return Set.of();
+			}
+		};
 	}
 }
