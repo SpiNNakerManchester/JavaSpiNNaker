@@ -332,30 +332,29 @@ class V1TaskImpl extends V1CompatTask {
 
 		private static JobDescription buildJobDescription(V1TaskImpl task,
 				Job job) {
-			var jd = new JobDescription();
-			jd.setJobID(job.getId());
-			jd.setOwner(""); // Default to information shrouded
-			jd.setKeepAlive(timestamp(job.getKeepaliveTimestamp()));
-			jd.setKeepAliveHost(job.getKeepaliveHost().orElse(""));
-			jd.setReason(job.getReason().orElse(""));
-			jd.setStartTime(timestamp(job.getStartTime()));
-			jd.setState(state(job));
+			var jd = new JobDescription.Builder() //
+					.withJobID(job.getId()) //
+					.withOwner("") // Default to information shrouded
+					.withKeepAlive(timestamp(job.getKeepaliveTimestamp()))
+					.withKeepAliveHost(job.getKeepaliveHost().orElse(""))
+					.withReason(job.getReason().orElse(""))
+					.withStartTime(timestamp(job.getStartTime()))
+					.withState(state(job));
 			job.getOriginalRequest().map(task::parseCommand).ifPresent(cmd -> {
 				// In order to get here, this must be safe
 				// Validation was when job was created
 				@SuppressWarnings({ "unchecked", "rawtypes" })
 				List<Integer> args = (List) cmd.getArgs();
-				jd.setArgs(args);
-				jd.setKwargs(cmd.getKwargs());
-				// Override shrouded owner from above
-				jd.setOwner(cmd.getKwargs().get("owner").toString());
+				jd.withArgs(args).withKwargs(cmd.getKwargs())
+						// Override shrouded owner from above
+						.withOwner(cmd.getKwargs().get("owner").toString());
 			});
 			job.getMachine().ifPresent(sm -> {
-				jd.setMachine(sm.getMachine().getName());
-				jd.setBoards(sm.getBoards());
-				jd.setPower(sm.getPower() == ON);
+				jd.withMachine(sm.getMachine().getName())
+						.withBoards(sm.getBoards()) //
+						.withPower(sm.getPower() == ON);
 			});
-			return jd;
+			return jd.build();
 		}
 
 		private Machine[] listMachines() {

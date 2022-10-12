@@ -111,17 +111,11 @@ class JsonTest {
 		@Test
 		void testJobDescription() throws IOException, JSONException {
 			var r = new JobDescription[1];
-			r[0] = new JobDescription();
-			r[0].setJobID(1);
-			r[0].setArgs(List.of(0));
-			r[0].setKwargs(Map.of());
-			r[0].setKeepAlive(123);
-			r[0].setKeepAliveHost("127.0.0.1");
-			r[0].setMachine("foo");
-			r[0].setOwner("bar");
-			r[0].setPower(false);
-			r[0].setStartTime(321.);
-			r[0].setState(State.POWER);
+			r[0] = new JobDescription.Builder().withJobID(1)
+					.withArgs(List.of(0)).withKwargs(Map.of())
+					.withKeepAlive(123).withKeepAliveHost("127.0.0.1")
+					.withMachine("foo").withOwner("bar").withPower(false)
+					.withStartTime(321.).withState(State.POWER).build();
 			JSONAssert.assertEquals(
 					"[{ 'allocated_machine_name': 'foo', "
 							+ "'args': [0], "
