@@ -16,50 +16,66 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
-import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
-
 import java.net.URI;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Machine;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
-import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
-import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
-import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 
 /** A description of where a board is and what it is doing. */
-@JsonAutoDetect(setterVisibility = NON_PRIVATE)
-public class WhereIs {
-	@JsonAlias("job-id")
-	private Integer jobId;
+@JsonDeserialize(builder = WhereIs.Builder.class)
+public final class WhereIs {
+	@JsonProperty("job-id")
+	private final Integer jobId;
 
-	@JsonAlias("job-ref")
-	private URI jobRef;
+	@JsonProperty("job-ref")
+	private final URI jobRef;
 
-	@JsonAlias("job-chip")
-	private ChipLocation jobChip;
+	@JsonProperty("job-chip")
+	private final ChipLocation jobChip;
 
-	private ChipLocation chip;
+	@JsonProperty("chip")
+	private final ChipLocation chip;
 
 	@JsonIgnore
-	private Machine machineHandle;
+	private transient Machine machineHandle;
 
-	private String machineName;
+	@JsonProperty("machine")
+	private final String machineName;
 
+	@JsonProperty("machine-ref")
 	private URI machineRef;
 
-	private ChipLocation boardChip;
+	@JsonProperty("board-chip")
+	private final ChipLocation boardChip;
 
-	private TriadCoords logicalCoords;
+	@JsonProperty("logical-board-coordinates")
+	private final TriadCoords logicalCoords;
 
-	private PhysicalCoords physicalCoords;
+	@JsonProperty("physical-board-coordinates")
+	private final PhysicalCoords physicalCoords;
+
+	private WhereIs(Integer jobId, URI jobRef, ChipLocation jobChip,
+			ChipLocation chip, String machineName, URI machineRef,
+			ChipLocation boardChip, TriadCoords logicalCoords,
+			PhysicalCoords physicalCoords) {
+		this.jobId = jobId;
+		this.jobRef = jobRef;
+		this.jobChip = jobChip;
+		this.chip = chip;
+		this.machineName = machineName;
+		this.machineRef = machineRef;
+		this.boardChip = boardChip;
+		this.logicalCoords = logicalCoords;
+		this.physicalCoords = physicalCoords;
+	}
 
 	/**
 	 * @return The ID of the job allocated to the board with the chip.
@@ -67,10 +83,6 @@ public class WhereIs {
 	 */
 	public Integer getJobId() {
 		return jobId;
-	}
-
-	void setJobId(Integer jobId) {
-		this.jobId = jobId;
 	}
 
 	/**
@@ -81,10 +93,6 @@ public class WhereIs {
 		return jobRef;
 	}
 
-	void setJobRef(URI jobRef) {
-		this.jobRef = jobRef;
-	}
-
 	/**
 	 * @return The global location of the chip at the root of the job
 	 *         allocation, if one exists.
@@ -93,17 +101,9 @@ public class WhereIs {
 		return jobChip;
 	}
 
-	void setJobChip(ChipLocation jobChip) {
-		this.jobChip = jobChip;
-	}
-
 	/** @return The global location of the chip. */
 	public ChipLocation getChip() {
 		return chip;
-	}
-
-	void setChip(ChipLocation chip) {
-		this.chip = chip;
 	}
 
 	/** @return Information about the machine containing the chip. */
@@ -120,21 +120,16 @@ public class WhereIs {
 		return machineName;
 	}
 
-	@JsonAlias("machine")
-	void setMachineName(String machineName) {
-		this.machineName = machineName;
-	}
-
 	/**
 	 * @return The location of more information about the machine containing the
 	 *         chip.
 	 */
-	public URI getMachineRef() {
+	URI getMachineRef() {
 		return machineRef;
 	}
 
-	void setMachineRef(URI machineRef) {
-		this.machineRef = machineRef;
+	void clearMachineRef() {
+		machineRef = null;
 	}
 
 	/**
@@ -145,18 +140,9 @@ public class WhereIs {
 		return boardChip;
 	}
 
-	void setBoardChip(ChipLocation boardChip) {
-		this.boardChip = boardChip;
-	}
-
 	/** @return The logical coordinates for the board containing the chip. */
 	public TriadCoords getLogicalCoords() {
 		return logicalCoords;
-	}
-
-	@JsonAlias("logical-board-coordinates")
-	void setLogicalCoords(Triad logicalCoords) {
-		this.logicalCoords = logicalCoords.toStd();
 	}
 
 	/** @return The physical coordinates for the board containing the chip. */
@@ -164,140 +150,69 @@ public class WhereIs {
 		return physicalCoords;
 	}
 
-	@JsonAlias("physical-board-coordinates")
-	void setPhysicalCoords(Physical physicalCoords) {
-		this.physicalCoords = physicalCoords.toStd();
-	}
+	@JsonPOJOBuilder(withPrefix = "set")
+	static class Builder {
+		private Integer jobId;
 
-	/**
-	 * Logical coordinates of a board.
-	 * <p>
-	 * This is a helper for deserialization only.
-	 */
-	@JsonFormat(shape = ARRAY)
-	@JsonAutoDetect(setterVisibility = NON_PRIVATE)
-	static class Triad {
-		@ValidTriadX
-		private int x;
+		private URI jobRef;
 
-		@ValidTriadY
-		private int y;
+		private ChipLocation jobChip;
 
-		@ValidTriadZ
-		private int z;
+		private ChipLocation chip;
 
-		Triad() {
+		private String machineName;
+
+		private URI machineRef;
+
+		private ChipLocation boardChip;
+
+		private TriadCoords logicalCoords;
+
+		private PhysicalCoords physicalCoords;
+
+		void setJobId(Integer jobId) {
+			this.jobId = jobId;
 		}
 
-		/**
-		 * @param x The X coordinate of the board.
-		 * @param y The Y coordinate of the board.
-		 * @param z The Z coordinate of the board.
-		 */
-		Triad(int x, int y, int z) {
-			this.x = x;
-			this.y = y;
-			this.z = z;
+		void setJobRef(URI jobRef) {
+			this.jobRef = jobRef;
 		}
 
-		/** @return The X coordinate of the board. */
-		public int getX() {
-			return x;
+		void setJobChip(ChipLocation jobChip) {
+			this.jobChip = jobChip;
 		}
 
-		void setX(int x) {
-			this.x = x;
+		void setChip(ChipLocation chip) {
+			this.chip = chip;
 		}
 
-		/** @return The Y coordinate of the board. */
-		public int getY() {
-			return y;
+		@JsonProperty("machine")
+		@JsonAlias("machine-name")
+		void setMachineName(String machineName) {
+			this.machineName = machineName;
 		}
 
-		void setY(int y) {
-			this.y = y;
+		void setMachineRef(URI machineRef) {
+			this.machineRef = machineRef;
 		}
 
-		/** @return The Z coordinate of the board. */
-		public int getZ() {
-			return z;
+		void setBoardChip(ChipLocation boardChip) {
+			this.boardChip = boardChip;
 		}
 
-		void setZ(int z) {
-			this.z = z;
+		@JsonProperty("logical-board-coordinates")
+		void setLogicalCoords(TriadCoords logicalCoords) {
+			this.logicalCoords = logicalCoords;
 		}
 
-		public TriadCoords toStd() {
-			return new TriadCoords(x, y, z);
-		}
-	}
-
-	/**
-	 * Physical coordinates of a board. SpiNNaker boards are arranged in frames
-	 * (multi-unit racks that share a management layer) and frames are arranged
-	 * in cabinets (full 19" server cabinets).
-	 * <p>
-	 * This is a helper for deserialization only.
-	 */
-	@JsonFormat(shape = ARRAY)
-	@JsonAutoDetect(setterVisibility = NON_PRIVATE)
-	static class Physical {
-		private int cabinet;
-
-		private int frame;
-
-		private Integer board;
-
-		Physical() {
+		@JsonProperty("physical-board-coordinates")
+		void setPhysicalCoords(PhysicalCoords physicalCoords) {
+			this.physicalCoords = physicalCoords;
 		}
 
-		/**
-		 * @param cabinet
-		 *            The cabinet number.
-		 * @param frame
-		 *            The frame number.
-		 * @param board
-		 *            The board number.
-		 */
-		Physical(int cabinet, int frame, int board) {
-			this.cabinet = cabinet;
-			this.frame = frame;
-			this.board = board;
-		}
-
-		/** @return The cabinet number. */
-		public int getCabinet() {
-			return cabinet;
-		}
-
-		void setCabinet(int cabinet) {
-			this.cabinet = cabinet;
-		}
-
-		/** @return The frame number. */
-		public int getFrame() {
-			return frame;
-		}
-
-		void setFrame(int frame) {
-			this.frame = frame;
-		}
-
-		/** @return The board number. */
-		public Integer getBoard() {
-			// TODO document when this can be null
-			return board;
-		}
-
-		void setBoard(Integer board) {
-			this.board = board;
-		}
-
-		public PhysicalCoords toStd() {
-			if (board == null) {
-				return null;
-			}
-			return new PhysicalCoords(cabinet, frame, board);
+		WhereIs build() {
+			return new WhereIs(jobId, jobRef, jobChip, chip, machineName,
+					machineRef, boardChip, logicalCoords, physicalCoords);
 		}
 	}
 }

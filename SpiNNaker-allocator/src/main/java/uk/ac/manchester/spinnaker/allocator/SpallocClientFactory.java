@@ -289,7 +289,7 @@ public class SpallocClientFactory {
 				var conn = s.connection(uri);
 				var w = whereis(conn);
 				w.setMachineHandle(getMachine(w.getMachineName()));
-				w.setMachineRef(null);
+				w.clearMachineRef();
 				return w;
 			});
 		}

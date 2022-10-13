@@ -20,52 +20,73 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRI
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
 import java.util.List;
+import java.util.Objects;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.google.errorprone.annotations.Immutable;
 
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Machine;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadDepth;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /** A description of what boards have been allocated to a job. */
 @JsonIgnoreProperties({
 	"power", "machine", "machine-ref"
 })
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
-public class AllocatedMachine {
-	private int width;
+@JsonDeserialize(builder = AllocatedMachine.Builder.class)
+public final class AllocatedMachine {
+	@ValidTriadWidth
+	private final int width;
 
-	private int height;
+	@ValidTriadHeight
+	private final int height;
 
-	private int depth;
+	@ValidTriadDepth
+	private final int depth;
 
-	private String machineName;
+	@NotBlank
+	private final String machineName;
 
+	// Not final; set later
 	private Machine machine;
 
-	private List<ConnectionInfo> connections;
+	private final List<@Valid ConnectionInfo> connections;
 
-	private List<BoardCoordinates> boards;
+	private final List<@Valid BoardCoordinates> boards;
+
+	private AllocatedMachine(int width, int height, int depth,
+			String machineName,
+			List<ConnectionInfo> connections, List<BoardCoordinates> boards) {
+		this.width = width;
+		this.height = height;
+		this.depth = depth;
+		this.machineName = machineName;
+		this.connections = connections;
+		this.boards = boards;
+	}
 
 	/** @return Rectangle width, in triads. */
 	public int getWidth() {
 		return width;
 	}
 
-	void setWidth(int width) {
-		this.width = width;
-	}
-
 	/** @return Rectangle height, in triads. */
 	public int getHeight() {
 		return height;
-	}
-
-	void setHeight(int height) {
-		this.height = height;
 	}
 
 	/**
@@ -76,17 +97,9 @@ public class AllocatedMachine {
 		return depth;
 	}
 
-	void setDepth(int depth) {
-		this.depth = depth;
-	}
-
 	/** @return On what machine. */
 	public String getMachineName() {
 		return machineName;
-	}
-
-	void setMachineName(String machineName) {
-		this.machineName = machineName;
 	}
 
 	/** @return The hosting SpiNNaker machine. */
@@ -103,17 +116,9 @@ public class AllocatedMachine {
 		return connections;
 	}
 
-	void setConnections(List<ConnectionInfo> connections) {
-		this.connections = connections;
-	}
-
 	/** @return Where the boards are. */
 	public List<BoardCoordinates> getBoards() {
 		return boards;
-	}
-
-	void setBoards(List<BoardCoordinates> boards) {
-		this.boards = boards;
 	}
 
 	/** Information about a connection to a board. */
@@ -122,27 +127,76 @@ public class AllocatedMachine {
 	})
 	@JsonFormat(shape = ARRAY)
 	@JsonAutoDetect(setterVisibility = NON_PRIVATE)
-	public static class ConnectionInfo {
-		private ChipLocation chip;
+	@Immutable
+	public static final class ConnectionInfo {
+		@Valid
+		private final ChipLocation chip;
 
-		private String hostname;
+		@IPAddress
+		private final String hostname;
+
+		public ConnectionInfo(@JsonProperty("chip") ChipLocation chip,
+				@JsonProperty("hostname") String hostname) {
+			this.chip = chip;
+			this.hostname = hostname;
+		}
 
 		/** @return Which root chip (of a board) is this about? */
 		public ChipLocation getChip() {
 			return chip;
 		}
 
-		void setChip(ChipLocation chip) {
-			this.chip = chip;
-		}
-
 		/** @return What's the IP address of the chip? */
 		public String getHostname() {
 			return hostname;
 		}
+	}
 
-		void setHostname(String hostname) {
-			this.hostname = hostname;
+	@JsonPOJOBuilder
+	static class Builder {
+		private int width;
+
+		private int height;
+
+		private int depth;
+
+		private String machineName;
+
+		private List<ConnectionInfo> connections = List.of();
+
+		private List<BoardCoordinates> boards = List.of();
+
+		void withWidth(int width) {
+			this.width = width;
+		}
+
+		void withHeight(int height) {
+			this.height = height;
+		}
+
+		void withDepth(int depth) {
+			this.depth = depth;
+		}
+
+		void withMachineName(String machineName) {
+			this.machineName = machineName;
+		}
+
+		private static <T> List<T> clone(List<T> list) {
+			return Objects.isNull(list) ? List.of() : List.copyOf(list);
+		}
+
+		void withConnections(List<ConnectionInfo> connections) {
+			this.connections = clone(connections);
+		}
+
+		void withBoards(List<BoardCoordinates> boards) {
+			this.boards = clone(boards);
+		}
+
+		AllocatedMachine build() {
+			return new AllocatedMachine(width, height, depth, machineName,
+					connections, boards);
 		}
 	}
 }

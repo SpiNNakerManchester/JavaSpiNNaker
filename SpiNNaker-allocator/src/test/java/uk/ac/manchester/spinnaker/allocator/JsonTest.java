@@ -40,8 +40,9 @@ class JsonTest {
 
 	@Test
 	void allocatedMachine() throws Exception {
-		assertNotNull(deserialize(serialize(new AllocatedMachine()),
-				AllocatedMachine.class));
+		assertNotNull(
+				deserialize(serialize(new AllocatedMachine.Builder().build()),
+						AllocatedMachine.class));
 	}
 
 	@Test
@@ -59,8 +60,9 @@ class JsonTest {
 
 	@Test
 	void jobDescription() throws Exception {
-		assertNotNull(deserialize(serialize(new JobDescription()),
-				JobDescription.class));
+		assertNotNull(
+				deserialize(serialize(new JobDescription.Builder().build()),
+						JobDescription.class));
 	}
 
 	@Test
@@ -103,16 +105,6 @@ class JsonTest {
 
 	@Test
 	void whereis() throws Exception {
-		var t = new WhereIs.Triad(1, 2, 3);
-		assertEquals("[1,2,3]", serialize(t));
-		assertEquals(t.toStd(),
-				deserialize("[1,2,3]", WhereIs.Triad.class).toStd());
-
-		var p = new WhereIs.Physical(1, 2, 3);
-		assertEquals("[1,2,3]", serialize(p));
-		assertEquals(p.toStd(),
-				deserialize("[1,2,3]", WhereIs.Physical.class).toStd());
-
 		var whereIs = "{\"job-id\":123,\"job-ref\":\"http:/0\","
 				+ "\"job-chip\":[0,0],\"chip\":[1,1],"
 				+ "\"machine-name\":\"gorp\",\"machine-ref\":\"http:/1\","
