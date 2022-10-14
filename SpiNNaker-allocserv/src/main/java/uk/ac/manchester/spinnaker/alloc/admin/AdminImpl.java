@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
-import static java.util.Collections.unmodifiableMap;
 import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.created;
@@ -182,8 +181,7 @@ public class AdminImpl implements AdminAPI {
 	public Map<String, URI> listUsers(UriInfo ui) {
 		log.info("CALLED listUsers()");
 		var ub = ui.getBaseUriBuilder().path(DESCRIBE_USER);
-		return unmodifiableMap(
-				userManager.listUsers(user -> ub.build(user.getUserId())));
+		return userManager.listUsers(user -> ub.build(user.getUserId()));
 	}
 
 	@Override

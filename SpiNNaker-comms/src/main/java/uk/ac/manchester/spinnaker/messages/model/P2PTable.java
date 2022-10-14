@@ -17,10 +17,10 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Math.min;
-import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.IntStream.range;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTableRoute.NONE;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 
 import java.nio.ByteBuffer;
 import java.util.Collection;
@@ -118,7 +118,7 @@ public class P2PTable {
 
 	/** @return The coordinates of chips in the table. */
 	public Set<ChipLocation> getChips() {
-		return unmodifiableSet(routes.keySet());
+		return copy(routes.keySet());
 	}
 
 	/**

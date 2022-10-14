@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Byte.toUnsignedInt;
 import static java.net.InetAddress.getByAddress;
-import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableSet;
 
 import java.net.InetAddress;
@@ -26,9 +25,10 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
@@ -90,10 +90,10 @@ public final class ChipSummaryInfo {
 	}
 
 	private static Set<Direction> parseWorkingLinks(int flags) {
-		var wl = new LinkedHashSet<Direction>();
-		for (int link = 0; link < NUM_LINKS; link++) {
-			if (bitset(flags, LINKS_FIELD_SHIFT + link)) {
-				wl.add(Direction.byId(link));
+		var wl = EnumSet.noneOf(Direction.class);
+		for (Direction d : Direction.values()) {
+			if (bitset(flags, LINKS_FIELD_SHIFT + d.id)) {
+				wl.add(d);
 			}
 		}
 		return unmodifiableSet(wl);
@@ -104,7 +104,7 @@ public final class ChipSummaryInfo {
 		for (byte b : stateBytes) {
 			states.add(CPUState.get(b));
 		}
-		return unmodifiableList(states);
+		return List.copyOf(states);
 	}
 
 	private static InetAddress parseEthernetAddress(byte[] addr) {

@@ -18,21 +18,15 @@ package uk.ac.manchester.spinnaker.alloc.compat;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.Thread.interrupted;
-import static java.lang.reflect.Array.newInstance;
 import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -274,54 +268,5 @@ abstract class Utils {
 				downLink.end2.direction.ordinal());
 
 		return List.of(bl1, bl2).stream();
-	}
-
-	/**
-	 * Convert a collection into an array of items of a mapped type.
-	 *
-	 * @param <T>
-	 *            The type of elements in the collection.
-	 * @param <U>
-	 *            The type of elements in the array.
-	 * @param src
-	 *            The source collection.
-	 * @param cls
-	 *            How to make instances of the array and the array itself.
-	 * @param fun
-	 *            The element conversion function.
-	 * @return The array of converted elements.
-	 * @throws UnsupportedOperationException
-	 *             If the class lacks a no-argument constructor.
-	 */
-	static <T, U> U[] mapToArray(Collection<T> src, Class<U> cls,
-			BiConsumer<T, U> fun) {
-		// No expected exceptions, so use input size as capacity
-		int projectedSize = src.size();
-		var dst = new ArrayList<U>(projectedSize);
-
-		Constructor<U> con;
-		try {
-			con = cls.getConstructor();
-		} catch (NoSuchMethodException e) {
-			throw new UnsupportedOperationException(e);
-		}
-
-		// This is why we can't use a Supplier
-		@SuppressWarnings("unchecked")
-		var ary = (U[]) newInstance(cls, projectedSize);
-
-		try {
-			for (var val : src) {
-				var target = con.newInstance();
-				fun.accept(val, target);
-				dst.add(target);
-			}
-		} catch (InstantiationException | IllegalAccessException
-				| IllegalArgumentException e) {
-			log.error("unexpected failure", e);
-		} catch (InvocationTargetException e) {
-			log.error("unexpected failure", e.getCause());
-		}
-		return dst.toArray(ary);
 	}
 }

@@ -167,7 +167,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			 */
 		} catch (IOException e) {
 			log.error("problem with socket {}", sock, e);
-		} catch (InterruptedException e) {
+		} catch (InterruptedException interrupted) {
 			// ignored
 		} finally {
 			log.debug("closing down connection from {}", sock);

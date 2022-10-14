@@ -17,8 +17,8 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 
 import java.net.URI;
 import java.util.List;
@@ -44,8 +44,7 @@ public final class ListJobsResponse {
 
 	ListJobsResponse(Jobs jc, UriInfo ui) {
 		var b = ui.getAbsolutePathBuilder().path("{id}");
-		jobs = unmodifiableList(
-				jc.ids().stream().map(id -> b.build(id)).collect(toList()));
+		jobs = copy(jc.ids().stream().map(b::build).collect(toList()));
 	}
 
 	/** @return URL of previous page when paging is used in this response. */

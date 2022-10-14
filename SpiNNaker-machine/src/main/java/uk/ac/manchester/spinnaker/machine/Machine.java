@@ -304,15 +304,6 @@ public class Machine implements MappableIterable<Chip> {
 	}
 
 	/**
-	 * The locations of each chip in the machine.
-	 *
-	 * @return An unmodifiable
-	 */
-	public final Set<ChipLocation> chipLocations() {
-		return unmodifiableSet(chips.keySet());
-	}
-
-	/**
 	 * Returns an iterator over the Chips in this Machine.
 	 * <p>
 	 * The Chips will be returned in the natural order of their ChipLocation.
@@ -749,8 +740,8 @@ public class Machine implements MappableIterable<Chip> {
 					rootY + fpgaEnum.getY());
 			if (hasChipAt(location)
 					&& !hasLinkAt(location, fpgaEnum.direction)) {
-				fpgaLinks.computeIfAbsent(address, k -> new HashMap<>())
-						.computeIfAbsent(fpgaEnum.fpgaId, k -> new HashMap<>())
+				fpgaLinks.computeIfAbsent(address, __ -> new HashMap<>())
+						.computeIfAbsent(fpgaEnum.fpgaId, __ -> new HashMap<>())
 						.put(fpgaEnum.id,
 								new FPGALinkData(fpgaEnum.id, fpgaEnum.fpgaId,
 										location, fpgaEnum.direction, address));
@@ -907,20 +898,19 @@ public class Machine implements MappableIterable<Chip> {
 		var abnormalLinks = new HashMap<ChipLocation, Set<Direction>>();
 		for (var chip : chips.values()) {
 			for (var link : chip.router) {
-				if (!hasChipAt(link.destination)) {
-					abnormalLinks.computeIfAbsent(
-							link.source, k -> new HashSet<>())
-							.add(link.sourceLinkDirection);
-				} else {
-					var destChip = getChipAt(link.destination);
-					var inverse = destChip.router
-							.getLink(link.sourceLinkDirection.inverse());
-					if (inverse == null) {
-						abnormalLinks.computeIfAbsent(
-								link.source, k -> new HashSet<>())
-								.add(link.sourceLinkDirection);
-					}
+				/*
+				 * If a link has both directions existing according to standard
+				 * rules, it's considered to be normal. Everything else is
+				 * abnormal.
+				 */
+				if (hasChipAt(link.destination)
+						&& getChipAt(link.destination).router
+								.hasLink(link.sourceLinkDirection.inverse())) {
+					continue;
 				}
+				abnormalLinks
+						.computeIfAbsent(link.source, __ -> new HashSet<>())
+						.add(link.sourceLinkDirection);
 			}
 		}
 		return unmodifiableMap(abnormalLinks);

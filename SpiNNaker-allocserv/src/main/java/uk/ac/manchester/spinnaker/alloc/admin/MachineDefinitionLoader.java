@@ -17,14 +17,12 @@
 package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static java.lang.Math.max;
-import static java.util.Collections.unmodifiableList;
-import static java.util.Collections.unmodifiableMap;
-import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_CHECK;
 import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_CHIP_SIZE;
 import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
 
 import java.io.File;
@@ -164,7 +162,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 		/** @return The tags of the machine. */
 		public Set<String> getTags() {
-			return unmodifiableSet(tags);
+			return tags;
 		}
 
 		/** @return The width of the machine, in triads. */
@@ -184,7 +182,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 		/** @return The dead boards of the machine. */
 		public Set<TriadCoords> getDeadBoards() {
-			return unmodifiableSet(deadBoards);
+			return deadBoards;
 		}
 
 		/**
@@ -192,22 +190,22 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		 *         dead boards.
 		 */
 		public Map<TriadCoords, EnumSet<Link>> getDeadLinks() {
-			return unmodifiableMap(deadLinks);
+			return deadLinks;
 		}
 
 		/** @return The logical-to-physical board location map. */
 		public Map<TriadCoords, PhysicalCoords> getBoardLocations() {
-			return unmodifiableMap(boardLocations);
+			return boardLocations;
 		}
 
 		/** @return The IP addresses of the BMPs. */
 		public Map<BMPCoords, String> getBmpIPs() {
-			return unmodifiableMap(bmpIPs);
+			return bmpIPs;
 		}
 
 		/** @return The IP addresses of the boards. */
 		public Map<TriadCoords, String> getSpinnakerIPs() {
-			return unmodifiableMap(spinnakerIPs);
+			return spinnakerIPs;
 		}
 
 		@Override
@@ -406,14 +404,14 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			public Machine build() {
 				var m = new Machine();
 				m.name = name;
-				m.tags = tags;
+				m.tags = copy(tags);
 				m.width = width;
 				m.height = height;
-				m.deadBoards = deadBoards;
-				m.deadLinks = deadLinks;
-				m.boardLocations = boardLocations;
-				m.bmpIPs = bmpAddrs;
-				m.spinnakerIPs = spinnakerAddrs;
+				m.deadBoards = copy(deadBoards);
+				m.deadLinks = copy(deadLinks);
+				m.boardLocations = copy(boardLocations);
+				m.bmpIPs = copy(bmpAddrs);
+				m.spinnakerIPs = copy(spinnakerAddrs);
 				return m;
 			}
 		}
@@ -446,11 +444,11 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 		/** @return The machines to manage. */
 		public List<Machine> getMachines() {
-			return unmodifiableList(machines);
+			return machines;
 		}
 
 		public void setMachines(List<Machine> machines) {
-			this.machines = machines;
+			this.machines = copy(machines);
 		}
 
 		/** @return The port for the service to listen on. (Ignored) */

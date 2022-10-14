@@ -24,6 +24,7 @@ import java.net.URI;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Parameters;
+import uk.ac.manchester.spinnaker.allocator.SpallocClient.Machine;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 
 public final class CommandLineCheck {
@@ -53,7 +54,7 @@ public final class CommandLineCheck {
 
 		System.out.println(client.getVersion());
 		System.out.println(client.listMachines().stream()
-				.map(m -> m.getName()).collect(toList()));
+				.map(Machine::getName).collect(toList()));
 		for (var m : client.listMachines()) {
 			var where = m.getBoard(new TriadCoords(0, 0, 1));
 			if (where == null) {

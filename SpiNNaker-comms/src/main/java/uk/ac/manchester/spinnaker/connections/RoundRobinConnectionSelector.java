@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
-import static java.util.Collections.unmodifiableList;
-
 import java.util.List;
 
 import uk.ac.manchester.spinnaker.connections.model.Connection;
@@ -48,7 +46,7 @@ public final class RoundRobinConnectionSelector<T extends Connection>
 			throw new IllegalArgumentException(
 					"at least one connection must be provided");
 		}
-		this.connections = unmodifiableList(connections);
+		this.connections = List.copyOf(connections);
 		next = 0;
 	}
 

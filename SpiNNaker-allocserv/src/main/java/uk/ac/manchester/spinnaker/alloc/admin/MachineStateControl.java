@@ -828,7 +828,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		 */
 		void completed() throws DataAccessException, BlacklistException,
 				InterruptedException {
-			getResult(row -> this);
+			getResult(__ -> this);
 		}
 
 		/**

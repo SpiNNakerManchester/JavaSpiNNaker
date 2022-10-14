@@ -16,10 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.alloc.model;
 
-import static java.util.Collections.unmodifiableList;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,11 +48,11 @@ public class MachineDescription {
 	@PositiveOrZero
 	private int numInUse;
 
-	private List<@Valid JobInfo> jobs = new ArrayList<>();
+	private List<@Valid JobInfo> jobs = List.of();
 
-	private List<@NotBlank String> tags = new ArrayList<>();
+	private List<@NotBlank String> tags = List.of();
 
-	private List<@Valid BoardCoords> dead = new ArrayList<>();
+	private List<@Valid BoardCoords> dead = List.of();
 
 	private List<@Valid BoardCoords> live;
 
@@ -116,12 +115,12 @@ public class MachineDescription {
 
 	/** @param live the in-service boards */
 	public void setLive(List<BoardCoords> live) {
-		this.live = live;
+		this.live = copy(live);
 	}
 
 	/** @param live the in-service boards */
 	public void setLive(MappableIterable<BoardCoords> live) {
-		this.live = live.toList();
+		this.live = copy(live.toList());
 	}
 
 	/** @return the out-of-service boards */
@@ -131,42 +130,42 @@ public class MachineDescription {
 
 	/** @param dead the out-of-service boards */
 	public void setDead(List<BoardCoords> dead) {
-		this.dead = dead;
+		this.dead = copy(dead);
 	}
 
 	/** @param dead the out-of-service boards */
 	public void setDead(MappableIterable<BoardCoords> dead) {
-		this.dead = dead.toList();
+		this.dead = copy(dead.toList());
 	}
 
 	/** @return the machine's jobs */
 	public List<JobInfo> getJobs() {
-		return unmodifiableList(jobs);
+		return jobs;
 	}
 
 	/** @param jobs the machine's jobs */
 	public void setJobs(List<JobInfo> jobs) {
-		this.jobs = jobs;
+		this.jobs = copy(jobs);
 	}
 
 	/** @param jobs the machine's jobs */
 	public void setJobs(MappableIterable<JobInfo> jobs) {
-		this.jobs = jobs.toList();
+		this.jobs = copy(jobs.toList());
 	}
 
 	/** @return the machine's tags */
 	public List<String> getTags() {
-		return unmodifiableList(tags);
+		return tags;
 	}
 
 	/** @param tags the machine's tags */
 	public void setTags(List<String> tags) {
-		this.tags = tags;
+		this.tags = copy(tags);
 	}
 
 	/** @param tags the machine's tags */
 	public void setTags(MappableIterable<String> tags) {
-		this.tags = tags.toList();
+		this.tags = copy(tags.toList());
 	}
 
 	/**
@@ -190,7 +189,7 @@ public class MachineDescription {
 
 		private Optional<String> owner = Optional.empty();
 
-		private List<@Valid BoardCoords> boards = new ArrayList<>();
+		private List<@Valid BoardCoords> boards = List.of();
 
 		/** @return the job ID */
 		public int getId() {
@@ -214,7 +213,7 @@ public class MachineDescription {
 
 		/** @return the board coordinates of all boards allocated to the job */
 		public List<BoardCoords> getBoards() {
-			return unmodifiableList(boards);
+			return boards;
 		}
 
 		/**
@@ -222,7 +221,7 @@ public class MachineDescription {
 		 *            the board coordinates of all boards allocated to the job
 		 */
 		public void setBoards(List<BoardCoords> boards) {
-			this.boards = boards;
+			this.boards = copy(boards);
 		}
 
 		/**
@@ -230,7 +229,7 @@ public class MachineDescription {
 		 *            the board coordinates of all boards allocated to the job
 		 */
 		public void setBoards(MappableIterable<BoardCoords> boards) {
-			this.boards = boards.toList();
+			this.boards = copy(boards.toList());
 		}
 
 		/** @return the owner (if that information is to be exposed) */

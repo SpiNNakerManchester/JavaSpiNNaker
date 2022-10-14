@@ -125,11 +125,11 @@ public final class GroupRecord {
 
 	/** @return The members of the group, if populated. */
 	public Map<String, URI> getMembers() {
-		return unmodifiableMap(members);
+		return members;
 	}
 
 	/** @param members The members of the group. */
 	public void setMembers(Map<String, URI> members) {
-		this.members = members;
+		this.members = unmodifiableMap(members);
 	}
 }

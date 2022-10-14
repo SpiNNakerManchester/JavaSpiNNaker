@@ -66,16 +66,18 @@ public class IobufRequest {
 	 */
 	@JsonCreator(mode = DELEGATING)
 	public IobufRequest(Map<String, List<List<Integer>>> map) {
-		requestMap = new HashMap<>();
+		var requestMap = new HashMap<File, CoreSubsets>();
 		for (var name : map.keySet()) {
 			var cores = requestMap.computeIfAbsent(
-					new File(name).getAbsoluteFile(), f -> new CoreSubsets());
+					new File(name).getAbsoluteFile(), __ -> new CoreSubsets());
 			map.get(name).forEach(node -> parseCore(cores, node));
 		}
 
 		if (!isSaneCores()) {
 			throw new IllegalArgumentException("overlapping uses of core");
 		}
+
+		this.requestMap = unmodifiableMap(requestMap);
 	}
 
 	@AssertTrue(message = "core must not have two binaries mapped to it")
@@ -102,6 +104,6 @@ public class IobufRequest {
 	 */
 	@JsonIgnore
 	public Map<File, CoreSubsets> getRequestDetails() {
-		return unmodifiableMap(requestMap);
+		return requestMap;
 	}
 }

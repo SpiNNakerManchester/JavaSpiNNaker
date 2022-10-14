@@ -414,7 +414,7 @@ public class SpallocClientFactory {
 					// Assume we can cache this
 					for (var bmd : ms.machines) {
 						machineMap.computeIfAbsent(bmd.name,
-								name -> new MachineImpl(this, s, bmd));
+								__ -> new MachineImpl(this, s, bmd));
 					}
 					return ms.machines.stream()
 							.map(bmd -> machineMap.get(bmd.name))

@@ -35,9 +35,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -409,13 +407,9 @@ public class AllocatorTask extends DatabaseAwareBean
 			}
 		}
 		try (var find = conn.query(GET_LIVE_JOB_IDS)) {
-			var toKill = new ArrayList<Integer>();
-			for (var row : find.call(NUMBER_OF_JOBS_TO_QUOTA_CHECK, 0)) {
-				int jobId = row.getInt("job_id");
-				if (!quotaManager.mayLetJobContinue(jobId)) {
-					toKill.add(jobId);
-				}
-			}
+			var toKill = find.call(NUMBER_OF_JOBS_TO_QUOTA_CHECK, 0)
+					.map(integer("job_id")).filter(quotaManager::shouldKillJob)
+					.toList();
 			for (var id : toKill) {
 				changed |= destroyJob(conn, id, "quota exceeded");
 			}
@@ -926,13 +920,9 @@ public class AllocatorTask extends DatabaseAwareBean
 			 * switched off because they are links to boards that are not
 			 * allocated to the job. Off-board links are shut off by default.
 			 */
-			var perimeterLinks = new HashMap<Integer, EnumSet<Direction>>();
-			for (var row : sql.getPerimeter.call(jobId)) {
-				perimeterLinks
-						.computeIfAbsent(row.getInt("board_id"),
-								k -> EnumSet.noneOf(Direction.class))
-						.add(row.getEnum("direction", Direction.class));
-			}
+			var perimeterLinks = sql.getPerimeter.call(jobId).toCollectingMap(
+					Direction.class, integer("board_id"),
+					enumerate("direction", Direction.class));
 
 			for (var boardId : boards) {
 				var toChange = perimeterLinks.getOrDefault(boardId,

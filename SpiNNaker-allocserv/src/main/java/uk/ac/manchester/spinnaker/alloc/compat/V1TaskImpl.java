@@ -157,15 +157,13 @@ class V1TaskImpl extends V1CompatTask {
 		job.access(host());
 		var machine = job.getMachine()
 				.orElseThrow(() -> new TaskException("boards not allocated"));
-		var jmi = new JobMachineInfo();
-		jmi.setMachineName(machine.getMachine().getName());
-		jmi.setBoards(machine.getBoards());
-		jmi.setConnections(machine.getConnections().stream()
-				.map(ci -> new Connection(ci.getChip(), ci.getHostname()))
-				.collect(toList()));
-		jmi.setWidth(job.getWidth().orElse(0));
-		jmi.setHeight(job.getHeight().orElse(0));
-		return jmi;
+		return new JobMachineInfo(job.getWidth().orElse(0),
+				job.getHeight().orElse(0),
+				machine.getConnections().stream()
+						.map(ci -> new Connection(ci.getChip(),
+								ci.getHostname()))
+						.collect(toList()),
+				machine.getMachine().getName(), machine.getBoards());
 	}
 
 	@Override

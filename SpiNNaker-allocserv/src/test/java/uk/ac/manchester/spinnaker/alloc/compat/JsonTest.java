@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.compat;
 
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 
 import java.io.IOException;
 import java.util.List;
@@ -74,14 +75,12 @@ class JsonTest {
 
 		@Test
 		void testJobMachineInfo() throws IOException, JSONException {
-			var r = new JobMachineInfo();
-			r.setMachineName("gorp");
-			r.setBoards(List.of(new BoardCoordinates(0, 1, 2)));
-			r.setConnections(
-					List.of(new Connection(new ChipLocation(0, 0), "foo.bar")));
+			var r = new JobMachineInfo(0, 0,
+					List.of(new Connection(ZERO_ZERO, "2.3.4.5")),
+					"gorp", List.of(new BoardCoordinates(0, 1, 2)));
 			JSONAssert.assertEquals(
 					"{ 'boards': [[0,1,2]], "
-							+ "'connections': [[[0,0],'foo.bar']], "
+							+ "'connections': [[[0,0],'2.3.4.5']], "
 							+ "'width': 0, "
 							+ "'height': 0, "
 							+ "'machine_name': 'gorp' }",

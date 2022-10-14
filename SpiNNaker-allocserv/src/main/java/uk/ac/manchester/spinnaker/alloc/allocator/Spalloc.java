@@ -19,8 +19,6 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.lang.Thread.currentThread;
-import static java.util.Collections.unmodifiableList;
-import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
@@ -35,6 +33,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 import static uk.ac.manchester.spinnaker.alloc.model.Utils.chip;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 import static uk.ac.manchester.spinnaker.utils.OptionalUtils.apply;
 
 import java.time.Duration;
@@ -359,7 +358,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					var chipDimensions = conn.query(GET_JOB_CHIP_DIMENSIONS);
 					var countPoweredBoards = conn.query(COUNT_POWERED_BOARDS);
 					var getCoords = conn.query(GET_JOB_BOARD_COORDS)) {
-				return s.call1(id).map(job -> jobDescription(id, job,
+				return s.call1(id).map(row -> jobDescription(id, row,
 						chipDimensions, countPoweredBoards, getCoords));
 			}
 		});
@@ -735,7 +734,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			height = rs.getInt("height");
 			inService = rs.getBoolean("in_service");
 			try (var getTags = conn.query(GET_TAGS)) {
-				tags = getTags.call(id).map(string("tag")).toSet();
+				tags = copy(getTags.call(id).map(string("tag")).toSet());
 			}
 		}
 
@@ -750,7 +749,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			}
 			try {
 				epoch.waitForChange(timeout);
-			} catch (InterruptedException ignored) {
+			} catch (InterruptedException interrupted) {
 				currentThread().interrupt();
 			}
 		}
@@ -821,7 +820,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			synchronized (Spalloc.this) {
 				var down = downBoardsCache.get(name);
 				if (nonNull(down)) {
-					return unmodifiableList(down);
+					return copy(down);
 				}
 			}
 			try (var conn = getConnection();
@@ -833,7 +832,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				synchronized (Spalloc.this) {
 					downBoardsCache.putIfAbsent(name, downBoards);
 				}
-				return unmodifiableList(downBoards);
+				return copy(downBoards);
 			}
 		}
 
@@ -843,7 +842,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			synchronized (Spalloc.this) {
 				var down = downLinksCache.get(name);
 				if (nonNull(down)) {
-					return unmodifiableList(down);
+					return copy(down);
 				}
 			}
 			try (var conn = getConnection();
@@ -853,7 +852,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				synchronized (Spalloc.this) {
 					downLinksCache.putIfAbsent(name, downLinks);
 				}
-				return unmodifiableList(downLinks);
+				return copy(downLinks);
 			}
 		}
 
@@ -879,7 +878,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 		@Override
 		public Set<String> getTags() {
-			return unmodifiableSet(tags);
+			return tags;
 		}
 
 		@Override
@@ -942,14 +941,14 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			}
 			try {
 				epoch.waitForChange(timeout);
-			} catch (InterruptedException ignored) {
+			} catch (InterruptedException interrupted) {
 				currentThread().interrupt();
 			}
 		}
 
 		@Override
 		public List<Job> jobs() {
-			return unmodifiableList(jobs);
+			return copy(jobs);
 		}
 
 		@Override
@@ -1179,7 +1178,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			}
 			try {
 				epoch.waitForChange(timeout);
-			} catch (InterruptedException ignored) {
+			} catch (InterruptedException interrupted) {
 				currentThread().interrupt();
 			}
 		}
@@ -1540,11 +1539,12 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			public PowerState getPower() {
 				try (var conn = getConnection();
 						var power = conn.query(GET_SUM_BOARDS_POWERED)) {
-					return conn.transaction(false, () -> power.call1(id)
-							.map(row -> row.getInt("total_on") < boardIds.size()
-									? OFF
-									: ON)
-							.orElse(null));
+					return conn.transaction(false,
+							() -> power.call1(id).map(integer("total_on"))
+									.map(totalOn -> totalOn < boardIds.size()
+											? OFF
+											: ON)
+									.orElse(null));
 				}
 			}
 

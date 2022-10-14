@@ -125,7 +125,7 @@ public class TransceiverFactory
 			synchronized (txrxMap) {
 				return txrxMap.computeIfAbsent(
 						new Key(machineDescription.getName(), bmp),
-						k -> makeTransceiver(machineDescription, bmp));
+						__ -> makeTransceiver(machineDescription, bmp));
 			}
 		} catch (TransceiverFactoryException e) {
 			var t = e.getCause();

@@ -16,13 +16,17 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import static java.util.Collections.unmodifiableList;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 /**
  * A response that describes what machines have changed state.
  */
+@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class MachinesChangedNotification implements Notification {
 	private List<String> machinesChanged = List.of();
 
@@ -31,10 +35,8 @@ public class MachinesChangedNotification implements Notification {
 		return machinesChanged;
 	}
 
-	/** @param machinesChanged What jobs have changed. */
-	public void setMachinesChanged(List<String> machinesChanged) {
-		this.machinesChanged = machinesChanged == null ? List.of()
-				: unmodifiableList(machinesChanged);
+	void setMachinesChanged(List<String> machinesChanged) {
+		this.machinesChanged = copy(machinesChanged);
 	}
 
 	@Override

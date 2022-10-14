@@ -121,7 +121,10 @@ public class ChipResources {
 	 * @return the tags
 	 */
 	public List<Integer> getTags() {
-		return tags;
+		if (tags == null) {
+			tags = List.of();
+		}
+		return List.copyOf(tags);
 	}
 
 	/**
