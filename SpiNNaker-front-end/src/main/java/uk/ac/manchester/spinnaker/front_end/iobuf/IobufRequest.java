@@ -73,13 +73,14 @@ public class IobufRequest {
 			map.get(name).forEach(node -> parseCore(cores, node));
 		}
 
+		this.requestMap = unmodifiableMap(requestMap);
+
 		if (!isSaneCores()) {
 			throw new IllegalArgumentException("overlapping uses of core");
 		}
-
-		this.requestMap = unmodifiableMap(requestMap);
 	}
 
+	@JsonIgnore
 	@AssertTrue(message = "core must not have two binaries mapped to it")
 	private boolean isSaneCores() {
 		int expectedSize = 0;
