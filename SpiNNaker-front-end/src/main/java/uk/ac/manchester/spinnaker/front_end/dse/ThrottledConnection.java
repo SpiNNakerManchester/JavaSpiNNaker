@@ -49,6 +49,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
+import uk.ac.manchester.spinnaker.utils.Daemon;
 
 /**
  * An SDP connection that uses a throttle to stop SCAMP from overloading. Note
@@ -68,11 +69,8 @@ class ThrottledConnection implements Closeable {
 	private static final ScheduledExecutorService CLOSER;
 
 	static {
-		CLOSER = newSingleThreadScheduledExecutor(r -> {
-			var t = new Thread(r, "ThrottledConnection.Closer");
-			t.setDaemon(true);
-			return t;
-		});
+		CLOSER = newSingleThreadScheduledExecutor(
+				r -> new Daemon(r, "ThrottledConnection.Closer"));
 		log.info("inter-message minimum time set to {}us",
 				THROTTLE_NS / NSEC_PER_USEC);
 	}

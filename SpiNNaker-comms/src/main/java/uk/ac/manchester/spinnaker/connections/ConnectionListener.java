@@ -22,6 +22,7 @@ import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.Closeable;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.HashSet;
@@ -130,6 +131,9 @@ public class ConnectionListener<MessageType> extends Thread
 				} catch (SocketTimeoutException e) {
 					// Timed out at the base level
 					continue;
+				} catch (EOFException e) {
+					// Definitely at EOF; time to stop
+					break;
 				} catch (Exception e) {
 					if (!done) {
 						log.warn("problem when dispatching message", e);

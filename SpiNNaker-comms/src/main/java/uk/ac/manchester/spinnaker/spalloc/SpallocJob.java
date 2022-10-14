@@ -54,6 +54,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobMachineInfo;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobState;
 import uk.ac.manchester.spinnaker.spalloc.messages.State;
+import uk.ac.manchester.spinnaker.utils.Daemon;
 
 /**
  * A high-level interface for requesting and managing allocations of SpiNNaker
@@ -474,10 +475,9 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 		if (keepalive != null) {
 			log.warn("launching second keepalive thread for " + id);
 		}
-		keepalive = new Thread(SPALLOC_WORKERS, this::keepalive,
-				"keepalive for spalloc job " + id);
-		keepalive.setDaemon(true);
 		stopping = false;
+		keepalive = new Daemon(SPALLOC_WORKERS, this::keepalive,
+				"keepalive for spalloc job " + id);
 		keepalive.start();
 	}
 
