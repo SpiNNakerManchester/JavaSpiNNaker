@@ -79,7 +79,9 @@ public abstract class Ping {
 	/**
 	 * Pings to detect if a host or IP address is reachable. May wait for up to
 	 * about five seconds (or longer <i>in extremis</i>). Technically, it only
-	 * detects if a host is reachable by ICMP ECHO requests.
+	 * detects if a host is reachable by ICMP ECHO requests; there are
+	 * environments (such as Microsoft Azure) where ICMP ECHO is blocked but it
+	 * is possible to route ordinary UDP packets.
 	 *
 	 * @param address
 	 *            Where should be pinged.
@@ -88,26 +90,26 @@ public abstract class Ping {
 	 */
 	@CheckReturnValue
 	public static int ping(String address) {
-		int result = -1;
 		int i = 0;
 		while (true) {
-			result = ping1(address);
+			int result = ping1(address);
 			if (result == 0 || ++i >= PING_COUNT) {
-				break;
+				return result;
 			}
 			try {
 				sleep(PING_DELAY);
 			} catch (InterruptedException e) {
-				break;
+				return result;
 			}
 		}
-		return result;
 	}
 
 	/**
 	 * Pings to detect if a host or IP address is reachable. May wait for up to
 	 * about five seconds (or longer <i>in extremis</i>). Technically, it only
-	 * detects if a host is reachable by ICMP ECHO requests.
+	 * detects if a host is reachable by ICMP ECHO requests; there are
+	 * environments (such as Microsoft Azure) where ICMP ECHO is blocked but it
+	 * is possible to route ordinary UDP packets.
 	 *
 	 * @param address
 	 *            Where should be pinged.

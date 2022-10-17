@@ -863,10 +863,12 @@ public class Transceiver extends UDPTransceiver
 	 * @param chip
 	 *            the chip coordinates to try to talk to
 	 * @return True if a valid response is received, False otherwise
+	 * @throws InterruptedException
+	 *             If interrupted while waiting for a response.
 	 */
 	@CheckReturnValue
 	private boolean checkConnection(SCPConnection connection,
-			HasChipLocation chip) {
+			HasChipLocation chip) throws InterruptedException {
 		for (int r = 0; r < CONNECTION_CHECK_RETRY_COUNT; r++) {
 			try {
 				var chipInfo = simpleProcess(connection)
@@ -875,8 +877,7 @@ public class Transceiver extends UDPTransceiver
 					return true;
 				}
 				sleep(CONNECTION_CHECK_DELAY);
-			} catch (InterruptedException | SocketTimeoutException
-					| ProcessException e) {
+			} catch (SocketTimeoutException | ProcessException e) {
 				// do nothing
 			} catch (IOException e) {
 				break;
@@ -2569,7 +2570,11 @@ public class Transceiver extends UDPTransceiver
 	 */
 	@Override
 	public void close() throws IOException {
-		close(true, false);
+		try {
+			close(true, false);
+		} catch (InterruptedException e) {
+			log.warn("unexpected interruption", e);
+		}
 	}
 
 	/**
@@ -2583,14 +2588,17 @@ public class Transceiver extends UDPTransceiver
 	 *            if true, the machine is sent a power down command via its BMP
 	 *            (if it has one)
 	 * @throws IOException
-	 *             If anything goes wrong
+	 *             If anything goes wrong with networking
+	 * @throws InterruptedException
+	 *             If interrupted while waiting for the machine to power down
+	 *             (only if that is requested).
 	 */
 	public void close(boolean closeOriginalConnections, boolean powerOffMachine)
-			throws IOException {
+			throws IOException, InterruptedException {
 		if (powerOffMachine && !bmpConnections.isEmpty()) {
 			try {
 				powerOffMachine();
-			} catch (InterruptedException | ProcessException e) {
+			} catch (ProcessException e) {
 				log.warn("failed to power off machine", e);
 			}
 		}
