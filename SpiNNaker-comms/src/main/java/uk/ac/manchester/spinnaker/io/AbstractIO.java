@@ -22,15 +22,19 @@ import static uk.ac.manchester.spinnaker.io.AbstractIO.Seek.CUR;
 import static uk.ac.manchester.spinnaker.messages.Constants.BYTE_MASK;
 import static uk.ac.manchester.spinnaker.transceiver.FillDataType.WORD;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.io.OutputStream;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.transceiver.FillDataType;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.utils.Slice;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Presents a view of an entity (SpiNNaker memory or a file on disk) as
@@ -86,8 +90,10 @@ public interface AbstractIO extends AutoCloseable {
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If something goes wrong
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
-	void flush() throws IOException, ProcessException;
+	void flush() throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Seek to a position within the region.
@@ -158,8 +164,11 @@ public interface AbstractIO extends AutoCloseable {
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If the read will be beyond the end of the region
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
-	default byte[] read() throws IOException, ProcessException {
+	default byte[] read()
+			throws IOException, ProcessException, InterruptedException {
 		return read(null);
 	}
 
@@ -175,8 +184,11 @@ public interface AbstractIO extends AutoCloseable {
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If the read will be beyond the end of the region
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
-	byte[] read(Integer numBytes) throws IOException, ProcessException;
+	byte[] read(Integer numBytes)
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Write some data to the region.
@@ -188,8 +200,11 @@ public interface AbstractIO extends AutoCloseable {
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If the write will go over the end of the region
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
-	int write(byte[] data) throws IOException, ProcessException;
+	int write(byte[] data)
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Fill the rest of the region with repeated data words.
@@ -200,8 +215,11 @@ public interface AbstractIO extends AutoCloseable {
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If the amount of data to fill is more than the region
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
-	default void fill(int value) throws IOException, ProcessException {
+	default void fill(int value)
+			throws IOException, ProcessException, InterruptedException {
 		fill(value, null, WORD);
 	}
 
@@ -216,9 +234,11 @@ public interface AbstractIO extends AutoCloseable {
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If the amount of data to fill is more than the region
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	default void fill(int value, int size)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		fill(value, size, WORD);
 	}
 
@@ -233,9 +253,11 @@ public interface AbstractIO extends AutoCloseable {
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If the amount of data to fill is more than the region
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	default void fill(int value, FillDataType type)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		fill(value, null, type);
 	}
 
@@ -253,9 +275,11 @@ public interface AbstractIO extends AutoCloseable {
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If the amount of data to fill is more than the region
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void fill(int value, Integer size, FillDataType type)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * The various positions that a {@link #seek(int,Seek)} may be relative to.
@@ -272,8 +296,10 @@ public interface AbstractIO extends AutoCloseable {
 	/**
 	 * Get a view of this IO object as a Java input stream.
 	 *
-	 * @return The input stream.
+	 * @return The input stream. You are strongly recommended to wrap this
+	 *         inside a {@link BufferedInputStream}.
 	 */
+	@UsedInJavadocOnly(BufferedInputStream.class)
 	default InputStream asInputStream() {
 		return new InputStream() {
 			@Override
@@ -287,6 +313,8 @@ public interface AbstractIO extends AutoCloseable {
 					// CHECKSTYLE:OFF
 					throw new IOException(e);
 					// CHECKSTYLE:ON
+				} catch (InterruptedException e) {
+					throw new InterruptedIOException("interrupted in flush");
 				}
 			}
 
@@ -302,6 +330,8 @@ public interface AbstractIO extends AutoCloseable {
 					// CHECKSTYLE:OFF
 					throw new IOException(e);
 					// CHECKSTYLE:ON
+				} catch (InterruptedException e) {
+					throw new InterruptedIOException("interrupted in flush");
 				}
 			}
 
@@ -318,6 +348,8 @@ public interface AbstractIO extends AutoCloseable {
 					// CHECKSTYLE:OFF
 					throw new IOException(e);
 					// CHECKSTYLE:ON
+				} catch (InterruptedException e) {
+					throw new InterruptedIOException("interrupted in flush");
 				}
 			}
 
@@ -338,10 +370,12 @@ public interface AbstractIO extends AutoCloseable {
 	}
 
 	/**
-	 * Get a view of this IO object as a Java input stream.
+	 * Get a view of this IO object as a Java output stream.
 	 *
-	 * @return The input stream.
+	 * @return The output stream. You are strongly recommended to wrap this in a
+	 *         {@link BufferedOutputStream}.
 	 */
+	@UsedInJavadocOnly(BufferedOutputStream.class)
 	default OutputStream asOutputStream() {
 		return new OutputStream() {
 			@Override
@@ -354,6 +388,8 @@ public interface AbstractIO extends AutoCloseable {
 					// CHECKSTYLE:OFF
 					throw new IOException(e);
 					// CHECKSTYLE:ON
+				} catch (InterruptedException e) {
+					throw new InterruptedIOException("interrupted in flush");
 				}
 			}
 
@@ -365,6 +401,8 @@ public interface AbstractIO extends AutoCloseable {
 					// CHECKSTYLE:OFF
 					throw new IOException(e);
 					// CHECKSTYLE:ON
+				} catch (InterruptedException e) {
+					throw new InterruptedIOException("interrupted in flush");
 				}
 			}
 
@@ -379,6 +417,8 @@ public interface AbstractIO extends AutoCloseable {
 					// CHECKSTYLE:OFF
 					throw new IOException(e);
 					// CHECKSTYLE:ON
+				} catch (InterruptedException e) {
+					throw new InterruptedIOException("interrupted in flush");
 				}
 			}
 
@@ -390,6 +430,8 @@ public interface AbstractIO extends AutoCloseable {
 					// CHECKSTYLE:OFF
 					throw new IOException(e);
 					// CHECKSTYLE:ON
+				} catch (InterruptedException e) {
+					throw new InterruptedIOException("interrupted in flush");
 				}
 			}
 		};

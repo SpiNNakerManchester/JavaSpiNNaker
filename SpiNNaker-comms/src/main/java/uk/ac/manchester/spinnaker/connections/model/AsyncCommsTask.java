@@ -17,9 +17,9 @@
 package uk.ac.manchester.spinnaker.connections.model;
 
 import java.io.IOException;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import uk.ac.manchester.spinnaker.connections.SCPErrorHandler;
 import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.NoResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
@@ -44,13 +44,14 @@ public interface AsyncCommsTask {
 	 *            {@code null} if the response doesn't need to be processed.
 	 * @param errorCallback
 	 *            A callback function to call when an error is found when
-	 *            processing the message; takes the original SCPRequest, and the
-	 *            exception caught while sending it.
+	 *            processing the message; takes the original {@link SCPRequest},
+	 *            and the exception caught while sending it.
 	 * @throws IOException
 	 *             If things go really wrong.
 	 */
 	<T extends CheckOKResponse> void sendRequest(SCPRequest<T> request,
-			Consumer<T> callback, SCPErrorHandler errorCallback)
+			Consumer<T> callback,
+			BiConsumer<SCPRequest<?>, Throwable> errorCallback)
 			throws IOException;
 
 	/**

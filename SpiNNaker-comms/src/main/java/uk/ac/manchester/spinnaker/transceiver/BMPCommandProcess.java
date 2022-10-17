@@ -127,10 +127,12 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 *             If the communications fail
 	 * @throws ProcessException
 	 *             If the other side responds with a failure code
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@SuppressWarnings("unchecked")
 	<T extends R> T execute(BMPRequest<T> request)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var holder = new ValueHolder<R>();
 		/*
 		 * If no pipeline built yet, build one on the connection selected for
@@ -162,10 +164,12 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 *             If the communications fail
 	 * @throws ProcessException
 	 *             If the other side responds with a failure code
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@SuppressWarnings("unchecked")
 	<T extends R> T execute(BMPRequest<T> request, int retries)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var holder = new ValueHolder<R>();
 		/*
 		 * If no pipeline built yet, build one on the connection selected for
@@ -199,10 +203,12 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 *             If the communications fail
 	 * @throws ProcessException
 	 *             If the other side responds with a failure code
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@SuppressWarnings("unchecked")
 	<T extends R> List<T> execute(Iterable<? extends BMPRequest<T>> requests)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var results = new ArrayList<R>();
 		RequestPipeline requestPipeline = null;
 		for (var request : requests) {
@@ -243,10 +249,13 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 *             If the communications fail
 	 * @throws ProcessException
 	 *             If the other side responds with a failure code
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@SuppressWarnings("unchecked")
 	<T extends R> List<T> execute(Iterable<? extends BMPRequest<T>> requests,
-			int retries) throws IOException, ProcessException {
+			int retries)
+			throws IOException, ProcessException, InterruptedException {
 		var results = new ArrayList<R>();
 		RequestPipeline requestPipeline = null;
 		for (var request : requests) {

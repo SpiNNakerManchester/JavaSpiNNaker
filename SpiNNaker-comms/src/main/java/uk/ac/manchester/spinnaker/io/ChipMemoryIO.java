@@ -122,8 +122,11 @@ final class ChipMemoryIO {
 	 *             If the OS has a problem sending or receiving a message.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
-	void flushWriteBuffer() throws IOException, ProcessException {
+	void flushWriteBuffer()
+			throws IOException, ProcessException, InterruptedException {
 		if (writeBuffer.position() > 0) {
 			var t = hold;
 			if (t == null) {
@@ -146,9 +149,11 @@ final class ChipMemoryIO {
 	 *             If the OS has a problem sending or receiving a message.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void setCurrentAddress(MemoryLocation address)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		flushWriteBuffer();
 		currentAddress = address;
 		writeAddress = address;
@@ -164,8 +169,11 @@ final class ChipMemoryIO {
 	 *             If the OS has a problem sending or receiving a message.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
-	byte[] read(int numBytes) throws IOException, ProcessException {
+	byte[] read(int numBytes)
+			throws IOException, ProcessException, InterruptedException {
 		if (numBytes == 0) {
 			return new byte[0];
 		}
@@ -188,8 +196,11 @@ final class ChipMemoryIO {
 	 *             If the OS has a problem sending or receiving a message.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
-	void write(byte[] data) throws IOException, ProcessException {
+	void write(byte[] data)
+			throws IOException, ProcessException, InterruptedException {
 		int numBytes = data.length;
 
 		var t = txrx();
@@ -228,9 +239,11 @@ final class ChipMemoryIO {
 	 *             If the OS has a problem sending or receiving a message.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void fill(int value, int size, FillDataType type)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var t = txrx();
 		flushWriteBuffer();
 		t.fillMemory(core, currentAddress, value, size, type);

@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
@@ -187,7 +188,7 @@ public class SCPRequestPipeline implements AsyncCommsTask {
 		private final Consumer<T> callback;
 
 		/** Callback function for errors. */
-		private final SCPErrorHandler errorCallback;
+		private final BiConsumer<SCPRequest<?>, Throwable> errorCallback;
 
 		/** Retry reasons. */
 		private final List<String> retryReason;
@@ -206,7 +207,7 @@ public class SCPRequestPipeline implements AsyncCommsTask {
 		 *            The failure callback.
 		 */
 		private Request(SCPRequest<T> request, Consumer<T> callback,
-				SCPErrorHandler errorCallback) {
+				BiConsumer<SCPRequest<?>, Throwable> errorCallback) {
 			this.request = request;
 			this.requestData = request.getMessageData(connection.getChip());
 			this.callback = callback;
@@ -281,7 +282,7 @@ public class SCPRequestPipeline implements AsyncCommsTask {
 		 */
 		private void handleError(Throwable exception) {
 			if (errorCallback != null) {
-				errorCallback.handleError(request, exception);
+				errorCallback.accept(request, exception);
 			}
 		}
 
@@ -335,7 +336,8 @@ public class SCPRequestPipeline implements AsyncCommsTask {
 
 	@Override
 	public <T extends CheckOKResponse> void sendRequest(SCPRequest<T> request,
-			Consumer<T> callback, SCPErrorHandler errorCallback)
+			Consumer<T> callback,
+			BiConsumer<SCPRequest<?>, Throwable> errorCallback)
 			throws IOException {
 		requireNonNull(errorCallback);
 		// If all the channels are used, start to receive packets
@@ -382,7 +384,7 @@ public class SCPRequestPipeline implements AsyncCommsTask {
 	 */
 	private <T extends CheckOKResponse> Request<T> registerRequest(
 			SCPRequest<T> request, Consumer<T> callback,
-			SCPErrorHandler errorCallback) {
+			BiConsumer<SCPRequest<?>, Throwable> errorCallback) {
 		synchronized (outstandingRequests) {
 			int sequence = toUnsignedInt(request.scpRequestHeader
 					.issueSequenceNumber(outstandingRequests.keySet()));
