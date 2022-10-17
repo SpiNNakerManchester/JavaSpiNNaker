@@ -438,8 +438,10 @@ class BMPCommandProcess<R extends BMPResponse> {
 		 *
 		 * @throws IOException
 		 *             If anything goes wrong with communications.
+		 * @throws InterruptedException
+		 *             If communications are interrupted.
 		 */
-		private void finish() throws IOException {
+		private void finish() throws IOException, InterruptedException {
 			// While there are still more packets in progress than some
 			// threshold
 			while (!requests.isEmpty()) {
@@ -452,7 +454,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 			}
 		}
 
-		private void retrieve() throws IOException {
+		private void retrieve() throws IOException, InterruptedException {
 			// Receive the next response
 			var msg = connection.receiveSCPResponse(timeout);
 			var req = msg.pickRequest(requests);

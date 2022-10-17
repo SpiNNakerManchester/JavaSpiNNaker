@@ -38,10 +38,13 @@ public interface MessageReceiver<MessageType> extends SocketHolder {
 	 * @return the received message
 	 * @throws IOException
 	 *             If there is an error receiving the message
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws IllegalArgumentException
 	 *             If one of the fields of the SpiNNaker message is invalid
 	 */
-	default MessageType receiveMessage() throws IOException {
+	default MessageType receiveMessage()
+			throws IOException, InterruptedException {
 		return receiveMessage(0);
 	}
 
@@ -55,11 +58,14 @@ public interface MessageReceiver<MessageType> extends SocketHolder {
 	 * @return the received message
 	 * @throws IOException
 	 *             If there is an error receiving the message
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws SocketTimeoutException
 	 *             If there is a timeout during receiving
 	 * @throws IllegalArgumentException
 	 *             If one of the fields of the SpiNNaker message is invalid
 	 */
 	@UsedInJavadocOnly(SocketTimeoutException.class)
-	MessageType receiveMessage(int timeout) throws IOException;
+	MessageType receiveMessage(int timeout)
+			throws IOException, InterruptedException;
 }

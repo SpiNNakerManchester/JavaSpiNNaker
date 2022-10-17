@@ -138,8 +138,11 @@ final class GatherDownloadConnection extends SDPConnection {
 	 *         returned. Never returns {@code null}.
 	 * @throws IOException
 	 *             If a non-recoverable error (e.g., closed channel) happens.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
-	ByteBuffer getNextPacket(int timeout) throws IOException {
+	ByteBuffer getNextPacket(int timeout)
+			throws IOException, InterruptedException {
 		try {
 			var b = receive(timeout);
 			if (b == null) {

@@ -42,9 +42,11 @@ public interface SCPReceiver extends SocketHolder {
 	 *             If there is an error receiving the message
 	 * @throws SocketTimeoutException
 	 *             If there is a timeout before a message is received
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	default SCPResultMessage receiveSCPResponse(Integer timeout)
-			throws SocketTimeoutException, IOException {
+			throws SocketTimeoutException, IOException, InterruptedException {
 		return receiveSCPResponse(convertTimeout(timeout));
 	}
 
@@ -62,7 +64,9 @@ public interface SCPReceiver extends SocketHolder {
 	 *             If there is an error receiving the message
 	 * @throws SocketTimeoutException
 	 *             If there is a timeout before a message is received
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	SCPResultMessage receiveSCPResponse(int timeout)
-			throws SocketTimeoutException, IOException;
+			throws SocketTimeoutException, IOException, InterruptedException;
 }

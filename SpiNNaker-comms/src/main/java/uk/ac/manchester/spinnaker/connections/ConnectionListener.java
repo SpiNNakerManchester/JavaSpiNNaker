@@ -154,17 +154,16 @@ public class ConnectionListener<MessageType> extends Thread
 	 * @throws IOException
 	 *             If other things go wrong with the comms, or if the callbacks
 	 *             throw it.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
-	private void runStep() throws IOException {
+	private void runStep() throws IOException, InterruptedException {
 		var message = connection.receiveMessage(timeout);
 		for (var future : checkpointCallbacks().stream().map(
 				callback -> callbackPool.submit(() -> callback.handle(message)))
 				.collect(toList())) {
 			try {
 				future.get();
-			} catch (InterruptedException e) {
-				log.warn("unexpected exception; not waiting for the future", e);
-				break;
 			} catch (ExecutionException ee) {
 				try {
 					throw ee.getCause();

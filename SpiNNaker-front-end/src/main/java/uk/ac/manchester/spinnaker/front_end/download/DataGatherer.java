@@ -639,9 +639,12 @@ public abstract class DataGatherer extends BoardLocalSupport
 		 *             If a download times out unrecoverably.
 		 * @throws ProcessException
 		 *             If anything unexpected goes wrong.
+		 * @throws InterruptedException
+		 *             If communications are interrupted.
 		 */
 		ByteBuffer doDownload(Monitor extraMonitor, Region region)
-				throws IOException, TimeoutException, ProcessException {
+				throws IOException, TimeoutException, ProcessException,
+				InterruptedException {
 			monitorCore = extraMonitor;
 			dataReceiver = allocate(region.size);
 			/*
@@ -711,9 +714,11 @@ public abstract class DataGatherer extends BoardLocalSupport
 		 * @throws TimeoutException
 		 *             If we have a full timeout, or if we are flailing around,
 		 *             making no progress.
+		 * @throws InterruptedException
+		 *             If communications are interrupted.
 		 */
 		private boolean processOnePacket(int timeout, int transactionId)
-				throws IOException, TimeoutException {
+				throws IOException, TimeoutException, InterruptedException {
 			var p = conn.getNextPacket(timeout + INTERNAL_DELAY);
 			if (p.hasRemaining()) {
 				received = true;
