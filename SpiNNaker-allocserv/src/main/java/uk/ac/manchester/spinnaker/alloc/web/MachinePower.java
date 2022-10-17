@@ -29,6 +29,7 @@ import uk.ac.manchester.spinnaker.alloc.model.PowerState;
  * @author Donal Fellows
  */
 public class MachinePower {
+	@NotNull(message = "power must be specified")
 	private PowerState power;
 
 	/** Make an instance. */
@@ -47,7 +48,6 @@ public class MachinePower {
 	}
 
 	/** @return the machine power state */
-	@NotNull(message = "power must be specified")
 	public PowerState getPower() {
 		return power;
 	}

@@ -16,6 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.machine.bean;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -34,9 +37,11 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 @UsedInJavadocOnly({Chip.class, Link.class})
 public class LinkBean {
 	/** Where the link is going. */
+	@Valid
 	public final ChipLocation destination;
 
 	/** What direction the link is going in. */
+	@NotNull
 	public final Direction sourceDirection;
 
 	/**

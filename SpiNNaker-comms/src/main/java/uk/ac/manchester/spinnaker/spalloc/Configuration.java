@@ -56,6 +56,8 @@ import org.apache.commons.configuration2.io.CombinedLocationStrategy;
 import org.apache.commons.configuration2.io.HomeDirectoryLocationStrategy;
 import org.apache.commons.configuration2.io.ProvidedURLLocationStrategy;
 
+import uk.ac.manchester.spinnaker.utils.validation.TCPPort;
+
 /** A spalloc configuration loaded from a file. */
 public class Configuration {
 	private static final char LIST_SEPARATOR = ' ';
@@ -110,12 +112,13 @@ public class Configuration {
 		return Map.copyOf(configurationMap);
 	}
 
-	/** @return The spalloc host. */
+	/** @return The spalloc TCP/IP host. */
 	public String getHost() {
 		return (String) configurationMap.get(HOSTNAME_PROPERTY);
 	}
 
-	/** @return The spalloc port. */
+	/** @return The spalloc TCP/IP port. */
+	@TCPPort
 	public int getPort() {
 		return (Integer) configurationMap.get(PORT_PROPERTY);
 	}

@@ -109,7 +109,7 @@ abstract class Utils {
 	}
 
 	/**
-	 * Parse a value as decimal.
+	 * Parse a value as non-negative decimal.
 	 *
 	 * @param value
 	 *            The value to parse (must actually be a string or a number).
@@ -118,16 +118,21 @@ abstract class Utils {
 	 *             If the object can't be converted to a number.
 	 */
 	static Integer parseDec(Object value) {
+		int n;
 		if (isNull(value)) {
 			return null;
 		} else if (value instanceof Number) {
-			return ((Number) value).intValue();
+			n = ((Number) value).intValue();
 		} else if (value instanceof String) {
-			return parseInt((String) value);
+			n = parseInt((String) value);
 		} else {
 			throw new IllegalArgumentException(
 					"needed a number, got a " + value.getClass().getName());
 		}
+		if (n < 0) {
+			throw new IllegalArgumentException("negative values not supported");
+		}
+		return n;
 	}
 
 	/**
@@ -171,7 +176,7 @@ abstract class Utils {
 	}
 
 	/**
-	 * Parse a value as decimal.
+	 * Parse a value as non-negative decimal.
 	 *
 	 * @param <T>
 	 *            The type of the values in the list (must actually be a
@@ -187,7 +192,7 @@ abstract class Utils {
 	}
 
 	/**
-	 * Parse a value as decimal.
+	 * Parse a value as non-negative decimal.
 	 *
 	 * @param <T>
 	 *            The type of the values in the map (must actually be a

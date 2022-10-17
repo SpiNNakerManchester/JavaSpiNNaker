@@ -26,14 +26,24 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * An API for talking to the Spalloc service.
@@ -193,8 +203,8 @@ public interface SpallocClient {
 		 * @throws IOException
 		 *             If communication with the server fails
 		 */
-		WhereIs getBoardByTriad(int x, int y, int z)
-				throws FileNotFoundException, IOException;
+		WhereIs getBoardByTriad(@ValidTriadX int x, @ValidTriadY int y,
+				@ValidTriadZ int z) throws FileNotFoundException, IOException;
 
 		/**
 		 * Given physical coordinates, return more info about a board.
@@ -211,7 +221,8 @@ public interface SpallocClient {
 		 * @throws IOException
 		 *             If communication with the server fails
 		 */
-		WhereIs getBoardByPhysicalCoords(int cabinet, int frame, int board)
+		WhereIs getBoardByPhysicalCoords(@ValidCabinetNumber int cabinet,
+				@ValidFrameNumber int frame, @ValidBoardNumber int board)
 				throws FileNotFoundException, IOException;
 
 		/**
@@ -226,7 +237,7 @@ public interface SpallocClient {
 		 * @throws IOException
 		 *             If communication with the server fails
 		 */
-		WhereIs getBoardByChip(HasChipLocation chip)
+		WhereIs getBoardByChip(@NotNull @Valid HasChipLocation chip)
 				throws FileNotFoundException, IOException;
 
 		/**
@@ -240,7 +251,7 @@ public interface SpallocClient {
 		 * @throws IOException
 		 *             If communication with the server fails
 		 */
-		WhereIs getBoardByIPAddress(String address)
+		WhereIs getBoardByIPAddress(@IPAddress String address)
 				throws FileNotFoundException, IOException;
 	}
 
@@ -343,7 +354,7 @@ public interface SpallocClient {
 		 * @throws IOException
 		 *             If communication fails or the job is deleted.
 		 */
-		WhereIs whereIs(HasChipLocation chip)
+		WhereIs whereIs(@NotNull @Valid HasChipLocation chip)
 				throws FileNotFoundException, IOException;
 
 		/**
@@ -377,7 +388,7 @@ public interface SpallocClient {
 		 *             If interrupted waiting for the connection to be set up.
 		 */
 		@MustBeClosed
-		SCPConnection getConnection(HasChipLocation chip)
+		SCPConnection getConnection(@NotNull @Valid HasChipLocation chip)
 				throws IOException, InterruptedException;
 
 		/**

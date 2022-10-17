@@ -19,6 +19,8 @@ package uk.ac.manchester.spinnaker.machine.tags;
 import java.net.InetAddress;
 import java.util.Objects;
 
+import javax.validation.Valid;
+
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
@@ -29,6 +31,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 public final class ReverseIPTag extends Tag {
 	private static final int DEFAULT_SDP_PORT = 1;
 
+	@Valid
 	private final CoreLocation destination;
 
 	private final int sdpPort;

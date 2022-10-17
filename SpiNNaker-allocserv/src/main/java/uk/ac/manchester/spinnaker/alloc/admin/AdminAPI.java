@@ -34,7 +34,6 @@ import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -53,10 +52,16 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
-import uk.ac.manchester.spinnaker.alloc.model.IPAddress;
 import uk.ac.manchester.spinnaker.alloc.model.MemberRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * Administration interface.
@@ -176,10 +181,13 @@ public interface AdminAPI {
 	default boolean getBoardState(
 			@NotBlank(message = "machine name is required")
 			@QueryParam("machine") String machineName,
-			@QueryParam("x") Integer x, @QueryParam("y") Integer y,
-			@QueryParam("z") Integer z, @QueryParam("cabinet") Integer c,
-			@QueryParam("frame") Integer f, @QueryParam("board") Integer b,
-			@QueryParam("address") String address) {
+			@QueryParam("x") @ValidTriadX Integer x,
+			@QueryParam("y") @ValidTriadY Integer y,
+			@QueryParam("z") @ValidTriadZ Integer z,
+			@QueryParam("cabinet") @ValidCabinetNumber Integer c,
+			@QueryParam("frame") @ValidFrameNumber Integer f,
+			@QueryParam("board") @ValidBoardNumber Integer b,
+			@QueryParam("address") @IPAddress(nullOK = true) String address) {
 		if (nonNull(x) && nonNull(y) && nonNull(z)) {
 			return getBoardStateXYZ(machineName, x, y, z);
 		}
@@ -207,8 +215,8 @@ public interface AdminAPI {
 	 *            The Z coordinate
 	 * @return Whether the board is enabled
 	 */
-	boolean getBoardStateXYZ(String name, @PositiveOrZero int x,
-			@PositiveOrZero int y, @PositiveOrZero int z);
+	boolean getBoardStateXYZ(String name, @ValidTriadX int x,
+			@ValidTriadY int y, @ValidTriadZ int z);
 
 	/**
 	 * Find board by physical coordinates and return its state.
@@ -223,8 +231,8 @@ public interface AdminAPI {
 	 *            The board number
 	 * @return Whether the board is enabled
 	 */
-	boolean getBoardStateCFB(String name, @PositiveOrZero int c,
-			@PositiveOrZero int f, @PositiveOrZero int b);
+	boolean getBoardStateCFB(String name, @ValidCabinetNumber int c,
+			@ValidFrameNumber int f, @ValidBoardNumber int b);
 
 	/**
 	 * Find board by IP address and return its state.
@@ -269,10 +277,14 @@ public interface AdminAPI {
 	default boolean setBoardState(
 			@NotBlank(message = "machine name is required")
 			@QueryParam("machine") String machineName,
-			@QueryParam("x") Integer x, @QueryParam("y") Integer y,
-			@QueryParam("z") Integer z, @QueryParam("cabinet") Integer c,
-			@QueryParam("frame") Integer f, @QueryParam("board") Integer b,
-			@QueryParam("address") String address, boolean enabled) {
+			@QueryParam("x") @ValidTriadX Integer x,
+			@QueryParam("y") @ValidTriadY Integer y,
+			@QueryParam("z") @ValidTriadZ Integer z,
+			@QueryParam("cabinet") @ValidCabinetNumber Integer c,
+			@QueryParam("frame") @ValidFrameNumber Integer f,
+			@QueryParam("board") @ValidBoardNumber Integer b,
+			@QueryParam("address") @IPAddress(nullOK = true) String address,
+			boolean enabled) {
 		if (nonNull(x) && nonNull(y) && nonNull(z)) {
 			return setBoardStateXYZ(machineName, x, y, z, enabled);
 		}
@@ -302,9 +314,8 @@ public interface AdminAPI {
 	 *            Whether the board should be set to the enabled state
 	 * @return Whether the board is enabled
 	 */
-	boolean setBoardStateXYZ(@NotBlank String name,
-			@NotNull @PositiveOrZero int x, @NotNull @PositiveOrZero int y,
-			@NotNull @PositiveOrZero int z, boolean enabled);
+	boolean setBoardStateXYZ(@NotBlank String name, @ValidTriadX int x,
+			@ValidTriadY int y, @ValidTriadZ int z, boolean enabled);
 
 	/**
 	 * Enable or disable a board. Find by physical coordinates.
@@ -322,8 +333,9 @@ public interface AdminAPI {
 	 * @return Whether the board is enabled
 	 */
 	boolean setBoardStateCFB(@NotBlank String name,
-			@NotNull @PositiveOrZero int c, @NotNull @PositiveOrZero int f,
-			@NotNull @PositiveOrZero int b, boolean enabled);
+			@NotNull @ValidCabinetNumber int c,
+			@NotNull @ValidFrameNumber int f,
+			@NotNull @ValidBoardNumber int b, boolean enabled);
 
 	/**
 	 * Enable or disable a board. Find by IP address.

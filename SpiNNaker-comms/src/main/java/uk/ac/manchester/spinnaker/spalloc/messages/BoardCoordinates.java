@@ -23,6 +23,10 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
+
 /**
  * The logical coordinates of a board.
  */
@@ -32,10 +36,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonFormat(shape = ARRAY)
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public final class BoardCoordinates {
+	@ValidTriadX
 	private int x;
 
+	@ValidTriadY
 	private int y;
 
+	@ValidTriadZ
 	private int z;
 
 	/**

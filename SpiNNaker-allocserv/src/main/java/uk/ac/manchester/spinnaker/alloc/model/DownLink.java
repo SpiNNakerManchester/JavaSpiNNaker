@@ -18,6 +18,9 @@ package uk.ac.manchester.spinnaker.alloc.model;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.errorprone.annotations.Immutable;
 
@@ -44,11 +47,13 @@ public final class DownLink {
 		/**
 		 * On what board is this end of the link.
 		 */
+		@Valid
 		public final BoardCoords board;
 
 		/**
 		 * In which direction does this end of the link go?
 		 */
+		@NotNull
 		public final Direction direction;
 	}
 
@@ -71,8 +76,10 @@ public final class DownLink {
 	}
 
 	/** One end of the down link. */
+	@Valid
 	public final DownLink.End end1;
 
 	/** The other end of the down link. */
+	@Valid
 	public final DownLink.End end2;
 }

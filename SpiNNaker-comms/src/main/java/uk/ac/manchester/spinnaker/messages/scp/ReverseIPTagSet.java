@@ -30,9 +30,14 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
 
 import java.nio.ByteBuffer;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.tags.TagID;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
+import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
 
 /**
  * An SCP Request to set a Reverse IP Tag. Reverse IP tags are tags that funnel
@@ -53,8 +58,9 @@ public class ReverseIPTagSet extends SCPRequest<CheckOKResponse> {
 	 * @param sdpPort
 	 *            The SDP port associated with this tag.
 	 */
-	public ReverseIPTagSet(HasChipLocation chip, HasCoreLocation destination,
-			int port, int tag, int sdpPort) {
+	public ReverseIPTagSet(@Valid @NotNull HasChipLocation chip,
+			@Valid @NotNull HasCoreLocation destination, @UDPPort int port,
+			@TagID int tag, int sdpPort) {
 		super(chip.getScampCore(), CMD_IPTAG,
 				argument1(sdpPort, destination, tag),
 				argument2(destination, port), 0);

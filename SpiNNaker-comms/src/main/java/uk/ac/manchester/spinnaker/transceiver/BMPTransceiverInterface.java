@@ -42,6 +42,10 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Set;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+
 import com.google.errorprone.annotations.CheckReturnValue;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
@@ -78,7 +82,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @param bmp
 	 *            The new default coordinates.
 	 */
-	void bind(BMPCoords bmp);
+	void bind(@Valid BMPCoords bmp);
 
 	/**
 	 * @return The currently bound BMP coordinates. Defaults to 0,0 if not set
@@ -100,7 +104,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
-	MappableIterable<BMPBoard> availableBoards(BMPCoords bmp)
+	MappableIterable<BMPBoard> availableBoards(@Valid BMPCoords bmp)
 			throws IOException, ProcessException;
 
 	/**
@@ -153,7 +157,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelSafeWithCare
-	default void powerOn(Collection<BMPBoard> boards)
+	default void powerOn(Collection<@Valid BMPBoard> boards)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, getBoundBMP(), boards);
 	}
@@ -174,7 +178,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelSafeWithCare
-	default void powerOn(BMPBoard board)
+	default void powerOn(@Valid BMPBoard board)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, getBoundBMP(), Set.of(board));
 	}
@@ -212,7 +216,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelSafeWithCare
-	default void powerOff(Collection<BMPBoard> boards)
+	default void powerOff(Collection<@Valid BMPBoard> boards)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, getBoundBMP(), boards);
 	}
@@ -233,7 +237,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelSafeWithCare
-	default void powerOff(BMPBoard board)
+	default void powerOff(@Valid BMPBoard board)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, getBoundBMP(), Set.of(board));
 	}
@@ -259,8 +263,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelUnsafe
-	void power(PowerCommand powerCommand, BMPCoords bmp,
-			Collection<BMPBoard> boards)
+	void power(@NotNull PowerCommand powerCommand, @Valid BMPCoords bmp,
+			Collection<@Valid BMPBoard> boards)
 			throws InterruptedException, IOException, ProcessException;
 
 	/**
@@ -281,8 +285,9 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	void setLED(Collection<Integer> leds, LEDAction action, BMPCoords bmp,
-			Collection<BMPBoard> boards) throws IOException, ProcessException;
+	void setLED(Collection<Integer> leds, LEDAction action,
+			@Valid BMPCoords bmp, Collection<@Valid BMPBoard> boards)
+			throws IOException, ProcessException;
 
 	/**
 	 * Set the LED state of a board in the machine.
@@ -300,7 +305,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafe
 	default void setLED(Collection<Integer> leds, LEDAction action,
-			BMPBoard board) throws IOException, ProcessException {
+			@Valid BMPBoard board) throws IOException, ProcessException {
 		setLED(leds, action, getBoundBMP(), Set.of(board));
 	}
 
@@ -323,7 +328,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	@ParallelSafe
 	@CheckReturnValue
 	default int readFPGARegister(FPGA fpga, FPGAMainRegisters register,
-			BMPBoard board) throws IOException, ProcessException {
+			@Valid BMPBoard board) throws IOException, ProcessException {
 		return readFPGARegister(fpga, register, getBoundBMP(), board);
 	}
 
@@ -348,7 +353,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	@ParallelSafe
 	@CheckReturnValue
 	default int readFPGARegister(FPGA fpga, FPGAMainRegisters register,
-			BMPCoords bmp, BMPBoard board)
+			@Valid BMPCoords bmp, @Valid BMPBoard board)
 			throws IOException, ProcessException {
 		return readFPGARegister(fpga, register.getAddress(), bmp, board);
 	}
@@ -374,7 +379,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	@ParallelSafe
 	@CheckReturnValue
 	default int readFPGARegister(FPGA fpga, int registerBank,
-			FPGALinkRegisters register, BMPBoard board)
+			FPGALinkRegisters register, @Valid BMPBoard board)
 			throws IOException, ProcessException {
 		return readFPGARegister(fpga, registerBank, register, getBoundBMP(),
 				board);
@@ -403,8 +408,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	@ParallelSafe
 	@CheckReturnValue
 	default int readFPGARegister(FPGA fpga, int registerBank,
-			FPGALinkRegisters register, BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException {
+			FPGALinkRegisters register, @Valid BMPCoords bmp,
+			@Valid BMPBoard board) throws IOException, ProcessException {
 		return readFPGARegister(fpga, register.address(registerBank), bmp,
 				board);
 	}
@@ -430,7 +435,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	@ParallelSafe
 	@CheckReturnValue
 	default int readFPGALinkCounter(FPGA fpga, int linkNumber,
-			FPGARecevingLinkCounters counter, BMPBoard board)
+			FPGARecevingLinkCounters counter, @Valid BMPBoard board)
 			throws IOException, ProcessException {
 		return readFPGALinkCounter(fpga, linkNumber, counter, getBoundBMP(),
 				board);
@@ -459,8 +464,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	@ParallelSafe
 	@CheckReturnValue
 	default int readFPGALinkCounter(FPGA fpga, int linkNumber,
-			FPGARecevingLinkCounters counter, BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException {
+			FPGARecevingLinkCounters counter, @Valid BMPCoords bmp,
+			@Valid BMPBoard board) throws IOException, ProcessException {
 		return readFPGARegister(fpga, counter.address(linkNumber), bmp, board);
 	}
 
@@ -485,7 +490,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	@ParallelSafe
 	@CheckReturnValue
 	default int readFPGALinkCounter(FPGA fpga, int linkNumber,
-			FPGASendingLinkCounters counter, BMPBoard board)
+			FPGASendingLinkCounters counter, @Valid BMPBoard board)
 			throws IOException, ProcessException {
 		return readFPGALinkCounter(fpga, linkNumber, counter, getBoundBMP(),
 				board);
@@ -514,8 +519,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	@ParallelSafe
 	@CheckReturnValue
 	default int readFPGALinkCounter(FPGA fpga, int linkNumber,
-			FPGASendingLinkCounters counter, BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException {
+			FPGASendingLinkCounters counter, @Valid BMPCoords bmp,
+			@Valid BMPBoard board) throws IOException, ProcessException {
 		return readFPGARegister(fpga, counter.address(linkNumber), bmp, board);
 	}
 
@@ -538,8 +543,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafe
 	@CheckReturnValue
-	default int readFPGARegister(FPGA fpga, MemoryLocation register,
-			BMPBoard board) throws IOException, ProcessException {
+	default int readFPGARegister(FPGA fpga, @NotNull MemoryLocation register,
+			@Valid BMPBoard board) throws IOException, ProcessException {
 		return readFPGARegister(fpga, register, getBoundBMP(), board);
 	}
 
@@ -564,8 +569,9 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafe
 	@CheckReturnValue
-	int readFPGARegister(FPGA fpga, MemoryLocation register, BMPCoords bmp,
-			BMPBoard board) throws IOException, ProcessException;
+	int readFPGARegister(FPGA fpga, @NotNull MemoryLocation register,
+			@Valid BMPCoords bmp, @Valid BMPBoard board)
+			throws IOException, ProcessException;
 
 	/**
 	 * Write a register on a FPGA of a board, assuming the standard FPGA
@@ -586,7 +592,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafe
 	default void writeFPGARegister(FPGA fpga, FPGAMainRegisters register,
-			int value, BMPBoard board) throws IOException, ProcessException {
+			int value, @Valid BMPBoard board)
+			throws IOException, ProcessException {
 		writeFPGARegister(fpga, register, value, getBoundBMP(), board);
 	}
 
@@ -611,7 +618,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafe
 	default void writeFPGARegister(FPGA fpga, FPGAMainRegisters register,
-			int value, BMPCoords bmp, BMPBoard board)
+			int value, @Valid BMPCoords bmp, @Valid BMPBoard board)
 			throws IOException, ProcessException {
 		writeFPGARegister(fpga, register.getAddress(), value, bmp, board);
 	}
@@ -637,7 +644,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafe
 	default void writeFPGARegister(FPGA fpga, int registerBank,
-			FPGALinkRegisters register, int value, BMPBoard board)
+			FPGALinkRegisters register, int value, @Valid BMPBoard board)
 			throws IOException, ProcessException {
 		writeFPGARegister(fpga, registerBank, register, value, getBoundBMP(),
 				board);
@@ -666,8 +673,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafe
 	default void writeFPGARegister(FPGA fpga, int registerBank,
-			FPGALinkRegisters register, int value, BMPCoords bmp,
-			BMPBoard board) throws IOException, ProcessException {
+			FPGALinkRegisters register, int value, @Valid BMPCoords bmp,
+			@Valid BMPBoard board) throws IOException, ProcessException {
 		writeFPGARegister(fpga, register.address(registerBank), value, bmp,
 				board);
 	}
@@ -691,8 +698,9 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void writeFPGARegister(FPGA fpga, MemoryLocation register,
-			int value, BMPBoard board) throws IOException, ProcessException {
+	default void writeFPGARegister(FPGA fpga, @NotNull MemoryLocation register,
+			int value, @Valid BMPBoard board)
+			throws IOException, ProcessException {
 		writeFPGARegister(fpga, register, value, getBoundBMP(), board);
 	}
 
@@ -717,8 +725,9 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	void writeFPGARegister(FPGA fpga, MemoryLocation register, int value,
-			BMPCoords bmp, BMPBoard board) throws IOException, ProcessException;
+	void writeFPGARegister(FPGA fpga, @NotNull MemoryLocation register,
+			int value, @Valid BMPCoords bmp, @Valid BMPBoard board)
+			throws IOException, ProcessException;
 
 	/**
 	 * Read the ADC data.
@@ -733,7 +742,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafe
 	@CheckReturnValue
-	default ADCInfo readADCData(BMPBoard board)
+	default ADCInfo readADCData(@Valid BMPBoard board)
 			throws IOException, ProcessException {
 		return readADCData(getBoundBMP(), board);
 	}
@@ -753,7 +762,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafe
 	@CheckReturnValue
-	ADCInfo readADCData(BMPCoords bmp, BMPBoard board)
+	ADCInfo readADCData(@Valid BMPCoords bmp, @Valid BMPBoard board)
 			throws IOException, ProcessException;
 
 	/**
@@ -770,8 +779,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelUnsafe
 	@CheckReturnValue
-	default VersionInfo readBMPVersion(
-			Iterable<BMPBoard> boards) throws IOException, ProcessException {
+	default VersionInfo readBMPVersion(Iterable<@Valid BMPBoard> boards)
+			throws IOException, ProcessException {
 		return readBMPVersion(getBoundBMP(), boards.iterator().next());
 	}
 
@@ -788,7 +797,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafe
 	@CheckReturnValue
-	default VersionInfo readBMPVersion(BMPBoard board)
+	default VersionInfo readBMPVersion(@Valid BMPBoard board)
 			throws IOException, ProcessException {
 		return readBMPVersion(getBoundBMP(), board);
 	}
@@ -809,7 +818,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelUnsafe
 	@CheckReturnValue
-	default VersionInfo readBMPVersion(BMPCoords bmp, Iterable<BMPBoard> boards)
+	default VersionInfo readBMPVersion(@Valid BMPCoords bmp,
+			Iterable<@Valid BMPBoard> boards)
 			throws IOException, ProcessException {
 		return readBMPVersion(bmp, boards.iterator().next());
 	}
@@ -829,7 +839,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
-	VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board)
+	VersionInfo readBMPVersion(@Valid BMPCoords bmp, @Valid BMPBoard board)
 			throws IOException, ProcessException;
 
 	/**
@@ -848,7 +858,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	default FirmwareDescriptor readBMPFirmwareDescriptor(
-			BMPBoard board, FirmwareDescriptors type)
+			@Valid BMPBoard board, FirmwareDescriptors type)
 			throws IOException, ProcessException {
 		return readBMPFirmwareDescriptor(getBoundBMP(), board, type);
 	}
@@ -870,8 +880,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
-	default FirmwareDescriptor readBMPFirmwareDescriptor(BMPCoords bmp,
-			BMPBoard board, FirmwareDescriptors type)
+	default FirmwareDescriptor readBMPFirmwareDescriptor(@Valid BMPCoords bmp,
+			@Valid BMPBoard board, FirmwareDescriptors type)
 			throws IOException, ProcessException {
 		return new FirmwareDescriptor(type,
 				readBMPMemory(bmp, board, type.address, type.blockSize));
@@ -890,7 +900,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
-	default boolean getResetStatus(BMPBoard board)
+	default boolean getResetStatus(@Valid BMPBoard board)
 			throws IOException, ProcessException {
 		return getResetStatus(getBoundBMP(), board);
 	}
@@ -910,7 +920,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
-	boolean getResetStatus(BMPCoords bmp, BMPBoard board)
+	boolean getResetStatus(@Valid BMPCoords bmp, @Valid BMPBoard board)
 			throws IOException, ProcessException;
 
 	/**
@@ -925,7 +935,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default MemoryLocation getSerialFlashBuffer(BMPBoard board)
+	default MemoryLocation getSerialFlashBuffer(@Valid BMPBoard board)
 			throws IOException, ProcessException {
 		return getSerialFlashBuffer(getBoundBMP(), board);
 	}
@@ -944,8 +954,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	MemoryLocation getSerialFlashBuffer(BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException;
+	MemoryLocation getSerialFlashBuffer(@Valid BMPCoords bmp,
+			@Valid BMPBoard board) throws IOException, ProcessException;
 
 	/** The type of reset to perform. */
 	enum FPGAResetType {
@@ -971,7 +981,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void resetFPGA(BMPBoard board, FPGAResetType resetType)
+	default void resetFPGA(@Valid BMPBoard board, FPGAResetType resetType)
 			throws IOException, ProcessException {
 		resetFPGA(getBoundBMP(), board, resetType);
 	}
@@ -991,8 +1001,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	void resetFPGA(BMPCoords bmp, BMPBoard board, FPGAResetType resetType)
-			throws IOException, ProcessException;
+	void resetFPGA(@Valid BMPCoords bmp, @Valid BMPBoard board,
+			FPGAResetType resetType) throws IOException, ProcessException;
 
 	/**
 	 * Read BMP memory.
@@ -1013,8 +1023,9 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
-	default ByteBuffer readBMPMemory(BMPBoard board, MemoryLocation baseAddress,
-			int length) throws IOException, ProcessException {
+	default ByteBuffer readBMPMemory(@Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @Positive int length)
+			throws IOException, ProcessException {
 		return readBMPMemory(getBoundBMP(), board, baseAddress, length);
 	}
 
@@ -1039,8 +1050,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
-	ByteBuffer readBMPMemory(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int length)
+	ByteBuffer readBMPMemory(@Valid BMPCoords bmp, @Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @Positive int length)
 			throws IOException, ProcessException;
 
 	/**
@@ -1059,7 +1070,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
-	default int readBMPMemoryWord(BMPBoard board, MemoryLocation address)
+	default int readBMPMemoryWord(@Valid BMPBoard board,
+			@NotNull MemoryLocation address)
 			throws IOException, ProcessException {
 		return readBMPMemoryWord(getBoundBMP(), board, address);
 	}
@@ -1082,8 +1094,9 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
-	default int readBMPMemoryWord(BMPCoords bmp, BMPBoard board,
-			MemoryLocation address) throws IOException, ProcessException {
+	default int readBMPMemoryWord(@Valid BMPCoords bmp, @Valid BMPBoard board,
+			@NotNull MemoryLocation address)
+			throws IOException, ProcessException {
 		var b = readBMPMemory(bmp, board, address, WORD_SIZE);
 		return b.getInt(0);
 	}
@@ -1105,8 +1118,9 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void writeBMPMemory(BMPBoard board, MemoryLocation baseAddress,
-			ByteBuffer data) throws IOException, ProcessException {
+	default void writeBMPMemory(@Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data)
+			throws IOException, ProcessException {
 		writeBMPMemory(getBoundBMP(), board, baseAddress, data);
 	}
 
@@ -1129,8 +1143,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void writeBMPMemory(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, ByteBuffer data)
+	void writeBMPMemory(@Valid BMPCoords bmp, @Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data)
 			throws IOException, ProcessException;
 
 	/**
@@ -1148,8 +1162,9 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void writeBMPMemory(BMPBoard board, MemoryLocation baseAddress,
-			int dataWord) throws IOException, ProcessException {
+	default void writeBMPMemory(@Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, int dataWord)
+			throws IOException, ProcessException {
 		writeBMPMemory(getBoundBMP(), board, baseAddress, dataWord);
 	}
 
@@ -1170,8 +1185,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void writeBMPMemory(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int dataWord)
+	default void writeBMPMemory(@Valid BMPCoords bmp, @Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, int dataWord)
 			throws IOException, ProcessException {
 		var data = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		data.putInt(dataWord);
@@ -1194,8 +1209,9 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void writeBMPMemory(BMPBoard board, MemoryLocation baseAddress,
-			File file) throws IOException, ProcessException {
+	default void writeBMPMemory(@Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @NotNull File file)
+			throws IOException, ProcessException {
 		writeBMPMemory(getBoundBMP(), board, baseAddress, file);
 	}
 
@@ -1216,8 +1232,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void writeBMPMemory(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, File file)
+	void writeBMPMemory(@Valid BMPCoords bmp, @Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @NotNull File file)
 			throws IOException, ProcessException;
 
 	/**
@@ -1239,8 +1255,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
-	default ByteBuffer readSerialFlash(BMPBoard board,
-			MemoryLocation baseAddress, int length)
+	default ByteBuffer readSerialFlash(@Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @Positive int length)
 			throws IOException, ProcessException {
 		return readSerialFlash(getBoundBMP(), board, baseAddress, length);
 	}
@@ -1266,8 +1282,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
-	ByteBuffer readSerialFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int length)
+	ByteBuffer readSerialFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @Positive int length)
 			throws IOException, ProcessException;
 
 	/**
@@ -1286,7 +1302,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
-	String readBoardSerialNumber(BMPCoords bmp, BMPBoard board)
+	String readBoardSerialNumber(@Valid BMPCoords bmp, @Valid BMPBoard board)
 			throws IOException, ProcessException;
 
 	/**
@@ -1302,7 +1318,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@CheckReturnValue
-	default String readBoardSerialNumber(BMPBoard board)
+	default String readBoardSerialNumber(@Valid BMPBoard board)
 			throws ProcessException, IOException {
 		return readBoardSerialNumber(getBoundBMP(), board);
 	}
@@ -1321,7 +1337,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@CheckReturnValue
-	default Blacklist readBlacklist(BMPCoords bmp, BMPBoard board)
+	default Blacklist readBlacklist(@Valid BMPCoords bmp, @Valid BMPBoard board)
 			throws IOException, ProcessException {
 		return new Blacklist(
 				readSerialFlash(bmp, board, SF_BL_ADDR, SF_BL_LEN));
@@ -1340,7 +1356,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@CheckReturnValue
-	default Blacklist readBlacklist(BMPBoard board)
+	default Blacklist readBlacklist(@Valid BMPBoard board)
 			throws IOException, ProcessException {
 		return readBlacklist(getBoundBMP(), board);
 	}
@@ -1361,7 +1377,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If interrupted. Interruption can happen <em>prior</em> to
 	 *             commencing the actual writes.
 	 */
-	default void writeBlacklist(BMPBoard board, Blacklist blacklist)
+	default void writeBlacklist(@Valid BMPBoard board,
+			@Valid Blacklist blacklist)
 			throws ProcessException, IOException, InterruptedException {
 		writeBlacklist(getBoundBMP(), board, blacklist);
 	}
@@ -1384,8 +1401,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If interrupted. Interruption can happen <em>prior</em> to
 	 *             commencing the actual writes.
 	 */
-	default void writeBlacklist(BMPCoords bmp, BMPBoard board,
-			Blacklist blacklist)
+	default void writeBlacklist(@Valid BMPCoords bmp, @Valid BMPBoard board,
+			@Valid Blacklist blacklist)
 			throws ProcessException, IOException, InterruptedException {
 		// Clear the interrupt status
 		interrupted();
@@ -1443,8 +1460,9 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
-	default int readSerialFlashCRC(BMPBoard board, MemoryLocation baseAddress,
-			int length) throws IOException, ProcessException {
+	default int readSerialFlashCRC(@Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @Positive int length)
+			throws IOException, ProcessException {
 		return readSerialFlashCRC(getBoundBMP(), board, baseAddress, length);
 	}
 
@@ -1468,8 +1486,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
-	int readSerialFlashCRC(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int length)
+	int readSerialFlashCRC(@Valid BMPCoords bmp, @Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @Positive int length)
 			throws IOException, ProcessException;
 
 	/**
@@ -1487,8 +1505,9 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void writeSerialFlash(BMPBoard board, MemoryLocation baseAddress,
-			File file) throws ProcessException, IOException {
+	default void writeSerialFlash(@Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @NotNull File file)
+			throws ProcessException, IOException {
 		writeSerialFlash(getBoundBMP(), board, baseAddress, file);
 	}
 
@@ -1509,8 +1528,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void writeSerialFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, File file)
+	void writeSerialFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @NotNull File file)
 			throws ProcessException, IOException;
 
 	/**
@@ -1530,8 +1549,9 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void writeSerialFlash(BMPBoard board, MemoryLocation baseAddress,
-			int size, InputStream stream) throws ProcessException, IOException {
+	default void writeSerialFlash(@Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @Positive int size,
+			@NotNull InputStream stream) throws ProcessException, IOException {
 		writeSerialFlash(getBoundBMP(), board, baseAddress, size, stream);
 	}
 
@@ -1554,9 +1574,9 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void writeSerialFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int size, InputStream stream)
-			throws ProcessException, IOException;
+	void writeSerialFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @Positive int size,
+			@NotNull InputStream stream) throws ProcessException, IOException;
 
 	/**
 	 * Write BMP serial flash memory.
@@ -1573,8 +1593,9 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void writeSerialFlash(BMPBoard board, MemoryLocation baseAddress,
-			ByteBuffer data) throws ProcessException, IOException {
+	default void writeSerialFlash(@Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data)
+			throws ProcessException, IOException {
 		writeSerialFlash(getBoundBMP(), board, baseAddress, data);
 	}
 
@@ -1595,8 +1616,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void writeSerialFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, ByteBuffer data)
+	void writeSerialFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data)
 			throws ProcessException, IOException;
 
 	/**
@@ -1620,8 +1641,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 */
 	@Deprecated
 	@CheckReturnValue
-	MemoryLocation eraseBMPFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int size)
+	MemoryLocation eraseBMPFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @Positive int size)
 			throws IOException, ProcessException;
 
 	/**
@@ -1643,7 +1664,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@Deprecated
-	void chunkBMPFlash(BMPCoords bmp, BMPBoard board, MemoryLocation address)
+	void chunkBMPFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
+			@NotNull MemoryLocation address)
 			throws IOException, ProcessException;
 
 	/**
@@ -1665,8 +1687,9 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@Deprecated
-	void copyBMPFlash(BMPCoords bmp, BMPBoard board, MemoryLocation baseAddress,
-			int size) throws IOException, ProcessException;
+	void copyBMPFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @Positive int size)
+			throws IOException, ProcessException;
 
 	/**
 	 * Write a {@linkplain WriteFlashBuffer#FLASH_CHUNK_SIZE fixed size} chunk
@@ -1683,7 +1706,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void writeBMPFlash(BMPBoard board, MemoryLocation baseAddress)
+	default void writeBMPFlash(@Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress)
 			throws IOException, ProcessException {
 		writeBMPFlash(getBoundBMP(), board, baseAddress);
 	}
@@ -1705,8 +1729,9 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void writeBMPFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress) throws IOException, ProcessException;
+	void writeBMPFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress)
+			throws IOException, ProcessException;
 
 	/**
 	 * Write a buffer to flash memory on the BMP. This is a composite operation.
@@ -1724,9 +1749,9 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void writeFlash(BMPBoard board, MemoryLocation baseAddress,
-			ByteBuffer data, boolean update)
-			throws ProcessException, IOException {
+	default void writeFlash(@Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data,
+			boolean update) throws ProcessException, IOException {
 		writeFlash(getBoundBMP(), board, baseAddress, data, update);
 	}
 
@@ -1748,9 +1773,9 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void writeFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, ByteBuffer data, boolean update)
-			throws ProcessException, IOException {
+	default void writeFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data,
+			boolean update) throws ProcessException, IOException {
 		int size = data.remaining();
 		var workingBuffer = eraseBMPFlash(bmp, board, baseAddress, size);
 		var targetAddr = baseAddress;
