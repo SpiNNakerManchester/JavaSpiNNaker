@@ -48,11 +48,13 @@ public interface AsyncCommsTask {
 	 *            and the exception caught while sending it.
 	 * @throws IOException
 	 *             If things go really wrong.
+	 * @throws InterruptedException
+	 *             If communications are interrupted (prior to sending).
 	 */
 	<T extends CheckOKResponse> void sendRequest(SCPRequest<T> request,
 			Consumer<T> callback,
 			BiConsumer<SCPRequest<?>, Throwable> errorCallback)
-			throws IOException;
+			throws IOException, InterruptedException;
 
 	/**
 	 * Indicate the end of the packets to be sent. This must be called to ensure
@@ -60,8 +62,10 @@ public interface AsyncCommsTask {
 	 *
 	 * @throws IOException
 	 *             If anything goes wrong with communications.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
-	void finish() throws IOException;
+	void finish() throws IOException, InterruptedException;
 
 	/**
 	 * Send a one-way request.
@@ -73,7 +77,9 @@ public interface AsyncCommsTask {
 	 *            The one-way SCP request to be sent.
 	 * @throws IOException
 	 *             If things go really wrong.
+	 * @throws InterruptedException
+	 *             If communications are interrupted (prior to sending).
 	 */
 	<T extends NoResponse> void sendOneWayRequest(SCPRequest<T> request)
-			throws IOException;
+			throws IOException, InterruptedException;
 }

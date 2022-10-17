@@ -117,7 +117,7 @@ class FillProcess extends TxrxProcess {
 
 	private void generateWriteMessages(HasChipLocation chip,
 			MemoryLocation base, int size, ByteBuffer buffer)
-			throws IOException {
+			throws IOException, InterruptedException {
 		int toWrite = size;
 		var address = base;
 

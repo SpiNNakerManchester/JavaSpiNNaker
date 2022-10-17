@@ -186,9 +186,11 @@ class TxrxProcess {
 	 *            The request to send.
 	 * @throws IOException
 	 *             If sending fails.
+	 * @throws InterruptedException
+	 *             If communications are interrupted while preparing to send.
 	 */
 	protected final <Resp extends CheckOKResponse> void sendRequest(
-			SCPRequest<Resp> request) throws IOException {
+			SCPRequest<Resp> request) throws IOException, InterruptedException {
 		sendRequest(request, null);
 	}
 
@@ -205,10 +207,12 @@ class TxrxProcess {
 	 *            (i.e., checked for any failures) and then discarded.
 	 * @throws IOException
 	 *             If sending fails.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	protected final <Resp extends CheckOKResponse> void sendRequest(
 			SCPRequest<Resp> request, Consumer<Resp> callback)
-			throws IOException {
+			throws IOException, InterruptedException {
 		getPipeline(request).sendRequest(request, callback, this::receiveError);
 	}
 
@@ -245,9 +249,11 @@ class TxrxProcess {
 	 *            The request to send. <em>Must</em> be a one-way request!
 	 * @throws IOException
 	 *             If sending fails.
+	 * @throws InterruptedException
+	 *             If communications are interrupted while preparing to send.
 	 */
-	protected final void sendOneWayRequest(
-			SCPRequest<NoResponse> request) throws IOException {
+	protected final void sendOneWayRequest(SCPRequest<NoResponse> request)
+			throws IOException, InterruptedException {
 		getPipeline(request).sendOneWayRequest(request);
 	}
 

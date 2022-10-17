@@ -154,8 +154,11 @@ class RuntimeControlProcess extends TxrxProcess {
 	 *            the cores to update the provenance of.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
-	void updateProvenanceAndExit(CoreSubsets coreSubsets) throws IOException {
+	void updateProvenanceAndExit(CoreSubsets coreSubsets)
+			throws IOException, InterruptedException {
 		for (var core : requireNonNull(coreSubsets,
 				"must have actual core subset to iterate over")) {
 			sendOneWayRequest(new UpdateProvenanceAndExit(core));

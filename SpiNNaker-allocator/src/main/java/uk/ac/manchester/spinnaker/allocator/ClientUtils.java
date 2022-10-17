@@ -36,19 +36,17 @@ abstract class ClientUtils {
 	 * @param timeout
 	 *            Timeout, in milliseconds.
 	 * @return The message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws SocketTimeoutException
 	 *             If a timeout happens.
 	 */
 	static ByteBuffer receiveHelper(BlockingQueue<ByteBuffer> received,
-			long timeout) throws SocketTimeoutException {
-		try {
-			var msg = received.poll(timeout, MILLISECONDS);
-			if (isNull(msg)) {
-				throw new SocketTimeoutException();
-			}
-			return msg;
-		} catch (InterruptedException e) {
+		long timeout) throws SocketTimeoutException, InterruptedException {
+		var msg = received.poll(timeout, MILLISECONDS);
+		if (isNull(msg)) {
 			throw new SocketTimeoutException();
 		}
+		return msg;
 	}
 }

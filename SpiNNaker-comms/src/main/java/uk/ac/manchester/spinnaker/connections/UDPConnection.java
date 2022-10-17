@@ -339,9 +339,11 @@ public abstract class UDPConnection<T>
 	 *             If the connection is closed
 	 * @throws IOException
 	 *             If an error occurs receiving the data
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	public final ByteBuffer receive(Integer timeout)
-			throws SocketTimeoutException, IOException {
+			throws SocketTimeoutException, IOException, InterruptedException {
 		if (timeout != null) {
 			return receive(convertTimeout(timeout));
 		}
@@ -367,9 +369,11 @@ public abstract class UDPConnection<T>
 	 *             If the connection is closed
 	 * @throws IOException
 	 *             If an error occurs receiving the data
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	public final ByteBuffer receive(int timeout)
-			throws SocketTimeoutException, IOException {
+			throws SocketTimeoutException, IOException, InterruptedException {
 		if (isClosed()) {
 			throw new EOFException();
 		}
@@ -389,10 +393,12 @@ public abstract class UDPConnection<T>
 	 *             If a timeout occurs before any data is received
 	 * @throws IOException
 	 *             If an error occurs receiving the data
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	@ForOverride
 	protected ByteBuffer doReceive(int timeout)
-			throws SocketTimeoutException, IOException {
+			throws SocketTimeoutException, IOException, InterruptedException {
 		socket.setSoTimeout(timeout);
 		var buffer = allocate(receivePacketSize);
 		var pkt = new DatagramPacket(buffer.array(), receivePacketSize);

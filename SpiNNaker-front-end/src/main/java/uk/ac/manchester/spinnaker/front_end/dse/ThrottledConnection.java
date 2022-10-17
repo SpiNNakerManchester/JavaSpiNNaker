@@ -123,8 +123,11 @@ class ThrottledConnection implements Closeable {
 	 *             If no message is received by the timeout.
 	 * @throws IOException
 	 *             If IO fails.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
-	public IntBuffer receive() throws SocketTimeoutException, IOException {
+	public IntBuffer receive()
+			throws SocketTimeoutException, IOException, InterruptedException {
 		return connection.receive(TIMEOUT_MS).slice().order(LITTLE_ENDIAN)
 				.asIntBuffer();
 	}
