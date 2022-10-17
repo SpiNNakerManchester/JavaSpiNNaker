@@ -33,7 +33,7 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
 /**
  * Get the CPU information structure for a set of processors.
  */
-class GetCPUInfoProcess extends MultiConnectionProcess<SCPConnection> {
+class GetCPUInfoProcess extends TxrxProcess {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
@@ -42,7 +42,8 @@ class GetCPUInfoProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	GetCPUInfoProcess(ConnectionSelector<SCPConnection> connectionSelector,
+	GetCPUInfoProcess(
+			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}

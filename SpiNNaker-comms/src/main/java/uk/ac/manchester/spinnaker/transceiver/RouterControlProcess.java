@@ -48,7 +48,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * Access to the control facilities for a set of routers. Depends on access to
  * the extra monitor cores running on those chips.
  */
-class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
+class RouterControlProcess extends TxrxProcess {
 	private static final int REGISTER = 4;
 
 	private static final int NUM_REGISTERS = 16;
@@ -61,7 +61,8 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	RouterControlProcess(ConnectionSelector<SCPConnection> connectionSelector,
+	RouterControlProcess(
+			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}

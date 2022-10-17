@@ -37,7 +37,7 @@ import uk.ac.manchester.spinnaker.transceiver.Accumulator.BufferAccumulator;
 import uk.ac.manchester.spinnaker.transceiver.Accumulator.FileAccumulator;
 
 /** A process for reading memory on a SpiNNaker chip. */
-class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
+class ReadMemoryProcess extends TxrxProcess {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
@@ -46,7 +46,8 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	ReadMemoryProcess(ConnectionSelector<SCPConnection> connectionSelector,
+	ReadMemoryProcess(
+			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}

@@ -1143,7 +1143,7 @@ public class Transceiver extends UDPTransceiver
 	 * @return The SCP runner process
 	 */
 	private TxrxProcess simpleProcess() {
-		return new MultiConnectionProcess<SCPConnection>(scpSelector, this);
+		return new TxrxProcess(scpSelector, this);
 	}
 
 	/**
@@ -1155,7 +1155,7 @@ public class Transceiver extends UDPTransceiver
 	 */
 	private TxrxProcess simpleProcess(
 			ConnectionSelector<SCPConnection> selector) {
-		return new MultiConnectionProcess<SCPConnection>(selector, this);
+		return new TxrxProcess(selector, this);
 	}
 
 	/**
@@ -1169,8 +1169,8 @@ public class Transceiver extends UDPTransceiver
 	 */
 	private TxrxProcess simpleProcess(SCPConnection connector)
 			throws IOException {
-		return new MultiConnectionProcess<SCPConnection>(
-				new SingletonConnectionSelector<>(connector), this);
+		return new TxrxProcess(new SingletonConnectionSelector<>(connector),
+				this);
 	}
 
 	/**
@@ -1187,10 +1187,8 @@ public class Transceiver extends UDPTransceiver
 	 */
 	private TxrxProcess simpleProcess(SDPConnection connector)
 			throws IOException {
-		return new MultiConnectionProcess<SCPConnection>(
-				new SingletonConnectionSelector<>(
-						new DelegatingSCPConnection(connector)),
-				this);
+		return new TxrxProcess(new SingletonConnectionSelector<>(
+				new DelegatingSCPConnection(connector)), this);
 	}
 
 	/**
@@ -1212,8 +1210,7 @@ public class Transceiver extends UDPTransceiver
 	 */
 	private <T extends CheckOKResponse> T simpleProcess(SCPRequest<T> request)
 			throws ProcessException, IOException {
-		return new MultiConnectionProcess<SCPConnection>(scpSelector, this)
-				.synchronousCall(request);
+		return new TxrxProcess(scpSelector, this).synchronousCall(request);
 	}
 
 	@Override

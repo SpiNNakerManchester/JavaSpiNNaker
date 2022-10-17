@@ -25,7 +25,7 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.scp.ApplicationRun;
 
 /** Launch an application. */
-class ApplicationRunProcess extends MultiConnectionProcess<SCPConnection> {
+class ApplicationRunProcess extends TxrxProcess {
 	/**
 	 * Create.
 	 *
@@ -36,7 +36,8 @@ class ApplicationRunProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	ApplicationRunProcess(ConnectionSelector<SCPConnection> connectionSelector,
+	ApplicationRunProcess(
+			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}
