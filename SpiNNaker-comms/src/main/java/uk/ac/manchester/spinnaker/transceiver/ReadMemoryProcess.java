@@ -70,9 +70,12 @@ class ReadMemoryProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	private <T> T readMemory(HasChipLocation chip, MemoryLocation baseAddress,
-			int size, Accumulator<T> a) throws IOException, ProcessException {
+			int size, Accumulator<T> a)
+			throws IOException, ProcessException, InterruptedException {
 		for (int offset = 0, chunk; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
 			final int thisOffset = offset;
@@ -103,10 +106,12 @@ class ReadMemoryProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	private <T> T readLink(HasChipLocation chip, Direction linkDirection,
 			MemoryLocation baseAddress, int size, Accumulator<T> a)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		for (int offset = 0, chunk; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
 			int thisOffset = offset;
@@ -135,10 +140,12 @@ class ReadMemoryProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void readLink(HasChipLocation chip, Direction linkDirection,
 			MemoryLocation baseAddress, ByteBuffer receivingBuffer)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		readLink(chip, linkDirection, baseAddress, receivingBuffer.remaining(),
 				new BufferAccumulator(receivingBuffer));
 	}
@@ -157,9 +164,12 @@ class ReadMemoryProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void readMemory(HasChipLocation chip, MemoryLocation baseAddress,
-			ByteBuffer receivingBuffer) throws IOException, ProcessException {
+			ByteBuffer receivingBuffer)
+			throws IOException, ProcessException, InterruptedException {
 		readMemory(chip, baseAddress, receivingBuffer.remaining(),
 				new BufferAccumulator(receivingBuffer));
 	}
@@ -180,10 +190,12 @@ class ReadMemoryProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	ByteBuffer readLink(HasChipLocation chip, Direction linkDirection,
 			MemoryLocation baseAddress, int size)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return readLink(chip, linkDirection, baseAddress, size,
 				new BufferAccumulator(size));
 	}
@@ -202,9 +214,12 @@ class ReadMemoryProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	ByteBuffer readMemory(HasChipLocation chip, MemoryLocation baseAddress,
-			int size) throws IOException, ProcessException {
+			int size)
+			throws IOException, ProcessException, InterruptedException {
 		return readMemory(chip, baseAddress, size, new BufferAccumulator(size));
 	}
 
@@ -227,10 +242,12 @@ class ReadMemoryProcess extends TxrxProcess {
 	 *             file.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void readLink(HasChipLocation chip, Direction linkDirection,
 			MemoryLocation baseAddress, int size, RandomAccessFile dataFile)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		readLink(chip, linkDirection, baseAddress, size,
 				new FileAccumulator(dataFile));
 	}
@@ -252,9 +269,12 @@ class ReadMemoryProcess extends TxrxProcess {
 	 *             file.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void readMemory(HasChipLocation chip, MemoryLocation baseAddress, int size,
-			RandomAccessFile dataFile) throws IOException, ProcessException {
+			RandomAccessFile dataFile)
+			throws IOException, ProcessException, InterruptedException {
 		readMemory(chip, baseAddress, size, new FileAccumulator(dataFile));
 	}
 
@@ -276,10 +296,12 @@ class ReadMemoryProcess extends TxrxProcess {
 	 *             file.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void readLink(HasChipLocation chip, Direction linkDirection,
 			MemoryLocation baseAddress, int size, File dataFile)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		try (var s = new RandomAccessFile(dataFile, "rw")) {
 			readLink(chip, linkDirection, baseAddress, size,
 					new FileAccumulator(s));
@@ -302,9 +324,12 @@ class ReadMemoryProcess extends TxrxProcess {
 	 *             file.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void readMemory(HasChipLocation chip, MemoryLocation baseAddress, int size,
-			File dataFile) throws IOException, ProcessException {
+			File dataFile)
+			throws IOException, ProcessException, InterruptedException {
 		try (var s = new RandomAccessFile(dataFile, "rw")) {
 			readMemory(chip, baseAddress, size, s);
 		}
@@ -326,10 +351,12 @@ class ReadMemoryProcess extends TxrxProcess {
 	 *             If SpiNNaker rejects a message.
 	 * @throws StorageException
 	 *             If anything goes wrong with access to the database.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void readMemory(BufferManagerStorage.Region region,
-			BufferManagerStorage storage)
-			throws IOException, ProcessException, StorageException {
+			BufferManagerStorage storage) throws IOException, ProcessException,
+			StorageException, InterruptedException {
 		var buffer = new byte[region.size];
 		readMemory(region.core.asChipLocation(), region.startAddress,
 				region.size, new BufferAccumulator(buffer));

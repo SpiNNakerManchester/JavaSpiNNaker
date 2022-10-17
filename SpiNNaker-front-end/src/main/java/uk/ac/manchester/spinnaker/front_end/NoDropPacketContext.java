@@ -88,11 +88,13 @@ public class NoDropPacketContext implements AutoCloseable {
 	 *             If communications fail.
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	@MustBeClosed
 	public NoDropPacketContext(TransceiverInterface txrx,
 			CoreSubsets monitorCores, CoreSubsets gatherers)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		this.txrx = txrx;
 		this.monitorCores = monitorCores;
 		// Store the last reinjection status for resetting
@@ -136,11 +138,13 @@ public class NoDropPacketContext implements AutoCloseable {
 	 *             If communications fail.
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	@MustBeClosed
 	public NoDropPacketContext(TransceiverInterface txrx,
 			CoreSubsets monitorCoreLocations, Gather gatherer)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		this(txrx, monitorCoreLocations, convertToCoreSubset(gatherer));
 	}
 
@@ -160,11 +164,14 @@ public class NoDropPacketContext implements AutoCloseable {
 	 *             If communications fail.
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	@MustBeClosed
 	public NoDropPacketContext(TransceiverInterface txrx,
 			List<? extends HasCoreLocation> monitorCoreLocations,
-			Gather gatherer) throws IOException, ProcessException {
+			Gather gatherer)
+			throws IOException, ProcessException, InterruptedException {
 		this(txrx, convertToCoreSubset(monitorCoreLocations),
 				convertToCoreSubset(gatherer));
 	}
@@ -185,11 +192,14 @@ public class NoDropPacketContext implements AutoCloseable {
 	 *             If communications fail.
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	@MustBeClosed
 	public NoDropPacketContext(TransceiverInterface txrx,
 			Stream<? extends HasCoreLocation> monitorCoreLocations,
-			Stream<Gather> gatherers) throws IOException, ProcessException {
+			Stream<Gather> gatherers)
+			throws IOException, ProcessException, InterruptedException {
 		this(txrx, convertToCoreSubset(monitorCoreLocations),
 				convertToCoreSubset(gatherers));
 	}
@@ -224,9 +234,12 @@ public class NoDropPacketContext implements AutoCloseable {
 	 *             If communications fail.
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	@Override
-	public void close() throws IOException, ProcessException {
+	public void close()
+			throws IOException, ProcessException, InterruptedException {
 		log.info("switching board at {} to standard mode", firstChip);
 		quietlySetTemporaryTimeouts();
 
@@ -237,6 +250,10 @@ public class NoDropPacketContext implements AutoCloseable {
 			txrx.setReinjection(monitorCores, lastStatus);
 			log.debug("switched board at {} to standard mode", firstChip);
 			return;
+		} catch (IOException | ProcessException | InterruptedException
+				| RuntimeException e) {
+			log.error("error resetting router timeouts", e);
+			throw e;
 		} catch (Exception e) {
 			log.error("error resetting router timeouts", e);
 		}

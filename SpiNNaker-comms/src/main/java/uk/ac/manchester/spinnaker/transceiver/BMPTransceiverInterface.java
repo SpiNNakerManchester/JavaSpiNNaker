@@ -101,26 +101,30 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	MappableIterable<BMPBoard> availableBoards(@Valid BMPCoords bmp)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
-	 * List which boards are actually available to be manipulated by the default
-	 * BMP.
+	 * List which boards are actually available to be manipulated by the current
+	 * bound BMP.
 	 *
 	 * @return Ordered list of board identifiers.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	default MappableIterable<BMPBoard> availableBoards()
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return availableBoards(getBoundBMP());
 	}
 
@@ -235,6 +239,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	default void powerOff(@Valid BMPBoard board)
@@ -261,6 +267,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
 	void power(@NotNull PowerCommand powerCommand, @Valid BMPCoords bmp,
@@ -283,11 +291,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void setLED(Collection<Integer> leds, LEDAction action,
 			@Valid BMPCoords bmp, Collection<@Valid BMPBoard> boards)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Set the LED state of a board in the machine.
@@ -302,10 +312,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void setLED(Collection<Integer> leds, LEDAction action,
-			@Valid BMPBoard board) throws IOException, ProcessException {
+			@Valid BMPBoard board)
+			throws IOException, ProcessException, InterruptedException {
 		setLED(leds, action, getBoundBMP(), Set.of(board));
 	}
 
@@ -324,11 +337,14 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default int readFPGARegister(FPGA fpga, FPGAMainRegisters register,
-			@Valid BMPBoard board) throws IOException, ProcessException {
+			@Valid BMPBoard board)
+			throws IOException, ProcessException, InterruptedException {
 		return readFPGARegister(fpga, register, getBoundBMP(), board);
 	}
 
@@ -349,12 +365,14 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default int readFPGARegister(FPGA fpga, FPGAMainRegisters register,
 			@Valid BMPCoords bmp, @Valid BMPBoard board)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return readFPGARegister(fpga, register.getAddress(), bmp, board);
 	}
 
@@ -375,12 +393,14 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default int readFPGARegister(FPGA fpga, int registerBank,
 			FPGALinkRegisters register, @Valid BMPBoard board)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return readFPGARegister(fpga, registerBank, register, getBoundBMP(),
 				board);
 	}
@@ -404,12 +424,15 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default int readFPGARegister(FPGA fpga, int registerBank,
 			FPGALinkRegisters register, @Valid BMPCoords bmp,
-			@Valid BMPBoard board) throws IOException, ProcessException {
+			@Valid BMPBoard board)
+			throws IOException, ProcessException, InterruptedException {
 		return readFPGARegister(fpga, register.address(registerBank), bmp,
 				board);
 	}
@@ -431,12 +454,14 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default int readFPGALinkCounter(FPGA fpga, int linkNumber,
 			FPGARecevingLinkCounters counter, @Valid BMPBoard board)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return readFPGALinkCounter(fpga, linkNumber, counter, getBoundBMP(),
 				board);
 	}
@@ -460,12 +485,15 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default int readFPGALinkCounter(FPGA fpga, int linkNumber,
 			FPGARecevingLinkCounters counter, @Valid BMPCoords bmp,
-			@Valid BMPBoard board) throws IOException, ProcessException {
+			@Valid BMPBoard board)
+			throws IOException, ProcessException, InterruptedException {
 		return readFPGARegister(fpga, counter.address(linkNumber), bmp, board);
 	}
 
@@ -486,12 +514,14 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default int readFPGALinkCounter(FPGA fpga, int linkNumber,
 			FPGASendingLinkCounters counter, @Valid BMPBoard board)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return readFPGALinkCounter(fpga, linkNumber, counter, getBoundBMP(),
 				board);
 	}
@@ -515,12 +545,15 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default int readFPGALinkCounter(FPGA fpga, int linkNumber,
 			FPGASendingLinkCounters counter, @Valid BMPCoords bmp,
-			@Valid BMPBoard board) throws IOException, ProcessException {
+			@Valid BMPBoard board)
+			throws IOException, ProcessException, InterruptedException {
 		return readFPGARegister(fpga, counter.address(linkNumber), bmp, board);
 	}
 
@@ -540,11 +573,14 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default int readFPGARegister(FPGA fpga, @NotNull MemoryLocation register,
-			@Valid BMPBoard board) throws IOException, ProcessException {
+			@Valid BMPBoard board)
+			throws IOException, ProcessException, InterruptedException {
 		return readFPGARegister(fpga, register, getBoundBMP(), board);
 	}
 
@@ -566,12 +602,14 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	int readFPGARegister(FPGA fpga, @NotNull MemoryLocation register,
 			@Valid BMPCoords bmp, @Valid BMPBoard board)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Write a register on a FPGA of a board, assuming the standard FPGA
@@ -589,11 +627,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void writeFPGARegister(FPGA fpga, FPGAMainRegisters register,
 			int value, @Valid BMPBoard board)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		writeFPGARegister(fpga, register, value, getBoundBMP(), board);
 	}
 
@@ -615,11 +655,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void writeFPGARegister(FPGA fpga, FPGAMainRegisters register,
 			int value, @Valid BMPCoords bmp, @Valid BMPBoard board)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		writeFPGARegister(fpga, register.getAddress(), value, bmp, board);
 	}
 
@@ -641,11 +683,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void writeFPGARegister(FPGA fpga, int registerBank,
 			FPGALinkRegisters register, int value, @Valid BMPBoard board)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		writeFPGARegister(fpga, registerBank, register, value, getBoundBMP(),
 				board);
 	}
@@ -670,11 +714,14 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void writeFPGARegister(FPGA fpga, int registerBank,
 			FPGALinkRegisters register, int value, @Valid BMPCoords bmp,
-			@Valid BMPBoard board) throws IOException, ProcessException {
+			@Valid BMPBoard board)
+			throws IOException, ProcessException, InterruptedException {
 		writeFPGARegister(fpga, register.address(registerBank), value, bmp,
 				board);
 	}
@@ -696,11 +743,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void writeFPGARegister(FPGA fpga, @NotNull MemoryLocation register,
 			int value, @Valid BMPBoard board)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		writeFPGARegister(fpga, register, value, getBoundBMP(), board);
 	}
 
@@ -723,11 +772,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void writeFPGARegister(FPGA fpga, @NotNull MemoryLocation register,
 			int value, @Valid BMPCoords bmp, @Valid BMPBoard board)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Read the ADC data.
@@ -739,11 +790,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default ADCInfo readADCData(@Valid BMPBoard board)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return readADCData(getBoundBMP(), board);
 	}
 
@@ -759,11 +812,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	ADCInfo readADCData(@Valid BMPCoords bmp, @Valid BMPBoard board)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Read the BMP version.
@@ -776,11 +831,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
 	@CheckReturnValue
 	default VersionInfo readBMPVersion(Iterable<@Valid BMPBoard> boards)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return readBMPVersion(getBoundBMP(), boards.iterator().next());
 	}
 
@@ -794,11 +851,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default VersionInfo readBMPVersion(@Valid BMPBoard board)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return readBMPVersion(getBoundBMP(), board);
 	}
 
@@ -815,12 +874,14 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
 	@CheckReturnValue
 	default VersionInfo readBMPVersion(@Valid BMPCoords bmp,
 			Iterable<@Valid BMPBoard> boards)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return readBMPVersion(bmp, boards.iterator().next());
 	}
 
@@ -836,11 +897,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	VersionInfo readBMPVersion(@Valid BMPCoords bmp, @Valid BMPBoard board)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Read the BMP firmware descriptor.
@@ -854,12 +917,14 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	default FirmwareDescriptor readBMPFirmwareDescriptor(
 			@Valid BMPBoard board, FirmwareDescriptors type)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return readBMPFirmwareDescriptor(getBoundBMP(), board, type);
 	}
 
@@ -877,12 +942,14 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	default FirmwareDescriptor readBMPFirmwareDescriptor(@Valid BMPCoords bmp,
 			@Valid BMPBoard board, FirmwareDescriptors type)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return new FirmwareDescriptor(type,
 				readBMPMemory(bmp, board, type.address, type.blockSize));
 	}
@@ -897,11 +964,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	default boolean getResetStatus(@Valid BMPBoard board)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return getResetStatus(getBoundBMP(), board);
 	}
 
@@ -917,11 +986,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	boolean getResetStatus(@Valid BMPCoords bmp, @Valid BMPBoard board)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Get the address of the serial flash buffer.
@@ -933,10 +1004,12 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	default MemoryLocation getSerialFlashBuffer(@Valid BMPBoard board)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return getSerialFlashBuffer(getBoundBMP(), board);
 	}
 
@@ -952,10 +1025,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	MemoryLocation getSerialFlashBuffer(@Valid BMPCoords bmp,
-			@Valid BMPBoard board) throws IOException, ProcessException;
+			@Valid BMPBoard board)
+			throws IOException, ProcessException, InterruptedException;
 
 	/** The type of reset to perform. */
 	enum FPGAResetType {
@@ -979,10 +1055,12 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	default void resetFPGA(@Valid BMPBoard board, FPGAResetType resetType)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		resetFPGA(getBoundBMP(), board, resetType);
 	}
 
@@ -999,10 +1077,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	void resetFPGA(@Valid BMPCoords bmp, @Valid BMPBoard board,
-			FPGAResetType resetType) throws IOException, ProcessException;
+			FPGAResetType resetType)
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Read BMP memory.
@@ -1020,12 +1101,14 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	default ByteBuffer readBMPMemory(@Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @Positive int length)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return readBMPMemory(getBoundBMP(), board, baseAddress, length);
 	}
 
@@ -1047,12 +1130,14 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	ByteBuffer readBMPMemory(@Valid BMPCoords bmp, @Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @Positive int length)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Read BMP memory.
@@ -1067,12 +1152,14 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	default int readBMPMemoryWord(@Valid BMPBoard board,
 			@NotNull MemoryLocation address)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return readBMPMemoryWord(getBoundBMP(), board, address);
 	}
 
@@ -1091,12 +1178,14 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	default int readBMPMemoryWord(@Valid BMPCoords bmp, @Valid BMPBoard board,
 			@NotNull MemoryLocation address)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var b = readBMPMemory(bmp, board, address, WORD_SIZE);
 		return b.getInt(0);
 	}
@@ -1117,10 +1206,12 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	default void writeBMPMemory(@Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		writeBMPMemory(getBoundBMP(), board, baseAddress, data);
 	}
 
@@ -1142,10 +1233,12 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void writeBMPMemory(@Valid BMPCoords bmp, @Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Write BMP memory.
@@ -1161,10 +1254,12 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	default void writeBMPMemory(@Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, int dataWord)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		writeBMPMemory(getBoundBMP(), board, baseAddress, dataWord);
 	}
 
@@ -1184,10 +1279,12 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	default void writeBMPMemory(@Valid BMPCoords bmp, @Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, int dataWord)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var data = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		data.putInt(dataWord);
 		data.flip();
@@ -1208,10 +1305,12 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking or file I/O.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	default void writeBMPMemory(@Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @NotNull File file)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		writeBMPMemory(getBoundBMP(), board, baseAddress, file);
 	}
 
@@ -1231,10 +1330,12 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking or file I/O.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void writeBMPMemory(@Valid BMPCoords bmp, @Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @NotNull File file)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Read BMP serial flash memory.
@@ -1252,12 +1353,14 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	default ByteBuffer readSerialFlash(@Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @Positive int length)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return readSerialFlash(getBoundBMP(), board, baseAddress, length);
 	}
 
@@ -1279,12 +1382,14 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	ByteBuffer readSerialFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @Positive int length)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Read the BMP serial number from a board.
@@ -1299,11 +1404,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	String readBoardSerialNumber(@Valid BMPCoords bmp, @Valid BMPBoard board)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Read the BMP serial number from a board.
@@ -1316,10 +1423,12 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@CheckReturnValue
 	default String readBoardSerialNumber(@Valid BMPBoard board)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		return readBoardSerialNumber(getBoundBMP(), board);
 	}
 
@@ -1335,10 +1444,12 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@CheckReturnValue
 	default Blacklist readBlacklist(@Valid BMPCoords bmp, @Valid BMPBoard board)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return new Blacklist(
 				readSerialFlash(bmp, board, SF_BL_ADDR, SF_BL_LEN));
 	}
@@ -1354,10 +1465,12 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@CheckReturnValue
 	default Blacklist readBlacklist(@Valid BMPBoard board)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return readBlacklist(getBoundBMP(), board);
 	}
 
@@ -1457,12 +1570,14 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	default int readSerialFlashCRC(@Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @Positive int length)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return readSerialFlashCRC(getBoundBMP(), board, baseAddress, length);
 	}
 
@@ -1483,12 +1598,14 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	int readSerialFlashCRC(@Valid BMPCoords bmp, @Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @Positive int length)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Write BMP serial flash memory from a file.
@@ -1504,10 +1621,12 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	default void writeSerialFlash(@Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @NotNull File file)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		writeSerialFlash(getBoundBMP(), board, baseAddress, file);
 	}
 
@@ -1527,10 +1646,12 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void writeSerialFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @NotNull File file)
-			throws ProcessException, IOException;
+			throws ProcessException, IOException, InterruptedException;
 
 	/**
 	 * Write BMP serial flash memory from a stream.
@@ -1548,10 +1669,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	default void writeSerialFlash(@Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @Positive int size,
-			@NotNull InputStream stream) throws ProcessException, IOException {
+			@NotNull InputStream stream)
+			throws ProcessException, IOException, InterruptedException {
 		writeSerialFlash(getBoundBMP(), board, baseAddress, size, stream);
 	}
 
@@ -1573,10 +1697,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void writeSerialFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @Positive int size,
-			@NotNull InputStream stream) throws ProcessException, IOException;
+			@NotNull InputStream stream)
+			throws ProcessException, IOException, InterruptedException;
 
 	/**
 	 * Write BMP serial flash memory.
@@ -1592,10 +1719,12 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	default void writeSerialFlash(@Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		writeSerialFlash(getBoundBMP(), board, baseAddress, data);
 	}
 
@@ -1615,10 +1744,12 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void writeSerialFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data)
-			throws ProcessException, IOException;
+			throws ProcessException, IOException, InterruptedException;
 
 	/**
 	 * Prepare a transfer area for writing to the flash memory of a BMP.
@@ -1638,12 +1769,14 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@Deprecated
 	@CheckReturnValue
 	MemoryLocation eraseBMPFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @Positive int size)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Move an uploaded chunk of data into the working buffer for writing to the
@@ -1662,11 +1795,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@Deprecated
 	void chunkBMPFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
 			@NotNull MemoryLocation address)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Finalise the writing of the flash memory of a BMP.
@@ -1685,11 +1820,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@Deprecated
 	void copyBMPFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @Positive int size)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Write a {@linkplain WriteFlashBuffer#FLASH_CHUNK_SIZE fixed size} chunk
@@ -1705,10 +1842,12 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	default void writeBMPFlash(@Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		writeBMPFlash(getBoundBMP(), board, baseAddress);
 	}
 
@@ -1728,10 +1867,12 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void writeBMPFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Write a buffer to flash memory on the BMP. This is a composite operation.
@@ -1748,10 +1889,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	default void writeFlash(@Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data,
-			boolean update) throws ProcessException, IOException {
+			boolean update)
+			throws ProcessException, IOException, InterruptedException {
 		writeFlash(getBoundBMP(), board, baseAddress, data, update);
 	}
 
@@ -1772,10 +1916,13 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	default void writeFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data,
-			boolean update) throws ProcessException, IOException {
+			boolean update)
+			throws ProcessException, IOException, InterruptedException {
 		int size = data.remaining();
 		var workingBuffer = eraseBMPFlash(bmp, board, baseAddress, size);
 		var targetAddr = baseAddress;

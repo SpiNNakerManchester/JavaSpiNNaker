@@ -58,6 +58,8 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 	 *             If the transceiver can't talk to its sockets.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws IllegalStateException
 	 *             If something really strange occurs with talking to the BMP;
 	 *             this constructor should not be doing that!
@@ -65,7 +67,7 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
 	protected ExecuteDataSpecification(Machine machine)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		super(machine);
 		this.machine = machine;
 		executor = new BasicExecutor(PARALLEL_SIZE);
@@ -101,17 +103,21 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 	 *             If SpiNNaker rejects a message.
 	 * @throws DataSpecificationException
 	 *             If a data specification in the database is invalid.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws IllegalStateException
 	 *             If an unexpected exception occurs in any of the parallel
 	 *             tasks.
 	 */
 	protected final void processTasksInParallel(List<Ethernet> tasks,
 			Function<Ethernet, SimpleCallable> mapper) throws StorageException,
-			IOException, ProcessException, DataSpecificationException {
+			IOException, ProcessException, DataSpecificationException,
+			InterruptedException {
 		try {
 			executor.submitTasks(tasks, mapper).awaitAndCombineExceptions();
 		} catch (StorageException | IOException | ProcessException
-				| DataSpecificationException | RuntimeException e) {
+				| DataSpecificationException | InterruptedException
+				| RuntimeException e) {
 			throw e;
 		} catch (Exception e) {
 			throw new IllegalStateException("unexpected exception", e);

@@ -113,10 +113,12 @@ class WriteMemoryProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void writeLink(HasCoreLocation core, Direction linkDirection,
 			MemoryLocation baseAddress, ByteBuffer data)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		writeMemoryFlow(baseAddress, data, (addr, bytes) -> new WriteLink(core,
 				linkDirection, addr, bytes));
 	}
@@ -139,10 +141,12 @@ class WriteMemoryProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking or the input stream.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void writeLink(HasCoreLocation core, Direction linkDirection,
 			MemoryLocation baseAddress, InputStream data, int bytesToWrite)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		writeMemoryFlow(baseAddress, data, bytesToWrite, (addr,
 				bytes) -> new WriteLink(core, linkDirection, addr, bytes));
 	}
@@ -164,10 +168,12 @@ class WriteMemoryProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking or access to the file.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void writeLink(HasCoreLocation core, Direction linkDirection,
 			MemoryLocation baseAddress, File dataFile)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		try (var data = buffer(new FileInputStream(dataFile))) {
 			writeMemoryFlow(baseAddress, data, (int) dataFile.length(), (addr,
 					bytes) -> new WriteLink(core, linkDirection, addr, bytes));
@@ -190,9 +196,12 @@ class WriteMemoryProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
-			ByteBuffer data) throws IOException, ProcessException {
+			ByteBuffer data)
+			throws IOException, ProcessException, InterruptedException {
 		writeMemoryFlow(baseAddress, data,
 				(addr, bytes) -> new WriteMemory(core, addr, bytes));
 	}
@@ -213,10 +222,12 @@ class WriteMemoryProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking or the input stream.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			InputStream data, int bytesToWrite)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		writeMemoryFlow(baseAddress, data, bytesToWrite,
 				(addr, bytes) -> new WriteMemory(core, addr, bytes));
 	}
@@ -236,9 +247,12 @@ class WriteMemoryProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking or access to the file.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
-			File dataFile) throws IOException, ProcessException {
+			File dataFile)
+			throws IOException, ProcessException, InterruptedException {
 		try (var data = buffer(new FileInputStream(dataFile))) {
 			writeMemoryFlow(baseAddress, data, (int) dataFile.length(),
 					(addr, bytes) -> new WriteMemory(core, addr, bytes));
@@ -260,11 +274,13 @@ class WriteMemoryProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	private <T extends SCPRequest<CheckOKResponse>> void writeMemoryFlow(
 			MemoryLocation baseAddress, ByteBuffer data,
 			MessageProvider<T> msgProvider)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		int offset = data.position();
 		int bytesToWrite = data.remaining();
 		var writePosition = baseAddress;
@@ -298,11 +314,13 @@ class WriteMemoryProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking or the input stream.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	private <T extends SCPRequest<CheckOKResponse>> void writeMemoryFlow(
 			MemoryLocation baseAddress, InputStream data, int bytesToWrite,
 			MessageProvider<T> msgProvider)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var writePosition = baseAddress;
 		var workingBuffer = allocate(UDP_MESSAGE_MAX_SIZE);
 		while (bytesToWrite > 0) {
