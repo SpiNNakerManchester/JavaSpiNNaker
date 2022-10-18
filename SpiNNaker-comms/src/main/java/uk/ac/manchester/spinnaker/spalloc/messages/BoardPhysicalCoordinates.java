@@ -24,28 +24,34 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.google.errorprone.annotations.Immutable;
+
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
 
 /**
- * The physical coordinates of a board.
+ * The physical coordinates of a board. This would be {@link PhysicalCoords}
+ * except it has a different serialization form for backward-compatibility.
  */
 @JsonPropertyOrder({
 	"cabinet", "frame", "board"
 })
 @JsonFormat(shape = ARRAY)
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
+@Immutable
 public final class BoardPhysicalCoordinates {
-	private int cabinet;
+	@ValidCabinetNumber
+	private final int cabinet;
 
-	private int frame;
+	@ValidFrameNumber
+	private final int frame;
 
-	private Integer board;
-
-	/**
-	 * Create with default coordinates.
-	 */
-	public BoardPhysicalCoordinates() {
-	}
+	@ValidBoardNumber
+	private final Integer board;
 
 	/**
 	 * Create with given coordinates.
@@ -57,10 +63,25 @@ public final class BoardPhysicalCoordinates {
 	 * @param board
 	 *            the board ID within the frame
 	 */
-	public BoardPhysicalCoordinates(int cabinet, int frame, Integer board) {
+	public BoardPhysicalCoordinates(
+			@JsonProperty(value = "cabinet", defaultValue = "0") int cabinet,
+			@JsonProperty(value = "frame", defaultValue = "0") int frame,
+			@JsonProperty(value = "board", defaultValue = "0") Integer board) {
 		this.cabinet = cabinet;
 		this.frame = frame;
 		this.board = board;
+	}
+
+	/**
+	 * Create with given coordinates.
+	 *
+	 * @param coords
+	 *            the coordinates in standard form.
+	 */
+	public BoardPhysicalCoordinates(PhysicalCoords coords) {
+		this.cabinet = coords.c;
+		this.frame = coords.f;
+		this.board = coords.b;
 	}
 
 	/** @return the cabinet ID */
@@ -68,26 +89,14 @@ public final class BoardPhysicalCoordinates {
 		return cabinet;
 	}
 
-	void setCabinet(int cabinet) {
-		this.cabinet = cabinet;
-	}
-
 	/** @return the frame ID within the cabinet */
 	public int getFrame() {
 		return frame;
 	}
 
-	void setFrame(int frame) {
-		this.frame = frame;
-	}
-
 	/** @return the board ID within the frame */
 	public Integer getBoard() {
 		return board;
-	}
-
-	void setBoard(Integer board) {
-		this.board = board;
 	}
 
 	@Override
@@ -109,5 +118,15 @@ public final class BoardPhysicalCoordinates {
 	@Override
 	public String toString() {
 		return "Board{" + cabinet + "," + frame + "," + board + "}";
+	}
+
+	/**
+	 * Convert to the standard coordinate scheme. Assumes that the {@code board}
+	 * field is defined.
+	 *
+	 * @return the coordinates
+	 */
+	public PhysicalCoords toStandardCoords() {
+		return new PhysicalCoords(cabinet, frame, board);
 	}
 }

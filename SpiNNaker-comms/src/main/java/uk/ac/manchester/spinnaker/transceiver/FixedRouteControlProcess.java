@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.messages.scp.FixedRouteInitialise;
 import uk.ac.manchester.spinnaker.messages.scp.FixedRouteRead;
 
 /** Load a fixed route routing entry onto a chip, and read it back again. */
-class FixedRouteControlProcess extends MultiConnectionProcess<SCPConnection> {
+class FixedRouteControlProcess extends TxrxProcess {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
@@ -39,7 +39,7 @@ class FixedRouteControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            required.
 	 */
 	FixedRouteControlProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}

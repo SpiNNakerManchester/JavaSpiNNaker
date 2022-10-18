@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.compat;
 
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 
 import java.io.IOException;
 import java.util.List;
@@ -74,14 +75,12 @@ class JsonTest {
 
 		@Test
 		void testJobMachineInfo() throws IOException, JSONException {
-			var r = new JobMachineInfo();
-			r.setMachineName("gorp");
-			r.setBoards(List.of(new BoardCoordinates(0, 1, 2)));
-			r.setConnections(
-					List.of(new Connection(new ChipLocation(0, 0), "foo.bar")));
+			var r = new JobMachineInfo(0, 0,
+					List.of(new Connection(ZERO_ZERO, "2.3.4.5")),
+					"gorp", List.of(new BoardCoordinates(0, 1, 2)));
 			JSONAssert.assertEquals(
 					"{ 'boards': [[0,1,2]], "
-							+ "'connections': [[[0,0],'foo.bar']], "
+							+ "'connections': [[[0,0],'2.3.4.5']], "
 							+ "'width': 0, "
 							+ "'height': 0, "
 							+ "'machine_name': 'gorp' }",
@@ -90,13 +89,14 @@ class JsonTest {
 
 		@Test
 		void testJobState() throws IOException, JSONException {
-			var r = new JobState();
-			r.setPower(false);
-			r.setReason("gorp");
-			r.setState(State.POWER);
-			r.setKeepalivehost("127.0.0.1");
-			r.setStartTime(123);
-			r.setKeepalive(321);
+			var r = new JobState.Builder() //
+					.withState(State.POWER) //
+					.withStartTime(123) //
+					.withPower(false) //
+					.withReason("gorp") //
+					.withKeepalive(321) //
+					.withKeepalivehost("127.0.0.1") //
+					.build();
 			JSONAssert.assertEquals(
 					"{ 'state': 2, "
 							+ "'start_time': 123, "
@@ -110,17 +110,11 @@ class JsonTest {
 		@Test
 		void testJobDescription() throws IOException, JSONException {
 			var r = new JobDescription[1];
-			r[0] = new JobDescription();
-			r[0].setJobID(1);
-			r[0].setArgs(List.of(0));
-			r[0].setKwargs(Map.of());
-			r[0].setKeepAlive(123);
-			r[0].setKeepAliveHost("127.0.0.1");
-			r[0].setMachine("foo");
-			r[0].setOwner("bar");
-			r[0].setPower(false);
-			r[0].setStartTime(321.);
-			r[0].setState(State.POWER);
+			r[0] = new JobDescription.Builder().withJobID(1)
+					.withArgs(List.of(0)).withKwargs(Map.of())
+					.withKeepAlive(123).withKeepAliveHost("127.0.0.1")
+					.withMachine("foo").withOwner("bar").withPower(false)
+					.withStartTime(321.).withState(State.POWER).build();
 			JSONAssert.assertEquals(
 					"[{ 'allocated_machine_name': 'foo', "
 							+ "'args': [0], "
@@ -141,9 +135,7 @@ class JsonTest {
 		@Test
 		void testMachine() throws IOException, JSONException {
 			var r = new Machine[1];
-			r[0] = new Machine();
-			r[0].setName("gorp");
-			r[0].setTags(List.of("foo", "bar"));
+			r[0] = new Machine("gorp", List.of("foo", "bar"), 0, 0, null, null);
 			JSONAssert
 					.assertEquals(
 							"[{ 'name': 'gorp', 'tags': ['foo', 'bar'], "

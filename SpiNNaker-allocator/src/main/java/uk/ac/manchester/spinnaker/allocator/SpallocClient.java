@@ -26,14 +26,20 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * An API for talking to the Spalloc service.
@@ -142,16 +148,25 @@ public interface SpallocClient {
 		 */
 		List<String> getTags();
 
-		/** The width of the machine.
-		 *  @return The width of the machine, in triads. */
+		/**
+		 * The width of the machine.
+		 *
+		 * @return The width of the machine, in triads.
+		 */
 		int getWidth();
 
-		/** The height of the machine.
-		 *  @return The height of the machine, in triads. */
+		/**
+		 * The height of the machine.
+		 *
+		 * @return The height of the machine, in triads.
+		 */
 		int getHeight();
 
-		/** The number of live boards.
-		 *  @return The (estimated) number of live boards in the machine. */
+		/**
+		 * The number of live boards.
+		 *
+		 * @return The (estimated) number of live boards in the machine.
+		 */
 		int getLiveBoardCount();
 
 		/**
@@ -181,37 +196,29 @@ public interface SpallocClient {
 		/**
 		 * Given logical triad coordinates, return more info about a board.
 		 *
-		 * @param x
-		 *            Triad X coordinate
-		 * @param y
-		 *            Triad Y coordinate
-		 * @param z
-		 *            Triad Z coordinate
+		 * @param coords
+		 *            Triad coordinates
 		 * @return Board information
 		 * @throws FileNotFoundException
 		 *             If the board doesn't exist.
 		 * @throws IOException
 		 *             If communication with the server fails
 		 */
-		WhereIs getBoardByTriad(int x, int y, int z)
+		WhereIs getBoard(@NotNull @Valid TriadCoords coords)
 				throws FileNotFoundException, IOException;
 
 		/**
 		 * Given physical coordinates, return more info about a board.
 		 *
-		 * @param cabinet
-		 *            Cabinet number; cabinets contain frames.
-		 * @param frame
-		 *            Frame number; frames contain boards.
-		 * @param board
-		 *            Board number
+		 * @param coords
+		 *            Physical coordinates.
 		 * @return Board information
 		 * @throws FileNotFoundException
 		 *             If the board doesn't exist.
 		 * @throws IOException
 		 *             If communication with the server fails
 		 */
-		WhereIs getBoardByPhysicalCoords(int cabinet, int frame, int board)
+		WhereIs getBoard(@NotNull @Valid PhysicalCoords coords)
 				throws FileNotFoundException, IOException;
 
 		/**
@@ -226,7 +233,7 @@ public interface SpallocClient {
 		 * @throws IOException
 		 *             If communication with the server fails
 		 */
-		WhereIs getBoardByChip(HasChipLocation chip)
+		WhereIs getBoard(@NotNull @Valid HasChipLocation chip)
 				throws FileNotFoundException, IOException;
 
 		/**
@@ -240,7 +247,7 @@ public interface SpallocClient {
 		 * @throws IOException
 		 *             If communication with the server fails
 		 */
-		WhereIs getBoardByIPAddress(String address)
+		WhereIs getBoard(@IPAddress String address)
 				throws FileNotFoundException, IOException;
 	}
 
@@ -343,7 +350,7 @@ public interface SpallocClient {
 		 * @throws IOException
 		 *             If communication fails or the job is deleted.
 		 */
-		WhereIs whereIs(HasChipLocation chip)
+		WhereIs whereIs(@NotNull @Valid HasChipLocation chip)
 				throws FileNotFoundException, IOException;
 
 		/**
@@ -377,7 +384,7 @@ public interface SpallocClient {
 		 *             If interrupted waiting for the connection to be set up.
 		 */
 		@MustBeClosed
-		SCPConnection getConnection(HasChipLocation chip)
+		SCPConnection getConnection(@NotNull @Valid HasChipLocation chip)
 				throws IOException, InterruptedException;
 
 		/**

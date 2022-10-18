@@ -44,7 +44,6 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.WAIT
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -77,7 +76,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import uk.ac.manchester.spinnaker.alloc.model.IPAddress;
+import uk.ac.manchester.spinnaker.machine.ValidX;
+import uk.ac.manchester.spinnaker.machine.ValidY;
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * The REST API for the SpiNNaker machine allocation service.
@@ -310,13 +317,12 @@ public interface SpallocServiceAPI {
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse whereIsLogicalPosition(
 				@Description("Triad X coordinate") @QueryParam("x")
-				@PositiveOrZero(message = "x must be at least 0") int x,
+				@ValidTriadX int x,
 				@Description("Triad Y coordinate") @QueryParam("y")
-				@PositiveOrZero(message = "y must be at least 0") int y,
+				@ValidTriadY int y,
 				@Description("Triad Z (internal member select) coordinate")
 				@QueryParam("z") @DefaultValue("0")
-				@PositiveOrZero(message = "z must be 0, 1 or 2")
-				@Max(value = 2, message = "z must be 0, 1 or 2") int z);
+				@ValidTriadZ int z);
 
 		/**
 		 * Get the location description of a board given its physical coords.
@@ -340,15 +346,11 @@ public interface SpallocServiceAPI {
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse whereIsPhysicalPosition(
 				@Description("Cabinet number") @QueryParam("cabinet")
-				@DefaultValue("0")
-				@PositiveOrZero(
-						message = "cabinet must be at least 0") int cabinet,
+				@DefaultValue("0") @ValidCabinetNumber int cabinet,
 				@Description("Frame number") @QueryParam("frame")
-				@DefaultValue("0")
-				@PositiveOrZero(message = "frame must be at least 0") int frame,
+				@DefaultValue("0") @ValidFrameNumber int frame,
 				@Description("Board number") @QueryParam("board")
-				@PositiveOrZero(
-						message = "board must be at least 0") int board);
+				@ValidBoardNumber int board);
 
 		/**
 		 * Get the location description of a board given the global coordinates
@@ -371,9 +373,9 @@ public interface SpallocServiceAPI {
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse whereIsMachineChipLocation(
 				@Description("Global chip X coordinate") @QueryParam(CHIP_X)
-				@PositiveOrZero(message = "x must be at least 0") int x,
+				@ValidX int x,
 				@Description("Global chip Y coordinate") @QueryParam(CHIP_Y)
-				@PositiveOrZero(message = "y must be at least 0") int y);
+				@ValidY int y);
 
 		/**
 		 * Get the location description of a board given its ethernet chip's IP
@@ -543,11 +545,9 @@ public interface SpallocServiceAPI {
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse getJobChipLocation(
 				@Description("X coordinate of chip within job's allocation.")
-				@QueryParam(CHIP_X) @DefaultValue("0")
-				@PositiveOrZero(message = "x must be at least 0") int x,
+				@QueryParam(CHIP_X) @DefaultValue("0") @ValidX int x,
 				@Description("Y coordinate of chip within job's allocation.")
-				@QueryParam(CHIP_Y) @DefaultValue("0")
-				@PositiveOrZero(message = "y must be at least 0") int y);
+				@QueryParam(CHIP_Y) @DefaultValue("0") @ValidY int y);
 
 		/**
 		 * Report an issue with some boards.

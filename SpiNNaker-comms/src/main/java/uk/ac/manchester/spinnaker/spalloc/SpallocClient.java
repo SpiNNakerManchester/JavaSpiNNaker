@@ -47,6 +47,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolTimeoutException;
@@ -234,7 +236,6 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 
 	@Deprecated(forRemoval = true) // TODO remove this
 	@Override
-	@SuppressWarnings("removal")
 	public int createJob(List<Integer> args, Map<String, Object> kwargs,
 			Integer timeout) throws IOException, SpallocServerException {
 		// If no owner, don't bother with the call
@@ -385,7 +386,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 
 	@Override
 	public BoardPhysicalCoordinates getBoardPosition(String machineName,
-			BoardCoordinates coords, Integer timeout)
+			TriadCoords coords, Integer timeout)
 			throws IOException, SpallocServerException {
 		var json = call(new GetBoardPositionCommand(machineName, coords),
 				timeout);
@@ -397,7 +398,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 
 	@Override
 	public BoardCoordinates getBoardPosition(String machineName,
-			BoardPhysicalCoordinates coords, Integer timeout)
+			PhysicalCoords coords, Integer timeout)
 			throws IOException, SpallocServerException {
 		var json = call(new GetBoardAtPositionCommand(machineName, coords),
 				timeout);
@@ -428,7 +429,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	}
 
 	@Override
-	public WhereIs whereIs(String machine, BoardPhysicalCoordinates coords,
+	public WhereIs whereIs(String machine, PhysicalCoords coords,
 			Integer timeout) throws IOException, SpallocServerException {
 		var json = call(new WhereIsMachineBoardPhysicalCommand(machine, coords),
 				timeout);
@@ -439,7 +440,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	}
 
 	@Override
-	public WhereIs whereIs(String machine, BoardCoordinates coords,
+	public WhereIs whereIs(String machine, TriadCoords coords,
 			Integer timeout) throws IOException, SpallocServerException {
 		var json = call(new WhereIsMachineBoardLogicalCommand(machine, coords),
 				timeout);

@@ -21,6 +21,8 @@ import static java.util.Objects.isNull;
 import java.net.InetAddress;
 import java.util.Objects;
 
+import javax.validation.Valid;
+
 import com.google.errorprone.annotations.Immutable;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -38,6 +40,7 @@ public abstract class AbstractDataLink implements HasChipLocation {
 	public final InetAddress boardAddress;
 
 	/** Coordinates of the location/Chip being linked to. */
+	@Valid
 	public final ChipLocation location;
 
 	/** Direction/id for this link. */

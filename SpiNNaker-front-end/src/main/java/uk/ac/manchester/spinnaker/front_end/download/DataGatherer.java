@@ -21,10 +21,9 @@ import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import static java.lang.Thread.sleep;
 import static java.nio.ByteBuffer.allocate;
-import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.download.MissingSequenceNumbersMessage.createMessages;
@@ -433,8 +432,8 @@ public abstract class DataGatherer extends BoardLocalSupport
 
 	private void compareDownloadWithSCP(Region r, ByteBuffer data)
 			throws IOException, ProcessException {
-		var data2 = txrx.readMemory(r.core.asChipLocation(),
-				r.startAddress, r.size);
+		var data2 = txrx.readMemory(r.core.asChipLocation(), r.startAddress,
+				r.size);
 		if (data.remaining() != data2.remaining()) {
 			log.error("different buffer sizes: {} with gatherer, {} with SCP",
 					data.remaining(), data2.remaining());
@@ -482,7 +481,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 
 	private static List<String> describeChunk(Chunk<Byte> chunk) {
 		return chunk.getLines().stream().map(MathUtils::hexbyte)
-				.collect(toList());
+				.collect(toUnmodifiableList());
 	}
 
 	/**
@@ -560,7 +559,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 	private static void snooze(int delay) {
 		try {
 			sleep(delay);
-		} catch (InterruptedException ignored) {
+		} catch (InterruptedException interrupted) {
 			/*
 			 * This is only used in contexts where we don't actually interrupt
 			 * the thread, so this exception isn't actually ever going to be
@@ -662,9 +661,10 @@ public abstract class DataGatherer extends BoardLocalSupport
 						monitorCore.getTransactionId());
 			} catch (TimeoutException e) {
 				if (received) {
-					log.warn("received only some of the packets from <{}> "
-							+ "for {}; has something crashed?", monitorCore,
-							region);
+					log.warn(
+							"received only some of the packets from <{}> "
+									+ "for {}; has something crashed?",
+							monitorCore, region);
 				}
 				throw e;
 			} finally {
@@ -788,8 +788,9 @@ public abstract class DataGatherer extends BoardLocalSupport
 		/**
 		 * Request that the extra monitor core retransmit some packets. Does
 		 * nothing if there are no packets missing.
+		 *
 		 * @param transactionId
-		 *             The transaction id of this stream
+		 *            The transaction id of this stream
 		 * @return Whether there were really any packets to retransmit.
 		 * @throws IOException
 		 *             If there are failures.
@@ -830,8 +831,8 @@ public abstract class DataGatherer extends BoardLocalSupport
 		 * @return The expected sequence numbers, as an ordered list.
 		 */
 		private List<Integer> expectedSeqs() {
-			return unmodifiableList(
-					expectedSeqNums.stream().boxed().collect(toList()));
+			return expectedSeqNums.stream().boxed()
+					.collect(toUnmodifiableList());
 		}
 	}
 }

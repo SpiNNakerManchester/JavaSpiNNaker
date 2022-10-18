@@ -22,16 +22,19 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.PositiveOrZero;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.errorprone.annotations.Keep;
 
-import uk.ac.manchester.spinnaker.alloc.model.IPAddress;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * A request to report an issue with some boards.
@@ -50,35 +53,35 @@ public class IssueReportRequest {
 	/** Describes a board that has an issue. */
 	public static class ReportedBoard {
 		/** The location of the chip within the reporting allocation. */
+		@Valid
 		public ChipLocation chip;
 
 		/** The X triad coordinate of the board. */
-		@PositiveOrZero(message = "x must be at least 0")
+		@ValidTriadX
 		public Integer x;
 
 		/** The Y triad coordinate of the board. */
-		@PositiveOrZero(message = "y must be at least 0")
+		@ValidTriadY
 		public Integer y;
 
 		/** The Z triad coordinate of the board. */
-		@Min(value = 0, message = "z must be at least 0")
-		@Max(value = 2, message = "z must be at most 2")
+		@ValidTriadZ
 		public Integer z;
 
 		/** The physical cabinet number of the board. */
-		@PositiveOrZero(message = "cabinet must be at least 0")
+		@ValidCabinetNumber
 		public Integer cabinet;
 
 		/** The physical frame number of the board. */
-		@PositiveOrZero(message = "frame must be at least 0")
+		@ValidFrameNumber
 		public Integer frame;
 
 		/** The physical board number of the board. */
-		@PositiveOrZero(message = "board must be at least 0")
+		@ValidBoardNumber
 		public Integer board;
 
 		/** The IP address of the board. */
-		@IPAddress(message = "address must be an IP address")
+		@IPAddress(nullOK = true, message = "address must be an IP address")
 		public String address;
 
 		@JsonIgnore

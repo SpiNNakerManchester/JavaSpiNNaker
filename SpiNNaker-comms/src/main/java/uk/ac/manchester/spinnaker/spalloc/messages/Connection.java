@@ -16,18 +16,23 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 import static java.util.Objects.isNull;
 
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import javax.validation.Valid;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.Immutable;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * Describes a connection by its chip and hostname.
@@ -36,19 +41,14 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 	"chip", "hostname"
 })
 @JsonFormat(shape = ARRAY)
-@JsonAutoDetect(setterVisibility = NON_PRIVATE)
+@JsonDeserialize(builder = Connection.Builder.class)
+@Immutable
 public final class Connection {
-	private ChipLocation chip;
+	@Valid
+	private final ChipLocation chip;
 
-	private String hostname;
-
-	/**
-	 * Create with defaults.
-	 */
-	public Connection() {
-		chip = null;
-		hostname = "";
-	}
+	@IPAddress
+	private final String hostname;
 
 	/**
 	 * Create.
@@ -68,17 +68,9 @@ public final class Connection {
 		return chip;
 	}
 
-	void setChip(ChipLocation chip) {
-		this.chip = chip;
-	}
-
 	/** @return Where to connect to to talk to the chip. */
 	public String getHostname() {
 		return hostname;
-	}
-
-	void setHostname(String hostname) {
-		this.hostname = hostname;
 	}
 
 	@Override
@@ -99,5 +91,32 @@ public final class Connection {
 	@Override
 	public String toString() {
 		return "Connection(" + chip + "@" + hostname + ")";
+	}
+
+	@JsonPropertyOrder({
+		"chip", "hostname"
+	})
+	@JsonFormat(shape = ARRAY)
+	@JsonPOJOBuilder
+	static class Builder {
+		private ChipLocation chip;
+
+		private String hostname;
+
+		@CanIgnoreReturnValue
+		public Builder withChip(ChipLocation chip) {
+			this.chip = chip;
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		public Builder withHostname(String hostname) {
+			this.hostname = hostname;
+			return this;
+		}
+
+		public Connection build() {
+			return new Connection(chip, hostname);
+		}
 	}
 }

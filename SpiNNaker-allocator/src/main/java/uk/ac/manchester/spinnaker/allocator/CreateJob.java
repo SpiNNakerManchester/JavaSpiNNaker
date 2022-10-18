@@ -17,11 +17,30 @@
 package uk.ac.manchester.spinnaker.allocator;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
+import static java.util.Objects.nonNull;
 
 import java.time.Duration;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.google.errorprone.annotations.Keep;
+
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * A request to create a job.
@@ -31,16 +50,20 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 public final class CreateJob {
 	private Duration keepaliveInterval;
 
+	@Positive
 	private Integer numBoards;
 
+	@Valid
 	private Dimensions dimensions;
 
+	@Valid
 	private SpecificBoard board;
 
 	private String machineName;
 
 	private List<String> tags;
 
+	@PositiveOrZero
 	private Integer maxDeadBoards;
 
 	/**
@@ -48,22 +71,24 @@ public final class CreateJob {
 	 */
 	@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 	public static final class Dimensions {
+		@ValidTriadWidth
 		private int width;
 
+		@ValidTriadHeight
 		private int height;
 
 		/**
 		 * @param width
-		 *            The width of rectangle to ask for, in boards.
+		 *            The width of rectangle to ask for, in triads.
 		 * @param height
-		 *            The height of rectangle to ask for, in boards.
+		 *            The height of rectangle to ask for, in triads.
 		 */
 		public Dimensions(int width, int height) {
 			this.width = width;
 			this.height = height;
 		}
 
-		/** @return The width of the allocation, in boards. */
+		/** @return The width of the allocation, in triads. */
 		public int getWidth() {
 			return width;
 		}
@@ -72,7 +97,7 @@ public final class CreateJob {
 			this.width = width;
 		}
 
-		/** @return The height of the allocation, in boards. */
+		/** @return The height of the allocation, in triads. */
 		public int getHeight() {
 			return height;
 		}
@@ -86,18 +111,25 @@ public final class CreateJob {
 	 * Used when asking for a specific board.
 	 */
 	public static final class SpecificBoard {
+		@ValidTriadX
 		private Integer x;
 
+		@ValidTriadY
 		private Integer y;
 
+		@ValidTriadZ
 		private Integer z;
 
+		@ValidCabinetNumber
 		private Integer cabinet;
 
+		@ValidFrameNumber
 		private Integer frame;
 
+		@ValidBoardNumber
 		private Integer board;
 
+		@IPAddress(nullOK = true)
 		private String address;
 
 		/**
@@ -229,15 +261,15 @@ public final class CreateJob {
 	}
 
 	/**
-	 * Create a request to run on rectangle of boards using the default machine
-	 * operated by the Spalloc service.
+	 * Create a request to run on rectangle of triads of boards using the
+	 * default machine operated by the Spalloc service.
 	 * <p>
 	 * Note that you can configure this request further.
 	 *
 	 * @param width
-	 *            The width of the rectangle
+	 *            The width of the rectangle, in triads
 	 * @param height
-	 *            The height of the rectangle
+	 *            The height of the rectangle, in triads
 	 * @throws IllegalArgumentException
 	 *             If either of the dimensions is less than 1
 	 */
@@ -262,9 +294,8 @@ public final class CreateJob {
 	 *            Which board of the machine to request? This is the logical
 	 *            coordinates.
 	 */
-	public CreateJob(String machine, Triad triad) {
-		board = new SpecificBoard(true, triad.getX(), triad.getY(),
-				triad.getZ());
+	public CreateJob(String machine, TriadCoords triad) {
+		board = new SpecificBoard(true, triad.x, triad.y, triad.z);
 		machineName = machine;
 	}
 
@@ -279,9 +310,8 @@ public final class CreateJob {
 	 * @param coords
 	 *            The physical coordinates of the board to request.
 	 */
-	public CreateJob(String machine, Physical coords) {
-		this.board = new SpecificBoard(false, coords.getCabinet(),
-				coords.getFrame(), coords.getBoard());
+	public CreateJob(String machine, PhysicalCoords coords) {
+		this.board = new SpecificBoard(false, coords.c, coords.f, coords.b);
 		machineName = machine;
 	}
 
@@ -391,6 +421,12 @@ public final class CreateJob {
 	public void setTags(List<String> tags) {
 		this.tags = tags;
 		this.machineName = null;
+	}
+
+	@Keep
+	@AssertTrue(message = "either machineName or tags must be given")
+	private boolean isTargetted() {
+		return nonNull(machineName) || (nonNull(tags) && !tags.isEmpty());
 	}
 
 	/**

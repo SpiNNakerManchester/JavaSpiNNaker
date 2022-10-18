@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc.model;
+package uk.ac.manchester.spinnaker.utils.validation;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
@@ -26,6 +26,8 @@ import static java.util.Objects.isNull;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.regex.Pattern;
 
 import javax.validation.Constraint;
@@ -34,7 +36,8 @@ import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 
 /**
- * Validates that a string looks like an IP address.
+ * Validates that a string looks like an IP address. A string is considered to
+ * be a valid IP address if it looks like a dotted quad.
  *
  * @author Donal Fellows
  */
@@ -45,6 +48,13 @@ import javax.validation.Payload;
 })
 @Constraint(validatedBy = IPAddressValidator.class)
 public @interface IPAddress {
+	/**
+	 * Whether {@code null} is allowed. It defaults to being disallowed.
+	 *
+	 * @return Whether to accept {@code null}.
+	 */
+	boolean nullOK() default false;
+
 	/**
 	 * Whether the empty string is allowed. It defaults to being disallowed.
 	 *
@@ -57,7 +67,7 @@ public @interface IPAddress {
 	 *
 	 * @return Message
 	 */
-	String message() default "${validatedValue} is a bad IPv4 address";
+	String message() default "'${validatedValue}' is a bad IPv4 address";
 
 	/**
 	 * Group of constraints. Required by validation spec.
@@ -74,10 +84,13 @@ public @interface IPAddress {
 	Class<? extends Payload>[] payload() default {};
 }
 
+/** Validator for {@link IPAddress} constraints. */
 class IPAddressValidator implements ConstraintValidator<IPAddress, String> {
 	private Pattern pattern;
 
 	private boolean emptyOK;
+
+	private boolean nullOK;
 
 	@Override
 	public void initialize(IPAddress annotation) {
@@ -85,16 +98,25 @@ class IPAddressValidator implements ConstraintValidator<IPAddress, String> {
 			pattern = Pattern.compile("^\\d+[.]\\d+[.]\\d+[.]\\d+$");
 		}
 		emptyOK = annotation.emptyOK();
+		nullOK = annotation.nullOK();
 	}
 
 	@Override
 	public boolean isValid(String value, ConstraintValidatorContext context) {
 		if (isNull(value)) {
+			return nullOK;
+		} else if (value.isEmpty()) {
+			return emptyOK;
+		}
+		if (!pattern.matcher(value).matches()) {
 			return false;
 		}
-		if (emptyOK && value.isBlank()) {
+		// Cheap checks succeeded; use the real parser now!
+		try {
+			InetAddress.getByName(value);
 			return true;
+		} catch (UnknownHostException e) {
+			return false;
 		}
-		return pattern.matcher(value).matches();
 	}
 }

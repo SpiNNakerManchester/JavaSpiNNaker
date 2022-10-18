@@ -169,7 +169,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 			var gathererChip = g.asChipLocation();
 			gathererForChip.put(gathererChip, g);
 			var boardMonitorCores = monitorsForBoard
-					.computeIfAbsent(gathererChip, x -> new CoreSubsets());
+					.computeIfAbsent(gathererChip, __ -> new CoreSubsets());
 			for (var m : g.getMonitors()) {
 				var monitorChip = m.asChipLocation();
 				gathererForChip.put(monitorChip, g);

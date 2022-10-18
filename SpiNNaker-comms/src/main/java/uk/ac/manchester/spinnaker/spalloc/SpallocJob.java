@@ -55,6 +55,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobMachineInfo;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobState;
 import uk.ac.manchester.spinnaker.spalloc.messages.State;
+import uk.ac.manchester.spinnaker.utils.Daemon;
 
 /**
  * A high-level interface for requesting and managing allocations of SpiNNaker
@@ -316,6 +317,19 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 		if (isNull(builder)) {
 			throw new IllegalArgumentException("a builder must be specified");
 		}
+		if (!builder.isTargetDefined()) {
+			var machine = config.getMachine();
+			var tags = config.getTags();
+			if (nonNull(machine)) {
+				builder.machine(machine);
+			} else if (nonNull(tags)) {
+				builder.tags(tags);
+			} else {
+				throw new IllegalArgumentException(
+						"must have either machine or tags specified or able "
+								+ "to be looked up from the configuration");
+			}
+		}
 		this.client = new SpallocClient(hostname, port, timeout);
 		this.timeout = timeout;
 		client.connect();
@@ -462,10 +476,9 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 		if (nonNull(keepalive)) {
 			log.warn("launching second keepalive thread for " + id);
 		}
-		keepalive = new Thread(SPALLOC_WORKERS, this::keepalive,
-				"keepalive for spalloc job " + id);
-		keepalive.setDaemon(true);
 		stopping = false;
+		keepalive = new Daemon(SPALLOC_WORKERS, this::keepalive,
+				"keepalive for spalloc job " + id);
 		keepalive.start();
 	}
 

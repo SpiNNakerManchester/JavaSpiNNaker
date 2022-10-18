@@ -16,6 +16,11 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
+
 /**
  * Request to get the location of a board in a machine by logical location.
  *
@@ -33,12 +38,12 @@ public class WhereIsMachineBoardLogicalCommand extends Command<Integer> {
 	 * @param coords
 	 *            The logical coordinates of the board to ask about.
 	 */
-	public WhereIsMachineBoardLogicalCommand(String machine,
-			BoardCoordinates coords) {
+	public WhereIsMachineBoardLogicalCommand(@NotBlank String machine,
+			@Valid TriadCoords coords) {
 		super("where_is");
 		addKwArg("machine", machine);
-		addKwArg("x", coords.getX());
-		addKwArg("y", coords.getY());
-		addKwArg("z", coords.getZ());
+		addKwArg("x", coords.x);
+		addKwArg("y", coords.y);
+		addKwArg("z", coords.z);
 	}
 }

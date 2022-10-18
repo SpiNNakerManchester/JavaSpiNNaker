@@ -23,7 +23,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
+
+import com.google.errorprone.annotations.Keep;
+
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * Model of a board, for configuration purposes.
@@ -31,22 +41,31 @@ import javax.validation.constraints.NotNull;
  * @author Donal Fellows
  */
 public class BoardRecord {
+	// TODO convert to structured form
 	private Integer id;
 
+	@NotBlank
 	private String machineName;
 
+	@ValidTriadX
 	private Integer x;
 
+	@ValidTriadY
 	private Integer y;
 
+	@ValidTriadZ
 	private Integer z;
 
+	@ValidCabinetNumber
 	private Integer cabinet;
 
+	@ValidFrameNumber
 	private Integer frame;
 
+	@ValidBoardNumber
 	private Integer board;
 
+	@IPAddress(nullOK = true)
 	private String ipAddress;
 
 	private Boolean enabled;
@@ -83,7 +102,6 @@ public class BoardRecord {
 	}
 
 	/** @return The machine name. */
-	@NotNull
 	public String getMachineName() {
 		return machineName;
 	}
@@ -183,8 +201,9 @@ public class BoardRecord {
 	 *         or the name of a machine and at least one set of coordinates for
 	 *         a board on that machine.
 	 */
-	@AssertTrue
-	boolean isValidBoardLocator() {
+	@Keep
+	@AssertTrue(message = "board must have some mechanism for being located")
+	private boolean isValidBoardLocator() {
 		return isIdPresent() || (nonNull(machineName) && (isTriadCoordPresent()
 				|| isPhysicalCoordPresent() || isAddressPresent()));
 	}
@@ -239,15 +258,17 @@ public class BoardRecord {
 		this.lastPowerOff = lastPowerOff;
 	}
 
-	/** @return The reports associated with this board. */
-	@NotNull
+	/**
+	 * @return The reports associated with this board. The list is not
+	 *         modifiable.
+	 */
 	public List<BoardIssueReport> getReports() {
 		return reports;
 	}
 
 	/** @param reports The reports associated with this board. */
 	public void setReports(List<BoardIssueReport> reports) {
-		this.reports = nonNull(reports) ? reports : new ArrayList<>();
+		this.reports = nonNull(reports) ? List.copyOf(reports) : List.of();
 	}
 
 	/** @return Whether this board is powered on. */

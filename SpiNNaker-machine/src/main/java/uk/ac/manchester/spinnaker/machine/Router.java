@@ -19,13 +19,13 @@ package uk.ac.manchester.spinnaker.machine;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.ROUTER_AVAILABLE_ENTRIES;
 
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import uk.ac.manchester.spinnaker.machine.bean.ChipDetails;
@@ -266,14 +266,13 @@ public final class Router implements MappableIterable<Link> {
 	/**
 	 * List of the destination for all links.
 	 * <p>
-	 * Note: Changes to the resulting list will not effect the actual links.
-	 * This function in the future may return an unmodifiable list.
+	 * This function returns an unmodifiable list.
 	 *
 	 * @return The destination locations
 	 */
 	public List<ChipLocation> neighbouringChipsCoords() {
 		return links.values().stream().map(link -> link.destination)
-				.collect(Collectors.toList());
+				.collect(toUnmodifiableList());
 	}
 
 	@Override
@@ -285,7 +284,7 @@ public final class Router implements MappableIterable<Link> {
 
 	@Override
 	public Iterator<Link> iterator() {
-		return links.values().iterator();
+		return unmodifiableCollection(links.values()).iterator();
 	}
 
 	@Override

@@ -147,7 +147,7 @@ final class GatherDownloadConnection extends SDPConnection {
 				return EMPTY_DATA;
 			}
 			return b;
-		} catch (SocketTimeoutException ignored) {
+		} catch (SocketTimeoutException e) {
 			log.debug("received timeout");
 			return EMPTY_DATA;
 		}

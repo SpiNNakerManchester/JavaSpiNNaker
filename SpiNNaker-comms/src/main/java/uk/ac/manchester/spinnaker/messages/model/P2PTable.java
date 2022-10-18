@@ -17,12 +17,12 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Math.min;
-import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.IntStream.range;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTableRoute.NONE;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 
 import java.nio.ByteBuffer;
 import java.util.Collection;
@@ -33,15 +33,19 @@ import java.util.Set;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
+import uk.ac.manchester.spinnaker.machine.ValidMachineHeight;
+import uk.ac.manchester.spinnaker.machine.ValidMachineWidth;
 
 /** Represents a P2P routing table read from the machine. */
 public class P2PTable {
 	private final Map<ChipLocation, P2PTableRoute> routes;
 
 	/** The width of the machine that this table represents. */
+	@ValidMachineWidth
 	public final int width;
 
 	/** The height of the machine that this table represents. */
+	@ValidMachineHeight
 	public final int height;
 
 	private static final int ROUTE_CHUNK = 8;
@@ -116,7 +120,7 @@ public class P2PTable {
 
 	/** @return The coordinates of chips in the table. */
 	public Set<ChipLocation> getChips() {
-		return unmodifiableSet(routes.keySet());
+		return copy(routes.keySet());
 	}
 
 	/**

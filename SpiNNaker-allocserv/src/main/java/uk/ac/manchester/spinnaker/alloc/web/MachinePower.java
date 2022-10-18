@@ -16,9 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
-import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
-
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.errorprone.annotations.Immutable;
 
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 
@@ -28,13 +29,10 @@ import uk.ac.manchester.spinnaker.alloc.model.PowerState;
  *
  * @author Donal Fellows
  */
+@Immutable
 public class MachinePower {
-	private PowerState power;
-
-	/** Make an instance. */
-	public MachinePower() {
-		power = OFF;
-	}
+	@NotNull(message = "power must be specified")
+	private final PowerState power;
 
 	/**
 	 * Make an instance.
@@ -42,18 +40,14 @@ public class MachinePower {
 	 * @param power
 	 *            the machine power state
 	 */
-	public MachinePower(PowerState power) {
+	public MachinePower(
+			@JsonProperty(value = "power", defaultValue = "OFF")
+			PowerState power) {
 		this.power = power;
 	}
 
 	/** @return the machine power state */
-	@NotNull(message = "power must be specified")
 	public PowerState getPower() {
 		return power;
-	}
-
-	/** @param power the machine power state */
-	public void setPower(PowerState power) {
-		this.power = power;
 	}
 }

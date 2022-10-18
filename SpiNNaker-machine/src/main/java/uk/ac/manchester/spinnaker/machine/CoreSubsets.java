@@ -28,6 +28,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 
+import javax.validation.Valid;
+
 import uk.ac.manchester.spinnaker.utils.DoubleMapIterator;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
@@ -40,7 +42,8 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * @author Christian-B
  */
 public final class CoreSubsets implements MappableIterable<CoreLocation> {
-	private final Map<ChipLocation, Map<Integer, CoreLocation>> locations;
+	private final Map<@Valid ChipLocation,
+			Map<@ValidP Integer, @Valid CoreLocation>> locations;
 
 	private boolean immutable;
 
@@ -204,7 +207,7 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	 * @return The core subset of a chip or {@code null} if there is no subset.
 	 */
 	private Map<Integer, CoreLocation> getOrCreate(ChipLocation chip) {
-		return locations.computeIfAbsent(chip, k -> new TreeMap<>());
+		return locations.computeIfAbsent(chip, __ -> new TreeMap<>());
 	}
 
 	/**
@@ -315,7 +318,7 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 		locations.forEach((chip, locs) -> {
 			var otherSubset = other.locations.get(chip);
 			if (nonNull(otherSubset)) {
-				locs.forEach((ignored, location) -> {
+				locs.forEach((__, location) -> {
 					if (otherSubset.containsValue(location)) {
 						results.addCore(location);
 					}
@@ -353,26 +356,28 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	 * @return Unmodifiable (possibly empty) collection of CoreLocation
 	 */
 	public Collection<CoreLocation> coreByChip(ChipLocation chip) {
-		if (locations.containsKey(chip)) {
-			return unmodifiableCollection(locations.get(chip).values());
+		var l = locations.get(chip);
+		if (l != null) {
+			return unmodifiableCollection(l.values());
 		} else {
 			return List.of();
 		}
 	}
 
 	/**
-	 * Provides the CoreLocations for just a single Chip.
+	 * Provides the processor identifiers for just a single Chip.
 	 * <p>
 	 * This will be an empty list when {@link #isChip(ChipLocation)} returns
 	 * {@code false}.
 	 *
 	 * @param chip
 	 *            coordinates of the chip
-	 * @return Unmodifiable (possibly empty) collection of CoreLocation
+	 * @return Unmodifiable (possibly empty) collection of processor identifiers
 	 */
 	public Set<Integer> pByChip(ChipLocation chip) {
-		if (locations.containsKey(chip)) {
-			return unmodifiableSet(locations.get(chip).keySet());
+		var l = locations.get(chip);
+		if (l != null) {
+			return unmodifiableSet(l.keySet());
 		} else {
 			return Set.of();
 		}

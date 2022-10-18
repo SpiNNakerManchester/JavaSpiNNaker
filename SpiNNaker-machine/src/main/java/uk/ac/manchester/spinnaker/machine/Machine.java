@@ -41,6 +41,8 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
@@ -68,28 +70,30 @@ public class Machine implements MappableIterable<Chip> {
 	private static final Logger log = getLogger(Link.class);
 
 	/** Size of the machine along the x and y axes in Chips. */
+	@Valid
 	public final MachineDimensions machineDimensions;
 
 	// This is not final as will change as processors become monitors.
 	private int maxUserProssorsOnAChip;
 
-	private final ArrayList<Chip> ethernetConnectedChips;
+	private final ArrayList<@Valid Chip> ethernetConnectedChips;
 
 	// This may change to a map of maps
-	private final Map<InetIdTuple, SpinnakerLinkData> spinnakerLinks;
+	private final Map<InetIdTuple, @Valid SpinnakerLinkData> spinnakerLinks;
 
 	/** Map of map of map implementation done to allow access to submaps. */
 	// If never required this could be changed to single map with tuple key.
 	private final Map<InetAddress,
-			Map<FpgaId, Map<Integer, FPGALinkData>>> fpgaLinks;
+			Map<FpgaId, Map<Integer, @Valid FPGALinkData>>> fpgaLinks;
 
 	/** The coordinates of the chip used to boot the machine. */
+	@Valid
 	public final ChipLocation boot;
 
 	// Not final as currently could come from a chip added later.
 	private InetAddress bootEthernetAddress;
 
-	private final TreeMap<ChipLocation, Chip> chips;
+	private final TreeMap<@Valid ChipLocation, @Valid Chip> chips;
 	// private final Chip[][] chipArray;
 
 	/** The version of the Machine based on its height and Width. */
@@ -298,15 +302,6 @@ public class Machine implements MappableIterable<Chip> {
 	 */
 	public final Collection<Chip> chips() {
 		return unmodifiableCollection(chips.values());
-	}
-
-	/**
-	 * The locations of each chip in the machine.
-	 *
-	 * @return An unmodifiable
-	 */
-	public final Set<ChipLocation> chipLocations() {
-		return unmodifiableSet(chips.keySet());
 	}
 
 	/**
@@ -746,8 +741,8 @@ public class Machine implements MappableIterable<Chip> {
 					rootY + fpgaEnum.getY());
 			if (hasChipAt(location)
 					&& !hasLinkAt(location, fpgaEnum.direction)) {
-				fpgaLinks.computeIfAbsent(address, k -> new HashMap<>())
-						.computeIfAbsent(fpgaEnum.fpgaId, k -> new HashMap<>())
+				fpgaLinks.computeIfAbsent(address, __ -> new HashMap<>())
+						.computeIfAbsent(fpgaEnum.fpgaId, __ -> new HashMap<>())
 						.put(fpgaEnum.id,
 								new FPGALinkData(fpgaEnum.id, fpgaEnum.fpgaId,
 										location, fpgaEnum.direction, address));
@@ -904,20 +899,19 @@ public class Machine implements MappableIterable<Chip> {
 		var abnormalLinks = new HashMap<ChipLocation, Set<Direction>>();
 		for (var chip : chips.values()) {
 			for (var link : chip.router) {
-				if (!hasChipAt(link.destination)) {
-					abnormalLinks.computeIfAbsent(
-							link.source, k -> new HashSet<>())
-							.add(link.sourceLinkDirection);
-				} else {
-					var destChip = getChipAt(link.destination);
-					var inverse = destChip.router
-							.getLink(link.sourceLinkDirection.inverse());
-					if (isNull(inverse)) {
-						abnormalLinks.computeIfAbsent(
-								link.source, k -> new HashSet<>())
-								.add(link.sourceLinkDirection);
-					}
+				/*
+				 * If a link has both directions existing according to standard
+				 * rules, it's considered to be normal. Everything else is
+				 * abnormal.
+				 */
+				if (hasChipAt(link.destination)
+						&& getChipAt(link.destination).router
+								.hasLink(link.sourceLinkDirection.inverse())) {
+					continue;
 				}
+				abnormalLinks
+						.computeIfAbsent(link.source, __ -> new HashSet<>())
+						.add(link.sourceLinkDirection);
 			}
 		}
 		return unmodifiableMap(abnormalLinks);

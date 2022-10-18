@@ -20,6 +20,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
+
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
@@ -55,9 +58,11 @@ public class Vertex {
 	 * actual buffers used to do the recording (which are <i>circular</i>
 	 * buffers).
 	 */
+	@NotNull
 	private final MemoryLocation base;
 
 	/** The IDs of the regions recording. */
+	@NotNull
 	private final int[] recordedRegionIds;
 
 	/**

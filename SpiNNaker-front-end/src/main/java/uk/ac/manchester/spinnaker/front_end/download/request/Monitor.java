@@ -17,16 +17,21 @@
 package uk.ac.manchester.spinnaker.front_end.download.request;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
-import static java.util.Collections.unmodifiableList;
-import static java.util.Objects.isNull;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 
 import java.io.IOException;
 import java.util.List;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.ValidP;
+import uk.ac.manchester.spinnaker.machine.ValidX;
+import uk.ac.manchester.spinnaker.machine.ValidY;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
@@ -39,16 +44,19 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 @JsonFormat(shape = OBJECT)
 public class Monitor implements HasCoreLocation {
 	/** The X coordinate of the core this monitor is placed on. */
+	@ValidX
 	private final int x;
 
 	/** The Y coordinate of the core this monitor is placed on. */
+	@ValidY
 	private final int y;
 
 	/** The processor ID of the core this monitor is placed on. */
+	@ValidP
 	private final int p;
 
 	/** The vertex placements that this monitor will read. */
-	private final List<Placement> placements;
+	private final List<@Valid @NotNull Placement> placements;
 
 	/** The transaction id for this extra monitor. */
 	private int transactionId = 0;
@@ -78,11 +86,7 @@ public class Monitor implements HasCoreLocation {
 		this.x = x;
 		this.y = y;
 		this.p = p;
-		if (isNull(placements)) {
-			this.placements = List.of();
-		} else {
-			this.placements = placements;
-		}
+		this.placements = copy(placements);
 	}
 
 	@Override
@@ -128,10 +132,10 @@ public class Monitor implements HasCoreLocation {
 	}
 
 	/**
-	 * @return the placements
+	 * @return the placements (read-only)
 	 */
 	public List<Placement> getPlacements() {
-		return unmodifiableList(placements);
+		return placements;
 	}
 
 	@Override

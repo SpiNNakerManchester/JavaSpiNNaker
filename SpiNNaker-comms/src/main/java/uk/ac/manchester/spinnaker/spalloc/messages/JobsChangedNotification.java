@@ -16,14 +16,17 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import static java.util.Collections.unmodifiableList;
-import static java.util.Objects.isNull;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 /**
  * A response that describes what jobs have changed state.
  */
+@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public final class JobsChangedNotification implements Notification {
 	private List<Integer> jobsChanged = List.of();
 
@@ -47,9 +50,8 @@ public final class JobsChangedNotification implements Notification {
 	}
 
 	/** @param jobsChanged What jobs have changed. */
-	public void setJobsChanged(List<Integer> jobsChanged) {
-		this.jobsChanged = isNull(jobsChanged) ? List.of()
-				: unmodifiableList(jobsChanged);
+	void setJobsChanged(List<Integer> jobsChanged) {
+		this.jobsChanged = copy(jobsChanged);
 	}
 
 	@Override

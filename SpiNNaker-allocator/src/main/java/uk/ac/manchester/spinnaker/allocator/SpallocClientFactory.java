@@ -58,6 +58,8 @@ import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
@@ -287,7 +289,7 @@ public class SpallocClientFactory {
 				var conn = s.connection(uri);
 				var w = whereis(conn);
 				w.setMachineHandle(getMachine(w.getMachineName()));
-				w.setMachineRef(null);
+				w.clearMachineRef();
 				return w;
 			});
 		}
@@ -412,7 +414,7 @@ public class SpallocClientFactory {
 					// Assume we can cache this
 					for (var bmd : ms.machines) {
 						machineMap.computeIfAbsent(bmd.name,
-								name -> new MachineImpl(this, s, bmd));
+								__ -> new MachineImpl(this, s, bmd));
 					}
 					return ms.machines.stream()
 							.map(bmd -> machineMap.get(bmd.name))
@@ -629,8 +631,8 @@ public class SpallocClientFactory {
 				BriefMachineDescription bmd) {
 			super(client, session);
 			this.bmd = bmd;
-			this.deadBoards = bmd.deadBoards;
-			this.deadLinks = bmd.deadLinks;
+			this.deadBoards = List.copyOf(bmd.deadBoards);
+			this.deadLinks = List.copyOf(bmd.deadLinks);
 		}
 
 		@Override
@@ -679,32 +681,32 @@ public class SpallocClientFactory {
 					s.trackCookie(conn);
 				}
 			});
-			this.deadBoards = nbmd.deadBoards;
-			this.deadLinks = nbmd.deadLinks;
+			this.deadBoards = List.copyOf(nbmd.deadBoards);
+			this.deadLinks = List.copyOf(nbmd.deadLinks);
 		}
 
 		@Override
-		public WhereIs getBoardByTriad(int x, int y, int z) throws IOException {
-			return whereis(bmd.uri
-					.resolve(format("logical-board?x=%d&y=%d&z=%d", x, y, z)));
+		public WhereIs getBoard(TriadCoords coords) throws IOException {
+			return whereis(
+					bmd.uri.resolve(format("logical-board?x=%d&y=%d&z=%d",
+							coords.x, coords.y, coords.z)));
 		}
 
 		@Override
-		public WhereIs getBoardByPhysicalCoords(int cabinet, int frame,
-				int board) throws IOException {
+		public WhereIs getBoard(PhysicalCoords coords) throws IOException {
 			return whereis(bmd.uri.resolve(
 					format("physical-board?cabinet=%d&frame=%d&board=%d",
-							cabinet, frame, board)));
+							coords.c, coords.f, coords.b)));
 		}
 
 		@Override
-		public WhereIs getBoardByChip(HasChipLocation chip) throws IOException {
+		public WhereIs getBoard(HasChipLocation chip) throws IOException {
 			return whereis(bmd.uri.resolve(
 					format("chip?x=%d&y=%d", chip.getX(), chip.getY())));
 		}
 
 		@Override
-		public WhereIs getBoardByIPAddress(String address) throws IOException {
+		public WhereIs getBoard(String address) throws IOException {
 			return whereis(bmd.uri.resolve(
 					format("board-ip?address=%s", encode(address, UTF_8))));
 		}

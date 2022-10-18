@@ -27,6 +27,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_NNP;
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.machine.ValidP;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 
 /** A request to start a flood fill of data. */
@@ -60,7 +61,7 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	 *            between 1 and 17. If not specified, no application is started.
 	 */
 	public FloodFillEnd(byte nearestNeighbourID, AppID appID,
-			Iterable<Integer> processors) {
+			Iterable<@ValidP Integer> processors) {
 		this(nearestNeighbourID, appID, processors, false);
 	}
 
@@ -77,7 +78,7 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	 *            executing
 	 */
 	public FloodFillEnd(byte nearestNeighbourID, AppID appID,
-			Iterable<Integer> processors, boolean wait) {
+			Iterable<@ValidP Integer> processors, boolean wait) {
 		super(BOOT_MONITOR_CORE, CMD_NNP, argument1(nearestNeighbourID),
 				argument2(appID, processors, wait), NNP_FORWARD_RETRY);
 	}

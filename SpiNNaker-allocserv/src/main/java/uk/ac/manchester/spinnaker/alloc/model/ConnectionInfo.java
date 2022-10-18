@@ -21,16 +21,23 @@ import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
 import java.util.Objects;
 
+import javax.validation.Valid;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.google.errorprone.annotations.Immutable;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * Describes a connection by its chip and hostname.
+ *
+ * @see Connection
  */
 @JsonPropertyOrder({
 	"chip", "hostname"
@@ -41,21 +48,14 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  * Duplicated from uk.ac.manchester.spinnaker.spalloc.messages.Connection
  * because that name was too confusing with SQL about!
  */
+@Immutable
+@UsedInJavadocOnly(Connection.class)
 public final class ConnectionInfo {
-	private ChipLocation chip;
+	@Valid
+	private final ChipLocation chip;
 
-	private String hostname;
-
-	@JsonIgnore
-	private transient boolean immutable;
-
-	/**
-	 * Create with defaults.
-	 */
-	public ConnectionInfo() {
-		chip = null;
-		hostname = "";
-	}
+	@IPAddress
+	private final String hostname;
 
 	/**
 	 * Create.
@@ -75,23 +75,9 @@ public final class ConnectionInfo {
 		return chip;
 	}
 
-	void setChip(ChipLocation chip) {
-		if (immutable) {
-			throw new UnsupportedOperationException("object is immutable");
-		}
-		this.chip = chip;
-	}
-
 	/** @return Where to connect to to talk to the chip. */
 	public String getHostname() {
 		return hostname;
-	}
-
-	void setHostname(String hostname) {
-		if (immutable) {
-			throw new UnsupportedOperationException("object is immutable");
-		}
-		this.hostname = hostname;
 	}
 
 	@Override
@@ -106,7 +92,6 @@ public final class ConnectionInfo {
 
 	@Override
 	public int hashCode() {
-		immutable = true;
 		return Objects.hash(hostname, chip);
 	}
 

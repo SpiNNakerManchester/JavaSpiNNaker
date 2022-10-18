@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.spalloc.SupportUtils.Joinable;
+import uk.ac.manchester.spinnaker.utils.Daemon;
 import uk.ac.manchester.spinnaker.utils.OneShotEvent;
 
 class MockServer implements SupportUtils.IServer {
@@ -130,7 +131,7 @@ class MockServer implements SupportUtils.IServer {
 	public void advancedEmulationMode(BlockingDeque<String> send,
 			BlockingDeque<JSONObject> received,
 			BlockingDeque<JSONObject> keepaliveQueue, Joinable bgAccept) {
-		new SupportUtils.Daemon(() -> {
+		new Daemon(() -> {
 			try {
 				bgAccept.join();
 				launchKeepaliveListener(keepaliveQueue);
@@ -151,12 +152,12 @@ class MockServer implements SupportUtils.IServer {
 			} catch (Exception e) {
 				log.error("failure in mock server", e);
 			}
-		}, "mock server advanced emulator");
+		}, "mock server advanced emulator").start();
 	}
 
 	private static void launchKeepaliveListener(
 			BlockingDeque<JSONObject> keepaliveQueue) {
-		new SupportUtils.Daemon(() -> {
+		new Daemon(() -> {
 			try (var s = new MockServer()) {
 				s.connect();
 				while (true) {
@@ -172,6 +173,6 @@ class MockServer implements SupportUtils.IServer {
 			} catch (Exception e) {
 				log.error("failure in keepalive listener", e);
 			}
-		}, "mock server keepalive listener");
+		}, "mock server keepalive listener").start();
 	}
 }

@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 
 /**
  * A mapping that says how to go from one board's coordinates (only the Z
@@ -55,6 +56,7 @@ public final class DirInfo extends SQLQueries {
 	/**
 	 * When your Z coordinate is this.
 	 */
+	@ValidTriadZ
 	public final int z;
 
 	/** When you are moving in this direction. */
@@ -76,7 +78,7 @@ public final class DirInfo extends SQLQueries {
 		this.dy = dy;
 		this.dz = dz;
 
-		MAP.computeIfAbsent(z, key -> new HashMap<>()).put(d, this);
+		MAP.computeIfAbsent(z, __ -> new HashMap<>()).put(d, this);
 	}
 
 	/**

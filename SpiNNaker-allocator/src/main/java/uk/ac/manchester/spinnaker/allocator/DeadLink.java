@@ -29,9 +29,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
 	"end1", "end2"
 })
-public class DeadLink {
+public final class DeadLink {
 	/** One end of a dead link. */
-	public static class End {
+	public static final class End {
 		/** The board at the end of a dead link. */
 		public final BoardCoords board;
 

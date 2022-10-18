@@ -16,9 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.messages.model;
 
-import static java.util.Collections.unmodifiableCollection;
 import static java.util.Objects.isNull;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
 
 import java.util.Collection;
@@ -118,7 +117,7 @@ public class DiagnosticFilter {
 		if (isNull(collection) || collection.isEmpty()) {
 			return List.of(defaults);
 		}
-		return unmodifiableCollection(collection);
+		return List.copyOf(collection);
 	}
 
 	/**
@@ -129,20 +128,23 @@ public class DiagnosticFilter {
 	public DiagnosticFilter(int encodedValue) {
 		enableInterrupt = bitSet(encodedValue, ENABLE_INTERRUPT_OFFSET);
 		emergencyMode = bitSet(encodedValue, EMERGENCY_ROUTE_MODE_OFFSET);
-		destinations = unmodifiableCollection(Stream.of(Destination.values())
-				.filter(d -> bitSet(encodedValue, d.bit)).collect(toList()));
-		sources = unmodifiableCollection(Stream.of(Source.values())
-				.filter(s -> bitSet(encodedValue, s.bit)).collect(toList()));
-		payloads = unmodifiableCollection(Stream.of(PayloadStatus.values())
-				.filter(p -> bitSet(encodedValue, p.bit)).collect(toList()));
-		defaultStatuses = unmodifiableCollection(Stream
-				.of(DefaultRoutingStatus.values())
-				.filter(dr -> bitSet(encodedValue, dr.bit)).collect(toList()));
-		emergencyStatuses = unmodifiableCollection(Stream
-				.of(EmergencyRoutingStatus.values())
-				.filter(er -> bitSet(encodedValue, er.bit)).collect(toList()));
-		packetTypes = unmodifiableCollection(Stream.of(PacketType.values())
-				.filter(pt -> bitSet(encodedValue, pt.bit)).collect(toList()));
+		destinations = Stream.of(Destination.values())
+				.filter(d -> d.bitSet(encodedValue))
+				.collect(toUnmodifiableList());
+		sources = Stream.of(Source.values()).filter(s -> s.bitSet(encodedValue))
+				.collect(toUnmodifiableList());
+		payloads = Stream.of(PayloadStatus.values())
+				.filter(p -> p.bitSet(encodedValue))
+				.collect(toUnmodifiableList());
+		defaultStatuses = Stream.of(DefaultRoutingStatus.values())
+				.filter(dr -> dr.bitSet(encodedValue))
+				.collect(toUnmodifiableList());
+		emergencyStatuses = Stream.of(EmergencyRoutingStatus.values())
+				.filter(er -> er.bitSet(encodedValue))
+				.collect(toUnmodifiableList());
+		packetTypes = Stream.of(PacketType.values())
+				.filter(pt -> pt.bitSet(encodedValue))
+				.collect(toUnmodifiableList());
 	}
 
 	private static boolean bitSet(int value, int bitIndex) {
@@ -237,11 +239,32 @@ public class DiagnosticFilter {
 		return data;
 	}
 
+	/** How to get the bit index of an enum value. */
+	public interface GetBitIndex {
+		/**
+		 * Get the bit index of this value.
+		 *
+		 * @return The encoded value's bit index.
+		 */
+		int bit();
+
+		/**
+		 * Is the bit for this enum value set in the given word?
+		 *
+		 * @param value
+		 *            The word to examine.
+		 * @return True if the bit is set, false if it isn't.
+		 */
+		default boolean bitSet(int value) {
+			return ((value >> bit()) & 0x1) == 1;
+		}
+	}
+
 	/**
 	 * Default routing flags for the diagnostic filters. Note that only one has
 	 * to match for the counter to be incremented.
 	 */
-	public enum DefaultRoutingStatus {
+	public enum DefaultRoutingStatus implements GetBitIndex {
 		/** Packet is to be default routed. */
 		DEFAULT_ROUTED(0),
 		/** Packet is not to be default routed. */
@@ -268,13 +291,18 @@ public class DiagnosticFilter {
 		static DefaultRoutingStatus get(int value) {
 			return MAP.get(value);
 		}
+
+		@Override
+		public int bit() {
+			return bit;
+		}
 	}
 
 	/**
 	 * Destination flags for the diagnostic filters. Note that only one has to
 	 * match for the counter to be incremented.
 	 */
-	public enum Destination {
+	public enum Destination implements GetBitIndex {
 		/** Destination is to dump the packet. */
 		DUMP(0),
 		/** Destination is a local core (but not the monitor core). */
@@ -315,13 +343,18 @@ public class DiagnosticFilter {
 		static Destination get(int value) {
 			return MAP.get(value);
 		}
+
+		@Override
+		public int bit() {
+			return bit;
+		}
 	}
 
 	/**
 	 * Emergency routing status flags for the diagnostic filters. Note that only
 	 * one has to match for the counter to be incremented.
 	 */
-	public enum EmergencyRoutingStatus {
+	public enum EmergencyRoutingStatus implements GetBitIndex {
 		/** Packet is not emergency routed. */
 		NORMAL(0),
 		/**
@@ -361,13 +394,18 @@ public class DiagnosticFilter {
 		static EmergencyRoutingStatus get(int value) {
 			return MAP.get(value);
 		}
+
+		@Override
+		public int bit() {
+			return bit;
+		}
 	}
 
 	/**
 	 * Packet type flags for the diagnostic filters. Note that only one has to
 	 * match for the counter to be incremented.
 	 */
-	public enum PacketType {
+	public enum PacketType implements GetBitIndex {
 		/** Packet is multicast. */
 		MULTICAST(0),
 		/** Packet is point-to-point. */
@@ -398,13 +436,18 @@ public class DiagnosticFilter {
 		static PacketType get(int value) {
 			return MAP.get(value);
 		}
+
+		@Override
+		public int bit() {
+			return bit;
+		}
 	}
 
 	/**
 	 * Payload flags for the diagnostic filters. Note that only one has to match
 	 * for the counter to be incremented.
 	 */
-	public enum PayloadStatus {
+	public enum PayloadStatus implements GetBitIndex {
 		/** Packet has a payload. */
 		WITH_PAYLOAD(0),
 		/** Packet doesn't have a payload. */
@@ -431,13 +474,18 @@ public class DiagnosticFilter {
 		static PayloadStatus get(int value) {
 			return MAP.get(value);
 		}
+
+		@Override
+		public int bit() {
+			return bit;
+		}
 	}
 
 	/**
 	 * Source flags for the diagnostic filters. Note that only one has to match
 	 * for the counter to be incremented.
 	 */
-	public enum Source {
+	public enum Source implements GetBitIndex {
 		/** Source is a local core. */
 		LOCAL(0),
 		/** Source is not a local core. */
@@ -463,6 +511,11 @@ public class DiagnosticFilter {
 		 */
 		static Source get(int value) {
 			return MAP.get(value);
+		}
+
+		@Override
+		public int bit() {
+			return bit;
 		}
 	}
 }

@@ -17,9 +17,10 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_MACHINE_POWER;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 
 import java.net.URI;
 import java.util.List;
@@ -69,10 +70,15 @@ public class SubMachineResponse {
 		height = m.getHeight();
 		depth = m.getDepth();
 		machineName = m.getMachine().getName();
-		connections = unmodifiableList(m.getConnections());
-		boards = unmodifiableList(m.getBoards());
-		power = ui.getAbsolutePathBuilder().path(JOB_MACHINE_POWER).build();
-		machineRef = ui.getBaseUriBuilder().path(MACH + "/{name}")
-				.build(m.getMachine().getName());
+		connections = copy(m.getConnections());
+		boards = copy(m.getBoards());
+		if (nonNull(ui)) {
+			power = ui.getAbsolutePathBuilder().path(JOB_MACHINE_POWER).build();
+			machineRef = ui.getBaseUriBuilder().path(MACH + "/{name}")
+					.build(m.getMachine().getName());
+		} else {
+			power = null;
+			machineRef = null;
+		}
 	}
 }

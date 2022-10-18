@@ -16,8 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
@@ -32,10 +31,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 
-import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BMPCoords;
-import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BoardPhysicalCoords;
-import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
 import uk.ac.manchester.spinnaker.alloc.db.MemDBTestBase;
+import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
 import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 
@@ -69,6 +68,9 @@ class MDefLoaderTest extends MemDBTestBase {
 	@Value("classpath:three-board-example.json")
 	private Resource threeBoard;
 
+	@Value("classpath:bad-board-example.json")
+	private Resource badBoard;
+
 	@Test
 	void readSingleBoardExample() throws IOException {
 		var machines = loader.readMachineDefinitions(singleBoard.getFile());
@@ -82,8 +84,18 @@ class MDefLoaderTest extends MemDBTestBase {
 		assertEquals(Set.of(new TriadCoords(0, 0, 0)),
 				m.getSpinnakerIPs().keySet());
 		assertEquals(Set.of(new BMPCoords(0, 0)), m.getBmpIPs().keySet());
-		assertEquals(Set.of(new BoardPhysicalCoords(0, 0, 0)),
+		assertEquals(Set.of(new PhysicalCoords(0, 0, 0)),
 				Set.copyOf(m.getBoardLocations().values()));
+	}
+
+	@Test
+	void readBadBoardExample() throws IOException {
+		var e = assertThrows(IOException.class,
+				() -> loader.readMachineDefinitions(badBoard.getFile()));
+		assertEquals(
+				"failed to validate configuration: "
+						+ "'1.2.3.4.5.not-an-ip' is a bad IPv4 address",
+				e.getMessage());
 	}
 
 	@Test

@@ -55,7 +55,7 @@ import uk.ac.manchester.spinnaker.messages.scp.GetChipInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 
 /** A process for getting the machine details over a set of connections. */
-class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
+class GetMachineProcess extends TxrxProcess {
 	private static final Logger log = getLogger(GetMachineProcess.class);
 
 	/** A dictionary of (x, y) &rarr; ChipInfo. */
@@ -105,7 +105,8 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	GetMachineProcess(ConnectionSelector<SCPConnection> connectionSelector,
+	GetMachineProcess(
+			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			Set<ChipLocation> ignoreChips,
 			Map<ChipLocation, Set<Integer>> ignoreCoresMap,
 			Map<ChipLocation, Set<Direction>> ignoreLinksMap,

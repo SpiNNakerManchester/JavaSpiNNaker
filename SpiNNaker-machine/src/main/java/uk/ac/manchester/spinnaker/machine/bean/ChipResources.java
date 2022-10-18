@@ -16,22 +16,28 @@
  */
 package uk.ac.manchester.spinnaker.machine.bean;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+
+import uk.ac.manchester.spinnaker.machine.tags.TagID;
 
 /**
  * Bean to represent values on a Chip that are typically the same on all Chips.
  *
  * @author Christian-B
  */
+@JsonDeserialize(builder = ChipResources.Builder.class)
 public class ChipResources {
 	/**
 	 * Symbolic value to specify no specific value has been set.
-	 *
+	 * <p>
 	 * This allows the value 0 to be declared as specifically set.
 	 */
 	public static final int NOT_SET = -1;
@@ -42,7 +48,7 @@ public class ChipResources {
 
 	private int sdram;
 
-	private List<Integer> tags;
+	private List<@TagID Integer> tags;
 
 	private int routerEntries;
 
@@ -54,6 +60,15 @@ public class ChipResources {
 		monitors = NOT_SET;
 		sdram = NOT_SET;
 		routerEntries = NOT_SET;
+	}
+
+	private ChipResources(int cores, int monitors, int sdram,
+			List<Integer> tags, int routerEntries) {
+		this.cores = cores;
+		this.monitors = monitors;
+		this.sdram = sdram;
+		this.tags = tags;
+		this.routerEntries = routerEntries;
 	}
 
 	/**
@@ -92,26 +107,10 @@ public class ChipResources {
 	}
 
 	/**
-	 * @param cores
-	 *            the cores to set
-	 */
-	public void setCores(int cores) {
-		this.cores = cores;
-	}
-
-	/**
 	 * @return the monitors
 	 */
 	public int getMonitors() {
 		return monitors;
-	}
-
-	/**
-	 * @param monitors
-	 *            the monitors to set
-	 */
-	public void setMonitors(int monitors) {
-		this.monitors = monitors;
 	}
 
 	/**
@@ -122,26 +121,13 @@ public class ChipResources {
 	}
 
 	/**
-	 * @param sdram
-	 *            the sdram to set
-	 */
-	public void setSdram(int sdram) {
-		this.sdram = sdram;
-	}
-
-	/**
 	 * @return the tags
 	 */
 	public List<Integer> getTags() {
-		return tags;
-	}
-
-	/**
-	 * @param tags
-	 *            the tags to set
-	 */
-	public void setTags(List<Integer> tags) {
-		this.tags = tags;
+		if (tags == null) {
+			tags = List.of();
+		}
+		return List.copyOf(tags);
 	}
 
 	/**
@@ -149,14 +135,6 @@ public class ChipResources {
 	 */
 	public int getRouterEntries() {
 		return routerEntries;
-	}
-
-	/**
-	 * @param routerEntries
-	 *            the router_entries to set
-	 */
-	public void setRouterEntries(int routerEntries) {
-		this.routerEntries = routerEntries;
 	}
 
 	@Override
@@ -184,5 +162,53 @@ public class ChipResources {
 		builder.setLength(builder.length() - 2);
 		builder.append("]");
 		return builder.toString();
+	}
+
+	@JsonPOJOBuilder
+	static class Builder {
+		private int cores = NOT_SET;
+
+		private int monitors = NOT_SET;
+
+		private int sdram = NOT_SET;
+
+		private List<Integer> tags = List.of();
+
+		private int routerEntries = NOT_SET;
+
+		@CanIgnoreReturnValue
+		public Builder withCores(int cores) {
+			this.cores = cores;
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		public Builder withMonitors(int monitors) {
+			this.monitors = monitors;
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		public Builder withSdram(int sdram) {
+			this.sdram = sdram;
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		public Builder withTags(List<Integer> tags) {
+			this.tags = List.copyOf(tags);
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		public Builder withRouterEntries(int routerEntries) {
+			this.routerEntries = routerEntries;
+			return this;
+		}
+
+		public ChipResources build() {
+			return new ChipResources(cores, monitors, sdram, tags,
+					routerEntries);
+		}
 	}
 }

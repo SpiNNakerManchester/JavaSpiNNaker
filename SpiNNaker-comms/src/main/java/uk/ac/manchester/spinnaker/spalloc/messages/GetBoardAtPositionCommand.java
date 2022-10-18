@@ -16,6 +16,11 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+
 /**
  * Request the logical location of a board.
  *
@@ -33,13 +38,13 @@ public class GetBoardAtPositionCommand extends Command<Integer> {
 	 * @param coords
 	 *            The logical coordinates of the board.
 	 */
-	public GetBoardAtPositionCommand(String machine,
-			BoardPhysicalCoordinates coords) {
+	public GetBoardAtPositionCommand(@NotBlank String machine,
+			@Valid PhysicalCoords coords) {
 		super("get_board_at_position");
 		addKwArg("machine_name", machine);
 		// The current spalloc server expects the param names x, y, z
-		addKwArg("x", coords.getCabinet());
-		addKwArg("y", coords.getFrame());
-		addKwArg("z", coords.getBoard());
+		addKwArg("x", coords.c);
+		addKwArg("y", coords.f);
+		addKwArg("z", coords.b);
 	}
 }

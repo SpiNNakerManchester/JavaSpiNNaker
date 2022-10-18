@@ -660,18 +660,18 @@ final class ClientSession implements Session {
 	public <T, Exn extends Exception> T withRenewal(Action<T, Exn> action)
 			throws Exn, IOException {
 		try {
-			return action.act();
+			return action.call();
 		} catch (SpallocException e) {
 			if (e.getResponseCode() == HTTP_UNAUTHORIZED) {
 				renew(true);
-				return action.act();
+				return action.call();
 			}
 			throw e;
 		} catch (IOException e) {
 			// Need to read the error message, like a barbarian!
 			if (e.getMessage().contains(HTTP_UNAUTHORIZED_MESSAGE)) {
 				renew(true);
-				return action.act();
+				return action.call();
 			}
 			throw e;
 		}

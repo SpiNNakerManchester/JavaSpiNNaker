@@ -22,9 +22,11 @@ import com.google.errorprone.annotations.Immutable;
 @Immutable
 public final class MachineDimensions {
 	/** The width of the machine in chips. */
+	@ValidMachineWidth
 	public final int width;
 
 	/** The height of the machine in chips. */
+	@ValidMachineHeight
 	public final int height;
 
 	/**

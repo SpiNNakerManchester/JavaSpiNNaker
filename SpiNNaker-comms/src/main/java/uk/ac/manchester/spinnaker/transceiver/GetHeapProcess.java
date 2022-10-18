@@ -37,7 +37,7 @@ import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 /**
  * Get a description of the heap.
  */
-class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
+class GetHeapProcess extends TxrxProcess {
 	private static final int HEAP_HEADER_SIZE = 16;
 
 	private static final int HEAP_BLOCK_HEADER_SIZE = 8;
@@ -50,7 +50,8 @@ class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	GetHeapProcess(ConnectionSelector<SCPConnection> connectionSelector,
+	GetHeapProcess(
+			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}

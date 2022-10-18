@@ -22,15 +22,22 @@ import static java.util.Objects.nonNull;
 import java.net.InetAddress;
 import java.util.Objects;
 
+import javax.validation.constraints.NotNull;
+
+import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
+
 /** Common properties of SpiNNaker IP tags and reverse IP tags. */
 public abstract class Tag implements Comparable<Tag> {
 	/** The board address associated with this tagID. */
+	@NotNull
 	private final InetAddress boardAddress;
 
 	/** The tagID ID associated with this tagID. */
+	@TagID
 	private final int tagID;
 
 	/** The port number associated with this tagID. */
+	@UDPPort
 	private Integer port;
 
 	/**
@@ -41,7 +48,7 @@ public abstract class Tag implements Comparable<Tag> {
 	 * @param tagID
 	 *            The ID of the tag (0-7?)
 	 * @param port
-	 *            The port of the tag.
+	 *            The UDP port of the tag.
 	 */
 	Tag(InetAddress boardAddress, int tagID, Integer port) {
 		this.boardAddress = Objects.requireNonNull(boardAddress);

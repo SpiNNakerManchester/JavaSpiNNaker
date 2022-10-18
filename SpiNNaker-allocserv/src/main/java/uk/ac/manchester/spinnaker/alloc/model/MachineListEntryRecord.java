@@ -16,12 +16,15 @@
  */
 package uk.ac.manchester.spinnaker.alloc.model;
 
-import static java.util.Collections.unmodifiableList;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 /**
  * Entry in a table of machines. The table is like this:
@@ -59,17 +62,21 @@ import java.util.Optional;
 public class MachineListEntryRecord {
 	private int id;
 
+	@NotBlank
 	private String name;
 
 	private URI detailsUrl;
 
+	@Positive
 	private int numBoards;
 
+	@PositiveOrZero
 	private int numInUse;
 
+	@PositiveOrZero
 	private int numJobs;
 
-	private List<String> tags = new ArrayList<>();
+	private List<@NotBlank String> tags = List.of();
 
 	/** @return the machine ID */
 	public int getId() {
@@ -133,11 +140,11 @@ public class MachineListEntryRecord {
 
 	/** @return the machine's tags */
 	public List<String> getTags() {
-		return unmodifiableList(tags);
+		return tags;
 	}
 
 	/** @param tags the machine's tags */
 	public void setTags(List<String> tags) {
-		this.tags = tags;
+		this.tags = copy(tags);
 	}
 }

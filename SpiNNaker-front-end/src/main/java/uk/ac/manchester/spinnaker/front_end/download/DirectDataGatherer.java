@@ -112,7 +112,7 @@ public class DirectDataGatherer extends DataGatherer {
 		// TODO get this info from the database, if the DB knows it
 		Map<MemoryLocation, ByteBuffer> map;
 		synchronized (coreTableCache) {
-			map = coreTableCache.computeIfAbsent(core, k -> new HashMap<>());
+			map = coreTableCache.computeIfAbsent(core, __ -> new HashMap<>());
 		}
 		// Individual cores are only ever handled from one thread
 		var buffer = map.get(vertex.getBase());

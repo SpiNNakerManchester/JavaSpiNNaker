@@ -45,14 +45,30 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+
 import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
-import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
+import uk.ac.manchester.spinnaker.machine.ValidP;
+import uk.ac.manchester.spinnaker.machine.ValidX;
+import uk.ac.manchester.spinnaker.machine.ValidY;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobDescription;
@@ -60,6 +76,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.JobMachineInfo;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobState;
 import uk.ac.manchester.spinnaker.spalloc.messages.Machine;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * The core of tasks that handle connections by clients.
@@ -150,7 +167,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			 */
 		} catch (IOException e) {
 			log.error("problem with socket {}", sock, e);
-		} catch (InterruptedException e) {
+		} catch (InterruptedException interrupted) {
 			// ignored
 		} finally {
 			log.debug("closing down connection from {}", sock);
@@ -550,16 +567,18 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
-	protected abstract Optional<Integer> createJobNumBoards(int numBoards,
-			Map<String, Object> kwargs, byte[] cmd) throws TaskException;
+	protected abstract Optional<Integer> createJobNumBoards(
+			@Positive int numBoards,
+			Map<@NotBlank String, @NotNull Object> kwargs, byte[] cmd)
+			throws TaskException;
 
 	/**
 	 * Create a job asking for a rectangle of boards.
 	 *
 	 * @param width
-	 *            Width of rectangle in boards.
+	 *            Width of rectangle in triads.
 	 * @param height
-	 *            Height of rectangle in boards.
+	 *            Height of rectangle in triads.
 	 * @param kwargs
 	 *            Keyword argument map.
 	 * @param cmd
@@ -568,8 +587,9 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
-	protected abstract Optional<Integer> createJobRectangle(int width,
-			int height, Map<String, Object> kwargs, byte[] cmd)
+	protected abstract Optional<Integer> createJobRectangle(
+			@ValidTriadWidth int width, @ValidTriadHeight int height,
+			Map<@NotBlank String, @NotNull Object> kwargs, byte[] cmd)
 			throws TaskException;
 
 	/**
@@ -586,7 +606,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 *             If anything goes wrong.
 	 */
 	protected abstract Optional<Integer> createJobSpecificBoard(
-			TriadCoords coords, Map<String, Object> kwargs, byte[] cmd)
+			@Valid TriadCoords coords,
+			Map<@NotBlank String, @NotNull Object> kwargs, byte[] cmd)
 			throws TaskException;
 
 	/**
@@ -618,7 +639,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 *             If anything goes wrong.
 	 */
 	protected abstract BoardCoordinates getBoardAtPhysicalPosition(
-			String machineName, int cabinet, int frame, int board)
+			@NotBlank String machineName, @ValidCabinetNumber int cabinet,
+			@ValidFrameNumber int frame, @ValidBoardNumber int board)
 			throws TaskException;
 
 	/**
@@ -637,7 +659,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 *             If anything goes wrong.
 	 */
 	protected abstract BoardPhysicalCoordinates getBoardAtLogicalPosition(
-			String machineName, int x, int y, int z) throws TaskException;
+			@NotBlank String machineName, @ValidTriadX int x,
+			@ValidTriadY int y, @ValidTriadZ int z) throws TaskException;
 
 	/**
 	 * Get information about the machine allocated to a job.
@@ -746,8 +769,9 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * @param description
 	 *            Optional descriptive text about the problem.
 	 */
-	protected abstract void reportProblem(String address, Integer x, Integer y,
-			Integer p, String description);
+	protected abstract void reportProblem(@IPAddress String address,
+			@ValidX Integer x, @ValidY Integer y, @ValidP Integer p,
+			String description);
 
 	/**
 	 * Get the service version.
@@ -771,8 +795,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
-	protected abstract WhereIs whereIsJobChip(int jobId, int x, int y)
-			throws TaskException;
+	protected abstract WhereIs whereIsJobChip(int jobId, @ValidX int x,
+			@ValidY int y) throws TaskException;
 
 	/**
 	 * Describe where a chip is within a machine.
@@ -787,8 +811,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
-	protected abstract WhereIs whereIsMachineChip(String machineName, int x,
-			int y) throws TaskException;
+	protected abstract WhereIs whereIsMachineChip(@NotBlank String machineName,
+			@ValidX int x, @ValidY int y) throws TaskException;
 
 	/**
 	 * Describe where a board is within a machine.
@@ -805,8 +829,9 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
-	protected abstract WhereIs whereIsMachineLogicalBoard(String machineName,
-			int x, int y, int z) throws TaskException;
+	protected abstract WhereIs whereIsMachineLogicalBoard(
+			@NotBlank String machineName, @ValidTriadX int x,
+			@ValidTriadY int y, @ValidTriadZ int z) throws TaskException;
 
 	/**
 	 * Describe where a board is within a machine.
@@ -824,7 +849,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 *             If anything goes wrong.
 	 */
 	protected abstract WhereIs whereIsMachinePhysicalBoard(String machineName,
-			int cabinet, int frame, int board) throws TaskException;
+			@ValidCabinetNumber int cabinet, @ValidFrameNumber int frame,
+			@ValidBoardNumber int board) throws TaskException;
 
 	private static Integer optInt(List<?> args) {
 		return args.isEmpty() ? null : parseDec(args, 0);

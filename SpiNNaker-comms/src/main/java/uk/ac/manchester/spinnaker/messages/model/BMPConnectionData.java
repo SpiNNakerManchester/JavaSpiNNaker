@@ -18,8 +18,7 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.String.format;
 import static java.net.InetAddress.getByAddress;
-import static java.util.Collections.unmodifiableCollection;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static java.util.stream.IntStream.range;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 
@@ -28,30 +27,34 @@ import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.List;
 
+import javax.validation.Valid;
+
+import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
+import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
+import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
+
 /**
  * Contains the details of a connection to a SpiNNaker Board Management
  * Processor (BMP).
  */
 public class BMPConnectionData {
 	/** The boards to be addressed. Unmodifiable. */
-	public final Collection<Integer> boards;
+	public final Collection<@Valid BMPBoard> boards;
 
-	/** The ID of the cabinet that contains the frame that contains the BMPs. */
-	public final int cabinet;
-
-	/**
-	 * The ID of the frame that contains the BMPs. Frames are contained within a
-	 * cabinet.
-	 */
-	public final int frame;
+	/** The coordinates of the BMP that manages a set of boards. */
+	@Valid
+	public final BMPCoords bmp;
 
 	/** The IP address of the BMP. */
+	@IPAddress
 	public final InetAddress ipAddress;
 
 	/**
 	 * The port number associated with the BMP connection, or {@code null} for
 	 * the default.
 	 */
+	@UDPPort
 	public final Integer portNumber;
 
 	/**
@@ -63,10 +66,25 @@ public class BMPConnectionData {
 	 */
 	public BMPConnectionData(int cabinet, int frame, InetAddress ipAddress,
 			Collection<Integer> boards, Integer portNumber) {
-		this.cabinet = cabinet;
-		this.frame = frame;
+		this.bmp = new BMPCoords(cabinet, frame);
 		this.ipAddress = ipAddress;
-		this.boards = unmodifiableCollection(boards);
+		this.boards = boards.stream().map(BMPBoard::new)
+				.collect(toUnmodifiableList());
+		this.portNumber = portNumber;
+	}
+
+	/**
+	 * @param coords The coordinates of the BMP.
+	 * @param ipAddress The address of the BMP.
+	 * @param boards The boards controlled by the BMP.
+	 * @param portNumber The BMP's port.
+	 */
+	public BMPConnectionData(BMPCoords coords, InetAddress ipAddress,
+			Collection<Integer> boards, Integer portNumber) {
+		this.bmp = coords;
+		this.ipAddress = ipAddress;
+		this.boards = boards.stream().map(BMPBoard::new)
+				.collect(toUnmodifiableList());
 		this.portNumber = portNumber;
 	}
 
@@ -107,25 +125,25 @@ public class BMPConnectionData {
 		portNumber = SCP_SCAMP_PORT;
 
 		// Assume a single board with no cabinet or frame specified
-		cabinet = 0;
-		frame = 0;
+		bmp = new BMPCoords(0, 0);
 
 		// add board scope for each split
 		// if null, the end user didn't enter anything, so assume one board
 		// starting at position 0
 		if (numBoards == 0) {
-			boards = List.of(0);
+			boards = List.of(new BMPBoard(0));
 		} else {
-			boards = unmodifiableCollection(
-					range(0, numBoards).boxed().collect(toList()));
+			boards = range(0, numBoards).mapToObj(BMPBoard::new)
+					.collect(toUnmodifiableList());
 		}
 	}
 
 	@Override
 	public String toString() {
 		return format(
-				"(c:%d,f:%d,b:%s...; %s)", cabinet, frame, boards.stream()
-						.findFirst().map(i -> Integer.toString(i)).orElse(""),
+				"(c:%d,f:%d,b:%s; %s)", bmp.cabinet, bmp.frame,
+				boards.stream().findFirst()
+						.map(board -> board.board + "...").orElse("<empty>"),
 				ipAddress);
 	}
 }

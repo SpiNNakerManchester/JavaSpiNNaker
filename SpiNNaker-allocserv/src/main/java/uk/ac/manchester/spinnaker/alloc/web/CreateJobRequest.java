@@ -24,8 +24,6 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -34,7 +32,15 @@ import javax.validation.constraints.PositiveOrZero;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.errorprone.annotations.Keep;
 
-import uk.ac.manchester.spinnaker.alloc.model.IPAddress;
+import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * A request to create a job.
@@ -44,7 +50,7 @@ import uk.ac.manchester.spinnaker.alloc.model.IPAddress;
 @SuppressWarnings("checkstyle:visibilitymodifier")
 public class CreateJobRequest {
 	/**
-	 * Who owns the job.
+	 * Who owns the job. Ignored when the job is submitted by a non-admin.
 	 */
 	public String owner;
 
@@ -72,9 +78,9 @@ public class CreateJobRequest {
 	public Integer numBoards;
 
 	/**
-	 * The dimensions of rectangle of boards to allocate. May be {@code null} to
-	 * let one of the other selectors ({@link #numBoards}, {@link #board}) make
-	 * the choice.
+	 * The dimensions of rectangle of triads of boards to allocate. May be
+	 * {@code null} to let one of the other selectors ({@link #numBoards},
+	 * {@link #board}) make the choice.
 	 */
 	@Valid
 	public Dimensions dimensions;
@@ -160,44 +166,43 @@ public class CreateJobRequest {
 
 	/** Describes a request for an allocation of given dimensions. */
 	public static class Dimensions {
-		/** The width of the rectangle of boards to allocate. */
-		@Positive(message = "width must be at least 1")
+		/** The width of the rectangle of boards to allocate, in triads. */
+		@ValidTriadWidth
 		public int width;
 
-		/** The height of the rectangle of boards to allocate. */
-		@Positive(message = "height must be at least 1")
+		/** The height of the rectangle of boards to allocate, in triads. */
+		@ValidTriadHeight
 		public int height;
 	}
 
 	/** Describes a request for a specific board. */
 	public static class SpecificBoard {
 		/** The X triad coordinate of the board. */
-		@PositiveOrZero(message = "x must be at least 0")
+		@ValidTriadX
 		public Integer x;
 
 		/** The Y triad coordinate of the board. */
-		@PositiveOrZero(message = "y must be at least 0")
+		@ValidTriadY
 		public Integer y;
 
 		/** The Z triad coordinate of the board. */
-		@Min(value = 0, message = "z must be at least 0")
-		@Max(value = 2, message = "z must be at most 2")
+		@ValidTriadZ
 		public Integer z;
 
 		/** The physical cabinet number of the board. */
-		@PositiveOrZero(message = "cabinet must be at least 0")
+		@ValidCabinetNumber
 		public Integer cabinet;
 
 		/** The physical frame number of the board. */
-		@PositiveOrZero(message = "frame must be at least 0")
+		@ValidFrameNumber
 		public Integer frame;
 
 		/** The physical board number of the board. */
-		@PositiveOrZero(message = "board must be at least 0")
+		@ValidBoardNumber
 		public Integer board;
 
 		/** The IP address of the board. */
-		@IPAddress(message = "address must be an IP address")
+		@IPAddress(nullOK = true, message = "address must be an IP address")
 		public String address;
 
 		@JsonIgnore

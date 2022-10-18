@@ -42,7 +42,8 @@ import org.springframework.validation.annotation.Validated;
 
 import com.google.errorprone.annotations.Keep;
 
-import uk.ac.manchester.spinnaker.alloc.model.IPAddress;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
+import uk.ac.manchester.spinnaker.utils.validation.TCPPort;
 
 /**
  * Spalloc service management properties. These are all intended to be set via
@@ -1780,10 +1781,6 @@ public class SpallocProperties {
 
 	/** Settings relating to the v1 spalloc configuration interface. */
 	public static class CompatibilityProperties {
-		private static final int MIN_PORT = 1024;
-
-		private static final int MAX_PORT = 65535;
-
 		/**
 		 * Whether to turn the spalloc version 1 compatibility service interface
 		 * on.
@@ -1799,7 +1796,7 @@ public class SpallocProperties {
 		/** What hostname to run the spalloc v1 compatibility service on. */
 		private String host;
 
-		/** What UDP port to run the spalloc v1 compatibility service on. */
+		/** What TCP port to run the spalloc v1 compatibility service on. */
 		private int port;
 
 		/** How long to wait for the executor to shut down, maximum. */
@@ -1846,7 +1843,7 @@ public class SpallocProperties {
 		 *            What hostname to run the spalloc v1 compatibility service
 		 *            on.
 		 * @param port
-		 *            What UDP port to run the spalloc v1 compatibility service
+		 *            What TCP port to run the spalloc v1 compatibility service
 		 *            on.
 		 * @param serviceUser
 		 *            What user to run jobs submitted through the spalloc v1
@@ -1932,9 +1929,10 @@ public class SpallocProperties {
 			this.host = host;
 		}
 
-		/** @return What port to run the spalloc v1 compatibility service on. */
-		@Min(MIN_PORT)
-		@Max(MAX_PORT)
+		/**
+		 * @return What TCP port to run the spalloc v1 compatibility service on.
+		 */
+		@TCPPort(ephemeral = false)
 		public int getPort() {
 			return port;
 		}

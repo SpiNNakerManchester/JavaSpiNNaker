@@ -33,10 +33,16 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.tags.TagID;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
+import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
 
 /**
  * An SCP Request to set a (forward) IP Tag. Forward IP tags are tags that
@@ -66,8 +72,10 @@ public class IPTagSet extends SCPRequest<CheckOKResponse> {
 	 * @param useSender
 	 *            if the sender's IP address and port should be used.
 	 */
-	public IPTagSet(HasChipLocation chip, byte[] host, int port, int tag,
-			boolean strip, boolean useSender) {
+	public IPTagSet(@Valid @NotNull HasChipLocation chip,
+			@Size(min = INADDRSZ, max = INADDRSZ) byte[] host,
+			@UDPPort int port, @TagID int tag, boolean strip,
+			boolean useSender) {
 		super(chip.getScampCore(), CMD_IPTAG, argument1(tag, strip, useSender),
 				argument2(port), argument3(host));
 		if (useSender && nonNull(host) && !Arrays.equals(host, INADDR_ANY)) {

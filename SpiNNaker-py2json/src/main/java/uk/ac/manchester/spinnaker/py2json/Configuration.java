@@ -21,28 +21,42 @@ import static uk.ac.manchester.spinnaker.py2json.PythonUtils.toList;
 
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+
 import org.python.core.PyObject;
+
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
+import uk.ac.manchester.spinnaker.utils.validation.TCPPort;
 
 /** A configuration description. JSON-serializable. */
 public final class Configuration {
 	/** The machines to manage. */
-	public final List<Machine> machines;
+	@NotEmpty(message = "there must be at least one machine described")
+	public final List<@Valid Machine> machines;
 
 	/** The port for the service to listen on. */
+	@TCPPort
 	public final int port;
 
 	/**
 	 * The host address for the service to listen on. Empty = all interfaces.
 	 */
+	@IPAddress(emptyOK = true)
 	public final String ip;
 
 	/** How often (in seconds) to check for timeouts. */
+	@Positive
 	public final double timeoutCheckInterval;
 
 	/** How many retired jobs to retain. */
+	@PositiveOrZero
 	public final int maxRetiredJobs;
 
 	/** Time to wait before freeing. */
+	@PositiveOrZero
 	public final int secondsBeforeFree;
 
 	Configuration(PyObject configuration) {

@@ -24,6 +24,9 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMa
 import java.nio.ByteBuffer;
 import java.util.Map;
 
+import javax.validation.Valid;
+import javax.validation.constraints.PositiveOrZero;
+
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.SerializableMessage;
@@ -45,10 +48,12 @@ public class SDPHeader implements SerializableMessage {
 
 	private static final int PORT_MASK = (1 << PORT_BITS) - 1;
 
+	@Valid
 	private HasCoreLocation destination;
 
 	private int destinationPort;
 
+	@Valid
 	private HasCoreLocation source;
 
 	private int sourcePort;
@@ -159,6 +164,7 @@ public class SDPHeader implements SerializableMessage {
 			}
 
 			@Override
+			@PositiveOrZero
 			public int getP() {
 				return p;
 			}

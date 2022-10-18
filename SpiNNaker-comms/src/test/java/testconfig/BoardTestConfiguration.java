@@ -189,11 +189,11 @@ public class BoardTestConfiguration {
 
 	private static boolean hostIsReachable(String remotehost) {
 		return REACHABLE.computeIfAbsent(remotehost,
-				r -> ping(remotehost) == 0);
+				__ -> ping(remotehost) == 0);
 	}
 
 	private static boolean hostIsReachable(InetAddress remotehost) {
 		return REACHABLE.computeIfAbsent(remotehost,
-				r -> ping(remotehost) == 0);
+				__ -> ping(remotehost) == 0);
 	}
 }

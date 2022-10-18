@@ -64,8 +64,7 @@ class ProxyRememberer {
 	 */
 	void rememberProxyForJob(Integer jobId, ProxyCore proxy) {
 		synchronized (proxies) {
-			proxies.computeIfAbsent(jobId, ignored -> new ArrayList<>())
-					.add(proxy);
+			proxies.computeIfAbsent(jobId, __ -> new ArrayList<>()).add(proxy);
 		}
 	}
 

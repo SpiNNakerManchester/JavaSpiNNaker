@@ -19,7 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
 import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 

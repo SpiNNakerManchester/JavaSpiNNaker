@@ -18,14 +18,13 @@ package uk.ac.manchester.spinnaker.spalloc;
 
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
+import static java.util.Map.entry;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.HOSTNAME_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_PROPERTY;
-import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MACHINE_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MACHINE_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MAX_DEAD_BOARDS_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MAX_DEAD_BOARDS_PROPERTY;
-import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MAX_DEAD_LINKS_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MAX_DEAD_LINKS_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MIN_RATIO_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MIN_RATIO_PROPERTY;
@@ -35,7 +34,6 @@ import static uk.ac.manchester.spinnaker.spalloc.JobConstants.RECONNECT_DELAY_DE
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.RECONNECT_DELAY_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.REQUIRE_TORUS_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.REQUIRE_TORUS_PROPERTY;
-import static uk.ac.manchester.spinnaker.spalloc.JobConstants.TAGS_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.TAGS_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.TIMEOUT_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.TIMEOUT_PROPERTY;
@@ -44,6 +42,10 @@ import static uk.ac.manchester.spinnaker.spalloc.JobConstants.USER_PROPERTY;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 import org.apache.commons.configuration2.INIConfiguration;
 import org.apache.commons.configuration2.SubnodeConfiguration;
@@ -55,6 +57,8 @@ import org.apache.commons.configuration2.io.ClasspathLocationStrategy;
 import org.apache.commons.configuration2.io.CombinedLocationStrategy;
 import org.apache.commons.configuration2.io.HomeDirectoryLocationStrategy;
 import org.apache.commons.configuration2.io.ProvidedURLLocationStrategy;
+
+import uk.ac.manchester.spinnaker.utils.validation.TCPPort;
 
 /** A spalloc configuration loaded from a file. */
 public class Configuration {
@@ -76,67 +80,76 @@ public class Configuration {
 	 *             If the configuration could not be loaded.
 	 */
 	public Configuration(String configFilename) {
-		configurationMap = initDefaultValues();
+		configurationMap = new HashMap<>(DEFAULTS);
 		try {
-			// TODO is this the right way to set this up?
-			/*
-			 * By default, configuration files are read (in ascending order of
-			 * priority) from a system-wide configuration directory (e.g.
-			 * ``/etc/xdg/spalloc``), user configuration file (e.g.
-			 * ``$HOME/.config/spalloc``) and finally the current working
-			 * directory (in a file named ``.spalloc``).
-			 */
-			var params = new Parameters().ini()
-					.setLocationStrategy(new CombinedLocationStrategy(
-							List.of(new ProvidedURLLocationStrategy(),
-									new HomeDirectoryLocationStrategy(),
-									new ClasspathLocationStrategy())))
-					.setListDelimiterHandler(
-							new DefaultListDelimiterHandler(LIST_SEPARATOR))
-					.setThrowExceptionOnMissing(true);
-			section =
-					new FileBasedConfigurationBuilder<>(INIConfiguration.class)
-							.configure(params.setFileName(configFilename))
-							.getConfiguration().getSection(SECTION_NAME);
+			loadConfig(configFilename);
 		} catch (ConfigurationException e) {
 			throw new RuntimeException(
 					"failed to load configuration from " + configFilename, e);
 		}
-		setValuesFromConfig(configurationMap);
+		setValuesFromConfig();
 	}
 
-	/** @return a clone of the map of configurationMap. */
+	private void loadConfig(String configFilename)
+			throws ConfigurationException {
+		// TODO is this the right way to set this up?
+		/*
+		 * By default, configuration files are read (in ascending order of
+		 * priority) from a system-wide configuration directory (e.g.
+		 * ``/etc/xdg/spalloc``), user configuration file (e.g.
+		 * ``$HOME/.config/spalloc``) and finally the current working directory
+		 * (in a file named ``.spalloc``).
+		 */
+		var params = new Parameters().ini()
+				.setLocationStrategy(new CombinedLocationStrategy(
+						List.of(new ProvidedURLLocationStrategy(),
+								new HomeDirectoryLocationStrategy(),
+								new ClasspathLocationStrategy())))
+				.setListDelimiterHandler(
+						new DefaultListDelimiterHandler(LIST_SEPARATOR))
+				.setThrowExceptionOnMissing(true);
+		section = new FileBasedConfigurationBuilder<>(INIConfiguration.class)
+				.configure(params.setFileName(configFilename))
+				.getConfiguration().getSection(SECTION_NAME);
+	}
+
+	/** @return a clone of the map of the configuration. */
 	public Map<String, Object> getDefaults() {
-		return Map.copyOf(configurationMap);
+		return new HashMap<String, Object>(configurationMap);
 	}
 
-	/** @return The spalloc host. */
+	/** @return The spalloc TCP/IP host. */
 	public String getHost() {
 		return (String) configurationMap.get(HOSTNAME_PROPERTY);
 	}
 
-	/** @return The spalloc port. */
+	/** @return The spalloc TCP/IP port. */
+	@TCPPort
 	public int getPort() {
 		return (Integer) configurationMap.get(PORT_PROPERTY);
 	}
 
 	/** @return The spalloc user. */
+	@NotBlank
 	public String getUser() {
 		return (String) configurationMap.get(USER_PROPERTY);
 	}
 
 	/** @return The keepalive interval, in seconds. */
+	@Positive
 	public double getKeepalive() {
 		return (Double) configurationMap.get(KEEPALIVE_PROPERTY);
 	}
 
 	/** @return The reconnection delay, in seconds. */
+	@Positive
 	public double getReconnectDelay() {
 		return (Double) configurationMap.getOrDefault(RECONNECT_DELAY_PROPERTY,
 				RECONNECT_DELAY_DEFAULT);
 	}
 
 	/** @return The network timeout, in seconds. */
+	@Positive
 	public double getTimeout() {
 		return (Double) configurationMap.get(TIMEOUT_PROPERTY);
 	}
@@ -152,21 +165,24 @@ public class Configuration {
 	}
 
 	/** @return The minimum ratio for rectangular allocations. */
+	@PositiveOrZero
 	public double getMinRatio() {
 		return (Double) configurationMap.get(MIN_RATIO_PROPERTY);
 	}
 
 	/** @return The maximum number of dead boards wanted. */
+	@PositiveOrZero
 	public Integer getMaxDeadBoards() {
 		return (Integer) configurationMap.get(MAX_DEAD_BOARDS_PROPERTY);
 	}
 
-	/** @return The maximum number of dead links wanted. */
+	/** @return The maximum number of dead links desired. Often ignored. */
+	@PositiveOrZero
 	public Integer getMaxDeadLinks() {
 		return (Integer) configurationMap.get(MAX_DEAD_LINKS_PROPERTY);
 	}
 
-	/** @return Whether a torus is required. Ignored by spalloc! */
+	/** @return Whether a torus is required. Not normally useful. */
 	public boolean getRequireTorus() {
 		return (Boolean) configurationMap.get(REQUIRE_TORUS_PROPERTY);
 	}
@@ -174,23 +190,14 @@ public class Configuration {
 	/**
 	 * Set up the default values in the map, so the configuration file doesn't
 	 * need to have everything listed in it.
-	 *
-	 * @return a <em>modifiable</em> map loaded with default configuration
-	 *         values.
 	 */
-	private static Map<String, Object> initDefaultValues() {
-		var defaults = new HashMap<String, Object>();
-		defaults.put(PORT_PROPERTY, PORT_DEFAULT);
-		defaults.put(KEEPALIVE_PROPERTY, KEEPALIVE_DEFAULT);
-		defaults.put(TIMEOUT_PROPERTY, TIMEOUT_DEFAULT);
-		defaults.put(MACHINE_PROPERTY, MACHINE_DEFAULT);
-		defaults.put(TAGS_PROPERTY, TAGS_DEFAULT);
-		defaults.put(MIN_RATIO_PROPERTY, MIN_RATIO_DEFAULT);
-		defaults.put(MAX_DEAD_BOARDS_PROPERTY, MAX_DEAD_BOARDS_DEFAULT);
-		defaults.put(MAX_DEAD_LINKS_PROPERTY, MAX_DEAD_LINKS_DEFAULT);
-		defaults.put(REQUIRE_TORUS_PROPERTY, REQUIRE_TORUS_DEFAULT);
-		return defaults;
-	}
+	private static final Map<String, Object> DEFAULTS = Map.ofEntries(//
+			entry(PORT_PROPERTY, PORT_DEFAULT),
+			entry(KEEPALIVE_PROPERTY, KEEPALIVE_DEFAULT),
+			entry(TIMEOUT_PROPERTY, TIMEOUT_DEFAULT),
+			entry(MIN_RATIO_PROPERTY, MIN_RATIO_DEFAULT),
+			entry(MAX_DEAD_BOARDS_PROPERTY, MAX_DEAD_BOARDS_DEFAULT),
+			entry(REQUIRE_TORUS_PROPERTY, REQUIRE_TORUS_DEFAULT));
 
 	private static final String NULL_MARKER = "None";
 
@@ -222,48 +229,51 @@ public class Configuration {
 		return val;
 	}
 
-	private void setValuesFromConfig(Map<String, Object> defaults) {
-		defaults.put(HOSTNAME_PROPERTY,
+	private void setValuesFromConfig() {
+		configurationMap.put(HOSTNAME_PROPERTY,
 				section.getString(HOSTNAME_PROPERTY, null));
 		if (section.containsKey(USER_PROPERTY)) {
-			defaults.put(USER_PROPERTY, section.getString(USER_PROPERTY));
+			configurationMap.put(USER_PROPERTY,
+					section.getString(USER_PROPERTY));
 		}
 		if (section.containsKey(KEEPALIVE_PROPERTY)) {
-			defaults.put(KEEPALIVE_PROPERTY,
+			configurationMap.put(KEEPALIVE_PROPERTY,
 					readNoneOrFloat(KEEPALIVE_PROPERTY));
 		}
 		if (section.containsKey(RECONNECT_DELAY_PROPERTY)) {
-			defaults.put(RECONNECT_DELAY_PROPERTY,
+			configurationMap.put(RECONNECT_DELAY_PROPERTY,
 					section.getDouble(RECONNECT_DELAY_PROPERTY));
 		}
 		if (section.containsKey(TIMEOUT_PROPERTY)) {
-			defaults.put(TIMEOUT_PROPERTY, readNoneOrFloat(TIMEOUT_PROPERTY));
+			configurationMap.put(TIMEOUT_PROPERTY,
+					readNoneOrFloat(TIMEOUT_PROPERTY));
 		}
 		if (section.containsKey(MACHINE_PROPERTY)) {
-			defaults.put(MACHINE_PROPERTY, readNoneOrString(MACHINE_PROPERTY));
+			configurationMap.put(MACHINE_PROPERTY,
+					readNoneOrString(MACHINE_PROPERTY));
 		}
 		if (section.containsKey(TAGS_PROPERTY)) {
 			if (isNull(section.getString(TAGS_PROPERTY))) {
-				defaults.put(TAGS_PROPERTY, null);
+				configurationMap.put(TAGS_PROPERTY, null);
 			} else {
-				defaults.put(TAGS_PROPERTY,
+				configurationMap.put(TAGS_PROPERTY,
 						section.getArray(String.class, TAGS_PROPERTY));
 			}
 		}
 		if (section.containsKey(MIN_RATIO_PROPERTY)) {
-			defaults.put(MIN_RATIO_PROPERTY,
+			configurationMap.put(MIN_RATIO_PROPERTY,
 					readNoneOrFloat(MIN_RATIO_PROPERTY));
 		}
 		if (section.containsKey(MAX_DEAD_BOARDS_PROPERTY)) {
-			defaults.put(MAX_DEAD_BOARDS_PROPERTY,
+			configurationMap.put(MAX_DEAD_BOARDS_PROPERTY,
 					readNoneOrInt(MAX_DEAD_BOARDS_PROPERTY));
 		}
 		if (section.containsKey(MAX_DEAD_LINKS_PROPERTY)) {
-			defaults.put(MAX_DEAD_LINKS_PROPERTY,
+			configurationMap.put(MAX_DEAD_LINKS_PROPERTY,
 					readNoneOrInt(MAX_DEAD_LINKS_PROPERTY));
 		}
 		if (section.containsKey(REQUIRE_TORUS_PROPERTY)) {
-			defaults.put(REQUIRE_TORUS_PROPERTY,
+			configurationMap.put(REQUIRE_TORUS_PROPERTY,
 					section.getBoolean(REQUIRE_TORUS_PROPERTY));
 		}
 	}
