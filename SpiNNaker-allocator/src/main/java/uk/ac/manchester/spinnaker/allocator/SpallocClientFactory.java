@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.allocator;
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static java.lang.String.format;
+import static java.lang.Thread.sleep;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
@@ -31,7 +32,9 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.io.IOUtils.readLines;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByNameQuietly;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -45,6 +48,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+
+import org.slf4j.Logger;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.google.errorprone.annotations.MustBeClosed;
@@ -63,6 +68,7 @@ import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
+import uk.ac.manchester.spinnaker.utils.Daemon;
 
 /**
  * A factory for clients to connect to the Spalloc service.
@@ -73,6 +79,8 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  * @author Donal Fellows
  */
 public class SpallocClientFactory {
+	private static final Logger log = getLogger(SpallocClientFactory.class);
+
 	private static final String CONTENT_TYPE = "Content-Type";
 
 	private static final String TEXT_PLAIN = "text/plain; charset=UTF-8";
@@ -429,6 +437,8 @@ public class SpallocClientFactory {
 	private static final class JobImpl extends Common implements Job {
 		private final URI uri;
 
+		private volatile boolean dead;
+
 		@GuardedBy("lock")
 		private ProxyProtocolClient proxy;
 
@@ -437,6 +447,8 @@ public class SpallocClientFactory {
 		JobImpl(SpallocClient client, Session session, URI uri) {
 			super(client, session);
 			this.uri = uri;
+			this.dead = false;
+			startKeepalive();
 		}
 
 		@Override
@@ -467,8 +479,37 @@ public class SpallocClientFactory {
 			});
 		}
 
+		private static final int DELAY = 20 * MSEC_PER_SEC;
+
+		private void startKeepalive() {
+			if (dead) {
+				throw new IllegalStateException("job is already deleted");
+			}
+			Thread t = new Daemon(() -> {
+				try {
+					while (true) {
+						sleep(DELAY);
+						if (dead) {
+							break;
+						}
+						keepalive();
+					}
+				} catch (IOException e) {
+					log.warn("failed to keep job alive for {}", this, e);
+				} catch (InterruptedException e) {
+					// If interrupted, we're simply done
+				}
+			});
+			t.setName("keepalive for " + this);
+			t.setUncaughtExceptionHandler((th, e) -> {
+				log.warn("unexpected exception in {}", th, e);
+			});
+			t.start();
+		}
+
 		@Override
 		public void delete(String reason) throws IOException {
+			dead = true;
 			s.withRenewal(() -> {
 				var conn = s.connection(uri, "?reason=" + encode(reason, UTF_8),
 						true);
