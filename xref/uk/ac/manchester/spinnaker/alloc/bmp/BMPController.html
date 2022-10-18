@@ -99,7 +99,7 @@
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.model.JobState;
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.board.BMPBoard;
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.model.Blacklist;
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.transceiver.ProcessException;
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.transceiver.ProcessException.CallerProcessException;
@@ -765,7 +765,7 @@
 <a class="jxr_linenumber" name="L757" href="#L757">757</a> <em class="jxr_javadoccomment">		 * @return The ID, if one can be found.</em>
 <a class="jxr_linenumber" name="L758" href="#L758">758</a> <em class="jxr_javadoccomment">		 */</em>
 <a class="jxr_linenumber" name="L759" href="#L759">759</a> 		<strong class="jxr_keyword">private</strong> Optional&lt;Integer&gt; getBoardId(<a name="HasCoreLocation" href="../../../../../../uk/ac/manchester/spinnaker/machine/HasCoreLocation.html#HasCoreLocation">HasCoreLocation</a> addr) {
-<a class="jxr_linenumber" name="L760" href="#L760">760</a> 			<strong class="jxr_keyword">return</strong> idToBoard.get(<strong class="jxr_keyword">new</strong> <a name="BMPCoords" href="../../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a>(addr.getX(), addr.getY()))
+<a class="jxr_linenumber" name="L760" href="#L760">760</a> 			<strong class="jxr_keyword">return</strong> idToBoard.get(<strong class="jxr_keyword">new</strong> <a name="BMPCoords" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/BMPCoords.html#BMPCoords">BMPCoords</a>(addr.getX(), addr.getY()))
 <a class="jxr_linenumber" name="L761" href="#L761">761</a> 					.entrySet().stream()
 <a class="jxr_linenumber" name="L762" href="#L762">762</a> 					.filter(ib2 -&gt; ib2.getValue().board == addr.getP())
 <a class="jxr_linenumber" name="L763" href="#L763">763</a> 					.map(Entry::getKey).findFirst();
@@ -838,7 +838,7 @@
 <a class="jxr_linenumber" name="L830" href="#L830">830</a> 
 <a class="jxr_linenumber" name="L831" href="#L831">831</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> boardId;
 <a class="jxr_linenumber" name="L832" href="#L832">832</a> 
-<a class="jxr_linenumber" name="L833" href="#L833">833</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="BMPCoords" href="../../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp;
+<a class="jxr_linenumber" name="L833" href="#L833">833</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="BMPCoords" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/BMPCoords.html#BMPCoords">BMPCoords</a> bmp;
 <a class="jxr_linenumber" name="L834" href="#L834">834</a> 
 <a class="jxr_linenumber" name="L835" href="#L835">835</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="BMPBoard" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/BMPBoard.html#BMPBoard">BMPBoard</a> board;
 <a class="jxr_linenumber" name="L836" href="#L836">836</a> 
@@ -852,7 +852,7 @@
 <a class="jxr_linenumber" name="L844" href="#L844">844</a> 			<strong class="jxr_keyword">this</strong>.op = op;
 <a class="jxr_linenumber" name="L845" href="#L845">845</a> 			opId = row.getInt(<span class="jxr_string">"op_id"</span>);
 <a class="jxr_linenumber" name="L846" href="#L846">846</a> 			boardId = row.getInt(<span class="jxr_string">"board_id"</span>);
-<a class="jxr_linenumber" name="L847" href="#L847">847</a> 			bmp = <strong class="jxr_keyword">new</strong> <a name="BMPCoords" href="../../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a>(row.getInt(<span class="jxr_string">"cabinet"</span>), row.getInt(<span class="jxr_string">"frame"</span>));
+<a class="jxr_linenumber" name="L847" href="#L847">847</a> 			bmp = <strong class="jxr_keyword">new</strong> <a name="BMPCoords" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/BMPCoords.html#BMPCoords">BMPCoords</a>(row.getInt(<span class="jxr_string">"cabinet"</span>), row.getInt(<span class="jxr_string">"frame"</span>));
 <a class="jxr_linenumber" name="L848" href="#L848">848</a> 			board = <strong class="jxr_keyword">new</strong> <a name="BMPBoard" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/BMPBoard.html#BMPBoard">BMPBoard</a>(row.getInt(<span class="jxr_string">"board_num"</span>));
 <a class="jxr_linenumber" name="L849" href="#L849">849</a> 			<strong class="jxr_keyword">if</strong> (op == WRITE) {
 <a class="jxr_linenumber" name="L850" href="#L850">850</a> 				blacklist = row.getSerial(<span class="jxr_string">"data"</span>, Blacklist.<strong class="jxr_keyword">class</strong>);
@@ -1117,7 +1117,7 @@
 <a class="jxr_linenumber" name="L1109" href="#L1109">1109</a> 
 <a class="jxr_linenumber" name="L1110" href="#L1110">1110</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> row : sql.getPowerChangesToDo.call(jobId)) {
 <a class="jxr_linenumber" name="L1111" href="#L1111">1111</a> 			changeIds.add(row.getInteger(<span class="jxr_string">"change_id"</span>));
-<a class="jxr_linenumber" name="L1112" href="#L1112">1112</a> 			<strong class="jxr_keyword">var</strong> bmp = <strong class="jxr_keyword">new</strong> <a name="BMPCoords" href="../../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a>(row.getInt(<span class="jxr_string">"cabinet"</span>), row.getInt(<span class="jxr_string">"frame"</span>));
+<a class="jxr_linenumber" name="L1112" href="#L1112">1112</a> 			<strong class="jxr_keyword">var</strong> bmp = <strong class="jxr_keyword">new</strong> <a name="BMPCoords" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/BMPCoords.html#BMPCoords">BMPCoords</a>(row.getInt(<span class="jxr_string">"cabinet"</span>), row.getInt(<span class="jxr_string">"frame"</span>));
 <a class="jxr_linenumber" name="L1113" href="#L1113">1113</a> 			<strong class="jxr_keyword">var</strong> board = row.getInteger(<span class="jxr_string">"board_id"</span>);
 <a class="jxr_linenumber" name="L1114" href="#L1114">1114</a> 			idToBoard.get(bmp).put(board,
 <a class="jxr_linenumber" name="L1115" href="#L1115">1115</a> 					<strong class="jxr_keyword">new</strong> <a name="BMPBoard" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/BMPBoard.html#BMPBoard">BMPBoard</a>(row.getInteger(<span class="jxr_string">"board_num"</span>)));

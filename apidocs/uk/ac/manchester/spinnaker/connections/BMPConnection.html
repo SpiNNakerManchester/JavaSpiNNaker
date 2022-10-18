@@ -195,10 +195,12 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 <tr class="altColor" id="i0">
 <td class="colFirst"><code><a href="../machine/ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getChip()">getChip</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Defined to satisfy the <a href="model/SCPSender.html" title="interface in uk.ac.manchester.spinnaker.connections.model"><code>SCPSender</code></a> interface.</div>
+</td>
 </tr>
 <tr class="rowColor" id="i1">
-<td class="colFirst"><code><a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a></code></td>
+<td class="colFirst"><code><a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getCoords()">getCoords</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -291,7 +293,8 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 <section class="detail">
 <h3><a id="boards">boards</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;</span>&nbsp;<span class="memberName">boards</span></div>
-<div class="block">The IDs of the specific set of boards managed by the BMPs we can talk to.</div>
+<div class="block">The IDs of the specific set of boards managed by the BMPs we can talk to.
+ Immutable.</div>
 </section>
 </li>
 </ul>
@@ -375,6 +378,8 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 <section class="detail">
 <h3><a id="getChip()">getChip</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="../machine/ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></span>&nbsp;<span class="memberName">getChip</span>()</div>
+<div class="block">Defined to satisfy the <a href="model/SCPSender.html" title="interface in uk.ac.manchester.spinnaker.connections.model"><code>SCPSender</code></a> interface. Always
+ <a href="../machine/ChipLocation.html#ZERO_ZERO">0,0</a> for a BMP.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="model/SCPSender.html#getChip()">getChip</a></code>&nbsp;in interface&nbsp;<code><a href="model/SCPSender.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPSender</a></code></dd>
@@ -433,7 +438,7 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 <li class="blockList">
 <section class="detail">
 <h3><a id="getCoords()">getCoords</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a></span>&nbsp;<span class="memberName">getCoords</span>()</div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a></span>&nbsp;<span class="memberName">getCoords</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The coordinates of the BMP that this connection talks to.</dd>

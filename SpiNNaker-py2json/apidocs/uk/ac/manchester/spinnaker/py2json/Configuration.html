@@ -115,42 +115,42 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<td class="colFirst"><code><a href="http://spinnakermanchester.github.io/SpiNNaker-utils/apidocs/uk/ac/manchester/spinnaker/utils/validation/IPAddress.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.utils.validation" class="externalLink">@IPAddress</a>(<a href="http://spinnakermanchester.github.io/SpiNNaker-utils/apidocs/uk/ac/manchester/spinnaker/utils/validation/IPAddress.html?is-external=true#emptyOK()" title="class or interface in uk.ac.manchester.spinnaker.utils.validation" class="externalLink">emptyOK</a>=true) <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#ip">ip</a></span></code></th>
 <td class="colLast">
 <div class="block">The host address for the service to listen on.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="Machine.html" title="class in uk.ac.manchester.spinnaker.py2json">Machine</a>&gt;</code></td>
+<td class="colFirst"><code>@NotEmpty(message="there must be at least one machine described") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;@Valid <a href="Machine.html" title="class in uk.ac.manchester.spinnaker.py2json">Machine</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#machines">machines</a></span></code></th>
 <td class="colLast">
 <div class="block">The machines to manage.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>int</code></td>
+<td class="colFirst"><code>@javax.validation.constraints.PositiveOrZero int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#maxRetiredJobs">maxRetiredJobs</a></span></code></th>
 <td class="colLast">
 <div class="block">How many retired jobs to retain.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>int</code></td>
+<td class="colFirst"><code>@uk.ac.manchester.spinnaker.utils.validation.TCPPort int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#port">port</a></span></code></th>
 <td class="colLast">
 <div class="block">The port for the service to listen on.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>int</code></td>
+<td class="colFirst"><code>@javax.validation.constraints.PositiveOrZero int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#secondsBeforeFree">secondsBeforeFree</a></span></code></th>
 <td class="colLast">
 <div class="block">Time to wait before freeing.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>double</code></td>
+<td class="colFirst"><code>@javax.validation.constraints.Positive double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#timeoutCheckInterval">timeoutCheckInterval</a></span></code></th>
 <td class="colLast">
 <div class="block">How often (in seconds) to check for timeouts.</div>
@@ -209,42 +209,48 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="machines">machines</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="Machine.html" title="class in uk.ac.manchester.spinnaker.py2json">Machine</a>&gt;</span>&nbsp;<span class="memberName">machines</span></div>
+<div class="memberSignature"><span class="annotations">@NotEmpty(message="there must be at least one machine described")
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@NotEmpty(message="there must be at least one machine described") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;@Valid <a href="Machine.html" title="class in uk.ac.manchester.spinnaker.py2json">Machine</a>&gt;</span>&nbsp;<span class="memberName">machines</span></div>
 <div class="block">The machines to manage.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="port">port</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">port</span></div>
+<div class="memberSignature"><span class="annotations"><a href="http://spinnakermanchester.github.io/SpiNNaker-utils/apidocs/uk/ac/manchester/spinnaker/utils/validation/TCPPort.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.utils.validation" class="externalLink">@TCPPort</a>
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@uk.ac.manchester.spinnaker.utils.validation.TCPPort int</span>&nbsp;<span class="memberName">port</span></div>
 <div class="block">The port for the service to listen on.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="ip">ip</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">ip</span></div>
+<div class="memberSignature"><span class="annotations"><a href="http://spinnakermanchester.github.io/SpiNNaker-utils/apidocs/uk/ac/manchester/spinnaker/utils/validation/IPAddress.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.utils.validation" class="externalLink">@IPAddress</a>(<a href="http://spinnakermanchester.github.io/SpiNNaker-utils/apidocs/uk/ac/manchester/spinnaker/utils/validation/IPAddress.html?is-external=true#emptyOK()" title="class or interface in uk.ac.manchester.spinnaker.utils.validation" class="externalLink">emptyOK</a>=true)
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-utils/apidocs/uk/ac/manchester/spinnaker/utils/validation/IPAddress.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.utils.validation" class="externalLink">@IPAddress</a>(<a href="http://spinnakermanchester.github.io/SpiNNaker-utils/apidocs/uk/ac/manchester/spinnaker/utils/validation/IPAddress.html?is-external=true#emptyOK()" title="class or interface in uk.ac.manchester.spinnaker.utils.validation" class="externalLink">emptyOK</a>=true) <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">ip</span></div>
 <div class="block">The host address for the service to listen on. Empty = all interfaces.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="timeoutCheckInterval">timeoutCheckInterval</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">double</span>&nbsp;<span class="memberName">timeoutCheckInterval</span></div>
+<div class="memberSignature"><span class="annotations">@Positive
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive double</span>&nbsp;<span class="memberName">timeoutCheckInterval</span></div>
 <div class="block">How often (in seconds) to check for timeouts.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="maxRetiredJobs">maxRetiredJobs</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">maxRetiredJobs</span></div>
+<div class="memberSignature"><span class="annotations">@PositiveOrZero
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.PositiveOrZero int</span>&nbsp;<span class="memberName">maxRetiredJobs</span></div>
 <div class="block">How many retired jobs to retain.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="secondsBeforeFree">secondsBeforeFree</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">secondsBeforeFree</span></div>
+<div class="memberSignature"><span class="annotations">@PositiveOrZero
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.PositiveOrZero int</span>&nbsp;<span class="memberName">secondsBeforeFree</span></div>
 <div class="block">Time to wait before freeing.</div>
 </section>
 </li>

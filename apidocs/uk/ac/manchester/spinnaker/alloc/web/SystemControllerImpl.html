@@ -271,7 +271,7 @@ javax.servlet.http.HttpServletResponse&nbsp;response)</code></th>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="SystemController.html#index()">index</a></code>&nbsp;in interface&nbsp;<code><a href="SystemController.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SystemController</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>View name</dd>
+<dd>View (<code>index.jsp</code>)</dd>
 </dl>
 </section>
 </li>
@@ -288,7 +288,8 @@ javax.servlet.http.HttpServletResponse&nbsp;response)</code></th>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>principal</code> - Who is changing their password.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>View and model</dd>
+<dd>View (<code>password.jsp</code>) and model (based on
+         <a href="../model/PasswordChangeRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model"><code>PasswordChangeRecord</code></a>)</dd>
 </dl>
 </section>
 </li>
@@ -306,7 +307,8 @@ javax.servlet.http.HttpServletResponse&nbsp;response)</code></th>
 <dd><code>user</code> - The description of what to change.</dd>
 <dd><code>principal</code> - Who is changing their password.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>View and model</dd>
+<dd>View (<code>password.jsp</code>) and model (based on
+         <a href="../model/PasswordChangeRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model"><code>PasswordChangeRecord</code></a>)</dd>
 </dl>
 </section>
 </li>
@@ -341,7 +343,8 @@ javax.servlet.http.HttpServletResponse&nbsp;response)</span></div>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="SystemController.html#getMachineList()">getMachineList</a></code>&nbsp;in interface&nbsp;<code><a href="SystemController.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SystemController</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>View and model</dd>
+<dd>View (<code>listmachines.jsp</code>) and model (based on
+         <a href="../model/MachineListEntryRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model"><code>MachineListEntryRecord</code></a>)</dd>
 </dl>
 </section>
 </li>
@@ -358,7 +361,8 @@ javax.servlet.http.HttpServletResponse&nbsp;response)</span></div>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>machine</code> - Which machine is being asked for</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>View and model</dd>
+<dd>View (<code>machinedetails.jsp</code>) and model (based on
+         <a href="../model/MachineDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model"><code>MachineDescription</code></a>)</dd>
 </dl>
 </section>
 </li>
@@ -373,7 +377,8 @@ javax.servlet.http.HttpServletResponse&nbsp;response)</span></div>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="SystemController.html#getJobList()">getJobList</a></code>&nbsp;in interface&nbsp;<code><a href="SystemController.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SystemController</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>View and model</dd>
+<dd>View (<code>listjobs.jsp</code>) and model (based on
+         <a href="../model/JobListEntryRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model"><code>JobListEntryRecord</code></a>)</dd>
 </dl>
 </section>
 </li>
@@ -390,7 +395,8 @@ javax.servlet.http.HttpServletResponse&nbsp;response)</span></div>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - Which job is being asked for</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>View and model</dd>
+<dd>View (<code>jobdetails.jsp</code>) and model (based on
+         <a href="../model/JobDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model"><code>JobDescription</code></a>)</dd>
 </dl>
 </section>
 </li>

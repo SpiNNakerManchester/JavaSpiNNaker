@@ -103,8 +103,7 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../SpallocAPI.BoardLocation.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.BoardLocation</a>&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Machine.</span><code><span class="memberNameLink"><a href="../SpallocAPI.Machine.html#getBoardByChip(@uk.ac.manchester.spinnaker.machine.ValidXint,@uk.ac.manchester.spinnaker.machine.ValidYint)">getBoardByChip</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;x,
-@uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;y)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Machine.</span><code><span class="memberNameLink"><a href="../SpallocAPI.Machine.html#getBoardByChip(uk.ac.manchester.spinnaker.machine.HasChipLocation)">getBoardByChip</a></span>&#8203;(@Valid @NotNull <a href="../../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chipLocation)</code></th>
 <td class="colLast">
 <div class="block">Get a description of the location of a board given the global
  coordinates of a chip on it.</div>
@@ -120,9 +119,7 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../SpallocAPI.BoardLocation.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.BoardLocation</a>&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Machine.</span><code><span class="memberNameLink"><a href="../SpallocAPI.Machine.html#getBoardByLogicalCoords(@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">getBoardByLogicalCoords</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
-@uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
-@uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Machine.</span><code><span class="memberNameLink"><a href="../SpallocAPI.Machine.html#getBoardByLogicalCoords(uk.ac.manchester.spinnaker.machine.board.TriadCoords)">getBoardByLogicalCoords</a></span>&#8203;(@Valid @NotNull <a href="../../../machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Get a description of the location of a board given the triad
  coordinates of the board.</div>
@@ -130,9 +127,7 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../SpallocAPI.BoardLocation.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.BoardLocation</a>&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Machine.</span><code><span class="memberNameLink"><a href="../SpallocAPI.Machine.html#getBoardByPhysicalCoords(@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">getBoardByPhysicalCoords</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;cabinet,
-@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;frame,
-@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;board)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Machine.</span><code><span class="memberNameLink"><a href="../SpallocAPI.Machine.html#getBoardByPhysicalCoords(uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">getBoardByPhysicalCoords</a></span>&#8203;(@Valid @NotNull <a href="../../../machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Get a description of the location of a board given the physical
  coordinates of the board.</div>

@@ -107,7 +107,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  Emulates a lot of default handling and variant-type handling by Python.
  <p>
  Note that operations on a particular BMP (i.e., with the same
- <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><code>BMPCoords</code></a>) are <strong>always</strong> thread-unsafe.</div>
+ <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board"><code>BMPCoords</code></a>) are <strong>always</strong> thread-unsafe.</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
 <dd>Donal Fellows</dd>
@@ -172,7 +172,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code><a href="../utils/MappableIterable.html" title="interface in uk.ac.manchester.spinnaker.utils">MappableIterable</a>&lt;<a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#availableBoards(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">availableBoards</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#availableBoards(uk.ac.manchester.spinnaker.machine.board.BMPCoords)">availableBoards</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp)</code></th>
 <td class="colLast">
 <div class="block">List which boards are actually available to be manipulated by a
  particular BMP.</div>
@@ -180,14 +180,14 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="altColor" id="i2">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#bind(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">bind</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#bind(uk.ac.manchester.spinnaker.machine.board.BMPCoords)">bind</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp)</code></th>
 <td class="colLast">
 <div class="block">Set the default BMP coordinates, at least for cabinet and frame.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#chunkBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">chunkBMPFlash</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#chunkBMPFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">chunkBMPFlash</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;address)</code></th>
 <td class="colLast">
@@ -198,7 +198,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="altColor" id="i4">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#copyBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">copyBMPFlash</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#copyBMPFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">copyBMPFlash</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 @javax.validation.constraints.Positive int&nbsp;size)</code></th>
@@ -210,7 +210,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor" id="i5">
 <td class="colFirst"><code><a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#eraseBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">eraseBMPFlash</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#eraseBMPFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">eraseBMPFlash</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 @javax.validation.constraints.Positive int&nbsp;size)</code></th>
@@ -221,7 +221,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </td>
 </tr>
 <tr class="altColor" id="i6">
-<td class="colFirst"><code><a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a></code></td>
+<td class="colFirst"><code><a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoundBMP()">getBoundBMP</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -234,7 +234,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="altColor" id="i8">
 <td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getResetStatus(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">getResetStatus</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getResetStatus(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">getResetStatus</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Get the FPGA reset status.</div>
@@ -249,7 +249,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="altColor" id="i10">
 <td class="colFirst"><code><a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSerialFlashBuffer(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">getSerialFlashBuffer</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSerialFlashBuffer(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">getSerialFlashBuffer</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Get the address of the serial flash buffer.</div>
@@ -257,8 +257,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor" id="i11">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">power</a></span>&#8203;(@NotNull <a href="../messages/model/PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,uk.ac.manchester.spinnaker.machine.board.BMPCoords,java.util.Collection)">power</a></span>&#8203;(@NotNull <a href="../messages/model/PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;@Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;&nbsp;boards)</code></th>
 <td class="colLast">
 <div class="block">Send a power request to the machine.</div>
@@ -315,7 +315,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor" id="i19">
 <td class="colFirst"><code><a href="../messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readADCData(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readADCData</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readADCData(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readADCData</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read the ADC data.</div>
@@ -330,7 +330,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor" id="i21">
 <td class="colFirst"><code>default <a href="../messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readBlacklist(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readBlacklist</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readBlacklist(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readBlacklist</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read the blacklist from a board.</div>
@@ -346,7 +346,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor" id="i23">
 <td class="colFirst"><code>default <a href="../messages/model/FirmwareDescriptor.html" title="class in uk.ac.manchester.spinnaker.messages.model">FirmwareDescriptor</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readBMPFirmwareDescriptor(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.messages.model.FirmwareDescriptors)">readBMPFirmwareDescriptor</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readBMPFirmwareDescriptor(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.messages.model.FirmwareDescriptors)">readBMPFirmwareDescriptor</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 <a href="../messages/model/FirmwareDescriptors.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FirmwareDescriptors</a>&nbsp;type)</code></th>
 <td class="colLast">
@@ -364,7 +364,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor" id="i25">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">readBMPMemory</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readBMPMemory(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">readBMPMemory</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 @javax.validation.constraints.Positive int&nbsp;length)</code></th>
@@ -382,7 +382,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor" id="i27">
 <td class="colFirst"><code>default int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readBMPMemoryWord(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">readBMPMemoryWord</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readBMPMemoryWord(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">readBMPMemoryWord</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;address)</code></th>
 <td class="colLast">
@@ -398,7 +398,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor" id="i29">
 <td class="colFirst"><code><a href="../messages/model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readBMPVersion(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readBMPVersion</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readBMPVersion(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readBMPVersion</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read the BMP version.</div>
@@ -406,7 +406,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="altColor" id="i30">
 <td class="colFirst"><code>default <a href="../messages/model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readBMPVersion(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.lang.Iterable)">readBMPVersion</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readBMPVersion(uk.ac.manchester.spinnaker.machine.board.BMPCoords,java.lang.Iterable)">readBMPVersion</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;@Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;&nbsp;boards)</code></th>
 <td class="colLast">
 <div class="block">Read the BMP version.</div>
@@ -428,7 +428,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor" id="i33">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readBoardSerialNumber(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readBoardSerialNumber</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readBoardSerialNumber(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readBoardSerialNumber</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read the BMP serial number from a board.</div>
@@ -447,10 +447,10 @@ int&nbsp;linkNumber,
 </tr>
 <tr class="rowColor" id="i35">
 <td class="colFirst"><code>default int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGARecevingLinkCounters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGALinkCounter</a></span>&#8203;(<a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGARecevingLinkCounters,uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGALinkCounter</a></span>&#8203;(<a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 int&nbsp;linkNumber,
 <a href="../messages/model/FPGARecevingLinkCounters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGARecevingLinkCounters</a>&nbsp;counter,
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a register on a FPGA of a board, assuming the standard FPGA
@@ -470,10 +470,10 @@ int&nbsp;linkNumber,
 </tr>
 <tr class="rowColor" id="i37">
 <td class="colFirst"><code>default int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGASendingLinkCounters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGALinkCounter</a></span>&#8203;(<a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGASendingLinkCounters,uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGALinkCounter</a></span>&#8203;(<a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 int&nbsp;linkNumber,
 <a href="../messages/model/FPGASendingLinkCounters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGASendingLinkCounters</a>&nbsp;counter,
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a register on a FPGA of a board, assuming the standard FPGA
@@ -493,10 +493,10 @@ int&nbsp;registerBank,
 </tr>
 <tr class="rowColor" id="i39">
 <td class="colFirst"><code>default int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 int&nbsp;registerBank,
 <a href="../messages/model/FPGALinkRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGALinkRegisters</a>&nbsp;register,
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a register on a FPGA of a board, assuming the standard FPGA
@@ -514,9 +514,9 @@ int&nbsp;registerBank,
 </tr>
 <tr class="rowColor" id="i41">
 <td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 @NotNull <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;register,
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a register on a FPGA of a board.</div>
@@ -534,9 +534,9 @@ int&nbsp;registerBank,
 </tr>
 <tr class="rowColor" id="i43">
 <td class="colFirst"><code>default int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 <a href="../messages/model/FPGAMainRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a>&nbsp;register,
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a register on a FPGA of a board, assuming the standard FPGA
@@ -554,7 +554,7 @@ int&nbsp;registerBank,
 </tr>
 <tr class="rowColor" id="i45">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">readSerialFlash</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readSerialFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">readSerialFlash</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 @javax.validation.constraints.Positive int&nbsp;length)</code></th>
@@ -573,7 +573,7 @@ int&nbsp;registerBank,
 </tr>
 <tr class="rowColor" id="i47">
 <td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readSerialFlashCRC(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">readSerialFlashCRC</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readSerialFlashCRC(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">readSerialFlashCRC</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 @javax.validation.constraints.Positive int&nbsp;length)</code></th>
@@ -591,7 +591,7 @@ int&nbsp;registerBank,
 </tr>
 <tr class="rowColor" id="i49">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#resetFPGA(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType)">resetFPGA</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#resetFPGA(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType)">resetFPGA</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 <a href="BMPTransceiverInterface.FPGAResetType.html" title="enum in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface.FPGAResetType</a>&nbsp;resetType)</code></th>
 <td class="colLast">
@@ -609,9 +609,9 @@ int&nbsp;registerBank,
 </tr>
 <tr class="rowColor" id="i51">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setLED(java.util.Collection,uk.ac.manchester.spinnaker.messages.model.LEDAction,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">setLED</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;leds,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setLED(java.util.Collection,uk.ac.manchester.spinnaker.messages.model.LEDAction,uk.ac.manchester.spinnaker.machine.board.BMPCoords,java.util.Collection)">setLED</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;leds,
 <a href="../messages/model/LEDAction.html" title="enum in uk.ac.manchester.spinnaker.messages.model">LEDAction</a>&nbsp;action,
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;@Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;&nbsp;boards)</code></th>
 <td class="colLast">
 <div class="block">Set the LED state of a board in the machine.</div>
@@ -627,7 +627,7 @@ int&nbsp;registerBank,
 </tr>
 <tr class="rowColor" id="i53">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeBlacklist(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklist</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeBlacklist(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklist</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @Valid <a href="../messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a>&nbsp;blacklist)</code></th>
 <td class="colLast">
@@ -645,7 +645,7 @@ int&nbsp;registerBank,
 </tr>
 <tr class="rowColor" id="i55">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">writeBMPFlash</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeBMPFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">writeBMPFlash</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress)</code></th>
 <td class="colLast">
@@ -682,7 +682,7 @@ int&nbsp;dataWord)</code></th>
 </tr>
 <tr class="rowColor" id="i59">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">writeBMPMemory</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeBMPMemory(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">writeBMPMemory</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 int&nbsp;dataWord)</code></th>
@@ -692,7 +692,7 @@ int&nbsp;dataWord)</code></th>
 </tr>
 <tr class="altColor" id="i60">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeBMPMemory</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeBMPMemory(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeBMPMemory</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 @NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;file)</code></th>
@@ -702,7 +702,7 @@ int&nbsp;dataWord)</code></th>
 </tr>
 <tr class="rowColor" id="i61">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeBMPMemory</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeBMPMemory(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeBMPMemory</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 @NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
@@ -722,7 +722,7 @@ boolean&nbsp;update)</code></th>
 </tr>
 <tr class="rowColor" id="i63">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer,boolean)">writeFlash</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer,boolean)">writeFlash</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 @NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data,
@@ -745,11 +745,11 @@ int&nbsp;value,
 </tr>
 <tr class="rowColor" id="i65">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,int,uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 int&nbsp;registerBank,
 <a href="../messages/model/FPGALinkRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGALinkRegisters</a>&nbsp;register,
 int&nbsp;value,
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Write a register on a FPGA of a board, assuming the standard FPGA
@@ -768,10 +768,10 @@ int&nbsp;value,
 </tr>
 <tr class="rowColor" id="i67">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 @NotNull <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;register,
 int&nbsp;value,
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Write a register on a FPGA of a board.</div>
@@ -790,10 +790,10 @@ int&nbsp;value,
 </tr>
 <tr class="rowColor" id="i69">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,int,uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 <a href="../messages/model/FPGAMainRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a>&nbsp;register,
 int&nbsp;value,
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Write a register on a FPGA of a board, assuming the standard FPGA
@@ -830,7 +830,7 @@ int&nbsp;value,
 </tr>
 <tr class="rowColor" id="i73">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint,java.io.InputStream)">writeSerialFlash</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeSerialFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint,java.io.InputStream)">writeSerialFlash</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 @javax.validation.constraints.Positive int&nbsp;size,
@@ -841,7 +841,7 @@ int&nbsp;value,
 </tr>
 <tr class="altColor" id="i74">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeSerialFlash</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeSerialFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeSerialFlash</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 @NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;file)</code></th>
@@ -851,7 +851,7 @@ int&nbsp;value,
 </tr>
 <tr class="rowColor" id="i75">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeSerialFlash</a></span>&#8203;(@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeSerialFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeSerialFlash</a></span>&#8203;(@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 @NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
@@ -883,9 +883,9 @@ int&nbsp;value,
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="bind(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">bind</a></h3>
+<h3><a id="bind(uk.ac.manchester.spinnaker.machine.board.BMPCoords)">bind</a></h3>
 <div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">bind</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp)</span></div>
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp)</span></div>
 <div class="block">Set the default BMP coordinates, at least for cabinet and frame.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -896,21 +896,21 @@ int&nbsp;value,
 <li class="blockList">
 <section class="detail">
 <h3><a id="getBoundBMP()">getBoundBMP</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a></span>&nbsp;<span class="memberName">getBoundBMP</span>()</div>
+<div class="memberSignature"><span class="returnType"><a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a></span>&nbsp;<span class="memberName">getBoundBMP</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The currently bound BMP coordinates. Defaults to 0,0 if not set
-         by <a href="#bind(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)"><code>bind(BMPCoords)</code></a>.</dd>
+         by <a href="#bind(uk.ac.manchester.spinnaker.machine.board.BMPCoords)"><code>bind(BMPCoords)</code></a>.</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="availableBoards(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">availableBoards</a></h3>
+<h3><a id="availableBoards(uk.ac.manchester.spinnaker.machine.board.BMPCoords)">availableBoards</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafeWithCare.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafeWithCare</a>
 <a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CheckReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CheckReturnValue</a>
 </span><span class="returnType"><a href="../utils/MappableIterable.html" title="interface in uk.ac.manchester.spinnaker.utils">MappableIterable</a>&lt;<a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;</span>&nbsp;<span class="memberName">availableBoards</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp)</span>
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp)</span>
                                     throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span></div>
 <div class="block">List which boards are actually available to be manipulated by a
@@ -1077,12 +1077,12 @@ int&nbsp;value,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">power</a></h3>
+<h3><a id="power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,uk.ac.manchester.spinnaker.machine.board.BMPCoords,java.util.Collection)">power</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelUnsafe.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelUnsafe</a>
 </span><span class="returnType">void</span>&nbsp;<span class="memberName">power</span>&#8203;(<span class="arguments">@NotNull
 @NotNull <a href="../messages/model/PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
 @Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;@Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;&nbsp;boards)</span>
     throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -1106,12 +1106,12 @@ int&nbsp;value,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setLED(java.util.Collection,uk.ac.manchester.spinnaker.messages.model.LEDAction,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">setLED</a></h3>
+<h3><a id="setLED(java.util.Collection,uk.ac.manchester.spinnaker.messages.model.LEDAction,uk.ac.manchester.spinnaker.machine.board.BMPCoords,java.util.Collection)">setLED</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafe.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafe</a>
 </span><span class="returnType">void</span>&nbsp;<span class="memberName">setLED</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;leds,
 <a href="../messages/model/LEDAction.html" title="enum in uk.ac.manchester.spinnaker.messages.model">LEDAction</a>&nbsp;action,
 @Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;@Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;&nbsp;boards)</span>
      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span></div>
@@ -1179,13 +1179,13 @@ int&nbsp;value,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGARegister</a></h3>
+<h3><a id="readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGARegister</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafe.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafe</a>
 <a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CheckReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CheckReturnValue</a>
 </span><span class="modifiers">default</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">readFPGARegister</span>&#8203;(<span class="arguments"><a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 <a href="../messages/model/FPGAMainRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a>&nbsp;register,
 @Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</span>
                       throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -1236,14 +1236,14 @@ int&nbsp;registerBank,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGARegister</a></h3>
+<h3><a id="readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGARegister</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafe.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafe</a>
 <a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CheckReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CheckReturnValue</a>
 </span><span class="modifiers">default</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">readFPGARegister</span>&#8203;(<span class="arguments"><a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 int&nbsp;registerBank,
 <a href="../messages/model/FPGALinkRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGALinkRegisters</a>&nbsp;register,
 @Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</span>
                       throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -1295,14 +1295,14 @@ int&nbsp;linkNumber,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGARecevingLinkCounters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGALinkCounter</a></h3>
+<h3><a id="readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGARecevingLinkCounters,uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGALinkCounter</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafe.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafe</a>
 <a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CheckReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CheckReturnValue</a>
 </span><span class="modifiers">default</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">readFPGALinkCounter</span>&#8203;(<span class="arguments"><a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 int&nbsp;linkNumber,
 <a href="../messages/model/FPGARecevingLinkCounters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGARecevingLinkCounters</a>&nbsp;counter,
 @Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</span>
                          throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -1354,14 +1354,14 @@ int&nbsp;linkNumber,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGASendingLinkCounters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGALinkCounter</a></h3>
+<h3><a id="readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGASendingLinkCounters,uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGALinkCounter</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafe.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafe</a>
 <a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CheckReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CheckReturnValue</a>
 </span><span class="modifiers">default</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">readFPGALinkCounter</span>&#8203;(<span class="arguments"><a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 int&nbsp;linkNumber,
 <a href="../messages/model/FPGASendingLinkCounters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGASendingLinkCounters</a>&nbsp;counter,
 @Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</span>
                          throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -1413,14 +1413,14 @@ int&nbsp;linkNumber,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGARegister</a></h3>
+<h3><a id="readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readFPGARegister</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafe.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafe</a>
 <a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CheckReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CheckReturnValue</a>
 </span><span class="returnType">int</span>&nbsp;<span class="memberName">readFPGARegister</span>&#8203;(<span class="arguments"><a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 @NotNull
 @NotNull <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;register,
 @Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</span>
               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -1469,13 +1469,13 @@ int&nbsp;value,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">writeFPGARegister</a></h3>
+<h3><a id="writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,int,uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">writeFPGARegister</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafe.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafe</a>
 </span><span class="modifiers">default</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">writeFPGARegister</span>&#8203;(<span class="arguments"><a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 <a href="../messages/model/FPGAMainRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a>&nbsp;register,
 int&nbsp;value,
 @Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</span>
                         throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -1524,14 +1524,14 @@ int&nbsp;value,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">writeFPGARegister</a></h3>
+<h3><a id="writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,int,uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">writeFPGARegister</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafe.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafe</a>
 </span><span class="modifiers">default</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">writeFPGARegister</span>&#8203;(<span class="arguments"><a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 int&nbsp;registerBank,
 <a href="../messages/model/FPGALinkRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGALinkRegisters</a>&nbsp;register,
 int&nbsp;value,
 @Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</span>
                         throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -1581,14 +1581,14 @@ int&nbsp;value,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">writeFPGARegister</a></h3>
+<h3><a id="writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">writeFPGARegister</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafe.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafe</a>
 </span><span class="returnType">void</span>&nbsp;<span class="memberName">writeFPGARegister</span>&#8203;(<span class="arguments"><a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 @NotNull
 @NotNull <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;register,
 int&nbsp;value,
 @Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</span>
                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -1632,11 +1632,11 @@ int&nbsp;value,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="readADCData(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readADCData</a></h3>
+<h3><a id="readADCData(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readADCData</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafe.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafe</a>
 <a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CheckReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CheckReturnValue</a>
 </span><span class="returnType"><a href="../messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></span>&nbsp;<span class="memberName">readADCData</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</span>
              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -1698,11 +1698,11 @@ int&nbsp;value,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="readBMPVersion(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.lang.Iterable)">readBMPVersion</a></h3>
+<h3><a id="readBMPVersion(uk.ac.manchester.spinnaker.machine.board.BMPCoords,java.lang.Iterable)">readBMPVersion</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelUnsafe.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelUnsafe</a>
 <a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CheckReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CheckReturnValue</a>
 </span><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="../messages/model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></span>&nbsp;<span class="memberName">readBMPVersion</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;@Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;&nbsp;boards)</span>
                             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span></div>
@@ -1722,11 +1722,11 @@ int&nbsp;value,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="readBMPVersion(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readBMPVersion</a></h3>
+<h3><a id="readBMPVersion(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readBMPVersion</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafeWithCare.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafeWithCare</a>
 <a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CheckReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CheckReturnValue</a>
 </span><span class="returnType"><a href="../messages/model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></span>&nbsp;<span class="memberName">readBMPVersion</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</span>
                     throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -1769,11 +1769,11 @@ int&nbsp;value,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="readBMPFirmwareDescriptor(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.messages.model.FirmwareDescriptors)">readBMPFirmwareDescriptor</a></h3>
+<h3><a id="readBMPFirmwareDescriptor(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.messages.model.FirmwareDescriptors)">readBMPFirmwareDescriptor</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafeWithCare.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafeWithCare</a>
 <a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CheckReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CheckReturnValue</a>
 </span><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="../messages/model/FirmwareDescriptor.html" title="class in uk.ac.manchester.spinnaker.messages.model">FirmwareDescriptor</a></span>&nbsp;<span class="memberName">readBMPFirmwareDescriptor</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 <a href="../messages/model/FirmwareDescriptors.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FirmwareDescriptors</a>&nbsp;type)</span>
@@ -1816,11 +1816,11 @@ int&nbsp;value,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="getResetStatus(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">getResetStatus</a></h3>
+<h3><a id="getResetStatus(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">getResetStatus</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafeWithCare.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafeWithCare</a>
 <a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CheckReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CheckReturnValue</a>
 </span><span class="returnType">boolean</span>&nbsp;<span class="memberName">getResetStatus</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</span>
                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -1860,10 +1860,10 @@ int&nbsp;value,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="getSerialFlashBuffer(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">getSerialFlashBuffer</a></h3>
+<h3><a id="getSerialFlashBuffer(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">getSerialFlashBuffer</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafeWithCare.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafeWithCare</a>
 </span><span class="returnType"><a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></span>&nbsp;<span class="memberName">getSerialFlashBuffer</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</span>
                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -1903,10 +1903,10 @@ int&nbsp;value,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="resetFPGA(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType)">resetFPGA</a></h3>
+<h3><a id="resetFPGA(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType)">resetFPGA</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafeWithCare.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafeWithCare</a>
 </span><span class="returnType">void</span>&nbsp;<span class="memberName">resetFPGA</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 <a href="BMPTransceiverInterface.FPGAResetType.html" title="enum in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface.FPGAResetType</a>&nbsp;resetType)</span>
@@ -1955,11 +1955,11 @@ int&nbsp;value,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="readBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">readBMPMemory</a></h3>
+<h3><a id="readBMPMemory(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">readBMPMemory</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafeWithCare.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafeWithCare</a>
 <a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CheckReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CheckReturnValue</a>
 </span><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></span>&nbsp;<span class="memberName">readBMPMemory</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull
@@ -2012,11 +2012,11 @@ int&nbsp;value,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="readBMPMemoryWord(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">readBMPMemoryWord</a></h3>
+<h3><a id="readBMPMemoryWord(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">readBMPMemoryWord</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafeWithCare.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafeWithCare</a>
 <a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CheckReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CheckReturnValue</a>
 </span><span class="modifiers">default</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">readBMPMemoryWord</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull
@@ -2066,9 +2066,9 @@ int&nbsp;value,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="writeBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeBMPMemory</a></h3>
+<h3><a id="writeBMPMemory(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeBMPMemory</a></h3>
 <div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">writeBMPMemory</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull
@@ -2118,9 +2118,9 @@ int&nbsp;dataWord)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="writeBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">writeBMPMemory</a></h3>
+<h3><a id="writeBMPMemory(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">writeBMPMemory</a></h3>
 <div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">writeBMPMemory</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull
@@ -2168,9 +2168,9 @@ int&nbsp;dataWord)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="writeBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeBMPMemory</a></h3>
+<h3><a id="writeBMPMemory(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeBMPMemory</a></h3>
 <div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">writeBMPMemory</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull
@@ -2224,11 +2224,11 @@ int&nbsp;dataWord)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="readSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">readSerialFlash</a></h3>
+<h3><a id="readSerialFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">readSerialFlash</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafeWithCare.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafeWithCare</a>
 <a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CheckReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CheckReturnValue</a>
 </span><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></span>&nbsp;<span class="memberName">readSerialFlash</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull
@@ -2256,11 +2256,11 @@ int&nbsp;dataWord)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="readBoardSerialNumber(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readBoardSerialNumber</a></h3>
+<h3><a id="readBoardSerialNumber(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readBoardSerialNumber</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafeWithCare.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafeWithCare</a>
 <a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CheckReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CheckReturnValue</a>
 </span><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">readBoardSerialNumber</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</span>
                       throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -2302,10 +2302,10 @@ int&nbsp;dataWord)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="readBlacklist(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readBlacklist</a></h3>
+<h3><a id="readBlacklist(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readBlacklist</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CheckReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CheckReturnValue</a>
 </span><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="../messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a></span>&nbsp;<span class="memberName">readBlacklist</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</span>
                          throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -2370,9 +2370,9 @@ int&nbsp;dataWord)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="writeBlacklist(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklist</a></h3>
+<h3><a id="writeBlacklist(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklist</a></h3>
 <div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">writeBlacklist</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @Valid
@@ -2425,11 +2425,11 @@ int&nbsp;dataWord)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="readSerialFlashCRC(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">readSerialFlashCRC</a></h3>
+<h3><a id="readSerialFlashCRC(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">readSerialFlashCRC</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafeWithCare.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafeWithCare</a>
 <a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CheckReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CheckReturnValue</a>
 </span><span class="returnType">int</span>&nbsp;<span class="memberName">readSerialFlashCRC</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull
@@ -2480,9 +2480,9 @@ int&nbsp;dataWord)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="writeSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeSerialFlash</a></h3>
+<h3><a id="writeSerialFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeSerialFlash</a></h3>
 <div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">writeSerialFlash</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull
@@ -2534,9 +2534,9 @@ int&nbsp;dataWord)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="writeSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint,java.io.InputStream)">writeSerialFlash</a></h3>
+<h3><a id="writeSerialFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint,java.io.InputStream)">writeSerialFlash</a></h3>
 <div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">writeSerialFlash</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull
@@ -2588,9 +2588,9 @@ int&nbsp;dataWord)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="writeSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeSerialFlash</a></h3>
+<h3><a id="writeSerialFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeSerialFlash</a></h3>
 <div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">writeSerialFlash</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull
@@ -2615,11 +2615,11 @@ int&nbsp;dataWord)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="eraseBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">eraseBMPFlash</a></h3>
+<h3><a id="eraseBMPFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">eraseBMPFlash</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html?is-external=true" title="class or interface in java.lang" class="externalLink">@Deprecated</a>
 <a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CheckReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CheckReturnValue</a>
 </span><span class="returnType"><a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></span>&nbsp;<span class="memberName">eraseBMPFlash</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull
@@ -2644,16 +2644,16 @@ int&nbsp;dataWord)</span>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong with networking.</dd>
 <dd><code><a href="ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If SpiNNaker rejects a message.</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="#writeFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer,boolean)"><code>writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)</code></a></dd>
+<dd><a href="#writeFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer,boolean)"><code>writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)</code></a></dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="chunkBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">chunkBMPFlash</a></h3>
+<h3><a id="chunkBMPFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">chunkBMPFlash</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html?is-external=true" title="class or interface in java.lang" class="externalLink">@Deprecated</a>
 </span><span class="returnType">void</span>&nbsp;<span class="memberName">chunkBMPFlash</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull
@@ -2674,17 +2674,17 @@ int&nbsp;dataWord)</span>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong with networking.</dd>
 <dd><code><a href="ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If SpiNNaker rejects a message.</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="#writeFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer,boolean)"><code>writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)</code></a>, 
-<a href="#eraseBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)"><code>eraseBMPFlash(BMPCoords,BMPBoard,MemoryLocation,int)</code></a></dd>
+<dd><a href="#writeFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer,boolean)"><code>writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)</code></a>, 
+<a href="#eraseBMPFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)"><code>eraseBMPFlash(BMPCoords,BMPBoard,MemoryLocation,int)</code></a></dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="copyBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">copyBMPFlash</a></h3>
+<h3><a id="copyBMPFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">copyBMPFlash</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html?is-external=true" title="class or interface in java.lang" class="externalLink">@Deprecated</a>
 </span><span class="returnType">void</span>&nbsp;<span class="memberName">copyBMPFlash</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull
@@ -2707,7 +2707,7 @@ int&nbsp;dataWord)</span>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong with networking.</dd>
 <dd><code><a href="ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If SpiNNaker rejects a message.</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="#writeFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer,boolean)"><code>writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)</code></a></dd>
+<dd><a href="#writeFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer,boolean)"><code>writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)</code></a></dd>
 </dl>
 </section>
 </li>
@@ -2731,15 +2731,15 @@ int&nbsp;dataWord)</span>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong with networking.</dd>
 <dd><code><a href="ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If SpiNNaker rejects a message.</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="#writeFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer,boolean)"><code>writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)</code></a></dd>
+<dd><a href="#writeFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer,boolean)"><code>writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)</code></a></dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="writeBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">writeBMPFlash</a></h3>
+<h3><a id="writeBMPFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">writeBMPFlash</a></h3>
 <div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">writeBMPFlash</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull
@@ -2758,7 +2758,7 @@ int&nbsp;dataWord)</span>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong with networking.</dd>
 <dd><code><a href="ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If SpiNNaker rejects a message.</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="#writeFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer,boolean)"><code>writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)</code></a></dd>
+<dd><a href="#writeFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer,boolean)"><code>writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)</code></a></dd>
 </dl>
 </section>
 </li>
@@ -2789,9 +2789,9 @@ boolean&nbsp;update)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="writeFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer,boolean)">writeFlash</a></h3>
+<h3><a id="writeFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer,boolean)">writeFlash</a></h3>
 <div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">writeFlash</span>&#8203;(<span class="arguments">@Valid
-@Valid <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
 @Valid
 @Valid <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 @NotNull

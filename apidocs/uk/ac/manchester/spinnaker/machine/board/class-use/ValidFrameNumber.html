@@ -81,39 +81,21 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.allocator">uk.ac.manchester.spinnaker.alloc.allocator</a></th>
-<td class="colLast">
-<div class="block">The core allocation system.</div>
-</td>
-</tr>
-<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.compat">uk.ac.manchester.spinnaker.alloc.compat</a></th>
 <td class="colLast">
 <div class="block">Spalloc v1 compatibility interface.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.web">uk.ac.manchester.spinnaker.alloc.web</a></th>
 <td class="colLast">
 <div class="block">The web interface to the service.</div>
 </td>
 </tr>
-<tr class="altColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.allocator">uk.ac.manchester.spinnaker.allocator</a></th>
-<td class="colLast">
-<div class="block">Java client for the SpiNNaker allocation service.</div>
-</td>
-</tr>
 <tr class="rowColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.model">uk.ac.manchester.spinnaker.messages.model</a></th>
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.machine.board">uk.ac.manchester.spinnaker.machine.board</a></th>
 <td class="colLast">
-<div class="block">Model support classes for the communication messages.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.spalloc.messages">uk.ac.manchester.spinnaker.spalloc.messages</a></th>
-<td class="colLast">
-<div class="block">Commands to send to Spalloc, and responses received from Spalloc.</div>
+<div class="block">Classes relating to boards in a SpiNNaker machine.</div>
 </td>
 </tr>
 </tbody>
@@ -128,34 +110,6 @@ loadScripts(document, 'script');</script>
 <h2>Uses of <a href="../ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidFrameNumber</a> in <a href="../../../alloc/admin/package-summary.html">uk.ac.manchester.spinnaker.alloc.admin</a></h2>
 <div class="useSummary">
 <table>
-<caption><span>Fields in <a href="../../../alloc/admin/package-summary.html">uk.ac.manchester.spinnaker.alloc.admin</a> with annotations of type <a href="../ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidFrameNumber</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Field</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">MachineDefinitionLoader.BMPCoords.</span><code><span class="memberNameLink"><a href="../../../alloc/admin/MachineDefinitionLoader.BMPCoords.html#f">f</a></span></code></th>
-<td class="colLast">
-<div class="block">Frame number.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">MachineDefinitionLoader.BoardPhysicalCoords.</span><code><span class="memberNameLink"><a href="../../../alloc/admin/MachineDefinitionLoader.BoardPhysicalCoords.html#f">f</a></span></code></th>
-<td class="colLast">
-<div class="block">Frame number.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="useSummary">
-<table>
 <caption><span>Method parameters in <a href="../../../alloc/admin/package-summary.html">uk.ac.manchester.spinnaker.alloc.admin</a> with annotations of type <a href="../ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidFrameNumber</a></span><span class="tabEnd">&nbsp;</span></caption>
 <thead>
 <tr>
@@ -166,16 +120,6 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../../../alloc/admin/MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">MachineStateControl.</span><code><span class="memberNameLink"><a href="../../../alloc/admin/MachineStateControl.html#findPhysical(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">findPhysical</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;c,
-@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;f,
-@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;b)</code></th>
-<td class="colLast">
-<div class="block">Look up a board for management.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><code>default boolean</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">AdminAPI.</span><code><span class="memberNameLink"><a href="../../../alloc/admin/AdminAPI.html#getBoardState(java.lang.String,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.String)">getBoardState</a></span>&#8203;(@NotBlank(message="machine name is required") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
 <a href="../ValidTriadX.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadX</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;x,
@@ -189,7 +133,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Describe the enable state of a board.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">AdminAPI.</span><code><span class="memberNameLink"><a href="../../../alloc/admin/AdminAPI.html#getBoardStateCFB(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">getBoardStateCFB</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
 @uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;c,
@@ -199,7 +143,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Find board by physical coordinates and return its state.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default boolean</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">AdminAPI.</span><code><span class="memberNameLink"><a href="../../../alloc/admin/AdminAPI.html#setBoardState(java.lang.String,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.String,boolean)">setBoardState</a></span>&#8203;(@NotBlank(message="machine name is required") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
 <a href="../ValidTriadX.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadX</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;x,
@@ -214,7 +158,7 @@ boolean&nbsp;enabled)</code></th>
 <div class="block">Enable or disable a board.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">AdminAPI.</span><code><span class="memberNameLink"><a href="../../../alloc/admin/AdminAPI.html#setBoardStateCFB(java.lang.String,@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint,boolean)">setBoardStateCFB</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
 @javax.validation.constraints.NotNull,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;c,
@@ -223,58 +167,6 @@ boolean&nbsp;enabled)</code></th>
 boolean&nbsp;enabled)</code></th>
 <td class="colLast">
 <div class="block">Enable or disable a board.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.allocator">
-<!--   -->
-</a>
-<h2>Uses of <a href="../ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidFrameNumber</a> in <a href="../../../alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a></h2>
-<div class="useSummary">
-<table>
-<caption><span>Fields in <a href="../../../alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a> with annotations of type <a href="../ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidFrameNumber</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Field</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Phys.</span><code><span class="memberNameLink"><a href="../../../alloc/allocator/SpallocAPI.Phys.html#frame">frame</a></span></code></th>
-<td class="colLast">
-<div class="block">Frame number.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="useSummary">
-<table>
-<caption><span>Method parameters in <a href="../../../alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a> with annotations of type <a href="../ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidFrameNumber</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Method</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../../../alloc/allocator/SpallocAPI.BoardLocation.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.BoardLocation</a>&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Machine.</span><code><span class="memberNameLink"><a href="../../../alloc/allocator/SpallocAPI.Machine.html#getBoardByPhysicalCoords(@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">getBoardByPhysicalCoords</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;cabinet,
-@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;frame,
-@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;board)</code></th>
-<td class="colLast">
-<div class="block">Get a description of the location of a board given the physical
- coordinates of the board.</div>
 </td>
 </tr>
 </tbody>
@@ -382,43 +274,13 @@ boolean&nbsp;enabled)</code></th>
 </section>
 </li>
 <li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.allocator">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.machine.board">
 <!--   -->
 </a>
-<h2>Uses of <a href="../ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidFrameNumber</a> in <a href="../../../allocator/package-summary.html">uk.ac.manchester.spinnaker.allocator</a></h2>
+<h2>Uses of <a href="../ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidFrameNumber</a> in <a href="../package-summary.html">uk.ac.manchester.spinnaker.machine.board</a></h2>
 <div class="useSummary">
 <table>
-<caption><span>Method parameters in <a href="../../../allocator/package-summary.html">uk.ac.manchester.spinnaker.allocator</a> with annotations of type <a href="../ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidFrameNumber</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Method</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code><a href="../../../allocator/WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Machine.</span><code><span class="memberNameLink"><a href="../../../allocator/SpallocClient.Machine.html#getBoardByPhysicalCoords(@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">getBoardByPhysicalCoords</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;cabinet,
-@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;frame,
-@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;board)</code></th>
-<td class="colLast">
-<div class="block">Given physical coordinates, return more info about a board.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.messages.model">
-<!--   -->
-</a>
-<h2>Uses of <a href="../ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidFrameNumber</a> in <a href="../../../messages/model/package-summary.html">uk.ac.manchester.spinnaker.messages.model</a></h2>
-<div class="useSummary">
-<table>
-<caption><span>Fields in <a href="../../../messages/model/package-summary.html">uk.ac.manchester.spinnaker.messages.model</a> with annotations of type <a href="../ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidFrameNumber</a></span><span class="tabEnd">&nbsp;</span></caption>
+<caption><span>Fields in <a href="../package-summary.html">uk.ac.manchester.spinnaker.machine.board</a> with annotations of type <a href="../ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidFrameNumber</a></span><span class="tabEnd">&nbsp;</span></caption>
 <thead>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
@@ -429,38 +291,16 @@ boolean&nbsp;enabled)</code></th>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BMPConnectionData.</span><code><span class="memberNameLink"><a href="../../../messages/model/BMPConnectionData.html#frame">frame</a></span></code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">PhysicalCoords.</span><code><span class="memberNameLink"><a href="../PhysicalCoords.html#f">f</a></span></code></th>
 <td class="colLast">
-<div class="block">The ID of the frame that contains the BMPs.</div>
+<div class="block">Frame number.</div>
 </td>
 </tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.spalloc.messages">
-<!--   -->
-</a>
-<h2>Uses of <a href="../ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidFrameNumber</a> in <a href="../../../spalloc/messages/package-summary.html">uk.ac.manchester.spinnaker.spalloc.messages</a></h2>
-<div class="useSummary">
-<table>
-<caption><span>Constructor parameters in <a href="../../../spalloc/messages/package-summary.html">uk.ac.manchester.spinnaker.spalloc.messages</a> with annotations of type <a href="../ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidFrameNumber</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Constructor</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../spalloc/messages/WhereIsMachineBoardPhysicalCommand.html#%3Cinit%3E(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">WhereIsMachineBoardPhysicalCommand</a></span>&#8203;(@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;cabinet,
-@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;frame,
-@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;board)</code></th>
+<tr class="rowColor">
+<td class="colFirst"><code>@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPCoords.</span><code><span class="memberNameLink"><a href="../BMPCoords.html#frame">frame</a></span></code></th>
 <td class="colLast">
-<div class="block">Create a request to locate a board on a machine.</div>
+<div class="block">The ID of the frame that contains the master BMP.</div>
 </td>
 </tr>
 </tbody>

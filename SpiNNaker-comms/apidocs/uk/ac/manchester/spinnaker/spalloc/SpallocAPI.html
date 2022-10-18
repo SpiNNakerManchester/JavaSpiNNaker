@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":50,"i1":38,"i2":18,"i3":6,"i4":18,"i5":6,"i6":18,"i7":6,"i8":18,"i9":6,"i10":18,"i11":6,"i12":18,"i13":6,"i14":18,"i15":6,"i16":18,"i17":6,"i18":18,"i19":6,"i20":18,"i21":6,"i22":18,"i23":6,"i24":18,"i25":6,"i26":18,"i27":6,"i28":18,"i29":6,"i30":18,"i31":6,"i32":18,"i33":6,"i34":18,"i35":6,"i36":18,"i37":6,"i38":18,"i39":6};
+<script type="text/javascript">var data = {"i0":18,"i1":6,"i2":50,"i3":38,"i4":18,"i5":6,"i6":18,"i7":6,"i8":18,"i9":6,"i10":18,"i11":18,"i12":18,"i13":18,"i14":18,"i15":6,"i16":18,"i17":6,"i18":18,"i19":6,"i20":18,"i21":6,"i22":18,"i23":6,"i24":18,"i25":6,"i26":18,"i27":6,"i28":18,"i29":6,"i30":18,"i31":6,"i32":18,"i33":6,"i34":18,"i35":6,"i36":18,"i37":6,"i38":18,"i39":6,"i40":18,"i41":6,"i42":18,"i43":6,"i44":18,"i45":18,"i46":18,"i47":18};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],16:["t5","Default Methods"],32:["t6","Deprecated Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -122,19 +122,34 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code>default int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJob(java.util.List,java.util.Map)">createJob</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;args,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;kwargs)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJob(uk.ac.manchester.spinnaker.spalloc.CreateJob)">createJob</a></span>&#8203;(@Valid <a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a>&nbsp;builder)</code></th>
+<td class="colLast">
+<div class="block">Create a job.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i1">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJob(uk.ac.manchester.spinnaker.spalloc.CreateJob,java.lang.Integer)">createJob</a></span>&#8203;(@Valid <a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a>&nbsp;builder,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<td class="colLast">
+<div class="block">Create a job.</div>
+</td>
+</tr>
+<tr class="altColor" id="i2">
+<td class="colFirst"><code>default int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJob(java.util.List,java.util.Map)">createJob</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;@PositiveOrZero <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;args,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;kwargs)</code></th>
 <td class="colLast">
 <div class="block"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
 <div class="deprecationComment">Consider using <a href="#createJob(uk.ac.manchester.spinnaker.spalloc.CreateJob)"><code>createJob(CreateJob)</code></a> instead.</div>
 </div>
 </td>
 </tr>
-<tr class="rowColor" id="i1">
+<tr class="rowColor" id="i3">
 <td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJob(java.util.List,java.util.Map,java.lang.Integer)">createJob</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;args,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;kwargs,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJob(java.util.List,java.util.Map,java.lang.Integer)">createJob</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;@PositiveOrZero <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;args,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;kwargs,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
 <div class="deprecationComment">Consider using <a href="#createJob(uk.ac.manchester.spinnaker.spalloc.CreateJob,java.lang.Integer)"><code>createJob(CreateJob, Integer)</code></a>
@@ -142,25 +157,10 @@ loadScripts(document, 'script');</script>
 </div>
 </td>
 </tr>
-<tr class="altColor" id="i2">
-<td class="colFirst"><code>default int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJob(uk.ac.manchester.spinnaker.spalloc.CreateJob)">createJob</a></span>&#8203;(<a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a>&nbsp;builder)</code></th>
-<td class="colLast">
-<div class="block">Create a job.</div>
-</td>
-</tr>
-<tr class="rowColor" id="i3">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJob(uk.ac.manchester.spinnaker.spalloc.CreateJob,java.lang.Integer)">createJob</a></span>&#8203;(<a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a>&nbsp;builder,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
-<td class="colLast">
-<div class="block">Create a job.</div>
-</td>
-</tr>
 <tr class="altColor" id="i4">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#destroyJob(int,java.lang.String)">destroyJob</a></span>&#8203;(int&nbsp;jobID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reason)</code></th>
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reason)</code></th>
 <td class="colLast">
 <div class="block">Destroy a job.</div>
 </td>
@@ -168,120 +168,154 @@ loadScripts(document, 'script');</script>
 <tr class="rowColor" id="i5">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#destroyJob(int,java.lang.String,java.lang.Integer)">destroyJob</a></span>&#8203;(int&nbsp;jobID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reason,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reason,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Destroy a job.</div>
 </td>
 </tr>
 <tr class="altColor" id="i6">
-<td class="colFirst"><code>default <a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates)">getBoardPosition</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-<a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords)</code></th>
+<td class="colFirst"><code>default <a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">getBoardPosition</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">PhysicalCoords</a>&nbsp;coords)</code></th>
 <td class="colLast">
-<div class="block">Get the physical location of a board.</div>
+<div class="block">Get the logical location of a board.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i7">
-<td class="colFirst"><code><a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.Integer)">getBoardPosition</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-<a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<td class="colFirst"><code><a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords,java.lang.Integer)">getBoardPosition</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">PhysicalCoords</a>&nbsp;coords,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<td class="colLast">
+<div class="block">Get the logical location of a board.</div>
+</td>
+</tr>
+<tr class="altColor" id="i8">
+<td class="colFirst"><code>default <a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords)">getBoardPosition</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/TriadCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">TriadCoords</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Get the physical location of a board.</div>
 </td>
 </tr>
-<tr class="altColor" id="i8">
-<td class="colFirst"><code>default <a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">getBoardPosition</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-<a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords)</code></th>
-<td class="colLast">
-<div class="block">Get the logical location of a board.</div>
-</td>
-</tr>
 <tr class="rowColor" id="i9">
-<td class="colFirst"><code><a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates,java.lang.Integer)">getBoardPosition</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-<a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<td class="colFirst"><code><a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords,java.lang.Integer)">getBoardPosition</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/TriadCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">TriadCoords</a>&nbsp;coords,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
-<div class="block">Get the logical location of a board.</div>
+<div class="block">Get the physical location of a board.</div>
 </td>
 </tr>
 <tr class="altColor" id="i10">
+<td class="colFirst"><code>default <a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates)">getBoardPosition</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@Valid <a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords)</code></th>
+<td class="colLast">
+<div class="block">Get the physical location of a board.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i11">
+<td class="colFirst"><code>default <a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.Integer)">getBoardPosition</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@Valid <a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<td class="colLast">
+<div class="block">Get the physical location of a board.</div>
+</td>
+</tr>
+<tr class="altColor" id="i12">
+<td class="colFirst"><code>default <a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">getBoardPosition</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@Valid <a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords)</code></th>
+<td class="colLast">
+<div class="block">Get the logical location of a board.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i13">
+<td class="colFirst"><code>default <a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates,java.lang.Integer)">getBoardPosition</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@Valid <a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<td class="colLast">
+<div class="block">Get the logical location of a board.</div>
+</td>
+</tr>
+<tr class="altColor" id="i14">
 <td class="colFirst"><code>default <a href="messages/JobMachineInfo.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">JobMachineInfo</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getJobMachineInfo(int)">getJobMachineInfo</a></span>&#8203;(int&nbsp;jobID)</code></th>
 <td class="colLast">
 <div class="block">Get information about a job's allocated machine.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i11">
+<tr class="rowColor" id="i15">
 <td class="colFirst"><code><a href="messages/JobMachineInfo.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">JobMachineInfo</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getJobMachineInfo(int,java.lang.Integer)">getJobMachineInfo</a></span>&#8203;(int&nbsp;jobID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Get information about a job's allocated machine.</div>
 </td>
 </tr>
-<tr class="altColor" id="i12">
+<tr class="altColor" id="i16">
 <td class="colFirst"><code>default <a href="messages/JobState.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">JobState</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getJobState(int)">getJobState</a></span>&#8203;(int&nbsp;jobID)</code></th>
 <td class="colLast">
 <div class="block">Get the state of a job.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i13">
+<tr class="rowColor" id="i17">
 <td class="colFirst"><code><a href="messages/JobState.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">JobState</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getJobState(int,java.lang.Integer)">getJobState</a></span>&#8203;(int&nbsp;jobID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Get the state of a job.</div>
 </td>
 </tr>
-<tr class="altColor" id="i14">
+<tr class="altColor" id="i18">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#jobKeepAlive(int)">jobKeepAlive</a></span>&#8203;(int&nbsp;jobID)</code></th>
 <td class="colLast">
 <div class="block">Keep a job alive.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i15">
+<tr class="rowColor" id="i19">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#jobKeepAlive(int,java.lang.Integer)">jobKeepAlive</a></span>&#8203;(int&nbsp;jobID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Keep a job alive.</div>
 </td>
 </tr>
-<tr class="altColor" id="i16">
+<tr class="altColor" id="i20">
 <td class="colFirst"><code>default <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="messages/JobDescription.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">JobDescription</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listJobs()">listJobs</a></span>()</code></th>
 <td class="colLast">
 <div class="block">List all jobs.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i17">
+<tr class="rowColor" id="i21">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="messages/JobDescription.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">JobDescription</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listJobs(java.lang.Integer)">listJobs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listJobs(java.lang.Integer)">listJobs</a></span>&#8203;(@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">List all jobs.</div>
 </td>
 </tr>
-<tr class="altColor" id="i18">
+<tr class="altColor" id="i22">
 <td class="colFirst"><code>default <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="messages/Machine.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">Machine</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listMachines()">listMachines</a></span>()</code></th>
 <td class="colLast">
 <div class="block">List all known machines.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i19">
+<tr class="rowColor" id="i23">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="messages/Machine.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">Machine</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listMachines(java.lang.Integer)">listMachines</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listMachines(java.lang.Integer)">listMachines</a></span>&#8203;(@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">List all known machines.</div>
 </td>
 </tr>
-<tr class="altColor" id="i20">
+<tr class="altColor" id="i24">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#notifyJob(java.lang.Integer,boolean)">notifyJob</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;jobID,
 boolean&nbsp;enable)</code></th>
@@ -289,16 +323,16 @@ boolean&nbsp;enable)</code></th>
 <div class="block">Enable or disable notifications of changes in job state.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i21">
+<tr class="rowColor" id="i25">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#notifyJob(java.lang.Integer,boolean,java.lang.Integer)">notifyJob</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;jobID,
 boolean&nbsp;enable,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Enable or disable notifications of changes in job state.</div>
 </td>
 </tr>
-<tr class="altColor" id="i22">
+<tr class="altColor" id="i26">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#notifyMachine(java.lang.String,boolean)">notifyMachine</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
 boolean&nbsp;enable)</code></th>
@@ -306,137 +340,171 @@ boolean&nbsp;enable)</code></th>
 <div class="block">Enable or disable notifications of changes in machine state.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i23">
+<tr class="rowColor" id="i27">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#notifyMachine(java.lang.String,boolean,java.lang.Integer)">notifyMachine</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
 boolean&nbsp;enable,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Enable or disable notifications of changes in machine state.</div>
 </td>
 </tr>
-<tr class="altColor" id="i24">
+<tr class="altColor" id="i28">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#powerOffJobBoards(int)">powerOffJobBoards</a></span>&#8203;(int&nbsp;jobID)</code></th>
 <td class="colLast">
 <div class="block">Turn off a job's allocated boards.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i25">
+<tr class="rowColor" id="i29">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#powerOffJobBoards(int,java.lang.Integer)">powerOffJobBoards</a></span>&#8203;(int&nbsp;jobID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Turn off a job's allocated boards.</div>
 </td>
 </tr>
-<tr class="altColor" id="i26">
+<tr class="altColor" id="i30">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#powerOnJobBoards(int)">powerOnJobBoards</a></span>&#8203;(int&nbsp;jobID)</code></th>
 <td class="colLast">
 <div class="block">Turn on a job's allocated boards.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i27">
+<tr class="rowColor" id="i31">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#powerOnJobBoards(int,java.lang.Integer)">powerOnJobBoards</a></span>&#8203;(int&nbsp;jobID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Turn on a job's allocated boards.</div>
 </td>
 </tr>
-<tr class="altColor" id="i28">
+<tr class="altColor" id="i32">
 <td class="colFirst"><code>default <a href="../messages/model/Version.html" title="class in uk.ac.manchester.spinnaker.messages.model">Version</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#version()">version</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Request the version of the spalloc server.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i29">
+<tr class="rowColor" id="i33">
 <td class="colFirst"><code><a href="../messages/model/Version.html" title="class in uk.ac.manchester.spinnaker.messages.model">Version</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#version(java.lang.Integer)">version</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#version(java.lang.Integer)">version</a></span>&#8203;(@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Request the version of the spalloc server.</div>
 </td>
 </tr>
-<tr class="altColor" id="i30">
+<tr class="altColor" id="i34">
 <td class="colFirst"><code>default <a href="messages/Notification.html" title="interface in uk.ac.manchester.spinnaker.spalloc.messages">Notification</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#waitForNotification()">waitForNotification</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Return the next notification to arrive.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i31">
+<tr class="rowColor" id="i35">
 <td class="colFirst"><code><a href="messages/Notification.html" title="interface in uk.ac.manchester.spinnaker.spalloc.messages">Notification</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#waitForNotification(java.lang.Integer)">waitForNotification</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Return the next notification to arrive.</div>
 </td>
 </tr>
-<tr class="altColor" id="i32">
-<td class="colFirst"><code>default <a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(int,uk.ac.manchester.spinnaker.machine.HasChipLocation)">whereIs</a></span>&#8203;(int&nbsp;jobID,
-<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip)</code></th>
-<td class="colLast">
-<div class="block">Locate a chip within a job's allocation.</div>
-</td>
-</tr>
-<tr class="rowColor" id="i33">
-<td class="colFirst"><code><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(int,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Integer)">whereIs</a></span>&#8203;(int&nbsp;jobID,
-<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
-<td class="colLast">
-<div class="block">Locate a chip within a job's allocation.</div>
-</td>
-</tr>
-<tr class="altColor" id="i34">
-<td class="colFirst"><code>default <a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip)</code></th>
-<td class="colLast">
-<div class="block">Locate a chip within a machine.</div>
-</td>
-</tr>
-<tr class="rowColor" id="i35">
-<td class="colFirst"><code><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Integer)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
-<td class="colLast">
-<div class="block">Locate a chip within a machine.</div>
-</td>
-</tr>
 <tr class="altColor" id="i36">
 <td class="colFirst"><code>default <a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(int,uk.ac.manchester.spinnaker.machine.HasChipLocation)">whereIs</a></span>&#8203;(int&nbsp;jobID,
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">
-<div class="block">Locate a board within a machine.</div>
+<div class="block">Locate a chip within a job's allocation.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i37">
 <td class="colFirst"><code><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.Integer)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(int,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Integer)">whereIs</a></span>&#8203;(int&nbsp;jobID,
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
-<div class="block">Locate a board within a machine.</div>
+<div class="block">Locate a chip within a job's allocation.</div>
 </td>
 </tr>
 <tr class="altColor" id="i38">
 <td class="colFirst"><code>default <a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">PhysicalCoords</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Locate a board within a machine.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i39">
 <td class="colFirst"><code><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates,java.lang.Integer)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords,java.lang.Integer)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">PhysicalCoords</a>&nbsp;coords,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<td class="colLast">
+<div class="block">Locate a board within a machine.</div>
+</td>
+</tr>
+<tr class="altColor" id="i40">
+<td class="colFirst"><code>default <a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/TriadCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">TriadCoords</a>&nbsp;coords)</code></th>
+<td class="colLast">
+<div class="block">Locate a board within a machine.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i41">
+<td class="colFirst"><code><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords,java.lang.Integer)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/TriadCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">TriadCoords</a>&nbsp;coords,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<td class="colLast">
+<div class="block">Locate a board within a machine.</div>
+</td>
+</tr>
+<tr class="altColor" id="i42">
+<td class="colFirst"><code>default <a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip)</code></th>
+<td class="colLast">
+<div class="block">Locate a chip within a machine.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i43">
+<td class="colFirst"><code><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Integer)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<td class="colLast">
+<div class="block">Locate a chip within a machine.</div>
+</td>
+</tr>
+<tr class="altColor" id="i44">
+<td class="colFirst"><code>default <a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords)</code></th>
+<td class="colLast">
+<div class="block">Locate a board within a machine.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i45">
+<td class="colFirst"><code>default <a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.Integer)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<td class="colLast">
+<div class="block">Locate a board within a machine.</div>
+</td>
+</tr>
+<tr class="altColor" id="i46">
+<td class="colFirst"><code>default <a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords)</code></th>
+<td class="colLast">
+<div class="block">Locate a board within a machine.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i47">
+<td class="colFirst"><code>default <a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates,java.lang.Integer)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Locate a board within a machine.</div>
 </td>
@@ -477,7 +545,8 @@ boolean&nbsp;enable,
 <li class="blockList">
 <section class="detail">
 <h3><a id="version(java.lang.Integer)">version</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="../messages/model/Version.html" title="class in uk.ac.manchester.spinnaker.messages.model">Version</a></span>&nbsp;<span class="memberName">version</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+<div class="memberSignature"><span class="returnType"><a href="../messages/model/Version.html" title="class in uk.ac.manchester.spinnaker.messages.model">Version</a></span>&nbsp;<span class="memberName">version</span>&#8203;(<span class="arguments">@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
          throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
@@ -499,8 +568,8 @@ boolean&nbsp;enable,
 <section class="detail">
 <h3><a id="createJob(java.util.List,java.util.Map)">createJob</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html?is-external=true" title="class or interface in java.lang" class="externalLink">@Deprecated</a>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html?is-external=true#forRemoval()" title="class or interface in java.lang" class="externalLink">forRemoval</a>=true)
-</span><span class="modifiers">default</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">createJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;args,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;kwargs)</span>
+</span><span class="modifiers">default</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">createJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;@PositiveOrZero <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;args,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;kwargs)</span>
                throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
@@ -525,7 +594,8 @@ boolean&nbsp;enable,
 <li class="blockList">
 <section class="detail">
 <h3><a id="createJob(uk.ac.manchester.spinnaker.spalloc.CreateJob)">createJob</a></h3>
-<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">createJob</span>&#8203;(<span class="arguments"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a>&nbsp;builder)</span>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">createJob</span>&#8203;(<span class="arguments">@Valid
+@Valid <a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a>&nbsp;builder)</span>
                throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <div class="block">Create a job.</div>
@@ -543,8 +613,10 @@ boolean&nbsp;enable,
 <li class="blockList">
 <section class="detail">
 <h3><a id="createJob(uk.ac.manchester.spinnaker.spalloc.CreateJob,java.lang.Integer)">createJob</a></h3>
-<div class="memberSignature"><span class="returnType">int</span>&nbsp;<span class="memberName">createJob</span>&#8203;(<span class="arguments"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a>&nbsp;builder,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+<div class="memberSignature"><span class="returnType">int</span>&nbsp;<span class="memberName">createJob</span>&#8203;(<span class="arguments">@Valid
+@Valid <a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a>&nbsp;builder,
+@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
        throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
@@ -567,9 +639,10 @@ boolean&nbsp;enable,
 <section class="detail">
 <h3><a id="createJob(java.util.List,java.util.Map,java.lang.Integer)">createJob</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html?is-external=true" title="class or interface in java.lang" class="externalLink">@Deprecated</a>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html?is-external=true#forRemoval()" title="class or interface in java.lang" class="externalLink">forRemoval</a>=true)
-</span><span class="returnType">int</span>&nbsp;<span class="memberName">createJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;args,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;kwargs,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+</span><span class="returnType">int</span>&nbsp;<span class="memberName">createJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;@PositiveOrZero <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;args,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;kwargs,
+@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
        throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
@@ -616,7 +689,8 @@ boolean&nbsp;enable,
 <section class="detail">
 <h3><a id="jobKeepAlive(int,java.lang.Integer)">jobKeepAlive</a></h3>
 <div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">jobKeepAlive</span>&#8203;(<span class="arguments">int&nbsp;jobID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
@@ -655,7 +729,8 @@ boolean&nbsp;enable,
 <section class="detail">
 <h3><a id="getJobState(int,java.lang.Integer)">getJobState</a></h3>
 <div class="memberSignature"><span class="returnType"><a href="messages/JobState.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">JobState</a></span>&nbsp;<span class="memberName">getJobState</span>&#8203;(<span class="arguments">int&nbsp;jobID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
@@ -696,7 +771,8 @@ boolean&nbsp;enable,
 <section class="detail">
 <h3><a id="getJobMachineInfo(int,java.lang.Integer)">getJobMachineInfo</a></h3>
 <div class="memberSignature"><span class="returnType"><a href="messages/JobMachineInfo.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">JobMachineInfo</a></span>&nbsp;<span class="memberName">getJobMachineInfo</span>&#8203;(<span class="arguments">int&nbsp;jobID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
                           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
@@ -735,7 +811,8 @@ boolean&nbsp;enable,
 <section class="detail">
 <h3><a id="powerOnJobBoards(int,java.lang.Integer)">powerOnJobBoards</a></h3>
 <div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">powerOnJobBoards</span>&#8203;(<span class="arguments">int&nbsp;jobID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
                throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
@@ -772,7 +849,8 @@ boolean&nbsp;enable,
 <section class="detail">
 <h3><a id="powerOffJobBoards(int,java.lang.Integer)">powerOffJobBoards</a></h3>
 <div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">powerOffJobBoards</span>&#8203;(<span class="arguments">int&nbsp;jobID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
@@ -793,7 +871,8 @@ boolean&nbsp;enable,
 <section class="detail">
 <h3><a id="destroyJob(int,java.lang.String)">destroyJob</a></h3>
 <div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">destroyJob</span>&#8203;(<span class="arguments">int&nbsp;jobID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reason)</span>
+@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reason)</span>
                  throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <div class="block">Destroy a job.</div>
@@ -811,8 +890,10 @@ boolean&nbsp;enable,
 <section class="detail">
 <h3><a id="destroyJob(int,java.lang.String,java.lang.Integer)">destroyJob</a></h3>
 <div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">destroyJob</span>&#8203;(<span class="arguments">int&nbsp;jobID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reason,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reason,
+@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
          throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
@@ -856,7 +937,8 @@ boolean&nbsp;enable)</span>
 <h3><a id="notifyJob(java.lang.Integer,boolean,java.lang.Integer)">notifyJob</a></h3>
 <div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">notifyJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;jobID,
 boolean&nbsp;enable,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
         throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
@@ -904,7 +986,8 @@ boolean&nbsp;enable)</span>
 <h3><a id="notifyMachine(java.lang.String,boolean,java.lang.Integer)">notifyMachine</a></h3>
 <div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">notifyMachine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
 boolean&nbsp;enable,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
@@ -946,7 +1029,8 @@ boolean&nbsp;enable,
 <li class="blockList">
 <section class="detail">
 <h3><a id="listJobs(java.lang.Integer)">listJobs</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="messages/JobDescription.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">JobDescription</a>&gt;</span>&nbsp;<span class="memberName">listJobs</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="messages/JobDescription.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">JobDescription</a>&gt;</span>&nbsp;<span class="memberName">listJobs</span>&#8203;(<span class="arguments">@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
                        throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
@@ -985,7 +1069,8 @@ boolean&nbsp;enable,
 <li class="blockList">
 <section class="detail">
 <h3><a id="listMachines(java.lang.Integer)">listMachines</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="messages/Machine.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">Machine</a>&gt;</span>&nbsp;<span class="memberName">listMachines</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="messages/Machine.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">Machine</a>&gt;</span>&nbsp;<span class="memberName">listMachines</span>&#8203;(<span class="arguments">@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
                     throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
@@ -1007,8 +1092,33 @@ boolean&nbsp;enable,
 <li class="blockList">
 <section class="detail">
 <h3><a id="getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates)">getBoardPosition</a></h3>
-<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a></span>&nbsp;<span class="memberName">getBoardPosition</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-<a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords)</span>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a></span>&nbsp;<span class="memberName">getBoardPosition</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@Valid
+@Valid <a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords)</span>
+                                           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
+<div class="block">Get the physical location of a board.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>machineName</code> - the name of the machine containing the board.</dd>
+<dd><code>coords</code> - the logical location of the board.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the physical location, or <code>null</code> if the logical location
+         doesn't map to a real board.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - if the server returns an exception response.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - if network communications fail.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords)">getBoardPosition</a></h3>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a></span>&nbsp;<span class="memberName">getBoardPosition</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@Valid
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/TriadCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">TriadCoords</a>&nbsp;coords)</span>
                                            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <div class="block">Get the physical location of a board.</div>
@@ -1028,9 +1138,41 @@ boolean&nbsp;enable,
 <li class="blockList">
 <section class="detail">
 <h3><a id="getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.Integer)">getBoardPosition</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a></span>&nbsp;<span class="memberName">getBoardPosition</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-<a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a></span>&nbsp;<span class="memberName">getBoardPosition</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@Valid
+@Valid <a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords,
+@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+                                           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
+<a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
+<div class="block">Get the physical location of a board.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>machineName</code> - the name of the machine containing the board.</dd>
+<dd><code>coords</code> - the logical location of the board.</dd>
+<dd><code>timeout</code> - How long to wait for the request to complete, in milliseconds,
+            or <code>null</code> to wait forever.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the physical location, or <code>null</code> if the logical location
+         doesn't map to a real board.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - if the server returns an exception response.</dd>
+<dd><code><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a></code> - if the request times out.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - if network communications fail.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords,java.lang.Integer)">getBoardPosition</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a></span>&nbsp;<span class="memberName">getBoardPosition</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@Valid
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/TriadCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">TriadCoords</a>&nbsp;coords,
+@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
                                    throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
@@ -1054,8 +1196,33 @@ boolean&nbsp;enable,
 <li class="blockList">
 <section class="detail">
 <h3><a id="getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">getBoardPosition</a></h3>
-<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></span>&nbsp;<span class="memberName">getBoardPosition</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-<a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords)</span>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></span>&nbsp;<span class="memberName">getBoardPosition</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@Valid
+@Valid <a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords)</span>
+                                   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
+<div class="block">Get the logical location of a board.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>machineName</code> - the name of the machine containing the board.</dd>
+<dd><code>coords</code> - the physical location of the board.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the logical location, or <code>null</code> if the physical location
+         doesn't map to a real board.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - if the server returns an exception response.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - if network communications fail.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">getBoardPosition</a></h3>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></span>&nbsp;<span class="memberName">getBoardPosition</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@Valid
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">PhysicalCoords</a>&nbsp;coords)</span>
                                    throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <div class="block">Get the logical location of a board.</div>
@@ -1075,9 +1242,41 @@ boolean&nbsp;enable,
 <li class="blockList">
 <section class="detail">
 <h3><a id="getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates,java.lang.Integer)">getBoardPosition</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></span>&nbsp;<span class="memberName">getBoardPosition</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-<a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></span>&nbsp;<span class="memberName">getBoardPosition</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@Valid
+@Valid <a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords,
+@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+                                   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
+<a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
+<div class="block">Get the logical location of a board.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>machineName</code> - the name of the machine containing the board.</dd>
+<dd><code>coords</code> - the physical location of the board.</dd>
+<dd><code>timeout</code> - How long to wait for the request to complete, in milliseconds,
+            or <code>null</code> to wait forever.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the logical location, or <code>null</code> if the physical location
+         doesn't map to a real board.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - if the server returns an exception response.</dd>
+<dd><code><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a></code> - if the request times out.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - if network communications fail.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords,java.lang.Integer)">getBoardPosition</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></span>&nbsp;<span class="memberName">getBoardPosition</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+@Valid
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">PhysicalCoords</a>&nbsp;coords,
+@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
                            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
@@ -1102,7 +1301,8 @@ boolean&nbsp;enable,
 <section class="detail">
 <h3><a id="whereIs(int,uk.ac.manchester.spinnaker.machine.HasChipLocation)">whereIs</a></h3>
 <div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments">int&nbsp;jobID,
-<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip)</span>
+@Valid
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip)</span>
                  throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <div class="block">Locate a chip within a job's allocation.</div>
@@ -1123,8 +1323,10 @@ boolean&nbsp;enable,
 <section class="detail">
 <h3><a id="whereIs(int,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Integer)">whereIs</a></h3>
 <div class="memberSignature"><span class="returnType"><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments">int&nbsp;jobID,
-<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+@Valid
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
+@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
          throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
@@ -1148,8 +1350,10 @@ boolean&nbsp;enable,
 <li class="blockList">
 <section class="detail">
 <h3><a id="whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation)">whereIs</a></h3>
-<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip)</span>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip)</span>
                  throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <div class="block">Locate a chip within a machine.</div>
@@ -1169,9 +1373,12 @@ boolean&nbsp;enable,
 <li class="blockList">
 <section class="detail">
 <h3><a id="whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Integer)">whereIs</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+<div class="memberSignature"><span class="returnType"><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
+@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
          throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
@@ -1195,8 +1402,33 @@ boolean&nbsp;enable,
 <li class="blockList">
 <section class="detail">
 <h3><a id="whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">whereIs</a></h3>
-<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords)</span>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid
+@Valid <a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords)</span>
+                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
+<div class="block">Locate a board within a machine.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>machine</code> - The machine to ask about.</dd>
+<dd><code>coords</code> - The physical coordinates of the board to ask about.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A description of the board's location, or <code>null</code> if it
+         can't be found.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - if the server returns an exception response.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - if network communications fail.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">whereIs</a></h3>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">PhysicalCoords</a>&nbsp;coords)</span>
                  throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <div class="block">Locate a board within a machine.</div>
@@ -1216,9 +1448,41 @@ boolean&nbsp;enable,
 <li class="blockList">
 <section class="detail">
 <h3><a id="whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates,java.lang.Integer)">whereIs</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid
+@Valid <a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords,
+@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
+<a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
+<div class="block">Locate a board within a machine.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>machine</code> - The machine to ask about.</dd>
+<dd><code>coords</code> - The physical coordinates of the board to ask about.</dd>
+<dd><code>timeout</code> - How long to wait for the request to complete, in milliseconds,
+            or <code>null</code> to wait forever.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A description of the board's location, or <code>null</code> if it
+         can't be found.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - if the server returns an exception response.</dd>
+<dd><code><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a></code> - if the request times out.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - if network communications fail.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords,java.lang.Integer)">whereIs</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">PhysicalCoords</a>&nbsp;coords,
+@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
          throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
@@ -1242,8 +1506,33 @@ boolean&nbsp;enable,
 <li class="blockList">
 <section class="detail">
 <h3><a id="whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates)">whereIs</a></h3>
-<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords)</span>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid
+@Valid <a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords)</span>
+                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
+<div class="block">Locate a board within a machine.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>machine</code> - The machine to ask about.</dd>
+<dd><code>coords</code> - The logical coordinates of the board to ask about.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A description of the board's location, or <code>null</code> if it
+         can't be found.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - if the server returns an exception response.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - if network communications fail.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords)">whereIs</a></h3>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/TriadCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">TriadCoords</a>&nbsp;coords)</span>
                  throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <div class="block">Locate a board within a machine.</div>
@@ -1263,9 +1552,41 @@ boolean&nbsp;enable,
 <li class="blockList">
 <section class="detail">
 <h3><a id="whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.Integer)">whereIs</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid
+@Valid <a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords,
+@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
+<a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
+<div class="block">Locate a board within a machine.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>machine</code> - The machine to ask about.</dd>
+<dd><code>coords</code> - The logical coordinates of the board to ask about.</dd>
+<dd><code>timeout</code> - How long to wait for the request to complete, in milliseconds,
+            or <code>null</code> to wait forever.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A description of the board's location, or <code>null</code> if it
+         can't be found.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - if the server returns an exception response.</dd>
+<dd><code><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a></code> - if the request times out.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - if network communications fail.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords,java.lang.Integer)">whereIs</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid
+@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/TriadCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">TriadCoords</a>&nbsp;coords,
+@Positive
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
          throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
@@ -1291,7 +1612,7 @@ boolean&nbsp;enable,
 <h3><a id="waitForNotification()">waitForNotification</a></h3>
 <div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="messages/Notification.html" title="interface in uk.ac.manchester.spinnaker.spalloc.messages">Notification</a></span>&nbsp;<span class="memberName">waitForNotification</span>()
                                   throws <span class="exceptions"><a href="exceptions/SpallocProtocolException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolException</a></span></div>
-<div class="block">Return the next notification to arrive.</div>
+<div class="block">Return the next notification to arrive. Waits indefinitely.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The notification sent by the server.</dd>
@@ -1314,14 +1635,17 @@ boolean&nbsp;enable,
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>timeout</code> - The number of seconds to wait before timing out or
-            <code>null</code> if this function should try again forever. If
-            negative, only responses already-received will be returned; if
-            no responses are available, in this case the function does not
-            raise a ProtocolTimeoutError but returns <code>null</code> instead.</dd>
+            <code>null</code> if this function should try again forever.
+            <p>
+            If negative, only responses already-received will be returned;
+            if no responses are available, in this case the function does
+            not raise a <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions"><code>SpallocProtocolTimeoutException</code></a> but
+            returns <code>null</code> instead.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The notification sent by the server.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a></code> - If a timeout occurs.</dd>
+<dd><code><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a></code> - If a timeout occurs (implying <code>timeout</code> is not
+             negative).</dd>
 <dd><code><a href="exceptions/SpallocProtocolException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolException</a></code> - If the socket is unusable or becomes disconnected.</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="messages/JobsChangedNotification.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages"><code>JobsChangedNotification</code></a>, 

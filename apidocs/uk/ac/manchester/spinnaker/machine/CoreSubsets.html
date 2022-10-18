@@ -282,7 +282,7 @@ int&nbsp;y,
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#pByChip(uk.ac.manchester.spinnaker.machine.ChipLocation)">pByChip</a></span>&#8203;(<a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">
-<div class="block">Provides the CoreLocations for just a single Chip.</div>
+<div class="block">Provides the processor identifiers for just a single Chip.</div>
 </td>
 </tr>
 <tr class="altColor" id="i16">
@@ -315,7 +315,7 @@ int&nbsp;y,
 <h3>Methods inherited from interface&nbsp;uk.ac.manchester.spinnaker.utils.<a href="../utils/MappableIterable.html" title="interface in uk.ac.manchester.spinnaker.utils">MappableIterable</a></h3>
 <a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.utils.MappableIterable">
 <!--   -->
-</a><code><a href="../utils/MappableIterable.html#filter(java.util.function.Predicate)">filter</a>, <a href="../utils/MappableIterable.html#first()">first</a>, <a href="../utils/MappableIterable.html#first(int)">first</a>, <a href="../utils/MappableIterable.html#map(java.util.function.Function)">map</a>, <a href="../utils/MappableIterable.html#nth(int)">nth</a>, <a href="../utils/MappableIterable.html#toCollectingMap(java.util.function.Function,java.util.function.Function)">toCollectingMap</a>, <a href="../utils/MappableIterable.html#toCollectingMap(java.util.function.Supplier,java.util.function.Supplier,java.util.function.Function,java.util.function.Function)">toCollectingMap</a>, <a href="../utils/MappableIterable.html#toCollectingMap(java.util.function.Supplier,java.util.function.Function,java.util.function.Function)">toCollectingMap</a>, <a href="../utils/MappableIterable.html#toList()">toList</a>, <a href="../utils/MappableIterable.html#toList(java.util.function.Supplier)">toList</a>, <a href="../utils/MappableIterable.html#toMap(java.util.function.Function,java.util.function.Function)">toMap</a>, <a href="../utils/MappableIterable.html#toMap(java.util.function.Supplier,java.util.function.Function,java.util.function.Function)">toMap</a>, <a href="../utils/MappableIterable.html#toSet()">toSet</a>, <a href="../utils/MappableIterable.html#toSet(java.util.function.Supplier)">toSet</a></code></div>
+</a><code><a href="../utils/MappableIterable.html#filter(java.util.function.Predicate)">filter</a>, <a href="../utils/MappableIterable.html#first()">first</a>, <a href="../utils/MappableIterable.html#first(int)">first</a>, <a href="../utils/MappableIterable.html#map(java.util.function.Function)">map</a>, <a href="../utils/MappableIterable.html#nth(int)">nth</a>, <a href="../utils/MappableIterable.html#toCollectingMap(java.lang.Class,java.util.function.Function,java.util.function.Function)">toCollectingMap</a>, <a href="../utils/MappableIterable.html#toCollectingMap(java.util.function.Function,java.util.function.Function)">toCollectingMap</a>, <a href="../utils/MappableIterable.html#toCollectingMap(java.util.function.Supplier,java.util.function.Supplier,java.util.function.Function,java.util.function.Function)">toCollectingMap</a>, <a href="../utils/MappableIterable.html#toCollectingMap(java.util.function.Supplier,java.util.function.Function,java.util.function.Function)">toCollectingMap</a>, <a href="../utils/MappableIterable.html#toList()">toList</a>, <a href="../utils/MappableIterable.html#toList(java.util.function.Supplier)">toList</a>, <a href="../utils/MappableIterable.html#toMap(java.util.function.Function,java.util.function.Function)">toMap</a>, <a href="../utils/MappableIterable.html#toMap(java.util.function.Supplier,java.util.function.Function,java.util.function.Function)">toMap</a>, <a href="../utils/MappableIterable.html#toSet()">toSet</a>, <a href="../utils/MappableIterable.html#toSet(java.util.function.Supplier)">toSet</a></code></div>
 </section>
 </li>
 </ul>
@@ -639,7 +639,7 @@ int&nbsp;y,
 <section class="detail">
 <h3><a id="pByChip(uk.ac.manchester.spinnaker.machine.ChipLocation)">pByChip</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</span>&nbsp;<span class="memberName">pByChip</span>&#8203;(<span class="arguments"><a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;chip)</span></div>
-<div class="block">Provides the CoreLocations for just a single Chip.
+<div class="block">Provides the processor identifiers for just a single Chip.
  <p>
  This will be an empty list when <a href="#isChip(uk.ac.manchester.spinnaker.machine.ChipLocation)"><code>isChip(ChipLocation)</code></a> returns
  <code>false</code>.</div>
@@ -647,7 +647,7 @@ int&nbsp;y,
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>chip</code> - coordinates of the chip</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>Unmodifiable (possibly empty) collection of CoreLocation</dd>
+<dd>Unmodifiable (possibly empty) collection of processor identifiers</dd>
 </dl>
 </section>
 </li>

@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":9,"i5":9};
+<script type="text/javascript">var data = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":9,"i5":9,"i6":9,"i7":9,"i8":9,"i9":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -169,6 +169,35 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </td>
 </tr>
 <tr class="rowColor" id="i1">
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Collector.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Collector</a>&lt;T,&#8203;?,&#8203;T[]&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#collectToArray(java.util.function.IntFunction)">collectToArray</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/IntFunction.html?is-external=true" title="class or interface in java.util.function" class="externalLink">IntFunction</a>&lt;T[]&gt;&nbsp;generator)</code></th>
+<td class="colLast">
+<div class="block">Create a collector that produces an array from a stream.</div>
+</td>
+</tr>
+<tr class="altColor" id="i2">
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;T&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#copy(java.util.List)">copy</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;T&gt;&nbsp;list)</code></th>
+<td class="colLast">
+<div class="block">Makes a read-only copy of a list.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i3">
+<td class="colFirst"><code>static &lt;K,&#8203;
+V&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;V&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#copy(java.util.Map)">copy</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;V&gt;&nbsp;map)</code></th>
+<td class="colLast">
+<div class="block">Makes a read-only copy of a map.</div>
+</td>
+</tr>
+<tr class="altColor" id="i4">
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;T&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#copy(java.util.Set)">copy</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;T&gt;&nbsp;set)</code></th>
+<td class="colLast">
+<div class="block">Makes a read-only copy of a set.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i5">
 <td class="colFirst"><code>static &lt;T,&#8203;
 U,&#8203;
 V&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;U,&#8203;V&gt;</code></td>
@@ -178,7 +207,7 @@ T&nbsp;arg)</code></th>
 <div class="block">Binary function currier.</div>
 </td>
 </tr>
-<tr class="altColor" id="i2">
+<tr class="altColor" id="i6">
 <td class="colFirst"><code>static &lt;T,&#8203;
 U&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;U&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#lmap(java.util.Collection,java.util.function.Function)">lmap</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;T&gt;&nbsp;list,
@@ -187,7 +216,7 @@ U&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <div class="block">Like <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true#map(java.util.function.Function)" title="class or interface in java.util.stream" class="externalLink"><code>Stream.map(Function)</code></a>, but for lists/collections.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="rowColor" id="i7">
 <td class="colFirst"><code>static &lt;E extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;E&gt;,&#8203;
 K&gt;<br><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;E&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#makeEnumBackingMap(E%5B%5D,java.util.function.Function)">makeEnumBackingMap</a></span>&#8203;(E[]&nbsp;enumMembers,
@@ -196,7 +225,7 @@ K&gt;<br><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/j
 <div class="block">Utility for making the backing maps for fast <code>enum</code>s.</div>
 </td>
 </tr>
-<tr class="altColor" id="i4">
+<tr class="altColor" id="i8">
 <td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;T&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#parseCommaSeparatedSet(java.lang.String,java.util.function.Function)">parseCommaSeparatedSet</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;str,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;T&gt;&nbsp;mapper)</code></th>
@@ -204,7 +233,7 @@ K&gt;<br><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/j
 <div class="block">Parse a comma-separated string into an <em>unordered</em> set of items.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i5">
+<tr class="rowColor" id="i9">
 <td class="colFirst"><code>static &lt;E extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;E&gt;&gt;<br><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Collector.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Collector</a>&lt;E,&#8203;?,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;E&gt;&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toEnumSet(java.lang.Class)">toEnumSet</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;E&gt;&nbsp;cls)</code></th>
 <td class="colLast">
@@ -377,6 +406,73 @@ K&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/j
 <dd><code>valueExtractor</code> - How to get the value to use as the map key.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Unmodifiable map from the values to the <code>enum</code> members.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="copy(java.util.List)">copy</a></h3>
+<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="typeParameters">&lt;T&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;T&gt;</span>&nbsp;<span class="memberName">copy</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;T&gt;&nbsp;list)</span></div>
+<div class="block">Makes a read-only copy of a list.</div>
+<dl>
+<dt><span class="paramLabel">Type Parameters:</span></dt>
+<dd><code>T</code> - The type of elements in the list.</dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>list</code> - The list to copy. <code>null</code> becomes an empty list.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A read-only copy of the list.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="copy(java.util.Set)">copy</a></h3>
+<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="typeParameters">&lt;T&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;T&gt;</span>&nbsp;<span class="memberName">copy</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;T&gt;&nbsp;set)</span></div>
+<div class="block">Makes a read-only copy of a set. This will preserve whatever order was in
+ the input set.</div>
+<dl>
+<dt><span class="paramLabel">Type Parameters:</span></dt>
+<dd><code>T</code> - The type of elements in the set.</dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>set</code> - The set to copy. <code>null</code> becomes an empty set.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A read-only copy of the set.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="copy(java.util.Map)">copy</a></h3>
+<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="typeParameters">&lt;K,&#8203;
+V&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;V&gt;</span>&nbsp;<span class="memberName">copy</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;V&gt;&nbsp;map)</span></div>
+<div class="block">Makes a read-only copy of a map. This will preserve whatever order was in
+ the input map.</div>
+<dl>
+<dt><span class="paramLabel">Type Parameters:</span></dt>
+<dd><code>K</code> - The type of keys in the map.</dd>
+<dd><code>V</code> - The type of values in the map.</dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>map</code> - The map to copy. <code>null</code> becomes an empty map.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A read-only copy of the map.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="collectToArray(java.util.function.IntFunction)">collectToArray</a></h3>
+<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="typeParameters">&lt;T&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Collector.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Collector</a>&lt;T,&#8203;?,&#8203;T[]&gt;</span>&nbsp;<span class="memberName">collectToArray</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/IntFunction.html?is-external=true" title="class or interface in java.util.function" class="externalLink">IntFunction</a>&lt;T[]&gt;&nbsp;generator)</span></div>
+<div class="block">Create a collector that produces an array from a stream. The order of the
+ elements in the array will be the inherent order of the elements in the
+ stream.</div>
+<dl>
+<dt><span class="paramLabel">Type Parameters:</span></dt>
+<dd><code>T</code> - The type of the elements.</dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>generator</code> - How to make the array. Typically something like
+            <code>T[]::new</code>.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A collector.</dd>
 </dl>
 </section>
 </li>

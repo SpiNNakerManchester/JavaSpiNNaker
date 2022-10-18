@@ -127,17 +127,17 @@ extends <a href="SpallocAPI.CreateDescriptor.html" title="class in uk.ac.manches
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>@javax.validation.constraints.Positive(message="height of request must be positive") int</code></td>
+<td class="colFirst"><code>@uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#height">height</a></span></code></th>
 <td class="colLast">
-<div class="block">Height requested, in boards.</div>
+<div class="block">Height requested, in triads.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>@javax.validation.constraints.Positive(message="width of request must be positive") int</code></td>
+<td class="colFirst"><code>@uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#width">width</a></span></code></th>
 <td class="colLast">
-<div class="block">Width requested, in boards.</div>
+<div class="block">Width requested, in triads.</div>
 </td>
 </tr>
 </tbody>
@@ -234,17 +234,17 @@ int&nbsp;height,
 <li class="blockList">
 <section class="detail">
 <h3><a id="width">width</a></h3>
-<div class="memberSignature"><span class="annotations">@Positive(message="width of request must be positive")
-</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive(message="width of request must be positive") int</span>&nbsp;<span class="memberName">width</span></div>
-<div class="block">Width requested, in boards.</div>
+<div class="memberSignature"><span class="annotations"><a href="../../machine/board/ValidTriadWidth.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadWidth</a>
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth int</span>&nbsp;<span class="memberName">width</span></div>
+<div class="block">Width requested, in triads.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="height">height</a></h3>
-<div class="memberSignature"><span class="annotations">@Positive(message="height of request must be positive")
-</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive(message="height of request must be positive") int</span>&nbsp;<span class="memberName">height</span></div>
-<div class="block">Height requested, in boards.</div>
+<div class="memberSignature"><span class="annotations"><a href="../../machine/board/ValidTriadHeight.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadHeight</a>
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight int</span>&nbsp;<span class="memberName">height</span></div>
+<div class="block">Height requested, in triads.</div>
 </section>
 </li>
 </ul>
@@ -267,8 +267,8 @@ int&nbsp;height,
  over-allocate.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>width</code> - The width of rectangle to request, in boards.</dd>
-<dd><code>height</code> - The height of rectangle to request, in boards.</dd>
+<dd><code>width</code> - The width of rectangle to request, in triads.</dd>
+<dd><code>height</code> - The height of rectangle to request, in triads.</dd>
 <dd><code>maxDeadBoards</code> - The number of dead boards that can be tolerated in that
             rectangle.</dd>
 </dl>

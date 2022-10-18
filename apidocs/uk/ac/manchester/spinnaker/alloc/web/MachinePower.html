@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10};
+<script type="text/javascript">var data = {"i0":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -92,7 +92,8 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="description">
 <hr>
-<pre>public class <span class="typeNameLabel">MachinePower</span>
+<pre><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/Immutable.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@Immutable</a>
+public class <span class="typeNameLabel">MachinePower</span>
 extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
 <div class="block">Describes the current state of power of the machine (or at least the portion
  of it allocated to a job), or a state that the user wants us to switch into.</div>
@@ -120,12 +121,6 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E()">MachinePower</a></span>()</code></th>
-<td class="colLast">
-<div class="block">Make an instance.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.alloc.model.PowerState)">MachinePower</a></span>&#8203;(<a href="../model/PowerState.html" title="enum in uk.ac.manchester.spinnaker.alloc.model">PowerState</a>&nbsp;power)</code></th>
 <td class="colLast">
 <div class="block">Make an instance.</div>
@@ -159,11 +154,6 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getPower()">getPower</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor" id="i1">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setPower(uk.ac.manchester.spinnaker.alloc.model.PowerState)">setPower</a></span>&#8203;(<a href="../model/PowerState.html" title="enum in uk.ac.manchester.spinnaker.alloc.model">PowerState</a>&nbsp;power)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -186,13 +176,6 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </a>
 <h2>Constructor Details</h2>
 <ul class="blockList">
-<li class="blockList">
-<section class="detail">
-<h3><a id="&lt;init&gt;()">MachinePower</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">MachinePower</span>()</div>
-<div class="block">Make an instance.</div>
-</section>
-</li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.alloc.model.PowerState)">MachinePower</a></h3>
@@ -221,16 +204,6 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the machine power state</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="setPower(uk.ac.manchester.spinnaker.alloc.model.PowerState)">setPower</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setPower</span>&#8203;(<span class="arguments"><a href="../model/PowerState.html" title="enum in uk.ac.manchester.spinnaker.alloc.model">PowerState</a>&nbsp;power)</span></div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>power</code> - the machine power state</dd>
 </dl>
 </section>
 </li>

@@ -80,6 +80,12 @@ loadScripts(document, 'script');</script>
 <div class="block">Classes used to model types of connections that talk to SpiNNaker.</div>
 </td>
 </tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.connections.model">uk.ac.manchester.spinnaker.connections.model</a></th>
+<td class="colLast">
+<div class="block">Abstract model classes for connections.</div>
+</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -104,6 +110,34 @@ loadScripts(document, 'script');</script>
 <tr class="altColor">
 <td class="colFirst"><code>&lt;T extends <a href="../../messages/scp/CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;<br>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SCPRequestPipeline.</span><code><span class="memberNameLink"><a href="../SCPRequestPipeline.html#sendRequest(uk.ac.manchester.spinnaker.messages.scp.SCPRequest,java.util.function.Consumer,uk.ac.manchester.spinnaker.connections.SCPErrorHandler)">sendRequest</a></span>&#8203;(<a href="../../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;T&gt;&nbsp;request,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;T&gt;&nbsp;callback,
+<a href="../SCPErrorHandler.html" title="interface in uk.ac.manchester.spinnaker.connections">SCPErrorHandler</a>&nbsp;errorCallback)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.connections.model">
+<!--   -->
+</a>
+<h2>Uses of <a href="../SCPErrorHandler.html" title="interface in uk.ac.manchester.spinnaker.connections">SCPErrorHandler</a> in <a href="../model/package-summary.html">uk.ac.manchester.spinnaker.connections.model</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../model/package-summary.html">uk.ac.manchester.spinnaker.connections.model</a> with parameters of type <a href="../SCPErrorHandler.html" title="interface in uk.ac.manchester.spinnaker.connections">SCPErrorHandler</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>&lt;T extends <a href="../../messages/scp/CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;<br>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">AsyncCommsTask.</span><code><span class="memberNameLink"><a href="../model/AsyncCommsTask.html#sendRequest(uk.ac.manchester.spinnaker.messages.scp.SCPRequest,java.util.function.Consumer,uk.ac.manchester.spinnaker.connections.SCPErrorHandler)">sendRequest</a></span>&#8203;(<a href="../../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;T&gt;&nbsp;request,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;T&gt;&nbsp;callback,
 <a href="../SCPErrorHandler.html" title="interface in uk.ac.manchester.spinnaker.connections">SCPErrorHandler</a>&nbsp;errorCallback)</code></th>
 <td class="colLast">

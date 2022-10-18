@@ -211,6 +211,14 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../../alloc/allocator/SpallocAPI.BoardLocation.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.BoardLocation</a>&gt;</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Machine.</span><code><span class="memberNameLink"><a href="../../alloc/allocator/SpallocAPI.Machine.html#getBoardByChip(uk.ac.manchester.spinnaker.machine.HasChipLocation)">getBoardByChip</a></span>&#8203;(@Valid @NotNull <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chipLocation)</code></th>
+<td class="colLast">
+<div class="block">Get a description of the location of a board given the global
+ coordinates of a chip on it.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Spalloc.</span><code><span class="memberNameLink"><a href="../../alloc/allocator/Spalloc.html#reportProblem(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.String,uk.ac.manchester.spinnaker.alloc.security.Permit)">reportProblem</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address,
 <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;coreLocation,
@@ -218,7 +226,7 @@ loadScripts(document, 'script');</script>
 <a href="../../alloc/security/Permit.html" title="class in uk.ac.manchester.spinnaker.alloc.security">Permit</a>&nbsp;permit)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../alloc/allocator/SpallocAPI.html#reportProblem(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.String,uk.ac.manchester.spinnaker.alloc.security.Permit)">reportProblem</a></span>&#8203;(<a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address,
 <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;coreLocation,
@@ -279,7 +287,7 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code><a href="../../allocator/WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Machine.</span><code><span class="memberNameLink"><a href="../../allocator/SpallocClient.Machine.html#getBoardByChip(uk.ac.manchester.spinnaker.machine.HasChipLocation)">getBoardByChip</a></span>&#8203;(@NotNull @Valid <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Machine.</span><code><span class="memberNameLink"><a href="../../allocator/SpallocClient.Machine.html#getBoard(uk.ac.manchester.spinnaker.machine.HasChipLocation)">getBoard</a></span>&#8203;(@NotNull @Valid <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">
 <div class="block">Given a <em>global</em> chip location, return more info about the
  board that contains it.</div>
@@ -1262,7 +1270,7 @@ int&nbsp;tag)</code></th>
 <tr class="altColor">
 <td class="colFirst"><code>default <a href="../../spalloc/messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../spalloc/SpallocAPI.html#whereIs(int,uk.ac.manchester.spinnaker.machine.HasChipLocation)">whereIs</a></span>&#8203;(int&nbsp;jobID,
-<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
+@Valid <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">
 <div class="block">Locate a chip within a job's allocation.</div>
 </td>
@@ -1270,25 +1278,25 @@ int&nbsp;tag)</code></th>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../../spalloc/messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../spalloc/SpallocAPI.html#whereIs(int,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Integer)">whereIs</a></span>&#8203;(int&nbsp;jobID,
-<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+@Valid <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Locate a chip within a job's allocation.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>default <a href="../../spalloc/messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../spalloc/SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../spalloc/SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">
 <div class="block">Locate a chip within a machine.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../../spalloc/messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../spalloc/SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Integer)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../spalloc/SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Integer)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Locate a chip within a machine.</div>
 </td>

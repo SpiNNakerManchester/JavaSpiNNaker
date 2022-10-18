@@ -37,7 +37,7 @@
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.FixedRouteRead;
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_javadoccomment">/** Load a fixed route routing entry onto a chip, and read it back again. */</em>
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">class</strong> <a name="FixedRouteControlProcess" href="../../../../../uk/ac/manchester/spinnaker/transceiver/FixedRouteControlProcess.html#FixedRouteControlProcess">FixedRouteControlProcess</a> <strong class="jxr_keyword">extends</strong> MultiConnectionProcess&lt;SCPConnection&gt; {
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">class</strong> <a name="FixedRouteControlProcess" href="../../../../../uk/ac/manchester/spinnaker/transceiver/FixedRouteControlProcess.html#FixedRouteControlProcess">FixedRouteControlProcess</a> <strong class="jxr_keyword">extends</strong> <a name="TxrxProcess" href="../../../../../uk/ac/manchester/spinnaker/transceiver/TxrxProcess.html#TxrxProcess">TxrxProcess</a> {
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_javadoccomment">	 * @param connectionSelector</em>
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_javadoccomment">	 *            How to select how to communicate.</em>
@@ -47,7 +47,7 @@
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment">	 *            required.</em>
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  	FixedRouteControlProcess(
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  			ConnectionSelector&lt;SCPConnection&gt; connectionSelector,
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  			ConnectionSelector&lt;? <strong class="jxr_keyword">extends</strong> SCPConnection&gt; connectionSelector,
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  			RetryTracker retryTracker) {
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  		<strong class="jxr_keyword">super</strong>(connectionSelector, retryTracker);
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  	}

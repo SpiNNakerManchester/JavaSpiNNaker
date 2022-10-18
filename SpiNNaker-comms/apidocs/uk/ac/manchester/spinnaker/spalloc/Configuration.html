@@ -154,7 +154,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i2">
-<td class="colFirst"><code>double</code></td>
+<td class="colFirst"><code>@javax.validation.constraints.Positive double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getKeepalive()">getKeepalive</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -164,17 +164,17 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i4">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></code></td>
+<td class="colFirst"><code>@PositiveOrZero <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMaxDeadBoards()">getMaxDeadBoards</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i5">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></code></td>
+<td class="colFirst"><code>@PositiveOrZero <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMaxDeadLinks()">getMaxDeadLinks</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i6">
-<td class="colFirst"><code>double</code></td>
+<td class="colFirst"><code>@javax.validation.constraints.PositiveOrZero double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMinRatio()">getMinRatio</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -184,7 +184,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i8">
-<td class="colFirst"><code>double</code></td>
+<td class="colFirst"><code>@javax.validation.constraints.Positive double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getReconnectDelay()">getReconnectDelay</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -199,12 +199,12 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i11">
-<td class="colFirst"><code>double</code></td>
+<td class="colFirst"><code>@javax.validation.constraints.Positive double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getTimeout()">getTimeout</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i12">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<td class="colFirst"><code>@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getUser()">getUser</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -260,7 +260,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;</span>&nbsp;<span class="memberName">getDefaults</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a clone of the map of configurationMap.</dd>
+<dd>a clone of the map of the configuration.</dd>
 </dl>
 </section>
 </li>
@@ -288,7 +288,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="getUser()">getUser</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getUser</span>()</div>
+<div class="memberSignature"><span class="annotations">@NotBlank
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getUser</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The spalloc user.</dd>
@@ -298,7 +299,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="getKeepalive()">getKeepalive</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">double</span>&nbsp;<span class="memberName">getKeepalive</span>()</div>
+<div class="memberSignature"><span class="annotations">@Positive
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive double</span>&nbsp;<span class="memberName">getKeepalive</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The keepalive interval, in seconds.</dd>
@@ -308,7 +310,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="getReconnectDelay()">getReconnectDelay</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">double</span>&nbsp;<span class="memberName">getReconnectDelay</span>()</div>
+<div class="memberSignature"><span class="annotations">@Positive
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive double</span>&nbsp;<span class="memberName">getReconnectDelay</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The reconnection delay, in seconds.</dd>
@@ -318,7 +321,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="getTimeout()">getTimeout</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">double</span>&nbsp;<span class="memberName">getTimeout</span>()</div>
+<div class="memberSignature"><span class="annotations">@Positive
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive double</span>&nbsp;<span class="memberName">getTimeout</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The network timeout, in seconds.</dd>
@@ -348,7 +352,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="getMinRatio()">getMinRatio</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">double</span>&nbsp;<span class="memberName">getMinRatio</span>()</div>
+<div class="memberSignature"><span class="annotations">@PositiveOrZero
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@javax.validation.constraints.PositiveOrZero double</span>&nbsp;<span class="memberName">getMinRatio</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The minimum ratio for rectangular allocations.</dd>
@@ -358,7 +363,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="getMaxDeadBoards()">getMaxDeadBoards</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></span>&nbsp;<span class="memberName">getMaxDeadBoards</span>()</div>
+<div class="memberSignature"><span class="annotations">@PositiveOrZero
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@PositiveOrZero <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></span>&nbsp;<span class="memberName">getMaxDeadBoards</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The maximum number of dead boards wanted.</dd>
@@ -368,10 +374,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="getMaxDeadLinks()">getMaxDeadLinks</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></span>&nbsp;<span class="memberName">getMaxDeadLinks</span>()</div>
+<div class="memberSignature"><span class="annotations">@PositiveOrZero
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@PositiveOrZero <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></span>&nbsp;<span class="memberName">getMaxDeadLinks</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The maximum number of dead links wanted.</dd>
+<dd>The maximum number of dead links desired. Often ignored.</dd>
 </dl>
 </section>
 </li>
@@ -381,7 +388,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">getRequireTorus</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>Whether a torus is required. Ignored by spalloc!</dd>
+<dd>Whether a torus is required. Not normally useful.</dd>
 </dl>
 </section>
 </li>

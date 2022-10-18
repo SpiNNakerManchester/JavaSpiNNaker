@@ -222,20 +222,16 @@ extends <a href="../db/DatabaseAwareBean.html" title="class in uk.ac.manchester.
 </tr>
 <tr class="altColor" id="i2">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findPhysical(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">findPhysical</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;c,
-@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;f,
-@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;b)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findPhysical(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">findPhysical</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid @NotNull <a href="../../machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Look up a board for management.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findTriad(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">findTriad</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
-@uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
-@uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findTriad(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords)">findTriad</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="../../machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Look up a board for management.</div>
 </td>
@@ -401,22 +397,16 @@ boolean&nbsp;inService)</code></th>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="findTriad(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">findTriad</a></h3>
+<h3><a id="findTriad(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords)">findTriad</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&gt;</span>&nbsp;<span class="memberName">findTriad</span>&#8203;(<span class="arguments">@NotBlank
 @NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="../../machine/board/ValidTriadX.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadX</a>
-@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
-<a href="../../machine/board/ValidTriadY.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadY</a>
-@uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
-<a href="../../machine/board/ValidTriadZ.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadZ</a>
-@uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z)</span></div>
+@Valid <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/lang/NonNull.html?is-external=true" title="class or interface in org.springframework.lang" class="externalLink">@NonNull</a>
+@Valid <a href="../../machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a>&nbsp;coords)</span></div>
 <div class="block">Look up a board for management.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>machine</code> - The name of the machine.</dd>
-<dd><code>x</code> - X coordinate</dd>
-<dd><code>y</code> - Y coordinate</dd>
-<dd><code>z</code> - Z coordinate</dd>
+<dd><code>coords</code> - Triad coordinates</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Board state manager</dd>
 </dl>
@@ -424,22 +414,16 @@ boolean&nbsp;inService)</code></th>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="findPhysical(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">findPhysical</a></h3>
+<h3><a id="findPhysical(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">findPhysical</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&gt;</span>&nbsp;<span class="memberName">findPhysical</span>&#8203;(<span class="arguments">@NotBlank
 @NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="../../machine/board/ValidCabinetNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidCabinetNumber</a>
-@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;c,
-<a href="../../machine/board/ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidFrameNumber</a>
-@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;f,
-<a href="../../machine/board/ValidBoardNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidBoardNumber</a>
-@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;b)</span></div>
+@Valid @NotNull
+@Valid @NotNull <a href="../../machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</span></div>
 <div class="block">Look up a board for management.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>machine</code> - The name of the machine.</dd>
-<dd><code>c</code> - Cabinet number</dd>
-<dd><code>f</code> - Frame number</dd>
-<dd><code>b</code> - Board number</dd>
+<dd><code>coords</code> - Physical coordinates</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Board state manager</dd>
 </dl>

@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -225,6 +225,14 @@ int&nbsp;delta)</code></th>
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#mayLetJobContinue(int)">mayLetJobContinue</a></span>&#8203;(int&nbsp;jobId)</code></th>
 <td class="colLast">
+<div class="block">Has the execution of a job remained within its group's resource
+ allocation at this point?</div>
+</td>
+</tr>
+<tr class="altColor" id="i4">
+<td class="colFirst"><code>boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#shouldKillJob(int)">shouldKillJob</a></span>&#8203;(int&nbsp;jobId)</code></th>
+<td class="colLast">
 <div class="block">Has the execution of a job exceeded its group's resource allocation at
  this point?</div>
 </td>
@@ -290,13 +298,27 @@ int&nbsp;delta)</code></th>
 <section class="detail">
 <h3><a id="mayLetJobContinue(int)">mayLetJobContinue</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">mayLetJobContinue</span>&#8203;(<span class="arguments">int&nbsp;jobId)</span></div>
+<div class="block">Has the execution of a job remained within its group's resource
+ allocation at this point?</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>jobId</code> - What job is consuming resources?</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>True if the job can continue to run. False if it can't.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="shouldKillJob(int)">shouldKillJob</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">shouldKillJob</span>&#8203;(<span class="arguments">int&nbsp;jobId)</span></div>
 <div class="block">Has the execution of a job exceeded its group's resource allocation at
  this point?</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>jobId</code> - What job is consuming resources?</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>True if the job can continue to run. False if it can't.</dd>
+<dd>False if the job should be killed. True otherwise.</dd>
 </dl>
 </section>
 </li>

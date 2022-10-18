@@ -71,8 +71,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">A description of what boards have been allocated to a job.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/AllocatedMachine.html#%3Cinit%3E()">AllocatedMachine()</a></span> - Constructor for class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/AllocatedMachine.html" title="class in uk.ac.manchester.spinnaker.allocator">AllocatedMachine</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/allocator/AllocatedMachine.ConnectionInfo.html" title="class in uk.ac.manchester.spinnaker.allocator"><span class="typeNameLink">AllocatedMachine.ConnectionInfo</span></a> - Class in <a href="uk/ac/manchester/spinnaker/allocator/package-summary.html">uk.ac.manchester.spinnaker.allocator</a></dt>
 <dd>
 <div class="block">Information about a connection to a board.</div>
@@ -97,7 +95,7 @@ loadScripts(document, 'script');</script>
 </a>
 <h2 class="title">C</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/AllocatedMachine.ConnectionInfo.html#%3Cinit%3E()">ConnectionInfo()</a></span> - Constructor for class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/AllocatedMachine.ConnectionInfo.html" title="class in uk.ac.manchester.spinnaker.allocator">AllocatedMachine.ConnectionInfo</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/AllocatedMachine.ConnectionInfo.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.ChipLocation,java.lang.String)">ConnectionInfo(ChipLocation, String)</a></span> - Constructor for class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/AllocatedMachine.ConnectionInfo.html" title="class in uk.ac.manchester.spinnaker.allocator">AllocatedMachine.ConnectionInfo</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/SpallocClientFactory.html#createClient(java.net.URI,java.lang.String,java.lang.String)">createClient(URI, String, String)</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/SpallocClientFactory.html" title="class in uk.ac.manchester.spinnaker.allocator">SpallocClientFactory</a></dt>
 <dd>
@@ -123,20 +121,20 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/CreateJob.html#%3Cinit%3E(int,int)">CreateJob(int, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/CreateJob.html" title="class in uk.ac.manchester.spinnaker.allocator">CreateJob</a></dt>
 <dd>
-<div class="block">Create a request to run on rectangle of boards using the default machine
- operated by the Spalloc service.</div>
+<div class="block">Create a request to run on rectangle of triads of boards using the
+ default machine operated by the Spalloc service.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/CreateJob.html#%3Cinit%3E(java.lang.String,java.lang.String)">CreateJob(String, String)</a></span> - Constructor for class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/CreateJob.html" title="class in uk.ac.manchester.spinnaker.allocator">CreateJob</a></dt>
 <dd>
 <div class="block">Create a request to run on a specific board of a specific machine
  operated by the Spalloc service.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/CreateJob.html#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.allocator.Physical)">CreateJob(String, Physical)</a></span> - Constructor for class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/CreateJob.html" title="class in uk.ac.manchester.spinnaker.allocator">CreateJob</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/CreateJob.html#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">CreateJob(String, PhysicalCoords)</a></span> - Constructor for class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/CreateJob.html" title="class in uk.ac.manchester.spinnaker.allocator">CreateJob</a></dt>
 <dd>
 <div class="block">Create a request to run on a specific board of a specific machine
  operated by the Spalloc service.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/CreateJob.html#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.allocator.Triad)">CreateJob(String, Triad)</a></span> - Constructor for class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/CreateJob.html" title="class in uk.ac.manchester.spinnaker.allocator">CreateJob</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/CreateJob.html#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords)">CreateJob(String, TriadCoords)</a></span> - Constructor for class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/CreateJob.html" title="class in uk.ac.manchester.spinnaker.allocator">CreateJob</a></dt>
 <dd>
 <div class="block">Create a request to run on a specific board of a specific machine
  operated by the Spalloc service.</div>
@@ -225,24 +223,22 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/CreateJob.SpecificBoard.html#getBoard()">getBoard()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/CreateJob.SpecificBoard.html" title="class in uk.ac.manchester.spinnaker.allocator">CreateJob.SpecificBoard</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/Physical.html#getBoard()">getBoard()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/Physical.html" title="class in uk.ac.manchester.spinnaker.allocator">Physical</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/SpallocClient.Machine.html#getBoardByChip(uk.ac.manchester.spinnaker.machine.HasChipLocation)">getBoardByChip(HasChipLocation)</a></span> - Method in interface uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/SpallocClient.Machine.html" title="interface in uk.ac.manchester.spinnaker.allocator">SpallocClient.Machine</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/SpallocClient.Machine.html#getBoard(uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">getBoard(PhysicalCoords)</a></span> - Method in interface uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/SpallocClient.Machine.html" title="interface in uk.ac.manchester.spinnaker.allocator">SpallocClient.Machine</a></dt>
+<dd>
+<div class="block">Given physical coordinates, return more info about a board.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/SpallocClient.Machine.html#getBoard(uk.ac.manchester.spinnaker.machine.board.TriadCoords)">getBoard(TriadCoords)</a></span> - Method in interface uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/SpallocClient.Machine.html" title="interface in uk.ac.manchester.spinnaker.allocator">SpallocClient.Machine</a></dt>
+<dd>
+<div class="block">Given logical triad coordinates, return more info about a board.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/SpallocClient.Machine.html#getBoard(uk.ac.manchester.spinnaker.machine.HasChipLocation)">getBoard(HasChipLocation)</a></span> - Method in interface uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/SpallocClient.Machine.html" title="interface in uk.ac.manchester.spinnaker.allocator">SpallocClient.Machine</a></dt>
 <dd>
 <div class="block">Given a <em>global</em> chip location, return more info about the
  board that contains it.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/SpallocClient.Machine.html#getBoardByIPAddress(java.lang.String)">getBoardByIPAddress(String)</a></span> - Method in interface uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/SpallocClient.Machine.html" title="interface in uk.ac.manchester.spinnaker.allocator">SpallocClient.Machine</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/SpallocClient.Machine.html#getBoard(java.lang.String)">getBoard(String)</a></span> - Method in interface uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/SpallocClient.Machine.html" title="interface in uk.ac.manchester.spinnaker.allocator">SpallocClient.Machine</a></dt>
 <dd>
 <div class="block">Given an IP address, return more info about a board.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/SpallocClient.Machine.html#getBoardByPhysicalCoords(@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">getBoardByPhysicalCoords(@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int, @uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int, @uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int)</a></span> - Method in interface uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/SpallocClient.Machine.html" title="interface in uk.ac.manchester.spinnaker.allocator">SpallocClient.Machine</a></dt>
-<dd>
-<div class="block">Given physical coordinates, return more info about a board.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/SpallocClient.Machine.html#getBoardByTriad(@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">getBoardByTriad(@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int, @uk.ac.manchester.spinnaker.machine.board.ValidTriadY int, @uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int)</a></span> - Method in interface uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/SpallocClient.Machine.html" title="interface in uk.ac.manchester.spinnaker.allocator">SpallocClient.Machine</a></dt>
-<dd>
-<div class="block">Given logical triad coordinates, return more info about a board.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/WhereIs.html#getBoardChip()">getBoardChip()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></dt>
 <dd>&nbsp;</dd>
@@ -253,8 +249,6 @@ loadScripts(document, 'script');</script>
 <div class="block">Get the number of the cabinet containing the frame containing the board.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/CreateJob.SpecificBoard.html#getCabinet()">getCabinet()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/CreateJob.SpecificBoard.html" title="class in uk.ac.manchester.spinnaker.allocator">CreateJob.SpecificBoard</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/Physical.html#getCabinet()">getCabinet()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/Physical.html" title="class in uk.ac.manchester.spinnaker.allocator">Physical</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/AllocatedMachine.ConnectionInfo.html#getChip()">getChip()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/AllocatedMachine.ConnectionInfo.html" title="class in uk.ac.manchester.spinnaker.allocator">AllocatedMachine.ConnectionInfo</a></dt>
 <dd>&nbsp;</dd>
@@ -297,8 +291,6 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/CreateJob.SpecificBoard.html#getFrame()">getFrame()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/CreateJob.SpecificBoard.html" title="class in uk.ac.manchester.spinnaker.allocator">CreateJob.SpecificBoard</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/Physical.html#getFrame()">getFrame()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/Physical.html" title="class in uk.ac.manchester.spinnaker.allocator">Physical</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/AllocatedMachine.html#getHeight()">getHeight()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/AllocatedMachine.html" title="class in uk.ac.manchester.spinnaker.allocator">AllocatedMachine</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/CreateJob.Dimensions.html#getHeight()">getHeight()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/CreateJob.Dimensions.html" title="class in uk.ac.manchester.spinnaker.allocator">CreateJob.Dimensions</a></dt>
@@ -336,8 +328,6 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/CreateJob.html#getMachineName()">getMachineName()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/CreateJob.html" title="class in uk.ac.manchester.spinnaker.allocator">CreateJob</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/WhereIs.html#getMachineName()">getMachineName()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/WhereIs.html#getMachineRef()">getMachineRef()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/CreateJob.html#getMaxDeadBoards()">getMaxDeadBoards()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/CreateJob.html" title="class in uk.ac.manchester.spinnaker.allocator">CreateJob</a></dt>
 <dd>&nbsp;</dd>
@@ -393,23 +383,17 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/CreateJob.SpecificBoard.html#getX()">getX()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/CreateJob.SpecificBoard.html" title="class in uk.ac.manchester.spinnaker.allocator">CreateJob.SpecificBoard</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/Triad.html#getX()">getX()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/Triad.html" title="class in uk.ac.manchester.spinnaker.allocator">Triad</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/BoardCoords.html#getY()">getY()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/BoardCoords.html" title="class in uk.ac.manchester.spinnaker.allocator">BoardCoords</a></dt>
 <dd>
 <div class="block">Get the triad Y coordinate.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/CreateJob.SpecificBoard.html#getY()">getY()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/CreateJob.SpecificBoard.html" title="class in uk.ac.manchester.spinnaker.allocator">CreateJob.SpecificBoard</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/Triad.html#getY()">getY()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/Triad.html" title="class in uk.ac.manchester.spinnaker.allocator">Triad</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/BoardCoords.html#getZ()">getZ()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/BoardCoords.html" title="class in uk.ac.manchester.spinnaker.allocator">BoardCoords</a></dt>
 <dd>
 <div class="block">Get the triad Z coordinate.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/CreateJob.SpecificBoard.html#getZ()">getZ()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/CreateJob.SpecificBoard.html" title="class in uk.ac.manchester.spinnaker.allocator">CreateJob.SpecificBoard</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/Triad.html#getZ()">getZ()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/Triad.html" title="class in uk.ac.manchester.spinnaker.allocator">Triad</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <a id="I:H">
@@ -429,8 +413,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Describes a job.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/JobDescription.html#%3Cinit%3E()">JobDescription()</a></span> - Constructor for class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/JobDescription.html" title="class in uk.ac.manchester.spinnaker.allocator">JobDescription</a></dt>
-<dd>&nbsp;</dd>
 </dl>
 <a id="I:K">
 <!--   -->
@@ -498,12 +480,6 @@ loadScripts(document, 'script');</script>
 </a>
 <h2 class="title">P</h2>
 <dl>
-<dt><a href="uk/ac/manchester/spinnaker/allocator/Physical.html" title="class in uk.ac.manchester.spinnaker.allocator"><span class="typeNameLink">Physical</span></a> - Class in <a href="uk/ac/manchester/spinnaker/allocator/package-summary.html">uk.ac.manchester.spinnaker.allocator</a></dt>
-<dd>
-<div class="block">Physical coordinates of a board.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/Physical.html#%3Cinit%3E(int,int,int)">Physical(int, int, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/Physical.html" title="class in uk.ac.manchester.spinnaker.allocator">Physical</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/State.html#POWER">POWER</a></span> - uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/State.html" title="enum in uk.ac.manchester.spinnaker.allocator">State</a></dt>
 <dd>
 <div class="block">The boards allocated to the job are currently being powered on or
@@ -618,16 +594,6 @@ loadScripts(document, 'script');</script>
 <dl>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/BoardCoords.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/BoardCoords.html" title="class in uk.ac.manchester.spinnaker.allocator">BoardCoords</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/Physical.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/Physical.html" title="class in uk.ac.manchester.spinnaker.allocator">Physical</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/Triad.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/Triad.html" title="class in uk.ac.manchester.spinnaker.allocator">Triad</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="uk/ac/manchester/spinnaker/allocator/Triad.html" title="class in uk.ac.manchester.spinnaker.allocator"><span class="typeNameLink">Triad</span></a> - Class in <a href="uk/ac/manchester/spinnaker/allocator/package-summary.html">uk.ac.manchester.spinnaker.allocator</a></dt>
-<dd>
-<div class="block">Logical coordinates of a board.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/Triad.html#%3Cinit%3E(int,int,int)">Triad(int, int, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/Triad.html" title="class in uk.ac.manchester.spinnaker.allocator">Triad</a></dt>
-<dd>&nbsp;</dd>
 </dl>
 <a id="I:U">
 <!--   -->
@@ -690,8 +656,6 @@ the order they are declared.</div>
 <dd>
 <div class="block">A description of where a board is and what it is doing.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/allocator/WhereIs.html#%3Cinit%3E()">WhereIs()</a></span> - Constructor for class uk.ac.manchester.spinnaker.allocator.<a href="uk/ac/manchester/spinnaker/allocator/WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></dt>
-<dd>&nbsp;</dd>
 </dl>
 <a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:H">H</a>&nbsp;<a href="#I:J">J</a>&nbsp;<a href="#I:K">K</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:N">N</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:Q">Q</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:V">V</a>&nbsp;<a href="#I:W">W</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes</a><span class="verticalSeparator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a></div>
 </main>

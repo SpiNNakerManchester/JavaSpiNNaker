@@ -95,7 +95,7 @@ loadScripts(document, 'script');</script>
 <pre><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/Immutable.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@Immutable</a>
 public final class <span class="typeNameLabel">BoardCoords</span>
 extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
-<div class="block">Basic coordinates of a board.</div>
+<div class="block">Basic coordinates of a board. The result of a DB query.</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
 <dd>Donal Fellows</dd>
@@ -127,7 +127,9 @@ int&nbsp;cabinet,
 int&nbsp;frame,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;board,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Make an instance from raw results.</div>
+</td>
 </tr>
 <tr class="rowColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.alloc.db.Row,boolean)">BoardCoords</a></span>&#8203;(<a href="../db/Row.html" title="class in uk.ac.manchester.spinnaker.alloc.db">Row</a>&nbsp;row,
@@ -242,6 +244,7 @@ int&nbsp;cabinet,
 int&nbsp;frame,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;board,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</span></div>
+<div class="block">Make an instance from raw results. Uncommon.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>x</code> - Logical triad X coordinate</dd>
@@ -260,7 +263,7 @@ int&nbsp;frame,
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">BoardCoords</span>&#8203;(<span class="arguments"><a href="../db/Row.html" title="class in uk.ac.manchester.spinnaker.alloc.db">Row</a>&nbsp;row,
 boolean&nbsp;shroudAddress)</span></div>
 <div class="block">Construct a set of board coordinates from a database row that describes
- them.</div>
+ them. The common constructor.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>row</code> - Database row</dd>

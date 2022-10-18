@@ -116,63 +116,63 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="CF.html" title="class in uk.ac.manchester.spinnaker.py2json">CF</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</code></td>
+<td class="colFirst"><code>@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>,&#8203;<a href="../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#bmpIPs">bmpIPs</a></span></code></th>
 <td class="colLast">
 <div class="block">The IP addresses of the BMPs.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="XYZ.html" title="class in uk.ac.manchester.spinnaker.py2json">XYZ</a>,&#8203;<a href="CFB.html" title="class in uk.ac.manchester.spinnaker.py2json">CFB</a>&gt;</code></td>
+<td class="colFirst"><code>@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;@Valid <a href="../machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a>,&#8203;@Valid <a href="../machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#boardLocations">boardLocations</a></span></code></th>
 <td class="colLast">
 <div class="block">The logical-to-physical board location map.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="XYZ.html" title="class in uk.ac.manchester.spinnaker.py2json">XYZ</a>&gt;</code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;@Valid <a href="../machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#deadBoards">deadBoards</a></span></code></th>
 <td class="colLast">
 <div class="block">The dead boards of the machine.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="XYZ.html" title="class in uk.ac.manchester.spinnaker.py2json">XYZ</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;<a href="Link.html" title="enum in uk.ac.manchester.spinnaker.py2json">Link</a>&gt;&gt;</code></td>
+<td class="colFirst"><code>@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;@Valid <a href="../machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a>,&#8203;@NotEmpty <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;<a href="Link.html" title="enum in uk.ac.manchester.spinnaker.py2json">Link</a>&gt;&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#deadLinks">deadLinks</a></span></code></th>
 <td class="colLast">
 <div class="block">The extra dead links of the machine.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>int</code></td>
+<td class="colFirst"><code>@uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#height">height</a></span></code></th>
 <td class="colLast">
 <div class="block">The height of the machine, in triads.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<td class="colFirst"><code>@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#name">name</a></span></code></th>
 <td class="colLast">
 <div class="block">The name of the machine.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="XYZ.html" title="class in uk.ac.manchester.spinnaker.py2json">XYZ</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</code></td>
+<td class="colFirst"><code>@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;@Valid <a href="../machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a>,&#8203;<a href="../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#spinnakerIPs">spinnakerIPs</a></span></code></th>
 <td class="colLast">
 <div class="block">The IP addresses of the boards.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</code></td>
+<td class="colFirst"><code>@NotEmpty <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#tags">tags</a></span></code></th>
 <td class="colLast">
 <div class="block">The tags of the machine.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>int</code></td>
+<td class="colFirst"><code>@uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#width">width</a></span></code></th>
 <td class="colLast">
 <div class="block">The width of the machine, in triads.</div>
@@ -231,42 +231,47 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="name">name</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">name</span></div>
+<div class="memberSignature"><span class="annotations">@NotBlank
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">name</span></div>
 <div class="block">The name of the machine.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="tags">tags</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</span>&nbsp;<span class="memberName">tags</span></div>
+<div class="memberSignature"><span class="annotations">@NotEmpty
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@NotEmpty <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</span>&nbsp;<span class="memberName">tags</span></div>
 <div class="block">The tags of the machine.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="width">width</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">width</span></div>
+<div class="memberSignature"><span class="annotations"><a href="../machine/board/ValidTriadWidth.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadWidth</a>
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth int</span>&nbsp;<span class="memberName">width</span></div>
 <div class="block">The width of the machine, in triads.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="height">height</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">height</span></div>
+<div class="memberSignature"><span class="annotations"><a href="../machine/board/ValidTriadHeight.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadHeight</a>
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight int</span>&nbsp;<span class="memberName">height</span></div>
 <div class="block">The height of the machine, in triads.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="deadBoards">deadBoards</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="XYZ.html" title="class in uk.ac.manchester.spinnaker.py2json">XYZ</a>&gt;</span>&nbsp;<span class="memberName">deadBoards</span></div>
+<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;@Valid <a href="../machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a>&gt;</span>&nbsp;<span class="memberName">deadBoards</span></div>
 <div class="block">The dead boards of the machine.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="deadLinks">deadLinks</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="XYZ.html" title="class in uk.ac.manchester.spinnaker.py2json">XYZ</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;<a href="Link.html" title="enum in uk.ac.manchester.spinnaker.py2json">Link</a>&gt;&gt;</span>&nbsp;<span class="memberName">deadLinks</span></div>
+<div class="memberSignature"><span class="annotations">@NotNull
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;@Valid <a href="../machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a>,&#8203;@NotEmpty <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;<a href="Link.html" title="enum in uk.ac.manchester.spinnaker.py2json">Link</a>&gt;&gt;</span>&nbsp;<span class="memberName">deadLinks</span></div>
 <div class="block">The extra dead links of the machine. Doesn't include links to dead
  boards.</div>
 </section>
@@ -274,21 +279,24 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="boardLocations">boardLocations</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="XYZ.html" title="class in uk.ac.manchester.spinnaker.py2json">XYZ</a>,&#8203;<a href="CFB.html" title="class in uk.ac.manchester.spinnaker.py2json">CFB</a>&gt;</span>&nbsp;<span class="memberName">boardLocations</span></div>
+<div class="memberSignature"><span class="annotations">@NotNull
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;@Valid <a href="../machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a>,&#8203;@Valid <a href="../machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&gt;</span>&nbsp;<span class="memberName">boardLocations</span></div>
 <div class="block">The logical-to-physical board location map.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="bmpIPs">bmpIPs</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="CF.html" title="class in uk.ac.manchester.spinnaker.py2json">CF</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</span>&nbsp;<span class="memberName">bmpIPs</span></div>
+<div class="memberSignature"><span class="annotations">@NotNull
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;@Valid <a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>,&#8203;<a href="../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</span>&nbsp;<span class="memberName">bmpIPs</span></div>
 <div class="block">The IP addresses of the BMPs.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="spinnakerIPs">spinnakerIPs</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="XYZ.html" title="class in uk.ac.manchester.spinnaker.py2json">XYZ</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</span>&nbsp;<span class="memberName">spinnakerIPs</span></div>
+<div class="memberSignature"><span class="annotations">@NotNull
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;@Valid <a href="../machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a>,&#8203;<a href="../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</span>&nbsp;<span class="memberName">spinnakerIPs</span></div>
 <div class="block">The IP addresses of the boards.</div>
 </section>
 </li>

@@ -83,7 +83,21 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code><a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Machine.</span><code><span class="memberNameLink"><a href="../SpallocClient.Machine.html#getBoardByChip(uk.ac.manchester.spinnaker.machine.HasChipLocation)">getBoardByChip</a></span>&#8203;(@NotNull @Valid uk.ac.manchester.spinnaker.machine.HasChipLocation&nbsp;chip)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Machine.</span><code><span class="memberNameLink"><a href="../SpallocClient.Machine.html#getBoard(uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">getBoard</a></span>&#8203;(@NotNull @Valid uk.ac.manchester.spinnaker.machine.board.PhysicalCoords&nbsp;coords)</code></th>
+<td class="colLast">
+<div class="block">Given physical coordinates, return more info about a board.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Machine.</span><code><span class="memberNameLink"><a href="../SpallocClient.Machine.html#getBoard(uk.ac.manchester.spinnaker.machine.board.TriadCoords)">getBoard</a></span>&#8203;(@NotNull @Valid uk.ac.manchester.spinnaker.machine.board.TriadCoords&nbsp;coords)</code></th>
+<td class="colLast">
+<div class="block">Given logical triad coordinates, return more info about a board.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Machine.</span><code><span class="memberNameLink"><a href="../SpallocClient.Machine.html#getBoard(uk.ac.manchester.spinnaker.machine.HasChipLocation)">getBoard</a></span>&#8203;(@NotNull @Valid uk.ac.manchester.spinnaker.machine.HasChipLocation&nbsp;chip)</code></th>
 <td class="colLast">
 <div class="block">Given a <em>global</em> chip location, return more info about the
  board that contains it.</div>
@@ -91,27 +105,9 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Machine.</span><code><span class="memberNameLink"><a href="../SpallocClient.Machine.html#getBoardByIPAddress(java.lang.String)">getBoardByIPAddress</a></span>&#8203;(@IPAddress <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Machine.</span><code><span class="memberNameLink"><a href="../SpallocClient.Machine.html#getBoard(java.lang.String)">getBoard</a></span>&#8203;(@IPAddress <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</code></th>
 <td class="colLast">
 <div class="block">Given an IP address, return more info about a board.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code><a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Machine.</span><code><span class="memberNameLink"><a href="../SpallocClient.Machine.html#getBoardByPhysicalCoords(@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">getBoardByPhysicalCoords</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;cabinet,
-@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;frame,
-@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;board)</code></th>
-<td class="colLast">
-<div class="block">Given physical coordinates, return more info about a board.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code><a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Machine.</span><code><span class="memberNameLink"><a href="../SpallocClient.Machine.html#getBoardByTriad(@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">getBoardByTriad</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
-@uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
-@uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z)</code></th>
-<td class="colLast">
-<div class="block">Given logical triad coordinates, return more info about a board.</div>
 </td>
 </tr>
 <tr class="altColor">

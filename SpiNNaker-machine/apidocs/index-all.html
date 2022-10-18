@@ -143,6 +143,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Return a list off all the Processors on this Chip</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html#asChipLocation()">asChipLocation()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a></dt>
+<dd>
+<div class="block">Convert these coordinates into a <em>machine-global</em> chip location.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Chip.html#asChipLocation()">asChipLocation()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/ChipLocation.html#asChipLocation()">asChipLocation()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></dt>
@@ -167,12 +171,28 @@ loadScripts(document, 'script');</script>
 </a>
 <h2 class="title">B</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html#b">b</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a></dt>
+<dd>
+<div class="block">Board number.</div>
+</dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board"><span class="typeNameLink">BMPBoard</span></a> - Class in <a href="uk/ac/manchester/spinnaker/machine/board/package-summary.html">uk.ac.manchester.spinnaker.machine.board</a></dt>
 <dd>
 <div class="block">Wrapper for a board number so that it can't get mixed up with other integers.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/BMPBoard.html#%3Cinit%3E(int)">BMPBoard(int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board"><span class="typeNameLink">BMPCoords</span></a> - Class in <a href="uk/ac/manchester/spinnaker/machine/board/package-summary.html">uk.ac.manchester.spinnaker.machine.board</a></dt>
+<dd>
+<div class="block">A simple description of a BMP to talk to.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html#%3Cinit%3E(int,int)">BMPCoords(int, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a></dt>
+<dd>
+<div class="block">Create an instance.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html#%3Cinit%3E(java.lang.String)">BMPCoords(String)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a></dt>
+<dd>
+<div class="block">Create an instance from its serial form.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/BMPBoard.html#board">board</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a></dt>
 <dd>
 <div class="block">The board number.</div>
@@ -227,6 +247,14 @@ loadScripts(document, 'script');</script>
 </a>
 <h2 class="title">C</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html#c">c</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a></dt>
+<dd>
+<div class="block">Cabinet number.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html#cabinet">cabinet</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a></dt>
+<dd>
+<div class="block">The ID of the cabinet that contains the frame that contains the BMPs.</div>
+</dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/Chip.html" title="class in uk.ac.manchester.spinnaker.machine"><span class="typeNameLink">Chip</span></a> - Class in <a href="uk/ac/manchester/spinnaker/machine/package-summary.html">uk.ac.manchester.spinnaker.machine</a></dt>
 <dd>
 <div class="block">A Description of a Spinnaker Chip including its Router.</div>
@@ -280,10 +308,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Describes the difference between chip location between two machines.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Machine.html#chipLocations()">chipLocations()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></dt>
-<dd>
-<div class="block">The locations of each chip in the machine.</div>
-</dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/bean/ChipResources.html" title="class in uk.ac.manchester.spinnaker.machine.bean"><span class="typeNameLink">ChipResources</span></a> - Class in <a href="uk/ac/manchester/spinnaker/machine/bean/package-summary.html">uk.ac.manchester.spinnaker.machine.bean</a></dt>
 <dd>
 <div class="block">Bean to represent values on a Chip that are typically the same on all Chips.</div>
@@ -312,6 +336,12 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Comparator for region locations.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html#compareTo(uk.ac.manchester.spinnaker.machine.board.BMPCoords)">compareTo(BMPCoords)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html#compareTo(uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">compareTo(PhysicalCoords)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html#compareTo(uk.ac.manchester.spinnaker.machine.board.TriadCoords)">compareTo(TriadCoords)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/ChipLocation.html#compareTo(uk.ac.manchester.spinnaker.machine.ChipLocation)">compareTo(ChipLocation)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/CoreLocation.html#compareTo(uk.ac.manchester.spinnaker.machine.CoreLocation)">compareTo(CoreLocation)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a></dt>
@@ -465,6 +495,12 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/BMPBoard.html#equals(java.lang.Object)">equals(Object)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html#equals(java.lang.Object)">equals(Object)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html#equals(java.lang.Object)">equals(Object)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html#equals(java.lang.Object)">equals(Object)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Chip.html#equals(java.lang.Object)">equals(Object)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/ChipLocation.html#equals(java.lang.Object)">equals(Object)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></dt>
@@ -520,6 +556,10 @@ loadScripts(document, 'script');</script>
 </a>
 <h2 class="title">F</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html#f">f</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a></dt>
+<dd>
+<div class="block">Frame number.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Processor.html#factory(int)">factory(int)</a></span> - Static method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a></dt>
 <dd>
 <div class="block">Obtain a non-monitor Processor object for this ID.</div>
@@ -628,6 +668,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">The link ID from the FPGA perspective.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html#frame">frame</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a></dt>
+<dd>
+<div class="block">The ID of the frame that contains the master BMP.</div>
+</dd>
 </dl>
 <a id="I:G">
 <!--   -->
@@ -639,6 +683,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Generate report on the physical structure of the target SpiNNaker
  machine.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html#getBmpCoords()">getBmpCoords()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/tags/Tag.html#getBoardAddress()">getBoardAddress()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.tags.<a href="uk/ac/manchester/spinnaker/machine/tags/Tag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">Tag</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Machine.html#getBootEthernetAddress()">getBootEthernetAddress()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></dt>
@@ -649,6 +695,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get a SpiNNaker link with a given ID on the boot chip.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html#getCabinet()">getCabinet()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Machine.html#getChipAt(int,int)">getChipAt(int, int)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></dt>
 <dd>
 <div class="block">Get the chip at a specific (x, y) location.</div>
@@ -705,6 +753,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">An iterable over all the added FPGA link data items for this address.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html#getFrame()">getFrame()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/tags/TrafficIdentifier.html#getInstance(java.lang.String)">getInstance(String)</a></span> - Static method in class uk.ac.manchester.spinnaker.machine.tags.<a href="uk/ac/manchester/spinnaker/machine/tags/TrafficIdentifier.html" title="class in uk.ac.manchester.spinnaker.machine.tags">TrafficIdentifier</a></dt>
 <dd>
 <div class="block">Finds a TrafficIdentifier based on the label.</div>
@@ -843,6 +893,18 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Group of constraints.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadDepth.html#groups()">groups()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadDepth.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidTriadDepth</a></dt>
+<dd>
+<div class="block">Group of constraints.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadHeight.html#groups()">groups()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadHeight.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidTriadHeight</a></dt>
+<dd>
+<div class="block">Group of constraints.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadWidth.html#groups()">groups()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadWidth.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidTriadWidth</a></dt>
+<dd>
+<div class="block">Group of constraints.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadX.html#groups()">groups()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadX.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidTriadX</a></dt>
 <dd>
 <div class="block">Group of constraints.</div>
@@ -856,6 +918,14 @@ loadScripts(document, 'script');</script>
 <div class="block">Group of constraints.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/tags/TagID.html#groups()">groups()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.tags.<a href="uk/ac/manchester/spinnaker/machine/tags/TagID.html" title="annotation in uk.ac.manchester.spinnaker.machine.tags">TagID</a></dt>
+<dd>
+<div class="block">Group of constraints.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/ValidMachineHeight.html#groups()">groups()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/ValidMachineHeight.html" title="annotation in uk.ac.manchester.spinnaker.machine">ValidMachineHeight</a></dt>
+<dd>
+<div class="block">Group of constraints.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/ValidMachineWidth.html#groups()">groups()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/ValidMachineWidth.html" title="annotation in uk.ac.manchester.spinnaker.machine">ValidMachineWidth</a></dt>
 <dd>
 <div class="block">Group of constraints.</div>
 </dd>
@@ -906,6 +976,12 @@ loadScripts(document, 'script');</script>
 <div class="block">The interface supported by any object that is associated with a core.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/BMPBoard.html#hashCode()">hashCode()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html#hashCode()">hashCode()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html#hashCode()">hashCode()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html#hashCode()">hashCode()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Chip.html#hashCode()">hashCode()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></dt>
 <dd>&nbsp;</dd>
@@ -1256,6 +1332,18 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Message on constraint violated.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadDepth.html#message()">message()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadDepth.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidTriadDepth</a></dt>
+<dd>
+<div class="block">Message on constraint violated.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadHeight.html#message()">message()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadHeight.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidTriadHeight</a></dt>
+<dd>
+<div class="block">Message on constraint violated.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadWidth.html#message()">message()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadWidth.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidTriadWidth</a></dt>
+<dd>
+<div class="block">Message on constraint violated.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadX.html#message()">message()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadX.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidTriadX</a></dt>
 <dd>
 <div class="block">Message on constraint violated.</div>
@@ -1269,6 +1357,14 @@ loadScripts(document, 'script');</script>
 <div class="block">Message on constraint violated.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/tags/TagID.html#message()">message()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.tags.<a href="uk/ac/manchester/spinnaker/machine/tags/TagID.html" title="annotation in uk.ac.manchester.spinnaker.machine.tags">TagID</a></dt>
+<dd>
+<div class="block">Message on constraint violated.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/ValidMachineHeight.html#message()">message()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/ValidMachineHeight.html" title="annotation in uk.ac.manchester.spinnaker.machine">ValidMachineHeight</a></dt>
+<dd>
+<div class="block">Message on constraint violated.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/ValidMachineWidth.html#message()">message()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/ValidMachineWidth.html" title="annotation in uk.ac.manchester.spinnaker.machine">ValidMachineWidth</a></dt>
 <dd>
 <div class="block">Message on constraint violated.</div>
 </dd>
@@ -1438,6 +1534,18 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Payload info.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadDepth.html#payload()">payload()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadDepth.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidTriadDepth</a></dt>
+<dd>
+<div class="block">Payload info.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadHeight.html#payload()">payload()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadHeight.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidTriadHeight</a></dt>
+<dd>
+<div class="block">Payload info.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadWidth.html#payload()">payload()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadWidth.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidTriadWidth</a></dt>
+<dd>
+<div class="block">Payload info.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadX.html#payload()">payload()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadX.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">ValidTriadX</a></dt>
 <dd>
 <div class="block">Payload info.</div>
@@ -1451,6 +1559,14 @@ loadScripts(document, 'script');</script>
 <div class="block">Payload info.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/tags/TagID.html#payload()">payload()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.tags.<a href="uk/ac/manchester/spinnaker/machine/tags/TagID.html" title="annotation in uk.ac.manchester.spinnaker.machine.tags">TagID</a></dt>
+<dd>
+<div class="block">Payload info.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/ValidMachineHeight.html#payload()">payload()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/ValidMachineHeight.html" title="annotation in uk.ac.manchester.spinnaker.machine">ValidMachineHeight</a></dt>
+<dd>
+<div class="block">Payload info.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/ValidMachineWidth.html#payload()">payload()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/ValidMachineWidth.html" title="annotation in uk.ac.manchester.spinnaker.machine">ValidMachineWidth</a></dt>
 <dd>
 <div class="block">Payload info.</div>
 </dd>
@@ -1468,7 +1584,19 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/CoreSubsets.html#pByChip(uk.ac.manchester.spinnaker.machine.ChipLocation)">pByChip(ChipLocation)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a></dt>
 <dd>
-<div class="block">Provides the CoreLocations for just a single Chip.</div>
+<div class="block">Provides the processor identifiers for just a single Chip.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board"><span class="typeNameLink">PhysicalCoords</span></a> - Class in <a href="uk/ac/manchester/spinnaker/machine/board/package-summary.html">uk.ac.manchester.spinnaker.machine.board</a></dt>
+<dd>
+<div class="block">Physical board coordinates.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html#%3Cinit%3E(int,int,int)">PhysicalCoords(int, int, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a></dt>
+<dd>
+<div class="block">Create an instance.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html#%3Cinit%3E(java.lang.String)">PhysicalCoords(String)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a></dt>
+<dd>
+<div class="block">Create an instance from its serial form.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/Processor.html" title="class in uk.ac.manchester.spinnaker.machine"><span class="typeNameLink">Processor</span></a> - Class in <a href="uk/ac/manchester/spinnaker/machine/package-summary.html">uk.ac.manchester.spinnaker.machine</a></dt>
 <dd>
@@ -1604,20 +1732,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Default SDRAM per chip after SCAMP has reserved space for itself.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/bean/ChipResources.html#setCores(int)">setCores(int)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.bean.<a href="uk/ac/manchester/spinnaker/machine/bean/ChipResources.html" title="class in uk.ac.manchester.spinnaker.machine.bean">ChipResources</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/bean/ChipResources.html#setMonitors(int)">setMonitors(int)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.bean.<a href="uk/ac/manchester/spinnaker/machine/bean/ChipResources.html" title="class in uk.ac.manchester.spinnaker.machine.bean">ChipResources</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/tags/Tag.html#setPort(int)">setPort(int)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.tags.<a href="uk/ac/manchester/spinnaker/machine/tags/Tag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">Tag</a></dt>
 <dd>
 <div class="block">Set the port.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/bean/ChipResources.html#setRouterEntries(int)">setRouterEntries(int)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.bean.<a href="uk/ac/manchester/spinnaker/machine/bean/ChipResources.html" title="class in uk.ac.manchester.spinnaker.machine.bean">ChipResources</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/bean/ChipResources.html#setSdram(int)">setSdram(int)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.bean.<a href="uk/ac/manchester/spinnaker/machine/bean/ChipResources.html" title="class in uk.ac.manchester.spinnaker.machine.bean">ChipResources</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/bean/ChipResources.html#setTags(java.util.List)">setTags(List&lt;Integer&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.bean.<a href="uk/ac/manchester/spinnaker/machine/bean/ChipResources.html" title="class in uk.ac.manchester.spinnaker.machine.bean">ChipResources</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/datalinks/FpgaEnum.html#SEVEN_FIVE_E">SEVEN_FIVE_E</a></span> - uk.ac.manchester.spinnaker.machine.datalinks.<a href="uk/ac/manchester/spinnaker/machine/datalinks/FpgaEnum.html" title="enum in uk.ac.manchester.spinnaker.machine.datalinks">FpgaEnum</a></dt>
 <dd>
 <div class="block">Link 12 on FPGA 2/TopRight From Chip(7,5) towards the East.</div>
@@ -1815,6 +1933,12 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/BMPBoard.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Chip.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/ChipLocation.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></dt>
@@ -1884,6 +2008,18 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Unknown combination of common style 48 chips boards but made up of Triads
  with both wrap-arounds.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board"><span class="typeNameLink">TriadCoords</span></a> - Class in <a href="uk/ac/manchester/spinnaker/machine/board/package-summary.html">uk.ac.manchester.spinnaker.machine.board</a></dt>
+<dd>
+<div class="block">Triad coordinates.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html#%3Cinit%3E(int,int,int)">TriadCoords(int, int, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a></dt>
+<dd>
+<div class="block">Create an instance.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html#%3Cinit%3E(java.lang.String)">TriadCoords(String)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a></dt>
+<dd>
+<div class="block">Create an instance from its serial form.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/SpiNNakerTriadGeometry.html#triadHeight">triadHeight</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/SpiNNakerTriadGeometry.html" title="class in uk.ac.manchester.spinnaker.machine">SpiNNakerTriadGeometry</a></dt>
 <dd>
@@ -1979,9 +2115,29 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Validates that a frame number is in a sane range.</div>
 </dd>
+<dt><a href="uk/ac/manchester/spinnaker/machine/ValidMachineHeight.html" title="annotation in uk.ac.manchester.spinnaker.machine"><span class="typeNameLink">ValidMachineHeight</span></a> - Annotation Type in <a href="uk/ac/manchester/spinnaker/machine/package-summary.html">uk.ac.manchester.spinnaker.machine</a></dt>
+<dd>
+<div class="block">Validates that a machine's height (in chips) is in a sane range.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/machine/ValidMachineWidth.html" title="annotation in uk.ac.manchester.spinnaker.machine"><span class="typeNameLink">ValidMachineWidth</span></a> - Annotation Type in <a href="uk/ac/manchester/spinnaker/machine/package-summary.html">uk.ac.manchester.spinnaker.machine</a></dt>
+<dd>
+<div class="block">Validates that a machine's width (in chips) is in a sane range.</div>
+</dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine"><span class="typeNameLink">ValidP</span></a> - Annotation Type in <a href="uk/ac/manchester/spinnaker/machine/package-summary.html">uk.ac.manchester.spinnaker.machine</a></dt>
 <dd>
 <div class="block">Validates that a chip processor number is in a sane range.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadDepth.html" title="annotation in uk.ac.manchester.spinnaker.machine.board"><span class="typeNameLink">ValidTriadDepth</span></a> - Annotation Type in <a href="uk/ac/manchester/spinnaker/machine/board/package-summary.html">uk.ac.manchester.spinnaker.machine.board</a></dt>
+<dd>
+<div class="block">Validates that a machine's depth is in a sane range.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadHeight.html" title="annotation in uk.ac.manchester.spinnaker.machine.board"><span class="typeNameLink">ValidTriadHeight</span></a> - Annotation Type in <a href="uk/ac/manchester/spinnaker/machine/board/package-summary.html">uk.ac.manchester.spinnaker.machine.board</a></dt>
+<dd>
+<div class="block">Validates that a machine's height (in triads) is in a sane range.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadWidth.html" title="annotation in uk.ac.manchester.spinnaker.machine.board"><span class="typeNameLink">ValidTriadWidth</span></a> - Annotation Type in <a href="uk/ac/manchester/spinnaker/machine/board/package-summary.html">uk.ac.manchester.spinnaker.machine.board</a></dt>
+<dd>
+<div class="block">Validates that a machine's width (in triads) is in a sane range.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/board/ValidTriadX.html" title="annotation in uk.ac.manchester.spinnaker.machine.board"><span class="typeNameLink">ValidTriadX</span></a> - Annotation Type in <a href="uk/ac/manchester/spinnaker/machine/board/package-summary.html">uk.ac.manchester.spinnaker.machine.board</a></dt>
 <dd>
@@ -2083,6 +2239,10 @@ the order they are declared.</div>
 </a>
 <h2 class="title">X</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html#x">x</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a></dt>
+<dd>
+<div class="block">X coordinate of triad.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/RegionLocation.html#x">x</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/RegionLocation.html" title="class in uk.ac.manchester.spinnaker.machine">RegionLocation</a></dt>
 <dd>
 <div class="block">The Chip / Core's X value.</div>
@@ -2097,6 +2257,10 @@ the order they are declared.</div>
 </a>
 <h2 class="title">Y</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html#y">y</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a></dt>
+<dd>
+<div class="block">Y coordinate of triad.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/RegionLocation.html#y">y</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/RegionLocation.html" title="class in uk.ac.manchester.spinnaker.machine">RegionLocation</a></dt>
 <dd>
 <div class="block">The Chip / Core's Y value.</div>
@@ -2111,6 +2275,10 @@ the order they are declared.</div>
 </a>
 <h2 class="title">Z</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html#z">z</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.board.<a href="uk/ac/manchester/spinnaker/machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a></dt>
+<dd>
+<div class="block">Z coordinate of triad.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/datalinks/FpgaEnum.html#ZERO_ONE_SW">ZERO_ONE_SW</a></span> - uk.ac.manchester.spinnaker.machine.datalinks.<a href="uk/ac/manchester/spinnaker/machine/datalinks/FpgaEnum.html" title="enum in uk.ac.manchester.spinnaker.machine.datalinks">FpgaEnum</a></dt>
 <dd>
 <div class="block">Link 2 on FPGA 1/Left From Chip(0,1) towards the SouthWest.</div>

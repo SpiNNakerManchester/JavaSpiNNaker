@@ -175,7 +175,7 @@
 <a class="jxr_linenumber" name="L167" href="#L167">167</a> 			<strong class="jxr_keyword">var</strong> gathererChip = g.asChipLocation();
 <a class="jxr_linenumber" name="L168" href="#L168">168</a> 			gathererForChip.put(gathererChip, g);
 <a class="jxr_linenumber" name="L169" href="#L169">169</a> 			<strong class="jxr_keyword">var</strong> boardMonitorCores = monitorsForBoard
-<a class="jxr_linenumber" name="L170" href="#L170">170</a> 					.computeIfAbsent(gathererChip, x -&gt; <strong class="jxr_keyword">new</strong> CoreSubsets());
+<a class="jxr_linenumber" name="L170" href="#L170">170</a> 					.computeIfAbsent(gathererChip, __ -&gt; <strong class="jxr_keyword">new</strong> CoreSubsets());
 <a class="jxr_linenumber" name="L171" href="#L171">171</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> m : g.getMonitors()) {
 <a class="jxr_linenumber" name="L172" href="#L172">172</a> 				<strong class="jxr_keyword">var</strong> monitorChip = m.asChipLocation();
 <a class="jxr_linenumber" name="L173" href="#L173">173</a> 				gathererForChip.put(monitorChip, g);

@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -92,9 +92,11 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="description">
 <hr>
-<pre>public class <span class="typeNameLabel">BoardPhysicalCoordinates</span>
+<pre><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/Immutable.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@Immutable</a>
+public class <span class="typeNameLabel">BoardPhysicalCoordinates</span>
 extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
-<div class="block">The physical coordinates of a board.</div>
+<div class="block">The physical coordinates of a board. This would be <a href="../../machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board"><code>PhysicalCoords</code></a>
+ except it has a different serialization form for backward-compatibility.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -115,15 +117,15 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E()">BoardPhysicalCoordinates</a></span>()</code></th>
-<td class="colLast">
-<div class="block">Create with default coordinates.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(int,int,java.lang.Integer)">BoardPhysicalCoordinates</a></span>&#8203;(int&nbsp;cabinet,
 int&nbsp;frame,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Create with given coordinates.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">BoardPhysicalCoordinates</a></span>&#8203;(<a href="../../machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Create with given coordinates.</div>
 </td>
@@ -177,6 +179,13 @@ int&nbsp;frame,
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i5">
+<td class="colFirst"><code><a href="../../machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toStandardCoords()">toStandardCoords</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Convert to the standard coordinate scheme.</div>
+</td>
+</tr>
+<tr class="altColor" id="i6">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toString()">toString</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
@@ -205,13 +214,6 @@ int&nbsp;frame,
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;()">BoardPhysicalCoordinates</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">BoardPhysicalCoordinates</span>()</div>
-<div class="block">Create with default coordinates.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="&lt;init&gt;(int,int,java.lang.Integer)">BoardPhysicalCoordinates</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">BoardPhysicalCoordinates</span>&#8203;(<span class="arguments">int&nbsp;cabinet,
 int&nbsp;frame,
@@ -222,6 +224,17 @@ int&nbsp;frame,
 <dd><code>cabinet</code> - the cabinet ID</dd>
 <dd><code>frame</code> - the frame ID within the cabinet</dd>
 <dd><code>board</code> - the board ID within the frame</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">BoardPhysicalCoordinates</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">BoardPhysicalCoordinates</span>&#8203;(<span class="arguments"><a href="../../machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</span></div>
+<div class="block">Create with given coordinates.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>coords</code> - the coordinates in standard form.</dd>
 </dl>
 </section>
 </li>
@@ -292,6 +305,18 @@ int&nbsp;frame,
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang" class="externalLink">toString</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></code></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="toStandardCoords()">toStandardCoords</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="../../machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a></span>&nbsp;<span class="memberName">toStandardCoords</span>()</div>
+<div class="block">Convert to the standard coordinate scheme. Assumes that the <code>board</code>
+ field is defined.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the coordinates</dd>
 </dl>
 </section>
 </li>

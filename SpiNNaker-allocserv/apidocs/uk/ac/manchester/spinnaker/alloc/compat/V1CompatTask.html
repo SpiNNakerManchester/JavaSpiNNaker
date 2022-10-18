@@ -175,8 +175,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="altColor" id="i2">
 <td class="colFirst"><code>protected abstract <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJobNumBoards(int,java.util.Map,byte%5B%5D)">createJobNumBoards</a></span>&#8203;(int&nbsp;numBoards,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;kwargs,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJobNumBoards(@javax.validation.constraints.Positiveint,java.util.Map,byte%5B%5D)">createJobNumBoards</a></span>&#8203;(@javax.validation.constraints.Positive int&nbsp;numBoards,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;kwargs,
 byte[]&nbsp;cmd)</code></th>
 <td class="colLast">
 <div class="block">Create a job asking for a number of boards.</div>
@@ -184,9 +184,9 @@ byte[]&nbsp;cmd)</code></th>
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code>protected abstract <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJobRectangle(int,int,java.util.Map,byte%5B%5D)">createJobRectangle</a></span>&#8203;(int&nbsp;width,
-int&nbsp;height,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;kwargs,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJobRectangle(@uk.ac.manchester.spinnaker.machine.board.ValidTriadWidthint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadHeightint,java.util.Map,byte%5B%5D)">createJobRectangle</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth int&nbsp;width,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight int&nbsp;height,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;kwargs,
 byte[]&nbsp;cmd)</code></th>
 <td class="colLast">
 <div class="block">Create a job asking for a rectangle of boards.</div>
@@ -194,8 +194,8 @@ byte[]&nbsp;cmd)</code></th>
 </tr>
 <tr class="altColor" id="i4">
 <td class="colFirst"><code>protected abstract <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJobSpecificBoard(uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords,java.util.Map,byte%5B%5D)">createJobSpecificBoard</a></span>&#8203;(<a href="../admin/MachineDefinitionLoader.TriadCoords.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineDefinitionLoader.TriadCoords</a>&nbsp;coords,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;kwargs,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJobSpecificBoard(uk.ac.manchester.spinnaker.machine.board.TriadCoords,java.util.Map,byte%5B%5D)">createJobSpecificBoard</a></span>&#8203;(@Valid uk.ac.manchester.spinnaker.machine.board.TriadCoords&nbsp;coords,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;kwargs,
 byte[]&nbsp;cmd)</code></th>
 <td class="colLast">
 <div class="block">Create a job asking for a specific board.</div>
@@ -597,9 +597,10 @@ boolean&nbsp;wantNotify)</code></th>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="createJobNumBoards(int,java.util.Map,byte[])">createJobNumBoards</a></h3>
-<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</span>&nbsp;<span class="memberName">createJobNumBoards</span>&#8203;(<span class="arguments">int&nbsp;numBoards,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;kwargs,
+<h3><a id="createJobNumBoards(@javax.validation.constraints.Positiveint,java.util.Map,byte[])">createJobNumBoards</a></h3>
+<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</span>&nbsp;<span class="memberName">createJobNumBoards</span>&#8203;(<span class="arguments">@Positive
+@javax.validation.constraints.Positive int&nbsp;numBoards,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;kwargs,
 byte[]&nbsp;cmd)</span>
                                                  throws <span class="exceptions">uk.ac.manchester.spinnaker.alloc.compat.TaskException</span></div>
 <div class="block">Create a job asking for a number of boards.</div>
@@ -617,17 +618,19 @@ byte[]&nbsp;cmd)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="createJobRectangle(int,int,java.util.Map,byte[])">createJobRectangle</a></h3>
-<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</span>&nbsp;<span class="memberName">createJobRectangle</span>&#8203;(<span class="arguments">int&nbsp;width,
-int&nbsp;height,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;kwargs,
+<h3><a id="createJobRectangle(@uk.ac.manchester.spinnaker.machine.board.ValidTriadWidthint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadHeightint,java.util.Map,byte[])">createJobRectangle</a></h3>
+<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</span>&nbsp;<span class="memberName">createJobRectangle</span>&#8203;(<span class="arguments">@ValidTriadWidth
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth int&nbsp;width,
+@ValidTriadHeight
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight int&nbsp;height,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;kwargs,
 byte[]&nbsp;cmd)</span>
                                                  throws <span class="exceptions">uk.ac.manchester.spinnaker.alloc.compat.TaskException</span></div>
 <div class="block">Create a job asking for a rectangle of boards.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>width</code> - Width of rectangle in boards.</dd>
-<dd><code>height</code> - Height of rectangle in boards.</dd>
+<dd><code>width</code> - Width of rectangle in triads.</dd>
+<dd><code>height</code> - Height of rectangle in triads.</dd>
 <dd><code>kwargs</code> - Keyword argument map.</dd>
 <dd><code>cmd</code> - The actual command, as serialised JSON.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -639,9 +642,10 @@ byte[]&nbsp;cmd)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="createJobSpecificBoard(uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords,java.util.Map,byte[])">createJobSpecificBoard</a></h3>
-<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</span>&nbsp;<span class="memberName">createJobSpecificBoard</span>&#8203;(<span class="arguments"><a href="../admin/MachineDefinitionLoader.TriadCoords.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineDefinitionLoader.TriadCoords</a>&nbsp;coords,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;kwargs,
+<h3><a id="createJobSpecificBoard(uk.ac.manchester.spinnaker.machine.board.TriadCoords,java.util.Map,byte[])">createJobSpecificBoard</a></h3>
+<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</span>&nbsp;<span class="memberName">createJobSpecificBoard</span>&#8203;(<span class="arguments">@Valid
+@Valid uk.ac.manchester.spinnaker.machine.board.TriadCoords&nbsp;coords,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;kwargs,
 byte[]&nbsp;cmd)</span>
                                                      throws <span class="exceptions">uk.ac.manchester.spinnaker.alloc.compat.TaskException</span></div>
 <div class="block">Create a job asking for a specific board.</div>

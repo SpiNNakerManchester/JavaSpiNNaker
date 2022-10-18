@@ -86,6 +86,12 @@ loadScripts(document, 'script');</script>
 <div class="block">SpiNNaker old-style machine allocation client.</div>
 </td>
 </tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.spalloc.messages">uk.ac.manchester.spinnaker.spalloc.messages</a></th>
+<td class="colLast">
+<div class="block">Commands to send to Spalloc, and responses received from Spalloc.</div>
+</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -169,7 +175,7 @@ loadScripts(document, 'script');</script>
 <tr class="altColor">
 <td class="colFirst"><code>default <a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../SpallocAPI.html#whereIs(int,uk.ac.manchester.spinnaker.machine.HasChipLocation)">whereIs</a></span>&#8203;(int&nbsp;jobID,
-<a href="../../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
+@Valid <a href="../../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">
 <div class="block">Locate a chip within a job's allocation.</div>
 </td>
@@ -177,59 +183,93 @@ loadScripts(document, 'script');</script>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../SpallocAPI.html#whereIs(int,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Integer)">whereIs</a></span>&#8203;(int&nbsp;jobID,
-<a href="../../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+@Valid <a href="../../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Locate a chip within a job's allocation.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>default <a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="../../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
-<td class="colLast">
-<div class="block">Locate a chip within a machine.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code><a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Integer)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="../../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
-<td class="colLast">
-<div class="block">Locate a chip within a machine.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>default <a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="../../../machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Locate a board within a machine.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.Integer)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords,java.lang.Integer)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="../../../machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Locate a board within a machine.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>default <a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="../BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="../../../machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Locate a board within a machine.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates,java.lang.Integer)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="../BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords,java.lang.Integer)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="../../../machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a>&nbsp;coords,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<td class="colLast">
+<div class="block">Locate a board within a machine.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>default <a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="../../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
+<td class="colLast">
+<div class="block">Locate a chip within a machine.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Integer)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="../../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<td class="colLast">
+<div class="block">Locate a chip within a machine.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>default <a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords)</code></th>
+<td class="colLast">
+<div class="block">Locate a board within a machine.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>default <a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.Integer)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<td class="colLast">
+<div class="block">Locate a board within a machine.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>default <a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="../BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords)</code></th>
+<td class="colLast">
+<div class="block">Locate a board within a machine.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>default <a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates,java.lang.Integer)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid <a href="../BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords,
+@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Locate a board within a machine.</div>
 </td>
@@ -243,23 +283,49 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.</span><code><span class="memberNameLink"><a href="../../SpallocClient.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Integer)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="../../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.</span><code><span class="memberNameLink"><a href="../../SpallocClient.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords,java.lang.Integer)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+<a href="../../../machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code><a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.</span><code><span class="memberNameLink"><a href="../../SpallocClient.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.Integer)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords,
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.</span><code><span class="memberNameLink"><a href="../../SpallocClient.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords,java.lang.Integer)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+<a href="../../../machine/board/TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a>&nbsp;coords,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.</span><code><span class="memberNameLink"><a href="../../SpallocClient.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates,java.lang.Integer)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="../BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords,
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.</span><code><span class="memberNameLink"><a href="../../SpallocClient.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Integer)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+<a href="../../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.spalloc.messages">
+<!--   -->
+</a>
+<h2>Uses of <a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a> in <a href="../package-summary.html">uk.ac.manchester.spinnaker.spalloc.messages</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../package-summary.html">uk.ac.manchester.spinnaker.spalloc.messages</a> that return <a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">WhereIs.Builder.</span><code><span class="memberNameLink"><a href="../WhereIs.Builder.html#build()">build</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>

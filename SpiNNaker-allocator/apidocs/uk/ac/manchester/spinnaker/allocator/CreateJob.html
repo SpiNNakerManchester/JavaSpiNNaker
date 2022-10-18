@@ -171,8 +171,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(int,int)">CreateJob</a></span>&#8203;(int&nbsp;width,
 int&nbsp;height)</code></th>
 <td class="colLast">
-<div class="block">Create a request to run on rectangle of boards using the default machine
- operated by the Spalloc service.</div>
+<div class="block">Create a request to run on rectangle of triads of boards using the
+ default machine operated by the Spalloc service.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -184,16 +184,16 @@ int&nbsp;height)</code></th>
 </td>
 </tr>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.allocator.Physical)">CreateJob</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="Physical.html" title="class in uk.ac.manchester.spinnaker.allocator">Physical</a>&nbsp;coords)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">CreateJob</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+uk.ac.manchester.spinnaker.machine.board.PhysicalCoords&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Create a request to run on a specific board of a specific machine
  operated by the Spalloc service.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.allocator.Triad)">CreateJob</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="Triad.html" title="class in uk.ac.manchester.spinnaker.allocator">Triad</a>&nbsp;triad)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords)">CreateJob</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+uk.ac.manchester.spinnaker.machine.board.TriadCoords&nbsp;triad)</code></th>
 <td class="colLast">
 <div class="block">Create a request to run on a specific board of a specific machine
  operated by the Spalloc service.</div>
@@ -345,14 +345,14 @@ int&nbsp;height)</code></th>
 <h3><a id="&lt;init&gt;(int,int)">CreateJob</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">CreateJob</span>&#8203;(<span class="arguments">int&nbsp;width,
 int&nbsp;height)</span></div>
-<div class="block">Create a request to run on rectangle of boards using the default machine
- operated by the Spalloc service.
+<div class="block">Create a request to run on rectangle of triads of boards using the
+ default machine operated by the Spalloc service.
  <p>
  Note that you can configure this request further.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>width</code> - The width of the rectangle</dd>
-<dd><code>height</code> - The height of the rectangle</dd>
+<dd><code>width</code> - The width of the rectangle, in triads</dd>
+<dd><code>height</code> - The height of the rectangle, in triads</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If either of the dimensions is less than 1</dd>
 </dl>
@@ -360,9 +360,9 @@ int&nbsp;height)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(java.lang.String,uk.ac.manchester.spinnaker.allocator.Triad)">CreateJob</a></h3>
+<h3><a id="&lt;init&gt;(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords)">CreateJob</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">CreateJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="Triad.html" title="class in uk.ac.manchester.spinnaker.allocator">Triad</a>&nbsp;triad)</span></div>
+uk.ac.manchester.spinnaker.machine.board.TriadCoords&nbsp;triad)</span></div>
 <div class="block">Create a request to run on a specific board of a specific machine
  operated by the Spalloc service.
  <p>
@@ -377,9 +377,9 @@ int&nbsp;height)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(java.lang.String,uk.ac.manchester.spinnaker.allocator.Physical)">CreateJob</a></h3>
+<h3><a id="&lt;init&gt;(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">CreateJob</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">CreateJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="Physical.html" title="class in uk.ac.manchester.spinnaker.allocator">Physical</a>&nbsp;coords)</span></div>
+uk.ac.manchester.spinnaker.machine.board.PhysicalCoords&nbsp;coords)</span></div>
 <div class="block">Create a request to run on a specific board of a specific machine
  operated by the Spalloc service.
  <p>

@@ -131,8 +131,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </td>
 </tr>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(@javax.validation.constraints.Positiveint,@javax.validation.constraints.Positiveint)">CreateJob</a></span>&#8203;(@javax.validation.constraints.Positive int&nbsp;width,
-@javax.validation.constraints.Positive int&nbsp;height)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(@uk.ac.manchester.spinnaker.machine.board.ValidTriadWidthint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadHeightint)">CreateJob</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth int&nbsp;width,
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight int&nbsp;height)</code></th>
 <td class="colLast">
 <div class="block">Build a request for a rectangle of boards.</div>
 </td>
@@ -187,37 +187,37 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#keepAlive(java.lang.Double)">keepAlive</a></span>&#8203;(@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Double.html?is-external=true" title="class or interface in java.lang" class="externalLink">Double</a>&nbsp;keepalive)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#keepAlive(java.time.Duration)">keepAlive</a></span>&#8203;(@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;keepalive)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i4">
 <td class="colFirst"><code><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#keepAlive(java.time.Duration)">keepAlive</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;keepalive)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#keepAlive(java.lang.Double)">keepAlive</a></span>&#8203;(@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Double.html?is-external=true" title="class or interface in java.lang" class="externalLink">Double</a>&nbsp;keepalive)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i5">
 <td class="colFirst"><code><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#machine(java.lang.String)">machine</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#machine(java.lang.String)">machine</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i6">
 <td class="colFirst"><code><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#maxDeadBoards(int)">maxDeadBoards</a></span>&#8203;(int&nbsp;maxDeadBoards)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#maxDeadBoards(@javax.validation.constraints.PositiveOrZeroint)">maxDeadBoards</a></span>&#8203;(@javax.validation.constraints.PositiveOrZero int&nbsp;maxDeadBoards)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i7">
 <td class="colFirst"><code><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#maxDeadLinks(int)">maxDeadLinks</a></span>&#8203;(int&nbsp;maxDeadLinks)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#maxDeadLinks(@javax.validation.constraints.PositiveOrZeroint)">maxDeadLinks</a></span>&#8203;(@javax.validation.constraints.PositiveOrZero int&nbsp;maxDeadLinks)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i8">
 <td class="colFirst"><code><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#minRatio(double)">minRatio</a></span>&#8203;(double&nbsp;minRatio)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#minRatio(@javax.validation.constraints.PositiveOrZerodouble)">minRatio</a></span>&#8203;(@javax.validation.constraints.PositiveOrZero double&nbsp;minRatio)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i9">
 <td class="colFirst"><code><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#owner(java.lang.String)">owner</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#owner(java.lang.String)">owner</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i10">
@@ -242,7 +242,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="altColor" id="i12">
 <td class="colFirst"><code><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#tags(java.lang.String...)">tags</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>...&nbsp;tags)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#tags(java.lang.String...)">tags</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>...&nbsp;tags)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
@@ -288,16 +288,16 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(@javax.validation.constraints.Positiveint,@javax.validation.constraints.Positiveint)">CreateJob</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">CreateJob</span>&#8203;(<span class="arguments">@Positive
-@javax.validation.constraints.Positive int&nbsp;width,
-@Positive
-@javax.validation.constraints.Positive int&nbsp;height)</span></div>
+<h3><a id="&lt;init&gt;(@uk.ac.manchester.spinnaker.machine.board.ValidTriadWidthint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadHeightint)">CreateJob</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">CreateJob</span>&#8203;(<span class="arguments"><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/ValidTriadWidth.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">@ValidTriadWidth</a>
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth int&nbsp;width,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/ValidTriadHeight.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">@ValidTriadHeight</a>
+@uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight int&nbsp;height)</span></div>
 <div class="block">Build a request for a rectangle of boards.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>width</code> - Horizontal size of rectangle</dd>
-<dd><code>height</code> - Vertical size of rectangle</dd>
+<dd><code>width</code> - Horizontal size of rectangle, in triads</dd>
+<dd><code>height</code> - Vertical size of rectangle, in triads</dd>
 </dl>
 </section>
 </li>
@@ -348,7 +348,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="owner(java.lang.String)">owner</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CanIgnoreReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CanIgnoreReturnValue</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">owner</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner)</span></div>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">owner</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>owner</code> - The name of the owner of this job. <strong>Required.</strong></dd>
@@ -393,7 +394,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="keepAlive(java.time.Duration)">keepAlive</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CanIgnoreReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CanIgnoreReturnValue</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">keepAlive</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;keepalive)</span></div>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">keepAlive</span>&#8203;(<span class="arguments">@NotNull
+@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;keepalive)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>keepalive</code> - The maximum amount of time which may elapse between a query on
@@ -410,7 +412,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="machine(java.lang.String)">machine</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CanIgnoreReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CanIgnoreReturnValue</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">machine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine)</span></div>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">machine</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>machine</code> - Specify the name of a machine which this job must be executed
@@ -428,7 +431,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="tags(java.lang.String...)">tags</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CanIgnoreReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CanIgnoreReturnValue</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">tags</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>...&nbsp;tags)</span></div>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">tags</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>...&nbsp;tags)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>tags</code> - The set of tags which any machine running this job must have.
@@ -444,9 +448,10 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="minRatio(double)">minRatio</a></h3>
+<h3><a id="minRatio(@javax.validation.constraints.PositiveOrZerodouble)">minRatio</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CanIgnoreReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CanIgnoreReturnValue</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">minRatio</span>&#8203;(<span class="arguments">double&nbsp;minRatio)</span></div>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">minRatio</span>&#8203;(<span class="arguments">@PositiveOrZero
+@javax.validation.constraints.PositiveOrZero double&nbsp;minRatio)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>minRatio</code> - The aspect ratio (h/w) which the allocated region must be ‘at
@@ -460,9 +465,10 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="maxDeadBoards(int)">maxDeadBoards</a></h3>
+<h3><a id="maxDeadBoards(@javax.validation.constraints.PositiveOrZeroint)">maxDeadBoards</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CanIgnoreReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CanIgnoreReturnValue</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">maxDeadBoards</span>&#8203;(<span class="arguments">int&nbsp;maxDeadBoards)</span></div>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">maxDeadBoards</span>&#8203;(<span class="arguments">@PositiveOrZero
+@javax.validation.constraints.PositiveOrZero int&nbsp;maxDeadBoards)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>maxDeadBoards</code> - The maximum number of broken or unreachable boards to allow in
@@ -476,9 +482,10 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="maxDeadLinks(int)">maxDeadLinks</a></h3>
+<h3><a id="maxDeadLinks(@javax.validation.constraints.PositiveOrZeroint)">maxDeadLinks</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CanIgnoreReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CanIgnoreReturnValue</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">maxDeadLinks</span>&#8203;(<span class="arguments">int&nbsp;maxDeadLinks)</span></div>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">maxDeadLinks</span>&#8203;(<span class="arguments">@PositiveOrZero
+@javax.validation.constraints.PositiveOrZero int&nbsp;maxDeadLinks)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>maxDeadLinks</code> - The maximum number of broken links allow in the allocated

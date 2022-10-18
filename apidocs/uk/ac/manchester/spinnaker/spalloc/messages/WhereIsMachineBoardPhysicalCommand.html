@@ -116,17 +116,8 @@ extends <a href="Command.html" title="class in uk.ac.manchester.spinnaker.spallo
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">WhereIsMachineBoardPhysicalCommand</a></span>&#8203;(@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;cabinet,
-@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;frame,
-@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;board)</code></th>
-<td class="colLast">
-<div class="block">Create a request to locate a board on a machine.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">WhereIsMachineBoardPhysicalCommand</a></span>&#8203;(@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-@Valid @NotNull <a href="BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">WhereIsMachineBoardPhysicalCommand</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+@Valid @NotNull <a href="../../machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Create a request to locate a board on a machine.</div>
 </td>
@@ -167,32 +158,11 @@ extends <a href="Command.html" title="class in uk.ac.manchester.spinnaker.spallo
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(java.lang.String,@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">WhereIsMachineBoardPhysicalCommand</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">WhereIsMachineBoardPhysicalCommand</span>&#8203;(<span class="arguments">@NotNull
-@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="../../machine/board/ValidCabinetNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidCabinetNumber</a>
-@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;cabinet,
-<a href="../../machine/board/ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidFrameNumber</a>
-@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;frame,
-<a href="../../machine/board/ValidBoardNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidBoardNumber</a>
-@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;board)</span></div>
-<div class="block">Create a request to locate a board on a machine.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>machine</code> - The machine to request about.</dd>
-<dd><code>cabinet</code> - The cabinet containing the board to ask about.</dd>
-<dd><code>frame</code> - The frame containing the board to ask about.</dd>
-<dd><code>board</code> - The board (within the cabinet and frame) to ask about.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="&lt;init&gt;(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">WhereIsMachineBoardPhysicalCommand</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">WhereIsMachineBoardPhysicalCommand</span>&#8203;(<span class="arguments">@NotNull
-@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+<h3><a id="&lt;init&gt;(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">WhereIsMachineBoardPhysicalCommand</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">WhereIsMachineBoardPhysicalCommand</span>&#8203;(<span class="arguments">@NotBlank
+@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
 @Valid @NotNull
-@Valid @NotNull <a href="BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords)</span></div>
+@Valid @NotNull <a href="../../machine/board/PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</span></div>
 <div class="block">Create a request to locate a board on a machine.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>

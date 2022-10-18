@@ -27,32 +27,34 @@
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> javax.validation.Valid;
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> javax.validation.constraints.NotBlank;
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_javadoccomment"> * Request to get the location of a board in a machine by logical location.</em>
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment"> * @see &lt;a href=</em>
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment"> *      "<a href="https://spalloc-server.readthedocs.io/en/stable/protocol/" target="alexandria_uri">https://spalloc-server.readthedocs.io/en/stable/protocol/</a>#commands.where_is"</em>
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment"> *      &gt;Spalloc Server documentation&lt;/a&gt;</em>
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment"> * @see WhereIs The basic result type associated with the request</em>
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="WhereIsMachineBoardLogicalCommand" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/WhereIsMachineBoardLogicalCommand.html#WhereIsMachineBoardLogicalCommand">WhereIsMachineBoardLogicalCommand</a> <strong class="jxr_keyword">extends</strong> Command&lt;Integer&gt; {
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_javadoccomment">	 * Create a request to locate a board on a machine.</em>
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_javadoccomment">	 * @param machine</em>
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_javadoccomment">	 *            The machine to request about.</em>
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment">	 * @param coords</em>
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment">	 *            The logical coordinates of the board to ask about.</em>
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  	<strong class="jxr_keyword">public</strong> <a name="WhereIsMachineBoardLogicalCommand" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/WhereIsMachineBoardLogicalCommand.html#WhereIsMachineBoardLogicalCommand">WhereIsMachineBoardLogicalCommand</a>(@NotBlank String machine,
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  			@Valid BoardCoordinates coords) {
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  		<strong class="jxr_keyword">super</strong>(<span class="jxr_string">"where_is"</span>);
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  		addKwArg(<span class="jxr_string">"machine"</span>, machine);
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  		addKwArg(<span class="jxr_string">"x"</span>, coords.getX());
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  		addKwArg(<span class="jxr_string">"y"</span>, coords.getY());
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  		addKwArg(<span class="jxr_string">"z"</span>, coords.getZ());
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  	}
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  }
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.board.TriadCoords;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment"> * Request to get the location of a board in a machine by logical location.</em>
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment"> * @see &lt;a href=</em>
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment"> *      "<a href="https://spalloc-server.readthedocs.io/en/stable/protocol/" target="alexandria_uri">https://spalloc-server.readthedocs.io/en/stable/protocol/</a>#commands.where_is"</em>
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_javadoccomment"> *      &gt;Spalloc Server documentation&lt;/a&gt;</em>
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_javadoccomment"> * @see WhereIs The basic result type associated with the request</em>
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="WhereIsMachineBoardLogicalCommand" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/WhereIsMachineBoardLogicalCommand.html#WhereIsMachineBoardLogicalCommand">WhereIsMachineBoardLogicalCommand</a> <strong class="jxr_keyword">extends</strong> Command&lt;Integer&gt; {
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_javadoccomment">	 * Create a request to locate a board on a machine.</em>
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment">	 * @param machine</em>
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment">	 *            The machine to request about.</em>
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment">	 * @param coords</em>
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment">	 *            The logical coordinates of the board to ask about.</em>
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  	<strong class="jxr_keyword">public</strong> <a name="WhereIsMachineBoardLogicalCommand" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/WhereIsMachineBoardLogicalCommand.html#WhereIsMachineBoardLogicalCommand">WhereIsMachineBoardLogicalCommand</a>(@NotBlank String machine,
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  			@Valid TriadCoords coords) {
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  		<strong class="jxr_keyword">super</strong>(<span class="jxr_string">"where_is"</span>);
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  		addKwArg(<span class="jxr_string">"machine"</span>, machine);
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  		addKwArg(<span class="jxr_string">"x"</span>, coords.x);
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  		addKwArg(<span class="jxr_string">"y"</span>, coords.y);
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  		addKwArg(<span class="jxr_string">"z"</span>, coords.z);
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  	}
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

@@ -47,7 +47,7 @@
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.bmp.FirmwareLoader.FirmwareLoaderException;
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.model.Prototype;
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.board.BMPBoard;
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.model.Blacklist;
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.model.FPGA;
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
@@ -78,7 +78,7 @@
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment">	 * frame use a CAN bus and I&lt;sup&gt;2&lt;/sup&gt;C to communicate with each other on</em>
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment">	 * our behalf.</em>
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <a name="BMPCoords" href="../../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> ROOT_BMP = <strong class="jxr_keyword">new</strong> <a name="BMPCoords" href="../../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a>(0, 0);
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <a name="BMPCoords" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/BMPCoords.html#BMPCoords">BMPCoords</a> ROOT_BMP = <strong class="jxr_keyword">new</strong> <a name="BMPCoords" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/BMPCoords.html#BMPCoords">BMPCoords</a>(0, 0);
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>  	@Autowired
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>  	<strong class="jxr_keyword">private</strong> TxrxProperties props;
@@ -94,7 +94,7 @@
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  	<strong class="jxr_keyword">private</strong> ObjectProvider&lt;FirmwareLoader&gt; firmwareLoaderFactory;
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  	<em class="jxr_javadoccomment">/** The BMP coordinates to bind into the transceiver. */</em>
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="BMPCoords" href="../../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp;
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="BMPCoords" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/BMPCoords.html#BMPCoords">BMPCoords</a> bmp;
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Machine machine;
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>  
@@ -142,7 +142,7 @@
 <a class="jxr_linenumber" name="L134" href="#L134">134</a> <em class="jxr_javadoccomment">	 * @param bmp</em>
 <a class="jxr_linenumber" name="L135" href="#L135">135</a> <em class="jxr_javadoccomment">	 *            Which BMP on the machine are we really talking to.</em>
 <a class="jxr_linenumber" name="L136" href="#L136">136</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L137" href="#L137">137</a> 	SpiNNaker1(Machine machine, <a name="BMPCoords" href="../../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> bmp) {
+<a class="jxr_linenumber" name="L137" href="#L137">137</a> 	SpiNNaker1(Machine machine, <a name="BMPCoords" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/BMPCoords.html#BMPCoords">BMPCoords</a> bmp) {
 <a class="jxr_linenumber" name="L138" href="#L138">138</a> 		<strong class="jxr_keyword">this</strong>.machine = machine;
 <a class="jxr_linenumber" name="L139" href="#L139">139</a> 		<strong class="jxr_keyword">this</strong>.bmp = bmp;
 <a class="jxr_linenumber" name="L140" href="#L140">140</a> 	}

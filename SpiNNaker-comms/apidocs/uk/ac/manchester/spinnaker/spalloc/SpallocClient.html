@@ -235,21 +235,21 @@ int&nbsp;port)</code></th>
 </td>
 </tr>
 <tr class="rowColor" id="i5">
-<td class="colFirst"><code><a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.Integer)">getBoardPosition</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-<a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
-<td class="colLast">
-<div class="block">Get the physical location of a board.</div>
-</td>
-</tr>
-<tr class="altColor" id="i6">
 <td class="colFirst"><code><a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates,java.lang.Integer)">getBoardPosition</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-<a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords,java.lang.Integer)">getBoardPosition</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">PhysicalCoords</a>&nbsp;coords,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Get the logical location of a board.</div>
+</td>
+</tr>
+<tr class="altColor" id="i6">
+<td class="colFirst"><code><a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords,java.lang.Integer)">getBoardPosition</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/TriadCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">TriadCoords</a>&nbsp;coords,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<td class="colLast">
+<div class="block">Get the physical location of a board.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i7">
@@ -357,17 +357,17 @@ boolean&nbsp;enable,
 </tr>
 <tr class="altColor" id="i20">
 <td class="colFirst"><code><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Integer)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords,java.lang.Integer)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">PhysicalCoords</a>&nbsp;coords,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
-<div class="block">Locate a chip within a machine.</div>
+<div class="block">Locate a board within a machine.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i21">
 <td class="colFirst"><code><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.Integer)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords,java.lang.Integer)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/TriadCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">TriadCoords</a>&nbsp;coords,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Locate a board within a machine.</div>
@@ -375,11 +375,11 @@ boolean&nbsp;enable,
 </tr>
 <tr class="altColor" id="i22">
 <td class="colFirst"><code><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates,java.lang.Integer)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Integer)">whereIs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
-<div class="block">Locate a board within a machine.</div>
+<div class="block">Locate a chip within a machine.</div>
 </td>
 </tr>
 </tbody>
@@ -400,7 +400,7 @@ boolean&nbsp;enable,
 <h3>Methods inherited from interface&nbsp;uk.ac.manchester.spinnaker.spalloc.<a href="SpallocAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocAPI</a></h3>
 <a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.spalloc.SpallocAPI">
 <!--   -->
-</a><code><a href="SpallocAPI.html#createJob(java.util.List,java.util.Map)">createJob</a>, <a href="SpallocAPI.html#createJob(uk.ac.manchester.spinnaker.spalloc.CreateJob)">createJob</a>, <a href="SpallocAPI.html#destroyJob(int,java.lang.String)">destroyJob</a>, <a href="SpallocAPI.html#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates)">getBoardPosition</a>, <a href="SpallocAPI.html#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">getBoardPosition</a>, <a href="SpallocAPI.html#getJobMachineInfo(int)">getJobMachineInfo</a>, <a href="SpallocAPI.html#getJobState(int)">getJobState</a>, <a href="SpallocAPI.html#jobKeepAlive(int)">jobKeepAlive</a>, <a href="SpallocAPI.html#listJobs()">listJobs</a>, <a href="SpallocAPI.html#listMachines()">listMachines</a>, <a href="SpallocAPI.html#notifyJob(java.lang.Integer,boolean)">notifyJob</a>, <a href="SpallocAPI.html#notifyMachine(java.lang.String,boolean)">notifyMachine</a>, <a href="SpallocAPI.html#powerOffJobBoards(int)">powerOffJobBoards</a>, <a href="SpallocAPI.html#powerOnJobBoards(int)">powerOnJobBoards</a>, <a href="SpallocAPI.html#version()">version</a>, <a href="SpallocAPI.html#waitForNotification()">waitForNotification</a>, <a href="SpallocAPI.html#whereIs(int,uk.ac.manchester.spinnaker.machine.HasChipLocation)">whereIs</a>, <a href="SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation)">whereIs</a>, <a href="SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates)">whereIs</a>, <a href="SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">whereIs</a></code></div>
+</a><code><a href="SpallocAPI.html#createJob(uk.ac.manchester.spinnaker.spalloc.CreateJob)">createJob</a>, <a href="SpallocAPI.html#createJob(java.util.List,java.util.Map)">createJob</a>, <a href="SpallocAPI.html#destroyJob(int,java.lang.String)">destroyJob</a>, <a href="SpallocAPI.html#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">getBoardPosition</a>, <a href="SpallocAPI.html#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords)">getBoardPosition</a>, <a href="SpallocAPI.html#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates)">getBoardPosition</a>, <a href="SpallocAPI.html#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.Integer)">getBoardPosition</a>, <a href="SpallocAPI.html#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">getBoardPosition</a>, <a href="SpallocAPI.html#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates,java.lang.Integer)">getBoardPosition</a>, <a href="SpallocAPI.html#getJobMachineInfo(int)">getJobMachineInfo</a>, <a href="SpallocAPI.html#getJobState(int)">getJobState</a>, <a href="SpallocAPI.html#jobKeepAlive(int)">jobKeepAlive</a>, <a href="SpallocAPI.html#listJobs()">listJobs</a>, <a href="SpallocAPI.html#listMachines()">listMachines</a>, <a href="SpallocAPI.html#notifyJob(java.lang.Integer,boolean)">notifyJob</a>, <a href="SpallocAPI.html#notifyMachine(java.lang.String,boolean)">notifyMachine</a>, <a href="SpallocAPI.html#powerOffJobBoards(int)">powerOffJobBoards</a>, <a href="SpallocAPI.html#powerOnJobBoards(int)">powerOnJobBoards</a>, <a href="SpallocAPI.html#version()">version</a>, <a href="SpallocAPI.html#waitForNotification()">waitForNotification</a>, <a href="SpallocAPI.html#whereIs(int,uk.ac.manchester.spinnaker.machine.HasChipLocation)">whereIs</a>, <a href="SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">whereIs</a>, <a href="SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords)">whereIs</a>, <a href="SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation)">whereIs</a>, <a href="SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates)">whereIs</a>, <a href="SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.Integer)">whereIs</a>, <a href="SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">whereIs</a>, <a href="SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates,java.lang.Integer)">whereIs</a></code></div>
 </section>
 </li>
 </ul>
@@ -511,15 +511,18 @@ int&nbsp;port)</span></div>
 <dd><code><a href="SpallocAPI.html#waitForNotification(java.lang.Integer)">waitForNotification</a></code>&nbsp;in interface&nbsp;<code><a href="SpallocAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocAPI</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>timeout</code> - The number of seconds to wait before timing out or
-            <code>null</code> if this function should try again forever. If
-            negative, only responses already-received will be returned; if
-            no responses are available, in this case the function does not
-            raise a ProtocolTimeoutError but returns <code>null</code> instead.</dd>
+            <code>null</code> if this function should try again forever.
+            <p>
+            If negative, only responses already-received will be returned;
+            if no responses are available, in this case the function does
+            not raise a <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions"><code>SpallocProtocolTimeoutException</code></a> but
+            returns <code>null</code> instead.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The notification sent by the server.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="exceptions/SpallocProtocolException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolException</a></code> - If the socket is unusable or becomes disconnected.</dd>
-<dd><code><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a></code> - If a timeout occurs.</dd>
+<dd><code><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a></code> - If a timeout occurs (implying <code>timeout</code> is not
+             negative).</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="messages/JobsChangedNotification.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages"><code>JobsChangedNotification</code></a>, 
 <a href="messages/MachinesChangedNotification.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages"><code>MachinesChangedNotification</code></a></dd>
@@ -857,17 +860,17 @@ boolean&nbsp;enable,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.Integer)">getBoardPosition</a></h3>
+<h3><a id="getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords,java.lang.Integer)">getBoardPosition</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a></span>&nbsp;<span class="memberName">getBoardPosition</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-<a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/TriadCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">TriadCoords</a>&nbsp;coords,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
                                           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SpallocAPI.html#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.Integer)">SpallocAPI</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SpallocAPI.html#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords,java.lang.Integer)">SpallocAPI</a></code></span></div>
 <div class="block">Get the physical location of a board.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="SpallocAPI.html#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.Integer)">getBoardPosition</a></code>&nbsp;in interface&nbsp;<code><a href="SpallocAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocAPI</a></code></dd>
+<dd><code><a href="SpallocAPI.html#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords,java.lang.Integer)">getBoardPosition</a></code>&nbsp;in interface&nbsp;<code><a href="SpallocAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocAPI</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>machineName</code> - the name of the machine containing the board.</dd>
 <dd><code>coords</code> - the logical location of the board.</dd>
@@ -885,17 +888,17 @@ boolean&nbsp;enable,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates,java.lang.Integer)">getBoardPosition</a></h3>
+<h3><a id="getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords,java.lang.Integer)">getBoardPosition</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></span>&nbsp;<span class="memberName">getBoardPosition</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-<a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">PhysicalCoords</a>&nbsp;coords,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
                                   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SpallocAPI.html#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates,java.lang.Integer)">SpallocAPI</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SpallocAPI.html#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords,java.lang.Integer)">SpallocAPI</a></code></span></div>
 <div class="block">Get the logical location of a board.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="SpallocAPI.html#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates,java.lang.Integer)">getBoardPosition</a></code>&nbsp;in interface&nbsp;<code><a href="SpallocAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocAPI</a></code></dd>
+<dd><code><a href="SpallocAPI.html#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords,java.lang.Integer)">getBoardPosition</a></code>&nbsp;in interface&nbsp;<code><a href="SpallocAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocAPI</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>machineName</code> - the name of the machine containing the board.</dd>
 <dd><code>coords</code> - the physical location of the board.</dd>
@@ -969,17 +972,17 @@ boolean&nbsp;enable,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates,java.lang.Integer)">whereIs</a></h3>
+<h3><a id="whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords,java.lang.Integer)">whereIs</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a>&nbsp;coords,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">PhysicalCoords</a>&nbsp;coords,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates,java.lang.Integer)">SpallocAPI</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords,java.lang.Integer)">SpallocAPI</a></code></span></div>
 <div class="block">Locate a board within a machine.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates,java.lang.Integer)">whereIs</a></code>&nbsp;in interface&nbsp;<code><a href="SpallocAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocAPI</a></code></dd>
+<dd><code><a href="SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords,java.lang.Integer)">whereIs</a></code>&nbsp;in interface&nbsp;<code><a href="SpallocAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocAPI</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>machine</code> - The machine to ask about.</dd>
 <dd><code>coords</code> - The physical coordinates of the board to ask about.</dd>
@@ -997,17 +1000,17 @@ boolean&nbsp;enable,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.Integer)">whereIs</a></h3>
+<h3><a id="whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords,java.lang.Integer)">whereIs</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;coords,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/TriadCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">TriadCoords</a>&nbsp;coords,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.Integer)">SpallocAPI</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords,java.lang.Integer)">SpallocAPI</a></code></span></div>
 <div class="block">Locate a board within a machine.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.Integer)">whereIs</a></code>&nbsp;in interface&nbsp;<code><a href="SpallocAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocAPI</a></code></dd>
+<dd><code><a href="SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.TriadCoords,java.lang.Integer)">whereIs</a></code>&nbsp;in interface&nbsp;<code><a href="SpallocAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocAPI</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>machine</code> - The machine to ask about.</dd>
 <dd><code>coords</code> - The logical coordinates of the board to ask about.</dd>

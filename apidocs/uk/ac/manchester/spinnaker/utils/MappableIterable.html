@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":18,"i1":18,"i2":18,"i3":18,"i4":18,"i5":18,"i6":18,"i7":18,"i8":18,"i9":18,"i10":18,"i11":18,"i12":18,"i13":18};
+<script type="text/javascript">var data = {"i0":18,"i1":18,"i2":18,"i3":18,"i4":18,"i5":18,"i6":18,"i7":18,"i8":18,"i9":18,"i10":18,"i11":18,"i12":18,"i13":18,"i14":18};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],16:["t5","Default Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -169,6 +169,16 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor" id="i5">
 <td class="colFirst"><code>default &lt;K,&#8203;
+E extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;E&gt;&gt;<br><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;E&gt;&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toCollectingMap(java.lang.Class,java.util.function.Function,java.util.function.Function)">toCollectingMap</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;E&gt;&nbsp;cls,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;E&gt;&nbsp;valueMapper)</code></th>
+<td class="colLast">
+<div class="block">Convert this iterable to a map of sets of enum values.</div>
+</td>
+</tr>
+<tr class="altColor" id="i6">
+<td class="colFirst"><code>default &lt;K,&#8203;
 V&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;V&gt;&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toCollectingMap(java.util.function.Function,java.util.function.Function)">toCollectingMap</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</code></th>
@@ -176,7 +186,7 @@ V&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <div class="block">Convert this iterable to a map of lists.</div>
 </td>
 </tr>
-<tr class="altColor" id="i6">
+<tr class="rowColor" id="i7">
 <td class="colFirst"><code>default &lt;K,&#8203;
 V,&#8203;
 S extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;V&gt;&gt;<br><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;S&gt;</code></td>
@@ -188,7 +198,7 @@ S extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/
 <div class="block">Convert this iterable to a map of collections.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i7">
+<tr class="altColor" id="i8">
 <td class="colFirst"><code>default &lt;K,&#8203;
 V,&#8203;
 S extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;V&gt;&gt;<br><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;S&gt;</code></td>
@@ -199,21 +209,21 @@ S extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/
 <div class="block">Convert this iterable to a map of collections.</div>
 </td>
 </tr>
-<tr class="altColor" id="i8">
+<tr class="rowColor" id="i9">
 <td class="colFirst"><code>default <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toList()">toList</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Convert this iterable to a list.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i9">
+<tr class="altColor" id="i10">
 <td class="colFirst"><code>default <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toList(java.util.function.Supplier)">toList</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;&gt;&nbsp;supplier)</code></th>
 <td class="colLast">
 <div class="block">Convert this iterable to a list.</div>
 </td>
 </tr>
-<tr class="altColor" id="i10">
+<tr class="rowColor" id="i11">
 <td class="colFirst"><code>default &lt;K,&#8203;
 V&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;V&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toMap(java.util.function.Function,java.util.function.Function)">toMap</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
@@ -222,7 +232,7 @@ V&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <div class="block">Convert this iterable to a map.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i11">
+<tr class="altColor" id="i12">
 <td class="colFirst"><code>default &lt;K,&#8203;
 V&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;V&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toMap(java.util.function.Supplier,java.util.function.Function,java.util.function.Function)">toMap</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;V&gt;&gt;&nbsp;supplier,
@@ -232,14 +242,14 @@ V&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <div class="block">Convert this iterable to a map.</div>
 </td>
 </tr>
-<tr class="altColor" id="i12">
+<tr class="rowColor" id="i13">
 <td class="colFirst"><code>default <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toSet()">toSet</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Convert this iterable to a set.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i13">
+<tr class="altColor" id="i14">
 <td class="colFirst"><code>default <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toSet(java.util.function.Supplier)">toSet</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;&gt;&nbsp;supplier)</code></th>
 <td class="colLast">
@@ -348,7 +358,7 @@ V&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A list of the elements in the iterable. Note that this must be
-         finite!</dd>
+         finite! This list is not modifiable.</dd>
 </dl>
 </section>
 </li>
@@ -363,7 +373,7 @@ V&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <dd><code>supplier</code> - How to make the list itself.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A list of the elements in the iterable. Note that this must be
-         finite!</dd>
+         finite! This list is not modifiable.</dd>
 </dl>
 </section>
 </li>
@@ -376,7 +386,7 @@ V&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A set of the elements in the iterable. Note that this must be
-         finite!</dd>
+         finite! This set is not modifiable.</dd>
 </dl>
 </section>
 </li>
@@ -391,7 +401,7 @@ V&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <dd><code>supplier</code> - How to make the set itself.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A set of the elements in the iterable. Note that this must be
-         finite!</dd>
+         finite! This set is not modifiable.</dd>
 </dl>
 </section>
 </li>
@@ -412,7 +422,7 @@ V&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/j
 <dd><code>valueMapper</code> - How to get a value from an element of the iterable.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A map derived from elements in the iterable. Note that this must
-         be finite!</dd>
+         be finite! This map is not modifiable.</dd>
 </dl>
 </section>
 </li>
@@ -435,7 +445,7 @@ V&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/j
 <dd><code>valueMapper</code> - How to get a value from an element of the iterable.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A map derived from the elements in the iterable. Note that this
-         must be finite!</dd>
+         must be finite! This map is not modifiable.</dd>
 </dl>
 </section>
 </li>
@@ -456,7 +466,30 @@ V&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/j
 <dd><code>valueMapper</code> - How to get a leaf value from an element of the iterable.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A map derived from the elements in the iterable. Note that this
-         must be finite!</dd>
+         must be finite! This map is not modifiable.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="toCollectingMap(java.lang.Class,java.util.function.Function,java.util.function.Function)">toCollectingMap</a></h3>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="typeParameters">&lt;K,&#8203;
+E extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;E&gt;&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;E&gt;&gt;</span>&nbsp;<span class="memberName">toCollectingMap</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;E&gt;&nbsp;cls,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;E&gt;&nbsp;valueMapper)</span></div>
+<div class="block">Convert this iterable to a map of sets of enum values. Items will be
+ added to the map in the order of this iterable.</div>
+<dl>
+<dt><span class="paramLabel">Type Parameters:</span></dt>
+<dd><code>K</code> - The type of keys.</dd>
+<dd><code>E</code> - The type of leaf values.</dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>cls</code> - The class of leaf values.</dd>
+<dd><code>keyMapper</code> - How to get a key from an element of the iterable.</dd>
+<dd><code>valueMapper</code> - How to get a leaf value from an element of the iterable.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A map derived from the elements in the iterable. Note that this
+         must be finite! This map is not modifiable.</dd>
 </dl>
 </section>
 </li>
@@ -481,7 +514,7 @@ S extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/
 <dd><code>valueMapper</code> - How to get a leaf value from an element of the iterable.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A map derived from the elements in the iterable. Note that this
-         must be finite!</dd>
+         must be finite! This map is not modifiable.</dd>
 </dl>
 </section>
 </li>
@@ -508,7 +541,7 @@ S extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/
 <dd><code>valueMapper</code> - How to get a value from an element of the iterable.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A map derived from the elements in the iterable. Note that this
-         must be finite!</dd>
+         must be finite! This map is not modifiable.</dd>
 </dl>
 </section>
 </li>

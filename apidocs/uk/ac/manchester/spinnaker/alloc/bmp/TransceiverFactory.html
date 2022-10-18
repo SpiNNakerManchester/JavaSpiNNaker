@@ -197,8 +197,8 @@ implements <a href="TransceiverFactoryAPI.html" title="interface in uk.ac.manche
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code><a href="../../transceiver/BMPTransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getTransciever(uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">getTransciever</a></span>&#8203;(<a href="../allocator/SpallocAPI.Machine.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Machine</a>&nbsp;machineDescription,
-<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getTransciever(uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine,uk.ac.manchester.spinnaker.machine.board.BMPCoords)">getTransciever</a></span>&#8203;(<a href="../allocator/SpallocAPI.Machine.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Machine</a>&nbsp;machineDescription,
+<a href="../../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp)</code></th>
 <td class="colLast">
 <div class="block">Get the transceiver for talking to a given machine's BMPs.</div>
 </td>
@@ -243,16 +243,16 @@ implements <a href="TransceiverFactoryAPI.html" title="interface in uk.ac.manche
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="getTransciever(uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">getTransciever</a></h3>
+<h3><a id="getTransciever(uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine,uk.ac.manchester.spinnaker.machine.board.BMPCoords)">getTransciever</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="../../transceiver/BMPTransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface</a></span>&nbsp;<span class="memberName">getTransciever</span>&#8203;(<span class="arguments"><a href="../allocator/SpallocAPI.Machine.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Machine</a>&nbsp;machineDescription,
-<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp)</span>
+<a href="../../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp)</span>
                                        throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="../../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a></span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="TransceiverFactoryAPI.html#getTransciever(uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">TransceiverFactoryAPI</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="TransceiverFactoryAPI.html#getTransciever(uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine,uk.ac.manchester.spinnaker.machine.board.BMPCoords)">TransceiverFactoryAPI</a></code></span></div>
 <div class="block">Get the transceiver for talking to a given machine's BMPs.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="TransceiverFactoryAPI.html#getTransciever(uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">getTransciever</a></code>&nbsp;in interface&nbsp;<code><a href="TransceiverFactoryAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.bmp">TransceiverFactoryAPI</a>&lt;<a href="../../transceiver/BMPTransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface</a>&gt;</code></dd>
+<dd><code><a href="TransceiverFactoryAPI.html#getTransciever(uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine,uk.ac.manchester.spinnaker.machine.board.BMPCoords)">getTransciever</a></code>&nbsp;in interface&nbsp;<code><a href="TransceiverFactoryAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.bmp">TransceiverFactoryAPI</a>&lt;<a href="../../transceiver/BMPTransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface</a>&gt;</code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>machineDescription</code> - The machine we're talking about.</dd>
 <dd><code>bmp</code> - Which BMP on the machine are we talking to.</dd>

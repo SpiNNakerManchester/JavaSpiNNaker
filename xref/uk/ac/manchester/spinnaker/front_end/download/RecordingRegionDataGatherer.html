@@ -120,7 +120,7 @@
 <a class="jxr_linenumber" name="L112" href="#L112">112</a> 		<strong class="jxr_keyword">var</strong> regions = getRecordingRegionDescriptors(txrx, placement);
 <a class="jxr_linenumber" name="L113" href="#L113">113</a> 		<strong class="jxr_keyword">synchronized</strong> (recordingRegions) {
 <a class="jxr_linenumber" name="L114" href="#L114">114</a> 			<em class="jxr_comment">// Put the value in the map if it wasn't already there</em>
-<a class="jxr_linenumber" name="L115" href="#L115">115</a> 			<strong class="jxr_keyword">return</strong> recordingRegions.computeIfAbsent(placement, key -&gt; regions);
+<a class="jxr_linenumber" name="L115" href="#L115">115</a> 			<strong class="jxr_keyword">return</strong> recordingRegions.computeIfAbsent(placement, __ -&gt; regions);
 <a class="jxr_linenumber" name="L116" href="#L116">116</a> 		}
 <a class="jxr_linenumber" name="L117" href="#L117">117</a> 	}
 <a class="jxr_linenumber" name="L118" href="#L118">118</a> 
