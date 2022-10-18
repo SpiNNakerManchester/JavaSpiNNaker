@@ -45,8 +45,8 @@ final class ChipMemoryIO {
 	 * transceiver, x and y (thus two transceivers might not see the same
 	 * buffered memory).
 	 */
-	private static Map<Transceiver, Map<ChipLocation, ChipMemoryIO>> existing =
-			new WeakHashMap<>();
+	private static final Map<Transceiver,
+			Map<ChipLocation, ChipMemoryIO>> CACHE = new WeakHashMap<>();
 
 	/**
 	 * Get the instance for a particular transceiver and chip.
@@ -59,10 +59,13 @@ final class ChipMemoryIO {
 	 */
 	static ChipMemoryIO getInstance(Transceiver transceiver,
 			HasChipLocation chip) {
-		var map = existing.computeIfAbsent(transceiver, x -> new HashMap<>());
-		return map.computeIfAbsent(chip.asChipLocation(),
-				k -> new ChipMemoryIO(transceiver, chip, UNBUFFERED_SDRAM_START,
-						UDP_MESSAGE_MAX_SIZE));
+		synchronized (CACHE) {
+			var map = CACHE.computeIfAbsent(transceiver,
+					__ -> new HashMap<>());
+			return map.computeIfAbsent(chip.asChipLocation(),
+					__ -> new ChipMemoryIO(transceiver, chip,
+							UNBUFFERED_SDRAM_START, UDP_MESSAGE_MAX_SIZE));
+		}
 	}
 
 	/** The transceiver for speaking to the machine. */

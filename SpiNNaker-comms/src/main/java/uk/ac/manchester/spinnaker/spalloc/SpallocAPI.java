@@ -16,16 +16,19 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
-/*
- * Disable style check for these imports; we use some extra imports here just
- * to support Javadoc (cross-referencing the notification message classes).
- */
-// CHECKSTYLE:OFF
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolTimeoutException;
@@ -40,13 +43,17 @@ import uk.ac.manchester.spinnaker.spalloc.messages.Machine;
 import uk.ac.manchester.spinnaker.spalloc.messages.MachinesChangedNotification;
 import uk.ac.manchester.spinnaker.spalloc.messages.Notification;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
-// CHECKSTYLE:ON
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * The interface exposed by the low-level Spalloc Client.
  *
  * @author Donal Fellows
  */
+@UsedInJavadocOnly({
+	JobsChangedNotification.class,
+	MachinesChangedNotification.class
+})
 public interface SpallocAPI {
 	/**
 	 * Request the version of the spalloc server.
@@ -75,7 +82,7 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	Version version(Integer timeout) throws IOException,
+	Version version(@Positive Integer timeout) throws IOException,
 			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
@@ -96,7 +103,8 @@ public interface SpallocAPI {
 	 *             if network communications fail.
 	 */
 	@Deprecated(forRemoval = true)
-	default int createJob(List<Integer> args, Map<String, Object> kwargs)
+	default int createJob(List<@PositiveOrZero Integer> args,
+			Map<@NotBlank String, @NotNull Object> kwargs)
 			throws IOException, SpallocServerException {
 		return createJob(args, kwargs, null);
 	}
@@ -112,7 +120,7 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	default int createJob(CreateJob builder)
+	default int createJob(@Valid CreateJob builder)
 			throws IOException, SpallocServerException {
 		return createJob(builder, null);
 	}
@@ -133,8 +141,9 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	int createJob(CreateJob builder, Integer timeout) throws IOException,
-			SpallocProtocolTimeoutException, SpallocServerException;
+	int createJob(@Valid CreateJob builder, @Positive Integer timeout)
+			throws IOException, SpallocProtocolTimeoutException,
+			SpallocServerException;
 
 	/**
 	 * Create a job.
@@ -160,8 +169,9 @@ public interface SpallocAPI {
 	 *             if network communications fail.
 	 */
 	@Deprecated(forRemoval = true) // TODO remove this
-	int createJob(List<Integer> args, Map<String, Object> kwargs,
-			Integer timeout) throws IOException,
+	int createJob(List<@PositiveOrZero Integer> args,
+			Map<@NotBlank String, @NotNull Object> kwargs,
+			@Positive Integer timeout) throws IOException,
 			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
@@ -194,7 +204,7 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	void jobKeepAlive(int jobID, Integer timeout) throws IOException,
+	void jobKeepAlive(int jobID, @Positive Integer timeout) throws IOException,
 			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
@@ -229,8 +239,9 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	JobState getJobState(int jobID, Integer timeout) throws IOException,
-			SpallocProtocolTimeoutException, SpallocServerException;
+	JobState getJobState(int jobID, @Positive Integer timeout)
+			throws IOException, SpallocProtocolTimeoutException,
+			SpallocServerException;
 
 	/**
 	 * Get information about a job's allocated machine.
@@ -264,7 +275,7 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	JobMachineInfo getJobMachineInfo(int jobID, Integer timeout)
+	JobMachineInfo getJobMachineInfo(int jobID, @Positive Integer timeout)
 			throws IOException, SpallocProtocolTimeoutException,
 			SpallocServerException;
 
@@ -298,8 +309,9 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	void powerOnJobBoards(int jobID, Integer timeout) throws IOException,
-			SpallocProtocolTimeoutException, SpallocServerException;
+	void powerOnJobBoards(int jobID, @Positive Integer timeout)
+			throws IOException, SpallocProtocolTimeoutException,
+			SpallocServerException;
 
 	/**
 	 * Turn off a job's allocated boards.
@@ -331,8 +343,9 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	void powerOffJobBoards(int jobID, Integer timeout) throws IOException,
-			SpallocProtocolTimeoutException, SpallocServerException;
+	void powerOffJobBoards(int jobID, @Positive Integer timeout)
+			throws IOException, SpallocProtocolTimeoutException,
+			SpallocServerException;
 
 	/**
 	 * Destroy a job.
@@ -346,7 +359,7 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	default void destroyJob(int jobID, String reason)
+	default void destroyJob(int jobID, @NotBlank String reason)
 			throws IOException, SpallocServerException {
 		destroyJob(jobID, reason, null);
 	}
@@ -368,7 +381,8 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	void destroyJob(int jobID, String reason, Integer timeout)
+	void destroyJob(int jobID, @NotBlank String reason,
+			@Positive Integer timeout)
 			throws IOException, SpallocProtocolTimeoutException,
 			SpallocServerException;
 
@@ -410,7 +424,7 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	void notifyJob(Integer jobID, boolean enable, Integer timeout)
+	void notifyJob(Integer jobID, boolean enable, @Positive Integer timeout)
 			throws IOException, SpallocProtocolTimeoutException,
 			SpallocServerException;
 
@@ -454,7 +468,8 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	void notifyMachine(String machineName, boolean enable, Integer timeout)
+	void notifyMachine(String machineName, boolean enable,
+			@Positive Integer timeout)
 			throws IOException, SpallocProtocolTimeoutException,
 			SpallocServerException;
 
@@ -488,7 +503,7 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	List<JobDescription> listJobs(Integer timeout) throws IOException,
+	List<JobDescription> listJobs(@Positive Integer timeout) throws IOException,
 			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
@@ -521,7 +536,7 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	List<Machine> listMachines(Integer timeout) throws IOException,
+	List<Machine> listMachines(@Positive Integer timeout) throws IOException,
 			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
@@ -538,8 +553,28 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	default BoardPhysicalCoordinates getBoardPosition(String machineName,
-			BoardCoordinates coords)
+	default BoardPhysicalCoordinates getBoardPosition(
+			@NotBlank String machineName, @Valid BoardCoordinates coords)
+			throws IOException, SpallocServerException {
+		return getBoardPosition(machineName, coords, null);
+	}
+
+	/**
+	 * Get the physical location of a board.
+	 *
+	 * @param machineName
+	 *            the name of the machine containing the board.
+	 * @param coords
+	 *            the logical location of the board.
+	 * @return the physical location, or {@code null} if the logical location
+	 *         doesn't map to a real board.
+	 * @throws SpallocServerException
+	 *             if the server returns an exception response.
+	 * @throws IOException
+	 *             if network communications fail.
+	 */
+	default BoardPhysicalCoordinates getBoardPosition(
+			@NotBlank String machineName, @Valid TriadCoords coords)
 			throws IOException, SpallocServerException {
 		return getBoardPosition(machineName, coords, null);
 	}
@@ -563,9 +598,37 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	BoardPhysicalCoordinates getBoardPosition(String machineName,
-			BoardCoordinates coords, Integer timeout) throws IOException,
-			SpallocProtocolTimeoutException, SpallocServerException;
+	default BoardPhysicalCoordinates getBoardPosition(
+			@NotBlank String machineName, @Valid BoardCoordinates coords,
+			@Positive Integer timeout) throws IOException,
+			SpallocProtocolTimeoutException, SpallocServerException {
+		return getBoardPosition(machineName, coords.toStandardCoords(),
+				timeout);
+	}
+
+	/**
+	 * Get the physical location of a board.
+	 *
+	 * @param machineName
+	 *            the name of the machine containing the board.
+	 * @param coords
+	 *            the logical location of the board.
+	 * @param timeout
+	 *            How long to wait for the request to complete, in milliseconds,
+	 *            or {@code null} to wait forever.
+	 * @return the physical location, or {@code null} if the logical location
+	 *         doesn't map to a real board.
+	 * @throws SpallocServerException
+	 *             if the server returns an exception response.
+	 * @throws SpallocProtocolTimeoutException
+	 *             if the request times out.
+	 * @throws IOException
+	 *             if network communications fail.
+	 */
+	BoardPhysicalCoordinates getBoardPosition(@NotBlank String machineName,
+			@Valid TriadCoords coords, @Positive Integer timeout)
+			throws IOException, SpallocProtocolTimeoutException,
+			SpallocServerException;
 
 	/**
 	 * Get the logical location of a board.
@@ -581,8 +644,28 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	default BoardCoordinates getBoardPosition(String machineName,
-			BoardPhysicalCoordinates coords)
+	default BoardCoordinates getBoardPosition(@NotBlank String machineName,
+			@Valid BoardPhysicalCoordinates coords)
+			throws IOException, SpallocServerException {
+		return getBoardPosition(machineName, coords, null);
+	}
+
+	/**
+	 * Get the logical location of a board.
+	 *
+	 * @param machineName
+	 *            the name of the machine containing the board.
+	 * @param coords
+	 *            the physical location of the board.
+	 * @return the logical location, or {@code null} if the physical location
+	 *         doesn't map to a real board.
+	 * @throws SpallocServerException
+	 *             if the server returns an exception response.
+	 * @throws IOException
+	 *             if network communications fail.
+	 */
+	default BoardCoordinates getBoardPosition(@NotBlank String machineName,
+			@Valid PhysicalCoords coords)
 			throws IOException, SpallocServerException {
 		return getBoardPosition(machineName, coords, null);
 	}
@@ -606,8 +689,35 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	BoardCoordinates getBoardPosition(String machineName,
-			BoardPhysicalCoordinates coords, Integer timeout)
+	default BoardCoordinates getBoardPosition(@NotBlank String machineName,
+			@Valid BoardPhysicalCoordinates coords, @Positive Integer timeout)
+			throws IOException, SpallocProtocolTimeoutException,
+			SpallocServerException {
+		return getBoardPosition(machineName, coords.toStandardCoords(),
+				timeout);
+	}
+
+	/**
+	 * Get the logical location of a board.
+	 *
+	 * @param machineName
+	 *            the name of the machine containing the board.
+	 * @param coords
+	 *            the physical location of the board.
+	 * @param timeout
+	 *            How long to wait for the request to complete, in milliseconds,
+	 *            or {@code null} to wait forever.
+	 * @return the logical location, or {@code null} if the physical location
+	 *         doesn't map to a real board.
+	 * @throws SpallocServerException
+	 *             if the server returns an exception response.
+	 * @throws SpallocProtocolTimeoutException
+	 *             if the request times out.
+	 * @throws IOException
+	 *             if network communications fail.
+	 */
+	BoardCoordinates getBoardPosition(@NotBlank String machineName,
+			@Valid PhysicalCoords coords, @Positive Integer timeout)
 			throws IOException, SpallocProtocolTimeoutException,
 			SpallocServerException;
 
@@ -625,7 +735,7 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	default WhereIs whereIs(int jobID, HasChipLocation chip)
+	default WhereIs whereIs(int jobID, @Valid HasChipLocation chip)
 			throws IOException, SpallocServerException {
 		return whereIs(jobID, chip, null);
 	}
@@ -649,9 +759,9 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	WhereIs whereIs(int jobID, HasChipLocation chip, Integer timeout)
-			throws IOException, SpallocProtocolTimeoutException,
-			SpallocServerException;
+	WhereIs whereIs(int jobID, @Valid HasChipLocation chip,
+			@Positive Integer timeout) throws IOException,
+			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Locate a chip within a machine.
@@ -667,7 +777,8 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	default WhereIs whereIs(String machine, HasChipLocation chip)
+	default WhereIs whereIs(@NotBlank String machine,
+			@Valid HasChipLocation chip)
 			throws IOException, SpallocServerException {
 		return whereIs(machine, chip, null);
 	}
@@ -691,9 +802,9 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	WhereIs whereIs(String machine, HasChipLocation chip, Integer timeout)
-			throws IOException, SpallocProtocolTimeoutException,
-			SpallocServerException;
+	WhereIs whereIs(@NotBlank String machine, @Valid HasChipLocation chip,
+			@Positive Integer timeout) throws IOException,
+			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Locate a board within a machine.
@@ -709,7 +820,28 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	default WhereIs whereIs(String machine, BoardPhysicalCoordinates coords)
+	default WhereIs whereIs(@NotBlank String machine,
+			@Valid BoardPhysicalCoordinates coords)
+			throws IOException, SpallocServerException {
+		return whereIs(machine, coords, null);
+	}
+
+	/**
+	 * Locate a board within a machine.
+	 *
+	 * @param machine
+	 *            The machine to ask about.
+	 * @param coords
+	 *            The physical coordinates of the board to ask about.
+	 * @return A description of the board's location, or {@code null} if it
+	 *         can't be found.
+	 * @throws SpallocServerException
+	 *             if the server returns an exception response.
+	 * @throws IOException
+	 *             if network communications fail.
+	 */
+	default WhereIs whereIs(@NotBlank String machine,
+			@Valid PhysicalCoords coords)
 			throws IOException, SpallocServerException {
 		return whereIs(machine, coords, null);
 	}
@@ -733,8 +865,34 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	WhereIs whereIs(String machine, BoardPhysicalCoordinates coords,
-			Integer timeout) throws IOException,
+	default WhereIs whereIs(@NotBlank String machine,
+			@Valid BoardPhysicalCoordinates coords, @Positive Integer timeout)
+			throws IOException,
+			SpallocProtocolTimeoutException, SpallocServerException {
+		return whereIs(machine, coords.toStandardCoords(), timeout);
+	}
+
+	/**
+	 * Locate a board within a machine.
+	 *
+	 * @param machine
+	 *            The machine to ask about.
+	 * @param coords
+	 *            The physical coordinates of the board to ask about.
+	 * @param timeout
+	 *            How long to wait for the request to complete, in milliseconds,
+	 *            or {@code null} to wait forever.
+	 * @return A description of the board's location, or {@code null} if it
+	 *         can't be found.
+	 * @throws SpallocServerException
+	 *             if the server returns an exception response.
+	 * @throws SpallocProtocolTimeoutException
+	 *             if the request times out.
+	 * @throws IOException
+	 *             if network communications fail.
+	 */
+	WhereIs whereIs(@NotBlank String machine, @Valid PhysicalCoords coords,
+			@Positive Integer timeout) throws IOException,
 			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
@@ -751,7 +909,27 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	default WhereIs whereIs(String machine, BoardCoordinates coords)
+	default WhereIs whereIs(@NotBlank String machine,
+			@Valid BoardCoordinates coords)
+			throws IOException, SpallocServerException {
+		return whereIs(machine, coords, null);
+	}
+
+	/**
+	 * Locate a board within a machine.
+	 *
+	 * @param machine
+	 *            The machine to ask about.
+	 * @param coords
+	 *            The logical coordinates of the board to ask about.
+	 * @return A description of the board's location, or {@code null} if it
+	 *         can't be found.
+	 * @throws SpallocServerException
+	 *             if the server returns an exception response.
+	 * @throws IOException
+	 *             if network communications fail.
+	 */
+	default WhereIs whereIs(@NotBlank String machine, @Valid TriadCoords coords)
 			throws IOException, SpallocServerException {
 		return whereIs(machine, coords, null);
 	}
@@ -775,12 +953,38 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	WhereIs whereIs(String machine, BoardCoordinates coords, Integer timeout)
-			throws IOException, SpallocProtocolTimeoutException,
-			SpallocServerException;
+	default WhereIs whereIs(@NotBlank String machine,
+			@Valid BoardCoordinates coords, @Positive Integer timeout)
+			throws IOException,
+			SpallocProtocolTimeoutException, SpallocServerException {
+		return whereIs(machine, coords.toStandardCoords(), timeout);
+	}
 
 	/**
-	 * Return the next notification to arrive.
+	 * Locate a board within a machine.
+	 *
+	 * @param machine
+	 *            The machine to ask about.
+	 * @param coords
+	 *            The logical coordinates of the board to ask about.
+	 * @param timeout
+	 *            How long to wait for the request to complete, in milliseconds,
+	 *            or {@code null} to wait forever.
+	 * @return A description of the board's location, or {@code null} if it
+	 *         can't be found.
+	 * @throws SpallocServerException
+	 *             if the server returns an exception response.
+	 * @throws SpallocProtocolTimeoutException
+	 *             if the request times out.
+	 * @throws IOException
+	 *             if network communications fail.
+	 */
+	WhereIs whereIs(@NotBlank String machine, @Valid TriadCoords coords,
+			@Positive Integer timeout) throws IOException,
+			SpallocProtocolTimeoutException, SpallocServerException;
+
+	/**
+	 * Return the next notification to arrive. Waits indefinitely.
 	 *
 	 * @return The notification sent by the server.
 	 * @see JobsChangedNotification
@@ -803,15 +1007,18 @@ public interface SpallocAPI {
 	 *
 	 * @param timeout
 	 *            The number of seconds to wait before timing out or
-	 *            {@code null} if this function should try again forever. If
-	 *            negative, only responses already-received will be returned; if
-	 *            no responses are available, in this case the function does not
-	 *            raise a ProtocolTimeoutError but returns {@code null} instead.
+	 *            {@code null} if this function should try again forever.
+	 *            <p>
+	 *            If negative, only responses already-received will be returned;
+	 *            if no responses are available, in this case the function does
+	 *            not raise a {@link SpallocProtocolTimeoutException} but
+	 *            returns {@code null} instead.
 	 * @return The notification sent by the server.
 	 * @see JobsChangedNotification
 	 * @see MachinesChangedNotification
 	 * @throws SpallocProtocolTimeoutException
-	 *             If a timeout occurs.
+	 *             If a timeout occurs (implying {@code timeout} is not
+	 *             negative).
 	 * @throws SpallocProtocolException
 	 *             If the socket is unusable or becomes disconnected.
 	 */

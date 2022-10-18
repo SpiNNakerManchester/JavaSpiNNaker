@@ -25,7 +25,10 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.DownLink;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 
 /**
  * A machine that just throws {@link UnsupportedOperationException} for every
@@ -80,19 +83,18 @@ public abstract class StubMachine implements SpallocAPI.Machine {
 	}
 
 	@Override
-	public Optional<BoardLocation> getBoardByChip(int x, int y) {
+	public Optional<BoardLocation> getBoardByChip(HasChipLocation chip) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Optional<BoardLocation> getBoardByPhysicalCoords(int cabinet,
-			int frame, int board) {
+	public Optional<BoardLocation> getBoardByPhysicalCoords(
+			PhysicalCoords coords) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Optional<BoardLocation> getBoardByLogicalCoords(int x, int y,
-			int z) {
+	public Optional<BoardLocation> getBoardByLogicalCoords(TriadCoords coords) {
 		throw new UnsupportedOperationException();
 	}
 

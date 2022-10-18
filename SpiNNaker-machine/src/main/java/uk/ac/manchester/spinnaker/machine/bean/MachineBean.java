@@ -40,8 +40,10 @@ public class MachineBean {
 	@Valid
 	private final ChipLocation root;
 
+	@Valid
 	private final ChipResources ethernetResources;
 
+	@Valid
 	private final ChipResources standardResources;
 
 	private final List<@Valid ChipBean> chips;

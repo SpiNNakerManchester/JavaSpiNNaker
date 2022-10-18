@@ -173,14 +173,14 @@ class AllocatorTest extends TestSupport {
 	}
 
 	@Test
-	public void allocateByDimensions1x1() {
+	public void allocateByDimensions1x1x1() {
 		doTransactionalTest(() -> {
 			int job = makeQueuedJob(100);
 			getAllocTester().allocate();
 
 			assertState(job, QUEUED, 0, 0);
 
-			makeAllocByDimensionsRequest(job, 1, 1, 0);
+			makeAllocByDimensionsRequest(job, 1, 1, 2);
 
 			assertState(job, QUEUED, 1, 0);
 
@@ -199,6 +199,33 @@ class AllocatorTest extends TestSupport {
 	}
 
 	@Test
+	public void allocateByDimensions1x1x3() {
+		doTransactionalTest(() -> {
+			int job = makeQueuedJob(100);
+			getAllocTester().allocate();
+
+			assertState(job, QUEUED, 0, 0);
+
+			makeAllocByDimensionsRequest(job, 1, 1, 0);
+
+			assertState(job, QUEUED, 1, 0);
+
+			assertTrue(getAllocTester().allocate());
+
+			assertState(job, POWER, 0, 3);
+
+			assertFalse(getAllocTester().allocate());
+
+			assertState(job, POWER, 0, 3);
+
+			getAllocTester().destroyJob(job, "test");
+
+			assertState(job, DESTROYED, 0, 0);
+		});
+	}
+
+	// This is a test with a job that is too large to fit
+	@Test
 	public void allocateByDimensions1x2() {
 		doTransactionalTest(() -> {
 			int job = makeQueuedJob(100);
@@ -210,14 +237,13 @@ class AllocatorTest extends TestSupport {
 
 			assertState(job, QUEUED, 1, 0);
 
-			assertTrue(getAllocTester().allocate());
+			var ex = assertThrows(IllegalArgumentException.class,
+					() -> getAllocTester().allocate());
+			assertEquals("that job cannot possibly fit on this machine",
+					ex.getMessage());
 
-			// Allocates a whole triad
-			assertState(job, POWER, 0, 3);
-
-			assertFalse(getAllocTester().allocate());
-
-			assertState(job, POWER, 0, 3);
+			// No change in state
+			assertState(job, QUEUED, 1, 0);
 
 			getAllocTester().destroyJob(job, "test");
 

@@ -16,43 +16,66 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
-
 import java.net.URI;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Machine;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 
 /** A description of where a board is and what it is doing. */
-@JsonAutoDetect(setterVisibility = NON_PRIVATE)
-public class WhereIs {
-	@JsonAlias("job-id")
-	private Integer jobId;
+@JsonDeserialize(builder = WhereIs.Builder.class)
+public final class WhereIs {
+	@JsonProperty("job-id")
+	private final Integer jobId;
 
-	@JsonAlias("job-ref")
-	private URI jobRef;
+	@JsonProperty("job-ref")
+	private final URI jobRef;
 
-	@JsonAlias("job-chip")
-	private ChipLocation jobChip;
+	@JsonProperty("job-chip")
+	private final ChipLocation jobChip;
 
-	private ChipLocation chip;
+	@JsonProperty("chip")
+	private final ChipLocation chip;
 
 	@JsonIgnore
-	private Machine machineHandle;
+	private transient Machine machineHandle;
 
-	private String machineName;
+	@JsonProperty("machine")
+	private final String machineName;
 
+	@JsonProperty("machine-ref")
 	private URI machineRef;
 
-	private ChipLocation boardChip;
+	@JsonProperty("board-chip")
+	private final ChipLocation boardChip;
 
-	private Triad logicalCoords;
+	@JsonProperty("logical-board-coordinates")
+	private final TriadCoords logicalCoords;
 
-	private Physical physicalCoords;
+	@JsonProperty("physical-board-coordinates")
+	private final PhysicalCoords physicalCoords;
+
+	private WhereIs(Integer jobId, URI jobRef, ChipLocation jobChip,
+			ChipLocation chip, String machineName, URI machineRef,
+			ChipLocation boardChip, TriadCoords logicalCoords,
+			PhysicalCoords physicalCoords) {
+		this.jobId = jobId;
+		this.jobRef = jobRef;
+		this.jobChip = jobChip;
+		this.chip = chip;
+		this.machineName = machineName;
+		this.machineRef = machineRef;
+		this.boardChip = boardChip;
+		this.logicalCoords = logicalCoords;
+		this.physicalCoords = physicalCoords;
+	}
 
 	/**
 	 * @return The ID of the job allocated to the board with the chip.
@@ -60,10 +83,6 @@ public class WhereIs {
 	 */
 	public Integer getJobId() {
 		return jobId;
-	}
-
-	void setJobId(Integer jobId) {
-		this.jobId = jobId;
 	}
 
 	/**
@@ -74,10 +93,6 @@ public class WhereIs {
 		return jobRef;
 	}
 
-	void setJobRef(URI jobRef) {
-		this.jobRef = jobRef;
-	}
-
 	/**
 	 * @return The global location of the chip at the root of the job
 	 *         allocation, if one exists.
@@ -86,17 +101,9 @@ public class WhereIs {
 		return jobChip;
 	}
 
-	void setJobChip(ChipLocation jobChip) {
-		this.jobChip = jobChip;
-	}
-
 	/** @return The global location of the chip. */
 	public ChipLocation getChip() {
 		return chip;
-	}
-
-	void setChip(ChipLocation chip) {
-		this.chip = chip;
 	}
 
 	/** @return Information about the machine containing the chip. */
@@ -109,25 +116,20 @@ public class WhereIs {
 	}
 
 	/** @return The name of the machine containing the chip. */
-	@JsonAlias("machine")
 	public String getMachineName() {
 		return machineName;
-	}
-
-	void setMachineName(String machineName) {
-		this.machineName = machineName;
 	}
 
 	/**
 	 * @return The location of more information about the machine containing the
 	 *         chip.
 	 */
-	public URI getMachineRef() {
+	URI getMachineRef() {
 		return machineRef;
 	}
 
-	void setMachineRef(URI machineRef) {
-		this.machineRef = machineRef;
+	void clearMachineRef() {
+		machineRef = null;
 	}
 
 	/**
@@ -138,27 +140,79 @@ public class WhereIs {
 		return boardChip;
 	}
 
-	void setBoardChip(ChipLocation boardChip) {
-		this.boardChip = boardChip;
-	}
-
 	/** @return The logical coordinates for the board containing the chip. */
-	@JsonAlias("logical-board-coordinates")
-	public Triad getLogicalCoords() {
+	public TriadCoords getLogicalCoords() {
 		return logicalCoords;
 	}
 
-	void setLogicalCoords(Triad logicalCoords) {
-		this.logicalCoords = logicalCoords;
-	}
-
 	/** @return The physical coordinates for the board containing the chip. */
-	@JsonAlias("physical-board-coordinates")
-	public Physical getPhysicalCoords() {
+	public PhysicalCoords getPhysicalCoords() {
 		return physicalCoords;
 	}
 
-	void setPhysicalCoords(Physical physicalCoords) {
-		this.physicalCoords = physicalCoords;
+	@JsonPOJOBuilder(withPrefix = "set")
+	static class Builder {
+		private Integer jobId;
+
+		private URI jobRef;
+
+		private ChipLocation jobChip;
+
+		private ChipLocation chip;
+
+		private String machineName;
+
+		private URI machineRef;
+
+		private ChipLocation boardChip;
+
+		private TriadCoords logicalCoords;
+
+		private PhysicalCoords physicalCoords;
+
+		void setJobId(Integer jobId) {
+			this.jobId = jobId;
+		}
+
+		void setJobRef(URI jobRef) {
+			this.jobRef = jobRef;
+		}
+
+		void setJobChip(ChipLocation jobChip) {
+			this.jobChip = jobChip;
+		}
+
+		void setChip(ChipLocation chip) {
+			this.chip = chip;
+		}
+
+		@JsonProperty("machine")
+		@JsonAlias("machine-name")
+		void setMachineName(String machineName) {
+			this.machineName = machineName;
+		}
+
+		void setMachineRef(URI machineRef) {
+			this.machineRef = machineRef;
+		}
+
+		void setBoardChip(ChipLocation boardChip) {
+			this.boardChip = boardChip;
+		}
+
+		@JsonProperty("logical-board-coordinates")
+		void setLogicalCoords(TriadCoords logicalCoords) {
+			this.logicalCoords = logicalCoords;
+		}
+
+		@JsonProperty("physical-board-coordinates")
+		void setPhysicalCoords(PhysicalCoords physicalCoords) {
+			this.physicalCoords = physicalCoords;
+		}
+
+		WhereIs build() {
+			return new WhereIs(jobId, jobRef, jobChip, chip, machineName,
+					machineRef, boardChip, logicalCoords, physicalCoords);
+		}
 	}
 }

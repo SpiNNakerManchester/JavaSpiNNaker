@@ -16,11 +16,15 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
+import static java.util.Collections.unmodifiableList;
+import static java.util.Collections.unmodifiableMap;
+import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.utils.IteratorWrapper.wrap;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -150,14 +154,14 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 * be the same as the order of items in this iterable.
 	 *
 	 * @return A list of the elements in the iterable. Note that this must be
-	 *         finite!
+	 *         finite! This list is not modifiable.
 	 */
 	default List<T> toList() {
 		var list = new ArrayList<T>();
 		for (var val : this) {
 			list.add(val);
 		}
-		return list;
+		return unmodifiableList(list);
 	}
 
 	/**
@@ -167,14 +171,14 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 * @param supplier
 	 *            How to make the list itself.
 	 * @return A list of the elements in the iterable. Note that this must be
-	 *         finite!
+	 *         finite! This list is not modifiable.
 	 */
 	default List<T> toList(Supplier<List<T>> supplier) {
 		var list = supplier.get();
 		for (var val : this) {
 			list.add(val);
 		}
-		return list;
+		return unmodifiableList(list);
 	}
 
 	/**
@@ -182,14 +186,14 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 * will be the same as the order of items in this iterable.
 	 *
 	 * @return A set of the elements in the iterable. Note that this must be
-	 *         finite!
+	 *         finite! This set is not modifiable.
 	 */
 	default Set<T> toSet() {
 		var set = new LinkedHashSet<T>();
 		for (var val : this) {
 			set.add(val);
 		}
-		return set;
+		return unmodifiableSet(set);
 	}
 
 	/**
@@ -199,14 +203,14 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 * @param supplier
 	 *            How to make the set itself.
 	 * @return A set of the elements in the iterable. Note that this must be
-	 *         finite!
+	 *         finite! This set is not modifiable.
 	 */
 	default Set<T> toSet(Supplier<Set<T>> supplier) {
 		var set = supplier.get();
 		for (var val : this) {
 			set.add(val);
 		}
-		return set;
+		return unmodifiableSet(set);
 	}
 
 	/**
@@ -222,7 +226,7 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 * @param valueMapper
 	 *            How to get a value from an element of the iterable.
 	 * @return A map derived from elements in the iterable. Note that this must
-	 *         be finite!
+	 *         be finite! This map is not modifiable.
 	 */
 	default <K, V> Map<K, V> toMap(Function<T, K> keyMapper,
 			Function<T, V> valueMapper) {
@@ -230,7 +234,7 @@ public interface MappableIterable<T> extends Iterable<T> {
 		for (var val : this) {
 			map.put(keyMapper.apply(val), valueMapper.apply(val));
 		}
-		return map;
+		return unmodifiableMap(map);
 	}
 
 	/**
@@ -248,7 +252,7 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 * @param valueMapper
 	 *            How to get a value from an element of the iterable.
 	 * @return A map derived from the elements in the iterable. Note that this
-	 *         must be finite!
+	 *         must be finite! This map is not modifiable.
 	 */
 	default <K, V> Map<K, V> toMap(Supplier<Map<K, V>> supplier,
 			Function<T, K> keyMapper, Function<T, V> valueMapper) {
@@ -256,7 +260,7 @@ public interface MappableIterable<T> extends Iterable<T> {
 		for (var val : this) {
 			map.put(keyMapper.apply(val), valueMapper.apply(val));
 		}
-		return map;
+		return unmodifiableMap(map);
 	}
 
 	/**
@@ -272,16 +276,44 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 * @param valueMapper
 	 *            How to get a leaf value from an element of the iterable.
 	 * @return A map derived from the elements in the iterable. Note that this
-	 *         must be finite!
+	 *         must be finite! This map is not modifiable.
 	 */
 	default <K, V> Map<K, List<V>> toCollectingMap(
 			Function<T, K> keyMapper, Function<T, V> valueMapper) {
 		var map = new LinkedHashMap<K, List<V>>();
 		for (var val : this) {
-			map.computeIfAbsent(keyMapper.apply(val),
-					k -> new ArrayList<>()).add(valueMapper.apply(val));
+			map.computeIfAbsent(keyMapper.apply(val), __ -> new ArrayList<>())
+					.add(valueMapper.apply(val));
 		}
-		return map;
+		return unmodifiableMap(map);
+	}
+
+	/**
+	 * Convert this iterable to a map of sets of enum values. Items will be
+	 * added to the map in the order of this iterable.
+	 *
+	 * @param <K>
+	 *            The type of keys.
+	 * @param <E>
+	 *            The type of leaf values.
+	 * @param cls
+	 *            The class of leaf values.
+	 * @param keyMapper
+	 *            How to get a key from an element of the iterable.
+	 * @param valueMapper
+	 *            How to get a leaf value from an element of the iterable.
+	 * @return A map derived from the elements in the iterable. Note that this
+	 *         must be finite! This map is not modifiable.
+	 */
+	default <K, E extends Enum<E>> Map<K, EnumSet<E>> toCollectingMap(
+			Class<E> cls, Function<T, K> keyMapper,
+			Function<T, E> valueMapper) {
+		var map = new LinkedHashMap<K, EnumSet<E>>();
+		for (var val : this) {
+			map.computeIfAbsent(keyMapper.apply(val), __ -> EnumSet.noneOf(cls))
+					.add(valueMapper.apply(val));
+		}
+		return unmodifiableMap(map);
 	}
 
 	/**
@@ -301,17 +333,17 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 * @param valueMapper
 	 *            How to get a leaf value from an element of the iterable.
 	 * @return A map derived from the elements in the iterable. Note that this
-	 *         must be finite!
+	 *         must be finite! This map is not modifiable.
 	 */
 	default <K, V, S extends Collection<V>> Map<K, S> toCollectingMap(
 			Supplier<S> supplier, Function<T, K> keyMapper,
 			Function<T, V> valueMapper) {
 		var map = new LinkedHashMap<K, S>();
 		for (var val : this) {
-			map.computeIfAbsent(keyMapper.apply(val), k -> supplier.get())
+			map.computeIfAbsent(keyMapper.apply(val), __ -> supplier.get())
 					.add(valueMapper.apply(val));
 		}
-		return map;
+		return unmodifiableMap(map);
 	}
 
 	/**
@@ -333,7 +365,7 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 * @param valueMapper
 	 *            How to get a value from an element of the iterable.
 	 * @return A map derived from the elements in the iterable. Note that this
-	 *         must be finite!
+	 *         must be finite! This map is not modifiable.
 	 */
 	default <K, V, S extends Collection<V>> Map<K, S> toCollectingMap(
 			Supplier<Map<K, S>> mapSupplier, Supplier<S> collectorSupplier,
@@ -341,9 +373,9 @@ public interface MappableIterable<T> extends Iterable<T> {
 		var map = mapSupplier.get();
 		for (var val : this) {
 			map.computeIfAbsent(keyMapper.apply(val),
-					k -> collectorSupplier.get()).add(valueMapper.apply(val));
+					__ -> collectorSupplier.get()).add(valueMapper.apply(val));
 		}
-		return map;
+		return unmodifiableMap(map);
 	}
 }
 

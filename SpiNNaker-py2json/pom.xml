@@ -37,6 +37,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 	<dependencies>
 		<dependency>
+			<groupId>uk.ac.manchester.spinnaker</groupId>
+			<artifactId>SpiNNaker-utils</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>uk.ac.manchester.spinnaker</groupId>
+			<artifactId>SpiNNaker-machine</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 		</dependency>

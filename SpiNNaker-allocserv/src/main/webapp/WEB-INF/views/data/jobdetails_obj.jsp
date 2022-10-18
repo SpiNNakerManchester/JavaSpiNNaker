@@ -41,6 +41,7 @@ job = (
 	<json:property name="machine" value="${ job.machine }" />
 	<json:property name="machine_url" value="${ job.machineUrl }" />
 	<json:array name="boards" items="${ job.boards }" var="board">
+		<%-- board is a BoardCoords --%>
 		<json:object>
 			<json:object name="triad">
 				<json:property name="x" value="${ board.x }"/>

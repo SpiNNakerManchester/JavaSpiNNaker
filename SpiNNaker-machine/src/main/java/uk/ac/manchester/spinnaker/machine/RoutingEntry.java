@@ -22,6 +22,7 @@ import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_LINKS_PER_R
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_NUM_CORES;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -52,7 +53,7 @@ public class RoutingEntry {
 		range(0, MAX_NUM_CORES)
 				.filter(pidx -> bitset(route, MAX_LINKS_PER_ROUTER + pidx))
 				.forEach(ps::add);
-		var ls = new LinkedHashSet<Direction>();
+		var ls = EnumSet.noneOf(Direction.class);
 		range(0, MAX_LINKS_PER_ROUTER).filter(lidx -> bitset(route, lidx))
 				.forEach(i -> ls.add(Direction.byId(i)));
 		this.processorIDs = unmodifiableSet(ps);
@@ -83,7 +84,7 @@ public class RoutingEntry {
 			}
 			ps.add(procId);
 		}
-		var ls = new LinkedHashSet<Direction>();
+		var ls = EnumSet.noneOf(Direction.class);
 		linkIDs.forEach(ls::add);
 		this.processorIDs = unmodifiableSet(ps);
 		this.linkIDs = unmodifiableSet(ls);

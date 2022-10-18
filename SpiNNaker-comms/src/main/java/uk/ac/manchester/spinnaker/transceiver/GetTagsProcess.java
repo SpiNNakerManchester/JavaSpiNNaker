@@ -33,7 +33,7 @@ import uk.ac.manchester.spinnaker.messages.scp.IPTagGet;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo;
 
 /** Gets IP tags and reverse IP tags. */
-class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
+class GetTagsProcess extends TxrxProcess {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
@@ -42,7 +42,8 @@ class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	GetTagsProcess(ConnectionSelector<SCPConnection> connectionSelector,
+	GetTagsProcess(
+			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}

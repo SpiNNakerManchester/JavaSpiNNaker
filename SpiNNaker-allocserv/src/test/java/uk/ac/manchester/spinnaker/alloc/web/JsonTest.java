@@ -22,12 +22,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -43,8 +46,13 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
+import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
+import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
+import uk.ac.manchester.spinnaker.alloc.model.DownLink;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
@@ -103,6 +111,115 @@ class JsonTest {
 		};
 	}
 
+	private static class M extends StubMachine {
+		@Override
+		public int getId() {
+			return 0;
+		}
+
+		@Override
+		public String getName() {
+			return "gorp";
+		}
+
+		@Override
+		public Set<String> getTags() {
+			return Set.of();
+		}
+
+		@Override
+		public int getWidth() {
+			return 1;
+		}
+
+		@Override
+		public int getHeight() {
+			return 1;
+		}
+
+		@Override
+		public boolean isInService() {
+			return false;
+		}
+
+		@Override
+		public List<BoardCoords> getDeadBoards() {
+			return List.of();
+		}
+
+		@Override
+		public List<DownLink> getDownLinks() {
+			return List.of();
+		}
+
+		@Override
+		public String getRootBoardBMPAddress() {
+			return "1.2.3.4";
+		}
+
+		@Override
+		public List<Integer> getBoardNumbers() {
+			return List.of();
+		}
+
+		@Override
+		public List<Integer> getAvailableBoards() {
+			return List.of();
+		}
+
+		@Override
+		public List<Integer> getBoardNumbers(BMPCoords bmp) {
+			return List.of();
+		}
+	}
+
+	private static class SM extends StubSubMachine {
+		@Override
+		public Machine getMachine() {
+			return new M();
+		}
+
+		@Override
+		public int getRootX() {
+			return 0;
+		}
+
+		@Override
+		public int getRootY() {
+			return 0;
+		}
+
+		@Override
+		public int getRootZ() {
+			return 0;
+		}
+
+		@Override
+		public int getWidth() {
+			return 1;
+		}
+
+		@Override
+		public int getHeight() {
+			return 1;
+		}
+
+		@Override
+		public int getDepth() {
+			return 1;
+		}
+
+		@Override
+		public List<ConnectionInfo> getConnections() {
+			return List.of(new ConnectionInfo(ZERO_ZERO, "2.3.4.5"));
+		}
+
+		@Override
+		public List<BoardCoordinates> getBoards() {
+			return List.of(new BoardCoordinates(0, 0, 0));
+		}
+	}
+
 	@Nested
 	class Serialization {
 		@Test
@@ -128,6 +245,17 @@ class JsonTest {
 							+ "\"owner\": \"gorp\", "
 							+ "\"keepalive-host\": \"127.0.0.1\" }",
 					serialize(r), false);
+		}
+
+		@Test
+		void testSubMachineResponse() throws IOException, JSONException {
+			var r = new SubMachineResponse(new SM(), null);
+			JSONAssert.assertEquals(
+					"{ \"depth\": 1, \"width\": 1, \"height\": 1,"
+					+ "\"machine-name\": \"gorp\","
+					+ "\"boards\": [[0, 0, 0]],"
+					+ "\"connections\": [[[0, 0], \"2.3.4.5\"]] }",
+					serialize(r), true);
 		}
 
 		@Test

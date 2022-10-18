@@ -17,11 +17,10 @@
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
-import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
-import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 
 /**
  * Request to get the location of a board in a machine by physical location.
@@ -37,37 +36,15 @@ public class WhereIsMachineBoardPhysicalCommand extends Command<Integer> {
 	 *
 	 * @param machine
 	 *            The machine to request about.
-	 * @param cabinet
-	 *            The cabinet containing the board to ask about.
-	 * @param frame
-	 *            The frame containing the board to ask about.
-	 * @param board
-	 *            The board (within the cabinet and frame) to ask about.
-	 */
-	public WhereIsMachineBoardPhysicalCommand(@NotNull String machine,
-			@ValidCabinetNumber int cabinet, @ValidFrameNumber int frame,
-			@ValidBoardNumber int board) {
-		super("where_is");
-		addKwArg("machine", machine);
-		addKwArg("cabinet", cabinet);
-		addKwArg("frame", frame);
-		addKwArg("board", board);
-	}
-
-	/**
-	 * Create a request to locate a board on a machine.
-	 *
-	 * @param machine
-	 *            The machine to request about.
 	 * @param coords
 	 *            The physical coordinates of the board to ask about.
 	 */
-	public WhereIsMachineBoardPhysicalCommand(@NotNull String machine,
-			@Valid @NotNull BoardPhysicalCoordinates coords) {
+	public WhereIsMachineBoardPhysicalCommand(@NotBlank String machine,
+			@Valid @NotNull PhysicalCoords coords) {
 		super("where_is");
 		addKwArg("machine", machine);
-		addKwArg("cabinet", coords.getCabinet());
-		addKwArg("frame", coords.getFrame());
-		addKwArg("board", coords.getBoard());
+		addKwArg("cabinet", coords.c);
+		addKwArg("frame", coords.f);
+		addKwArg("board", coords.b);
 	}
 }

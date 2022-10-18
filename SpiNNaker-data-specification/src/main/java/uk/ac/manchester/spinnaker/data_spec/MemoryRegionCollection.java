@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Spliterator;
+import java.util.function.IntFunction;
 import java.util.stream.Stream;
 
 import com.google.errorprone.annotations.DoNotCall;
@@ -191,6 +192,13 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 			a[regions.length] = null;
 		}
 		return a;
+	}
+
+	@Override
+	public <T> T[] toArray(IntFunction<T[]> generator) {
+		var ary = generator.apply(regions.length);
+		arraycopy(regions, 0, ary, 0, regions.length);
+		return ary;
 	}
 
 	@Override

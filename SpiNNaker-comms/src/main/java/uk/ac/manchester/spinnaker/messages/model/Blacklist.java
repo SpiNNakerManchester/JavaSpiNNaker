@@ -387,12 +387,13 @@ public final class Blacklist implements Serializable {
 			links.remove(dead);
 		} else if (!chips.contains(chip)) {
 			if (deadCores != null && !deadCores.isEmpty()) {
-				cores.computeIfAbsent(chip, k -> new HashSet<>())
+				cores.computeIfAbsent(chip, __ -> new HashSet<>())
 						.addAll(deadCores);
 			}
 			if (deadLinks != null && !deadLinks.isEmpty()) {
 				links.computeIfAbsent(chip,
-						k -> EnumSet.noneOf(Direction.class)).addAll(deadLinks);
+						__ -> EnumSet.noneOf(Direction.class))
+						.addAll(deadLinks);
 			}
 		}
 	}

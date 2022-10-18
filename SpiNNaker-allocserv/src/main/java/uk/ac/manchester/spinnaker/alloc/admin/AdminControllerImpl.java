@@ -110,6 +110,8 @@ import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.web.Action;
 import uk.ac.manchester.spinnaker.alloc.web.SystemController;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 
 /**
@@ -622,10 +624,11 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			return machineController.findId(board.getId());
 		} else if (board.isTriadCoordPresent()) {
 			return machineController.findTriad(board.getMachineName(),
-					board.getX(), board.getY(), board.getZ());
+					new TriadCoords(board.getX(), board.getY(), board.getZ()));
 		} else if (board.isPhysicalCoordPresent()) {
 			return machineController.findPhysical(board.getMachineName(),
-					board.getCabinet(), board.getFrame(), board.getBoard());
+					new PhysicalCoords(board.getCabinet(), board.getFrame(),
+							board.getBoard()));
 		} else if (board.isAddressPresent()) {
 			return machineController.findIP(board.getMachineName(),
 					board.getIpAddress());

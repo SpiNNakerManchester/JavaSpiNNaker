@@ -76,7 +76,7 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 	 *            required.
 	 */
 	MulticastRoutesControlProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}

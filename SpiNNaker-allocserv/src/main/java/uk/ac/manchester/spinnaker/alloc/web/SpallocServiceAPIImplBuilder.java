@@ -52,6 +52,9 @@ import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.ItsGone;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI.JobAPI;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI.MachineAPI;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 
 /**
  * Manufactures instances of {@link MachineAPI} and {@link JobAPI}. This
@@ -123,19 +126,21 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 
 			@Override
 			public WhereIsResponse whereIsLogicalPosition(int x, int y, int z) {
-				return makeResponse(machine.getBoardByLogicalCoords(x, y, z));
+				return makeResponse(machine
+						.getBoardByLogicalCoords(new TriadCoords(x, y, z)));
 			}
 
 			@Override
 			public WhereIsResponse whereIsPhysicalPosition(int cabinet,
 					int frame, int board) {
-				return makeResponse(machine.getBoardByPhysicalCoords(cabinet,
-						frame, board));
+				return makeResponse(machine.getBoardByPhysicalCoords(
+						new PhysicalCoords(cabinet, frame, board)));
 			}
 
 			@Override
 			public WhereIsResponse whereIsMachineChipLocation(int x, int y) {
-				return makeResponse(machine.getBoardByChip(x, y));
+				return makeResponse(
+						machine.getBoardByChip(new ChipLocation(x, y)));
 			}
 
 			@Override

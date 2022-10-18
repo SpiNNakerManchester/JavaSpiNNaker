@@ -43,7 +43,7 @@ import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
 /**
  * Write to memory on SpiNNaker.
  */
-class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
+class WriteMemoryProcess extends TxrxProcess {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
@@ -52,7 +52,8 @@ class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	WriteMemoryProcess(ConnectionSelector<SCPConnection> connectionSelector,
+	WriteMemoryProcess(
+			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}
@@ -67,7 +68,8 @@ class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	WriteMemoryProcess(ConnectionSelector<SCPConnection> connectionSelector,
+	WriteMemoryProcess(
+			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			int numChannels, RetryTracker retryTracker) {
 		super(connectionSelector, SCP_RETRIES, SCP_TIMEOUT, numChannels,
 				max(numChannels / 2, 1), retryTracker);
