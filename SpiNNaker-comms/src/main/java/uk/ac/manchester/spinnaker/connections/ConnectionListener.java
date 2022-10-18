@@ -109,12 +109,17 @@ public class ConnectionListener<MessageType> extends Thread
 			int numProcesses, int timeout) {
 		super("Connection listener for connection " + connection);
 		setDaemon(true);
+		setUncaughtExceptionHandler(this::logExn);
 		this.connection = connection;
 		this.timeout = timeout;
 		callbackPool = new ThreadPoolExecutor(1, numProcesses, POOL_TIMEOUT,
 				MILLISECONDS, new LinkedBlockingQueue<>());
 		done = false;
 		callbacks = new HashSet<>();
+	}
+
+	private void logExn(Thread thread, Throwable ex) {
+		log.warn("unexpected exception in {}", thread, ex);
 	}
 
 	/**
