@@ -118,6 +118,7 @@ abstract class DatabaseCache<Conn extends Connection> {
 			resource = c;
 			setName("database closer for " + owner);
 			setPriority(MAX_PRIORITY);
+			setUncaughtExceptionHandler(this::logExn);
 			start();
 		}
 
@@ -131,6 +132,11 @@ abstract class DatabaseCache<Conn extends Connection> {
 			} finally {
 				closeDatabaseConnection(resource, owner);
 			}
+		}
+
+		private void logExn(Thread thread, Throwable ex) {
+			log.warn("unexpected exception in thread terminate watcher for {}",
+					owner, ex);
 		}
 	}
 

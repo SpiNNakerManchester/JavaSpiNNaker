@@ -493,30 +493,32 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	}
 
 	private void launchKeepaliveDaemon() {
-		log.info("launching keepalive thread for " + id + " with interval "
-				+ (keepaliveTime / 2) + "ms");
+		log.info("launching keepalive thread for {} with interval {}ms", id,
+				keepaliveTime / 2);
 		if (keepalive != null) {
-			log.warn("launching second keepalive thread for " + id);
+			log.warn("launching second keepalive thread for {}", id);
 		}
 		stopping = false;
 		keepalive = new Daemon(SPALLOC_WORKERS, this::keepalive,
 				"keepalive for spalloc job " + id);
+		keepalive.setUncaughtExceptionHandler((th, e) -> {
+			log.warn("unexpected exception in {}", th, e);
+		});
 		keepalive.start();
 	}
 
 	private void keepalive() {
-		while (!stopping) {
-			try {
+		try {
+			while (!stopping) {
 				client.jobKeepAlive(id, timeout);
 				if (!interrupted()) {
 					sleep(keepaliveTime / 2);
 				}
-			} catch (IOException | SpallocServerException e) {
-				log.debug("exception in keepalive; terminating", e);
-				stopping = true;
-			} catch (InterruptedException e) {
-				log.trace("interrupted in keepalive", e);
 			}
+		} catch (IOException | SpallocServerException e) {
+			log.debug("exception in keepalive; terminating", e);
+		} catch (InterruptedException e) {
+			log.trace("interrupted in keepalive", e);
 		}
 	}
 
