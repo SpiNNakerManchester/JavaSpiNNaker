@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -137,6 +137,11 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setExceptionHandler(java.lang.Thread.UncaughtExceptionHandler)">setExceptionHandler</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Thread.UncaughtExceptionHandler.html?is-external=true" title="class or interface in java.lang" class="externalLink">Thread.UncaughtExceptionHandler</a>&nbsp;callback)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor" id="i2">
+<td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setTerminationCallback(java.lang.Runnable)">setTerminationCallback</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Runnable</a>&nbsp;callback)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -171,6 +176,19 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <dd><code>callback</code> - An action to carry out when a thread made by this factory
             actually terminates. If <code>null</code>, remove any current
             termination callback.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="setExceptionHandler(java.lang.Thread.UncaughtExceptionHandler)">setExceptionHandler</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setExceptionHandler</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Thread.UncaughtExceptionHandler.html?is-external=true" title="class or interface in java.lang" class="externalLink">Thread.UncaughtExceptionHandler</a>&nbsp;callback)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>callback</code> - An action to carry out when a thread made by this factory
+            terminates with an exception. If <code>null</code>, remove any
+            current termination callback so that the exception vanishes
+            silently. (The default handler just logs the exception.)</dd>
 </dl>
 </section>
 </li>
