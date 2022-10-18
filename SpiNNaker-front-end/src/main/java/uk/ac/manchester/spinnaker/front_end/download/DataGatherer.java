@@ -567,24 +567,6 @@ public abstract class DataGatherer extends BoardLocalSupport
 			throws StorageException;
 
 	/**
-	 * Have a quiet sleep. Utility method.
-	 *
-	 * @param delay
-	 *            How long to sleep, in milliseconds.
-	 */
-	private static void snooze(int delay) {
-		try {
-			sleep(delay);
-		} catch (InterruptedException interrupted) {
-			/*
-			 * This is only used in contexts where we don't actually interrupt
-			 * the thread, so this exception isn't actually ever going to be
-			 * thrown.
-			 */
-		}
-	}
-
-	/**
 	 * Class used to manage a download. Every instance <em>must only</em> ever
 	 * be used from one thread.
 	 *
@@ -744,9 +726,11 @@ public abstract class DataGatherer extends BoardLocalSupport
 		 *             error.
 		 * @throws TimeoutException
 		 *             If we are flailing around, making no progress.
+		 * @throws InterruptedException
+		 *             If we are interrupted.
 		 */
 		private boolean processData(ByteBuffer data, int transactionId)
-				throws IOException, TimeoutException {
+				throws IOException, TimeoutException, InterruptedException {
 			int seqNum = data.getInt();
 			int responseTransactionId = data.getInt();
 
@@ -793,9 +777,11 @@ public abstract class DataGatherer extends BoardLocalSupport
 		 *             causes an error.
 		 * @throws TimeoutException
 		 *             If we have a full timeout.
+		 * @throws InterruptedException
+		 *             If we are interrupted.
 		 */
 		private boolean processTimeout(int transactionId)
-				throws IOException, TimeoutException {
+				throws IOException, TimeoutException, InterruptedException {
 			if (++timeoutcount > TIMEOUT_RETRY_LIMIT) {
 				log.error(TIMEOUT_MESSAGE);
 				throw new TimeoutException();
@@ -817,9 +803,11 @@ public abstract class DataGatherer extends BoardLocalSupport
 		 *             If there are failures.
 		 * @throws TimeoutException
 		 *             If we are flailing around, making no progress.
+		 * @throws InterruptedException
+		 *             If interrupted.
 		 */
 		private boolean retransmitMissingSequences(int transactionId)
-				throws IOException, TimeoutException {
+				throws IOException, TimeoutException, InterruptedException {
 			int numMissing = expectedSeqNums.cardinality();
 			if (numMissing < 1) {
 				return true;
@@ -842,7 +830,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 			// Transmit missing sequences as a new SDP Packet
 			for (var msg : createMessages(monitorCore, missingSeqs,
 					transactionId)) {
-				snooze(DELAY_PER_SEND);
+				sleep(DELAY_PER_SEND);
 				conn.sendMissing(msg);
 			}
 			return false;

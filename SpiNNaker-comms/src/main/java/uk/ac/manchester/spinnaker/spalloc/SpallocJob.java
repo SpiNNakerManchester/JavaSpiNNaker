@@ -505,18 +505,17 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	}
 
 	private void keepalive() {
-		while (!stopping) {
-			try {
+		try {
+			while (!stopping) {
 				client.jobKeepAlive(id, timeout);
 				if (!interrupted()) {
 					sleep(keepaliveTime / 2);
 				}
-			} catch (IOException | SpallocServerException e) {
-				log.debug("exception in keepalive; terminating", e);
-				stopping = true;
-			} catch (InterruptedException e) {
-				log.trace("interrupted in keepalive", e);
 			}
+		} catch (IOException | SpallocServerException e) {
+			log.debug("exception in keepalive; terminating", e);
+		} catch (InterruptedException e) {
+			log.trace("interrupted in keepalive", e);
 		}
 	}
 

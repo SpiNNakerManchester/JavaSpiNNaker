@@ -477,6 +477,8 @@ class BMPCommandProcess<R extends BMPResponse> {
 					// Remove the sequence from the outstanding responses
 					msg.removeRequest(requests);
 				}
+			} catch (InterruptedException e) {
+				throw e;
 			} catch (Exception e) {
 				errorRequest = req.request;
 				exception = e;
