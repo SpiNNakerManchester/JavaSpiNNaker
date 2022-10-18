@@ -44,6 +44,7 @@ import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.connections.model.AsyncCommsTask;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.CommandCode;
@@ -68,7 +69,7 @@ import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
  * @author Andrew Rowley
  * @author Donal Fellows
  */
-public class SCPRequestPipeline {
+public class SCPRequestPipeline implements AsyncCommsTask {
 	/**
 	 * The name of a <em>system property</em> that can override the default
 	 * timeouts. If specified as an integer, it gives the number of milliseconds
@@ -295,43 +296,6 @@ public class SCPRequestPipeline {
 	}
 
 	/**
-	 * Create a request handling pipeline using default settings.
-	 *
-	 * @param connection
-	 *            The connection over which the communication is to take place.
-	 * @param retryTracker
-	 *            Object used to track how many retries were used in an
-	 *            operation. May be {@code null} if no suck tracking is
-	 *            required.
-	 */
-	public SCPRequestPipeline(SCPConnection connection,
-			RetryTracker retryTracker) {
-		this(connection, DEFAULT_NUM_CHANNELS,
-				DEFAULT_INTERMEDIATE_TIMEOUT_WAITS, SCP_RETRIES, SCP_TIMEOUT,
-				retryTracker);
-	}
-
-	/**
-	 * Create a request handling pipeline using default settings.
-	 *
-	 * @param connection
-	 *            The connection over which the communication is to take place.
-	 * @param packetTimeout
-	 *            The number of elapsed milliseconds after sending a packet
-	 *            before it is considered a timeout.
-	 * @param retryTracker
-	 *            Object used to track how many retries were used in an
-	 *            operation. May be {@code null} if no suck tracking is
-	 *            required.
-	 */
-	public SCPRequestPipeline(SCPConnection connection, int packetTimeout,
-			RetryTracker retryTracker) {
-		this(connection, DEFAULT_NUM_CHANNELS,
-				DEFAULT_INTERMEDIATE_TIMEOUT_WAITS, SCP_RETRIES, packetTimeout,
-				retryTracker);
-	}
-
-	/**
 	 * Create a request handling pipeline.
 	 *
 	 * @param connection
@@ -369,24 +333,7 @@ public class SCPRequestPipeline {
 		numRetryCodeResent = 0;
 	}
 
-	/**
-	 * Add an SCP request to the set to be sent.
-	 *
-	 * @param <T>
-	 *            The type of response expected to the request.
-	 * @param request
-	 *            The SCP request to be sent
-	 * @param callback
-	 *            A callback function to call when the response has been
-	 *            received; takes an SCPResponse as a parameter, or a
-	 *            {@code null} if the response doesn't need to be processed.
-	 * @param errorCallback
-	 *            A callback function to call when an error is found when
-	 *            processing the message; takes the original SCPRequest, and the
-	 *            exception caught while sending it.
-	 * @throws IOException
-	 *             If things go really wrong.
-	 */
+	@Override
 	public <T extends CheckOKResponse> void sendRequest(SCPRequest<T> request,
 			Consumer<T> callback, SCPErrorHandler errorCallback)
 			throws IOException {
@@ -450,15 +397,8 @@ public class SCPRequestPipeline {
 		}
 	}
 
-	/**
-	 * Send a one-way request.
-	 *
-	 * @param request
-	 *            The one-way SCP request to be sent.
-	 * @throws IOException
-	 *             If things go really wrong.
-	 */
-	public void sendOneWayRequest(SCPRequest<? extends NoResponse> request)
+	@Override
+	public <T extends NoResponse> void sendOneWayRequest(SCPRequest<T> request)
 			throws IOException {
 		// Wait for all current in-flight responses to be received
 		finish();
@@ -469,13 +409,7 @@ public class SCPRequestPipeline {
 		new Request<>(request, null, null).send();
 	}
 
-	/**
-	 * Indicate the end of the packets to be sent. This must be called to ensure
-	 * that all responses are received and handled.
-	 *
-	 * @throws IOException
-	 *             If anything goes wrong with communications.
-	 */
+	@Override
 	public void finish() throws IOException {
 		while (!outstandingRequests.isEmpty()) {
 			multiRetrieve(0);

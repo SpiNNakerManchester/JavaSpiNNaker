@@ -55,6 +55,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
+import uk.ac.manchester.spinnaker.utils.Daemon;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -87,11 +88,8 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 
 	SpinWSHandler() {
 		var group = new ThreadGroup("ws/udp workers");
-		executor = newCachedThreadPool(r -> {
-			var t = new Thread(group, r, "ws/udp worker");
-			t.setDaemon(true);
-			return t;
-		});
+		executor =
+				newCachedThreadPool(r -> new Daemon(group, r, "ws/udp worker"));
 	}
 
 	/** The path that we match in this handler. */

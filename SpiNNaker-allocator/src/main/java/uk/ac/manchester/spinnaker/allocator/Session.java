@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLConnection;
+import java.util.concurrent.Callable;
 
 /**
  * Operations on the low level session that are intended to be used by the
@@ -140,7 +141,7 @@ interface Session {
 	 *            The extra exceptions that may be thrown by the action.
 	 */
 	@FunctionalInterface
-	interface Action<T, Exn extends Exception> {
+	interface Action<T, Exn extends Exception> extends Callable<T> {
 		/**
 		 * Perform the action.
 		 *
@@ -150,7 +151,8 @@ interface Session {
 		 * @throws Exn
 		 *             If another failure happens.
 		 */
-		T act() throws Exn, IOException;
+		@Override
+		T call() throws Exn, IOException;
 	}
 
 	/**

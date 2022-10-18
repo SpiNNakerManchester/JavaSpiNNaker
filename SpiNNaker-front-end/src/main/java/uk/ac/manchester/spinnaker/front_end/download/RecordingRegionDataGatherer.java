@@ -112,7 +112,7 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		var regions = getRecordingRegionDescriptors(txrx, placement);
 		synchronized (recordingRegions) {
 			// Put the value in the map if it wasn't already there
-			return recordingRegions.computeIfAbsent(placement, key -> regions);
+			return recordingRegions.computeIfAbsent(placement, __ -> regions);
 		}
 	}
 

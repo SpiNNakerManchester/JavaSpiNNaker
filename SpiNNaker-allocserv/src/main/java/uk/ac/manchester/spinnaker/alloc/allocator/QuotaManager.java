@@ -94,8 +94,8 @@ public class QuotaManager extends DatabaseAwareBean {
 	}
 
 	/**
-	 * Has the execution of a job exceeded its group's resource allocation at
-	 * this point?
+	 * Has the execution of a job remained within its group's resource
+	 * allocation at this point?
 	 *
 	 * @param jobId
 	 *            What job is consuming resources?
@@ -105,6 +105,18 @@ public class QuotaManager extends DatabaseAwareBean {
 		try (var sql = new ContinueCheckSQL()) {
 			return sql.transaction(false, () -> sql.mayLetJobContinue(jobId));
 		}
+	}
+
+	/**
+	 * Has the execution of a job exceeded its group's resource allocation at
+	 * this point?
+	 *
+	 * @param jobId
+	 *            What job is consuming resources?
+	 * @return False if the job should be killed. True otherwise.
+	 */
+	public boolean shouldKillJob(int jobId) {
+		return !mayLetJobContinue(jobId);
 	}
 
 	private class ContinueCheckSQL extends AbstractSQL {

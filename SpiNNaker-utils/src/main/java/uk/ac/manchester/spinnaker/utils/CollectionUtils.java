@@ -19,21 +19,32 @@ package uk.ac.manchester.spinnaker.utils;
 import static java.lang.Math.min;
 import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableCollection;
+import static java.util.Collections.unmodifiableList;
+import static java.util.Collections.unmodifiableMap;
+import static java.util.Collections.unmodifiableSet;
 import static java.util.EnumSet.noneOf;
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Collectors.toUnmodifiableMap;
 import static java.util.stream.IntStream.range;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.IntBinaryOperator;
+import java.util.function.IntFunction;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 
@@ -174,5 +185,101 @@ public abstract class CollectionUtils {
 			E[] enumMembers, Function<E, K> valueExtractor) {
 		return stream(enumMembers)
 				.collect(toUnmodifiableMap(valueExtractor, v -> v));
+	}
+
+	/**
+	 * Makes a read-only copy of a list.
+	 *
+	 * @param <T>
+	 *            The type of elements in the list.
+	 * @param list
+	 *            The list to copy. {@code null} becomes an empty list.
+	 * @return A read-only copy of the list.
+	 */
+	public static <T> List<T> copy(List<T> list) {
+		// Don't copyOf; avoid nullability failures
+		return isNull(list) ? List.of()
+				: unmodifiableList(new ArrayList<>(list));
+	}
+
+	/**
+	 * Makes a read-only copy of a set. This will preserve whatever order was in
+	 * the input set.
+	 *
+	 * @param <T>
+	 *            The type of elements in the set.
+	 * @param set
+	 *            The set to copy. {@code null} becomes an empty set.
+	 * @return A read-only copy of the set.
+	 */
+	public static <T> Set<T> copy(Set<T> set) {
+		// Don't copyOf; avoid nullability failures
+		return isNull(set) ? Set.of()
+				: unmodifiableSet(new LinkedHashSet<>(set));
+	}
+
+	/**
+	 * Makes a read-only copy of a map. This will preserve whatever order was in
+	 * the input map.
+	 *
+	 * @param <K>
+	 *            The type of keys in the map.
+	 * @param <V>
+	 *            The type of values in the map.
+	 * @param map
+	 *            The map to copy. {@code null} becomes an empty map.
+	 * @return A read-only copy of the map.
+	 */
+	public static <K, V> Map<K, V> copy(Map<K, V> map) {
+		// Don't copyOf; avoid nullability failures
+		return isNull(map) ? Map.of()
+				: unmodifiableMap(new LinkedHashMap<>(map));
+	}
+
+	/**
+	 * Create a collector that produces an array from a stream. The order of the
+	 * elements in the array will be the inherent order of the elements in the
+	 * stream.
+	 *
+	 * @param <T>
+	 *            The type of the elements.
+	 * @param generator
+	 *            How to make the array. Typically something like
+	 *            {@code T[]::new}.
+	 * @return A collector.
+	 */
+	public static <
+			T> Collector<T, ?, T[]> collectToArray(IntFunction<T[]> generator) {
+		return new Collector<T, List<T>, T[]>() {
+			@Override
+			public Supplier<List<T>> supplier() {
+				return ArrayList::new;
+			}
+
+			@Override
+			public BiConsumer<List<T>, T> accumulator() {
+				return List::add;
+			}
+
+			@Override
+			public BinaryOperator<List<T>> combiner() {
+				return (left, right) -> {
+					left.addAll(right);
+					return left;
+				};
+			}
+
+			@Override
+			public Function<List<T>, T[]> finisher() {
+				// We know the size right now; use it!
+				// Also, we assume that the generator is non-crazy
+				return l -> l.toArray(generator.apply(l.size()));
+			}
+
+			@Override
+			public Set<Characteristics> characteristics() {
+				return Set.of();
+			}
+		};
 	}
 }

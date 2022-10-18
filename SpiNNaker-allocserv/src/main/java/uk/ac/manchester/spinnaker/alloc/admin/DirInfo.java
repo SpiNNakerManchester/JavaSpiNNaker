@@ -78,7 +78,7 @@ public final class DirInfo extends SQLQueries {
 		this.dy = dy;
 		this.dz = dz;
 
-		MAP.computeIfAbsent(z, key -> new HashMap<>()).put(d, this);
+		MAP.computeIfAbsent(z, __ -> new HashMap<>()).put(d, this);
 	}
 
 	/**

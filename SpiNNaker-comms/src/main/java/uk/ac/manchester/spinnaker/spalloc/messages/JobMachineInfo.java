@@ -16,36 +16,57 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import static java.util.Collections.unmodifiableList;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 
 import java.util.List;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * A description of a machine associated with a job, in terms of width, height,
  * connections and its name.
  */
-public class JobMachineInfo {
-	private int width;
+// Would be @Immutable but Error Prone can't prove it and so gets shirty
+@JsonDeserialize(builder = JobMachineInfo.Builder.class)
+public final class JobMachineInfo {
+	private final int width;
 
-	private int height;
+	private final int height;
 
-	private List<Connection> connections = List.of();
+	private final List<Connection> connections;
 
-	private String machineName;
+	private final String machineName;
 
-	private List<BoardCoordinates> boards = List.of();
+	private final List<BoardCoordinates> boards;
 
 	/** Number of boards/Connections to list individually in the toString. */
 	private static final int PRINT_CONNECTIONS_THRESHOLD = 6;
 
+	/**
+	 * @param width
+	 *            The width of the allocated machine chunk.
+	 * @param height
+	 *            The height of the allocated machine chunk.
+	 * @param connections
+	 *            How to talk to the allocated boards.
+	 * @param machineName
+	 *            The name of the machine handling the job.
+	 * @param boards
+	 *            Locations of the allocated boards.
+	 */
+	public JobMachineInfo(int width, int height, List<Connection> connections,
+			String machineName, List<BoardCoordinates> boards) {
+		this.width = width;
+		this.height = height;
+		this.connections = copy(connections);
+		this.machineName = machineName;
+		this.boards = copy(boards);
+	}
+
 	/** @return The width of the allocated machine chunk. */
 	public int getWidth() {
 		return width;
-	}
-
-	/** @param width The width of the allocated machine chunk. */
-	public void setWidth(int width) {
-		this.width = width;
 	}
 
 	/** @return The height of the allocated machine chunk. */
@@ -53,20 +74,9 @@ public class JobMachineInfo {
 		return height;
 	}
 
-	/** @param height The height of the allocated machine chunk. */
-	public void setHeight(int height) {
-		this.height = height;
-	}
-
 	/** @return How to talk to the allocated boards. */
 	public List<Connection> getConnections() {
 		return connections;
-	}
-
-	/** @param connections How to talk to the allocated boards. */
-	public void setConnections(List<Connection> connections) {
-		this.connections = connections == null ? List.of()
-				: unmodifiableList(connections);
 	}
 
 	/** @return The name of the machine handling the job. */
@@ -74,19 +84,9 @@ public class JobMachineInfo {
 		return machineName;
 	}
 
-	/** @param machineName The name of the machine handling the job. */
-	public void setMachineName(String machineName) {
-		this.machineName = machineName;
-	}
-
 	/** @return Locations of the allocated boards. */
 	public List<BoardCoordinates> getBoards() {
 		return boards;
-	}
-
-	/** @param boards Locations of the allocated boards. */
-	public void setBoards(List<BoardCoordinates> boards) {
-		this.boards = boards == null ? List.of() : unmodifiableList(boards);
 	}
 
 	@Override
@@ -104,5 +104,43 @@ public class JobMachineInfo {
 			builder.append(" boards: ").append(boards);
 		}
 		return builder.toString();
+	}
+
+	@JsonPOJOBuilder(withPrefix = "set")
+	static class Builder {
+		private int width;
+
+		private int height;
+
+		private List<Connection> connections = List.of();
+
+		private String machineName;
+
+		private List<BoardCoordinates> boards = List.of();
+
+		void setWidth(int width) {
+			this.width = width;
+		}
+
+		void setHeight(int height) {
+			this.height = height;
+		}
+
+		void setConnections(List<Connection> connections) {
+			this.connections = connections;
+		}
+
+		void setMachineName(String machineName) {
+			this.machineName = machineName;
+		}
+
+		void setBoards(List<BoardCoordinates> boards) {
+			this.boards = boards;
+		}
+
+		JobMachineInfo build() {
+			return new JobMachineInfo(width, height, connections, machineName,
+					boards);
+		}
 	}
 }

@@ -17,34 +17,35 @@
 package uk.ac.manchester.spinnaker.allocator;
 
 import static java.util.stream.Collectors.toList;
-import static picocli.CommandLine.populateCommand;
 import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.JSON_MAPPER;
 
 import java.io.IOException;
 import java.net.URI;
 
+import picocli.CommandLine;
 import picocli.CommandLine.Parameters;
+import uk.ac.manchester.spinnaker.allocator.SpallocClient.Machine;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 
 public final class CommandLineCheck {
-	private CommandLineCheck() {
-	}
+	@Parameters(index = "0", paramLabel = "BaseURL")
+	private URI baseUrl;
 
-	private static class TestingClientArgs {
-		@Parameters(index = "0", paramLabel = "BaseURL")
-		private URI baseUrl;
+	@Parameters(index = "1", paramLabel = "UserName")
+	private String username;
 
-		@Parameters(index = "1", paramLabel = "UserName")
-		private String username;
+	@Parameters(index = "2", paramLabel = "PassWord")
+	private String password;
 
-		@Parameters(index = "2", paramLabel = "PassWord")
-		private String password;
+	private CommandLineCheck(String[] args) {
+		new CommandLine(this).parseArgs(args);
 	}
 
 	private static final int SHORT_SLEEP = 100;
 
 	public static void main(String... args)
 			throws IOException, InterruptedException {
-		var a = populateCommand(new TestingClientArgs(), args);
+		var a = new CommandLineCheck(args);
 		var factory = new SpallocClientFactory();
 		var client = factory.createClient(a.baseUrl, a.username, a.password);
 
@@ -53,9 +54,9 @@ public final class CommandLineCheck {
 
 		System.out.println(client.getVersion());
 		System.out.println(client.listMachines().stream()
-				.map(m -> m.getName()).collect(toList()));
+				.map(Machine::getName).collect(toList()));
 		for (var m : client.listMachines()) {
-			var where = m.getBoardByTriad(0, 0, 1);
+			var where = m.getBoard(new TriadCoords(0, 0, 1));
 			if (where == null) {
 				System.out.println(
 						"board (0,0,1) not in machine " + m.getName());

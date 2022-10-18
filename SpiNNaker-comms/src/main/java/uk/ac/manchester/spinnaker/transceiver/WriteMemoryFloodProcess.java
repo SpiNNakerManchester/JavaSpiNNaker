@@ -35,7 +35,7 @@ import uk.ac.manchester.spinnaker.messages.scp.FloodFillEnd;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillStart;
 
 /** A process for writing memory on multiple SpiNNaker chips at once. */
-class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
+class WriteMemoryFloodProcess extends TxrxProcess {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
@@ -45,7 +45,7 @@ class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            required.
 	 */
 	WriteMemoryFloodProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}

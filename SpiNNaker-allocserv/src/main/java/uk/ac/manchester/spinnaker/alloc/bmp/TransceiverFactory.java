@@ -43,7 +43,7 @@ import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.transceiver.BMPSendTimedOutException;
@@ -125,7 +125,7 @@ public class TransceiverFactory
 			synchronized (txrxMap) {
 				return txrxMap.computeIfAbsent(
 						new Key(machineDescription.getName(), bmp),
-						k -> makeTransceiver(machineDescription, bmp));
+						__ -> makeTransceiver(machineDescription, bmp));
 			}
 		} catch (TransceiverFactoryException e) {
 			var t = e.getCause();

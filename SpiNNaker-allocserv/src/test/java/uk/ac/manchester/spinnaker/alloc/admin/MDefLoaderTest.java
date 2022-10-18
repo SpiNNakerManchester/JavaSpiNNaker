@@ -31,10 +31,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 
-import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BMPCoords;
-import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BoardPhysicalCoords;
-import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
 import uk.ac.manchester.spinnaker.alloc.db.MemDBTestBase;
+import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
 import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 
@@ -84,7 +84,7 @@ class MDefLoaderTest extends MemDBTestBase {
 		assertEquals(Set.of(new TriadCoords(0, 0, 0)),
 				m.getSpinnakerIPs().keySet());
 		assertEquals(Set.of(new BMPCoords(0, 0)), m.getBmpIPs().keySet());
-		assertEquals(Set.of(new BoardPhysicalCoords(0, 0, 0)),
+		assertEquals(Set.of(new PhysicalCoords(0, 0, 0)),
 				Set.copyOf(m.getBoardLocations().values()));
 	}
 

@@ -26,6 +26,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
+import com.google.errorprone.annotations.CompileTimeConstant;
 import com.google.errorprone.annotations.Immutable;
 
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
@@ -100,7 +101,7 @@ public abstract class ControllerUtils {
 		 * @param viewName
 		 *            The name of the view that this class will make.
 		 */
-		public ViewFactory(String viewName) {
+		public ViewFactory(@CompileTimeConstant String viewName) {
 			view = viewName;
 		}
 

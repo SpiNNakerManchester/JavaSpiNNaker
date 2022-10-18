@@ -44,12 +44,9 @@ public final class MapperFactory {
 	 * @return The Object Mapper used by the Spalloc client,
 	 */
 	public static ObjectMapper createMapper() {
-		var mapper = new ObjectMapper();
-		var module = new SimpleModule();
-		mapper.registerModule(module);
-		mapper.setPropertyNamingStrategy(LOWER_CAMEL_CASE);
-		mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, true);
-		mapper.configure(ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-		return mapper;
+		return new ObjectMapper().registerModule(new SimpleModule())
+				.setPropertyNamingStrategy(LOWER_CAMEL_CASE)
+				.configure(FAIL_ON_UNKNOWN_PROPERTIES, true)
+				.configure(ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
 	}
 }

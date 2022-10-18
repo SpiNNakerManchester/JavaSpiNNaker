@@ -35,6 +35,8 @@ import com.google.errorprone.annotations.Keep;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight;
+import uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
@@ -76,9 +78,9 @@ public class CreateJobRequest {
 	public Integer numBoards;
 
 	/**
-	 * The dimensions of rectangle of boards to allocate. May be {@code null} to
-	 * let one of the other selectors ({@link #numBoards}, {@link #board}) make
-	 * the choice.
+	 * The dimensions of rectangle of triads of boards to allocate. May be
+	 * {@code null} to let one of the other selectors ({@link #numBoards},
+	 * {@link #board}) make the choice.
 	 */
 	@Valid
 	public Dimensions dimensions;
@@ -164,12 +166,12 @@ public class CreateJobRequest {
 
 	/** Describes a request for an allocation of given dimensions. */
 	public static class Dimensions {
-		/** The width of the rectangle of boards to allocate. */
-		@Positive(message = "width must be at least 1")
+		/** The width of the rectangle of boards to allocate, in triads. */
+		@ValidTriadWidth
 		public int width;
 
-		/** The height of the rectangle of boards to allocate. */
-		@Positive(message = "height must be at least 1")
+		/** The height of the rectangle of boards to allocate, in triads. */
+		@ValidTriadHeight
 		public int height;
 	}
 

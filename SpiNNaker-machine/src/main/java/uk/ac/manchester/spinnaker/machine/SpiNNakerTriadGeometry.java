@@ -18,7 +18,8 @@ package uk.ac.manchester.spinnaker.machine;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
-import static java.util.Collections.unmodifiableCollection;
+import static java.util.Collections.unmodifiableMap;
+import static java.util.Collections.unmodifiableSet;
 import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.HALF_SIZE;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_X_OF_ONE_BOARD;
@@ -61,7 +62,7 @@ public final class SpiNNakerTriadGeometry {
 	public final int triadWidth;
 
 	/** Bottom Left corner Chips. Typically the Ethernet Chip */
-	private final Iterable<ChipLocation> roots;
+	private final List<ChipLocation> roots;
 
 	private final Map<ChipLocation, ChipLocation> localChipCoordinates;
 
@@ -86,7 +87,7 @@ public final class SpiNNakerTriadGeometry {
 	 *            Magic number to adjust Y to find the nearest root.
 	 */
 	private SpiNNakerTriadGeometry(int triadHeight, int triadWidth,
-			Iterable<ChipLocation> roots, float xCentre, float yCentre) {
+			List<ChipLocation> roots, float xCentre, float yCentre) {
 		this.triadHeight = triadHeight;
 		this.triadWidth = triadWidth;
 		this.roots = roots;
@@ -94,34 +95,34 @@ public final class SpiNNakerTriadGeometry {
 		var calulationEthernets = new ArrayList<Location>();
 
 		for (var root : roots) {
-			calulationEthernets.add(new Location(root.getX(), root.getY()));
+			calulationEthernets.add(new Location(root, 0, 0));
 			// Add fictional roots that are less than a full triad away
 			if (root.getX() > 0) {
-				calulationEthernets.add(
-						new Location(root.getX() - triadHeight, root.getY()));
+				calulationEthernets.add(new Location(root, triadHeight, 0));
 			}
 			if (root.getY() > 0) {
-				calulationEthernets.add(
-						new Location(root.getX(), root.getY() - triadWidth));
+				calulationEthernets.add(new Location(root, 0, triadWidth));
 			}
 		}
 		this.xCentre = xCentre;
 		this.yCentre = yCentre;
 
-		localChipCoordinates = new HashMap<>();
-		singleBoardCoordinates = new LinkedHashSet<>();
+		var lcc = new HashMap<ChipLocation, ChipLocation>();
+		var sbc = new LinkedHashSet<ChipLocation>();
 
 		for (int x = 0; x < triadHeight; x++) {
 			for (int y = 0; y < triadWidth; y++) {
 				var bestCalc = locateNearestRoot(x, y, calulationEthernets);
 				var key = new ChipLocation(x, y);
-				localChipCoordinates.put(key,
-						new ChipLocation((x - bestCalc.x), (y - bestCalc.y)));
+				lcc.put(key, new ChipLocation(x - bestCalc.x, y - bestCalc.y));
 				if (bestCalc.x == 0 && bestCalc.y == 0) {
-					singleBoardCoordinates.add(key);
+					sbc.add(key);
 				}
 			}
 		}
+
+		this.localChipCoordinates = unmodifiableMap(lcc);
+		this.singleBoardCoordinates = unmodifiableSet(sbc);
 	}
 
 	/**
@@ -145,7 +146,7 @@ public final class SpiNNakerTriadGeometry {
 	 *            is the theoretical centre, it might not be an actual chip
 	 * @return how far the chip is away from the centre of the hexagon
 	 */
-	private float hexagonalMetricDistance(int x, int y, float xCentre,
+	private static float hexagonalMetricDistance(int x, int y, float xCentre,
 			float yCentre) {
 		float dx = x - xCentre;
 		float dy = y - yCentre;
@@ -277,7 +278,7 @@ public final class SpiNNakerTriadGeometry {
 	 * @return An unmodifiable Collection of the Locations on one board.
 	 */
 	public Collection<ChipLocation> singleBoard() {
-		return unmodifiableCollection(singleBoardCoordinates);
+		return singleBoardCoordinates;
 	}
 
 	/**
@@ -286,7 +287,7 @@ public final class SpiNNakerTriadGeometry {
 	 * @return All the Locations on one board.
 	 */
 	public Iterator<ChipLocation> singleBoardIterator() {
-		return singleBoardCoordinates.iterator();
+		return singleBoard().iterator();
 	}
 
 	/**
@@ -333,9 +334,9 @@ public final class SpiNNakerTriadGeometry {
 
 		final int y;
 
-		Location(int x, int y) {
-			this.x = x;
-			this.y = y;
+		Location(ChipLocation chip, int dx, int dy) {
+			this.x = chip.getX() - dx;
+			this.y = chip.getY() - dy;
 		}
 
 		@Override

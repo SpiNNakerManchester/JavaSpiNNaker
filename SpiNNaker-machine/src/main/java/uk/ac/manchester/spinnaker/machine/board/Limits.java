@@ -18,11 +18,17 @@ package uk.ac.manchester.spinnaker.machine.board;
 
 /** Various limits. */
 interface Limits {
-	/** Max triad X coordinate. */
-	int MAX_TRIAD_X = 63;
+	/**
+	 * Max triad X coordinate. Any larger and the chips become unaddressible, as
+	 * some of the coordinates on the board will go above 256.
+	 */
+	int MAX_TRIAD_X = 20;
 
-	/** Max triad Y coordinate. */
-	int MAX_TRIAD_Y = 63;
+	/**
+	 * Max triad Y coordinate. Any larger and the chips become unaddressible, as
+	 * some of the coordinates on the board will go above 256.
+	 */
+	int MAX_TRIAD_Y = 20;
 
 	/** Max triad Z coordinate. */
 	int MAX_TRIAD_Z = 2;

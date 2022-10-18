@@ -35,8 +35,6 @@ public abstract class Ping {
 
 	private static final int PING_COUNT = 10;
 
-	private static final int BUFFER_SIZE = 256;
-
 	private Ping() {
 	}
 
@@ -62,10 +60,19 @@ public abstract class Ping {
 		cmd.redirectErrorStream(true);
 		try {
 			var process = cmd.start();
-			new InputStreamDrain(process.getInputStream());
+			var input = process.getInputStream();
+			new Daemon(() -> drain(input)).start();
 			return process.waitFor();
 		} catch (Exception e) {
 			return -1;
+		}
+	}
+
+	private static void drain(InputStream is) {
+		try (is) {
+			is.skip(Long.MAX_VALUE);
+		} catch (IOException e) {
+			// Ignore this exception
 		}
 	}
 
@@ -110,33 +117,5 @@ public abstract class Ping {
 	@CheckReturnValue
 	public static int ping(InetAddress address) {
 		return ping(address.getHostAddress());
-	}
-
-	private static class InputStreamDrain implements Runnable {
-		private InputStream is;
-
-		InputStreamDrain(InputStream is) {
-			this.is = is;
-			var t = new Thread(this);
-			t.setDaemon(true);
-			t.start();
-		}
-
-		@Override
-		public void run() {
-			try {
-				try {
-					byte[] b = new byte[BUFFER_SIZE];
-					int read;
-					do {
-						read = is.read(b);
-					} while (read >= 0);
-				} finally {
-					is.close();
-				}
-			} catch (IOException e) {
-				// Ignore this exception
-			}
-		}
 	}
 }

@@ -185,7 +185,7 @@ public class RawConfigParser {
 			var m = sectRE.matcher(line);
 			if (m.matches()) {
 				sect = normaliseSectionName(m.group("name"));
-				map.computeIfAbsent(sect, key -> new HashMap<>());
+				map.computeIfAbsent(sect, __ -> new HashMap<>());
 				continue;
 			} else if (isNull(sect)) {
 				throw new IllegalArgumentException(

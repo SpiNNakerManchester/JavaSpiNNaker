@@ -53,7 +53,7 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  *
  * @author Donal Fellows
  */
-class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
+class RuntimeControlProcess extends TxrxProcess {
 	private static final int BUF_HEADER_BYTES = 16;
 
 	private static final int BLOCK_HEADER_BYTES = 16;
@@ -75,7 +75,8 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	RuntimeControlProcess(ConnectionSelector<SCPConnection> connectionSelector,
+	RuntimeControlProcess(
+			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}

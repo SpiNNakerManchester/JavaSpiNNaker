@@ -16,19 +16,20 @@
  */
 package uk.ac.manchester.spinnaker.alloc.model;
 
-import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.summarizingInt;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 
 import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
+
+import uk.ac.manchester.spinnaker.machine.ValidMachineHeight;
+import uk.ac.manchester.spinnaker.machine.ValidMachineWidth;
 
 /**
  * Descriptive detail for a job. Used for HTML generation, something like:
@@ -69,10 +70,10 @@ public class JobDescription {
 
 	private String request;
 
-	@Positive
+	@ValidMachineWidth
 	private Integer width;
 
-	@Positive
+	@ValidMachineHeight
 	private Integer height;
 
 	private boolean powered;
@@ -82,7 +83,7 @@ public class JobDescription {
 
 	private URI machineUrl;
 
-	private List<@Valid BoardCoords> boards = new ArrayList<>();
+	private List<@Valid BoardCoords> boards = List.of();
 
 	private byte[] requestBytes;
 
@@ -241,7 +242,7 @@ public class JobDescription {
 
 	/** @return the board coordinates of all boards allocated to the job */
 	public List<BoardCoords> getBoards() {
-		return unmodifiableList(boards);
+		return boards;
 	}
 
 	/**
@@ -249,7 +250,7 @@ public class JobDescription {
 	 *            the board coordinates of all boards allocated to the job
 	 */
 	public void setBoards(List<BoardCoords> boards) {
-		this.boards = boards;
+		this.boards = copy(boards);
 	}
 
 	/** @return the URL to get machine information */

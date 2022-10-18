@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
-import static java.util.Collections.unmodifiableList;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -72,8 +72,8 @@ public final class MachinesResponse {
 			this.width = width;
 			this.height = height;
 			this.tags = List.copyOf(tags);
-			this.deadBoards = unmodifiableList(deadBoards);
-			this.deadLinks = unmodifiableList(deadLinks);
+			this.deadBoards = copy(deadBoards);
+			this.deadLinks = copy(deadLinks);
 		}
 	}
 
@@ -88,6 +88,6 @@ public final class MachinesResponse {
 						ub.build(name), machine.getWidth(), machine.getHeight(),
 						machine.getTags(), machine.getDeadBoards(),
 						machine.getDownLinks())));
-		this.machines = unmodifiableList(mlist);
+		this.machines = copy(mlist);
 	}
 }
