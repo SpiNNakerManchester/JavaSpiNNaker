@@ -99,8 +99,13 @@ public class V1CompatService {
 				.build();
 		var group = new ThreadGroup("spalloc-legacy-service");
 		var counter = new ValueHolder<>(1);
-		threadFactory = r -> new Thread(group, r,
-				"spalloc-legacy-" + counter.update(i -> i + 1));
+		threadFactory = r -> {
+			var t = new Thread(group, r,
+					"spalloc-legacy-" + counter.update(i -> i + 1));
+			t.setUncaughtExceptionHandler((thread, ex) -> log
+					.error("uncaught exception in {}", thread, ex));
+			return t;
+		};
 	}
 
 	/** A class that can reach into a compat service. */
