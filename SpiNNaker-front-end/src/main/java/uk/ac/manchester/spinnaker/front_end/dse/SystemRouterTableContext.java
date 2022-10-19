@@ -58,10 +58,13 @@ public class SystemRouterTableContext implements AutoCloseable {
 	 *             If communications fail.
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	@MustBeClosed
 	public SystemRouterTableContext(TransceiverInterface txrx,
-			CoreSubsets monitorCores) throws IOException, ProcessException {
+			CoreSubsets monitorCores)
+			throws IOException, ProcessException, InterruptedException {
 		this.txrx = txrx;
 		this.monitorCores = monitorCores;
 		var firstCore = monitorCores.first().orElseThrow();
@@ -73,7 +76,7 @@ public class SystemRouterTableContext implements AutoCloseable {
 		try {
 			txrx.saveApplicationRouterTables(monitorCores);
 			txrx.loadSystemRouterTables(monitorCores);
-		} catch (IOException | ProcessException e) {
+		} catch (IOException | ProcessException | InterruptedException e) {
 			log.error("failed to switch multicast routing on {} to system",
 					firstChip, e);
 			throw e;
@@ -92,11 +95,13 @@ public class SystemRouterTableContext implements AutoCloseable {
 	 *             If communications fail.
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	@MustBeClosed
 	public SystemRouterTableContext(TransceiverInterface txrx,
 			List<? extends HasCoreLocation> monitorCoreLocations)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		this(txrx, convertToCoreSubset(monitorCoreLocations));
 	}
 
@@ -112,11 +117,13 @@ public class SystemRouterTableContext implements AutoCloseable {
 	 *             If communications fail.
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	@MustBeClosed
 	public SystemRouterTableContext(TransceiverInterface txrx,
 			Stream<? extends HasCoreLocation> monitorCoreLocations)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		this(txrx, convertToCoreSubset(monitorCoreLocations));
 	}
 
@@ -143,15 +150,18 @@ public class SystemRouterTableContext implements AutoCloseable {
 	 *             If communications fail.
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	@Override
-	public void close() throws IOException, ProcessException {
+	public void close()
+			throws IOException, ProcessException, InterruptedException {
 		log.info("switching multicast routing on board at {} to standard mode",
 				firstChip);
 
 		try {
 			txrx.loadApplicationRouterTables(monitorCores);
-		} catch (IOException | ProcessException e) {
+		} catch (IOException | ProcessException | InterruptedException e) {
 			log.error("error restoring multicast router tables", e);
 			throw e;
 		}

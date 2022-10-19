@@ -82,7 +82,7 @@ final class ProxiedEIEIOListenerConnection extends EIEIOConnection {
 
 	@Override
 	protected ByteBuffer doReceive(int timeout)
-			throws IOException {
+			throws IOException, InterruptedException {
 		if (isClosed() && receiveQueue.isEmpty()) {
 			throw new EOFException("connection closed");
 		}

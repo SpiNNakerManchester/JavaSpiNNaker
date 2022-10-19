@@ -71,7 +71,7 @@ public class DelegatingSCPConnection extends SCPConnection {
 
 	@Override
 	protected ByteBuffer doReceive(int timeout)
-			throws SocketTimeoutException, IOException {
+			throws SocketTimeoutException, IOException, InterruptedException {
 		return delegate.doReceive(timeout);
 	}
 

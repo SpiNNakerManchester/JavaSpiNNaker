@@ -140,7 +140,8 @@ class SpiNNaker1 implements SpiNNakerControl {
 	}
 
 	@PostConstruct
-	void initTransceiver() throws IOException, SpinnmanException {
+	void initTransceiver()
+			throws IOException, SpinnmanException, InterruptedException {
 		txrx = txrxFactory.getTransciever(machine, bmp);
 		txrx.bind(ROOT_BMP);
 	}
@@ -176,9 +177,11 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 * @throws FPGAReloadRequired
 	 *             If the FPGA is in such a bad state that the FPGA definitions
 	 *             for the board need to be reloaded.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	private boolean isGoodFPGA(BMPBoard board, FPGA fpga)
-			throws FPGAReloadRequired {
+			throws FPGAReloadRequired, InterruptedException {
 		int flag;
 		try {
 			flag = txrx.readFPGARegister(fpga, FLAG, board);
@@ -209,9 +212,11 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 *             If a BMP rejects a message.
 	 * @throws IOException
 	 *             If network I/O fails.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	private boolean canBoardManageFPGAs(BMPBoard board)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		var vi = txrx.readBMPVersion(board);
 		return vi.versionNumber.majorVersion >= BMP_VERSION_MIN;
 	}
@@ -223,7 +228,8 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 * that link. We assume that the other end of the link also behaves.
 	 */
 	@Override
-	public void setLinkOff(Link link) throws ProcessException, IOException {
+	public void setLinkOff(Link link)
+			throws ProcessException, IOException, InterruptedException {
 		var board = requireNonNull(idToBoard.get(link.getBoard()));
 		var d = link.getLink();
 		// skip FPGA link configuration if old BMP version
@@ -242,9 +248,12 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 * @throws FPGAReloadRequired
 	 *             If an FPGA is in such a bad state that the FPGA definitions
 	 *             for the board need to be reloaded.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 * @see #isGoodFPGA(Integer, FPGA)
 	 */
-	private boolean hasGoodFPGAs(BMPBoard board) throws FPGAReloadRequired {
+	private boolean hasGoodFPGAs(BMPBoard board)
+			throws FPGAReloadRequired, InterruptedException {
 		for (var fpga : FPGA.values()) {
 			if (fpga.isSingleFPGA() && !isGoodFPGA(board, fpga)) {
 				return false;
@@ -318,13 +327,13 @@ class SpiNNaker1 implements SpiNNakerControl {
 
 	@Override
 	public String readSerial(BMPBoard board)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		return txrx.readBoardSerialNumber(board);
 	}
 
 	@Override
 	public Blacklist readBlacklist(BMPBoard board)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		return txrx.readBlacklist(board);
 	}
 

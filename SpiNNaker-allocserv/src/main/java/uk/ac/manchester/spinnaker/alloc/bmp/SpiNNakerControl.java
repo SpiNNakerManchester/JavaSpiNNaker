@@ -69,8 +69,11 @@ public interface SpiNNakerControl {
 	 *             If a BMP rejects a message.
 	 * @throws IOException
 	 *             If network I/O fails.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
-	void setLinkOff(Link link) throws ProcessException, IOException;
+	void setLinkOff(Link link)
+			throws ProcessException, IOException, InterruptedException;
 
 	/**
 	 * Turn off boards managed by a BMP. Turning off a board also turns off its

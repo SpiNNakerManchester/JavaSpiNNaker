@@ -76,9 +76,12 @@ class ExecutionContext implements AutoCloseable {
 	 *             If something goes wrong SpiNNaker-side with the write.
 	 * @throws IOException
 	 *             If there's a problem with I/O.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	void execute(Executor executor, CoreLocation core, MemoryLocation start)
-			throws DataSpecificationException, ProcessException, IOException {
+			throws DataSpecificationException, ProcessException, IOException,
+			InterruptedException {
 		executor.execute();
 		executor.setBaseAddress(start);
 
@@ -124,7 +127,8 @@ class ExecutionContext implements AutoCloseable {
 	}
 
 	private void writeHeader(HasCoreLocation core, Executor executor,
-			MemoryLocation startAddress) throws IOException, ProcessException {
+			MemoryLocation startAddress)
+			throws IOException, ProcessException, InterruptedException {
 		var b = allocate(APP_PTR_TABLE_BYTE_SIZE).order(LITTLE_ENDIAN);
 
 		executor.addHeader(b);
@@ -136,7 +140,7 @@ class ExecutionContext implements AutoCloseable {
 
 	@Override
 	public void close() throws DataSpecificationException, ProcessException,
-			IOException {
+			IOException, InterruptedException {
 		// Check for missing
 		var errors = new ArrayList<String>();
 		for (var toFill : regionsToFill) {

@@ -105,9 +105,11 @@ public class DirectDataGatherer extends DataGatherer {
 	 *             If IO fails
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	private IntBuffer getCoreRegionTable(CoreLocation core, Vertex vertex)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		// TODO get this info from the database, if the DB knows it
 		Map<MemoryLocation, ByteBuffer> map;
 		synchronized (coreTableCache) {
@@ -135,7 +137,7 @@ public class DirectDataGatherer extends DataGatherer {
 
 	@Override
 	protected List<Region> getRegion(Placement placement, int regionID)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var b = getCoreRegionTable(placement.asCoreLocation(),
 				placement.getVertex());
 		// TODO This is wrong because of shared regions!

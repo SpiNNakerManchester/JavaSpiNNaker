@@ -38,8 +38,11 @@ public interface SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
-	default void destroy() throws IOException, SpallocServerException {
+	default void destroy()
+			throws IOException, SpallocServerException, InterruptedException {
 		destroy(null);
 	}
 
@@ -53,8 +56,11 @@ public interface SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
-	void destroy(String reason) throws IOException, SpallocServerException;
+	void destroy(String reason)
+			throws IOException, SpallocServerException, InterruptedException;
 
 	/**
 	 * Turn the boards allocated to the job on or off.
@@ -72,8 +78,11 @@ public interface SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
-	void setPower(Boolean powerOn) throws IOException, SpallocServerException;
+	void setPower(Boolean powerOn)
+			throws IOException, SpallocServerException, InterruptedException;
 
 	/**
 	 * Reset (power-cycle) the boards allocated to the job.
@@ -87,8 +96,11 @@ public interface SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
-	default void reset() throws IOException, SpallocServerException {
+	default void reset()
+			throws IOException, SpallocServerException, InterruptedException {
 		setPower(true);
 	}
 
@@ -101,8 +113,11 @@ public interface SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
-	State getState() throws IOException, SpallocServerException;
+	State getState()
+			throws IOException, SpallocServerException, InterruptedException;
 
 	/**
 	 * @return The current power state of the job.
@@ -110,8 +125,11 @@ public interface SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
-	Boolean getPower() throws IOException, SpallocServerException;
+	Boolean getPower()
+			throws IOException, SpallocServerException, InterruptedException;
 
 	/**
 	 * @return The reason for destruction of the job, or {@code null} if there
@@ -122,8 +140,11 @@ public interface SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
-	String getDestroyReason() throws IOException, SpallocServerException;
+	String getDestroyReason()
+			throws IOException, SpallocServerException, InterruptedException;
 
 	/**
 	 * @return The list of connections, where each connection says what the
@@ -134,9 +155,11 @@ public interface SpallocJobAPI {
 	 *             If the spalloc server rejects the operation request.
 	 * @throws IllegalStateException
 	 *             If the spalloc job is not Ready.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
-	List<Connection> getConnections()
-			throws IOException, SpallocServerException, IllegalStateException;
+	List<Connection> getConnections() throws IOException,
+			SpallocServerException, IllegalStateException, InterruptedException;
 
 	/**
 	 * @return The name of the host that is the root chip of the whole
@@ -145,8 +168,11 @@ public interface SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
-	String getHostname() throws IOException, SpallocServerException;
+	String getHostname()
+			throws IOException, SpallocServerException, InterruptedException;
 
 	/**
 	 * @return The dimensions of the machine in chips, e.g., for booting.
@@ -156,9 +182,11 @@ public interface SpallocJobAPI {
 	 *             If the spalloc server rejects the operation request.
 	 * @throws IllegalStateException
 	 *             If the spalloc job is not Ready.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
-	MachineDimensions getDimensions()
-			throws IOException, SpallocServerException, IllegalStateException;
+	MachineDimensions getDimensions() throws IOException,
+			SpallocServerException, IllegalStateException, InterruptedException;
 
 	/**
 	 * @return The name of the machine the job is allocated on.
@@ -168,9 +196,11 @@ public interface SpallocJobAPI {
 	 *             If the spalloc server rejects the operation request.
 	 * @throws IllegalStateException
 	 *             If the spalloc job is not Ready.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
-	String getMachineName()
-			throws IOException, SpallocServerException, IllegalStateException;
+	String getMachineName() throws IOException, SpallocServerException,
+			IllegalStateException, InterruptedException;
 
 	/**
 	 * @return All the boards allocated to the job.
@@ -180,9 +210,11 @@ public interface SpallocJobAPI {
 	 *             If the spalloc server rejects the operation request.
 	 * @throws IllegalStateException
 	 *             If the spalloc job is not Ready.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
-	List<BoardCoordinates> getBoards()
-			throws IOException, SpallocServerException, IllegalStateException;
+	List<BoardCoordinates> getBoards() throws IOException,
+			SpallocServerException, IllegalStateException, InterruptedException;
 
 	/**
 	 * Block until the job's state changes from the supplied state.
@@ -192,9 +224,11 @@ public interface SpallocJobAPI {
 	 * @return The new state.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
 	default State waitForStateChange(State oldState)
-			throws SpallocServerException {
+			throws SpallocServerException, InterruptedException {
 		return waitForStateChange(oldState, null);
 	}
 
@@ -209,9 +243,11 @@ public interface SpallocJobAPI {
 	 * @return The new state, or old state if timed out.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
 	State waitForStateChange(State oldState, Integer timeout)
-			throws SpallocServerException;
+			throws SpallocServerException, InterruptedException;
 
 	/**
 	 * Block until the job is allocated and ready.
@@ -227,10 +263,12 @@ public interface SpallocJobAPI {
 	 *             If the timeout expired before the ready state was entered.
 	 * @throws JobDestroyedException
 	 *             If the job was destroyed before becoming ready.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
 	void waitUntilReady(Integer timeout)
 			throws JobDestroyedException, IOException, SpallocServerException,
-			SpallocStateChangeTimeoutException;
+			SpallocStateChangeTimeoutException, InterruptedException;
 
 	/**
 	 * Locates and returns the physical coordinates containing a given chip in a
@@ -243,7 +281,9 @@ public interface SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
 	BoardPhysicalCoordinates whereIs(HasChipLocation chip)
-			throws IOException, SpallocServerException;
+			throws IOException, SpallocServerException, InterruptedException;
 }
