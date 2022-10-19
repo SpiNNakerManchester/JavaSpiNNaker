@@ -194,10 +194,12 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
 	@MustBeClosed
 	public SpallocJob(String hostname, Integer timeout, CreateJob builder)
-			throws IOException, SpallocServerException {
+			throws IOException, SpallocServerException, InterruptedException {
 		this(hostname, config.getPort(), timeout, builder);
 	}
 
@@ -212,10 +214,12 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
 	@MustBeClosed
 	public SpallocJob(String hostname, CreateJob builder)
-			throws IOException, SpallocServerException {
+			throws IOException, SpallocServerException, InterruptedException {
 		this(hostname, config.getPort(), f2ms(config.getTimeout()), builder);
 	}
 
@@ -228,10 +232,12 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
 	@MustBeClosed
 	public SpallocJob(CreateJob builder)
-			throws IOException, SpallocServerException {
+			throws IOException, SpallocServerException, InterruptedException {
 		this(config.getHost(), config.getPort(), f2ms(config.getTimeout()),
 				builder);
 	}
@@ -249,9 +255,11 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *             If the spalloc server rejects the operation request.
 	 * @throws IllegalArgumentException
 	 *             If a bad builder is given.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
 	public SpallocJob(SpallocClient client, CreateJob builder)
-			throws IOException, SpallocServerException {
+			throws IOException, SpallocServerException, InterruptedException {
 		this(client, f2ms(config.getTimeout()), builder);
 	}
 
@@ -268,11 +276,13 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 * @throws IllegalArgumentException
 	 *             If a bad builder is given.
 	 */
 	public SpallocJob(SpallocClient client, Integer timeout, CreateJob builder)
-			throws IOException, SpallocServerException {
+			throws IOException, SpallocServerException, InterruptedException {
 		if (builder == null) {
 			throw new IllegalArgumentException("a builder must be specified");
 		}
@@ -305,6 +315,8 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 * @throws IllegalArgumentException
 	 *             If a bad builder is given.
 	 */
@@ -312,7 +324,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	@SuppressWarnings("MustBeClosed")
 	public SpallocJob(String hostname, Integer port, Integer timeout,
 			CreateJob builder)
-			throws IOException, SpallocServerException {
+			throws IOException, SpallocServerException, InterruptedException {
 		if (Objects.isNull(builder)) {
 			throw new IllegalArgumentException("a builder must be specified");
 		}
@@ -354,10 +366,12 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *             If the spalloc server rejects the operation request.
 	 * @throws JobDestroyedException
 	 *             If the job doesn't exist (any more).
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
 	@MustBeClosed
-	public SpallocJob(int id)
-			throws IOException, SpallocServerException, JobDestroyedException {
+	public SpallocJob(int id) throws IOException, SpallocServerException,
+			JobDestroyedException, InterruptedException {
 		this(config.getHost(), config.getPort(), f2ms(config.getTimeout()), id);
 	}
 
@@ -374,10 +388,13 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *             If the spalloc server rejects the operation request.
 	 * @throws JobDestroyedException
 	 *             If the job doesn't exist (any more).
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
 	@MustBeClosed
 	public SpallocJob(String hostname, int id)
-			throws IOException, SpallocServerException, JobDestroyedException {
+			throws IOException, SpallocServerException, JobDestroyedException,
+			InterruptedException {
 		this(hostname, config.getPort(), f2ms(config.getTimeout()), id);
 	}
 
@@ -396,10 +413,13 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *             If the spalloc server rejects the operation request.
 	 * @throws JobDestroyedException
 	 *             If the job doesn't exist (any more).
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
 	@MustBeClosed
 	public SpallocJob(String hostname, Integer timeout, int id)
-			throws IOException, SpallocServerException, JobDestroyedException {
+			throws IOException, SpallocServerException, JobDestroyedException,
+			InterruptedException {
 		this(hostname, config.getPort(), timeout, id);
 	}
 
@@ -436,11 +456,14 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *             If the spalloc server rejects the operation request.
 	 * @throws JobDestroyedException
 	 *             If the job doesn't exist (any more).
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
 	public SpallocJob(String hostname, int port, Integer timeout, int id)
-			throws IOException, SpallocServerException, JobDestroyedException {
+			throws IOException, SpallocServerException, JobDestroyedException,
+			InterruptedException {
 		this.client = new SpallocClient(hostname, port, timeout);
 		this.timeout = timeout;
 		this.id = id;
@@ -508,11 +531,14 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 
 	/**
 	 * Reconnect to the server and check version.
-	 *
+	 * <p>
 	 * If reconnection fails, the error is reported as a warning but no
 	 * exception is raised.
+	 *
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
-	private void reconnect() {
+	private void reconnect() throws InterruptedException {
 		try {
 			client.connect(timeout);
 			assertCompatibleVersion();
@@ -541,11 +567,13 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 * @throws IllegalStateException
 	 *             If the server is not compatible with this client.
 	 */
 	protected void assertCompatibleVersion()
-			throws IOException, SpallocServerException {
+			throws IOException, SpallocServerException, InterruptedException {
 		var v = client.version(timeout);
 		if (MIN_VER.compareTo(v) <= 0 && MAX_VER.compareTo(v) > 0) {
 			return;
@@ -557,7 +585,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 
 	@Override
 	public void destroy(String reason)
-			throws IOException, SpallocServerException {
+			throws IOException, SpallocServerException, InterruptedException {
 		try {
 			client.destroyJob(id, reason, timeout);
 		} finally {
@@ -568,7 +596,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 
 	@Override
 	public void setPower(Boolean powerOn)
-			throws IOException, SpallocServerException {
+			throws IOException, SpallocServerException, InterruptedException {
 		if (powerOn == null) {
 			return;
 		}
@@ -585,7 +613,8 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 		return id;
 	}
 
-	private JobState getStatus() throws IOException, SpallocServerException {
+	private JobState getStatus()
+			throws IOException, SpallocServerException, InterruptedException {
 		if (statusCache == null || statusTimestamp < currentTimeMillis()
 				- STATUS_CACHE_PERIOD) {
 			statusCache = client.getJobState(id, timeout);
@@ -599,23 +628,26 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	}
 
 	@Override
-	public State getState() throws IOException, SpallocServerException {
+	public State getState()
+			throws IOException, SpallocServerException, InterruptedException {
 		return getStatus().getState();
 	}
 
 	@Override
-	public Boolean getPower() throws IOException, SpallocServerException {
+	public Boolean getPower()
+			throws IOException, SpallocServerException, InterruptedException {
 		return getStatus().getPower();
 	}
 
 	@Override
 	public String getDestroyReason()
-			throws IOException, SpallocServerException {
+			throws IOException, SpallocServerException, InterruptedException {
 		return getStatus().getReason();
 	}
 
 	private void retrieveMachineInfo()
-			throws IOException, SpallocServerException, IllegalStateException {
+			throws IOException, SpallocServerException, IllegalStateException,
+			InterruptedException {
 		/*
 		 * Check the job is still not QUEUED as then machine info is all nulls
 		 * getJobMachineInfo works if the Job is in State.POWER
@@ -635,7 +667,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 
 	@Override
 	public List<Connection> getConnections()
-			throws IOException, SpallocServerException, IllegalStateException {
+			throws IOException, SpallocServerException, InterruptedException {
 		if (machineInfoCache == null
 				|| machineInfoCache.getConnections() == null) {
 			retrieveMachineInfo();
@@ -644,7 +676,8 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	}
 
 	@Override
-	public String getHostname() throws IOException, SpallocServerException {
+	public String getHostname()
+			throws IOException, SpallocServerException, InterruptedException {
 		for (Connection c : getConnections()) {
 			if (c.getChip().onSameChipAs(ZERO_ZERO)) {
 				return c.getHostname();
@@ -655,20 +688,22 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 
 	@Override
 	public MachineDimensions getDimensions()
-			throws IOException, SpallocServerException, IllegalStateException {
+			throws IOException, SpallocServerException,
+			InterruptedException {
 		if (machineInfoCache == null || machineInfoCache.getWidth() == 0) {
 			retrieveMachineInfo();
 		}
 		if (machineInfoCache == null || machineInfoCache.getWidth() == 0) {
 			return null;
 		}
-		return new MachineDimensions(machineInfoCache.getWidth(),
+		return new MachineDimensions(
+				machineInfoCache.getWidth(),
 				machineInfoCache.getHeight());
 	}
 
 	@Override
-	public String getMachineName()
-			throws IOException, SpallocServerException, IllegalStateException {
+	public String getMachineName() throws IOException, SpallocServerException,
+			InterruptedException {
 		if (machineInfoCache == null
 				|| machineInfoCache.getMachineName() == null) {
 			retrieveMachineInfo();
@@ -681,7 +716,8 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 
 	@Override
 	public List<BoardCoordinates> getBoards()
-			throws IOException, SpallocServerException, IllegalStateException {
+			throws IOException, SpallocServerException, IllegalStateException,
+			InterruptedException {
 		if (machineInfoCache == null || machineInfoCache.getBoards() == null) {
 			retrieveMachineInfo();
 		}
@@ -693,7 +729,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 
 	@Override
 	public State waitForStateChange(State oldState, Integer timeout)
-			throws SpallocServerException {
+			throws SpallocServerException, InterruptedException {
 		var finishTime = makeTimeout(timeout);
 
 		// We may get disconnected while waiting so keep listening...
@@ -728,7 +764,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 				 */
 				try {
 					doReconnect(finishTime);
-				} catch (IOException | InterruptedException e1) {
+				} catch (IOException e1) {
 					log.error("problem when reconnecting after disconnect", e1);
 				}
 			}
@@ -751,9 +787,11 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *             If the server throws an exception.
 	 * @throws IOException
 	 *             If communications fail.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
 	 */
 	private boolean doWaitForAChange(Long finishTime)
-			throws IOException, SpallocServerException {
+			throws IOException, SpallocServerException, InterruptedException {
 		/*
 		 * Since we're about to block holding the client lock, we must be
 		 * responsible for keeping everything alive.
@@ -816,7 +854,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	@Override
 	public void waitUntilReady(Integer timeout)
 			throws JobDestroyedException, IOException, SpallocServerException,
-			SpallocStateChangeTimeoutException {
+			SpallocStateChangeTimeoutException, InterruptedException {
 		State curState = null;
 		var finishTime = makeTimeout(timeout);
 		while (!timedOut(finishTime)) {
@@ -858,7 +896,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 
 	@Override
 	public BoardPhysicalCoordinates whereIs(HasChipLocation chip)
-			throws IOException, SpallocServerException {
+			throws IOException, SpallocServerException, InterruptedException {
 		var result = client.whereIs(id, chip, timeout);
 		if (result == null) {
 			throw new IllegalStateException(

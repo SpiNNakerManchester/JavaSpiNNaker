@@ -91,7 +91,8 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	 *         socket timed out (not an error!)
 	 */
 	@Override
-	public Optional<ByteBuffer> receiveMessage(int timeout) throws IOException {
+	public Optional<ByteBuffer> receiveMessage(int timeout)
+			throws IOException, InterruptedException {
 		try {
 			// Raw buffer, including header bytes
 			var msg = receive(timeout);
@@ -167,13 +168,16 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 				e.addSuppressed(e1);
 			}
 			log.warn("problem in SpiNNaker-to-client part of {}", name, e);
+		} catch (InterruptedException e) {
+			// We've been interrupted, so we're done.
+			return;
 		} finally {
 			log.debug("shutting down listener {}", name);
 			me.setName(oldThreadName);
 		}
 	}
 
-	private void mainLoop() throws IOException {
+	private void mainLoop() throws IOException, InterruptedException {
 		while (session.isOpen() && !isClosed()) {
 			var msg = receiveMessage(TIMEOUT);
 			if (msg.isPresent()) {

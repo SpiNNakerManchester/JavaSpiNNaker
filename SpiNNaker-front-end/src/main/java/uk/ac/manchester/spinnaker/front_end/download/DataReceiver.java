@@ -100,17 +100,19 @@ public class DataReceiver extends BoardLocalSupport {
 	 *             if SpiNNaker rejects a message
 	 * @throws StorageException
 	 *             if database access fails
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	public void getDataForPlacementsParallel(List<Placement> placements,
-			int parallelFactor)
-			throws IOException, StorageException, ProcessException {
+			int parallelFactor) throws IOException, StorageException,
+			ProcessException, InterruptedException {
 		try (var exec = new BasicExecutor(parallelFactor)) {
 			// get data on a by-the-board basis
 			exec.submitTasks(partitionByBoard(placements), places -> {
 				return () -> getDataForPlacements(places);
 			}).awaitAndCombineExceptions();
 		} catch (IOException | StorageException | ProcessException
-				| RuntimeException e) {
+				| RuntimeException | InterruptedException e) {
 			throw e;
 		} catch (Exception e) {
 			// CHECKSTYLE:OFF
@@ -134,9 +136,12 @@ public class DataReceiver extends BoardLocalSupport {
 	 *             if SpiNNaker rejects a message
 	 * @throws StorageException
 	 *             if database access fails
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	public void getDataForPlacements(List<Placement> placements)
-			throws IOException, StorageException, ProcessException {
+			throws IOException, StorageException, ProcessException,
+			InterruptedException {
 		// get data
 		try (var c = new BoardLocal(placements.get(0))) {
 			for (var placement : placements) {
@@ -149,7 +154,8 @@ public class DataReceiver extends BoardLocalSupport {
 	}
 
 	private void getDataForPlacement(Placement placement, int recordingRegionId)
-			throws IOException, StorageException, ProcessException {
+			throws IOException, StorageException, ProcessException,
+			InterruptedException {
 		// Combine placement.x, placement.y, placement.p, recording_region_id
 		var location = new RegionLocation(placement, recordingRegionId);
 
@@ -177,8 +183,8 @@ public class DataReceiver extends BoardLocalSupport {
 	}
 
 	private void readSomeData(RegionLocation location, MemoryLocation address,
-			long length)
-			throws IOException, StorageException, ProcessException {
+			long length) throws IOException, StorageException, ProcessException,
+			InterruptedException {
 		if (!is32bit(length)) {
 			throw new IllegalArgumentException("non-32-bit argument");
 		}
@@ -202,10 +208,12 @@ public class DataReceiver extends BoardLocalSupport {
 	 * @return data as a byte array
 	 * @throws IOException
 	 *             if communications fail
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	private ByteBuffer requestData(HasCoreLocation location,
 			MemoryLocation address, int length)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		if (length < 1) {
 			// Crazy negative lengths get an exception
 			return allocate(length);

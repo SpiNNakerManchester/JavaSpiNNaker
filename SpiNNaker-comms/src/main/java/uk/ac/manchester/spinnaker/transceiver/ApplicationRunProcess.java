@@ -56,9 +56,11 @@ class ApplicationRunProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void run(AppID appID, CoreSubsets coreSubsets, boolean wait)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		for (var chip : coreSubsets.getChips()) {
 			sendRequest(new ApplicationRun(appID, chip,
 					coreSubsets.pByChip(chip), wait));

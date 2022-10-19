@@ -14,7 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.connections;
+package uk.ac.manchester.spinnaker.connections.model;
+
+import java.util.function.BiConsumer;
 
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 
@@ -24,7 +26,8 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
  * @author Donal Fellows
  */
 @FunctionalInterface
-public interface SCPErrorHandler {
+public interface SCPErrorHandler extends BiConsumer<SCPRequest<?>, Throwable> {
+
 	/**
 	 * A callback function to call when an error is found when processing an SCP
 	 * message.
@@ -34,5 +37,7 @@ public interface SCPErrorHandler {
 	 * @param exception
 	 *            the exception caught while sending the request.
 	 */
-	void handleError(SCPRequest<?> request, Throwable exception);
+	default void handleError(SCPRequest<?> request, Throwable exception) {
+		this.accept(request, exception);
+	}
 }

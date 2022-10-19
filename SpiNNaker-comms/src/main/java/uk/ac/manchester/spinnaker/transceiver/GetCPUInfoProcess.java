@@ -58,9 +58,11 @@ class GetCPUInfoProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	MappableIterable<CPUInfo> getCPUInfo(CoreSubsets coreSubsets)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var cpuInfo = new ArrayList<CPUInfo>();
 		for (var core : requireNonNull(coreSubsets,
 				"must have actual core subset to iterate over")) {

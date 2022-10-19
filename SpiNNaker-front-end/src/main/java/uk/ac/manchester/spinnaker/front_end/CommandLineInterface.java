@@ -340,10 +340,12 @@ public final class CommandLineInterface {
 	 *             If a BMP is uncontactable or SpiNNaker rejects a message
 	 * @throws StorageException
 	 *             If the database is in an illegal state
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	public static void downloadRun(String placementsJsonFile,
 			String machineJsonFile, String runFolder) throws IOException,
-			SpinnmanException, StorageException {
+			SpinnmanException, StorageException, InterruptedException {
 		var placements = getPlacements(placementsJsonFile);
 		var machine = getMachine(machineJsonFile);
 		var db = getDatabase(runFolder);
