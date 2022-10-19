@@ -259,7 +259,8 @@ implements <a href="../../../machine/HasCoreLocation.html" title="interface in u
 <h3><a id="updateTransactionIdFromMachine(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface)">updateTransactionIdFromMachine</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">updateTransactionIdFromMachine</span>&#8203;(<span class="arguments"><a href="../../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx)</span>
                                     throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
-<a href="../../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span></div>
+<a href="../../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">gets the transaction id from the machine and updates.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -267,6 +268,7 @@ implements <a href="../../../machine/HasCoreLocation.html" title="interface in u
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If SpiNNaker rejects a message.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong with networking.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If communications are interrupted.</dd>
 </dl>
 </section>
 </li>

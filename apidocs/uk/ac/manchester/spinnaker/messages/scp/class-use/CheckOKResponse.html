@@ -115,9 +115,9 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>&lt;T extends <a href="../CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;<br>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SCPRequestPipeline.</span><code><span class="memberNameLink"><a href="../../../connections/SCPRequestPipeline.html#sendRequest(uk.ac.manchester.spinnaker.messages.scp.SCPRequest,java.util.function.Consumer,uk.ac.manchester.spinnaker.connections.SCPErrorHandler)">sendRequest</a></span>&#8203;(<a href="../SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;T&gt;&nbsp;request,
+<th class="colSecond" scope="row"><span class="typeNameLabel">SCPRequestPipeline.</span><code><span class="memberNameLink"><a href="../../../connections/SCPRequestPipeline.html#sendRequest(uk.ac.manchester.spinnaker.messages.scp.SCPRequest,java.util.function.Consumer,java.util.function.BiConsumer)">sendRequest</a></span>&#8203;(<a href="../SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;T&gt;&nbsp;request,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;T&gt;&nbsp;callback,
-<a href="../../../connections/SCPErrorHandler.html" title="interface in uk.ac.manchester.spinnaker.connections">SCPErrorHandler</a>&nbsp;errorCallback)</code></th>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/BiConsumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">BiConsumer</a>&lt;<a href="../SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;?&gt;,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Throwable</a>&gt;&nbsp;errorCallback)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
@@ -143,9 +143,9 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>&lt;T extends <a href="../CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;<br>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">AsyncCommsTask.</span><code><span class="memberNameLink"><a href="../../../connections/model/AsyncCommsTask.html#sendRequest(uk.ac.manchester.spinnaker.messages.scp.SCPRequest,java.util.function.Consumer,uk.ac.manchester.spinnaker.connections.SCPErrorHandler)">sendRequest</a></span>&#8203;(<a href="../SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;T&gt;&nbsp;request,
+<th class="colSecond" scope="row"><span class="typeNameLabel">AsyncCommsTask.</span><code><span class="memberNameLink"><a href="../../../connections/model/AsyncCommsTask.html#sendRequest(uk.ac.manchester.spinnaker.messages.scp.SCPRequest,java.util.function.Consumer,java.util.function.BiConsumer)">sendRequest</a></span>&#8203;(<a href="../SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;T&gt;&nbsp;request,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;T&gt;&nbsp;callback,
-<a href="../../../connections/SCPErrorHandler.html" title="interface in uk.ac.manchester.spinnaker.connections">SCPErrorHandler</a>&nbsp;errorCallback)</code></th>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/BiConsumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">BiConsumer</a>&lt;<a href="../SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;?&gt;,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Throwable</a>&gt;&nbsp;errorCallback)</code></th>
 <td class="colLast">
 <div class="block">Add an SCP request to the set to be sent.</div>
 </td>

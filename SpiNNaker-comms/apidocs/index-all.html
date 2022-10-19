@@ -333,7 +333,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/io/AbstractIO.html#asOutputStream()">asOutputStream()</a></span> - Method in interface uk.ac.manchester.spinnaker.io.<a href="uk/ac/manchester/spinnaker/io/AbstractIO.html" title="interface in uk.ac.manchester.spinnaker.io">AbstractIO</a></dt>
 <dd>
-<div class="block">Get a view of this IO object as a Java input stream.</div>
+<div class="block">Get a view of this IO object as a Java output stream.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/spalloc/SpallocJob.html#assertCompatibleVersion()">assertCompatibleVersion()</a></span> - Method in class uk.ac.manchester.spinnaker.spalloc.<a href="uk/ac/manchester/spinnaker/spalloc/SpallocJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">SpallocJob</a></dt>
 <dd>
@@ -350,8 +350,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/BMPTransceiverInterface.html#availableBoards()">availableBoards()</a></span> - Method in interface uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/BMPTransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface</a></dt>
 <dd>
-<div class="block">List which boards are actually available to be manipulated by the default
- BMP.</div>
+<div class="block">List which boards are actually available to be manipulated by the current
+ bound BMP.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/BMPTransceiverInterface.html#availableBoards(uk.ac.manchester.spinnaker.machine.board.BMPCoords)">availableBoards(BMPCoords)</a></span> - Method in interface uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/BMPTransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface</a></dt>
 <dd>
@@ -3726,7 +3726,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Handle an EIEIO data message.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPErrorHandler.html#handleError(uk.ac.manchester.spinnaker.messages.scp.SCPRequest,java.lang.Throwable)">handleError(SCPRequest&lt;?&gt;, Throwable)</a></span> - Method in interface uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPErrorHandler.html" title="interface in uk.ac.manchester.spinnaker.connections">SCPErrorHandler</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/model/SCPErrorHandler.html#handleError(uk.ac.manchester.spinnaker.messages.scp.SCPRequest,java.lang.Throwable)">handleError(SCPRequest&lt;?&gt;, Throwable)</a></span> - Method in interface uk.ac.manchester.spinnaker.connections.model.<a href="uk/ac/manchester/spinnaker/connections/model/SCPErrorHandler.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPErrorHandler</a></dt>
 <dd>
 <div class="block">A callback function to call when an error is found when processing an SCP
  message.</div>
@@ -6337,7 +6337,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Create a connection to a particular instance of SCAMP.</div>
 </dd>
-<dt><a href="uk/ac/manchester/spinnaker/connections/SCPErrorHandler.html" title="interface in uk.ac.manchester.spinnaker.connections"><span class="typeNameLink">SCPErrorHandler</span></a> - Interface in <a href="uk/ac/manchester/spinnaker/connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a></dt>
+<dt><a href="uk/ac/manchester/spinnaker/connections/model/SCPErrorHandler.html" title="interface in uk.ac.manchester.spinnaker.connections.model"><span class="typeNameLink">SCPErrorHandler</span></a> - Interface in <a href="uk/ac/manchester/spinnaker/connections/model/package-summary.html">uk.ac.manchester.spinnaker.connections.model</a></dt>
 <dd>
 <div class="block">A callback handler for reporting errors in receiving an SCP (or BMP) message.</div>
 </dd>
@@ -6644,11 +6644,11 @@ loadScripts(document, 'script');</script>
              directly instead.</div>
 </div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/model/AsyncCommsTask.html#sendRequest(uk.ac.manchester.spinnaker.messages.scp.SCPRequest,java.util.function.Consumer,uk.ac.manchester.spinnaker.connections.SCPErrorHandler)">sendRequest(SCPRequest&lt;T&gt;, Consumer&lt;T&gt;, SCPErrorHandler)</a></span> - Method in interface uk.ac.manchester.spinnaker.connections.model.<a href="uk/ac/manchester/spinnaker/connections/model/AsyncCommsTask.html" title="interface in uk.ac.manchester.spinnaker.connections.model">AsyncCommsTask</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/model/AsyncCommsTask.html#sendRequest(uk.ac.manchester.spinnaker.messages.scp.SCPRequest,java.util.function.Consumer,java.util.function.BiConsumer)">sendRequest(SCPRequest&lt;T&gt;, Consumer&lt;T&gt;, BiConsumer&lt;SCPRequest&lt;?&gt;, Throwable&gt;)</a></span> - Method in interface uk.ac.manchester.spinnaker.connections.model.<a href="uk/ac/manchester/spinnaker/connections/model/AsyncCommsTask.html" title="interface in uk.ac.manchester.spinnaker.connections.model">AsyncCommsTask</a></dt>
 <dd>
 <div class="block">Add an SCP request to the set to be sent.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPRequestPipeline.html#sendRequest(uk.ac.manchester.spinnaker.messages.scp.SCPRequest,java.util.function.Consumer,uk.ac.manchester.spinnaker.connections.SCPErrorHandler)">sendRequest(SCPRequest&lt;T&gt;, Consumer&lt;T&gt;, SCPErrorHandler)</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPRequestPipeline.html" title="class in uk.ac.manchester.spinnaker.connections">SCPRequestPipeline</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPRequestPipeline.html#sendRequest(uk.ac.manchester.spinnaker.messages.scp.SCPRequest,java.util.function.Consumer,java.util.function.BiConsumer)">sendRequest(SCPRequest&lt;T&gt;, Consumer&lt;T&gt;, BiConsumer&lt;SCPRequest&lt;?&gt;, Throwable&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPRequestPipeline.html" title="class in uk.ac.manchester.spinnaker.connections">SCPRequestPipeline</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html#sendSCPMessage(uk.ac.manchester.spinnaker.messages.scp.SCPRequest,uk.ac.manchester.spinnaker.connections.SCPConnection)">sendSCPMessage(SCPRequest&lt;?&gt;, SCPConnection)</a></span> - Method in interface uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></dt>
 <dd>

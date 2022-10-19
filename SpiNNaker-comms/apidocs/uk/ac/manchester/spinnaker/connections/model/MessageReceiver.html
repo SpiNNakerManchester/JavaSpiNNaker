@@ -180,7 +180,8 @@ extends <a href="SocketHolder.html" title="interface in uk.ac.manchester.spinnak
 <section class="detail">
 <h3><a id="receiveMessage()">receiveMessage</a></h3>
 <div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="MessageReceiver.html" title="type parameter in MessageReceiver">MessageType</a></span>&nbsp;<span class="memberName">receiveMessage</span>()
-                            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+                            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Receives a SpiNNaker message from this connection. Blocks until a message
  has been received.</div>
 <dl>
@@ -188,6 +189,7 @@ extends <a href="SocketHolder.html" title="interface in uk.ac.manchester.spinnak
 <dd>the received message</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If there is an error receiving the message</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If communications are interrupted.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If one of the fields of the SpiNNaker message is invalid</dd>
 </dl>
 </section>
@@ -196,7 +198,8 @@ extends <a href="SocketHolder.html" title="interface in uk.ac.manchester.spinnak
 <section class="detail">
 <h3><a id="receiveMessage(int)">receiveMessage</a></h3>
 <div class="memberSignature"><span class="returnType"><a href="MessageReceiver.html" title="type parameter in MessageReceiver">MessageType</a></span>&nbsp;<span class="memberName">receiveMessage</span>&#8203;(<span class="arguments">int&nbsp;timeout)</span>
-                    throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+                    throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Receives a SpiNNaker message from this connection. Blocks until a message
  has been received, or a timeout occurs.</div>
 <dl>
@@ -207,6 +210,7 @@ extends <a href="SocketHolder.html" title="interface in uk.ac.manchester.spinnak
 <dd>the received message</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If there is an error receiving the message</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If communications are interrupted.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/SocketTimeoutException.html?is-external=true" title="class or interface in java.net" class="externalLink">SocketTimeoutException</a></code> - If there is a timeout during receiving</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If one of the fields of the SpiNNaker message is invalid</dd>
 </dl>

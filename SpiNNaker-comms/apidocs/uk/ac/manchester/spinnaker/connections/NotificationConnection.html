@@ -333,7 +333,8 @@ implements <a href="model/NotificationReceiver.html" title="interface in uk.ac.m
 <section class="detail">
 <h3><a id="receiveMessage(int)">receiveMessage</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="../messages/notification/NotificationMessage.html" title="interface in uk.ac.manchester.spinnaker.messages.notification">NotificationMessage</a></span>&nbsp;<span class="memberName">receiveMessage</span>&#8203;(<span class="arguments">int&nbsp;timeout)</span>
-                                   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+                                   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="model/MessageReceiver.html#receiveMessage(int)">MessageReceiver</a></code></span></div>
 <div class="block">Receives a SpiNNaker message from this connection. Blocks until a message
  has been received, or a timeout occurs.</div>
@@ -348,6 +349,7 @@ implements <a href="model/NotificationReceiver.html" title="interface in uk.ac.m
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If there is an error receiving the message</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/SocketTimeoutException.html?is-external=true" title="class or interface in java.net" class="externalLink">SocketTimeoutException</a></code> - If there is a timeout during receiving</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If communications are interrupted.</dd>
 </dl>
 </section>
 </li>

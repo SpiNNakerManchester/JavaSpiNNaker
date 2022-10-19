@@ -278,7 +278,8 @@ uk.ac.manchester.spinnaker.machine.board.BMPBoard&nbsp;board)</span></div>
 <h3><a id="setupRegisters(uk.ac.manchester.spinnaker.alloc.bmp.FirmwareLoader.RegisterSet...)">setupRegisters</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setupRegisters</span>&#8203;(<span class="arguments"><a href="FirmwareLoader.RegisterSet.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">FirmwareLoader.RegisterSet</a>...&nbsp;settings)</span>
                     throws <span class="exceptions"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/ProcessException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">ProcessException</a>,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">The write part of <code>cmd_xreg</code> from <code>bmpc</code>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -286,6 +287,7 @@ uk.ac.manchester.spinnaker.machine.board.BMPBoard&nbsp;board)</span></div>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong with networking.</dd>
 <dd><code><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/ProcessException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">ProcessException</a></code> - If SpiNNaker rejects a message.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If the communications were interrupted.</dd>
 <dd><code><a href="FirmwareLoader.UpdateFailedException.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">FirmwareLoader.UpdateFailedException</a></code> - If the flash data sector read back does not match what we
              wanted to write.</dd>
 </dl>
@@ -298,7 +300,8 @@ uk.ac.manchester.spinnaker.machine.board.BMPBoard&nbsp;board)</span></div>
 int&nbsp;slot,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/messages/model/FPGA.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.messages.model" class="externalLink">FPGA</a>&nbsp;chip)</span>
                   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
-<a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/ProcessException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">ProcessException</a></span></div>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/ProcessException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">ProcessException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Set a bitfile to be loaded.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -313,6 +316,7 @@ int&nbsp;slot,
 <dd><code><a href="FirmwareLoader.CRCFailedException.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">FirmwareLoader.CRCFailedException</a></code> - If the written bitfile fails its CRC check.</dd>
 <dd><code><a href="FirmwareLoader.UpdateFailedException.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">FirmwareLoader.UpdateFailedException</a></code> - If the flash data sector read back does not match what we
              wanted to write.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If the communications were interrupted.</dd>
 </dl>
 </section>
 </li>

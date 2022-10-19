@@ -166,7 +166,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <td class="colFirst"><code>default <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/OutputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">OutputStream</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#asOutputStream()">asOutputStream</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Get a view of this IO object as a Java input stream.</div>
+<div class="block">Get a view of this IO object as a Java output stream.</div>
 </td>
 </tr>
 <tr class="altColor" id="i2">
@@ -370,12 +370,14 @@ int&nbsp;size)</code></th>
 <h3><a id="flush()">flush</a></h3>
 <div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">flush</span>()
     throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
-<a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span></div>
+<a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Flush any outstanding written data.</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If the communications with SpiNNaker fails</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If something goes wrong</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If the communications were interrupted.</dd>
 </dl>
 </section>
 </li>
@@ -448,7 +450,8 @@ int&nbsp;size)</code></th>
 <h3><a id="read()">read</a></h3>
 <div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType">byte[]</span>&nbsp;<span class="memberName">read</span>()
              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
-<a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span></div>
+<a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Read the rest of the data.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -456,6 +459,7 @@ int&nbsp;size)</code></th>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If the communications with SpiNNaker fails</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the read will be beyond the end of the region</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If the communications were interrupted.</dd>
 </dl>
 </section>
 </li>
@@ -464,7 +468,8 @@ int&nbsp;size)</code></th>
 <h3><a id="read(java.lang.Integer)">read</a></h3>
 <div class="memberSignature"><span class="returnType">byte[]</span>&nbsp;<span class="memberName">read</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;numBytes)</span>
      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
-<a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span></div>
+<a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Read a number of bytes, or the rest of the data if <code>numBytes</code> is
  <code>null</code> or negative.</div>
 <dl>
@@ -476,6 +481,7 @@ int&nbsp;size)</code></th>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If the communications with SpiNNaker fails</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the read will be beyond the end of the region</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If the communications were interrupted.</dd>
 </dl>
 </section>
 </li>
@@ -484,7 +490,8 @@ int&nbsp;size)</code></th>
 <h3><a id="write(byte[])">write</a></h3>
 <div class="memberSignature"><span class="returnType">int</span>&nbsp;<span class="memberName">write</span>&#8203;(<span class="arguments">byte[]&nbsp;data)</span>
    throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
-<a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span></div>
+<a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Write some data to the region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -494,6 +501,7 @@ int&nbsp;size)</code></th>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If the communications with SpiNNaker fails</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the write will go over the end of the region</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If the communications were interrupted.</dd>
 </dl>
 </section>
 </li>
@@ -502,7 +510,8 @@ int&nbsp;size)</code></th>
 <h3><a id="fill(int)">fill</a></h3>
 <div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">fill</span>&#8203;(<span class="arguments">int&nbsp;value)</span>
            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
-<a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span></div>
+<a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Fill the rest of the region with repeated data words.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -510,6 +519,7 @@ int&nbsp;size)</code></th>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If the communications with SpiNNaker fails</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the amount of data to fill is more than the region</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If the communications were interrupted.</dd>
 </dl>
 </section>
 </li>
@@ -519,7 +529,8 @@ int&nbsp;size)</code></th>
 <div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">fill</span>&#8203;(<span class="arguments">int&nbsp;value,
 int&nbsp;size)</span>
            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
-<a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span></div>
+<a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Fill the next part of the region with repeated data words.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -528,6 +539,7 @@ int&nbsp;size)</span>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If the communications with SpiNNaker fails</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the amount of data to fill is more than the region</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If the communications were interrupted.</dd>
 </dl>
 </section>
 </li>
@@ -537,7 +549,8 @@ int&nbsp;size)</span>
 <div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">fill</span>&#8203;(<span class="arguments">int&nbsp;value,
 <a href="../transceiver/FillDataType.html" title="enum in uk.ac.manchester.spinnaker.transceiver">FillDataType</a>&nbsp;type)</span>
            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
-<a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span></div>
+<a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Fill the rest of the region with repeated data.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -546,6 +559,7 @@ int&nbsp;size)</span>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If the communications with SpiNNaker fails</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the amount of data to fill is more than the region</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If the communications were interrupted.</dd>
 </dl>
 </section>
 </li>
@@ -556,7 +570,8 @@ int&nbsp;size)</span>
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;size,
 <a href="../transceiver/FillDataType.html" title="enum in uk.ac.manchester.spinnaker.transceiver">FillDataType</a>&nbsp;type)</span>
    throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
-<a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span></div>
+<a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Fill the next part of the region with repeated data.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -567,6 +582,7 @@ int&nbsp;size)</span>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If the communications with SpiNNaker fails</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the amount of data to fill is more than the region</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If the communications were interrupted.</dd>
 </dl>
 </section>
 </li>
@@ -577,7 +593,8 @@ int&nbsp;size)</span>
 <div class="block">Get a view of this IO object as a Java input stream.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The input stream.</dd>
+<dd>The input stream. You are strongly recommended to wrap this
+         inside a <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/BufferedInputStream.html?is-external=true" title="class or interface in java.io" class="externalLink"><code>BufferedInputStream</code></a>.</dd>
 </dl>
 </section>
 </li>
@@ -585,10 +602,11 @@ int&nbsp;size)</span>
 <section class="detail">
 <h3><a id="asOutputStream()">asOutputStream</a></h3>
 <div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/OutputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">OutputStream</a></span>&nbsp;<span class="memberName">asOutputStream</span>()</div>
-<div class="block">Get a view of this IO object as a Java input stream.</div>
+<div class="block">Get a view of this IO object as a Java output stream.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The input stream.</dd>
+<dd>The output stream. You are strongly recommended to wrap this in a
+         <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/BufferedOutputStream.html?is-external=true" title="class or interface in java.io" class="externalLink"><code>BufferedOutputStream</code></a>.</dd>
 </dl>
 </section>
 </li>

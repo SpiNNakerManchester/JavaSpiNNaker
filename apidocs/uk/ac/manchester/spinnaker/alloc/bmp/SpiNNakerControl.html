@@ -247,7 +247,8 @@ loadScripts(document, 'script');</script>
 <h3><a id="setLinkOff(uk.ac.manchester.spinnaker.alloc.bmp.Link)">setLinkOff</a></h3>
 <div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">setLinkOff</span>&#8203;(<span class="arguments"><a href="Link.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">Link</a>&nbsp;link)</span>
          throws <span class="exceptions"><a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Turns a link off. (We never need to explicitly switch a link on; that's
  implicit in switching on its board.)</div>
 <dl>
@@ -256,6 +257,7 @@ loadScripts(document, 'script');</script>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If a BMP rejects a message.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If network I/O fails.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If the communications were interrupted.</dd>
 </dl>
 </section>
 </li>

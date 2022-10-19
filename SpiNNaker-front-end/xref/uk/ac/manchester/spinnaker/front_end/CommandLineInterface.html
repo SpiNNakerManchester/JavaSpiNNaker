@@ -348,143 +348,145 @@
 <a class="jxr_linenumber" name="L340" href="#L340">340</a> <em class="jxr_javadoccomment">	 *             If a BMP is uncontactable or SpiNNaker rejects a message</em>
 <a class="jxr_linenumber" name="L341" href="#L341">341</a> <em class="jxr_javadoccomment">	 * @throws StorageException</em>
 <a class="jxr_linenumber" name="L342" href="#L342">342</a> <em class="jxr_javadoccomment">	 *             If the database is in an illegal state</em>
-<a class="jxr_linenumber" name="L343" href="#L343">343</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L344" href="#L344">344</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> downloadRun(String placementsJsonFile,
-<a class="jxr_linenumber" name="L345" href="#L345">345</a> 			String machineJsonFile, String runFolder) <strong class="jxr_keyword">throws</strong> IOException,
-<a class="jxr_linenumber" name="L346" href="#L346">346</a> 			SpinnmanException, StorageException {
-<a class="jxr_linenumber" name="L347" href="#L347">347</a> 		<strong class="jxr_keyword">var</strong> placements = getPlacements(placementsJsonFile);
-<a class="jxr_linenumber" name="L348" href="#L348">348</a> 		<strong class="jxr_keyword">var</strong> machine = getMachine(machineJsonFile);
-<a class="jxr_linenumber" name="L349" href="#L349">349</a> 		<strong class="jxr_keyword">var</strong> db = getDatabase(runFolder);
-<a class="jxr_linenumber" name="L350" href="#L350">350</a> 
-<a class="jxr_linenumber" name="L351" href="#L351">351</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> trans = <strong class="jxr_keyword">new</strong> Transceiver(machine)) {
-<a class="jxr_linenumber" name="L352" href="#L352">352</a> 			<strong class="jxr_keyword">var</strong> r = <strong class="jxr_keyword">new</strong> <a name="DataReceiver" href="../../../../../uk/ac/manchester/spinnaker/front_end/download/DataReceiver.html#DataReceiver">DataReceiver</a>(trans, machine, db);
-<a class="jxr_linenumber" name="L353" href="#L353">353</a> 			r.getDataForPlacementsParallel(placements, PARALLEL_SIZE);
-<a class="jxr_linenumber" name="L354" href="#L354">354</a> 		}
-<a class="jxr_linenumber" name="L355" href="#L355">355</a> 	}
-<a class="jxr_linenumber" name="L356" href="#L356">356</a> 
-<a class="jxr_linenumber" name="L357" href="#L357">357</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L358" href="#L358">358</a> <em class="jxr_javadoccomment">	 * Download data using data gatherer cores.</em>
-<a class="jxr_linenumber" name="L359" href="#L359">359</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L360" href="#L360">360</a> <em class="jxr_javadoccomment">	 * @param gatherersJsonFile</em>
-<a class="jxr_linenumber" name="L361" href="#L361">361</a> <em class="jxr_javadoccomment">	 *            Name of file containing JSON description of gatherers.</em>
-<a class="jxr_linenumber" name="L362" href="#L362">362</a> <em class="jxr_javadoccomment">	 * @param machineJsonFile</em>
-<a class="jxr_linenumber" name="L363" href="#L363">363</a> <em class="jxr_javadoccomment">	 *            Name of file containing JSON description of overall machine.</em>
-<a class="jxr_linenumber" name="L364" href="#L364">364</a> <em class="jxr_javadoccomment">	 * @param runFolder</em>
-<a class="jxr_linenumber" name="L365" href="#L365">365</a> <em class="jxr_javadoccomment">	 *            Name of directory containing per-run information (i.e., the</em>
-<a class="jxr_linenumber" name="L366" href="#L366">366</a> <em class="jxr_javadoccomment">	 *            database that receives the output).</em>
-<a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
-<a class="jxr_linenumber" name="L368" href="#L368">368</a> <em class="jxr_javadoccomment">	 *             If the communications fail</em>
-<a class="jxr_linenumber" name="L369" href="#L369">369</a> <em class="jxr_javadoccomment">	 * @throws SpinnmanException</em>
-<a class="jxr_linenumber" name="L370" href="#L370">370</a> <em class="jxr_javadoccomment">	 *             If a BMP is uncontactable or SpiNNaker rejects a message</em>
-<a class="jxr_linenumber" name="L371" href="#L371">371</a> <em class="jxr_javadoccomment">	 * @throws StorageException</em>
-<a class="jxr_linenumber" name="L372" href="#L372">372</a> <em class="jxr_javadoccomment">	 *             If the database is in an illegal state</em>
-<a class="jxr_linenumber" name="L373" href="#L373">373</a> <em class="jxr_javadoccomment">	 * @throws InterruptedException</em>
-<a class="jxr_linenumber" name="L374" href="#L374">374</a> <em class="jxr_javadoccomment">	 *             If things are interrupted while waiting for all the downloads</em>
-<a class="jxr_linenumber" name="L375" href="#L375">375</a> <em class="jxr_javadoccomment">	 *             to be done</em>
-<a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L377" href="#L377">377</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> gatherRun(String gatherersJsonFile,
-<a class="jxr_linenumber" name="L378" href="#L378">378</a> 			String machineJsonFile, String runFolder) <strong class="jxr_keyword">throws</strong> IOException,
-<a class="jxr_linenumber" name="L379" href="#L379">379</a> 			SpinnmanException, StorageException, InterruptedException {
-<a class="jxr_linenumber" name="L380" href="#L380">380</a> 		<strong class="jxr_keyword">var</strong> gathers = getGatherers(gatherersJsonFile);
-<a class="jxr_linenumber" name="L381" href="#L381">381</a> 		<strong class="jxr_keyword">var</strong> machine = getMachine(machineJsonFile);
-<a class="jxr_linenumber" name="L382" href="#L382">382</a> 		<strong class="jxr_keyword">var</strong> db = getDatabase(runFolder);
-<a class="jxr_linenumber" name="L383" href="#L383">383</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> trans = <strong class="jxr_keyword">new</strong> Transceiver(machine);
-<a class="jxr_linenumber" name="L384" href="#L384">384</a> 				<strong class="jxr_keyword">var</strong> r = <strong class="jxr_keyword">new</strong> <a name="RecordingRegionDataGatherer" href="../../../../../uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html#RecordingRegionDataGatherer">RecordingRegionDataGatherer</a>(trans, machine, db)) {
-<a class="jxr_linenumber" name="L385" href="#L385">385</a> 			<strong class="jxr_keyword">int</strong> misses = r.gather(gathers);
-<a class="jxr_linenumber" name="L386" href="#L386">386</a> 			getLogger(CommandLineInterface.<strong class="jxr_keyword">class</strong>).info(<span class="jxr_string">"total misses: {}"</span>,
-<a class="jxr_linenumber" name="L387" href="#L387">387</a> 					misses);
-<a class="jxr_linenumber" name="L388" href="#L388">388</a> 		}
-<a class="jxr_linenumber" name="L389" href="#L389">389</a> 	}
-<a class="jxr_linenumber" name="L390" href="#L390">390</a> 
-<a class="jxr_linenumber" name="L391" href="#L391">391</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> Machine getMachine(String filename)
-<a class="jxr_linenumber" name="L392" href="#L392">392</a> 			<strong class="jxr_keyword">throws</strong> JsonParseException, JsonMappingException, IOException {
-<a class="jxr_linenumber" name="L393" href="#L393">393</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> machineReader = <strong class="jxr_keyword">new</strong> FileReader(filename, UTF_8)) {
-<a class="jxr_linenumber" name="L394" href="#L394">394</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Machine(
-<a class="jxr_linenumber" name="L395" href="#L395">395</a> 					MAPPER.readValue(machineReader, MachineBean.<strong class="jxr_keyword">class</strong>));
-<a class="jxr_linenumber" name="L396" href="#L396">396</a> 		}
-<a class="jxr_linenumber" name="L397" href="#L397">397</a> 	}
-<a class="jxr_linenumber" name="L398" href="#L398">398</a> 
-<a class="jxr_linenumber" name="L399" href="#L399">399</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a name="IobufRequest" href="../../../../../uk/ac/manchester/spinnaker/front_end/iobuf/IobufRequest.html#IobufRequest">IobufRequest</a> getIobufRequest(String filename)
-<a class="jxr_linenumber" name="L400" href="#L400">400</a> 			<strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L401" href="#L401">401</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> gatherReader = <strong class="jxr_keyword">new</strong> FileReader(filename, UTF_8)) {
-<a class="jxr_linenumber" name="L402" href="#L402">402</a> 			<strong class="jxr_keyword">return</strong> MAPPER.readValue(gatherReader, IobufRequest.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L403" href="#L403">403</a> 		}
-<a class="jxr_linenumber" name="L404" href="#L404">404</a> 	}
-<a class="jxr_linenumber" name="L405" href="#L405">405</a> 
-<a class="jxr_linenumber" name="L406" href="#L406">406</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> List&lt;Gather&gt; getGatherers(String filename)
-<a class="jxr_linenumber" name="L407" href="#L407">407</a> 			<strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L408" href="#L408">408</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> gatherReader = <strong class="jxr_keyword">new</strong> FileReader(filename, UTF_8)) {
-<a class="jxr_linenumber" name="L409" href="#L409">409</a> 			<strong class="jxr_keyword">return</strong> MAPPER.readValue(gatherReader, Gather.LIST);
-<a class="jxr_linenumber" name="L410" href="#L410">410</a> 		}
-<a class="jxr_linenumber" name="L411" href="#L411">411</a> 	}
-<a class="jxr_linenumber" name="L412" href="#L412">412</a> 
-<a class="jxr_linenumber" name="L413" href="#L413">413</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> List&lt;Placement&gt; getPlacements(String placementsFile)
-<a class="jxr_linenumber" name="L414" href="#L414">414</a> 			<strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L415" href="#L415">415</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> placementReader = <strong class="jxr_keyword">new</strong> FileReader(placementsFile, UTF_8)) {
-<a class="jxr_linenumber" name="L416" href="#L416">416</a> 			<strong class="jxr_keyword">return</strong> MAPPER.readValue(placementReader, Placement.LIST);
-<a class="jxr_linenumber" name="L417" href="#L417">417</a> 		}
-<a class="jxr_linenumber" name="L418" href="#L418">418</a> 	}
-<a class="jxr_linenumber" name="L419" href="#L419">419</a> 
-<a class="jxr_linenumber" name="L420" href="#L420">420</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> BufferManagerStorage getDatabase(String runFolder) {
-<a class="jxr_linenumber" name="L421" href="#L421">421</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> BufferManagerDatabaseEngine(
-<a class="jxr_linenumber" name="L422" href="#L422">422</a> 				<strong class="jxr_keyword">new</strong> File(runFolder, BUFFER_DB_FILE)).getStorageInterface();
-<a class="jxr_linenumber" name="L423" href="#L423">423</a> 	}
-<a class="jxr_linenumber" name="L424" href="#L424">424</a> }
-<a class="jxr_linenumber" name="L425" href="#L425">425</a> 
-<a class="jxr_linenumber" name="L426" href="#L426">426</a> <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L427" href="#L427">427</a> <em class="jxr_javadoccomment"> * The names of supported commands.</em>
-<a class="jxr_linenumber" name="L428" href="#L428">428</a> <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L429" href="#L429">429</a> <em class="jxr_javadoccomment"> * @author Donal Fellows</em>
-<a class="jxr_linenumber" name="L430" href="#L430">430</a> <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L431" href="#L431">431</a> <strong class="jxr_keyword">interface</strong> <a name="CLICommands" href="../../../../../uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#CLICommands">CLICommands</a> {
-<a class="jxr_linenumber" name="L432" href="#L432">432</a> 	<em class="jxr_javadoccomment">/** The fast-data-out download command name. */</em>
-<a class="jxr_linenumber" name="L433" href="#L433">433</a> 	String GATHER = <span class="jxr_string">"gather"</span>;
-<a class="jxr_linenumber" name="L434" href="#L434">434</a> 
-<a class="jxr_linenumber" name="L435" href="#L435">435</a> 	<em class="jxr_javadoccomment">/** The SCP-based download command name. */</em>
-<a class="jxr_linenumber" name="L436" href="#L436">436</a> 	String DOWNLOAD = <span class="jxr_string">"download"</span>;
-<a class="jxr_linenumber" name="L437" href="#L437">437</a> 
-<a class="jxr_linenumber" name="L438" href="#L438">438</a> 	<em class="jxr_javadoccomment">/** The basic DSE command name. */</em>
-<a class="jxr_linenumber" name="L439" href="#L439">439</a> 	String DSE = <span class="jxr_string">"dse"</span>;
-<a class="jxr_linenumber" name="L440" href="#L440">440</a> 
-<a class="jxr_linenumber" name="L441" href="#L441">441</a> 	<em class="jxr_javadoccomment">/** The system DSE command name. */</em>
-<a class="jxr_linenumber" name="L442" href="#L442">442</a> 	String DSE_SYS = <span class="jxr_string">"dse_sys"</span>;
-<a class="jxr_linenumber" name="L443" href="#L443">443</a> 
-<a class="jxr_linenumber" name="L444" href="#L444">444</a> 	<em class="jxr_javadoccomment">/** The application DSE command name. */</em>
-<a class="jxr_linenumber" name="L445" href="#L445">445</a> 	String DSE_APP = <span class="jxr_string">"dse_app"</span>;
-<a class="jxr_linenumber" name="L446" href="#L446">446</a> 
-<a class="jxr_linenumber" name="L447" href="#L447">447</a> 	<em class="jxr_javadoccomment">/** The application DSE (with fast-data-in) command name. */</em>
-<a class="jxr_linenumber" name="L448" href="#L448">448</a> 	String DSE_APP_MON = <span class="jxr_string">"dse_app_mon"</span>;
-<a class="jxr_linenumber" name="L449" href="#L449">449</a> 
-<a class="jxr_linenumber" name="L450" href="#L450">450</a> 	<em class="jxr_javadoccomment">/** The IOBUF-retrieval command name. */</em>
-<a class="jxr_linenumber" name="L451" href="#L451">451</a> 	String IOBUF = <span class="jxr_string">"iobuf"</span>;
-<a class="jxr_linenumber" name="L452" href="#L452">452</a> 
-<a class="jxr_linenumber" name="L453" href="#L453">453</a> 	<em class="jxr_javadoccomment">/** The listen-for-an-unbooted-machine command name. */</em>
-<a class="jxr_linenumber" name="L454" href="#L454">454</a> 	String LISTEN = <span class="jxr_string">"listen_for_unbooted"</span>;
-<a class="jxr_linenumber" name="L455" href="#L455">455</a> 
-<a class="jxr_linenumber" name="L456" href="#L456">456</a> 	<em class="jxr_javadoccomment">/** The version command name. */</em>
-<a class="jxr_linenumber" name="L457" href="#L457">457</a> 	String VERSION = <span class="jxr_string">"version"</span>;
-<a class="jxr_linenumber" name="L458" href="#L458">458</a> 
-<a class="jxr_linenumber" name="L459" href="#L459">459</a> 	<em class="jxr_javadoccomment">/** All the command names. Sorted. */</em>
-<a class="jxr_linenumber" name="L460" href="#L460">460</a> 	List&lt;String&gt; ALL = List.of(DOWNLOAD, DSE, DSE_APP, DSE_APP_MON, DSE_SYS,
-<a class="jxr_linenumber" name="L461" href="#L461">461</a> 			GATHER, IOBUF, LISTEN, VERSION);
-<a class="jxr_linenumber" name="L462" href="#L462">462</a> 
-<a class="jxr_linenumber" name="L463" href="#L463">463</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L464" href="#L464">464</a> <em class="jxr_javadoccomment">	 * @return A human-readable list of all command names.</em>
-<a class="jxr_linenumber" name="L465" href="#L465">465</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L466" href="#L466">466</a> 	<strong class="jxr_keyword">static</strong> String list() {
-<a class="jxr_linenumber" name="L467" href="#L467">467</a> 		<strong class="jxr_keyword">var</strong> sb = <strong class="jxr_keyword">new</strong> StringBuilder();
-<a class="jxr_linenumber" name="L468" href="#L468">468</a> 		<strong class="jxr_keyword">var</strong> sep = <span class="jxr_string">""</span>;
-<a class="jxr_linenumber" name="L469" href="#L469">469</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> item : ALL) {
-<a class="jxr_linenumber" name="L470" href="#L470">470</a> 			sb.append(sep);
-<a class="jxr_linenumber" name="L471" href="#L471">471</a> 			sep = <span class="jxr_string">", "</span>;
-<a class="jxr_linenumber" name="L472" href="#L472">472</a> 			<strong class="jxr_keyword">if</strong> (item.equals(VERSION)) {
-<a class="jxr_linenumber" name="L473" href="#L473">473</a> 				sb.append(<span class="jxr_string">"or "</span>);
-<a class="jxr_linenumber" name="L474" href="#L474">474</a> 			}
-<a class="jxr_linenumber" name="L475" href="#L475">475</a> 			sb.append(item);
-<a class="jxr_linenumber" name="L476" href="#L476">476</a> 		}
-<a class="jxr_linenumber" name="L477" href="#L477">477</a> 		<strong class="jxr_keyword">return</strong> sb.toString();
-<a class="jxr_linenumber" name="L478" href="#L478">478</a> 	}
-<a class="jxr_linenumber" name="L479" href="#L479">479</a> }
+<a class="jxr_linenumber" name="L343" href="#L343">343</a> <em class="jxr_javadoccomment">	 * @throws InterruptedException</em>
+<a class="jxr_linenumber" name="L344" href="#L344">344</a> <em class="jxr_javadoccomment">	 *             If communications are interrupted.</em>
+<a class="jxr_linenumber" name="L345" href="#L345">345</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L346" href="#L346">346</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> downloadRun(String placementsJsonFile,
+<a class="jxr_linenumber" name="L347" href="#L347">347</a> 			String machineJsonFile, String runFolder) <strong class="jxr_keyword">throws</strong> IOException,
+<a class="jxr_linenumber" name="L348" href="#L348">348</a> 			SpinnmanException, StorageException, InterruptedException {
+<a class="jxr_linenumber" name="L349" href="#L349">349</a> 		<strong class="jxr_keyword">var</strong> placements = getPlacements(placementsJsonFile);
+<a class="jxr_linenumber" name="L350" href="#L350">350</a> 		<strong class="jxr_keyword">var</strong> machine = getMachine(machineJsonFile);
+<a class="jxr_linenumber" name="L351" href="#L351">351</a> 		<strong class="jxr_keyword">var</strong> db = getDatabase(runFolder);
+<a class="jxr_linenumber" name="L352" href="#L352">352</a> 
+<a class="jxr_linenumber" name="L353" href="#L353">353</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> trans = <strong class="jxr_keyword">new</strong> Transceiver(machine)) {
+<a class="jxr_linenumber" name="L354" href="#L354">354</a> 			<strong class="jxr_keyword">var</strong> r = <strong class="jxr_keyword">new</strong> <a name="DataReceiver" href="../../../../../uk/ac/manchester/spinnaker/front_end/download/DataReceiver.html#DataReceiver">DataReceiver</a>(trans, machine, db);
+<a class="jxr_linenumber" name="L355" href="#L355">355</a> 			r.getDataForPlacementsParallel(placements, PARALLEL_SIZE);
+<a class="jxr_linenumber" name="L356" href="#L356">356</a> 		}
+<a class="jxr_linenumber" name="L357" href="#L357">357</a> 	}
+<a class="jxr_linenumber" name="L358" href="#L358">358</a> 
+<a class="jxr_linenumber" name="L359" href="#L359">359</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L360" href="#L360">360</a> <em class="jxr_javadoccomment">	 * Download data using data gatherer cores.</em>
+<a class="jxr_linenumber" name="L361" href="#L361">361</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L362" href="#L362">362</a> <em class="jxr_javadoccomment">	 * @param gatherersJsonFile</em>
+<a class="jxr_linenumber" name="L363" href="#L363">363</a> <em class="jxr_javadoccomment">	 *            Name of file containing JSON description of gatherers.</em>
+<a class="jxr_linenumber" name="L364" href="#L364">364</a> <em class="jxr_javadoccomment">	 * @param machineJsonFile</em>
+<a class="jxr_linenumber" name="L365" href="#L365">365</a> <em class="jxr_javadoccomment">	 *            Name of file containing JSON description of overall machine.</em>
+<a class="jxr_linenumber" name="L366" href="#L366">366</a> <em class="jxr_javadoccomment">	 * @param runFolder</em>
+<a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">	 *            Name of directory containing per-run information (i.e., the</em>
+<a class="jxr_linenumber" name="L368" href="#L368">368</a> <em class="jxr_javadoccomment">	 *            database that receives the output).</em>
+<a class="jxr_linenumber" name="L369" href="#L369">369</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
+<a class="jxr_linenumber" name="L370" href="#L370">370</a> <em class="jxr_javadoccomment">	 *             If the communications fail</em>
+<a class="jxr_linenumber" name="L371" href="#L371">371</a> <em class="jxr_javadoccomment">	 * @throws SpinnmanException</em>
+<a class="jxr_linenumber" name="L372" href="#L372">372</a> <em class="jxr_javadoccomment">	 *             If a BMP is uncontactable or SpiNNaker rejects a message</em>
+<a class="jxr_linenumber" name="L373" href="#L373">373</a> <em class="jxr_javadoccomment">	 * @throws StorageException</em>
+<a class="jxr_linenumber" name="L374" href="#L374">374</a> <em class="jxr_javadoccomment">	 *             If the database is in an illegal state</em>
+<a class="jxr_linenumber" name="L375" href="#L375">375</a> <em class="jxr_javadoccomment">	 * @throws InterruptedException</em>
+<a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">	 *             If things are interrupted while waiting for all the downloads</em>
+<a class="jxr_linenumber" name="L377" href="#L377">377</a> <em class="jxr_javadoccomment">	 *             to be done</em>
+<a class="jxr_linenumber" name="L378" href="#L378">378</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L379" href="#L379">379</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> gatherRun(String gatherersJsonFile,
+<a class="jxr_linenumber" name="L380" href="#L380">380</a> 			String machineJsonFile, String runFolder) <strong class="jxr_keyword">throws</strong> IOException,
+<a class="jxr_linenumber" name="L381" href="#L381">381</a> 			SpinnmanException, StorageException, InterruptedException {
+<a class="jxr_linenumber" name="L382" href="#L382">382</a> 		<strong class="jxr_keyword">var</strong> gathers = getGatherers(gatherersJsonFile);
+<a class="jxr_linenumber" name="L383" href="#L383">383</a> 		<strong class="jxr_keyword">var</strong> machine = getMachine(machineJsonFile);
+<a class="jxr_linenumber" name="L384" href="#L384">384</a> 		<strong class="jxr_keyword">var</strong> db = getDatabase(runFolder);
+<a class="jxr_linenumber" name="L385" href="#L385">385</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> trans = <strong class="jxr_keyword">new</strong> Transceiver(machine);
+<a class="jxr_linenumber" name="L386" href="#L386">386</a> 				<strong class="jxr_keyword">var</strong> r = <strong class="jxr_keyword">new</strong> <a name="RecordingRegionDataGatherer" href="../../../../../uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html#RecordingRegionDataGatherer">RecordingRegionDataGatherer</a>(trans, machine, db)) {
+<a class="jxr_linenumber" name="L387" href="#L387">387</a> 			<strong class="jxr_keyword">int</strong> misses = r.gather(gathers);
+<a class="jxr_linenumber" name="L388" href="#L388">388</a> 			getLogger(CommandLineInterface.<strong class="jxr_keyword">class</strong>).info(<span class="jxr_string">"total misses: {}"</span>,
+<a class="jxr_linenumber" name="L389" href="#L389">389</a> 					misses);
+<a class="jxr_linenumber" name="L390" href="#L390">390</a> 		}
+<a class="jxr_linenumber" name="L391" href="#L391">391</a> 	}
+<a class="jxr_linenumber" name="L392" href="#L392">392</a> 
+<a class="jxr_linenumber" name="L393" href="#L393">393</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> Machine getMachine(String filename)
+<a class="jxr_linenumber" name="L394" href="#L394">394</a> 			<strong class="jxr_keyword">throws</strong> JsonParseException, JsonMappingException, IOException {
+<a class="jxr_linenumber" name="L395" href="#L395">395</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> machineReader = <strong class="jxr_keyword">new</strong> FileReader(filename, UTF_8)) {
+<a class="jxr_linenumber" name="L396" href="#L396">396</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Machine(
+<a class="jxr_linenumber" name="L397" href="#L397">397</a> 					MAPPER.readValue(machineReader, MachineBean.<strong class="jxr_keyword">class</strong>));
+<a class="jxr_linenumber" name="L398" href="#L398">398</a> 		}
+<a class="jxr_linenumber" name="L399" href="#L399">399</a> 	}
+<a class="jxr_linenumber" name="L400" href="#L400">400</a> 
+<a class="jxr_linenumber" name="L401" href="#L401">401</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a name="IobufRequest" href="../../../../../uk/ac/manchester/spinnaker/front_end/iobuf/IobufRequest.html#IobufRequest">IobufRequest</a> getIobufRequest(String filename)
+<a class="jxr_linenumber" name="L402" href="#L402">402</a> 			<strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L403" href="#L403">403</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> gatherReader = <strong class="jxr_keyword">new</strong> FileReader(filename, UTF_8)) {
+<a class="jxr_linenumber" name="L404" href="#L404">404</a> 			<strong class="jxr_keyword">return</strong> MAPPER.readValue(gatherReader, IobufRequest.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L405" href="#L405">405</a> 		}
+<a class="jxr_linenumber" name="L406" href="#L406">406</a> 	}
+<a class="jxr_linenumber" name="L407" href="#L407">407</a> 
+<a class="jxr_linenumber" name="L408" href="#L408">408</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> List&lt;Gather&gt; getGatherers(String filename)
+<a class="jxr_linenumber" name="L409" href="#L409">409</a> 			<strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L410" href="#L410">410</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> gatherReader = <strong class="jxr_keyword">new</strong> FileReader(filename, UTF_8)) {
+<a class="jxr_linenumber" name="L411" href="#L411">411</a> 			<strong class="jxr_keyword">return</strong> MAPPER.readValue(gatherReader, Gather.LIST);
+<a class="jxr_linenumber" name="L412" href="#L412">412</a> 		}
+<a class="jxr_linenumber" name="L413" href="#L413">413</a> 	}
+<a class="jxr_linenumber" name="L414" href="#L414">414</a> 
+<a class="jxr_linenumber" name="L415" href="#L415">415</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> List&lt;Placement&gt; getPlacements(String placementsFile)
+<a class="jxr_linenumber" name="L416" href="#L416">416</a> 			<strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L417" href="#L417">417</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> placementReader = <strong class="jxr_keyword">new</strong> FileReader(placementsFile, UTF_8)) {
+<a class="jxr_linenumber" name="L418" href="#L418">418</a> 			<strong class="jxr_keyword">return</strong> MAPPER.readValue(placementReader, Placement.LIST);
+<a class="jxr_linenumber" name="L419" href="#L419">419</a> 		}
+<a class="jxr_linenumber" name="L420" href="#L420">420</a> 	}
+<a class="jxr_linenumber" name="L421" href="#L421">421</a> 
+<a class="jxr_linenumber" name="L422" href="#L422">422</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> BufferManagerStorage getDatabase(String runFolder) {
+<a class="jxr_linenumber" name="L423" href="#L423">423</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> BufferManagerDatabaseEngine(
+<a class="jxr_linenumber" name="L424" href="#L424">424</a> 				<strong class="jxr_keyword">new</strong> File(runFolder, BUFFER_DB_FILE)).getStorageInterface();
+<a class="jxr_linenumber" name="L425" href="#L425">425</a> 	}
+<a class="jxr_linenumber" name="L426" href="#L426">426</a> }
+<a class="jxr_linenumber" name="L427" href="#L427">427</a> 
+<a class="jxr_linenumber" name="L428" href="#L428">428</a> <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L429" href="#L429">429</a> <em class="jxr_javadoccomment"> * The names of supported commands.</em>
+<a class="jxr_linenumber" name="L430" href="#L430">430</a> <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L431" href="#L431">431</a> <em class="jxr_javadoccomment"> * @author Donal Fellows</em>
+<a class="jxr_linenumber" name="L432" href="#L432">432</a> <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L433" href="#L433">433</a> <strong class="jxr_keyword">interface</strong> <a name="CLICommands" href="../../../../../uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#CLICommands">CLICommands</a> {
+<a class="jxr_linenumber" name="L434" href="#L434">434</a> 	<em class="jxr_javadoccomment">/** The fast-data-out download command name. */</em>
+<a class="jxr_linenumber" name="L435" href="#L435">435</a> 	String GATHER = <span class="jxr_string">"gather"</span>;
+<a class="jxr_linenumber" name="L436" href="#L436">436</a> 
+<a class="jxr_linenumber" name="L437" href="#L437">437</a> 	<em class="jxr_javadoccomment">/** The SCP-based download command name. */</em>
+<a class="jxr_linenumber" name="L438" href="#L438">438</a> 	String DOWNLOAD = <span class="jxr_string">"download"</span>;
+<a class="jxr_linenumber" name="L439" href="#L439">439</a> 
+<a class="jxr_linenumber" name="L440" href="#L440">440</a> 	<em class="jxr_javadoccomment">/** The basic DSE command name. */</em>
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> 	String DSE = <span class="jxr_string">"dse"</span>;
+<a class="jxr_linenumber" name="L442" href="#L442">442</a> 
+<a class="jxr_linenumber" name="L443" href="#L443">443</a> 	<em class="jxr_javadoccomment">/** The system DSE command name. */</em>
+<a class="jxr_linenumber" name="L444" href="#L444">444</a> 	String DSE_SYS = <span class="jxr_string">"dse_sys"</span>;
+<a class="jxr_linenumber" name="L445" href="#L445">445</a> 
+<a class="jxr_linenumber" name="L446" href="#L446">446</a> 	<em class="jxr_javadoccomment">/** The application DSE command name. */</em>
+<a class="jxr_linenumber" name="L447" href="#L447">447</a> 	String DSE_APP = <span class="jxr_string">"dse_app"</span>;
+<a class="jxr_linenumber" name="L448" href="#L448">448</a> 
+<a class="jxr_linenumber" name="L449" href="#L449">449</a> 	<em class="jxr_javadoccomment">/** The application DSE (with fast-data-in) command name. */</em>
+<a class="jxr_linenumber" name="L450" href="#L450">450</a> 	String DSE_APP_MON = <span class="jxr_string">"dse_app_mon"</span>;
+<a class="jxr_linenumber" name="L451" href="#L451">451</a> 
+<a class="jxr_linenumber" name="L452" href="#L452">452</a> 	<em class="jxr_javadoccomment">/** The IOBUF-retrieval command name. */</em>
+<a class="jxr_linenumber" name="L453" href="#L453">453</a> 	String IOBUF = <span class="jxr_string">"iobuf"</span>;
+<a class="jxr_linenumber" name="L454" href="#L454">454</a> 
+<a class="jxr_linenumber" name="L455" href="#L455">455</a> 	<em class="jxr_javadoccomment">/** The listen-for-an-unbooted-machine command name. */</em>
+<a class="jxr_linenumber" name="L456" href="#L456">456</a> 	String LISTEN = <span class="jxr_string">"listen_for_unbooted"</span>;
+<a class="jxr_linenumber" name="L457" href="#L457">457</a> 
+<a class="jxr_linenumber" name="L458" href="#L458">458</a> 	<em class="jxr_javadoccomment">/** The version command name. */</em>
+<a class="jxr_linenumber" name="L459" href="#L459">459</a> 	String VERSION = <span class="jxr_string">"version"</span>;
+<a class="jxr_linenumber" name="L460" href="#L460">460</a> 
+<a class="jxr_linenumber" name="L461" href="#L461">461</a> 	<em class="jxr_javadoccomment">/** All the command names. Sorted. */</em>
+<a class="jxr_linenumber" name="L462" href="#L462">462</a> 	List&lt;String&gt; ALL = List.of(DOWNLOAD, DSE, DSE_APP, DSE_APP_MON, DSE_SYS,
+<a class="jxr_linenumber" name="L463" href="#L463">463</a> 			GATHER, IOBUF, LISTEN, VERSION);
+<a class="jxr_linenumber" name="L464" href="#L464">464</a> 
+<a class="jxr_linenumber" name="L465" href="#L465">465</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L466" href="#L466">466</a> <em class="jxr_javadoccomment">	 * @return A human-readable list of all command names.</em>
+<a class="jxr_linenumber" name="L467" href="#L467">467</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L468" href="#L468">468</a> 	<strong class="jxr_keyword">static</strong> String list() {
+<a class="jxr_linenumber" name="L469" href="#L469">469</a> 		<strong class="jxr_keyword">var</strong> sb = <strong class="jxr_keyword">new</strong> StringBuilder();
+<a class="jxr_linenumber" name="L470" href="#L470">470</a> 		<strong class="jxr_keyword">var</strong> sep = <span class="jxr_string">""</span>;
+<a class="jxr_linenumber" name="L471" href="#L471">471</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> item : ALL) {
+<a class="jxr_linenumber" name="L472" href="#L472">472</a> 			sb.append(sep);
+<a class="jxr_linenumber" name="L473" href="#L473">473</a> 			sep = <span class="jxr_string">", "</span>;
+<a class="jxr_linenumber" name="L474" href="#L474">474</a> 			<strong class="jxr_keyword">if</strong> (item.equals(VERSION)) {
+<a class="jxr_linenumber" name="L475" href="#L475">475</a> 				sb.append(<span class="jxr_string">"or "</span>);
+<a class="jxr_linenumber" name="L476" href="#L476">476</a> 			}
+<a class="jxr_linenumber" name="L477" href="#L477">477</a> 			sb.append(item);
+<a class="jxr_linenumber" name="L478" href="#L478">478</a> 		}
+<a class="jxr_linenumber" name="L479" href="#L479">479</a> 		<strong class="jxr_keyword">return</strong> sb.toString();
+<a class="jxr_linenumber" name="L480" href="#L480">480</a> 	}
+<a class="jxr_linenumber" name="L481" href="#L481">481</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

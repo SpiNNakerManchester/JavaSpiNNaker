@@ -395,7 +395,8 @@ int&nbsp;port,
 <h3><a id="receiveResponse(java.lang.Integer)">receiveResponse</a></h3>
 <div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="messages/Response.html" title="interface in uk.ac.manchester.spinnaker.spalloc.messages">Response</a></span>&nbsp;<span class="memberName">receiveResponse</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
                             throws <span class="exceptions"><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Receive a line from the server with a response.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -407,6 +408,7 @@ int&nbsp;port,
 <dd><code><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a></code> - If a timeout occurs.</dd>
 <dd><code><a href="exceptions/SpallocProtocolException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolException</a></code> - If the socket gets an empty response.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the socket is unusable or becomes disconnected.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If interrupted, eventually</dd>
 </dl>
 </section>
 </li>
@@ -470,7 +472,8 @@ int&nbsp;port,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
                throws <span class="exceptions"><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
-<a href="exceptions/SpallocProtocolException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolException</a></span></div>
+<a href="exceptions/SpallocProtocolException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Send a command to the server and return the reply.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -483,6 +486,7 @@ int&nbsp;port,
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the server sends an error.</dd>
 <dd><code><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a></code> - If a timeout occurs.</dd>
 <dd><code><a href="exceptions/SpallocProtocolException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolException</a></code> - If the connection is unavailable or is closed.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If interrupted, eventually</dd>
 </dl>
 </section>
 </li>

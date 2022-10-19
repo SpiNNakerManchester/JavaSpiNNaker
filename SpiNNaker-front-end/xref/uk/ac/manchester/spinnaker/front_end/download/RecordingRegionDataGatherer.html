@@ -107,7 +107,7 @@
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>  	}
 <a class="jxr_linenumber" name="L100" href="#L100">100</a> 
 <a class="jxr_linenumber" name="L101" href="#L101">101</a> 	<strong class="jxr_keyword">private</strong> List&lt;RecordingRegion&gt; getRegions(<a name="Placement" href="../../../../../../uk/ac/manchester/spinnaker/front_end/download/request/Placement.html#Placement">Placement</a> placement)
-<a class="jxr_linenumber" name="L102" href="#L102">102</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException {
+<a class="jxr_linenumber" name="L102" href="#L102">102</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException {
 <a class="jxr_linenumber" name="L103" href="#L103">103</a> 		<em class="jxr_comment">// Cheap check first</em>
 <a class="jxr_linenumber" name="L104" href="#L104">104</a> 		<strong class="jxr_keyword">synchronized</strong> (recordingRegions) {
 <a class="jxr_linenumber" name="L105" href="#L105">105</a> 			<strong class="jxr_keyword">var</strong> regions = recordingRegions.get(placement);
@@ -126,7 +126,7 @@
 <a class="jxr_linenumber" name="L118" href="#L118">118</a> 
 <a class="jxr_linenumber" name="L119" href="#L119">119</a> 	@Override
 <a class="jxr_linenumber" name="L120" href="#L120">120</a> 	<strong class="jxr_keyword">protected</strong> List&lt;Region&gt; getRegion(<a name="Placement" href="../../../../../../uk/ac/manchester/spinnaker/front_end/download/request/Placement.html#Placement">Placement</a> placement, <strong class="jxr_keyword">int</strong> index)
-<a class="jxr_linenumber" name="L121" href="#L121">121</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException {
+<a class="jxr_linenumber" name="L121" href="#L121">121</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException {
 <a class="jxr_linenumber" name="L122" href="#L122">122</a> 		<strong class="jxr_keyword">var</strong> region = getRegions(placement).get(index);
 <a class="jxr_linenumber" name="L123" href="#L123">123</a> 		log.debug(<span class="jxr_string">"got region of {} R:{} as {}"</span>, placement.asCoreLocation(),
 <a class="jxr_linenumber" name="L124" href="#L124">124</a> 				index, region);
