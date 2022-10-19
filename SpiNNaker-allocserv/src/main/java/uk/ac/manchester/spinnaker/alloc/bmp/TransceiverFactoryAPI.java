@@ -46,7 +46,9 @@ public interface TransceiverFactoryAPI<T extends BMPTransceiverInterface> {
 	 *             If low-level things go wrong.
 	 * @throws SpinnmanException
 	 *             If the transceiver can't be built.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	T getTransciever(Machine machineDescription, BMPCoords bmp)
-			throws IOException, SpinnmanException;
+			throws IOException, SpinnmanException, InterruptedException;
 }

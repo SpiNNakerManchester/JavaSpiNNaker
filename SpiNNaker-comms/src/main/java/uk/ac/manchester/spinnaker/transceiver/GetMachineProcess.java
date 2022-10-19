@@ -133,9 +133,11 @@ class GetMachineProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	Machine getMachineDetails(HasChipLocation bootChip, MachineDimensions size)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		// Get the P2P table; 8 entries are packed into each 32-bit word
 		var p2pColumnData = new ArrayList<ByteBuffer>();
 		for (int column = 0; column < size.width; column++) {

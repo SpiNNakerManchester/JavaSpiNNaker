@@ -67,9 +67,12 @@ class BMPReadSerialFlashProcess extends BMPCommandProcess<BMPResponse> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	private <T> T read(BMPBoard board, MemoryLocation address, int size,
-			Accumulator<T> accum) throws ProcessException, IOException {
+			Accumulator<T> accum)
+			throws ProcessException, IOException, InterruptedException {
 		for (int offset = 0, chunk; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
 			accum.add(offset, execute(new ReadSerialFlash(board,
@@ -92,9 +95,12 @@ class BMPReadSerialFlashProcess extends BMPCommandProcess<BMPResponse> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void read(BMPBoard board, MemoryLocation baseAddress,
-			ByteBuffer receivingBuffer) throws IOException, ProcessException {
+			ByteBuffer receivingBuffer)
+			throws IOException, ProcessException, InterruptedException {
 		read(board, baseAddress, receivingBuffer.remaining(),
 				new BufferAccumulator(receivingBuffer));
 		// Ignore the result; caller already knows it
@@ -114,9 +120,11 @@ class BMPReadSerialFlashProcess extends BMPCommandProcess<BMPResponse> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	ByteBuffer read(BMPBoard board, MemoryLocation baseAddress, int size)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return read(board, baseAddress, size, new BufferAccumulator(size));
 	}
 
@@ -137,9 +145,12 @@ class BMPReadSerialFlashProcess extends BMPCommandProcess<BMPResponse> {
 	 *             file.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void read(BMPBoard board, MemoryLocation baseAddress, int size,
-			RandomAccessFile dataFile) throws IOException, ProcessException {
+			RandomAccessFile dataFile)
+			throws IOException, ProcessException, InterruptedException {
 		read(board, baseAddress, size, new FileAccumulator(dataFile));
 	}
 
@@ -159,9 +170,12 @@ class BMPReadSerialFlashProcess extends BMPCommandProcess<BMPResponse> {
 	 *             file.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void read(BMPBoard board, MemoryLocation baseAddress, int size,
-			File dataFile) throws IOException, ProcessException {
+			File dataFile)
+			throws IOException, ProcessException, InterruptedException {
 		try (var s = new RandomAccessFile(dataFile, "rw")) {
 			read(board, baseAddress, size, new FileAccumulator(s));
 		}

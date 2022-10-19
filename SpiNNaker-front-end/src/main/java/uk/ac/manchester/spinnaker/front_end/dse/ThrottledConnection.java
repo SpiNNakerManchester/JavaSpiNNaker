@@ -97,10 +97,13 @@ class ThrottledConnection implements Closeable {
 	 *             If IO fails.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the reprogramming.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	@MustBeClosed
 	ThrottledConnection(TransceiverInterface transceiver, Ethernet board,
-			IPTag iptag) throws IOException, ProcessException {
+			IPTag iptag)
+			throws IOException, ProcessException, InterruptedException {
 		location = board.location;
 		addr = getByName(board.ethernetAddress);
 		connection = new SCPConnection(location, addr, SCP_SCAMP_PORT);
@@ -120,8 +123,11 @@ class ThrottledConnection implements Closeable {
 	 *             If no message is received by the timeout.
 	 * @throws IOException
 	 *             If IO fails.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
-	public IntBuffer receive() throws SocketTimeoutException, IOException {
+	public IntBuffer receive()
+			throws SocketTimeoutException, IOException, InterruptedException {
 		return connection.receive(TIMEOUT_MS).slice().order(LITTLE_ENDIAN)
 				.asIntBuffer();
 	}

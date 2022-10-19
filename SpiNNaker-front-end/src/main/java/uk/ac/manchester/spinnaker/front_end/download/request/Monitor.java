@@ -125,9 +125,11 @@ public class Monitor implements HasCoreLocation {
 	 *             If SpiNNaker rejects a message.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	public void updateTransactionIdFromMachine(TransceiverInterface txrx)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		transactionId = txrx.readUser1(this);
 	}
 

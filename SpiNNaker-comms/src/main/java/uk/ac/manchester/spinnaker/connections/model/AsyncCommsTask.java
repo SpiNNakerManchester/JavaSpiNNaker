@@ -17,9 +17,9 @@
 package uk.ac.manchester.spinnaker.connections.model;
 
 import java.io.IOException;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import uk.ac.manchester.spinnaker.connections.SCPErrorHandler;
 import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.NoResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
@@ -44,14 +44,17 @@ public interface AsyncCommsTask {
 	 *            {@code null} if the response doesn't need to be processed.
 	 * @param errorCallback
 	 *            A callback function to call when an error is found when
-	 *            processing the message; takes the original SCPRequest, and the
-	 *            exception caught while sending it.
+	 *            processing the message; takes the original {@link SCPRequest},
+	 *            and the exception caught while sending it.
 	 * @throws IOException
 	 *             If things go really wrong.
+	 * @throws InterruptedException
+	 *             If communications are interrupted (prior to sending).
 	 */
 	<T extends CheckOKResponse> void sendRequest(SCPRequest<T> request,
-			Consumer<T> callback, SCPErrorHandler errorCallback)
-			throws IOException;
+			Consumer<T> callback,
+			BiConsumer<SCPRequest<?>, Throwable> errorCallback)
+			throws IOException, InterruptedException;
 
 	/**
 	 * Indicate the end of the packets to be sent. This must be called to ensure
@@ -59,8 +62,10 @@ public interface AsyncCommsTask {
 	 *
 	 * @throws IOException
 	 *             If anything goes wrong with communications.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
-	void finish() throws IOException;
+	void finish() throws IOException, InterruptedException;
 
 	/**
 	 * Send a one-way request.
@@ -72,7 +77,9 @@ public interface AsyncCommsTask {
 	 *            The one-way SCP request to be sent.
 	 * @throws IOException
 	 *             If things go really wrong.
+	 * @throws InterruptedException
+	 *             If communications are interrupted (prior to sending).
 	 */
 	<T extends NoResponse> void sendOneWayRequest(SCPRequest<T> request)
-			throws IOException;
+			throws IOException, InterruptedException;
 }

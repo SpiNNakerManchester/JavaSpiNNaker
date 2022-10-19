@@ -91,8 +91,11 @@ class RuntimeControlProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
-	void clearIOBUF(CoreLocation core) throws IOException, ProcessException {
+	void clearIOBUF(CoreLocation core)
+			throws IOException, ProcessException, InterruptedException {
 		synchronousCall(new ClearIOBUF(core));
 	}
 
@@ -105,9 +108,11 @@ class RuntimeControlProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void clearIOBUF(CoreSubsets coreSubsets)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		for (var core : requireNonNull(coreSubsets,
 				"must have actual core subset to iterate over")) {
 			sendRequest(new ClearIOBUF(core));
@@ -127,11 +132,13 @@ class RuntimeControlProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void updateRuntime(Integer runTimesteps, CoreSubsets coreSubsets)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		boolean infiniteRun = isNull(runTimesteps);
-		int runTime = isNull(runTimesteps) ? 0 : runTimesteps;
+		int runTime = infiniteRun ? 0 : runTimesteps;
 		for (var core : requireNonNull(coreSubsets,
 				"must have actual core subset to iterate over")) {
 			sendRequest(new UpdateRuntime(core, runTime, infiniteRun));
@@ -148,8 +155,11 @@ class RuntimeControlProcess extends TxrxProcess {
 	 *            the cores to update the provenance of.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
-	void updateProvenanceAndExit(CoreSubsets coreSubsets) throws IOException {
+	void updateProvenanceAndExit(CoreSubsets coreSubsets)
+			throws IOException, InterruptedException {
 		for (var core : requireNonNull(coreSubsets,
 				"must have actual core subset to iterate over")) {
 			sendOneWayRequest(new UpdateProvenanceAndExit(core));
@@ -173,9 +183,11 @@ class RuntimeControlProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	MappableIterable<IOBuffer> readIOBuf(int size, CoreSubsets cores)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		// Get the IOBuf address for each core
 		for (var core : requireNonNull(cores,
 				"must have actual core subset to iterate over")) {

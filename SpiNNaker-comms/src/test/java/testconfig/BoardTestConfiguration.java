@@ -149,7 +149,7 @@ public class BoardTestConfiguration {
 	@MustBeClosed
 	public SpallocJob setUpSpallocedBoard()
 			throws IOException, SpallocServerException, JobDestroyedException,
-			SpallocStateChangeTimeoutException {
+			SpallocStateChangeTimeoutException, InterruptedException {
 		var spalloc = config.get(SPSEC, "hostname");
 		assumeTrue(spalloc != null, "no spalloc server defined");
 		assumeTrue(hostIsReachable(spalloc),

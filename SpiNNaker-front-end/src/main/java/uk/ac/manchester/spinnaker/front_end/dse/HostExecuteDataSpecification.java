@@ -66,13 +66,15 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             If the transceiver can't talk to its sockets.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws IllegalStateException
 	 *             If something really strange occurs with talking to the BMP;
 	 *             this constructor should not be doing that!
 	 */
 	@MustBeClosed
 	public HostExecuteDataSpecification(Machine machine)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		super(machine);
 	}
 
@@ -91,13 +93,15 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             If SpiNNaker rejects a message.
 	 * @throws DataSpecificationException
 	 *             If a data specification in the database is invalid.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws IllegalStateException
 	 *             If an unexpected exception occurs in any of the parallel
 	 *             tasks.
 	 */
 	public void loadAllCores(ConnectionProvider<DSEStorage> connection)
 			throws StorageException, IOException, ProcessException,
-			DataSpecificationException {
+			DataSpecificationException, InterruptedException {
 		var storage = connection.getStorageInterface();
 		var ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
@@ -124,13 +128,15 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             If SpiNNaker rejects a message.
 	 * @throws DataSpecificationException
 	 *             If a data specification in the database is invalid.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws IllegalStateException
 	 *             If an unexpected exception occurs in any of the parallel
 	 *             tasks.
 	 */
 	public void loadApplicationCores(ConnectionProvider<DSEStorage> connection)
 			throws StorageException, IOException, ProcessException,
-			DataSpecificationException {
+			DataSpecificationException, InterruptedException {
 		var storage = connection.getStorageInterface();
 		var ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
@@ -157,13 +163,15 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             If SpiNNaker rejects a message.
 	 * @throws DataSpecificationException
 	 *             If a data specification in the database is invalid.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws IllegalStateException
 	 *             If an unexpected exception occurs in any of the parallel
 	 *             tasks.
 	 */
 	public void loadSystemCores(ConnectionProvider<DSEStorage> connection)
 			throws StorageException, IOException, ProcessException,
-			DataSpecificationException {
+			DataSpecificationException, InterruptedException {
 		var storage = connection.getStorageInterface();
 		var ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
@@ -177,7 +185,7 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 
 	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar,
 			ExecutionContext context) throws IOException, ProcessException,
-			DataSpecificationException, StorageException {
+			DataSpecificationException, StorageException, InterruptedException {
 		try (var c = new BoardLocal(board.location)) {
 			var worker = new BoardWorker(board, storage, bar, context);
 			for (var ctl : storage.listCoresToLoad(board)) {
@@ -187,8 +195,9 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	}
 
 	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar,
-			boolean system, ExecutionContext context) throws IOException,
-			ProcessException, DataSpecificationException, StorageException {
+			boolean system, ExecutionContext context)
+			throws IOException, ProcessException, DataSpecificationException,
+			StorageException, InterruptedException {
 		try (var c = new BoardLocal(board.location)) {
 			var worker = new BoardWorker(board, storage, bar, context);
 			for (var ctl : storage.listCoresToLoad(board, system)) {
@@ -241,9 +250,12 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 		 *             If the instructions to build the data are wrong.
 		 * @throws StorageException
 		 *             If the database access fails.
+		 * @throws InterruptedException
+		 *             If communications are interrupted.
 		 */
 		void loadCore(CoreToLoad ctl) throws IOException, ProcessException,
-				DataSpecificationException, StorageException {
+				DataSpecificationException, StorageException,
+				InterruptedException {
 			ByteBuffer ds = getDataSpec(ctl);
 			var start = malloc(ctl, ctl.sizeToWrite);
 			var executor = new Executor(ds, machine.getChipAt(ctl.core).sdram);
@@ -274,7 +286,7 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 		}
 
 		private MemoryLocation malloc(CoreToLoad ctl, int bytesUsed)
-				throws IOException, ProcessException {
+				throws IOException, ProcessException, InterruptedException {
 			return txrx.mallocSDRAM(ctl.core.getScampCore(), bytesUsed,
 					new AppID(ctl.appID),
 					ctl.core.getP() + CORE_DATA_SDRAM_BASE_TAG);
@@ -295,10 +307,12 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 		 *             If anything goes wrong with I/O.
 		 * @throws ProcessException
 		 *             If SCAMP rejects the request.
+		 * @throws InterruptedException
+		 *             If communications are interrupted.
 		 */
 		private int writeRegion(HasCoreLocation core, MemoryRegionReal region,
 				MemoryLocation baseAddress)
-				throws IOException, ProcessException {
+				throws IOException, ProcessException, InterruptedException {
 			var data = region.getRegionData().duplicate();
 
 			data.flip();

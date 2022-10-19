@@ -67,9 +67,11 @@ public class ProcessException extends SpinnmanException {
 	 * @param cause
 	 *            What exception caused problems.
 	 * @return A process exception, or a subclass of it.
+	 * @throws InterruptedException
+	 *             If the cause was an interrupt, it is immediately rethrown.
 	 */
 	static ProcessException makeInstance(HasCoreLocation core,
-			Throwable cause) {
+			Throwable cause) throws InterruptedException {
 		if (requireNonNull(cause) instanceof UnexpectedResponseCodeException) {
 			var urc = (UnexpectedResponseCodeException) cause;
 			if (isNull(urc.response)) {
@@ -109,6 +111,9 @@ public class ProcessException extends SpinnmanException {
 			default:
 				// Fall through
 			}
+		}
+		if (cause instanceof InterruptedException) {
+			throw (InterruptedException) cause;
 		}
 		return new ProcessException(core, cause, null);
 	}

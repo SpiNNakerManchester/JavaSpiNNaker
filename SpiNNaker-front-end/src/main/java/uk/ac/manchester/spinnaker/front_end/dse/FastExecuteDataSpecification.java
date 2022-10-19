@@ -137,13 +137,16 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             If IO goes wrong.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws IllegalStateException
 	 *             If something really strange occurs with talking to the BMP;
 	 *             this constructor should not be doing that!
 	 */
 	@MustBeClosed
 	public FastExecuteDataSpecification(Machine machine, List<Gather> gatherers,
-			File reportDir) throws IOException, ProcessException {
+			File reportDir)
+			throws IOException, ProcessException, InterruptedException {
 		super(machine);
 		if (nonNull(SPINNAKER_COMPARE_UPLOAD)) {
 			log.warn("detailed comparison of uploaded data enabled; "
@@ -163,7 +166,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	}
 
 	private void buildMaps(List<Gather> gatherers)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		for (var g : gatherers) {
 			g.updateTransactionIdFromMachine(txrx);
 			var gathererChip = g.asChipLocation();
@@ -194,13 +197,15 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             If SpiNNaker rejects a message.
 	 * @throws DataSpecificationException
 	 *             If a data specification in the database is invalid.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws IllegalStateException
 	 *             If an unexpected exception occurs in any of the parallel
 	 *             tasks.
 	 */
 	public void loadCores(ConnectionProvider<DSEStorage> connection)
 			throws StorageException, IOException, ProcessException,
-			DataSpecificationException {
+			DataSpecificationException, InterruptedException {
 		var storage = connection.getStorageInterface();
 		var ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
@@ -213,7 +218,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 
 	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar)
 			throws IOException, ProcessException,
-			DataSpecificationException, StorageException {
+			DataSpecificationException, StorageException, InterruptedException {
 		var cores = storage.listCoresToLoad(board, false);
 		if (cores.isEmpty()) {
 			log.info("no cores need loading on board; skipping");
@@ -244,7 +249,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	}
 
 	private MemoryLocation malloc(CoreToLoad ctl, Integer bytesUsed)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return txrx.mallocSDRAM(ctl.core.getScampCore(), bytesUsed,
 				new AppID(ctl.appID),
 				ctl.core.getP() + CORE_DATA_SDRAM_BASE_TAG);
@@ -396,7 +401,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		@MustBeClosed
 		@SuppressWarnings("MustBeClosed")
 		BoardWorker(Ethernet board, DSEStorage storage, Progress bar)
-				throws IOException, ProcessException {
+				throws IOException, ProcessException, InterruptedException {
 			this.board = board;
 			this.logContext = new BoardLocal(board.location);
 			this.storage = storage;
@@ -408,7 +413,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 
 		@Override
 		public void close() throws IOException, ProcessException,
-				DataSpecificationException {
+				DataSpecificationException, InterruptedException {
 			execContext.close();
 			logContext.close();
 			connection.close();
@@ -433,10 +438,13 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		 *             If the instructions to build the data are wrong.
 		 * @throws StorageException
 		 *             If the database access fails.
+		 * @throws InterruptedException
+		 *             If communications are interrupted.
 		 */
 		protected void loadCore(CoreToLoad ctl, Gather gather,
 				MemoryLocation start) throws IOException, ProcessException,
-				DataSpecificationException, StorageException {
+				DataSpecificationException, StorageException,
+				InterruptedException {
 			ByteBuffer ds;
 			try {
 				ds = ctl.getDataSpec();
@@ -472,14 +480,14 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 
 		private int loadCoreFromExecutor(CoreToLoad ctl, Gather gather,
 				MemoryLocation start, Executor executor,
-				ExecutionContext execContext) throws DataSpecificationException,
-				IOException, ProcessException, StorageException {
+				ExecutionContext execContext)
+				throws DataSpecificationException, IOException,
+				ProcessException, StorageException, InterruptedException {
 			execContext.execute(executor, ctl.core, start);
 			int size = executor.getConstructedDataSize();
 			if (log.isInfoEnabled()) {
-				log.info(
-						"generated {} bytes to load onto {} into memory "
-								+ "starting at {}",
+				log.info("generated {} bytes to load onto {} into memory "
+						+ "starting at {}",
 						size, ctl.core, start);
 			}
 			int written = APP_PTR_TABLE_BYTE_SIZE;
@@ -605,10 +613,12 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		 *             If anything goes wrong with communication.
 		 * @throws ProcessException
 		 *             If SpiNNaker rejects a message.
+		 * @throws InterruptedException
+		 *             If communications are interrupted.
 		 */
 		@MustBeClosed
 		NoDropPacketContext dontDropPackets(Gather core)
-				throws IOException, ProcessException {
+				throws IOException, ProcessException, InterruptedException {
 			return new NoDropPacketContext(txrx,
 					monitorsForBoard.get(board.location), core);
 		}
@@ -622,10 +632,12 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		 *             If anything goes wrong with communication.
 		 * @throws ProcessException
 		 *             If SpiNNaker rejects a message.
+		 * @throws InterruptedException
+		 *             If communications are interrupted.
 		 */
 		@MustBeClosed
 		SystemRouterTableContext systemRouterTables()
-				throws IOException, ProcessException {
+				throws IOException, ProcessException, InterruptedException {
 			return new SystemRouterTableContext(txrx,
 					monitorsForBoard.get(board.location));
 		}

@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
@@ -189,7 +190,7 @@ public class SCPRequestPipeline implements AsyncCommsTask {
 		private final Consumer<T> callback;
 
 		/** Callback function for errors. */
-		private final SCPErrorHandler errorCallback;
+		private final BiConsumer<SCPRequest<?>, Throwable> errorCallback;
 
 		/** Retry reasons. */
 		private final List<String> retryReason;
@@ -208,7 +209,7 @@ public class SCPRequestPipeline implements AsyncCommsTask {
 		 *            The failure callback.
 		 */
 		private Request(SCPRequest<T> request, Consumer<T> callback,
-				SCPErrorHandler errorCallback) {
+				BiConsumer<SCPRequest<?>, Throwable> errorCallback) {
 			this.request = request;
 			this.requestData = request.getMessageData(connection.getChip());
 			this.callback = callback;
@@ -283,7 +284,7 @@ public class SCPRequestPipeline implements AsyncCommsTask {
 		 */
 		private void handleError(Throwable exception) {
 			if (nonNull(errorCallback)) {
-				errorCallback.handleError(request, exception);
+				errorCallback.accept(request, exception);
 			}
 		}
 
@@ -337,8 +338,9 @@ public class SCPRequestPipeline implements AsyncCommsTask {
 
 	@Override
 	public <T extends CheckOKResponse> void sendRequest(SCPRequest<T> request,
-			Consumer<T> callback, SCPErrorHandler errorCallback)
-			throws IOException {
+			Consumer<T> callback,
+			BiConsumer<SCPRequest<?>, Throwable> errorCallback)
+			throws IOException, InterruptedException {
 		requireNonNull(errorCallback);
 		// If all the channels are used, start to receive packets
 		while (outstandingRequests.size() >= numChannels) {
@@ -384,7 +386,7 @@ public class SCPRequestPipeline implements AsyncCommsTask {
 	 */
 	private <T extends CheckOKResponse> Request<T> registerRequest(
 			SCPRequest<T> request, Consumer<T> callback,
-			SCPErrorHandler errorCallback) {
+			BiConsumer<SCPRequest<?>, Throwable> errorCallback) {
 		synchronized (outstandingRequests) {
 			int sequence = toUnsignedInt(request.scpRequestHeader
 					.issueSequenceNumber(outstandingRequests.keySet()));
@@ -401,7 +403,7 @@ public class SCPRequestPipeline implements AsyncCommsTask {
 
 	@Override
 	public <T extends NoResponse> void sendOneWayRequest(SCPRequest<T> request)
-			throws IOException {
+			throws IOException, InterruptedException {
 		// Wait for all current in-flight responses to be received
 		finish();
 
@@ -412,7 +414,7 @@ public class SCPRequestPipeline implements AsyncCommsTask {
 	}
 
 	@Override
-	public void finish() throws IOException {
+	public void finish() throws IOException, InterruptedException {
 		while (!outstandingRequests.isEmpty()) {
 			multiRetrieve(0);
 		}
@@ -425,8 +427,11 @@ public class SCPRequestPipeline implements AsyncCommsTask {
 	 *            The number of packets that can remain after running.
 	 * @throws IOException
 	 *             If anything goes wrong with receiving a packet.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
-	private void multiRetrieve(int numPackets) throws IOException {
+	private void multiRetrieve(int numPackets)
+			throws IOException, InterruptedException {
 		// While there are still more packets in progress than some threshold
 		while (outstandingRequests.size() > numPackets) {
 			try {
@@ -438,7 +443,7 @@ public class SCPRequestPipeline implements AsyncCommsTask {
 		}
 	}
 
-	private void singleRetrieve() throws IOException {
+	private void singleRetrieve() throws IOException, InterruptedException {
 		// Receive the next response
 		log.debug("waiting for message... timeout of {}", packetTimeout);
 		var msg = connection.receiveSCPResponse(packetTimeout);

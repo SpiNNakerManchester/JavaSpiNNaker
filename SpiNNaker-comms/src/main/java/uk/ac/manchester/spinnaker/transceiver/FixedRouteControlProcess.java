@@ -56,9 +56,11 @@ class FixedRouteControlProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		loadFixedRoute(chip, fixedRoute, DEFAULT);
 	}
 
@@ -75,9 +77,12 @@ class FixedRouteControlProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
-			AppID appID) throws IOException, ProcessException {
+			AppID appID)
+			throws IOException, ProcessException, InterruptedException {
 		int entry = fixedRoute.encode();
 		synchronousCall(new FixedRouteInitialise(chip, entry, appID));
 	}
@@ -92,9 +97,11 @@ class FixedRouteControlProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	RoutingEntry readFixedRoute(HasChipLocation chip)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return readFixedRoute(chip, DEFAULT);
 	}
 
@@ -110,9 +117,11 @@ class FixedRouteControlProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	RoutingEntry readFixedRoute(HasChipLocation chip, AppID appID)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return synchronousCall(new FixedRouteRead(chip, appID)).getRoute();
 	}
 }

@@ -33,6 +33,7 @@ import uk.ac.manchester.spinnaker.connections.model.AsyncCommsTask;
 import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.NoResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
@@ -63,9 +64,7 @@ class TxrxProcess {
 
 	private final RetryTracker retryTracker;
 
-	private SCPRequest<?> errorRequest;
-
-	private Throwable exception;
+	private Failure failure;
 
 	/**
 	 * @param connectionSelector
@@ -140,23 +139,20 @@ class TxrxProcess {
 	 * Put the state in such a way that it definitely isn't recording an error.
 	 */
 	private void resetState() {
-		this.errorRequest = null;
-		this.exception = null;
+		this.failure = null;
 	}
 
 	/**
-	 * A default handler for exceptions that arranges for them to be rethrown
-	 * later.
+	 * Handler for exceptions trapped by the low level pipeline that remembers
+	 * them so that they can be rethrown later.
 	 *
 	 * @param request
 	 *            The request that caused the exception
 	 * @param exception
 	 *            The exception that was causing the problem
 	 */
-	protected final void receiveError(SCPRequest<?> request,
-			Throwable exception) {
-		this.errorRequest = request;
-		this.exception = exception;
+	private void receiveError(SCPRequest<?> request, Throwable exception) {
+		this.failure = new Failure(request, exception);
 	}
 
 	/**
@@ -168,14 +164,17 @@ class TxrxProcess {
 	 *             If communications fail.
 	 * @throws ProcessException
 	 *             an exception that wraps the original exception that occurred.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
-	protected final void finishBatch() throws ProcessException, IOException {
+	protected final void finishBatch()
+			throws ProcessException, IOException, InterruptedException {
 		for (var pipe : requestPipelines.values()) {
 			pipe.finish();
 		}
-		if (nonNull(exception)) {
-			var hdr = errorRequest.sdpHeader;
-			throw makeInstance(hdr.getDestination(), exception);
+		if (nonNull(failure)) {
+			var hdr = failure.reqHeader;
+			throw makeInstance(hdr.getDestination(), failure.exn);
 		}
 	}
 
@@ -189,9 +188,11 @@ class TxrxProcess {
 	 *            The request to send.
 	 * @throws IOException
 	 *             If sending fails.
+	 * @throws InterruptedException
+	 *             If communications are interrupted while preparing to send.
 	 */
 	protected final <Resp extends CheckOKResponse> void sendRequest(
-			SCPRequest<Resp> request) throws IOException {
+			SCPRequest<Resp> request) throws IOException, InterruptedException {
 		sendRequest(request, null);
 	}
 
@@ -208,10 +209,12 @@ class TxrxProcess {
 	 *            (i.e., checked for any failures) and then discarded.
 	 * @throws IOException
 	 *             If sending fails.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	protected final <Resp extends CheckOKResponse> void sendRequest(
 			SCPRequest<Resp> request, Consumer<Resp> callback)
-			throws IOException {
+			throws IOException, InterruptedException {
 		getPipeline(request).sendRequest(request, callback, this::receiveError);
 	}
 
@@ -228,9 +231,12 @@ class TxrxProcess {
 	 *             If the communications fail
 	 * @throws ProcessException
 	 *             If the other side responds with a failure code
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	protected final <Resp extends CheckOKResponse> Resp synchronousCall(
-			SCPRequest<Resp> request) throws IOException, ProcessException {
+			SCPRequest<Resp> request)
+			throws IOException, ProcessException, InterruptedException {
 		var holder = new ValueHolder<Resp>();
 		resetState();
 		sendRequest(request, holder::setValue);
@@ -245,9 +251,22 @@ class TxrxProcess {
 	 *            The request to send. <em>Must</em> be a one-way request!
 	 * @throws IOException
 	 *             If sending fails.
+	 * @throws InterruptedException
+	 *             If communications are interrupted while preparing to send.
 	 */
-	protected final void sendOneWayRequest(
-			SCPRequest<NoResponse> request) throws IOException {
+	protected final void sendOneWayRequest(SCPRequest<NoResponse> request)
+			throws IOException, InterruptedException {
 		getPipeline(request).sendOneWayRequest(request);
+	}
+
+	private static final class Failure {
+		private final SDPHeader reqHeader;
+
+		private final Throwable exn;
+
+		Failure(SCPRequest<?> req, Throwable exn) {
+			this.reqHeader = req.sdpHeader;
+			this.exn = exn;
+		}
 	}
 }

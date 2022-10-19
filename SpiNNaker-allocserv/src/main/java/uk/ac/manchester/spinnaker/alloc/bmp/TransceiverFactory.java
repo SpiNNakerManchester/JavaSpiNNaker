@@ -124,10 +124,12 @@ public class TransceiverFactory
 
 	@Override
 	public BMPTransceiverInterface getTransciever(Machine machineDescription,
-			BMPCoords bmp) throws IOException, SpinnmanException {
+			BMPCoords bmp)
+			throws IOException, SpinnmanException, InterruptedException {
 		try {
 			synchronized (txrxMap) {
-				return txrxMap.computeIfAbsent(
+				return txrxMap
+						.computeIfAbsent(
 						new Key(machineDescription.getName(), bmp),
 						__ -> makeTransceiver(machineDescription, bmp));
 			}
@@ -137,6 +139,8 @@ public class TransceiverFactory
 				throw (IOException) t;
 			} else if (t instanceof SpinnmanException) {
 				throw (SpinnmanException) t;
+			} else if (t instanceof InterruptedException) {
+				throw (InterruptedException) t;
 			}
 			throw e;
 		}
@@ -164,7 +168,7 @@ public class TransceiverFactory
 			} else {
 				return makeTransceiver(connData);
 			}
-		} catch (IOException | SpinnmanException e) {
+		} catch (IOException | SpinnmanException | InterruptedException e) {
 			throw new TransceiverFactoryException(
 					"failed to build BMP transceiver", e);
 		}
@@ -196,9 +200,11 @@ public class TransceiverFactory
 	 *             If network access fails
 	 * @throws SpinnmanException
 	 *             If transceiver building fails
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	private Transceiver makeTransceiver(BMPConnectionData data)
-			throws IOException, SpinnmanException {
+			throws IOException, SpinnmanException, InterruptedException {
 		int count = 0;
 		while (true) {
 			try {

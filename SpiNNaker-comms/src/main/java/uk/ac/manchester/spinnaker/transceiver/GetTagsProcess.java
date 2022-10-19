@@ -58,9 +58,11 @@ class GetTagsProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	Collection<Tag> getTags(SCPConnection connection)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var tags = new TreeMap<Integer, Tag>();
 		for (var tag : range(0, getTagCount(connection)).toArray()) {
 			sendRequest(new IPTagGet(connection.getChip(), tag), response -> {
@@ -75,7 +77,7 @@ class GetTagsProcess extends TxrxProcess {
 	}
 
 	private int getTagCount(SCPConnection connection)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var tagInfo = synchronousCall(new IPTagGetInfo(connection.getChip()));
 		return tagInfo.poolSize + tagInfo.fixedSize;
 	}
@@ -102,9 +104,11 @@ class GetTagsProcess extends TxrxProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	Map<Tag, Integer> getTagUsage(SCPConnection connection)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var tagUsages = new TreeMap<Tag, Integer>();
 		for (var tag : range(0, getTagCount(connection)).toArray()) {
 			sendRequest(new IPTagGet(connection.getChip(), tag), response -> {

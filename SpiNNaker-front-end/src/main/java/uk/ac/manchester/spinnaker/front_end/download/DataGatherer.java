@@ -185,9 +185,11 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *             If SpiNNaker rejects a message.
 	 * @throws StorageException
 	 *             If DB access goes wrong.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
-	public int gather(List<Gather> gatherers)
-			throws IOException, ProcessException, StorageException {
+	public int gather(List<Gather> gatherers) throws IOException,
+			ProcessException, StorageException, InterruptedException {
 		sanityCheck(gatherers);
 		var workSize = new ValueHolder<>(0);
 		Map<ChipLocation, List<WorkItems>> work;
@@ -268,10 +270,13 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *             If SpiNNaker rejects a message.
 	 * @throws StorageException
 	 *             If DB access goes wrong.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	private Map<ChipLocation, List<WorkItems>> discoverActualWork(
 			List<Gather> gatherers, ValueHolder<Integer> workSize, Progress bar)
-			throws IOException, ProcessException, StorageException {
+			throws IOException, ProcessException, StorageException,
+			InterruptedException {
 		log.info("discovering regions to download");
 		var work = new HashMap<ChipLocation, List<WorkItems>>();
 		int count = 0;
@@ -321,10 +326,12 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *             If IO fails.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	private Map<ChipLocation, GatherDownloadConnection> createConnections(
 			List<Gather> gatherers, Map<ChipLocation, ?> work)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		log.info("building high-speed data connections and configuring IPtags");
 		var connections = new HashMap<ChipLocation, GatherDownloadConnection>();
 		for (var g : gatherers) {
@@ -351,13 +358,15 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *             If SpiNNaker rejects a message.
 	 * @throws StorageException
 	 *             If DB access goes wrong.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
-	private void parallel(Stream<SimpleCallable> tasks)
-			throws IOException, ProcessException, StorageException {
+	private void parallel(Stream<SimpleCallable> tasks) throws IOException,
+			ProcessException, StorageException, InterruptedException {
 		try {
 			pool.submitTasks(tasks).awaitAndCombineExceptions();
 		} catch (IOException | StorageException | ProcessException
-				| RuntimeException e) {
+				| InterruptedException | RuntimeException e) {
 			throw e;
 		} catch (Exception e) {
 			throw new RuntimeException("unexpected exception", e);
@@ -381,10 +390,13 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *             If a download times out unrecoverably.
 	 * @throws ProcessException
 	 *             If anything unexpected goes wrong.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	private void fastDownload(List<WorkItems> work,
-			GatherDownloadConnection conn, Progress bar) throws IOException,
-			StorageException, TimeoutException, ProcessException {
+			GatherDownloadConnection conn, Progress bar)
+			throws IOException, StorageException, TimeoutException,
+			ProcessException, InterruptedException {
 		try (var c = new BoardLocal(conn.getChip())) {
 			log.info("processing fast downloads for {}", conn.getChip());
 			var dl = new Downloader(conn);
@@ -431,7 +443,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 	}
 
 	private void compareDownloadWithSCP(Region r, ByteBuffer data)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var data2 = txrx.readMemory(r.core.asChipLocation(), r.startAddress,
 				r.size);
 		if (data.remaining() != data2.remaining()) {
@@ -495,9 +507,11 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *             If message sending or reception fails.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	private void reconfigureIPtag(IPTag iptag, GatherDownloadConnection conn)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		txrx.setIPTag(iptag, conn);
 		if (log.isDebugEnabled()) {
 			log.debug("all tags for board: {}", txrx.getTags(
@@ -527,11 +541,14 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *             If SpiNNaker rejects a message.
 	 * @throws StorageException
 	 *             If the database doesn't like something.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	@UsedInJavadocOnly(BufferManagerStorage.class)
 	@ForOverride
 	protected abstract List<Region> getRegion(Placement placement, int regionID)
-			throws IOException, ProcessException, StorageException;
+			throws IOException, ProcessException, StorageException,
+			InterruptedException;
 
 	/**
 	 * Store the data retrieved from a region. Called (at most) once for each
@@ -549,24 +566,6 @@ public abstract class DataGatherer extends BoardLocalSupport
 	@ForOverride
 	protected abstract void storeData(Region r, ByteBuffer data)
 			throws StorageException;
-
-	/**
-	 * Have a quiet sleep. Utility method.
-	 *
-	 * @param delay
-	 *            How long to sleep, in milliseconds.
-	 */
-	private static void snooze(int delay) {
-		try {
-			sleep(delay);
-		} catch (InterruptedException interrupted) {
-			/*
-			 * This is only used in contexts where we don't actually interrupt
-			 * the thread, so this exception isn't actually ever going to be
-			 * thrown.
-			 */
-		}
-	}
 
 	/**
 	 * Class used to manage a download. Every instance <em>must only</em> ever
@@ -623,9 +622,12 @@ public abstract class DataGatherer extends BoardLocalSupport
 		 *             If a download times out unrecoverably.
 		 * @throws ProcessException
 		 *             If anything unexpected goes wrong.
+		 * @throws InterruptedException
+		 *             If communications are interrupted.
 		 */
 		ByteBuffer doDownload(Monitor extraMonitor, Region region)
-				throws IOException, TimeoutException, ProcessException {
+				throws IOException, TimeoutException, ProcessException,
+				InterruptedException {
 			monitorCore = extraMonitor;
 			dataReceiver = allocate(region.size);
 			/*
@@ -695,9 +697,11 @@ public abstract class DataGatherer extends BoardLocalSupport
 		 * @throws TimeoutException
 		 *             If we have a full timeout, or if we are flailing around,
 		 *             making no progress.
+		 * @throws InterruptedException
+		 *             If communications are interrupted.
 		 */
 		private boolean processOnePacket(int timeout, int transactionId)
-				throws IOException, TimeoutException {
+				throws IOException, TimeoutException, InterruptedException {
 			var p = conn.getNextPacket(timeout + INTERNAL_DELAY);
 			if (p.hasRemaining()) {
 				received = true;
@@ -723,9 +727,11 @@ public abstract class DataGatherer extends BoardLocalSupport
 		 *             error.
 		 * @throws TimeoutException
 		 *             If we are flailing around, making no progress.
+		 * @throws InterruptedException
+		 *             If we are interrupted.
 		 */
 		private boolean processData(ByteBuffer data, int transactionId)
-				throws IOException, TimeoutException {
+				throws IOException, TimeoutException, InterruptedException {
 			int seqNum = data.getInt();
 			int responseTransactionId = data.getInt();
 
@@ -772,9 +778,11 @@ public abstract class DataGatherer extends BoardLocalSupport
 		 *             causes an error.
 		 * @throws TimeoutException
 		 *             If we have a full timeout.
+		 * @throws InterruptedException
+		 *             If we are interrupted.
 		 */
 		private boolean processTimeout(int transactionId)
-				throws IOException, TimeoutException {
+				throws IOException, TimeoutException, InterruptedException {
 			if (++timeoutcount > TIMEOUT_RETRY_LIMIT) {
 				log.error(TIMEOUT_MESSAGE);
 				throw new TimeoutException();
@@ -796,9 +804,11 @@ public abstract class DataGatherer extends BoardLocalSupport
 		 *             If there are failures.
 		 * @throws TimeoutException
 		 *             If we are flailing around, making no progress.
+		 * @throws InterruptedException
+		 *             If interrupted.
 		 */
 		private boolean retransmitMissingSequences(int transactionId)
-				throws IOException, TimeoutException {
+				throws IOException, TimeoutException, InterruptedException {
 			int numMissing = expectedSeqNums.cardinality();
 			if (numMissing < 1) {
 				return true;
@@ -821,7 +831,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 			// Transmit missing sequences as a new SDP Packet
 			for (var msg : createMessages(monitorCore, missingSeqs,
 					transactionId)) {
-				snooze(DELAY_PER_SEND);
+				sleep(DELAY_PER_SEND);
 				conn.sendMissing(msg);
 			}
 			return false;

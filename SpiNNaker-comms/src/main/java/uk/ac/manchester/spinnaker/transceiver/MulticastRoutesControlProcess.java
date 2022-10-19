@@ -137,6 +137,8 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 * @throws IllegalArgumentException
 	 *             If there are more routes to apply than can fit in a router.
 	 * @throws RuntimeException
@@ -144,7 +146,7 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 	 */
 	void setRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes, AppID appID)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		if (routes.size() > MAX_ROUTER_ENTRIES) {
 			throw new IllegalArgumentException(
 					"too many router entries: " + routes.size());
@@ -179,10 +181,12 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	List<MulticastRoutingEntry> getRoutes(HasChipLocation chip,
 			MemoryLocation baseAddress, AppID appID)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var routes = new TreeMap<Integer, MulticastRoutingEntry>();
 		for (int i = 0; i < NUM_READS; i++) {
 			int offset = i * ENTRIES_PER_READ;

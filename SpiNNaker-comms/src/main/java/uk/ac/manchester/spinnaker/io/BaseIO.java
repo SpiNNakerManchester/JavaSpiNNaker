@@ -88,8 +88,11 @@ abstract class BaseIO implements AbstractIO {
 	 *             If IO fails.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
-	abstract byte[] doRead(int numBytes) throws IOException, ProcessException;
+	abstract byte[] doRead(int numBytes)
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Do the actual write.
@@ -104,9 +107,11 @@ abstract class BaseIO implements AbstractIO {
 	 *             If IO fails.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	abstract void doWrite(byte[] bytes, int start, int len)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Do the actual fill.
@@ -121,9 +126,11 @@ abstract class BaseIO implements AbstractIO {
 	 *             If IO fails.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	abstract void doFill(int value, FillDataType type, int len)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	private void inRange(int delta) throws EOFException {
 		var newAddr = current.add(delta);
@@ -133,7 +140,8 @@ abstract class BaseIO implements AbstractIO {
 	}
 
 	@Override
-	public byte[] read(Integer numBytes) throws IOException, ProcessException {
+	public byte[] read(Integer numBytes)
+			throws IOException, ProcessException, InterruptedException {
 		if (nonNull(numBytes) && numBytes == 0) {
 			return new byte[0];
 		}
@@ -146,7 +154,8 @@ abstract class BaseIO implements AbstractIO {
 	}
 
 	@Override
-	public int write(byte[] data) throws IOException, ProcessException {
+	public int write(byte[] data)
+			throws IOException, ProcessException, InterruptedException {
 		int n = data.length;
 		inRange(n);
 		doWrite(data, 0, n);
@@ -156,7 +165,7 @@ abstract class BaseIO implements AbstractIO {
 
 	@Override
 	public void fill(int value, Integer size, FillDataType type)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		int len = isNull(size) ? end.diff(current) : size;
 		inRange(len);
 		if (len < 0 || len % type.size != 0) {

@@ -101,7 +101,7 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	}
 
 	private List<RecordingRegion> getRegions(Placement placement)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		// Cheap check first
 		synchronized (recordingRegions) {
 			var regions = recordingRegions.get(placement);
@@ -120,7 +120,7 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 
 	@Override
 	protected List<Region> getRegion(Placement placement, int index)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var region = getRegions(placement).get(index);
 		log.debug("got region of {} R:{} as {}", placement.asCoreLocation(),
 				index, region);
