@@ -19,14 +19,16 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.google.errorprone.annotations.Immutable;
 
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 
 /**
- * A combination of x, y,z and a Link.
+ * A combination of x, y, z and a Link.
  *
  * @author Christian
  */
@@ -34,83 +36,64 @@ import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 	"x", "y", "z", "link"
 })
 @JsonFormat(shape = ARRAY)
+@Immutable
 public class BoardLink {
 	// TODO verify format and meaning.
 
 	@ValidTriadX
-	private int x;
+	private final int x;
 
 	@ValidTriadY
-	private int y;
+	private final int y;
 
 	@ValidTriadZ
-	private int z;
+	private final int z;
 
-	private int link;
+	private final int link;
 
 	/**
-	 * Empty constructor for unmarshaller.
+	 * @param x
+	 *            The X coordinate
+	 * @param y
+	 *            The Y coordinate
+	 * @param z
+	 *            The Z coordinate
+	 * @param link
+	 *            The link number
 	 */
-	public BoardLink() {
+	public BoardLink(@JsonProperty("x") int x, @JsonProperty("y") int y,
+			@JsonProperty("z") int z, @JsonProperty("link") int link) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.link = link;
 	}
 
 	/**
-	 * @return the x
+	 * @return the X coordinate
 	 */
 	public int getX() {
 		return x;
 	}
 
 	/**
-	 * @param x
-	 *            the x to set
-	 */
-	public void setX(int x) {
-		this.x = x;
-	}
-
-	/**
-	 * @return the y
+	 * @return the Y coordinate
 	 */
 	public int getY() {
 		return y;
 	}
 
 	/**
-	 * @param y
-	 *            the y to set
-	 */
-	public void setY(int y) {
-		this.y = y;
-	}
-
-	/**
-	 * @return the z
+	 * @return the Z coordinate
 	 */
 	public int getZ() {
 		return z;
 	}
 
 	/**
-	 * @param z
-	 *            the z to set
-	 */
-	public void setZ(int z) {
-		this.z = z;
-	}
-
-	/**
-	 * @return the link
+	 * @return the link number
 	 */
 	public int getLink() {
 		return link;
-	}
-
-	/**
-	 * @param link
-	 *            the link to set
-	 */
-	public void setLink(int link) {
-		this.link = link;
 	}
 }

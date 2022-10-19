@@ -26,6 +26,8 @@ import java.util.concurrent.BlockingDeque;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.ac.manchester.spinnaker.utils.Daemon;
+
 abstract class SupportUtils {
 	private SupportUtils() {
 	}
@@ -47,16 +49,9 @@ abstract class SupportUtils {
 	/** Requested timeout. */
 	static final int TIMEOUT = 101;
 
-	static class Daemon extends Thread {
-		Daemon(Runnable r, String name) {
-			super(r, name);
-			setDaemon(true);
-			start();
-		}
-	}
-
 	static Joinable backgroundAccept(MockServer s) throws Exception {
 		var t = new Daemon(s::connectQuietly, "background accept");
+		t.start();
 		return () -> t.join();
 	}
 

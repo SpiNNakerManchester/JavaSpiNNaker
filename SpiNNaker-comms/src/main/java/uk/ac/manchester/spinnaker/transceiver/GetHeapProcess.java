@@ -37,7 +37,7 @@ import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 /**
  * Get a description of the heap.
  */
-class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
+final class GetHeapProcess extends TxrxProcess {
 	private static final int HEAP_HEADER_SIZE = 16;
 
 	private static final int HEAP_BLOCK_HEADER_SIZE = 8;
@@ -50,7 +50,8 @@ class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	GetHeapProcess(ConnectionSelector<SCPConnection> connectionSelector,
+	GetHeapProcess(
+			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}
@@ -67,10 +68,12 @@ class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	List<HeapElement> getBlocks(HasChipLocation chip,
 			SystemVariableDefinition heap)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var header = getHeapHeader(chip, heap);
 		var nextBlock = header.first;
 
@@ -102,10 +105,12 @@ class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	List<HeapElement> getFreeBlocks(HasChipLocation chip,
 			SystemVariableDefinition heap)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var header = getHeapHeader(chip, heap);
 		var nextBlock = header.free;
 
@@ -135,31 +140,81 @@ class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	int getFreeSpace(HasChipLocation chip, SystemVariableDefinition heap)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return getHeapHeader(chip, heap).freeBytes;
 	}
 
+	/**
+	 * Read a heap header.
+	 *
+	 * @param chip
+	 *            What chip to read from.
+	 * @param heap
+	 *            Which heap to get the header of.
+	 * @return The heap header.
+	 * @throws IOException
+	 *             If anything goes wrong with networking
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
+	 */
 	private HeapHeader getHeapHeader(HasChipLocation chip,
 			SystemVariableDefinition heap)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var heapBase = new MemoryLocation(readFromAddress(chip,
 				SYS_VARS.add(heap.offset), heap.type.value).get());
 		return new HeapHeader(
 				readFromAddress(chip, heapBase, HEAP_HEADER_SIZE));
 	}
 
+	/**
+	 * Read a memory block header.
+	 *
+	 * @param chip
+	 *            What chip to read from.
+	 * @param address
+	 *            What address to read from.
+	 * @return The memory block header.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
+	 */
 	private BlockHeader getBlockHeader(HasChipLocation chip,
-			MemoryLocation address) throws IOException, ProcessException {
+			MemoryLocation address)
+			throws IOException, ProcessException, InterruptedException {
 		return new BlockHeader(
 				readFromAddress(chip, address, HEAP_BLOCK_HEADER_SIZE));
 	}
 
-	// NB: assumes that size is small
+	/**
+	 * Simplified read. <em>Assumes</em> that the amount of data being read can
+	 * fit in a single response message.
+	 *
+	 * @param chip
+	 *            What chip to read from.
+	 * @param address
+	 *            What address to read from.
+	 * @param size
+	 *            How much to read.
+	 * @return Data read, wrapped as little-endian integer buffer.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
+	 */
 	private IntBuffer readFromAddress(HasChipLocation chip,
 			MemoryLocation address, long size)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return synchronousCall(
 				new ReadMemory(chip, address, (int) size)).data
 						.asIntBuffer();

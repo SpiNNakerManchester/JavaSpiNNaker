@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.messages.scp.FixedRouteInitialise;
 import uk.ac.manchester.spinnaker.messages.scp.FixedRouteRead;
 
 /** Load a fixed route routing entry onto a chip, and read it back again. */
-class FixedRouteControlProcess extends MultiConnectionProcess<SCPConnection> {
+class FixedRouteControlProcess extends TxrxProcess {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
@@ -39,7 +39,7 @@ class FixedRouteControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            required.
 	 */
 	FixedRouteControlProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}
@@ -56,9 +56,11 @@ class FixedRouteControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		loadFixedRoute(chip, fixedRoute, DEFAULT);
 	}
 
@@ -75,9 +77,12 @@ class FixedRouteControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
-			AppID appID) throws IOException, ProcessException {
+			AppID appID)
+			throws IOException, ProcessException, InterruptedException {
 		int entry = fixedRoute.encode();
 		synchronousCall(new FixedRouteInitialise(chip, entry, appID));
 	}
@@ -92,9 +97,11 @@ class FixedRouteControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	RoutingEntry readFixedRoute(HasChipLocation chip)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return readFixedRoute(chip, DEFAULT);
 	}
 
@@ -110,9 +117,11 @@ class FixedRouteControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	RoutingEntry readFixedRoute(HasChipLocation chip, AppID appID)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return synchronousCall(new FixedRouteRead(chip, appID)).getRoute();
 	}
 }

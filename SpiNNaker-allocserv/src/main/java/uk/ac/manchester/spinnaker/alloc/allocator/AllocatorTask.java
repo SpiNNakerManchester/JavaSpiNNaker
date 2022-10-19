@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.lang.Math.ceil;
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
 import static java.lang.String.format;
@@ -34,9 +35,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -62,6 +61,7 @@ import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -141,30 +141,6 @@ public class AllocatorTask extends DatabaseAwareBean
 
 		public int getArea() {
 			return width * height * depth;
-		}
-	}
-
-	/**
-	 * Helper class representing the logical coordinates of a board.
-	 *
-	 * @author Donal Fellows
-	 */
-	private static final class TriadCoords {
-		final int x;
-
-		final int y;
-
-		final int z;
-
-		private TriadCoords(Row row) {
-			this.x = row.getInt("x");
-			this.y = row.getInt("y");
-			this.z = row.getInt("z");
-		}
-
-		@Override
-		public String toString() {
-			return format("[%d,%d,%d]", x, y, z);
 		}
 	}
 
@@ -431,13 +407,9 @@ public class AllocatorTask extends DatabaseAwareBean
 			}
 		}
 		try (var find = conn.query(GET_LIVE_JOB_IDS)) {
-			var toKill = new ArrayList<Integer>();
-			for (var row : find.call(NUMBER_OF_JOBS_TO_QUOTA_CHECK, 0)) {
-				int jobId = row.getInt("job_id");
-				if (!quotaManager.mayLetJobContinue(jobId)) {
-					toKill.add(jobId);
-				}
-			}
+			var toKill = find.call(NUMBER_OF_JOBS_TO_QUOTA_CHECK, 0)
+					.map(integer("job_id")).filter(quotaManager::shouldKillJob)
+					.toList();
 			for (var id : toKill) {
 				changed |= destroyJob(conn, id, "quota exceeded");
 			}
@@ -583,14 +555,10 @@ public class AllocatorTask extends DatabaseAwareBean
 	 * @author Donal Fellows
 	 */
 	private static final class DimensionEstimate {
-		private static final double HORIZONTAL_FACTOR = 1.5;
-
-		private static final double VERTICAL_FACTOR = 2.0;
-
-		/** The estimated width. */
+		/** The estimated width, in triads. */
 		final int width;
 
-		/** The estimated height. */
+		/** The estimated height, in triads. */
 		final int height;
 
 		/**
@@ -600,11 +568,23 @@ public class AllocatorTask extends DatabaseAwareBean
 		 */
 		final int tolerance;
 
+		/**
+		 * Create an estimate of what to allocate. The old spalloc would take
+		 * hints at this point on the aspect ratio, but we don't bother; we
+		 * strongly prefer allocations "nearly square", going for making them
+		 * slightly taller than wide if necessary.
+		 *
+		 * @param numBoards
+		 *            The number of boards wanted.
+		 * @param max
+		 *            The size of the machine.
+		 */
 		DimensionEstimate(int numBoards, Rectangle max) {
-			int numTriads = numBoards / TRIAD_DEPTH;
-			if (numBoards % TRIAD_DEPTH > 0) {
-				numTriads++;
+			if (numBoards < 1) {
+				throw new IllegalArgumentException(
+						"number of boards must be greater than zero");
 			}
+			int numTriads = ceildiv(numBoards, TRIAD_DEPTH);
 			width = min((int) ceil(sqrt(numTriads)), max.width);
 			height = min(ceildiv(numTriads, width), max.height);
 			tolerance = (width * height * TRIAD_DEPTH) - numBoards;
@@ -618,15 +598,26 @@ public class AllocatorTask extends DatabaseAwareBean
 			}
 		}
 
+		/**
+		 * Create an estimate of what to allocate. This does not need to be
+		 * "near square".
+		 *
+		 * @param w
+		 *            The width of the allocation requested, in triads.
+		 * @param h
+		 *            The height of the allocation requested, in triads.
+		 * @param max
+		 *            The size of the machine.
+		 */
 		DimensionEstimate(int w, int h, Rectangle max) {
-			int numBoards = w * h;
-			width = (int) min(ceil(w / HORIZONTAL_FACTOR), max.width);
-			height = (int) min(ceil(h / VERTICAL_FACTOR), max.height);
-			tolerance = (width * height * TRIAD_DEPTH) - numBoards;
-			if (width < 1 || height < 1) {
+			if (w < 1 || h < 1) {
 				throw new IllegalArgumentException(
-						"computed dimensions must be greater than zero");
+						"dimensions must be greater than zero");
 			}
+			int numBoards = w * h * TRIAD_DEPTH;
+			width = max(1, min(w, max.width));
+			height = max(1, min(h, max.height));
+			tolerance = (width * height * TRIAD_DEPTH) - numBoards;
 			if (tolerance < 0) {
 				throw new IllegalArgumentException(
 						"that job cannot possibly fit on this machine");
@@ -659,6 +650,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		int maxDeadBoards = task.getInt("max_dead_boards");
 		var numBoards = task.getInteger("num_boards");
 		if (nonNull(numBoards) && numBoards > 0) {
+			// Single-board case gets its own allocator that's better at that
 			if (numBoards == 1) {
 				return allocateOneBoard(sql, jobId, machineId);
 			}
@@ -677,7 +669,9 @@ public class AllocatorTask extends DatabaseAwareBean
 		}
 
 		if (nonNull(width) && nonNull(height) && width > 0 && height > 0) {
-			if (height == 1 && width == 1) {
+			// Special case; user is really just asking for one board
+			if (height == 1 && width == 1 && nonNull(maxDeadBoards)
+					&& maxDeadBoards == 2) {
 				return allocateOneBoard(sql, jobId, machineId);
 			}
 			var estimate = new DimensionEstimate(width, height, max);
@@ -704,8 +698,15 @@ public class AllocatorTask extends DatabaseAwareBean
 		// This is simplified; no subsidiary searching needed
 		return sql.findFreeBoard
 				.call1(machineId).map(row -> setAllocation(sql, jobId,
-						ONE_BOARD, machineId, new TriadCoords(row)))
+						ONE_BOARD, machineId, coords(row)))
 				.orElse(false);
+	}
+
+	private static TriadCoords coords(Row row) {
+		int x = row.getInt("x");
+		int y = row.getInt("y");
+		int z = row.getInt("z");
+		return new TriadCoords(x, y, z);
 	}
 
 	private boolean allocateDimensions(AllocSQL sql, int jobId, int machineId,
@@ -715,7 +716,7 @@ public class AllocatorTask extends DatabaseAwareBean
 				estimate.width * estimate.height * TRIAD_DEPTH - tolerance;
 		for (var root : sql.getRectangles
 				.call(estimate.width, estimate.height, machineId, tolerance)
-				.map(TriadCoords::new)) {
+				.map(AllocatorTask::coords)) {
 			if (minArea > 1) {
 				/*
 				 * Check that a minimum number of boards are reachable from the
@@ -802,7 +803,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			int boardId) {
 		return sql.findSpecificBoard
 				.call1(machineId, boardId).map(row -> setAllocation(sql, jobId,
-						ONE_BOARD, machineId, new TriadCoords(row)))
+						ONE_BOARD, machineId, coords(row)))
 				.orElse(false);
 	}
 
@@ -811,7 +812,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		var rect = new Rectangle(width, height, TRIAD_DEPTH);
 		return sql.getRectangleAt
 				.call1(rootId, width, height, machineId, maxDeadBoards)
-				.map(TriadCoords::new)
+				.map(AllocatorTask::coords)
 				.filter(root -> connectedSize(sql, machineId, root,
 						rect) >= rect.getArea() - maxDeadBoards)
 				.map(root -> setAllocation(sql, jobId, rect, machineId, root))
@@ -919,13 +920,9 @@ public class AllocatorTask extends DatabaseAwareBean
 			 * switched off because they are links to boards that are not
 			 * allocated to the job. Off-board links are shut off by default.
 			 */
-			var perimeterLinks = new HashMap<Integer, EnumSet<Direction>>();
-			for (var row : sql.getPerimeter.call(jobId)) {
-				perimeterLinks
-						.computeIfAbsent(row.getInt("board_id"),
-								k -> EnumSet.noneOf(Direction.class))
-						.add(row.getEnum("direction", Direction.class));
-			}
+			var perimeterLinks = sql.getPerimeter.call(jobId).toCollectingMap(
+					Direction.class, integer("board_id"),
+					enumerate("direction", Direction.class));
 
 			for (var boardId : boards) {
 				var toChange = perimeterLinks.getOrDefault(boardId,

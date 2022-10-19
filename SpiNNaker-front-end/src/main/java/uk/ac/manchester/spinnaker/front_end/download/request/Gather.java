@@ -17,7 +17,7 @@
 package uk.ac.manchester.spinnaker.front_end.download.request;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
-import static java.util.Collections.unmodifiableList;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 
 import java.io.IOException;
 import java.util.List;
@@ -103,7 +103,7 @@ public class Gather implements HasCoreLocation {
 		this.y = y;
 		this.p = p;
 		this.iptag = iptag;
-		this.monitors = monitors;
+		this.monitors = copy(monitors);
 		this.transactionId = 0;
 	}
 
@@ -140,9 +140,11 @@ public class Gather implements HasCoreLocation {
 	 *             If SpiNNaker rejects a message.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	public void updateTransactionIdFromMachine(TransceiverInterface txrx)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		transactionId = txrx.readUser1(this);
 	}
 
@@ -154,9 +156,9 @@ public class Gather implements HasCoreLocation {
 	}
 
 	/**
-	 * @return the monitors
+	 * @return the monitors (read-only)
 	 */
 	public List<Monitor> getMonitors() {
-		return unmodifiableList(monitors);
+		return monitors;
 	}
 }

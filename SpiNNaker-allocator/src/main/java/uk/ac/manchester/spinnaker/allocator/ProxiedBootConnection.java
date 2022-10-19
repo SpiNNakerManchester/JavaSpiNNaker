@@ -89,7 +89,7 @@ final class ProxiedBootConnection extends BootConnection {
 
 	@Override
 	protected ByteBuffer doReceive(int timeout)
-			throws IOException {
+			throws IOException, InterruptedException {
 		if (isClosed() && receiveQueue.isEmpty()) {
 			throw new EOFException("connection closed");
 		}

@@ -197,11 +197,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	MachineDimensions getMachineDimensions()
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Get the details of the machine made up of chips on a board and how they
@@ -216,10 +218,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
-	Machine getMachineDetails() throws IOException, ProcessException;
+	Machine getMachineDetails()
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Determines if the board can be contacted.
@@ -251,10 +256,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
-	default VersionInfo getScampVersion() throws IOException, ProcessException {
+	default VersionInfo getScampVersion()
+			throws IOException, ProcessException, InterruptedException {
 		return getScampVersion(BOOT_CHIP, getScampConnectionSelector());
 	}
 
@@ -269,12 +277,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default VersionInfo getScampVersion(
 			@NotNull ConnectionSelector<SCPConnection> connectionSelector)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return getScampVersion(BOOT_CHIP, connectionSelector);
 	}
 
@@ -288,11 +298,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default VersionInfo getScampVersion(@Valid HasChipLocation chip)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return getScampVersion(chip, getScampConnectionSelector());
 	}
 
@@ -309,12 +321,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	VersionInfo getScampVersion(@Valid HasChipLocation chip,
 			@NotNull ConnectionSelector<SCPConnection> connectionSelector)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Attempt to boot the board. No check is performed to see if the board is
@@ -460,11 +474,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
 	@CheckReturnValue
 	default MappableIterable<CPUInfo> getCPUInformation()
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return getCPUInformation((CoreSubsets) null);
 	}
 
@@ -478,11 +494,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default CPUInfo getCPUInformation(@Valid HasCoreLocation core)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return getCPUInformation(new CoreSubsets(core)).first().orElseThrow();
 	}
 
@@ -503,11 +521,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	MappableIterable<CPUInfo> getCPUInformation(@Valid CoreSubsets coreSubsets)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Get the address of user<sub>0</sub> for a given processor on the board.
@@ -649,11 +669,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
 	@CheckReturnValue
 	default MappableIterable<IOBuffer> getIobuf()
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return getIobuf((CoreSubsets) null);
 	}
 
@@ -667,11 +689,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default IOBuffer getIobuf(@Valid HasCoreLocation core)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return getIobuf(new CoreSubsets(core)).first().orElseThrow();
 	}
 
@@ -686,11 +710,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	MappableIterable<IOBuffer> getIobuf(@Valid CoreSubsets coreSubsets)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Clear the contents of the IOBUF buffer for all processors.
@@ -699,9 +725,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
-	default void clearIobuf() throws IOException, ProcessException {
+	default void clearIobuf()
+			throws IOException, ProcessException, InterruptedException {
 		clearIobuf((CoreSubsets) null);
 	}
 
@@ -714,10 +743,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void clearIobuf(@Valid HasCoreLocation core)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		clearIobuf(new CoreSubsets(core));
 	}
 
@@ -730,10 +761,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	void clearIobuf(@Valid CoreSubsets coreSubsets)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Set the value of the watch dog timer on a specific chip.
@@ -746,10 +779,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void setWatchDogTimeoutOnChip(@Valid HasChipLocation chip, int watchdog)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Enable or disable the watch dog timer on a specific chip.
@@ -762,10 +797,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void enableWatchDogTimerOnChip(@Valid HasChipLocation chip,
-			boolean watchdog) throws IOException, ProcessException;
+			boolean watchdog)
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Set the value of the watch dog timer.
@@ -776,10 +814,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
 	default void setWatchDogTimeout(int watchdog)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		for (var chip : getMachineDetails().chipCoordinates()) {
 			setWatchDogTimeoutOnChip(chip, watchdog);
 		}
@@ -795,10 +835,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
 	default void enableWatchDogTimer(boolean watchdog)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		for (var chip : getMachineDetails().chipCoordinates()) {
 			enableWatchDogTimerOnChip(chip, watchdog);
 		}
@@ -819,11 +861,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
 	@CheckReturnValue
 	int getCoreStateCount(@NotNull AppID appID, @NotNull CPUState state)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Start an executable running on a single core.
@@ -1408,10 +1452,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
 	default void updateRuntime(@PositiveOrZero Integer runTimesteps)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		updateRuntime(runTimesteps, (CoreSubsets) null);
 	}
 
@@ -1428,10 +1474,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void updateRuntime(@PositiveOrZero Integer runTimesteps,
-			@Valid HasCoreLocation core) throws IOException, ProcessException {
+			@Valid HasCoreLocation core)
+			throws IOException, ProcessException, InterruptedException {
 		updateRuntime(runTimesteps, new CoreSubsets(core));
 	}
 
@@ -1448,11 +1497,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	void updateRuntime(@PositiveOrZero Integer runTimesteps,
 			@Valid CoreSubsets coreSubsets)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Tell all running application cores to write their provenance data to a
@@ -1463,10 +1514,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
 	default void updateProvenanceAndExit()
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		updateProvenanceAndExit((CoreSubsets) null);
 	}
 
@@ -1481,10 +1534,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void updateProvenanceAndExit(@Valid HasCoreLocation core)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		updateProvenanceAndExit(new CoreSubsets(core));
 	}
 
@@ -1499,10 +1554,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	void updateProvenanceAndExit(@Valid CoreSubsets coreSubsets)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Write to the SDRAM on the board.
@@ -1522,12 +1579,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             input stream.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void writeMemory(@Valid HasChipLocation chip,
 			@NotNull MemoryLocation baseAddress,
 			@NotNull InputStream dataStream, @Positive int numBytes)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		writeMemory(chip.getScampCore(), baseAddress, dataStream, numBytes);
 	}
 
@@ -1549,12 +1608,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             input stream.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void writeMemory(@Valid HasCoreLocation core,
 			@NotNull MemoryLocation baseAddress,
 			@NotNull InputStream dataStream, @Positive int numBytes)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Write to the SDRAM on the board.
@@ -1572,11 +1633,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             file.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void writeMemory(@Valid HasChipLocation chip,
 			@NotNull MemoryLocation baseAddress, @NotNull File dataFile)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		writeMemory(chip.getScampCore(), baseAddress, dataFile);
 	}
 
@@ -1596,11 +1659,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             file.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void writeMemory(@Valid HasCoreLocation core,
 			@NotNull MemoryLocation baseAddress, @NotNull File dataFile)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Write to the SDRAM on the board.
@@ -1617,11 +1682,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void writeMemory(@Valid HasChipLocation chip,
 			@NotNull MemoryLocation baseAddress, int dataWord)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		writeMemory(chip.getScampCore(), baseAddress, dataWord);
 	}
 
@@ -1640,11 +1707,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void writeMemory(@Valid HasCoreLocation core,
 			@NotNull MemoryLocation baseAddress, int dataWord)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
 		writeMemory(core, baseAddress, b);
@@ -1665,11 +1734,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void writeMemory(@Valid HasChipLocation chip,
 			@NotNull MemoryLocation baseAddress, @NotEmpty byte[] data)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		writeMemory(chip.getScampCore(), baseAddress, wrap(data));
 	}
 
@@ -1688,11 +1759,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void writeMemory(@Valid HasCoreLocation core,
 			@NotNull MemoryLocation baseAddress, @NotEmpty byte[] data)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		writeMemory(core, baseAddress, wrap(data));
 	}
 
@@ -1712,11 +1785,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void writeMemory(@Valid HasChipLocation chip,
 			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		writeMemory(chip.getScampCore(), baseAddress, data);
 	}
 
@@ -1736,11 +1811,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void writeMemory(@Valid HasCoreLocation core,
 			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Write to the user<sub>0</sub> register of a core.
@@ -1754,9 +1831,11 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	default void writeUser0(@Valid HasCoreLocation core, int value)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		writeMemory(core.getScampCore(), getUser0RegisterAddress(core), value);
 	}
 
@@ -1772,10 +1851,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	default void writeUser0(@Valid HasCoreLocation core,
 			@NotNull MemoryLocation pointer)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		writeMemory(core.getScampCore(), getUser0RegisterAddress(core),
 				pointer.address);
 	}
@@ -1792,9 +1873,11 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	default void writeUser1(@Valid HasCoreLocation core, int value)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		writeMemory(core.getScampCore(), getUser1RegisterAddress(core), value);
 	}
 
@@ -1809,10 +1892,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	default void writeUser1(@Valid HasCoreLocation core,
 			@NotNull MemoryLocation pointer)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		writeMemory(core.getScampCore(), getUser1RegisterAddress(core),
 				pointer.address);
 	}
@@ -1829,9 +1914,11 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	default void writeUser2(@Valid HasCoreLocation core, int value)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		writeMemory(core.getScampCore(), getUser2RegisterAddress(core), value);
 	}
 
@@ -1846,10 +1933,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	default void writeUser2(@Valid HasCoreLocation core,
 			@NotNull MemoryLocation pointer)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		writeMemory(core.getScampCore(), getUser2RegisterAddress(core),
 				pointer.address);
 	}
@@ -1880,12 +1969,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             the input stream.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	default void writeNeighbourMemory(@Valid HasChipLocation chip,
 			@NotNull Direction link, @NotNull MemoryLocation baseAddress,
 			@NotNull InputStream dataStream, @Positive int numBytes)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, dataStream,
 				numBytes);
 	}
@@ -1917,12 +2008,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             the input stream.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	void writeNeighbourMemory(@Valid HasCoreLocation core,
 			@NotNull Direction link, @NotNull MemoryLocation baseAddress,
 			@NotNull InputStream dataStream, @Positive int numBytes)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
@@ -1948,11 +2041,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             the file.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	default void writeNeighbourMemory(@Valid HasChipLocation chip,
 			@NotNull Direction link, @NotNull MemoryLocation baseAddress,
-			@NotNull File dataFile) throws IOException, ProcessException {
+			@NotNull File dataFile)
+			throws IOException, ProcessException, InterruptedException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, dataFile);
 	}
 
@@ -1981,11 +2077,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             the file.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	void writeNeighbourMemory(@Valid HasCoreLocation core,
 			@NotNull Direction link, @NotNull MemoryLocation baseAddress,
-			@NotNull File dataFile) throws IOException, ProcessException;
+			@NotNull File dataFile)
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
@@ -2010,11 +2109,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	default void writeNeighbourMemory(@Valid HasChipLocation chip,
 			@NotNull Direction link, @NotNull MemoryLocation baseAddress,
-			int dataWord) throws IOException, ProcessException {
+			int dataWord)
+			throws IOException, ProcessException, InterruptedException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, dataWord);
 	}
 
@@ -2042,11 +2144,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	default void writeNeighbourMemory(@Valid HasCoreLocation core,
 			@NotNull Direction link, @NotNull MemoryLocation baseAddress,
-			int dataWord) throws IOException, ProcessException {
+			int dataWord)
+			throws IOException, ProcessException, InterruptedException {
 		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
 		writeNeighbourMemory(core, link, baseAddress, b);
@@ -2075,11 +2180,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	default void writeNeighbourMemory(@Valid HasChipLocation chip,
 			@NotNull Direction link, @NotNull MemoryLocation baseAddress,
-			@NotEmpty byte[] data) throws IOException, ProcessException {
+			@NotEmpty byte[] data)
+			throws IOException, ProcessException, InterruptedException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, data);
 	}
 
@@ -2107,11 +2215,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	default void writeNeighbourMemory(@Valid HasCoreLocation core,
 			@NotNull Direction link, @NotNull MemoryLocation baseAddress,
-			@NotEmpty byte[] data) throws IOException, ProcessException {
+			@NotEmpty byte[] data)
+			throws IOException, ProcessException, InterruptedException {
 		writeNeighbourMemory(core, link, baseAddress, wrap(data));
 	}
 
@@ -2139,11 +2250,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	default void writeNeighbourMemory(@Valid HasChipLocation chip,
 			@NotNull Direction link, @NotNull MemoryLocation baseAddress,
-			@NotNull ByteBuffer data) throws IOException, ProcessException {
+			@NotNull ByteBuffer data)
+			throws IOException, ProcessException, InterruptedException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, data);
 	}
 
@@ -2172,11 +2286,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	void writeNeighbourMemory(@Valid HasCoreLocation core,
 			@NotNull Direction link, @NotNull MemoryLocation baseAddress,
-			@NotNull ByteBuffer data) throws IOException, ProcessException;
+			@NotNull ByteBuffer data)
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Write to the SDRAM of all chips.
@@ -2197,11 +2314,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             the input stream.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
 	void writeMemoryFlood(@NotNull MemoryLocation baseAddress,
 			@NotNull InputStream dataStream, @Positive int numBytes)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Write to the SDRAM of all chips.
@@ -2220,10 +2339,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             the file.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
 	void writeMemoryFlood(@NotNull MemoryLocation baseAddress,
-			@NotNull File dataFile) throws IOException, ProcessException;
+			@NotNull File dataFile)
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Write to the SDRAM of all chips.
@@ -2241,10 +2363,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
 	default void writeMemoryFlood(@NotNull MemoryLocation baseAddress,
-			int dataWord) throws IOException, ProcessException {
+			int dataWord)
+			throws IOException, ProcessException, InterruptedException {
 		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
 		writeMemoryFlood(baseAddress, b);
@@ -2266,10 +2391,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
 	default void writeMemoryFlood(@NotNull MemoryLocation baseAddress,
-			@NotEmpty byte[] data) throws IOException, ProcessException {
+			@NotEmpty byte[] data)
+			throws IOException, ProcessException, InterruptedException {
 		writeMemoryFlood(baseAddress, wrap(data));
 	}
 
@@ -2290,10 +2418,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
 	void writeMemoryFlood(@NotNull MemoryLocation baseAddress,
-			@NotNull ByteBuffer data) throws IOException, ProcessException;
+			@NotNull ByteBuffer data)
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Read some areas of SDRAM from the board.
@@ -2312,12 +2443,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default ByteBuffer readMemory(@Valid HasChipLocation chip,
 			@NotNull MemoryLocation baseAddress, @Positive int length)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return readMemory(chip.getScampCore(), baseAddress, length);
 	}
 
@@ -2338,12 +2471,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	ByteBuffer readMemory(@Valid HasCoreLocation core,
 			@NotNull MemoryLocation baseAddress, @Positive int length)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Read the contents of an allocated block on the heap from the board. The
@@ -2361,11 +2496,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default ByteBuffer readMemory(@Valid HasCoreLocation core,
-			@NotNull HeapElement element) throws IOException, ProcessException {
+			@NotNull HeapElement element)
+			throws IOException, ProcessException, InterruptedException {
 		if (element.isFree) {
 			return null;
 		}
@@ -2388,11 +2526,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 * @throws StorageException
 	 *             If anything goes wrong with access to the database.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void readRegion(@Valid BufferManagerStorage.Region region,
-			@NotNull BufferManagerStorage storage)
-			throws IOException, ProcessException, StorageException;
+			@NotNull BufferManagerStorage storage) throws IOException,
+			ProcessException, StorageException, InterruptedException;
 
 	/**
 	 * Read the user<sub>0</sub> register of a core.
@@ -2404,10 +2544,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@CheckReturnValue
 	default int readUser0(@Valid HasCoreLocation core)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		var user0 = getUser0RegisterAddress(core);
 		return readMemory(core.getScampCore(), user0, WORD_SIZE).getInt();
 	}
@@ -2422,10 +2564,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@CheckReturnValue
 	default int readUser1(@Valid HasCoreLocation core)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		var user1 = getUser1RegisterAddress(core);
 		return readMemory(core.getScampCore(), user1, WORD_SIZE).getInt();
 	}
@@ -2440,10 +2584,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@CheckReturnValue
 	default int readUser2(@Valid HasCoreLocation core)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		var user2 = getUser2RegisterAddress(core);
 		return readMemory(core.getScampCore(), user2, WORD_SIZE).getInt();
 	}
@@ -2472,11 +2618,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	default ByteBuffer readNeighbourMemory(@Valid HasChipLocation chip,
 			@NotNull Direction link, @NotNull MemoryLocation baseAddress,
-			@Positive int length) throws IOException, ProcessException {
+			@Positive int length)
+			throws IOException, ProcessException, InterruptedException {
 		return readNeighbourMemory(chip.getScampCore(), link, baseAddress,
 				length);
 	}
@@ -2507,11 +2656,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	ByteBuffer readNeighbourMemory(@Valid HasCoreLocation core,
 			@NotNull Direction link, @NotNull MemoryLocation baseAddress,
-			@Positive int length) throws IOException, ProcessException;
+			@Positive int length)
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Sends a stop request for an application ID.
@@ -2525,10 +2677,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
 	void stopApplication(@NotNull AppID appID)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Waits for the specified cores running the given application to be in some
@@ -2619,11 +2773,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	default CoreSubsets getCoresInState(@Valid CoreSubsets allCoreSubsets,
-			@NotNull CPUState state) throws IOException, ProcessException {
+			@NotNull CPUState state)
+			throws IOException, ProcessException, InterruptedException {
 		return getCoresInState(allCoreSubsets, Set.of(state));
 	}
 
@@ -2643,12 +2800,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	default CoreSubsets getCoresInState(@Valid CoreSubsets allCoreSubsets,
 			Set<@NotNull CPUState> states)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return new CoreSubsets(getCPUInformation(allCoreSubsets)
 				.filter(info -> states.contains(info.getState()))
 				.map(CPUInfo::asCoreLocation));
@@ -2670,12 +2829,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			@Valid CoreSubsets allCoreSubsets, @NotNull CPUState state)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return getCoresNotInState(allCoreSubsets, Set.of(state));
 	}
 
@@ -2695,12 +2856,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			@Valid CoreSubsets allCoreSubsets, Set<@NotNull CPUState> states)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return getCPUInformation(allCoreSubsets)
 				.filter(info -> !states.contains(info.getState()))
 				.toMap(TreeMap::new, CPUInfo::asCoreLocation, identity());
@@ -2720,10 +2883,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
 	void sendSignal(@NotNull AppID appID, @NotNull Signal signal)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Set LED states.
@@ -2737,11 +2902,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void setLEDs(@Valid HasChipLocation chip,
 			Map<Integer, LEDAction> ledStates)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		setLEDs(chip.getScampCore(), ledStates);
 	}
 
@@ -2757,10 +2924,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void setLEDs(@Valid HasCoreLocation core, Map<Integer, LEDAction> ledStates)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Find a connection that matches the given board IP address.
@@ -2783,9 +2952,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
-	void setIPTag(@Valid IPTag tag) throws IOException, ProcessException;
+	void setIPTag(@Valid IPTag tag)
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Set up an IP tag to deliver messages to a particular connection.
@@ -2799,10 +2971,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	void setIPTag(@Valid IPTag tag, @NotNull SDPConnection connection)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Set up a reverse IP tag.
@@ -2815,10 +2989,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void setReverseIPTag(@Valid ReverseIPTag tag)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Clear the setting of an IP tag.
@@ -2829,10 +3005,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void clearIPTag(@Valid Tag tag)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		clearIPTag(tag.getTag(), tag.getBoardAddress());
 	}
 
@@ -2848,10 +3026,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
 	default void clearIPTag(@TagID int tag)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		clearIPTag(tag, null);
 	}
 
@@ -2868,10 +3048,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void clearIPTag(@TagID int tag, InetAddress boardAddress)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Get the current set of tags that have been set on the board using all
@@ -2885,10 +3067,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
 	@CheckReturnValue
-	default List<Tag> getTags() throws IOException, ProcessException {
+	default List<Tag> getTags()
+			throws IOException, ProcessException, InterruptedException {
 		return getTags(null);
 	}
 
@@ -2902,11 +3087,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	List<Tag> getTags(SCPConnection connection)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Get the number of times each tag has had a message sent via it using all
@@ -2920,11 +3107,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
 	@CheckReturnValue
 	default Map<Tag, Integer> getTagUsage()
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return getTagUsage(null);
 	}
 
@@ -2939,11 +3128,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	Map<Tag, Integer> getTagUsage(@NotNull SCPConnection connection)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Allocates a chunk of SDRAM on a chip on the machine.
@@ -2957,11 +3148,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default MemoryLocation mallocSDRAM(@Valid HasChipLocation chip,
-			@Positive int size) throws IOException, ProcessException {
+			@Positive int size)
+			throws IOException, ProcessException, InterruptedException {
 		return mallocSDRAM(chip, size, DEFAULT, 0);
 	}
 
@@ -2979,12 +3173,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default MemoryLocation mallocSDRAM(@Valid HasChipLocation chip,
 			@Positive int size, @NotNull AppID appID)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return mallocSDRAM(chip, size, appID, 0);
 	}
 
@@ -3006,10 +3202,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	MemoryLocation mallocSDRAM(@Valid HasChipLocation chip, @Positive int size,
-			@NotNull AppID appID, int tag) throws IOException, ProcessException;
+			@NotNull AppID appID, int tag)
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Free allocated SDRAM.
@@ -3022,11 +3221,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void freeSDRAM(@Valid HasChipLocation chip,
 			@NotNull MemoryLocation baseAddress)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Free all SDRAM allocated to a given application ID.
@@ -3040,10 +3241,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	int freeSDRAM(@Valid HasChipLocation chip, @NotNull AppID appID)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Load a set of multicast routes on to a chip associated with the default
@@ -3057,11 +3260,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void loadMulticastRoutes(@Valid HasChipLocation chip,
 			Collection<@NotNull MulticastRoutingEntry> routes)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		loadMulticastRoutes(chip, routes, DEFAULT);
 	}
 
@@ -3078,11 +3283,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void loadMulticastRoutes(@Valid HasChipLocation chip,
 			Collection<@NotNull MulticastRoutingEntry> routes,
-			@NotNull AppID appID) throws IOException, ProcessException;
+			@NotNull AppID appID)
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Loads a fixed route routing table entry onto a chip's router.
@@ -3095,11 +3303,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void loadFixedRoute(@Valid HasChipLocation chip,
 			@Valid RoutingEntry fixedRoute)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		loadFixedRoute(chip, fixedRoute, DEFAULT);
 	}
 
@@ -3116,11 +3326,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void loadFixedRoute(@Valid HasChipLocation chip,
 			@Valid RoutingEntry fixedRoute, @NotNull AppID appID)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Reads a fixed route routing table entry from a chip's router.
@@ -3132,11 +3344,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default RoutingEntry readFixedRoute(@Valid HasChipLocation chip)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return readFixedRoute(chip, DEFAULT);
 	}
 
@@ -3152,11 +3366,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	RoutingEntry readFixedRoute(@Valid HasChipLocation chip,
-			@NotNull AppID appID) throws IOException, ProcessException;
+			@NotNull AppID appID)
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Get the current multicast routes set up on a chip.
@@ -3168,11 +3385,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default List<MulticastRoutingEntry> getMulticastRoutes(
-			@Valid HasChipLocation chip) throws IOException, ProcessException {
+			@Valid HasChipLocation chip)
+			throws IOException, ProcessException, InterruptedException {
 		return getMulticastRoutes(chip, null);
 	}
 
@@ -3189,11 +3409,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	List<MulticastRoutingEntry> getMulticastRoutes(@Valid HasChipLocation chip,
-			AppID appID) throws IOException, ProcessException;
+			AppID appID)
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Remove all the multicast routes on a chip.
@@ -3204,10 +3427,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void clearMulticastRoutes(@Valid HasChipLocation chip)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Get router diagnostic information from a chip.
@@ -3219,11 +3444,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	RouterDiagnostics getRouterDiagnostics(@Valid HasChipLocation chip)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Sets a router diagnostic filter in a router.
@@ -3241,11 +3468,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void setRouterDiagnosticFilter(@Valid HasChipLocation chip, int position,
 			@NotNull DiagnosticFilter diagnosticFilter)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Gets a router diagnostic filter from a router.
@@ -3261,11 +3490,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	DiagnosticFilter getRouterDiagnosticFilter(@Valid HasChipLocation chip,
-			@PositiveOrZero int position) throws IOException, ProcessException;
+			@PositiveOrZero int position)
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Clear router diagnostic information on a chip. Resets and enables all
@@ -3277,10 +3509,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void clearRouterDiagnosticCounters(@Valid HasChipLocation chip)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		clearRouterDiagnosticCounters(chip, false,
 				range(0, NO_ROUTER_DIAGNOSTIC_FILTERS).boxed()
 						.collect(toList()));
@@ -3298,10 +3532,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void clearRouterDiagnosticCounters(@Valid HasChipLocation chip,
-			boolean enable) throws IOException, ProcessException {
+			boolean enable)
+			throws IOException, ProcessException, InterruptedException {
 		clearRouterDiagnosticCounters(chip, enable,
 				range(0, NO_ROUTER_DIAGNOSTIC_FILTERS).boxed()
 						.collect(toList()));
@@ -3320,11 +3557,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void clearRouterDiagnosticCounters(@Valid HasChipLocation chip,
 			Iterable<@NotNull Integer> counterIDs)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		clearRouterDiagnosticCounters(chip, false, counterIDs);
 	}
 
@@ -3342,11 +3581,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void clearRouterDiagnosticCounters(@Valid HasChipLocation chip,
 			boolean enable, Iterable<@NotNull Integer> counterIDs)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Get the contents of the SDRAM heap on a given chip.
@@ -3358,11 +3599,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	default List<HeapElement> getHeap(@Valid HasChipLocation chip)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return getHeap(chip, sdram_heap_address);
 	}
 
@@ -3378,12 +3621,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	List<HeapElement> getHeap(@Valid HasChipLocation chip,
 			@NotNull SystemVariableDefinition heap)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Fill some memory with repeated data.
@@ -3402,11 +3647,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void fillMemory(@Valid HasChipLocation chip,
 			@NotNull MemoryLocation baseAddress, int repeatValue,
-			@Positive int size) throws ProcessException, IOException {
+			@Positive int size)
+			throws ProcessException, IOException, InterruptedException {
 		fillMemory(chip, baseAddress, repeatValue, size, WORD);
 	}
 
@@ -3429,12 +3677,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void fillMemory(@Valid HasChipLocation chip,
 			@NotNull MemoryLocation baseAddress, int repeatValue,
 			@Positive int size, @NotNull FillDataType dataType)
-			throws ProcessException, IOException;
+			throws ProcessException, IOException, InterruptedException;
 
 	/**
 	 * Clear the packet reinjection queues in a monitor process.
@@ -3445,10 +3695,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void clearReinjectionQueues(@Valid HasCoreLocation monitorCore)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Clear the packet reinjection queues in some monitor processes.
@@ -3459,10 +3711,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void clearReinjectionQueues(@Valid CoreSubsets monitorCores)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Get the packet reinjection status of a monitor process.
@@ -3474,11 +3728,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	ReinjectionStatus getReinjectionStatus(@Valid HasCoreLocation monitorCore)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Get the packet reinjection status of some monitor processes.
@@ -3490,12 +3746,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	@CheckReturnValue
 	Map<CoreLocation, ReinjectionStatus> getReinjectionStatus(
 			@Valid CoreSubsets monitorCores)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Reset the packet reinjection counters of a monitor process.
@@ -3506,10 +3764,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void resetReinjectionCounters(@Valid HasCoreLocation monitorCore)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Reset the packet reinjection counters of some monitor processes.
@@ -3520,10 +3780,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	void resetReinjectionCounters(@Valid CoreSubsets monitorCores)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Set whether packets (of all types) are to be reinjected.
@@ -3536,10 +3798,15 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void setReinjection(@Valid HasCoreLocation monitorCore,
-			boolean reinject) throws IOException, ProcessException {
+			boolean reinject)
+			throws IOException, ProcessException, InterruptedException {
 		setReinjectionTypes(monitorCore, reinject, reinject, reinject,
 				reinject);
 	}
@@ -3555,10 +3822,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void setReinjection(@Valid CoreSubsets monitorCores,
-			boolean reinject) throws IOException, ProcessException {
+			boolean reinject)
+			throws IOException, ProcessException, InterruptedException {
 		setReinjectionTypes(monitorCores, reinject, reinject, reinject,
 				reinject);
 	}
@@ -3574,11 +3844,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void setReinjection(@Valid HasCoreLocation monitorCore,
 			@NotNull ReinjectionStatus status)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		setReinjectionTypes(monitorCore, status.isReinjectingMulticast(),
 				status.isReinjectingPointToPoint(),
 				status.isReinjectingFixedRoute(),
@@ -3596,11 +3868,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void setReinjection(@Valid CoreSubsets monitorCores,
 			@NotNull ReinjectionStatus status)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		setReinjectionTypes(monitorCores, status.isReinjectingMulticast(),
 				status.isReinjectingPointToPoint(),
 				status.isReinjectingFixedRoute(),
@@ -3624,11 +3898,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void setReinjectionTypes(@Valid HasCoreLocation monitorCore,
 			boolean multicast, boolean pointToPoint, boolean fixedRoute,
-			boolean nearestNeighbour) throws IOException, ProcessException;
+			boolean nearestNeighbour)
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Set what types of packets are to be reinjected.
@@ -3647,11 +3924,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	void setReinjectionTypes(@Valid CoreSubsets monitorCores, boolean multicast,
 			boolean pointToPoint, boolean fixedRoute, boolean nearestNeighbour)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Set the emergency packet reinjection timeout.
@@ -3666,11 +3945,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void setReinjectionEmergencyTimeout(@Valid HasCoreLocation monitorCore,
 			int timeoutMantissa, int timeoutExponent)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Set the emergency packet reinjection timeout.
@@ -3683,11 +3964,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void setReinjectionEmergencyTimeout(
 			@Valid HasCoreLocation monitorCore, @NotNull RouterTimeout timeout)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		setReinjectionEmergencyTimeout(monitorCore, timeout.mantissa,
 				timeout.exponent);
 	}
@@ -3705,11 +3988,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	void setReinjectionEmergencyTimeout(@Valid CoreSubsets monitorCores,
 			int timeoutMantissa, int timeoutExponent)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Set the emergency packet reinjection timeout.
@@ -3722,11 +4007,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	default void setReinjectionEmergencyTimeout(@Valid CoreSubsets monitorCores,
 			@NotNull RouterTimeout timeout)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		setReinjectionEmergencyTimeout(monitorCores, timeout.mantissa,
 				timeout.exponent);
 	}
@@ -3742,11 +4029,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	default void setReinjectionEmergencyTimeout(@Valid CoreSubsets monitorCores,
 			@NotNull ReinjectionStatus status)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		setReinjectionEmergencyTimeout(monitorCores,
 				status.getEmergencyTimeout());
 	}
@@ -3764,11 +4053,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void setReinjectionTimeout(@Valid HasCoreLocation monitorCore,
 			int timeoutMantissa, int timeoutExponent)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Set the packet reinjection timeout.
@@ -3781,11 +4072,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	default void setReinjectionTimeout(@Valid HasCoreLocation monitorCore,
 			@NotNull RouterTimeout timeout)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		setReinjectionTimeout(monitorCore, timeout.mantissa, timeout.exponent);
 	}
 
@@ -3802,11 +4095,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	void setReinjectionTimeout(@Valid CoreSubsets monitorCores,
 			int timeoutMantissa, int timeoutExponent)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Set the packet reinjection timeout.
@@ -3819,11 +4114,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	default void setReinjectionTimeout(@Valid CoreSubsets monitorCores,
 			@NotNull RouterTimeout timeout)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		setReinjectionTimeout(monitorCores, timeout.mantissa, timeout.exponent);
 	}
 
@@ -3838,11 +4135,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	default void setReinjectionTimeout(@Valid CoreSubsets monitorCores,
 			@NotNull ReinjectionStatus status)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		setReinjectionTimeout(monitorCores, status.getTimeout());
 	}
 
@@ -3856,10 +4155,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	void saveApplicationRouterTables(@Valid CoreSubsets monitorCores)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Load the (previously saved) application's multicast router tables. The
@@ -3873,10 +4174,12 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	void loadApplicationRouterTables(@Valid CoreSubsets monitorCores)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Load the (previously configured) system multicast router tables. The
@@ -3890,8 +4193,10 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	@ParallelSafeWithCare
 	void loadSystemRouterTables(@Valid CoreSubsets monitorCores)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, InterruptedException;
 }

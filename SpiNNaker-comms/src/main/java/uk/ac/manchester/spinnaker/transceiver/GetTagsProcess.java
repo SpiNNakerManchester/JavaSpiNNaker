@@ -33,7 +33,7 @@ import uk.ac.manchester.spinnaker.messages.scp.IPTagGet;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo;
 
 /** Gets IP tags and reverse IP tags. */
-class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
+class GetTagsProcess extends TxrxProcess {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
@@ -42,7 +42,8 @@ class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	GetTagsProcess(ConnectionSelector<SCPConnection> connectionSelector,
+	GetTagsProcess(
+			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}
@@ -57,9 +58,11 @@ class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	Collection<Tag> getTags(SCPConnection connection)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var tags = new TreeMap<Integer, Tag>();
 		for (var tag : range(0, getTagCount(connection)).toArray()) {
 			sendRequest(new IPTagGet(connection.getChip(), tag), response -> {
@@ -74,7 +77,7 @@ class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 	}
 
 	private int getTagCount(SCPConnection connection)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var tagInfo = synchronousCall(new IPTagGetInfo(connection.getChip()));
 		return tagInfo.poolSize + tagInfo.fixedSize;
 	}
@@ -101,9 +104,11 @@ class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	Map<Tag, Integer> getTagUsage(SCPConnection connection)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var tagUsages = new TreeMap<Tag, Integer>();
 		for (var tag : range(0, getTagCount(connection)).toArray()) {
 			sendRequest(new IPTagGet(connection.getChip(), tag), response -> {

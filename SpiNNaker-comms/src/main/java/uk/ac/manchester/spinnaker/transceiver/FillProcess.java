@@ -35,7 +35,7 @@ import uk.ac.manchester.spinnaker.messages.scp.FillRequest;
 import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
 
 /** A process for filling memory. */
-class FillProcess extends MultiConnectionProcess<SCPConnection> {
+class FillProcess extends TxrxProcess {
 	private static final Logger log = getLogger(FillProcess.class);
 
 	private static final int ALIGNMENT = 4;
@@ -52,7 +52,7 @@ class FillProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	FillProcess(ConnectionSelector<SCPConnection> connectionSelector,
+	FillProcess(ConnectionSelector<? extends SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}
@@ -74,12 +74,14 @@ class FillProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 * @throws IllegalArgumentException
 	 *             If the size doesn't match the alignment of the data type.
 	 */
 	void fillMemory(HasChipLocation chip, MemoryLocation baseAddress, int data,
 			int size, FillDataType dataType)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		// Don't do anything if there is nothing to do!
 		if (size == 0) {
 			return;
@@ -115,7 +117,7 @@ class FillProcess extends MultiConnectionProcess<SCPConnection> {
 
 	private void generateWriteMessages(HasChipLocation chip,
 			MemoryLocation base, int size, ByteBuffer buffer)
-			throws IOException {
+			throws IOException, InterruptedException {
 		int toWrite = size;
 		var address = base;
 

@@ -16,22 +16,24 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
-import static java.util.stream.Collectors.toList;
 import static uk.ac.manchester.spinnaker.connections.UDPConnection.TrafficClass.IPTOS_RELIABILITY;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 
 import java.io.IOException;
 import java.util.Collection;
 
+import uk.ac.manchester.spinnaker.connections.model.SCPSender;
 import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * A connection for talking to one or more Board Management Processors (BMPs). A
@@ -40,14 +42,12 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
  */
 public class BMPConnection extends UDPConnection<SDPMessage>
 		implements SCPSenderReceiver {
-	/** Defined to satisfy the SCPSender; always 0,0 for a BMP. */
-	private static final ChipLocation BMP_LOCATION = new ChipLocation(0, 0);
-
 	/** The coordinates of the BMP. */
 	private final BMPCoords coords;
 
 	/**
 	 * The IDs of the specific set of boards managed by the BMPs we can talk to.
+	 * Immutable.
 	 */
 	public final Collection<BMPBoard> boards;
 
@@ -61,9 +61,8 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 		super(null, null, connectionData.ipAddress,
 				(connectionData.portNumber == null ? SCP_SCAMP_PORT
 						: connectionData.portNumber), IPTOS_RELIABILITY);
-		coords = new BMPCoords(connectionData.cabinet, connectionData.frame);
-		boards = connectionData.boards.stream().map(BMPBoard::new)
-				.collect(toList());
+		coords = connectionData.bmp;
+		boards = connectionData.boards;
 	}
 
 	@Override
@@ -83,18 +82,27 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 		send(getSCPData(scpRequest));
 	}
 
+	/**
+	 * Defined to satisfy the {@link SCPSender} interface. Always
+	 * {@linkplain ChipLocation#ZERO_ZERO 0,0} for a BMP.
+	 *
+	 * @return {@inheritDoc}
+	 */
 	@Override
+	@UsedInJavadocOnly(SCPSender.class)
 	public ChipLocation getChip() {
-		return BMP_LOCATION;
+		return ZERO_ZERO;
 	}
 
 	@Override
-	public SCPResultMessage receiveSCPResponse(int timeout) throws IOException {
+	public SCPResultMessage receiveSCPResponse(int timeout)
+			throws IOException, InterruptedException {
 		return new SCPResultMessage(receive(timeout));
 	}
 
 	@Override
-	public SDPMessage receiveMessage(int timeout) throws IOException {
+	public SDPMessage receiveMessage(int timeout)
+			throws IOException, InterruptedException {
 		return new SDPMessage(receive(timeout), true);
 	}
 

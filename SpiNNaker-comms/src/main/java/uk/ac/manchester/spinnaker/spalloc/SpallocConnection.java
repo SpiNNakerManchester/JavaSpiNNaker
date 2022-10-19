@@ -275,7 +275,8 @@ public abstract class SpallocConnection implements Closeable {
 	}
 
 	private static String readLine(TextSocket sock)
-			throws SpallocProtocolTimeoutException, IOException {
+			throws SpallocProtocolTimeoutException, IOException,
+			InterruptedException {
 		try {
 			var line = sock.getReader().readLine();
 			if (line == null) {
@@ -283,6 +284,9 @@ public abstract class SpallocConnection implements Closeable {
 			}
 			return line;
 		} catch (SocketTimeoutException e) {
+			if (Thread.interrupted()) {
+				throw new InterruptedException("interrupted in readLine");
+			}
 			throw new SpallocProtocolTimeoutException("recv timed out", e);
 		}
 	}
@@ -300,9 +304,12 @@ public abstract class SpallocConnection implements Closeable {
 	 *             If the socket gets an empty response.
 	 * @throws IOException
 	 *             If the socket is unusable or becomes disconnected.
+	 * @throws InterruptedException
+	 *             If interrupted, eventually
 	 */
 	protected Response receiveResponse(Integer timeout)
-			throws SpallocProtocolTimeoutException, IOException {
+			throws SpallocProtocolTimeoutException, IOException,
+			InterruptedException {
 		if (timeout == null || timeout < 0) {
 			timeout = 0;
 		}
@@ -397,10 +404,12 @@ public abstract class SpallocConnection implements Closeable {
 	 *             If a timeout occurs.
 	 * @throws SpallocProtocolException
 	 *             If the connection is unavailable or is closed.
+	 * @throws InterruptedException
+	 *             If interrupted, eventually
 	 */
 	protected String call(Command<?> command, Integer timeout)
 			throws SpallocServerException, SpallocProtocolTimeoutException,
-			SpallocProtocolException {
+			SpallocProtocolException, InterruptedException {
 		try {
 			var finishTime = makeTimeout(timeout);
 

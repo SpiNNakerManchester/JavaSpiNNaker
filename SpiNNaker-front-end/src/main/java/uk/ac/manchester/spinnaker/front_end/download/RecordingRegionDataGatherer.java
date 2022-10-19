@@ -99,7 +99,7 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	}
 
 	private List<RecordingRegion> getRegions(Placement placement)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		// Cheap check first
 		synchronized (recordingRegions) {
 			var regions = recordingRegions.get(placement);
@@ -112,13 +112,13 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		var regions = getRecordingRegionDescriptors(txrx, placement);
 		synchronized (recordingRegions) {
 			// Put the value in the map if it wasn't already there
-			return recordingRegions.computeIfAbsent(placement, key -> regions);
+			return recordingRegions.computeIfAbsent(placement, __ -> regions);
 		}
 	}
 
 	@Override
 	protected List<Region> getRegion(Placement placement, int index)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var region = getRegions(placement).get(index);
 		log.debug("got region of {} R:{} as {}", placement.asCoreLocation(),
 				index, region);

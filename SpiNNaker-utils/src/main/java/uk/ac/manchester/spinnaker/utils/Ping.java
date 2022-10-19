@@ -35,8 +35,6 @@ public abstract class Ping {
 
 	private static final int PING_COUNT = 10;
 
-	private static final int BUFFER_SIZE = 256;
-
 	private Ping() {
 	}
 
@@ -62,17 +60,28 @@ public abstract class Ping {
 		cmd.redirectErrorStream(true);
 		try {
 			var process = cmd.start();
-			new InputStreamDrain(process.getInputStream());
+			var input = process.getInputStream();
+			new Daemon(() -> drain(input)).start();
 			return process.waitFor();
 		} catch (Exception e) {
 			return -1;
 		}
 	}
 
+	private static void drain(InputStream is) {
+		try (is) {
+			is.skip(Long.MAX_VALUE);
+		} catch (IOException e) {
+			// Ignore this exception
+		}
+	}
+
 	/**
 	 * Pings to detect if a host or IP address is reachable. May wait for up to
 	 * about five seconds (or longer <i>in extremis</i>). Technically, it only
-	 * detects if a host is reachable by ICMP ECHO requests.
+	 * detects if a host is reachable by ICMP ECHO requests; there are
+	 * environments (such as Microsoft Azure) where ICMP ECHO is blocked but it
+	 * is possible to route ordinary UDP packets.
 	 *
 	 * @param address
 	 *            Where should be pinged.
@@ -81,26 +90,26 @@ public abstract class Ping {
 	 */
 	@CheckReturnValue
 	public static int ping(String address) {
-		int result = -1;
 		int i = 0;
 		while (true) {
-			result = ping1(address);
+			int result = ping1(address);
 			if (result == 0 || ++i >= PING_COUNT) {
-				break;
+				return result;
 			}
 			try {
 				sleep(PING_DELAY);
 			} catch (InterruptedException e) {
-				break;
+				return result;
 			}
 		}
-		return result;
 	}
 
 	/**
 	 * Pings to detect if a host or IP address is reachable. May wait for up to
 	 * about five seconds (or longer <i>in extremis</i>). Technically, it only
-	 * detects if a host is reachable by ICMP ECHO requests.
+	 * detects if a host is reachable by ICMP ECHO requests; there are
+	 * environments (such as Microsoft Azure) where ICMP ECHO is blocked but it
+	 * is possible to route ordinary UDP packets.
 	 *
 	 * @param address
 	 *            Where should be pinged.
@@ -110,33 +119,5 @@ public abstract class Ping {
 	@CheckReturnValue
 	public static int ping(InetAddress address) {
 		return ping(address.getHostAddress());
-	}
-
-	private static class InputStreamDrain implements Runnable {
-		private InputStream is;
-
-		InputStreamDrain(InputStream is) {
-			this.is = is;
-			var t = new Thread(this);
-			t.setDaemon(true);
-			t.start();
-		}
-
-		@Override
-		public void run() {
-			try {
-				try {
-					byte[] b = new byte[BUFFER_SIZE];
-					int read;
-					do {
-						read = is.read(b);
-					} while (read >= 0);
-				} finally {
-					is.close();
-				}
-			} catch (IOException e) {
-				// Ignore this exception
-			}
-		}
 	}
 }

@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.allocator;
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static java.lang.String.format;
+import static java.lang.Thread.sleep;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
@@ -31,7 +32,9 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.io.IOUtils.readLines;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByNameQuietly;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -46,6 +49,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.google.errorprone.annotations.MustBeClosed;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
@@ -58,9 +63,12 @@ import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
+import uk.ac.manchester.spinnaker.utils.Daemon;
 
 /**
  * A factory for clients to connect to the Spalloc service.
@@ -71,6 +79,8 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  * @author Donal Fellows
  */
 public class SpallocClientFactory {
+	private static final Logger log = getLogger(SpallocClientFactory.class);
+
 	private static final String CONTENT_TYPE = "Content-Type";
 
 	private static final String TEXT_PLAIN = "text/plain; charset=UTF-8";
@@ -287,7 +297,7 @@ public class SpallocClientFactory {
 				var conn = s.connection(uri);
 				var w = whereis(conn);
 				w.setMachineHandle(getMachine(w.getMachineName()));
-				w.setMachineRef(null);
+				w.clearMachineRef();
 				return w;
 			});
 		}
@@ -412,7 +422,7 @@ public class SpallocClientFactory {
 					// Assume we can cache this
 					for (var bmd : ms.machines) {
 						machineMap.computeIfAbsent(bmd.name,
-								name -> new MachineImpl(this, s, bmd));
+								__ -> new MachineImpl(this, s, bmd));
 					}
 					return ms.machines.stream()
 							.map(bmd -> machineMap.get(bmd.name))
@@ -427,6 +437,8 @@ public class SpallocClientFactory {
 	private static final class JobImpl extends Common implements Job {
 		private final URI uri;
 
+		private volatile boolean dead;
+
 		@GuardedBy("lock")
 		private ProxyProtocolClient proxy;
 
@@ -435,6 +447,8 @@ public class SpallocClientFactory {
 		JobImpl(SpallocClient client, Session session, URI uri) {
 			super(client, session);
 			this.uri = uri;
+			this.dead = false;
+			startKeepalive();
 		}
 
 		@Override
@@ -465,8 +479,37 @@ public class SpallocClientFactory {
 			});
 		}
 
+		private static final int DELAY = 20 * MSEC_PER_SEC;
+
+		private void startKeepalive() {
+			if (dead) {
+				throw new IllegalStateException("job is already deleted");
+			}
+			Thread t = new Daemon(() -> {
+				try {
+					while (true) {
+						sleep(DELAY);
+						if (dead) {
+							break;
+						}
+						keepalive();
+					}
+				} catch (IOException e) {
+					log.warn("failed to keep job alive for {}", this, e);
+				} catch (InterruptedException e) {
+					// If interrupted, we're simply done
+				}
+			});
+			t.setName("keepalive for " + this);
+			t.setUncaughtExceptionHandler((th, e) -> {
+				log.warn("unexpected exception in {}", th, e);
+			});
+			t.start();
+		}
+
 		@Override
 		public void delete(String reason) throws IOException {
+			dead = true;
 			s.withRenewal(() -> {
 				var conn = s.connection(uri, "?reason=" + encode(reason, UTF_8),
 						true);
@@ -629,8 +672,8 @@ public class SpallocClientFactory {
 				BriefMachineDescription bmd) {
 			super(client, session);
 			this.bmd = bmd;
-			this.deadBoards = bmd.deadBoards;
-			this.deadLinks = bmd.deadLinks;
+			this.deadBoards = List.copyOf(bmd.deadBoards);
+			this.deadLinks = List.copyOf(bmd.deadLinks);
 		}
 
 		@Override
@@ -679,32 +722,32 @@ public class SpallocClientFactory {
 					s.trackCookie(conn);
 				}
 			});
-			this.deadBoards = nbmd.deadBoards;
-			this.deadLinks = nbmd.deadLinks;
+			this.deadBoards = List.copyOf(nbmd.deadBoards);
+			this.deadLinks = List.copyOf(nbmd.deadLinks);
 		}
 
 		@Override
-		public WhereIs getBoardByTriad(int x, int y, int z) throws IOException {
-			return whereis(bmd.uri
-					.resolve(format("logical-board?x=%d&y=%d&z=%d", x, y, z)));
+		public WhereIs getBoard(TriadCoords coords) throws IOException {
+			return whereis(
+					bmd.uri.resolve(format("logical-board?x=%d&y=%d&z=%d",
+							coords.x, coords.y, coords.z)));
 		}
 
 		@Override
-		public WhereIs getBoardByPhysicalCoords(int cabinet, int frame,
-				int board) throws IOException {
+		public WhereIs getBoard(PhysicalCoords coords) throws IOException {
 			return whereis(bmd.uri.resolve(
 					format("physical-board?cabinet=%d&frame=%d&board=%d",
-							cabinet, frame, board)));
+							coords.c, coords.f, coords.b)));
 		}
 
 		@Override
-		public WhereIs getBoardByChip(HasChipLocation chip) throws IOException {
+		public WhereIs getBoard(HasChipLocation chip) throws IOException {
 			return whereis(bmd.uri.resolve(
 					format("chip?x=%d&y=%d", chip.getX(), chip.getY())));
 		}
 
 		@Override
-		public WhereIs getBoardByIPAddress(String address) throws IOException {
+		public WhereIs getBoard(String address) throws IOException {
 			return whereis(bmd.uri.resolve(
 					format("board-ip?address=%s", encode(address, UTF_8))));
 		}

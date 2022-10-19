@@ -53,7 +53,7 @@ import uk.ac.manchester.spinnaker.messages.scp.GetChipInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 
 /** A process for getting the machine details over a set of connections. */
-class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
+class GetMachineProcess extends TxrxProcess {
 	private static final Logger log = getLogger(GetMachineProcess.class);
 
 	/** A dictionary of (x, y) &rarr; ChipInfo. */
@@ -103,7 +103,8 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	GetMachineProcess(ConnectionSelector<SCPConnection> connectionSelector,
+	GetMachineProcess(
+			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			Set<ChipLocation> ignoreChips,
 			Map<ChipLocation, Set<Integer>> ignoreCoresMap,
 			Map<ChipLocation, Set<Direction>> ignoreLinksMap,
@@ -130,9 +131,11 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	Machine getMachineDetails(HasChipLocation bootChip, MachineDimensions size)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		// Get the P2P table; 8 entries are packed into each 32-bit word
 		var p2pColumnData = new ArrayList<ByteBuffer>();
 		for (int column = 0; column < size.width; column++) {

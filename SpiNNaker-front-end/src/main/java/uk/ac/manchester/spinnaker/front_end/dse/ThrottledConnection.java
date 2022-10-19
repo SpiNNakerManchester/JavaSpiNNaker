@@ -49,6 +49,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
+import uk.ac.manchester.spinnaker.utils.Daemon;
 
 /**
  * An SDP connection that uses a throttle to stop SCAMP from overloading. Note
@@ -68,11 +69,8 @@ class ThrottledConnection implements Closeable {
 	private static final ScheduledExecutorService CLOSER;
 
 	static {
-		CLOSER = newSingleThreadScheduledExecutor(r -> {
-			var t = new Thread(r, "ThrottledConnection.Closer");
-			t.setDaemon(true);
-			return t;
-		});
+		CLOSER = newSingleThreadScheduledExecutor(
+				r -> new Daemon(r, "ThrottledConnection.Closer"));
 		log.info("inter-message minimum time set to {}us",
 				THROTTLE_NS / NSEC_PER_USEC);
 	}
@@ -99,10 +97,13 @@ class ThrottledConnection implements Closeable {
 	 *             If IO fails.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the reprogramming.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	@MustBeClosed
 	ThrottledConnection(TransceiverInterface transceiver, Ethernet board,
-			IPTag iptag) throws IOException, ProcessException {
+			IPTag iptag)
+			throws IOException, ProcessException, InterruptedException {
 		location = board.location;
 		addr = getByName(board.ethernetAddress);
 		connection = new SCPConnection(location, addr, SCP_SCAMP_PORT);
@@ -122,8 +123,11 @@ class ThrottledConnection implements Closeable {
 	 *             If no message is received by the timeout.
 	 * @throws IOException
 	 *             If IO fails.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
-	public IntBuffer receive() throws SocketTimeoutException, IOException {
+	public IntBuffer receive()
+			throws SocketTimeoutException, IOException, InterruptedException {
 		return connection.receive(TIMEOUT_MS).slice().order(LITTLE_ENDIAN)
 				.asIntBuffer();
 	}

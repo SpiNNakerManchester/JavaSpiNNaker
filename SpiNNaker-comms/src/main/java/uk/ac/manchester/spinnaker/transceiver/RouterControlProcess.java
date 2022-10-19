@@ -48,7 +48,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * Access to the control facilities for a set of routers. Depends on access to
  * the extra monitor cores running on those chips.
  */
-class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
+class RouterControlProcess extends TxrxProcess {
 	private static final int REGISTER = 4;
 
 	private static final int NUM_REGISTERS = 16;
@@ -61,7 +61,8 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	RouterControlProcess(ConnectionSelector<SCPConnection> connectionSelector,
+	RouterControlProcess(
+			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}
@@ -75,9 +76,11 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void clearQueue(CoreLocation monitorCore)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		synchronousCall(new ClearReinjectionQueue(monitorCore));
 	}
 
@@ -90,9 +93,11 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void clearQueue(CoreSubsets monitorCoreSubsets)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		for (var core : monitorCoreSubsets) {
 			sendRequest(new ClearReinjectionQueue(core));
 		}
@@ -108,9 +113,11 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void resetCounters(CoreLocation monitorCore)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		synchronousCall(new ResetReinjectionCounters(monitorCore));
 	}
 
@@ -123,9 +130,11 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void resetCounters(CoreSubsets coreSubsets)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		for (var core : coreSubsets) {
 			sendRequest(new ResetReinjectionCounters(core));
 		}
@@ -149,10 +158,12 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void setPacketTypes(CoreLocation monitorCore, boolean multicast,
 			boolean pointToPoint, boolean fixedRoute, boolean nearestNeighbour)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		synchronousCall(new SetReinjectionPacketTypes(monitorCore, multicast,
 				pointToPoint, fixedRoute, nearestNeighbour));
 	}
@@ -174,10 +185,12 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void setPacketTypes(CoreSubsets monitorCoreSubsets, boolean multicast,
 			boolean pointToPoint, boolean fixedRoute, boolean nearestNeighbour)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		for (var core : monitorCoreSubsets) {
 			sendRequest(new SetReinjectionPacketTypes(core, multicast,
 					pointToPoint, fixedRoute, nearestNeighbour));
@@ -198,9 +211,12 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void setTimeout(CoreLocation monitorCore, int timeoutMantissa,
-			int timeoutExponent) throws IOException, ProcessException {
+			int timeoutExponent)
+			throws IOException, ProcessException, InterruptedException {
 		synchronousCall(new SetRouterTimeout(monitorCore, timeoutMantissa,
 				timeoutExponent));
 	}
@@ -218,9 +234,12 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void setTimeout(CoreSubsets monitorCoreSubsets, int timeoutMantissa,
-			int timeoutExponent) throws IOException, ProcessException {
+			int timeoutExponent)
+			throws IOException, ProcessException, InterruptedException {
 		for (var core : monitorCoreSubsets) {
 			sendRequest(new SetRouterTimeout(core, timeoutMantissa,
 					timeoutExponent));
@@ -241,9 +260,12 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void setEmergencyTimeout(CoreLocation monitorCore, int timeoutMantissa,
-			int timeoutExponent) throws IOException, ProcessException {
+			int timeoutExponent)
+			throws IOException, ProcessException, InterruptedException {
 		synchronousCall(new SetRouterEmergencyTimeout(monitorCore,
 				timeoutMantissa, timeoutExponent));
 	}
@@ -261,10 +283,12 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void setEmergencyTimeout(CoreSubsets monitorCoreSubsets,
 			int timeoutMantissa, int timeoutExponent)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		for (var core : monitorCoreSubsets) {
 			sendRequest(new SetRouterEmergencyTimeout(core, timeoutMantissa,
 					timeoutExponent));
@@ -281,9 +305,11 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void saveApplicationRouterTable(CoreLocation monitorCore)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		synchronousCall(new RouterTableSaveApplicationRoutes(monitorCore));
 	}
 
@@ -297,9 +323,11 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void saveApplicationRouterTable(CoreSubsets monitorCoreSubsets)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		for (var core : monitorCoreSubsets) {
 			sendRequest(new RouterTableSaveApplicationRoutes(core));
 		}
@@ -316,9 +344,11 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void loadSystemRouterTable(CoreLocation monitorCore)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		synchronousCall(new RouterTableLoadSystemRoutes(monitorCore));
 	}
 
@@ -332,9 +362,11 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void loadSystemRouterTable(CoreSubsets monitorCoreSubsets)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		for (var core : monitorCoreSubsets) {
 			sendRequest(new RouterTableLoadSystemRoutes(core));
 		}
@@ -351,9 +383,11 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void loadApplicationRouterTable(CoreLocation monitorCore)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		synchronousCall(new RouterTableLoadApplicationRoutes(monitorCore));
 	}
 
@@ -367,9 +401,11 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void loadApplicationRouterTable(CoreSubsets monitorCoreSubsets)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		for (var core : monitorCoreSubsets) {
 			sendRequest(new RouterTableLoadApplicationRoutes(core));
 		}
@@ -386,9 +422,11 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	ReinjectionStatus getReinjectionStatus(CoreLocation monitorCore)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		return synchronousCall(
 				new GetReinjectionStatus(monitorCore)).reinjectionStatus;
 	}
@@ -403,10 +441,12 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	Map<CoreLocation, ReinjectionStatus> getReinjectionStatus(
 			CoreSubsets monitorCoreSubsets)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var status = new HashMap<CoreLocation, ReinjectionStatus>();
 		for (var core : monitorCoreSubsets) {
 			sendRequest(new GetReinjectionStatus(core),
@@ -426,9 +466,11 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	RouterDiagnostics getRouterDiagnostics(HasChipLocation chip)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var cr = new ValueHolder<Integer>();
 		var es = new ValueHolder<Integer>();
 		var reg = new int[NUM_REGISTERS];

@@ -16,10 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.alloc.model;
 
-import static java.util.Collections.unmodifiableList;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,7 +76,7 @@ public class MachineListEntryRecord {
 	@PositiveOrZero
 	private int numJobs;
 
-	private List<@NotBlank String> tags = new ArrayList<>();
+	private List<@NotBlank String> tags = List.of();
 
 	/** @return the machine ID */
 	public int getId() {
@@ -141,11 +140,11 @@ public class MachineListEntryRecord {
 
 	/** @return the machine's tags */
 	public List<String> getTags() {
-		return unmodifiableList(tags);
+		return tags;
 	}
 
 	/** @param tags the machine's tags */
 	public void setTags(List<String> tags) {
-		this.tags = tags;
+		this.tags = copy(tags);
 	}
 }

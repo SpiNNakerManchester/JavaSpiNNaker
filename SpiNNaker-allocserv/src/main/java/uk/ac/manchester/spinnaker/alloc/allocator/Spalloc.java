@@ -19,8 +19,6 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.lang.Thread.currentThread;
-import static java.util.Collections.unmodifiableList;
-import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
@@ -35,6 +33,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 import static uk.ac.manchester.spinnaker.alloc.model.Utils.chip;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 import static uk.ac.manchester.spinnaker.utils.OptionalUtils.apply;
 
 import java.time.Duration;
@@ -83,7 +82,9 @@ import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest.ReportedBoard;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
@@ -357,7 +358,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					var chipDimensions = conn.query(GET_JOB_CHIP_DIMENSIONS);
 					var countPoweredBoards = conn.query(COUNT_POWERED_BOARDS);
 					var getCoords = conn.query(GET_JOB_BOARD_COORDS)) {
-				return s.call1(id).map(job -> jobDescription(id, job,
+				return s.call1(id).map(row -> jobDescription(id, row,
 						chipDimensions, countPoweredBoards, getCoords));
 			}
 		});
@@ -564,8 +565,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 								NO_BOARD_MSG));
 			} else if (nonNull(b.physical)) {
 				return findPhysical
-						.call1(machineName, b.physical.cabinet,
-								b.physical.frame, b.physical.board)
+						.call1(machineName, b.physical.c,
+								b.physical.f, b.physical.b)
 						.filter(r -> !requireTriadRoot || r.getInt("z") == 0)
 						.map(integer("board_id"))
 						.orElseThrow(() -> new IllegalArgumentException(
@@ -696,6 +697,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	private static DownLink makeDownLinkFromRow(Row row) {
+		// Non-standard column names to reduce number of queries
 		var board1 = new BoardCoords(row.getInt("board_1_x"),
 				row.getInt("board_1_y"), row.getInt("board_1_z"),
 				row.getInt("board_1_c"), row.getInt("board_1_f"),
@@ -732,7 +734,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			height = rs.getInt("height");
 			inService = rs.getBoolean("in_service");
 			try (var getTags = conn.query(GET_TAGS)) {
-				tags = getTags.call(id).map(string("tag")).toSet();
+				tags = copy(getTags.call(id).map(string("tag")).toSet());
 			}
 		}
 
@@ -747,38 +749,39 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			}
 			try {
 				epoch.waitForChange(timeout);
-			} catch (InterruptedException ignored) {
+			} catch (InterruptedException interrupted) {
 				currentThread().interrupt();
 			}
 		}
 
 		@Override
-		public Optional<BoardLocation> getBoardByChip(int x, int y) {
+		public Optional<BoardLocation> getBoardByChip(HasChipLocation chip) {
 			try (var conn = getConnection();
 					var findBoard = conn.query(findBoardByGlobalChip)) {
-				return conn.transaction(false, () -> findBoard.call1(id, x, y)
-						.map(row -> new BoardLocationImpl(row, this)));
-			}
-		}
-
-		@Override
-		public Optional<BoardLocation> getBoardByPhysicalCoords(int cabinet,
-				int frame, int board) {
-			try (var conn = getConnection();
-					var findBoard = conn.query(findBoardByPhysicalCoords)) {
 				return conn.transaction(false,
-						() -> findBoard.call1(id, cabinet, frame, board)
+						() -> findBoard.call1(id, chip.getX(), chip.getY())
 								.map(row -> new BoardLocationImpl(row, this)));
 			}
 		}
 
 		@Override
-		public Optional<BoardLocation> getBoardByLogicalCoords(int x, int y,
-				int z) {
+		public Optional<BoardLocation> getBoardByPhysicalCoords(
+				PhysicalCoords coords) {
+			try (var conn = getConnection();
+					var findBoard = conn.query(findBoardByPhysicalCoords)) {
+				return conn.transaction(false,
+						() -> findBoard.call1(id, coords.c, coords.f, coords.b)
+								.map(row -> new BoardLocationImpl(row, this)));
+			}
+		}
+
+		@Override
+		public Optional<BoardLocation> getBoardByLogicalCoords(
+				TriadCoords coords) {
 			try (var conn = getConnection();
 					var findBoard = conn.query(findBoardByLogicalCoords)) {
 				return conn.transaction(false,
-						() -> findBoard.call1(id, x, y, z)
+						() -> findBoard.call1(id, coords.x, coords.y, coords.z)
 								.map(row -> new BoardLocationImpl(row, this)));
 			}
 		}
@@ -817,23 +820,19 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			synchronized (Spalloc.this) {
 				var down = downBoardsCache.get(name);
 				if (nonNull(down)) {
-					return unmodifiableList(down);
+					return copy(down);
 				}
 			}
 			try (var conn = getConnection();
 					var boardNumbers = conn.query(GET_DEAD_BOARDS)) {
-				var downBoards = conn.transaction(false, () -> boardNumbers
-						.call(id)
-						.map(row -> new BoardCoords(row.getInt("x"),
-								row.getInt("y"), row.getInt("z"),
-								row.getInt("cabinet"), row.getInt("frame"),
-								row.getInteger("board_num"),
-								row.getString("address")))
-						.toList());
+				var downBoards = conn.transaction(false,
+						() -> boardNumbers.call(id)
+								.map(row -> new BoardCoords(row, false))
+								.toList());
 				synchronized (Spalloc.this) {
 					downBoardsCache.putIfAbsent(name, downBoards);
 				}
-				return unmodifiableList(downBoards);
+				return copy(downBoards);
 			}
 		}
 
@@ -843,7 +842,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			synchronized (Spalloc.this) {
 				var down = downLinksCache.get(name);
 				if (nonNull(down)) {
-					return unmodifiableList(down);
+					return copy(down);
 				}
 			}
 			try (var conn = getConnection();
@@ -853,7 +852,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				synchronized (Spalloc.this) {
 					downLinksCache.putIfAbsent(name, downLinks);
 				}
-				return unmodifiableList(downLinks);
+				return copy(downLinks);
 			}
 		}
 
@@ -879,7 +878,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 		@Override
 		public Set<String> getTags() {
-			return unmodifiableSet(tags);
+			return tags;
 		}
 
 		@Override
@@ -942,14 +941,14 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			}
 			try {
 				epoch.waitForChange(timeout);
-			} catch (InterruptedException ignored) {
+			} catch (InterruptedException interrupted) {
 				currentThread().interrupt();
 			}
 		}
 
 		@Override
 		public List<Job> jobs() {
-			return unmodifiableList(jobs);
+			return copy(jobs);
 		}
 
 		@Override
@@ -1179,7 +1178,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			}
 			try {
 				epoch.waitForChange(timeout);
-			} catch (InterruptedException ignored) {
+			} catch (InterruptedException interrupted) {
 				currentThread().interrupt();
 			}
 		}
@@ -1540,11 +1539,12 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			public PowerState getPower() {
 				try (var conn = getConnection();
 						var power = conn.query(GET_SUM_BOARDS_POWERED)) {
-					return conn.transaction(false, () -> power.call1(id)
-							.map(row -> row.getInt("total_on") < boardIds.size()
-									? OFF
-									: ON)
-							.orElse(null));
+					return conn.transaction(false,
+							() -> power.call1(id).map(integer("total_on"))
+									.map(totalOn -> totalOn < boardIds.size()
+											? OFF
+											: ON)
+									.orElse(null));
 				}
 			}
 

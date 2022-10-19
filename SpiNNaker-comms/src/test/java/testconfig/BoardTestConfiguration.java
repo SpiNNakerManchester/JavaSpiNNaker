@@ -148,7 +148,7 @@ public class BoardTestConfiguration {
 	@MustBeClosed
 	public SpallocJob setUpSpallocedBoard()
 			throws IOException, SpallocServerException, JobDestroyedException,
-			SpallocStateChangeTimeoutException {
+			SpallocStateChangeTimeoutException, InterruptedException {
 		var spalloc = config.get(SPSEC, "hostname");
 		assumeTrue(spalloc != null, "no spalloc server defined");
 		assumeTrue(hostIsReachable(spalloc),
@@ -188,11 +188,11 @@ public class BoardTestConfiguration {
 
 	private static boolean hostIsReachable(String remotehost) {
 		return REACHABLE.computeIfAbsent(remotehost,
-				r -> ping(remotehost) == 0);
+				__ -> ping(remotehost) == 0);
 	}
 
 	private static boolean hostIsReachable(InetAddress remotehost) {
 		return REACHABLE.computeIfAbsent(remotehost,
-				r -> ping(remotehost) == 0);
+				__ -> ping(remotehost) == 0);
 	}
 }

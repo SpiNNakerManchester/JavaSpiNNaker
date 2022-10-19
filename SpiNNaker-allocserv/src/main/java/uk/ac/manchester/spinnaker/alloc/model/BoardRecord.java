@@ -41,6 +41,7 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  * @author Donal Fellows
  */
 public class BoardRecord {
+	// TODO convert to structured form
 	private Integer id;
 
 	@NotBlank

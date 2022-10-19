@@ -16,67 +16,104 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 /**
  * A description of the state of a job.
  */
-public class JobDescription {
-	private int jobID;
+@JsonDeserialize(builder = JobDescription.Builder.class)
+public final class JobDescription {
+	private final int jobID;
 
-	private String owner;
+	private final String owner;
 
-	private Double startTime;
+	private final Double startTime;
 
-	private State state;
+	private final State state;
 
-	private Boolean power;
+	private final Boolean power;
 
-	private double keepAlive;
+	private final double keepAlive;
 
-	private String reason;
+	private final String reason;
 
-	private String machine;
+	private final String machine;
 
-	private List<Integer> args;
+	private final List<Integer> args;
 
-	private Map<String, Object> kwargs;
+	private final Map<String, Object> kwargs;
 
-	private List<BoardCoordinates> boards = List.of();
+	private final List<BoardCoordinates> boards;
 
-	private String keepAliveHost;
+	private final String keepAliveHost;
 
-	/** Number of boards to list individually in the toString. */
+	/** Number of boards to list individually in the toString(). */
 	private static final int PRINT_EXACT_BOARDS_THRESHOLD = 6;
+
+	/**
+	 * @param jobID
+	 *            The job's identifier
+	 * @param owner
+	 *            The job's owner. This is not necessarily validated!
+	 * @param startTime
+	 *            When the job started, in seconds from the epoch.
+	 * @param state
+	 *            The job state.
+	 * @param power
+	 *            Whether the job's allocated boards are powered on.
+	 * @param keepAlive
+	 *            The job's maximum keepalive interval, in seconds.
+	 * @param reason
+	 *            The reason why the job terminated.
+	 * @param machine
+	 *            The name of the machine that the job is allocated to.
+	 * @param args
+	 *            The positional arguments used to create the job.
+	 * @param kwargs
+	 *            The keyword arguments used to create the job.
+	 * @param boards
+	 *            The boards allocated to the job and their locations.
+	 * @param keepAliveHost
+	 *            The host believed to be keeping the job alive.
+	 */
+	public JobDescription(int jobID, String owner, Double startTime,
+			State state, Boolean power, double keepAlive, String reason,
+			String machine, List<Integer> args, Map<String, Object> kwargs,
+			List<BoardCoordinates> boards, String keepAliveHost) {
+		this.jobID = jobID;
+		this.owner = owner;
+		this.startTime = startTime;
+		this.state = state;
+		this.power = power;
+		this.keepAlive = keepAlive;
+		this.reason = reason;
+		this.machine = machine;
+		this.args = args;
+		this.kwargs = kwargs;
+		this.boards = boards;
+		this.keepAliveHost = keepAliveHost;
+	}
 
 	/** @return The job state. */
 	public State getState() {
 		return state;
 	}
 
-	/** @param state The job state. */
-	public void setState(State state) {
-		this.state = state;
-	}
-
 	/** @return Whether the job's allocated boards are powered on. */
 	public Boolean getPower() {
 		return power;
-	}
-
-	/** @param power Whether the job's allocated boards are powered on. */
-	public void setPower(Boolean power) {
-		this.power = power;
 	}
 
 	/** @return The job's maximum keepalive interval, in seconds. */
@@ -85,19 +122,9 @@ public class JobDescription {
 		return keepAlive;
 	}
 
-	/** @param keepAlive The job's maximum keepalive interval, in seconds. */
-	public void setKeepAlive(double keepAlive) {
-		this.keepAlive = keepAlive;
-	}
-
 	/** @return The reason why the job terminated. */
 	public String getReason() {
 		return reason;
-	}
-
-	/** @param reason The reason why the job terminated. */
-	public void setReason(String reason) {
-		this.reason = reason;
 	}
 
 	/** @return The job's identifier. */
@@ -106,19 +133,9 @@ public class JobDescription {
 		return jobID;
 	}
 
-	/** @param jobID The job's identifier. */
-	public void setJobID(int jobID) {
-		this.jobID = jobID;
-	}
-
 	/** @return The job's owner. This is not necessarily validated! */
 	public String getOwner() {
 		return owner;
-	}
-
-	/** @param owner The job's owner. */
-	public void setOwner(String owner) {
-		this.owner = owner;
 	}
 
 	/** @return When the job started, in seconds from the epoch. */
@@ -127,20 +144,10 @@ public class JobDescription {
 		return startTime;
 	}
 
-	/** @param startTime When the job started, in seconds from the epoch. */
-	public void setStartTime(Double startTime) {
-		this.startTime = startTime;
-	}
-
 	/** @return The name of the machine that the job is allocated to. */
 	@JsonProperty("allocated_machine_name")
 	public String getMachine() {
 		return machine;
-	}
-
-	/** @param machine The name of the machine that the job is allocated to. */
-	public void setMachine(String machine) {
-		this.machine = machine;
 	}
 
 	/** @return The positional arguments used to create the job. */
@@ -148,19 +155,9 @@ public class JobDescription {
 		return args;
 	}
 
-	/** @param args The positional arguments used to create the job. */
-	public void setArgs(List<Integer> args) {
-		this.args = unmodifiableList(args);
-	}
-
 	/** @return The keyword arguments used to create the job. */
 	public Map<String, Object> getKwargs() {
 		return kwargs;
-	}
-
-	/** @param kwargs The keyword arguments used to create the job. */
-	public void setKwargs(Map<String, Object> kwargs) {
-		this.kwargs = unmodifiableMap(kwargs);
 	}
 
 	/** @return The boards allocated to the job and their locations. */
@@ -168,20 +165,10 @@ public class JobDescription {
 		return boards;
 	}
 
-	/** @param boards The boards allocated to the job and their locations. */
-	public void setBoards(List<BoardCoordinates> boards) {
-		this.boards = boards;
-	}
-
 	/** @return The host believed to be keeping the job alive. */
 	@JsonProperty("keepalivehost")
 	public String getKeepAliveHost() {
 		return keepAliveHost;
-	}
-
-	/** @param keepAliveHost The host believed to be keeping the job alive. */
-	public void setKeepAliveHost(String keepAliveHost) {
-		this.keepAliveHost = keepAliveHost;
 	}
 
 	@Override
@@ -206,5 +193,116 @@ public class JobDescription {
 		}
 		builder.append(" keepAliveHost ").append(keepAliveHost);
 		return builder.toString();
+	}
+
+	public static class Builder {
+		private int jobID;
+
+		private String owner;
+
+		private Double startTime;
+
+		private State state;
+
+		private Boolean power;
+
+		private double keepAlive;
+
+		private String reason;
+
+		private String machine;
+
+		private List<Integer> args;
+
+		private Map<String, Object> kwargs;
+
+		private List<BoardCoordinates> boards = List.of();
+
+		private String keepAliveHost;
+
+		@CanIgnoreReturnValue
+		@JsonProperty("job_id")
+		public Builder withJobID(int jobID) {
+			this.jobID = jobID;
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		public Builder withOwner(String owner) {
+			this.owner = owner;
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		@JsonProperty("start_time")
+		public Builder withStartTime(Double startTime) {
+			this.startTime = startTime;
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		public Builder withState(State state) {
+			this.state = state;
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		public Builder withPower(Boolean power) {
+			this.power = power;
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		@JsonProperty("keepalive")
+		public Builder withKeepAlive(double keepAlive) {
+			this.keepAlive = keepAlive;
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		public Builder withReason(String reason) {
+			this.reason = reason;
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		@JsonProperty("allocated_machine_name")
+		public Builder withMachine(String machine) {
+			this.machine = machine;
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		public Builder withArgs(List<Integer> args) {
+			this.args = isNull(args) ? List.of() : List.copyOf(args);
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		public Builder withKwargs(Map<String, Object> kwargs) {
+			this.kwargs = isNull(args) ? Map.of()
+					// Careful: could be null values in map!
+					: unmodifiableMap(new HashMap<>(kwargs));
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		public Builder withBoards(List<BoardCoordinates> boards) {
+			this.boards = isNull(boards) ? List.of() : List.copyOf(boards);
+			return this;
+		}
+
+		@CanIgnoreReturnValue
+		@JsonProperty("keepalivehost")
+		public Builder withKeepAliveHost(String keepAliveHost) {
+			this.keepAliveHost = keepAliveHost;
+			return this;
+		}
+
+		public JobDescription build() {
+			return new JobDescription(jobID, owner, startTime, state, power,
+					keepAlive, reason, machine, args, kwargs, boards,
+					keepAliveHost);
+		}
 	}
 }

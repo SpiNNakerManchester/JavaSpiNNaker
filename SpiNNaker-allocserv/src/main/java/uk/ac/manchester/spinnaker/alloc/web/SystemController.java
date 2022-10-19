@@ -33,6 +33,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import uk.ac.manchester.spinnaker.alloc.model.JobDescription;
+import uk.ac.manchester.spinnaker.alloc.model.JobListEntryRecord;
+import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
+import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
@@ -58,7 +62,7 @@ public interface SystemController {
 	/**
 	 * Get the view for the main page of the service.
 	 *
-	 * @return View name
+	 * @return View ({@code index.jsp})
 	 */
 	@GetMapping("/")
 	ModelAndView index();
@@ -66,10 +70,12 @@ public interface SystemController {
 	/**
 	 * Get the view for the general machine list.
 	 *
-	 * @return View and model
+	 * @return View ({@code listmachines.jsp}) and model (based on
+	 *         {@link MachineListEntryRecord})
 	 */
 	@GetMapping("/list_machines")
 	@PreAuthorize(IS_READER)
+	@UsedInJavadocOnly(MachineListEntryRecord.class)
 	ModelAndView getMachineList();
 
 	/**
@@ -77,19 +83,23 @@ public interface SystemController {
 	 *
 	 * @param machine
 	 *            Which machine is being asked for
-	 * @return View and model
+	 * @return View ({@code machinedetails.jsp}) and model (based on
+	 *         {@link MachineDescription})
 	 */
 	@GetMapping("/machine_info/{machine}")
 	@PreAuthorize(IS_READER)
+	@UsedInJavadocOnly(MachineDescription.class)
 	ModelAndView getMachineInfo(@PathVariable("machine") String machine);
 
 	/**
 	 * Get the view for the general job list.
 	 *
-	 * @return View and model
+	 * @return View ({@code listjobs.jsp}) and model (based on
+	 *         {@link JobListEntryRecord})
 	 */
 	@GetMapping("/list_jobs")
 	@PreAuthorize(IS_READER)
+	@UsedInJavadocOnly(JobListEntryRecord.class)
 	ModelAndView getJobList();
 
 	/**
@@ -97,10 +107,12 @@ public interface SystemController {
 	 *
 	 * @param id
 	 *            Which job is being asked for
-	 * @return View and model
+	 * @return View ({@code jobdetails.jsp}) and model (based on
+	 *         {@link JobDescription})
 	 */
 	@GetMapping("/job_info/{id}")
 	@PreAuthorize(IS_READER)
+	@UsedInJavadocOnly(JobDescription.class)
 	ModelAndView getJobInfo(@PathVariable("id") int id);
 
 	/**
@@ -108,7 +120,8 @@ public interface SystemController {
 	 *
 	 * @param principal
 	 *            Who is changing their password.
-	 * @return View and model
+	 * @return View ({@code password.jsp}) and model (based on
+	 *         {@link PasswordChangeRecord})
 	 */
 	@GetMapping("/change_password")
 	ModelAndView getPasswordChangeForm(Principal principal);
@@ -120,7 +133,8 @@ public interface SystemController {
 	 *            The description of what to change.
 	 * @param principal
 	 *            Who is changing their password.
-	 * @return View and model
+	 * @return View ({@code password.jsp}) and model (based on
+	 *         {@link PasswordChangeRecord})
 	 */
 	@PostMapping("/change_password")
 	ModelAndView

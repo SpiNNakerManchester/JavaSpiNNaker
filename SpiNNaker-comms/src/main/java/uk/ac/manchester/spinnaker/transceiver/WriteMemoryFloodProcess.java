@@ -35,7 +35,7 @@ import uk.ac.manchester.spinnaker.messages.scp.FloodFillEnd;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillStart;
 
 /** A process for writing memory on multiple SpiNNaker chips at once. */
-class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
+class WriteMemoryFloodProcess extends TxrxProcess {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
@@ -45,7 +45,7 @@ class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            required.
 	 */
 	WriteMemoryFloodProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}
@@ -70,9 +70,12 @@ class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void writeMemory(byte nearestNeighbourID, MemoryLocation baseAddress,
-			ByteBuffer data) throws IOException, ProcessException {
+			ByteBuffer data)
+			throws IOException, ProcessException, InterruptedException {
 		data = data.asReadOnlyBuffer();
 		int numBytes = data.remaining();
 		synchronousCall(
@@ -113,10 +116,12 @@ class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking or the input stream.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void writeMemory(byte nearestNeighbourID, MemoryLocation baseAddress,
 			InputStream dataStream, int numBytes)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		synchronousCall(
 				new FloodFillStart(nearestNeighbourID, numBlocks(numBytes)));
 
@@ -153,9 +158,12 @@ class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking or access to the file.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void writeMemory(byte nearestNeighbourID, MemoryLocation baseAddress,
-			File dataFile) throws IOException, ProcessException {
+			File dataFile)
+			throws IOException, ProcessException, InterruptedException {
 		try (var s = buffer(new FileInputStream(dataFile))) {
 			writeMemory(nearestNeighbourID, baseAddress, s,
 					(int) dataFile.length());

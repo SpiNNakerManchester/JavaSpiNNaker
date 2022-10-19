@@ -16,14 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
-
 import java.net.URI;
 import java.time.Instant;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.google.errorprone.annotations.Immutable;
 
 /**
  * Describes a job. This includes the state that the job is in and the
@@ -32,31 +32,41 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({
 	"keepalive-ref", "machine-ref", "power-ref", "chip-ref"
 })
-@JsonAutoDetect(setterVisibility = NON_PRIVATE)
-public class JobDescription {
-	private State state;
+@JsonDeserialize(builder = JobDescription.Builder.class)
+@Immutable
+public final class JobDescription {
+	private final State state;
 
-	private String owner;
+	private final String owner;
 
-	private Instant startTime;
+	private final Instant startTime;
 
-	private Instant finishTime;
+	private final Instant finishTime;
 
-	private String reason;
+	private final String reason;
 
-	private String keepaliveHost;
+	private final String keepaliveHost;
 
-	private Instant keepaliveTime;
+	private final Instant keepaliveTime;
 
-	private URI proxyRef;
+	private final URI proxyRef;
+
+	private JobDescription(State state, String owner, Instant startTime,
+			Instant finishTime, String reason, String keepaliveHost,
+			Instant keepaliveTime, URI proxyRef) {
+		this.state = state;
+		this.owner = owner;
+		this.startTime = startTime;
+		this.finishTime = finishTime;
+		this.reason = reason;
+		this.keepaliveHost = keepaliveHost;
+		this.keepaliveTime = keepaliveTime;
+		this.proxyRef = proxyRef;
+	}
 
 	/** @return The state of the job. */
 	public State getState() {
 		return state;
-	}
-
-	void setState(State state) {
-		this.state = state;
 	}
 
 	/**
@@ -67,28 +77,16 @@ public class JobDescription {
 		return owner;
 	}
 
-	void setOwner(String owner) {
-		this.owner = owner;
-	}
-
 	/** @return When the job started. */
-	@JsonAlias("start-time")
+	@JsonProperty("start-time")
 	public Instant getStartTime() {
 		return startTime;
 	}
 
-	void setStartTime(Instant startTime) {
-		this.startTime = startTime;
-	}
-
 	/** @return When the job was destroyed. {@code null} if not yet finished. */
-	@JsonAlias("finish-time")
+	@JsonProperty("finish-time")
 	public Instant getFinishTime() {
 		return finishTime;
-	}
-
-	void setFinishTime(Instant finishTime) {
-		this.finishTime = finishTime;
 	}
 
 	/** @return Why the job was destroyed. {@code null} if the job is alive. */
@@ -96,41 +94,86 @@ public class JobDescription {
 		return reason;
 	}
 
-	void setReason(String reason) {
-		this.reason = reason;
-	}
-
 	/**
 	 * @return Which host is believed to be keeping a job alive. May be
 	 *         {@code null} if the information is not known or shrouded from
 	 *         you.
 	 */
-	@JsonAlias("keepalive-host")
+	@JsonProperty("keepalive-host")
 	public String getKeepaliveHost() {
 		return keepaliveHost;
 	}
 
-	void setKeepaliveHost(String keepaliveHost) {
-		this.keepaliveHost = keepaliveHost;
-	}
-
 	/** @return The most recent keepalive timestamp. */
-	@JsonAlias("keepalive-time")
+	@JsonProperty("keepalive-time")
 	public Instant getKeepaliveTime() {
 		return keepaliveTime;
 	}
 
-	void setKeepaliveTime(Instant keepaliveTime) {
-		this.keepaliveTime = keepaliveTime;
-	}
-
 	/** @return The URL for connecting to the job's websocket-based proxy. */
-	@JsonAlias("proxy-ref")
+	@JsonProperty("proxy-ref")
 	public URI getProxyAddress() {
 		return proxyRef;
 	}
 
-	void setProxyAddress(URI proxyAddress) {
-		this.proxyRef = proxyAddress;
+	@JsonPOJOBuilder
+	static class Builder {
+		private State state;
+
+		private String owner;
+
+		private Instant startTime;
+
+		private Instant finishTime;
+
+		private String reason;
+
+		private String keepaliveHost;
+
+		private Instant keepaliveTime;
+
+		private URI proxyRef;
+
+		void withState(State state) {
+			this.state = state;
+		}
+
+		void withOwner(String owner) {
+			this.owner = owner;
+		}
+
+		@JsonProperty("start-time")
+		void withStartTime(Instant startTime) {
+			this.startTime = startTime;
+		}
+
+		@JsonProperty("finish-time")
+		void withFinishTime(Instant finishTime) {
+			this.finishTime = finishTime;
+		}
+
+		void withReason(String reason) {
+			this.reason = reason;
+		}
+
+		@JsonProperty("keepalive-host")
+		void withKeepaliveHost(String keepaliveHost) {
+			this.keepaliveHost = keepaliveHost;
+		}
+
+		@JsonProperty("keepalive-time")
+		void withKeepaliveTime(Instant keepaliveTime) {
+			this.keepaliveTime = keepaliveTime;
+		}
+
+		@JsonProperty("proxy-ref")
+		void withProxyRef(URI proxyRef) {
+			this.proxyRef = proxyRef;
+		}
+
+		JobDescription build() {
+			return new JobDescription(state, owner, startTime, finishTime,
+					reason, keepaliveHost, keepaliveTime, proxyRef);
+		}
 	}
 }

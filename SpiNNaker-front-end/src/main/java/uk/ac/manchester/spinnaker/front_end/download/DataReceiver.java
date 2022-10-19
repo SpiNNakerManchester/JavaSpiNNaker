@@ -23,6 +23,7 @@ import static uk.ac.manchester.spinnaker.front_end.download.RecordingRegion.getR
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -39,7 +40,6 @@ import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
-import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
  * Stripped down version of the BufferManager for early testing.
@@ -78,12 +78,12 @@ public class DataReceiver extends BoardLocalSupport {
 		this.machine = machine;
 	}
 
-	private Stream<? extends List<Placement>> partitionByBoard(
+	private Stream<List<Placement>> partitionByBoard(
 			List<Placement> placements) {
-		var map = new DefaultMap<>(ArrayList<Placement>::new);
-		for (var p : placements) {
-			map.get(machine.getChipAt(p).nearestEthernet).add(p);
-		}
+		var map = new HashMap<Object, List<Placement>>();
+		placements.forEach(
+				p -> map.computeIfAbsent(machine.getChipAt(p).nearestEthernet,
+						__ -> new ArrayList<>()).add(p));
 		return map.values().stream();
 	}
 
@@ -100,17 +100,19 @@ public class DataReceiver extends BoardLocalSupport {
 	 *             if SpiNNaker rejects a message
 	 * @throws StorageException
 	 *             if database access fails
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	public void getDataForPlacementsParallel(List<Placement> placements,
-			int parallelFactor)
-			throws IOException, StorageException, ProcessException {
+			int parallelFactor) throws IOException, StorageException,
+			ProcessException, InterruptedException {
 		try (var exec = new BasicExecutor(parallelFactor)) {
 			// get data on a by-the-board basis
 			exec.submitTasks(partitionByBoard(placements), places -> {
 				return () -> getDataForPlacements(places);
 			}).awaitAndCombineExceptions();
 		} catch (IOException | StorageException | ProcessException
-				| RuntimeException e) {
+				| RuntimeException | InterruptedException e) {
 			throw e;
 		} catch (Exception e) {
 			// CHECKSTYLE:OFF
@@ -134,9 +136,12 @@ public class DataReceiver extends BoardLocalSupport {
 	 *             if SpiNNaker rejects a message
 	 * @throws StorageException
 	 *             if database access fails
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	public void getDataForPlacements(List<Placement> placements)
-			throws IOException, StorageException, ProcessException {
+			throws IOException, StorageException, ProcessException,
+			InterruptedException {
 		// get data
 		try (var c = new BoardLocal(placements.get(0))) {
 			for (var placement : placements) {
@@ -149,7 +154,8 @@ public class DataReceiver extends BoardLocalSupport {
 	}
 
 	private void getDataForPlacement(Placement placement, int recordingRegionId)
-			throws IOException, StorageException, ProcessException {
+			throws IOException, StorageException, ProcessException,
+			InterruptedException {
 		// Combine placement.x, placement.y, placement.p, recording_region_id
 		var location = new RegionLocation(placement, recordingRegionId);
 
@@ -177,8 +183,8 @@ public class DataReceiver extends BoardLocalSupport {
 	}
 
 	private void readSomeData(RegionLocation location, MemoryLocation address,
-			long length)
-			throws IOException, StorageException, ProcessException {
+			long length) throws IOException, StorageException, ProcessException,
+			InterruptedException {
 		if (!is32bit(length)) {
 			throw new IllegalArgumentException("non-32-bit argument");
 		}
@@ -202,10 +208,12 @@ public class DataReceiver extends BoardLocalSupport {
 	 * @return data as a byte array
 	 * @throws IOException
 	 *             if communications fail
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	private ByteBuffer requestData(HasCoreLocation location,
 			MemoryLocation address, int length)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		if (length < 1) {
 			// Crazy negative lengths get an exception
 			return allocate(length);

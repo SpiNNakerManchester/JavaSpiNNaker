@@ -57,7 +57,8 @@ public class MemoryIO extends BaseIO {
 	}
 
 	@Override
-	public void close() throws ProcessException, IOException {
+	public void close()
+			throws ProcessException, IOException, InterruptedException {
 		synchronized (io) {
 			io.flushWriteBuffer();
 		}
@@ -88,14 +89,16 @@ public class MemoryIO extends BaseIO {
 	}
 
 	@Override
-	public void flush() throws IOException, ProcessException {
+	public void flush()
+			throws IOException, ProcessException, InterruptedException {
 		synchronized (io) {
 			io.flushWriteBuffer();
 		}
 	}
 
 	@Override
-	byte[] doRead(int size) throws IOException, ProcessException {
+	byte[] doRead(int size)
+			throws IOException, ProcessException, InterruptedException {
 		synchronized (io) {
 			io.setCurrentAddress(current);
 			return io.read(size);
@@ -104,7 +107,7 @@ public class MemoryIO extends BaseIO {
 
 	@Override
 	void doWrite(byte[] data, int from, int len)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		synchronized (io) {
 			io.setCurrentAddress(current);
 			io.write(data);
@@ -113,7 +116,7 @@ public class MemoryIO extends BaseIO {
 
 	@Override
 	void doFill(int value, FillDataType type, int len)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		synchronized (io) {
 			io.setCurrentAddress(current);
 			io.fill(value, len, type);

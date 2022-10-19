@@ -53,7 +53,7 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  *
  * @author Donal Fellows
  */
-class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
+class RuntimeControlProcess extends TxrxProcess {
 	private static final int BUF_HEADER_BYTES = 16;
 
 	private static final int BLOCK_HEADER_BYTES = 16;
@@ -75,7 +75,8 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	RuntimeControlProcess(ConnectionSelector<SCPConnection> connectionSelector,
+	RuntimeControlProcess(
+			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}
@@ -89,8 +90,11 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
-	void clearIOBUF(CoreLocation core) throws IOException, ProcessException {
+	void clearIOBUF(CoreLocation core)
+			throws IOException, ProcessException, InterruptedException {
 		synchronousCall(new ClearIOBUF(core));
 	}
 
@@ -103,9 +107,11 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void clearIOBUF(CoreSubsets coreSubsets)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		for (var core : requireNonNull(coreSubsets,
 				"must have actual core subset to iterate over")) {
 			sendRequest(new ClearIOBUF(core));
@@ -125,9 +131,11 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void updateRuntime(Integer runTimesteps, CoreSubsets coreSubsets)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		int runTime = (runTimesteps == null ? 0 : runTimesteps);
 		boolean infiniteRun = runTimesteps == null;
 		for (var core : requireNonNull(coreSubsets,
@@ -146,8 +154,11 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            the cores to update the provenance of.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
-	void updateProvenanceAndExit(CoreSubsets coreSubsets) throws IOException {
+	void updateProvenanceAndExit(CoreSubsets coreSubsets)
+			throws IOException, InterruptedException {
 		for (var core : requireNonNull(coreSubsets,
 				"must have actual core subset to iterate over")) {
 			sendOneWayRequest(new UpdateProvenanceAndExit(core));
@@ -171,9 +182,11 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	MappableIterable<IOBuffer> readIOBuf(int size, CoreSubsets cores)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		// Get the IOBuf address for each core
 		for (var core : requireNonNull(cores,
 				"must have actual core subset to iterate over")) {

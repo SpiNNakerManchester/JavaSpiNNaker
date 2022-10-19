@@ -161,8 +161,11 @@ public class EIEIOConnection
 	 * @return the command ID
 	 * @throws IOException
 	 *             If receiving fails.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
-	protected EIEIOCommand receiveCommand() throws IOException {
+	protected EIEIOCommand receiveCommand()
+			throws IOException, InterruptedException {
 		var msg = receiveMessage();
 		if (msg instanceof EIEIOCommandMessage) {
 			return ((EIEIOCommandMessage) msg).getHeader().command;
@@ -197,7 +200,7 @@ public class EIEIOConnection
 
 	@Override
 	public EIEIOMessage<? extends EIEIOHeader> receiveMessage(int timeout)
-			throws IOException {
+			throws IOException, InterruptedException {
 		var b = receive(timeout);
 		short header = b.getShort();
 		if ((header & MASK) == FLAG) {

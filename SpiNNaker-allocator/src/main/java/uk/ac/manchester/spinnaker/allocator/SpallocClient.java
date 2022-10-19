@@ -34,12 +34,8 @@ import com.google.errorprone.annotations.MustBeClosed;
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
-import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
-import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
-import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
-import uk.ac.manchester.spinnaker.machine.board.ValidTriadX;
-import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
-import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
@@ -152,16 +148,25 @@ public interface SpallocClient {
 		 */
 		List<String> getTags();
 
-		/** The width of the machine.
-		 *  @return The width of the machine, in triads. */
+		/**
+		 * The width of the machine.
+		 *
+		 * @return The width of the machine, in triads.
+		 */
 		int getWidth();
 
-		/** The height of the machine.
-		 *  @return The height of the machine, in triads. */
+		/**
+		 * The height of the machine.
+		 *
+		 * @return The height of the machine, in triads.
+		 */
 		int getHeight();
 
-		/** The number of live boards.
-		 *  @return The (estimated) number of live boards in the machine. */
+		/**
+		 * The number of live boards.
+		 *
+		 * @return The (estimated) number of live boards in the machine.
+		 */
 		int getLiveBoardCount();
 
 		/**
@@ -191,38 +196,29 @@ public interface SpallocClient {
 		/**
 		 * Given logical triad coordinates, return more info about a board.
 		 *
-		 * @param x
-		 *            Triad X coordinate
-		 * @param y
-		 *            Triad Y coordinate
-		 * @param z
-		 *            Triad Z coordinate
+		 * @param coords
+		 *            Triad coordinates
 		 * @return Board information
 		 * @throws FileNotFoundException
 		 *             If the board doesn't exist.
 		 * @throws IOException
 		 *             If communication with the server fails
 		 */
-		WhereIs getBoardByTriad(@ValidTriadX int x, @ValidTriadY int y,
-				@ValidTriadZ int z) throws FileNotFoundException, IOException;
+		WhereIs getBoard(@NotNull @Valid TriadCoords coords)
+				throws FileNotFoundException, IOException;
 
 		/**
 		 * Given physical coordinates, return more info about a board.
 		 *
-		 * @param cabinet
-		 *            Cabinet number; cabinets contain frames.
-		 * @param frame
-		 *            Frame number; frames contain boards.
-		 * @param board
-		 *            Board number
+		 * @param coords
+		 *            Physical coordinates.
 		 * @return Board information
 		 * @throws FileNotFoundException
 		 *             If the board doesn't exist.
 		 * @throws IOException
 		 *             If communication with the server fails
 		 */
-		WhereIs getBoardByPhysicalCoords(@ValidCabinetNumber int cabinet,
-				@ValidFrameNumber int frame, @ValidBoardNumber int board)
+		WhereIs getBoard(@NotNull @Valid PhysicalCoords coords)
 				throws FileNotFoundException, IOException;
 
 		/**
@@ -237,7 +233,7 @@ public interface SpallocClient {
 		 * @throws IOException
 		 *             If communication with the server fails
 		 */
-		WhereIs getBoardByChip(@NotNull @Valid HasChipLocation chip)
+		WhereIs getBoard(@NotNull @Valid HasChipLocation chip)
 				throws FileNotFoundException, IOException;
 
 		/**
@@ -251,7 +247,7 @@ public interface SpallocClient {
 		 * @throws IOException
 		 *             If communication with the server fails
 		 */
-		WhereIs getBoardByIPAddress(@IPAddress String address)
+		WhereIs getBoard(@IPAddress String address)
 				throws FileNotFoundException, IOException;
 	}
 

@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.security;
 
-import static java.util.Collections.unmodifiableCollection;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_READER;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_USER;
@@ -24,7 +24,6 @@ import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 
 import java.io.NotSerializableException;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
@@ -46,11 +45,10 @@ public final class Permit {
 	/** What is the name of the user? */
 	public final String name;
 
-	private final List<GrantedAuthority> authorities = new ArrayList<>();
+	private final List<GrantedAuthority> authorities;
 
-	private static final String[] STDAUTH = {
-		GRANT_ADMIN, GRANT_READER, GRANT_USER
-	};
+	private static final List<String> STDAUTH =
+			List.of(GRANT_ADMIN, GRANT_READER, GRANT_USER);
 
 	/**
 	 * Build a permit.
@@ -59,11 +57,8 @@ public final class Permit {
 	 *            The originating security context.
 	 */
 	public Permit(javax.ws.rs.core.SecurityContext context) {
-		for (var role : STDAUTH) {
-			if (context.isUserInRole(role)) {
-				authorities.add(new SimpleGrantedAuthority(role));
-			}
-		}
+		authorities = STDAUTH.stream().filter(context::isUserInRole)
+				.map(SimpleGrantedAuthority::new).collect(toUnmodifiableList());
 		admin = isAdmin(authorities);
 		name = context.getUserPrincipal().getName();
 	}
@@ -80,7 +75,8 @@ public final class Permit {
 	 *            The originating security context.
 	 */
 	public Permit(SecurityContext context) {
-		authorities.addAll(context.getAuthentication().getAuthorities());
+		authorities = context.getAuthentication().getAuthorities().stream()
+				.collect(toUnmodifiableList());
 		admin = isAdmin(authorities);
 		name = context.getAuthentication().getName();
 	}
@@ -94,7 +90,7 @@ public final class Permit {
 	 *            The user name. Must exist in order to be actually used.
 	 */
 	public Permit(String serviceUser) {
-		USER.getGrants().forEach(authorities::add);
+		authorities = USER.getGrants().collect(toUnmodifiableList());
 		admin = false;
 		name = serviceUser;
 	}
@@ -108,7 +104,7 @@ public final class Permit {
 	 *            The originating websocket context.
 	 */
 	public Permit(WebSocketSession session) {
-		USER.getGrants().forEach(authorities::add);
+		authorities = USER.getGrants().collect(toUnmodifiableList());
 		admin = false;
 		name = session.getPrincipal().getName();
 	}
@@ -155,7 +151,7 @@ public final class Permit {
 
 			@Override
 			public Collection<? extends GrantedAuthority> getAuthorities() {
-				return unmodifiableCollection(authorities);
+				return authorities;
 			}
 
 			@Override

@@ -22,6 +22,7 @@ import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.Closeable;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.HashSet;
@@ -108,12 +109,17 @@ public class ConnectionListener<MessageType> extends Thread
 			int numProcesses, int timeout) {
 		super("Connection listener for connection " + connection);
 		setDaemon(true);
+		setUncaughtExceptionHandler(this::logExn);
 		this.connection = connection;
 		this.timeout = timeout;
 		callbackPool = new ThreadPoolExecutor(1, numProcesses, POOL_TIMEOUT,
 				MILLISECONDS, new LinkedBlockingQueue<>());
 		done = false;
 		callbacks = new HashSet<>();
+	}
+
+	private void logExn(Thread thread, Throwable ex) {
+		log.warn("unexpected exception in {}", thread, ex);
 	}
 
 	/**
@@ -130,6 +136,9 @@ public class ConnectionListener<MessageType> extends Thread
 				} catch (SocketTimeoutException e) {
 					// Timed out at the base level
 					continue;
+				} catch (EOFException e) {
+					// Definitely at EOF; time to stop
+					break;
 				} catch (Exception e) {
 					if (!done) {
 						log.warn("problem when dispatching message", e);
@@ -150,17 +159,16 @@ public class ConnectionListener<MessageType> extends Thread
 	 * @throws IOException
 	 *             If other things go wrong with the comms, or if the callbacks
 	 *             throw it.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
-	private void runStep() throws IOException {
+	private void runStep() throws IOException, InterruptedException {
 		var message = connection.receiveMessage(timeout);
 		for (var future : checkpointCallbacks().stream().map(
 				callback -> callbackPool.submit(() -> callback.handle(message)))
 				.collect(toList())) {
 			try {
 				future.get();
-			} catch (InterruptedException e) {
-				log.warn("unexpected exception; not waiting for the future", e);
-				break;
 			} catch (ExecutionException ee) {
 				try {
 					throw ee.getCause();

@@ -111,10 +111,12 @@ public final class RecordingRegion {
 	 *             If the reading goes wrong
 	 * @throws ProcessException
 	 *             If the data in the read goes wrong
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	public static List<RecordingRegion> getRecordingRegionDescriptors(
 			TransceiverInterface txrx, Placement placement)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var recordingDataAddress = placement.getVertex().getBase();
 		// Get the size of the list of recordings
 		int nRegions = txrx.readMemory(placement.getScampCore(),
