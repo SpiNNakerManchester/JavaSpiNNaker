@@ -114,7 +114,8 @@ public class NotificationConnection
 	}
 
 	@Override
-	public NotificationMessage receiveMessage(int timeout) throws IOException {
+	public NotificationMessage receiveMessage(int timeout)
+			throws IOException, InterruptedException {
 		var b = receive(timeout);
 		return AbstractNotificationMessage.build(b);
 	}

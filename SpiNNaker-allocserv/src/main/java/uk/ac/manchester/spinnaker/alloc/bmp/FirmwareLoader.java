@@ -365,12 +365,13 @@ public class FirmwareLoader {
 		return s.slice().order(LITTLE_ENDIAN);
 	}
 
-	private ByteBuffer readFlashData() throws ProcessException, IOException {
+	private ByteBuffer readFlashData()
+			throws ProcessException, IOException, InterruptedException {
 		return txrx.readBMPMemory(board, FLASH_DATA_ADDRESS, FLASH_DATA_LENGTH);
 	}
 
 	private ByteBuffer readFlashDataHead()
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		return txrx.readBMPMemory(board, FLASH_DATA_ADDRESS,
 				FLASH_DATA_LENGTH / 2);
 	}
@@ -401,7 +402,7 @@ public class FirmwareLoader {
 	}
 
 	private void updateFlashData(ByteBuffer data)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		data.putInt(CRC_OFFSET, ~crc(data, 0, CRC_OFFSET));
 		data.position(0);
 		var fb = txrx.getSerialFlashBuffer(board);
@@ -413,7 +414,8 @@ public class FirmwareLoader {
 		}
 	}
 
-	private void logBMPVersion() throws ProcessException, IOException {
+	private void logBMPVersion()
+			throws ProcessException, IOException, InterruptedException {
 		var info = txrx.readBMPVersion(board);
 		// TODO validate which field is which; some of these seem... unlikely
 		log.info("BMP INFO:       {}",
@@ -430,7 +432,8 @@ public class FirmwareLoader {
 	 * them separate for our use case and that avoids doing some network
 	 * traffic.
 	 */
-	private void listFPGABootChunks() throws ProcessException, IOException {
+	private void listFPGABootChunks()
+			throws ProcessException, IOException, InterruptedException {
 		var data = readFlashDataHead();
 		for (int i = 0; i < NUM_DATA_SECTORS; i++) {
 			var chunk = slice(data, DATA_SECTOR_CHUNK_SIZE * i,
@@ -514,12 +517,14 @@ public class FirmwareLoader {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 * @throws UpdateFailedException
 	 *             If the flash data sector read back does not match what we
 	 *             wanted to write.
 	 */
 	public void setupRegisters(RegisterSet... settings)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		var data = new ArrayList<Integer>();
 		for (var r : settings) {
 			data.add(r.address.address | r.fpga.value);
@@ -553,9 +558,11 @@ public class FirmwareLoader {
 	 * @throws UpdateFailedException
 	 *             If the flash data sector read back does not match what we
 	 *             wanted to write.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	public void setupBitfile(String handle, int slot, FPGA chip)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var resource = firmware.resource(handle);
 		int mtime = firmware.mtime(handle);
 		var name = resource.getFilename();

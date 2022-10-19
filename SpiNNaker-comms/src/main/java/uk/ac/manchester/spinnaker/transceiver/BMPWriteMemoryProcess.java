@@ -71,9 +71,12 @@ class BMPWriteMemoryProcess extends BMPCommandProcess<BMPResponse> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void writeMemory(BMPBoard board, MemoryLocation baseAddress,
-			ByteBuffer data) throws IOException, ProcessException {
+			ByteBuffer data)
+			throws IOException, ProcessException, InterruptedException {
 		execute(new BMPWriteIterator(board, baseAddress, data.remaining()) {
 			private int offset = data.position();
 
@@ -103,10 +106,12 @@ class BMPWriteMemoryProcess extends BMPCommandProcess<BMPResponse> {
 	 *             If anything goes wrong with networking or the input stream.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 */
 	void writeMemory(BMPBoard board, MemoryLocation baseAddress,
 			InputStream data, int bytesToWrite)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		var exn = new ValueHolder<IOException>();
 		var workingBuffer = allocate(UDP_MESSAGE_MAX_SIZE);
 

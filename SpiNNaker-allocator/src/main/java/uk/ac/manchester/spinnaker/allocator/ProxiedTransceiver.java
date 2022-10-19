@@ -36,12 +36,14 @@ final class ProxiedTransceiver extends Transceiver {
 	 *            The proxy handle.
 	 * @throws IOException
 	 *             If we couldn't finish setting up our networking.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws SpinnmanExcception
 	 *             If SpiNNaker rejects a message.
 	 */
 	ProxiedTransceiver(Collection<Connection> connections,
 			ProxyProtocolClient websocket)
-			throws IOException, SpinnmanException {
+			throws IOException, SpinnmanException, InterruptedException {
 		// Assume unwrapped
 		super(TRIAD_NO_WRAPAROUND, connections, null, null, null, null,
 				null);

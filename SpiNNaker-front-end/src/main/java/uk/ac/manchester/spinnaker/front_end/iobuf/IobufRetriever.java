@@ -110,11 +110,14 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 	 *             If network IO fails or the mapping dictionary is absent.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws RuntimeException
 	 *             If an unexpected exception happens.
 	 */
 	public NotableMessages retrieveIobufContents(IobufRequest request,
-			String provenanceDir) throws IOException, ProcessException {
+			String provenanceDir)
+			throws IOException, ProcessException, InterruptedException {
 		var provDir = new File(provenanceDir);
 		validateProvenanceDirectory(provDir);
 		var errorEntries = new ArrayList<String>();
@@ -131,7 +134,8 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 					})).awaitAndCombineExceptions();
 		} catch (Replacer.WrappedException e) {
 			e.rethrow();
-		} catch (IOException | ProcessException | RuntimeException e) {
+		} catch (IOException | ProcessException | InterruptedException
+				| RuntimeException e) {
 			throw e;
 		} catch (Exception e) {
 			throw new RuntimeException("unexpected exception", e);
@@ -157,12 +161,14 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 	 *             If network IO fails or the mapping dictionary is absent.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws RuntimeException
 	 *             If an unexpected exception happens.
 	 */
 	public NotableMessages retrieveIobufContents(CoreSubsets cores,
 			File binaryFile, File provenanceDir)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, InterruptedException {
 		validateProvenanceDirectory(provenanceDir);
 		var errorEntries = new ArrayList<String>();
 		var warnEntries = new ArrayList<String>();
@@ -174,7 +180,8 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 			}).awaitAndCombineExceptions();
 		} catch (Replacer.WrappedException e) {
 			e.rethrow();
-		} catch (IOException | ProcessException | RuntimeException e) {
+		} catch (IOException | ProcessException | InterruptedException
+				| RuntimeException e) {
 			throw e;
 		} catch (Exception e) {
 			throw new RuntimeException("unexpected exception", e);
@@ -209,7 +216,8 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 
 	private void retrieveIobufContents(CoreSubsets cores, Replacer replacer,
 			File provenanceDir, List<String> errorEntries,
-			List<String> warnEntries) throws IOException, ProcessException {
+			List<String> warnEntries)
+			throws IOException, ProcessException, InterruptedException {
 		try (var bl = new BoardLocal(cores.first().orElseThrow())) {
 			// extract iobuf, write to file and check for errors for provenance
 			for (var iobuf : txrx.getIobuf(cores)) {
@@ -218,8 +226,8 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 					log.info("storing iobuf from {} (running {}) in {}",
 							iobuf.asCoreLocation(), replacer.origin, file);
 					// ISO 8859-1: bytes are zero-extended to chars
-					for (var originalLine : iobuf
-							.getContentsString(ISO_8859_1).split("\n", -1)) {
+					for (var originalLine : iobuf.getContentsString(ISO_8859_1)
+							.split("\n", -1)) {
 						var line = replacer.replace(originalLine);
 						w.write(line);
 						w.newLine();
