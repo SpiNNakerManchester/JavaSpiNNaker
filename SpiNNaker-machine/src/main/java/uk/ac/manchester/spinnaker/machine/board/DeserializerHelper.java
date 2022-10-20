@@ -118,11 +118,11 @@ abstract class DeserializerHelper<T> extends StdDeserializer<T> {
 	}
 
 	int requireSetOnceInt(String name, Integer current) throws IOException {
-		var p = parser.get();
 		if (current != null) {
-			context.get().handleUnknownProperty(p, this, _valueClass, name);
+			context.get().reportInputMismatch(_valueClass,
+					"Duplicate property '%s'", name);
 		}
-		return p.nextIntValue(0);
+		return parser.get().nextIntValue(0);
 	}
 
 	void unknownProperty(String name) throws IOException {

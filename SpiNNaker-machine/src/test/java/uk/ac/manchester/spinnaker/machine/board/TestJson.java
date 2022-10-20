@@ -71,6 +71,8 @@ public class TestJson {
 				() -> mapper.readValue("{\"f\":2}", BMPCoords.class));
 		assertThrows(IOException.class, () -> mapper
 				.readValue("{\"c\":1,\"f\":2,\"b\":3}", BMPCoords.class));
+		assertThrows(IOException.class, () -> mapper
+				.readValue("{\"c\":1,\"f\":2,\"c\":3}", BMPCoords.class));
 	}
 
 	@Test
@@ -116,13 +118,15 @@ public class TestJson {
 		assertEquals(new PhysicalCoords(1, 2, 3), fromJson);
 
 		assertThrows(IOException.class,
-				() -> mapper.readValue("{}", BMPCoords.class));
+				() -> mapper.readValue("{}", PhysicalCoords.class));
 		assertThrows(IOException.class,
-				() -> mapper.readValue("{\"c\":1}", BMPCoords.class));
+				() -> mapper.readValue("{\"c\":1}", PhysicalCoords.class));
 		assertThrows(IOException.class,
-				() -> mapper.readValue("{\"f\":2}", BMPCoords.class));
+				() -> mapper.readValue("{\"f\":2}", PhysicalCoords.class));
 		assertThrows(IOException.class, () -> mapper
-				.readValue("{\"c\":1,\"f\":2,\"x\":3}", BMPCoords.class));
+				.readValue("{\"c\":1,\"f\":2,\"x\":3}", PhysicalCoords.class));
+		assertThrows(IOException.class, () -> mapper
+				.readValue("{\"c\":1,\"f\":2,\"c\":3}", PhysicalCoords.class));
 	}
 
 	@Test
@@ -175,6 +179,8 @@ public class TestJson {
 				() -> mapper.readValue("{\"y\":2}", TriadCoords.class));
 		assertThrows(IOException.class, () -> mapper
 				.readValue("{\"x\":1,\"y\":2,\"b\":3}", TriadCoords.class));
+		assertThrows(IOException.class, () -> mapper
+				.readValue("{\"x\":1,\"y\":2,\"x\":3}", TriadCoords.class));
 	}
 
 	@Test
