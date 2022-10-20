@@ -163,7 +163,7 @@ public final class PhysicalCoords implements Comparable<PhysicalCoords> {
 			int c = getNextIntOfArray();
 			int f = getNextIntOfArray();
 			int b = getNextIntOfArray();
-			requireEndOfStruct();
+			requireEndOfArray();
 			return new PhysicalCoords(c, f, b);
 		}
 
@@ -190,7 +190,7 @@ public final class PhysicalCoords implements Comparable<PhysicalCoords> {
 				}
 			}
 			if (c == null || f == null || b == null) {
-				missingProperty();
+				missingProperty("c", c, "f", f, "b", b);
 			}
 			return new PhysicalCoords(c, f, b);
 		}

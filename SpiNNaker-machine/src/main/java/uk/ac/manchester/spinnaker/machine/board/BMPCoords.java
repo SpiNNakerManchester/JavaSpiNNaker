@@ -159,7 +159,7 @@ public final class BMPCoords implements Comparable<BMPCoords> {
 		BMPCoords deserializeArray() throws IOException {
 			int c = getNextIntOfArray();
 			int f = getNextIntOfArray();
-			requireEndOfStruct();
+			requireEndOfArray();
 			return new BMPCoords(c, f);
 		}
 
@@ -182,7 +182,7 @@ public final class BMPCoords implements Comparable<BMPCoords> {
 				}
 			}
 			if (c == null || f == null) {
-				missingProperty();
+				missingProperty("c", c, "f", f);
 			}
 			return new BMPCoords(c, f);
 		}

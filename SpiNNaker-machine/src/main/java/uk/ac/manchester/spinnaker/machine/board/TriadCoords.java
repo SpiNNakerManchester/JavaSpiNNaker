@@ -188,7 +188,7 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 			int x = getNextIntOfArray();
 			int y = getNextIntOfArray();
 			int z = getNextIntOfArray();
-			requireEndOfStruct();
+			requireEndOfArray();
 			return new TriadCoords(x, y, z);
 		}
 
@@ -212,7 +212,7 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 				}
 			}
 			if (x == null || y == null || z == null) {
-				missingProperty();
+				missingProperty("x", x, "y", y, "z", z);
 			}
 			return new TriadCoords(x, y, z);
 		}

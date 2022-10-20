@@ -92,32 +92,37 @@ abstract class DeserializerHelper<T> extends StdDeserializer<T> {
 	abstract T deserializeString(String string);
 
 	int getNextIntOfArray() throws IOException {
-		if (!parser.get().nextToken().isNumeric()) {
-			context.get().handleUnexpectedToken(int.class, parser.get());
+		var p = parser.get();
+		if (!p.nextToken().isNumeric()) {
+			context.get().handleUnexpectedToken(int.class, p);
 		}
-		return parser.get().getIntValue();
+		return p.getIntValue();
 	}
 
 	String getNextFieldName() throws IOException {
-		String name = parser.get().nextFieldName();
+		var p = parser.get();
+		String name = p.nextFieldName();
 		if (name == null) {
-			requireEndOfStruct();
+			if (!p.currentToken().isStructEnd()) {
+				context.get().handleUnexpectedToken(_valueClass, p);
+			}
 		}
 		return name;
 	}
 
-	void requireEndOfStruct() throws IOException {
-		if (!parser.get().nextToken().isStructEnd()) {
-			context.get().handleUnexpectedToken(_valueClass, parser.get());
+	void requireEndOfArray() throws IOException {
+		var p = parser.get();
+		if (!p.nextToken().isStructEnd()) {
+			context.get().handleUnexpectedToken(_valueClass, p);
 		}
 	}
 
 	int requireSetOnceInt(String name, Integer current) throws IOException {
+		var p = parser.get();
 		if (current != null) {
-			context.get().handleUnknownProperty(parser.get(), this, _valueClass,
-					name);
+			context.get().handleUnknownProperty(p, this, _valueClass, name);
 		}
-		return parser.get().nextIntValue(0);
+		return p.nextIntValue(0);
 	}
 
 	void unknownProperty(String name) throws IOException {
@@ -125,7 +130,33 @@ abstract class DeserializerHelper<T> extends StdDeserializer<T> {
 				name);
 	}
 
-	void missingProperty() throws IOException {
-		context.get().handleUnexpectedToken(_valueClass, parser.get());
+	void missingProperty(String n1, Object v1) throws IOException {
+		context.get().reportInputMismatch(_valueClass,
+				"Missing required property '%s'", n1);
+	}
+
+	void missingProperty(String n1, Object v1, String n2, Object v2)
+			throws IOException {
+		if (v1 == null) {
+			context.get().reportInputMismatch(_valueClass,
+					"Missing required property '%s'", n1);
+		} else {
+			context.get().reportInputMismatch(_valueClass,
+					"Missing required property '%s'", n2);
+		}
+	}
+
+	void missingProperty(String n1, Object v1, String n2, Object v2, String n3,
+			Object v3) throws IOException {
+		if (v1 == null) {
+			context.get().reportInputMismatch(_valueClass,
+					"Missing required property '%s'", n1);
+		} else if (v2 == null) {
+			context.get().reportInputMismatch(_valueClass,
+					"Missing required property '%s'", n2);
+		} else {
+			context.get().reportInputMismatch(_valueClass,
+					"Missing required property '%s'", n3);
+		}
 	}
 }
