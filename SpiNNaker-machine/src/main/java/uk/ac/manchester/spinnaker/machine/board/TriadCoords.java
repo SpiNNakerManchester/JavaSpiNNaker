@@ -19,19 +19,13 @@ package uk.ac.manchester.spinnaker.machine.board;
 import static java.lang.Integer.compare;
 import static java.lang.Integer.parseInt;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
@@ -183,7 +177,7 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 	}
 
 	/** JSON deserializer for {@link TriadCoords}. */
-	static class Deserializer extends StdDeserializer<TriadCoords> {
+	static final class Deserializer extends DeserializerHelper<TriadCoords> {
 		private static final long serialVersionUID = 1L;
 
 		protected Deserializer() {
@@ -191,80 +185,42 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 		}
 
 		@Override
-		public TriadCoords deserialize(JsonParser p,
-				DeserializationContext ctxt)
-				throws IOException, JacksonException {
-			switch (p.currentToken()) {
-			case START_ARRAY:
-				return deserializeArray(p, ctxt);
-			case START_OBJECT:
-				return deserializeObject(p, ctxt);
-			case VALUE_STRING:
-				return new TriadCoords(p.getValueAsString());
-			default:
-				ctxt.handleUnexpectedToken(_valueClass, p);
-				return null;
-			}
-		}
-
-		private TriadCoords deserializeArray(JsonParser p,
-				DeserializationContext ctxt) throws IOException {
-			if (!p.nextToken().isNumeric()) {
-				ctxt.handleUnexpectedToken(int.class, p);
-			}
-			int x = p.getIntValue();
-			if (!p.nextToken().isNumeric()) {
-				ctxt.handleUnexpectedToken(int.class, p);
-			}
-			int y = p.getIntValue();
-			if (!p.nextToken().isNumeric()) {
-				ctxt.handleUnexpectedToken(int.class, p);
-			}
-			int z = p.getIntValue();
-			if (!p.nextToken().isStructEnd()) {
-				ctxt.handleUnexpectedToken(_valueClass, p);
-			}
+		TriadCoords deserializeArray() throws IOException {
+			int x = getNextIntOfArray();
+			int y = getNextIntOfArray();
+			int z = getNextIntOfArray();
+			requireEndOfArray();
 			return new TriadCoords(x, y, z);
 		}
 
-		private TriadCoords deserializeObject(JsonParser p,
-				DeserializationContext ctxt) throws IOException {
+		@Override
+		TriadCoords deserializeObject() throws IOException {
 			Integer x = null, y = null, z = null;
-			while (true) {
-				String name = p.nextFieldName();
-				if (isNull(name)) {
-					if (p.currentToken() != JsonToken.END_OBJECT) {
-						ctxt.handleUnexpectedToken(_valueClass, p);
-					}
-					break;
-				}
+			String name;
+			while ((name = getNextFieldName()) != null) {
 				switch (name) {
 				case "x":
-					if (nonNull(x)) {
-						ctxt.handleUnknownProperty(p, this, _valueClass, name);
-					}
-					x = p.nextIntValue(0);
+					x = requireSetOnceInt(name, x);
 					break;
 				case "y":
-					if (nonNull(y)) {
-						ctxt.handleUnknownProperty(p, this, _valueClass, name);
-					}
-					y = p.nextIntValue(0);
+					y = requireSetOnceInt(name, y);
 					break;
 				case "z":
-					if (nonNull(z)) {
-						ctxt.handleUnknownProperty(p, this, _valueClass, name);
-					}
-					z = p.nextIntValue(0);
+					z = requireSetOnceInt(name, z);
 					break;
 				default:
-					ctxt.handleUnknownProperty(p, this, _valueClass, name);
+					unknownProperty(name);
 				}
 			}
 			if (isNull(x) || isNull(y) || isNull(z)) {
-				ctxt.handleUnexpectedToken(_valueClass, p);
+				missingProperty("x", x, "y", y, "z", z);
 			}
 			return new TriadCoords(x, y, z);
+		}
+
+		@Override
+		TriadCoords deserializeString(String string) {
+			return new TriadCoords(string);
 		}
 	}
 }

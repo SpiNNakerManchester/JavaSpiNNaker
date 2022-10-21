@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.machine.board;
 import static java.lang.Integer.compare;
 import static java.lang.Integer.parseInt;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
@@ -27,12 +26,7 @@ import java.util.regex.Pattern;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.google.errorprone.annotations.Immutable;
 
 /**
@@ -158,7 +152,7 @@ public final class PhysicalCoords implements Comparable<PhysicalCoords> {
 	}
 
 	/** JSON deserializer for {@link PhysicalCoords}. */
-	static class Deserializer extends StdDeserializer<PhysicalCoords> {
+	static final class Deserializer extends DeserializerHelper<PhysicalCoords> {
 		private static final long serialVersionUID = 1L;
 
 		protected Deserializer() {
@@ -166,83 +160,45 @@ public final class PhysicalCoords implements Comparable<PhysicalCoords> {
 		}
 
 		@Override
-		public PhysicalCoords deserialize(JsonParser p,
-				DeserializationContext ctxt)
-				throws IOException, JacksonException {
-			switch (p.currentToken()) {
-			case START_ARRAY:
-				return deserializeArray(p, ctxt);
-			case START_OBJECT:
-				return deserializeObject(p, ctxt);
-			case VALUE_STRING:
-				return new PhysicalCoords(p.getValueAsString());
-			default:
-				ctxt.handleUnexpectedToken(_valueClass, p);
-				return null;
-			}
-		}
-
-		private PhysicalCoords deserializeArray(JsonParser p,
-				DeserializationContext ctxt) throws IOException {
-			if (!p.nextToken().isNumeric()) {
-				ctxt.handleUnexpectedToken(int.class, p);
-			}
-			int c = p.getIntValue();
-			if (!p.nextToken().isNumeric()) {
-				ctxt.handleUnexpectedToken(int.class, p);
-			}
-			int f = p.getIntValue();
-			if (!p.nextToken().isNumeric()) {
-				ctxt.handleUnexpectedToken(int.class, p);
-			}
-			int b = p.getIntValue();
-			if (!p.nextToken().isStructEnd()) {
-				ctxt.handleUnexpectedToken(_valueClass, p);
-			}
+		PhysicalCoords deserializeArray() throws IOException {
+			int c = getNextIntOfArray();
+			int f = getNextIntOfArray();
+			int b = getNextIntOfArray();
+			requireEndOfArray();
 			return new PhysicalCoords(c, f, b);
 		}
 
-		private PhysicalCoords deserializeObject(JsonParser p,
-				DeserializationContext ctxt) throws IOException {
+		@Override
+		PhysicalCoords deserializeObject() throws IOException {
 			Integer c = null, f = null, b = null;
-			while (true) {
-				String name = p.nextFieldName();
-				if (isNull(name)) {
-					if (p.currentToken() != JsonToken.END_OBJECT) {
-						ctxt.handleUnexpectedToken(_valueClass, p);
-					}
-					break;
-				}
+			String name;
+			while ((name = getNextFieldName()) != null) {
 				switch (name) {
 				case "cabinet":
 				case "c":
-					if (nonNull(c)) {
-						ctxt.handleUnknownProperty(p, this, _valueClass, name);
-					}
-					c = p.nextIntValue(0);
+					c = requireSetOnceInt(name, c);
 					break;
 				case "frame":
 				case "f":
-					if (nonNull(f)) {
-						ctxt.handleUnknownProperty(p, this, _valueClass, name);
-					}
-					f = p.nextIntValue(0);
+					f = requireSetOnceInt(name, f);
 					break;
 				case "board":
 				case "b":
-					if (nonNull(b)) {
-						ctxt.handleUnknownProperty(p, this, _valueClass, name);
-					}
-					b = p.nextIntValue(0);
+					b = requireSetOnceInt(name, b);
 					break;
 				default:
-					ctxt.handleUnknownProperty(p, this, _valueClass, name);
+					unknownProperty(name);
 				}
 			}
 			if (isNull(c) || isNull(f) || isNull(b)) {
-				ctxt.handleUnexpectedToken(_valueClass, p);
+				missingProperty("c", c, "f", f, "b", b);
 			}
 			return new PhysicalCoords(c, f, b);
+		}
+
+		@Override
+		PhysicalCoords deserializeString(String string) {
+			return new PhysicalCoords(string);
 		}
 	}
 }
