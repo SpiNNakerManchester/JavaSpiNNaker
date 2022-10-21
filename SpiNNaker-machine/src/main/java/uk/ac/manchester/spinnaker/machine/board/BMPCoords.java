@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.machine.board;
 
 import static java.lang.Integer.compare;
 import static java.lang.Integer.parseInt;
-import static java.util.Objects.isNull;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
@@ -182,9 +181,7 @@ public final class BMPCoords implements Comparable<BMPCoords> {
 					unknownProperty(name);
 				}
 			}
-			if (isNull(c) || isNull(f)) {
-				missingProperty("c", c, "f", f);
-			}
+			checkMissingProperty("c", c, "f", f);
 			return new BMPCoords(c, f);
 		}
 

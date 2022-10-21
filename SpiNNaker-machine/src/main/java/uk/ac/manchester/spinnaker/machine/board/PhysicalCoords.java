@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.machine.board;
 
 import static java.lang.Integer.compare;
 import static java.lang.Integer.parseInt;
-import static java.util.Objects.isNull;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
@@ -190,9 +189,7 @@ public final class PhysicalCoords implements Comparable<PhysicalCoords> {
 					unknownProperty(name);
 				}
 			}
-			if (isNull(c) || isNull(f) || isNull(b)) {
-				missingProperty("c", c, "f", f, "b", b);
-			}
+			checkMissingProperty("c", c, "f", f, "b", b);
 			return new PhysicalCoords(c, f, b);
 		}
 

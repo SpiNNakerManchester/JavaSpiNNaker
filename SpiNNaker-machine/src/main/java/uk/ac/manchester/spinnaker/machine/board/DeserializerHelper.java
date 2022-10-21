@@ -16,6 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.machine.board;
 
+import static com.fasterxml.jackson.core.JsonToken.VALUE_NUMBER_INT;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -102,7 +106,7 @@ abstract class DeserializerHelper<T> extends StdDeserializer<T> {
 	String getNextFieldName() throws IOException {
 		var p = parser.get();
 		String name = p.nextFieldName();
-		if (name == null) {
+		if (isNull(name)) {
 			if (!p.currentToken().isStructEnd()) {
 				context.get().handleUnexpectedToken(_valueClass, p);
 			}
@@ -118,11 +122,15 @@ abstract class DeserializerHelper<T> extends StdDeserializer<T> {
 	}
 
 	int requireSetOnceInt(String name, Integer current) throws IOException {
-		if (current != null) {
+		if (nonNull(current)) {
 			context.get().reportInputMismatch(_valueClass,
 					"Duplicate property '%s'", name);
 		}
-		return parser.get().nextIntValue(0);
+		var p = parser.get();
+		if (p.nextToken() != VALUE_NUMBER_INT) {
+			context.get().handleUnexpectedToken(int.class, p);
+		}
+		return p.getIntValue();
 	}
 
 	void unknownProperty(String name) throws IOException {
@@ -130,31 +138,33 @@ abstract class DeserializerHelper<T> extends StdDeserializer<T> {
 				name);
 	}
 
-	void missingProperty(String n1, Object v1) throws IOException {
-		context.get().reportInputMismatch(_valueClass,
-				"Missing required property '%s'", n1);
-	}
-
-	void missingProperty(String n1, Object v1, String n2, Object v2)
-			throws IOException {
-		if (v1 == null) {
+	<P> void checkMissingProperty(String n1, P v1) throws IOException {
+		if (isNull(v1)) {
 			context.get().reportInputMismatch(_valueClass,
 					"Missing required property '%s'", n1);
-		} else {
+		}
+	}
+
+	<P> void checkMissingProperty(String n1, P v1, String n2, P v2)
+			throws IOException {
+		if (isNull(v1)) {
+			context.get().reportInputMismatch(_valueClass,
+					"Missing required property '%s'", n1);
+		} else if (isNull(v2)) {
 			context.get().reportInputMismatch(_valueClass,
 					"Missing required property '%s'", n2);
 		}
 	}
 
-	void missingProperty(String n1, Object v1, String n2, Object v2, String n3,
-			Object v3) throws IOException {
-		if (v1 == null) {
+	<P> void checkMissingProperty(String n1, P v1, String n2, P v2, String n3,
+			P v3) throws IOException {
+		if (isNull(v1)) {
 			context.get().reportInputMismatch(_valueClass,
 					"Missing required property '%s'", n1);
-		} else if (v2 == null) {
+		} else if (isNull(v2)) {
 			context.get().reportInputMismatch(_valueClass,
 					"Missing required property '%s'", n2);
-		} else {
+		} else if (isNull(v3)) {
 			context.get().reportInputMismatch(_valueClass,
 					"Missing required property '%s'", n3);
 		}

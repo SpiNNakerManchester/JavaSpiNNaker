@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.machine.board;
 
 import static java.lang.Integer.compare;
 import static java.lang.Integer.parseInt;
-import static java.util.Objects.isNull;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
@@ -212,9 +211,7 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 					unknownProperty(name);
 				}
 			}
-			if (isNull(x) || isNull(y) || isNull(z)) {
-				missingProperty("x", x, "y", y, "z", z);
-			}
+			checkMissingProperty("x", x, "y", y, "z", z);
 			return new TriadCoords(x, y, z);
 		}
 
