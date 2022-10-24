@@ -73,7 +73,6 @@ public final class CommandLineInterface {
 
 	private static final ObjectMapper MAPPER = createMapper();
 
-	private static final String BUFFER_DB_FILE = "buffer.sqlite3";
 
 	static {
 		var cls = CommandLineInterface.class;
@@ -116,7 +115,7 @@ public final class CommandLineInterface {
 					wrongArgs(CLICommands.GATHER,
 							"<gatherFile> <machineFile> <runFolder>");
 				}
-				setLoggerDir(args[THIRD]);
+				setLoggerDir(args[FOURTH]);
 				gatherRun(args[1], args[2], args[THIRD]);
 				exit(0);
 
@@ -125,7 +124,7 @@ public final class CommandLineInterface {
 					wrongArgs(CLICommands.DOWNLOAD,
 							"<placementFile> <machineFile> <runFolder>");
 				}
-				setLoggerDir(args[THIRD]);
+				setLoggerDir(args[FOURTH]);
 				downloadRun(args[1], args[2], args[THIRD]);
 				exit(0);
 
@@ -194,7 +193,7 @@ public final class CommandLineInterface {
 		}
 	}
 
-	private static final int NUM_DOWNLOAD_ARGS = 4;
+	private static final int NUM_DOWNLOAD_ARGS = 5;
 
 	private static final int THIRD = 3;
 
@@ -344,11 +343,11 @@ public final class CommandLineInterface {
 	 *             If communications are interrupted.
 	 */
 	public static void downloadRun(String placementsJsonFile,
-			String machineJsonFile, String runFolder) throws IOException,
+			String machineJsonFile, String databasePath) throws IOException,
 			SpinnmanException, StorageException, InterruptedException {
 		var placements = getPlacements(placementsJsonFile);
 		var machine = getMachine(machineJsonFile);
-		var db = getDatabase(runFolder);
+		var db = getDatabase(databasePath);
 
 		try (var trans = new Transceiver(machine)) {
 			var r = new DataReceiver(trans, machine, db);
@@ -377,11 +376,11 @@ public final class CommandLineInterface {
 	 *             to be done
 	 */
 	public static void gatherRun(String gatherersJsonFile,
-			String machineJsonFile, String runFolder) throws IOException,
+			String machineJsonFile, String databasePath) throws IOException,
 			SpinnmanException, StorageException, InterruptedException {
 		var gathers = getGatherers(gatherersJsonFile);
 		var machine = getMachine(machineJsonFile);
-		var db = getDatabase(runFolder);
+		var db = getDatabase(databasePath);
 		try (var trans = new Transceiver(machine);
 				var r = new RecordingRegionDataGatherer(trans, machine, db)) {
 			int misses = r.gather(gathers);
@@ -419,9 +418,9 @@ public final class CommandLineInterface {
 		}
 	}
 
-	private static BufferManagerStorage getDatabase(String runFolder) {
+	private static BufferManagerStorage getDatabase(String databasePath) {
 		return new BufferManagerDatabaseEngine(
-				new File(runFolder, BUFFER_DB_FILE)).getStorageInterface();
+				new File(databasePath)).getStorageInterface();
 	}
 }
 
