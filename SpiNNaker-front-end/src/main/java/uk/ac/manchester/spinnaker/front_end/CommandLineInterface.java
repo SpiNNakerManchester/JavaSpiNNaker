@@ -73,7 +73,6 @@ public final class CommandLineInterface {
 
 	private static final ObjectMapper MAPPER = createMapper();
 
-
 	static {
 		var cls = CommandLineInterface.class;
 		var prop = new Properties();
@@ -330,9 +329,8 @@ public final class CommandLineInterface {
 	 *            Name of file containing JSON description of placements.
 	 * @param machineJsonFile
 	 *            Name of file containing JSON description of overall machine.
-	 * @param runFolder
-	 *            Name of directory containing per-run information (i.e., the
-	 *            database that receives the output).
+	 * @param databasePath
+	 *            Path to the database that receives the output.
 	 * @throws IOException
 	 *             If the communications fail
 	 * @throws SpinnmanException
@@ -362,9 +360,8 @@ public final class CommandLineInterface {
 	 *            Name of file containing JSON description of gatherers.
 	 * @param machineJsonFile
 	 *            Name of file containing JSON description of overall machine.
-	 * @param runFolder
-	 *            Name of directory containing per-run information (i.e., the
-	 *            database that receives the output).
+	 * @param databasePath
+	 *            Path to the database that receives the output.
 	 * @throws IOException
 	 *             If the communications fail
 	 * @throws SpinnmanException
