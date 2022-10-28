@@ -90,8 +90,6 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SDPConnection;
 import uk.ac.manchester.spinnaker.connections.SingletonConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
-import uk.ac.manchester.spinnaker.connections.model.BootReceiver;
-import uk.ac.manchester.spinnaker.connections.model.BootSender;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.connections.model.SCPReceiver;
 import uk.ac.manchester.spinnaker.connections.model.SCPSender;
@@ -282,7 +280,7 @@ public class Transceiver extends UDPTransceiver
 	 * A boot send connection. There can only be one in the current system, or
 	 * otherwise bad things can happen!
 	 */
-	private BootSender bootSendConnection;
+	private BootConnection bootConnection;
 
 	/**
 	 * A list of all connections that can be used to send SCP messages.
@@ -661,15 +659,12 @@ public class Transceiver extends UDPTransceiver
 	 */
 	private void identifyConnection(Connection conn) {
 		// locate the only boot send conn
-		if (conn instanceof BootSender) {
-			if (bootSendConnection != null) {
+		if (conn instanceof BootConnection) {
+			if (bootConnection != null) {
 				throw new IllegalArgumentException(
 						"Only a single BootSender can be specified");
 			}
-			bootSendConnection = (BootSender) conn;
-		} else if (conn instanceof BootReceiver) {
-			// non-sending boot receivers aren't supported; warn about them
-			log.warn("unhandled boot connection: {}", conn);
+			bootConnection = (BootConnection) conn;
 		}
 
 		// Locate any connections listening on a UDP port
@@ -958,7 +953,7 @@ public class Transceiver extends UDPTransceiver
 		appIDTracker = new AppIdTracker();
 
 		log.info("Detected a machine on IP address {} which has {}",
-				bootSendConnection.getRemoteIPAddress(),
+				bootConnection.getRemoteIPAddress(),
 				machine.coresAndLinkOutputString());
 	}
 
@@ -1129,7 +1124,7 @@ public class Transceiver extends UDPTransceiver
 		var bootMessages = new BootMessages(version, extraBootValues);
 		var msgs = bootMessages.getMessages().iterator();
 		while (msgs.hasNext()) {
-			bootSendConnection.sendBootMessage(msgs.next());
+			bootConnection.sendBootMessage(msgs.next());
 		}
 		sleep(POST_BOOT_DELAY);
 	}
