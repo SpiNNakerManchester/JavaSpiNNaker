@@ -38,7 +38,6 @@ import com.google.errorprone.annotations.MustBeClosed;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.connections.model.MessageHandler;
-import uk.ac.manchester.spinnaker.connections.model.MessageReceiver;
 
 /**
  * Thread that listens to a connection and calls callbacks with new messages
@@ -75,7 +74,7 @@ public class ConnectionListener<MessageType> extends Thread
 	@GuardedBy("callbacks")
 	private List<MessageHandler<MessageType>> callbacksCheckpointed;
 
-	private final MessageReceiver<MessageType> connection;
+	private final UDPConnection<MessageType> connection;
 
 	private volatile boolean done;
 
@@ -89,7 +88,7 @@ public class ConnectionListener<MessageType> extends Thread
 	 *            The connection to listen to.
 	 */
 	@MustBeClosed
-	public ConnectionListener(MessageReceiver<MessageType> connection) {
+	public ConnectionListener(UDPConnection<MessageType> connection) {
 		this(connection, POOL_SIZE, TIMEOUT);
 	}
 
@@ -105,7 +104,7 @@ public class ConnectionListener<MessageType> extends Thread
 	 *            0, wait indefinitely.
 	 */
 	@MustBeClosed
-	public ConnectionListener(MessageReceiver<MessageType> connection,
+	public ConnectionListener(UDPConnection<MessageType> connection,
 			int numProcesses, int timeout) {
 		super("Connection listener for connection " + connection);
 		setDaemon(true);

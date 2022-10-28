@@ -16,12 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.connections.model;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 /**
  * An abstract connection to the SpiNNaker board over some medium.
  */
-public interface Connection extends SocketHolder {
+public interface Connection extends Closeable {
 	/**
 	 * Determines if the medium is connected at this point in time. Connected
 	 * media are not {@linkplain #isClosed() closed}. Disconnected media might
