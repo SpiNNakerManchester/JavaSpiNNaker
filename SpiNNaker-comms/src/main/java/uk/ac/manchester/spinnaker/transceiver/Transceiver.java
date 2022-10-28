@@ -91,8 +91,7 @@ import uk.ac.manchester.spinnaker.connections.SDPConnection;
 import uk.ac.manchester.spinnaker.connections.SingletonConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
-import uk.ac.manchester.spinnaker.connections.model.SCPReceiver;
-import uk.ac.manchester.spinnaker.connections.model.SCPSender;
+import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
 import uk.ac.manchester.spinnaker.connections.model.SDPSender;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
@@ -289,7 +288,8 @@ public class Transceiver extends UDPTransceiver
 	 * useful if they are just using SCP to send a command that doesn't expect a
 	 * response.
 	 */
-	private final List<SCPSender> scpSenderConnections = new ArrayList<>();
+	private final List<SCPSenderReceiver> scpSenderConnections =
+			new ArrayList<>();
 
 	/** A list of all connections that can be used to send SDP messages. */
 	private final List<SDPSender> sdpSenderConnections = new ArrayList<>();
@@ -676,8 +676,9 @@ public class Transceiver extends UDPTransceiver
 		 * Locate any connections that can send SCP (that are not BMP
 		 * connections)
 		 */
-		if (conn instanceof SCPSender && !(conn instanceof BMPConnection)) {
-			scpSenderConnections.add((SCPSender) conn);
+		if (conn instanceof SCPSenderReceiver
+				&& !(conn instanceof BMPConnection)) {
+			scpSenderConnections.add((SCPSenderReceiver) conn);
 		}
 
 		// Locate any connections that can send SDP
@@ -686,18 +687,16 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		// Locate any connections that can send and receive SCP
-		if (conn instanceof SCPSender && conn instanceof SCPReceiver) {
-			// If it is a BMP connection, add it here
-			if (conn instanceof BMPConnection) {
-				var bmpc = (BMPConnection) conn;
-				bmpConnections.add(bmpc);
-				bmpSelectors.put(bmpc.getCoords(),
-						new SingletonConnectionSelector<>(bmpc));
-			} else if (conn instanceof SCPConnection) {
-				var scpc = (SCPConnection) conn;
-				scpConnections.add(scpc);
-				udpScpConnections.put(scpc.getRemoteIPAddress(), scpc);
-			}
+		// If it is a BMP connection, add it here
+		if (conn instanceof BMPConnection) {
+			var bmpc = (BMPConnection) conn;
+			bmpConnections.add(bmpc);
+			bmpSelectors.put(bmpc.getCoords(),
+					new SingletonConnectionSelector<>(bmpc));
+		} else if (conn instanceof SCPConnection) {
+			var scpc = (SCPConnection) conn;
+			scpConnections.add(scpc);
+			udpScpConnections.put(scpc.getRemoteIPAddress(), scpc);
 		}
 	}
 
@@ -884,7 +883,7 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public void sendSCPMessage(SCPRequest<?> message, SCPConnection connection)
 			throws IOException {
-		SCPSender c = connection;
+		SCPSenderReceiver c = connection;
 		if (c == null) {
 			c = getRandomConnection(scpSenderConnections);
 		}
