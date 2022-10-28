@@ -91,8 +91,6 @@ import uk.ac.manchester.spinnaker.connections.SDPConnection;
 import uk.ac.manchester.spinnaker.connections.SingletonConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
-import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
-import uk.ac.manchester.spinnaker.connections.model.SDPSender;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
@@ -281,18 +279,8 @@ public class Transceiver extends UDPTransceiver
 	 */
 	private BootConnection bootConnection;
 
-	/**
-	 * A list of all connections that can be used to send SCP messages.
-	 * <p>
-	 * Note that some of these might not be able to receive SCP; this could be
-	 * useful if they are just using SCP to send a command that doesn't expect a
-	 * response.
-	 */
-	private final List<SCPSenderReceiver> scpSenderConnections =
-			new ArrayList<>();
-
 	/** A list of all connections that can be used to send SDP messages. */
-	private final List<SDPSender> sdpSenderConnections = new ArrayList<>();
+	private final List<SDPConnection> sdpConnections = new ArrayList<>();
 
 	/**
 	 * A map of IP address &rarr; SCAMP connection. These are those that can be
@@ -672,18 +660,9 @@ public class Transceiver extends UDPTransceiver
 			registerConnection((UDPConnection<?>) conn);
 		}
 
-		/*
-		 * Locate any connections that can send SCP (that are not BMP
-		 * connections)
-		 */
-		if (conn instanceof SCPSenderReceiver
-				&& !(conn instanceof BMPConnection)) {
-			scpSenderConnections.add((SCPSenderReceiver) conn);
-		}
-
 		// Locate any connections that can send SDP
-		if (conn instanceof SDPSender) {
-			sdpSenderConnections.add((SDPSender) conn);
+		if (conn instanceof SDPConnection) {
+			sdpConnections.add((SDPConnection) conn);
 		}
 
 		// Locate any connections that can send and receive SCP
@@ -790,11 +769,16 @@ public class Transceiver extends UDPTransceiver
 	 *
 	 * @param <C>
 	 *            the connection type
+	 * @param conn
+	 *            the connection to use if it is not {@code null}
 	 * @param connections
 	 *            the list of connections to locate a random one from
 	 * @return a connection object
 	 */
-	private static <C> C getRandomConnection(List<C> connections) {
+	private static <C> C useOrRandomConnection(C conn, List<C> connections) {
+		if (conn != null) {
+			return conn;
+		}
 		if (connections.isEmpty()) {
 			return null;
 		}
@@ -883,21 +867,13 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public void sendSCPMessage(SCPRequest<?> message, SCPConnection connection)
 			throws IOException {
-		SCPSenderReceiver c = connection;
-		if (c == null) {
-			c = getRandomConnection(scpSenderConnections);
-		}
-		c.send(message);
+		useOrRandomConnection(connection, scpConnections).send(message);
 	}
 
 	@Override
 	public void sendSDPMessage(SDPMessage message, SDPConnection connection)
 			throws IOException {
-		SDPSender c = connection;
-		if (c == null) {
-			c = getRandomConnection(sdpSenderConnections);
-		}
-		c.send(message);
+		useOrRandomConnection(connection, sdpConnections).send(message);
 	}
 
 	/**
@@ -1005,7 +981,6 @@ public class Transceiver extends UDPTransceiver
 
 			// check if it works
 			if (checkConnection(conn, chip)) {
-				scpSenderConnections.add(conn);
 				allConnections.add(conn);
 				udpScpConnections.put(ipAddress, conn);
 				scpConnections.add(conn);
