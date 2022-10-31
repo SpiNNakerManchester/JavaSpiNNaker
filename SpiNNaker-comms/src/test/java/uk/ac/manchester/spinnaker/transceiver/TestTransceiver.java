@@ -43,6 +43,7 @@ import uk.ac.manchester.spinnaker.connections.BootConnection;
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
+import uk.ac.manchester.spinnaker.connections.model.EIEIOMessageHandler;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
@@ -50,6 +51,8 @@ import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.VirtualMachine;
+import uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandMessage;
+import uk.ac.manchester.spinnaker.messages.eieio.EIEIODataMessage;
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 
 @NotThreadSafe
@@ -164,18 +167,28 @@ class TestTransceiver {
 		var orig = new EIEIOConnection(null, null, null, null);
 		connections.add(orig);
 
+		var mh = new EIEIOMessageHandler() {
+			@Override
+			public void handleData(EIEIODataMessage message) {
+			}
+
+			@Override
+			public void handleCommand(EIEIOCommandMessage message) {
+			}
+		};
+
 		// Create transceiver
 		try (var txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
 			int port = orig.getLocalPort();
 			// Register a UDP listeners
-			var c1 = txrx.registerEIEIOListener(null);
+			var c1 = txrx.registerEIEIOListener(mh);
 			assertTrue(c1 == orig, "first connection must be original");
-			var c2 = txrx.registerEIEIOListener(null);
+			var c2 = txrx.registerEIEIOListener(mh);
 			assertTrue(c2 == orig, "second connection must be original");
-			var c3 = txrx.registerEIEIOListener(null, port);
+			var c3 = txrx.registerEIEIOListener(mh, port);
 			assertTrue(c3 == orig, "third connection must be original");
-			var c4 = txrx.registerEIEIOListener(null, port + 1);
+			var c4 = txrx.registerEIEIOListener(mh, port + 1);
 			assertFalse(c4 == orig, "fourth connection must not be original");
 		}
 	}

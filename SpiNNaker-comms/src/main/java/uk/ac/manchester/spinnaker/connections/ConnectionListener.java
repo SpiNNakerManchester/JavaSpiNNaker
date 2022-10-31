@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.connections;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -46,7 +47,7 @@ import uk.ac.manchester.spinnaker.connections.model.MessageHandler;
  * @param <MessageType>
  *            The type of message being listened for by the connection.
  */
-public class ConnectionListener<MessageType> extends Thread
+public final class ConnectionListener<MessageType> extends Thread
 		implements Closeable {
 	/** What size of thread pool to use by default. */
 	public static final int POOL_SIZE = 4;
@@ -127,7 +128,7 @@ public class ConnectionListener<MessageType> extends Thread
 	 * {@linkplain #close() closed}.
 	 */
 	@Override
-	public final void run() {
+	public void run() {
 		try {
 			while (!done) {
 				try {
@@ -199,7 +200,7 @@ public class ConnectionListener<MessageType> extends Thread
 	public void addCallback(MessageHandler<MessageType> callback) {
 		synchronized (callbacks) {
 			callbacksCheckpointed = null;
-			callbacks.add(callback);
+			callbacks.add(requireNonNull(callback));
 		}
 	}
 

@@ -21,7 +21,9 @@ import static java.net.InetAddress.getByAddress;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.IPV4_SIZE;
 
+import java.io.Closeable;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -29,6 +31,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 
@@ -38,14 +43,18 @@ import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.connections.model.EIEIOMessageHandler;
 import uk.ac.manchester.spinnaker.connections.model.MessageHandler;
+import uk.ac.manchester.spinnaker.messages.eieio.EIEIOHeader;
+import uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessage;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
- * A simple transceiver for UDP connections.
+ * A simple transceiver for UDP connections. In particular, handles managing the
+ * connection listeners for EIEIO connections and ensuring that connections are
+ * not double-registered.
  *
  * @author Donal Fellows
  */
-public abstract class UDPTransceiver implements AutoCloseable {
+public abstract class UDPTransceiver implements Closeable {
 	private static final Logger log = getLogger(UDPTransceiver.class);
 
 	/**
@@ -60,12 +69,12 @@ public abstract class UDPTransceiver implements AutoCloseable {
 			new DefaultMap<>(HashMap::new);
 
 	/**
-	 * A map of class &rarr; list of (connection, listener) for UDP connections
-	 * that are listenable. Note that listener might be {@code null} if the
-	 * connection has not be listened to before.
+	 * A list of (connection, listener) for EIEIO connections. Note that
+	 * listener might be {@code null} if the connection has not be listened to
+	 * before.
 	 */
-	private final Map<Class<?>, List<Pair<?>>> connectionsByClass =
-			new DefaultMap<>(ArrayList::new);
+	private final List<Pair<EIEIOMessage<?>>> eieioListeners =
+			new ArrayList<>();
 
 	/**
 	 * Add a connection to the collection of general connections managed by this
@@ -77,82 +86,79 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	protected abstract void addConnection(Connection connection);
 
 	/**
-	 * Add a connection to the list managed for UDP reception.
+	 * Add a connection to the list managed for UDP reception. Does not add a
+	 * listener... yet.
 	 *
 	 * @param connection
 	 *            the connection to add
 	 */
+	@SuppressWarnings("unchecked")
 	final void registerConnection(UDPConnection<?> connection) {
-		var pair = new Pair<>(connection, null);
-		var addr = normalize(connection.getLocalIPAddress());
+		var pair = new Pair<>(connection);
+		var addr = pair.addr();
 		log.info("registering connection {} for {}", connection, addr);
 		connectionsByPort.get(connection.getLocalPort()).put(addr, pair);
-		connectionsByClass.get(connection.getClass()).add(pair);
+		if (connection instanceof EIEIOConnection) {
+			eieioListeners.add((Pair<EIEIOMessage<?>>) pair);
+		}
 	}
 
-	private static final class Pair<MessageType> implements Cloneable {
-		UDPConnection<MessageType> connection;
+	private final class Pair<T> implements AutoCloseable {
+		final UDPConnection<T> connection;
 
-		ConnectionListener<MessageType> listener;
+		private ConnectionListener<T> listener;
 
-		Pair(UDPConnection<MessageType> connection,
-				ConnectionListener<MessageType> listener) {
-			this.connection = connection;
-			this.listener = listener;
+		Pair(UDPConnection<T> connection) {
+			this.connection = Objects.requireNonNull(connection);
+		}
+
+		private Pair(UDPConnection<T> connection, boolean register) {
+			this(connection);
+			addConnection(this.connection);
+		}
+
+		@SuppressWarnings("MustBeClosed")
+		synchronized void initListener(InetAddress addr,
+				MessageHandler<T> callback) {
+			if (listener == null) {
+				listener = new ConnectionListener<>(connection);
+				log.info("launching listener for {}:{}",
+						connection.getLocalIPAddress(),
+						connection.getLocalPort());
+				listener.start();
+				connectionsByPort.get(connection.getLocalPort()).put(addr,
+						this);
+			}
+			listener.addCallback(callback);
+		}
+
+		InetAddress addr() {
+			return normalize(connection.getLocalIPAddress());
 		}
 
 		@Override
-		public Pair<MessageType> clone() {
-			return new Pair<>(connection, listener);
+		public synchronized void close() {
+			// Close the listener, not the connection
+			if (listener != null) {
+				listener.close();
+				listener = null;
+			}
 		}
 	}
 
 	/**
-	 * How to manufacture new instances of a connection as required.
+	 * Shut down any {@linkplain ConnectionListener listeners} registered for
+	 * the EIEIO connections. The connections are not closed; caller (or
+	 * subclass) is responsible for that.
 	 *
-	 * @author Donal Fellows
-	 * @param <Conn>
-	 *            The type of connection being created.
+	 * @throws IOException
+	 *             Not thrown. Subclasses may (do!) throw it.
 	 */
-	public interface ConnectionFactory<Conn extends UDPConnection<?>> {
-		/**
-		 * @return The type of connection this factory actually makes.
-		 */
-		Class<Conn> getClassKey();
-
-		/**
-		 * Make an instance with an OS-selected local port.
-		 *
-		 * @param localAddress
-		 *            the local address to bind.
-		 * @return the new connection
-		 * @throws IOException
-		 *             If the connection can't be opened.
-		 */
-		Conn getInstance(InetAddress localAddress) throws IOException;
-
-		/**
-		 * Make an instance with a caller-selected local port.
-		 *
-		 * @param localAddress
-		 *            the local address to bind.
-		 * @param localPort
-		 *            the local port to bind.
-		 * @return the new connection
-		 * @throws IOException
-		 *             If the connection can't be opened.
-		 */
-		Conn getInstance(InetAddress localAddress, int localPort)
-				throws IOException;
-	}
-
 	@Override
 	public void close() throws IOException {
 		for (var connections : connectionsByPort.values()) {
 			for (var p : connections.values()) {
-				if (p.listener != null) {
-					p.listener.close();
-				}
+				p.close();
 			}
 		}
 	}
@@ -181,140 +187,48 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		return addr;
 	}
 
-	/**
-	 * Register a callback for a certain type of traffic to be received via UDP.
-	 *
-	 * @param <T>
-	 *            The type of message to be received
-	 * @param callback
-	 *            Function to be called when a packet is received
-	 * @param connectionFactory
-	 *            The class of connection to receive using
-	 * @return The connection to be used
-	 * @throws IllegalArgumentException
-	 *             If basic sanity checks fail.
-	 * @throws IOException
-	 *             If the networking fails.
-	 */
-	public final <T> UDPConnection<T> registerUDPListener(
-			MessageHandler<T> callback,
-			ConnectionFactory<? extends UDPConnection<T>> connectionFactory)
-			throws IOException {
-		return registerUDPListener(callback, connectionFactory, null, null);
+	/** Like a {@link Supplier} but can throw. */
+	@FunctionalInterface
+	private interface ThrowingSupplier<T> {
+		T get() throws IOException;
 	}
 
 	/**
-	 * Register a callback for a certain type of traffic to be received via UDP.
-	 *
-	 * @param <T>
-	 *            The type of message to be received
-	 * @param callback
-	 *            Function to be called when a packet is received
-	 * @param connectionFactory
-	 *            The class of connection to receive using
-	 * @param localPort
-	 *            The local UDP port to bind.
-	 * @return The connection to be used
-	 * @throws IllegalArgumentException
-	 *             If basic sanity checks fail.
-	 * @throws IOException
-	 *             If the networking fails.
+	 * Wrap any IOException thrown into an UncheckedIOException.
+	 * @param <T> Type of result
+	 * @param s Produces result or throws.
+	 * @return Result of s
+	 * @throws UncheckedIOException If supplier throws IOException
 	 */
-	public final <T> UDPConnection<T> registerUDPListener(
-			MessageHandler<T> callback,
-			ConnectionFactory<? extends UDPConnection<T>> connectionFactory,
-			int localPort) throws IOException {
-		return registerUDPListener(callback, connectionFactory, localPort,
-				null);
+	private static <T> T wrap(ThrowingSupplier<T> s) {
+		try {
+			return s.get();
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 
 	/**
-	 * Register a callback for a certain type of traffic to be received via UDP.
-	 *
-	 * @param <T>
-	 *            The type of message to be received
-	 * @param callback
-	 *            Function to be called when a packet is received
-	 * @param connectionFactory
-	 *            The class of connection to receive using
-	 * @param localPort
-	 *            The optional port number to listen on; if not specified, an
-	 *            existing connection will be used if possible, otherwise a
-	 *            random free port number will be used
-	 * @param localHost
-	 *            The optional hostname or IP address to listen on; if not
-	 *            specified, all interfaces will be used for listening
-	 * @return The connection to be used
-	 * @throws IllegalArgumentException
-	 *             If basic sanity checks fail.
-	 * @throws IOException
-	 *             If the networking fails.
+	 * Unwrap any UncheckedIOException thrown as its IOException.
+	 * @param <T> Type of result
+	 * @param s Produces result or throws.
+	 * @return Result of s
+	 * @throws IOException If supplier throws UncheckedIOException
 	 */
-	public final <T> UDPConnection<T> registerUDPListener(
-			MessageHandler<T> callback,
-			ConnectionFactory<? extends UDPConnection<T>> connectionFactory,
-			Integer localPort, InetAddress localHost) throws IOException {
-		if (!UDPConnection.class
-				.isAssignableFrom(connectionFactory.getClassKey())) {
-			throw new IllegalArgumentException(
-					"the connection class must be a UDPConnection");
+	private static <T> T unwrap(Supplier<T> s) throws IOException {
+		try {
+			return s.get();
+		} catch (UncheckedIOException e) {
+			throw e.getCause();
 		}
-
-		// normalise local_host to the IP address
-		var addr = normalize(localHost);
-
-		// If the local port was specified
-		Pair<T> pair;
-		log.info("creating connection listening on {}:{}",
-				addr.getHostAddress(), localPort);
-		if (localPort != null && localPort != 0) {
-			pair = lookup(connectionFactory.getClassKey(), addr, localPort);
-
-			// Create a connection if there isn't already one
-			if (pair.connection == null) {
-				log.info("creating connection on {}:{}", addr.getHostAddress(),
-						localPort);
-				pair.connection =
-						connectionFactory.getInstance(addr, localPort);
-				addConnection(pair.connection);
-			}
-		} else {
-			pair = lookup(connectionFactory.getClassKey(), addr);
-
-			// Create a connection if there isn't already one
-			if (pair.connection == null) {
-				log.info("creating connection on {}:0 (arbitrary port)",
-						addr.getHostAddress());
-				pair.connection = connectionFactory.getInstance(addr);
-				addConnection(pair.connection);
-			}
-		}
-
-		// Launch a listener if one is required
-		if (pair.listener == null) {
-			// Caller has guaranteed the type constraint
-			@SuppressWarnings({"resource", "MustBeClosed"})
-			var listener = new ConnectionListener<>(pair.connection);
-			log.info("launching listener for {}:{}",
-					pair.connection.getLocalIPAddress(),
-					pair.connection.getLocalPort());
-			listener.start();
-			pair.listener = listener;
-			connectionsByPort.get(pair.connection.getLocalPort()).put(addr,
-					pair);
-		}
-		connectionsByClass.get(connectionFactory.getClassKey()).add(pair);
-		pair.listener.addCallback(callback);
-		return pair.connection;
 	}
-
-	private static final EIEIOFactory EIEIO_FACTORY = new EIEIOFactory();
 
 	/**
 	 * Register a callback for EIEIO traffic to be received.
 	 *
 	 * @param callback
-	 *            Function to be called when a packet is received
+	 *            Function to be called when a packet is received.
+	 *            Must not be {@code null}.
 	 * @param localPort
 	 *            The optional port number to listen on; if not specified, an
 	 *            existing connection will be used if possible, otherwise a
@@ -329,17 +243,32 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	 *             If the networking fails.
 	 */
 	public final EIEIOConnection registerEIEIOListener(
-			EIEIOMessageHandler callback, Integer localPort,
+			EIEIOMessageHandler callback, int localPort,
 			InetAddress localHost) throws IOException {
-		return (EIEIOConnection) registerUDPListener(callback, EIEIO_FACTORY,
-				localPort, localHost);
+		Objects.requireNonNull(callback);
+		// normalise local_host to the IP address
+		var addr = normalize(localHost);
+		var port = localPort == 0 ? null : localPort;
+
+		// Look up or create the connection (and its containing pair)
+		log.info("finding/creating connection listening on {}:{}",
+				addr.getHostAddress(), localPort);
+		var pair = unwrap(() -> lookup(addr, localPort).orElseGet(
+				() -> new Pair<>(wrap(() -> new EIEIOConnection(addr, port)),
+						true)));
+
+		// Launch a listener if one is required
+		pair.initListener(addr, callback);
+		eieioListeners.add(pair);
+		return (EIEIOConnection) pair.connection;
 	}
 
 	/**
 	 * Register a callback for EIEIO traffic to be received.
 	 *
 	 * @param callback
-	 *            Function to be called when a packet is received
+	 *            Function to be called when a packet is received.
+	 *            Must not be {@code null}.
 	 * @param localPort
 	 *            The local UDP port to bind.
 	 * @return The connection to be used
@@ -350,15 +279,15 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	 */
 	public final EIEIOConnection registerEIEIOListener(
 			EIEIOMessageHandler callback, int localPort) throws IOException {
-		return (EIEIOConnection) registerUDPListener(callback, EIEIO_FACTORY,
-				localPort, null);
+		return registerEIEIOListener(callback, localPort, null);
 	}
 
 	/**
 	 * Register a callback for EIEIO traffic to be received.
 	 *
 	 * @param callback
-	 *            Function to be called when a packet is received
+	 *            Function to be called when a packet is received.
+	 *            Must not be {@code null}.
 	 * @return The connection to be used
 	 * @throws IllegalArgumentException
 	 *             If basic sanity checks fail.
@@ -367,104 +296,58 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	 */
 	public final EIEIOConnection registerEIEIOListener(
 			EIEIOMessageHandler callback) throws IOException {
-		return (EIEIOConnection) registerUDPListener(callback, EIEIO_FACTORY,
-				null, null);
+		return registerEIEIOListener(callback, 0, null);
 	}
 
-	@SuppressWarnings({
-		"unchecked", "rawtypes"
-	})
-	private <T> List<Pair<T>> getConnections(
-			Class<? extends UDPConnection<T>> clazz) {
-		return (List) connectionsByClass.get(clazz);
-	}
-
-	private <T> Pair<T> lookup(Class<? extends UDPConnection<T>> clazz,
-			InetAddress addr) {
-		for (var a : getConnections(clazz)) {
-			if (normalize(a.connection.getLocalIPAddress()).equals(addr)) {
-				if (a.listener == null) {
-					a = a.clone();
+	private Optional<Pair<EIEIOMessage<? extends EIEIOHeader>>> lookup(
+			InetAddress addr, int port) {
+		if (port == 0) {
+			for (var a : eieioListeners) {
+				if (a.addr().equals(addr)) {
+					return Optional.of(a);
 				}
-				return a;
+			}
+			return Optional.empty();
+		}
+		var receivers = connectionsByPort.get(port);
+		if (receivers.isEmpty()) {
+			return Optional.empty();
+		}
+		// Something is already listening on this port
+		if (addr.isAnyLocalAddress()) {
+			/*
+			 * If we are to listen on all interfaces and the listener is not on
+			 * all interfaces, this is an error
+			 */
+			if (!receivers.containsKey(WILDCARD_ADDRESS)) {
+				throw new IllegalArgumentException(
+						"Another connection is already listening on this port");
+			}
+		} else {
+			/*
+			 * If we are to listen to a specific interface, and the listener is
+			 * on all interfaces, this is an error
+			 */
+			if (receivers.containsKey(WILDCARD_ADDRESS)) {
+				throw new RuntimeException("port " + port
+						+ " already has conflicting wildcard listener");
 			}
 		}
-		return new Pair<>(null, null);
-	}
 
-	@SuppressWarnings("unchecked")
-	private <T> Pair<T> getPair(Map<InetAddress, Pair<?>> receivers,
-			InetAddress addr, Class<? extends UDPConnection<T>> clazz) {
-		var p = receivers.get(addr);
-		// If the type of an existing connection is wrong, this is an error
-		if (!clazz.isInstance(p.connection)) {
+		if (receivers.containsKey(addr)) {
+			@SuppressWarnings("unchecked")
+			var p = (Pair<EIEIOMessage<? extends EIEIOHeader>>) receivers
+					.get(addr);
+			// This is the check for the unsafe cast above
+			if (p.connection instanceof EIEIOConnection) {
+				return Optional.of(p);
+			}
+			// If the type of an existing connection was wrong, this is an error
 			throw new IllegalArgumentException(format(
 					"A connection of class %s is already "
-							+ "listening on this port on all " + "interfaces",
+							+ "listening on this port on all interfaces",
 					p.connection.getClass()));
 		}
-		return (Pair<T>) p;
-	}
-
-	private <T> Pair<T> lookup(Class<? extends UDPConnection<T>> clazz,
-			InetAddress addr, int port) {
-		var receivers = connectionsByPort.get(port);
-		// If something is already listening on this port
-		if (!receivers.isEmpty()) {
-			if (addr.isAnyLocalAddress()) {
-				/*
-				 * If we are to listen on all interfaces and the listener is not
-				 * on all interfaces, this is an error
-				 */
-				if (!receivers.containsKey(WILDCARD_ADDRESS)) {
-					throw new IllegalArgumentException(
-							"Another connection is already listening on this"
-									+ " port");
-				}
-			} else {
-				/*
-				 * If we are to listen to a specific interface, and the listener
-				 * is on all interfaces, this is an error
-				 */
-				if (receivers.containsKey(WILDCARD_ADDRESS)) {
-					throw new RuntimeException("port " + port
-							+ " already has conflicting wildcard listener");
-				}
-			}
-
-			if (receivers.containsKey(addr)) {
-				var p = getPair(receivers, addr, clazz);
-				if (p.listener == null) {
-					p = p.clone();
-				}
-				return p;
-			}
-		}
-		return new Pair<>(null, null);
-	}
-}
-
-/**
- * Makes EIEIO connections. For internal use only.
- *
- * @author Donal Fellows
- */
-class EIEIOFactory
-		implements UDPTransceiver.ConnectionFactory<EIEIOConnection> {
-	@Override
-	public Class<EIEIOConnection> getClassKey() {
-		return EIEIOConnection.class;
-	}
-
-	@Override
-	public EIEIOConnection getInstance(InetAddress localAddress)
-			throws IOException {
-		return new EIEIOConnection(localAddress);
-	}
-
-	@Override
-	public EIEIOConnection getInstance(InetAddress localAddress, int localPort)
-			throws IOException {
-		return new EIEIOConnection(localAddress, localPort);
+		return Optional.empty();
 	}
 }
