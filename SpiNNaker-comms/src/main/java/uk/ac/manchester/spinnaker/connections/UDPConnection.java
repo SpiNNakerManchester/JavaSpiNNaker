@@ -52,7 +52,6 @@ import com.google.errorprone.annotations.ForOverride;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 
 import uk.ac.manchester.spinnaker.connections.model.Connection;
-import uk.ac.manchester.spinnaker.connections.model.SocketHolder;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
@@ -65,8 +64,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
  *            information to even be metadata about the message, and not the
  *            content of the message.
  */
-public abstract class UDPConnection<T>
-		implements Connection, SocketHolder {
+public abstract class UDPConnection<T> implements Connection {
 	private static final Logger log = getLogger(UDPConnection.class);
 
 	private static final int RECEIVE_BUFFER_SIZE = 1048576;
@@ -329,21 +327,7 @@ public abstract class UDPConnection<T>
 		}
 	}
 
-	/**
-	 * Receive data from the connection.
-	 *
-	 * @param timeout
-	 *            The timeout in milliseconds, or {@code null} to wait forever
-	 * @return The data received, in a little-endian buffer
-	 * @throws SocketTimeoutException
-	 *             If a timeout occurs before any data is received
-	 * @throws EOFException
-	 *             If the connection is closed
-	 * @throws IOException
-	 *             If an error occurs receiving the data
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 */
+	@Override
 	public final ByteBuffer receive(Integer timeout)
 			throws SocketTimeoutException, IOException, InterruptedException {
 		if (timeout != null) {
@@ -410,21 +394,7 @@ public abstract class UDPConnection<T>
 		return buffer.order(LITTLE_ENDIAN);
 	}
 
-	/**
-	 * Receive data from the connection along with the address where the data
-	 * was received from.
-	 *
-	 * @param timeout
-	 *            The timeout in milliseconds
-	 * @return The datagram packet received; caller is responsible for only
-	 *         accessing the valid part of the buffer.
-	 * @throws SocketTimeoutException
-	 *             If a timeout occurs before any data is received
-	 * @throws EOFException
-	 *             If the connection is closed
-	 * @throws IOException
-	 *             If an error occurs receiving the data
-	 */
+	@Override
 	public final UDPPacket receiveWithAddress(int timeout)
 			throws SocketTimeoutException, IOException {
 		if (isClosed()) {
@@ -559,19 +529,7 @@ public abstract class UDPConnection<T>
 		socket.send(formSendPacket(data, remoteAddress));
 	}
 
-	/**
-	 * Send data down this connection.
-	 *
-	 * @param data
-	 *            The data to be sent
-	 * @throws EOFException
-	 *             If the connection is closed
-	 * @throws IOException
-	 *             If there is an error sending the data
-	 * @throws IllegalStateException
-	 *             If the data buffer doesn't hold a message; zero-length
-	 *             messages are not supported!
-	 */
+	@Override
 	public final void send(ByteBuffer data) throws IOException {
 		if (!canSend) {
 			throw new IOException("Remote host and/or port not set; "
@@ -632,23 +590,7 @@ public abstract class UDPConnection<T>
 		sendTo(wrap(data, 0, data.length), address, port);
 	}
 
-	/**
-	 * Send data down this connection.
-	 *
-	 * @param data
-	 *            The data to be sent
-	 * @param address
-	 *            Where to send (must be non-{@code null})
-	 * @param port
-	 *            What port to send to (must be non-zero)
-	 * @throws EOFException
-	 *             If the connection is closed
-	 * @throws IOException
-	 *             If there is an error sending the data
-	 * @throws IllegalStateException
-	 *             If the data buffer doesn't hold a message; zero-length
-	 *             messages are not supported!
-	 */
+	@Override
 	public final void sendTo(ByteBuffer data, InetAddress address, int port)
 			throws IOException {
 		if (!canSend) {

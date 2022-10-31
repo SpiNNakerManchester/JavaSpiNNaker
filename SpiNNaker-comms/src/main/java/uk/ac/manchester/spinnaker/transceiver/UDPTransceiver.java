@@ -41,10 +41,10 @@ import uk.ac.manchester.spinnaker.connections.ConnectionListener;
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
-import uk.ac.manchester.spinnaker.connections.model.EIEIOMessageHandler;
 import uk.ac.manchester.spinnaker.connections.model.MessageHandler;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIOHeader;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessage;
+import uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessageHandler;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**

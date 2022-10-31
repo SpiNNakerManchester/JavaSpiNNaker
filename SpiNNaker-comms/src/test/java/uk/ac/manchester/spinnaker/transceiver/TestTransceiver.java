@@ -43,7 +43,6 @@ import uk.ac.manchester.spinnaker.connections.BootConnection;
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
-import uk.ac.manchester.spinnaker.connections.model.EIEIOMessageHandler;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
@@ -53,6 +52,7 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.VirtualMachine;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandMessage;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIODataMessage;
+import uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessageHandler;
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 
 @NotThreadSafe

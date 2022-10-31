@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
  *
  * @author Donal Fellows
  */
-public interface SCPSenderReceiver extends Connection, SocketHolder {
+public interface SCPSenderReceiver extends Connection {
 	/**
 	 * Returns the data of an SCP request as it would be sent down this
 	 * connection.
