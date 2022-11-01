@@ -23,8 +23,6 @@ import static uk.ac.manchester.spinnaker.messages.model.CPUState.IDLE;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTable.getColumnOffset;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTable.getNumColumnBytes;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTER_P2P;
-import static uk.ac.manchester.spinnaker.transceiver.SCPRequestPipeline.SCP_RETRIES;
-import static uk.ac.manchester.spinnaker.transceiver.SCPRequestPipeline.SCP_TIMEOUT;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
