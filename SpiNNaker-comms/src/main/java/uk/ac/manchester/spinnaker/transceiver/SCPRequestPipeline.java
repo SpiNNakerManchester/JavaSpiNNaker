@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.connections;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Integer.getInteger;
 import static java.lang.Short.toUnsignedInt;
@@ -45,6 +45,7 @@ import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.model.AsyncCommsTask;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
@@ -53,7 +54,6 @@ import uk.ac.manchester.spinnaker.messages.scp.NoResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /**
  * Allows a set of SCP requests to be grouped together in a communication across

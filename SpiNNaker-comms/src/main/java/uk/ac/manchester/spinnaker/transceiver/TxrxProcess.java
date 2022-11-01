@@ -16,9 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
-import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_RETRIES;
-import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.transceiver.ProcessException.makeInstance;
+import static uk.ac.manchester.spinnaker.transceiver.SCPRequestPipeline.SCP_RETRIES;
+import static uk.ac.manchester.spinnaker.transceiver.SCPRequestPipeline.SCP_TIMEOUT;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -27,7 +27,6 @@ import java.util.function.Consumer;
 
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
-import uk.ac.manchester.spinnaker.connections.SCPRequestPipeline;
 import uk.ac.manchester.spinnaker.connections.model.AsyncCommsTask;
 import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.NoResponse;

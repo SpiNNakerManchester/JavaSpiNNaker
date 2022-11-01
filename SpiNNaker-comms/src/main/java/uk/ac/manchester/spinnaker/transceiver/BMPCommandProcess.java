@@ -19,10 +19,10 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.RETRY_DELAY_MS;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
 import static uk.ac.manchester.spinnaker.transceiver.ProcessException.makeInstance;
+import static uk.ac.manchester.spinnaker.transceiver.SCPRequestPipeline.RETRY_DELAY_MS;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.IOException;
@@ -43,6 +43,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
@@ -53,9 +54,9 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * @param <R>
  *            The type of the response; implicit in the type of the request.
  * @author Donal Fellows
- * @see uk.ac.manchester.spinnaker.connections.SCPRequestPipeline
- *      SCPRequestPipeline
+ * @see SCPRequestPipeline
  */
+@UsedInJavadocOnly(SCPRequestPipeline.class)
 class BMPCommandProcess<R extends BMPResponse> {
 	private static final Logger log = getLogger(BMPCommandProcess.class);
 
