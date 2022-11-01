@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.util.Collection;
 
 import uk.ac.manchester.spinnaker.connections.model.Connection;
-import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.SpinnmanException;
 
 /** A transceiver that routes messages across the proxy. */
 final class ProxiedTransceiver extends Transceiver {

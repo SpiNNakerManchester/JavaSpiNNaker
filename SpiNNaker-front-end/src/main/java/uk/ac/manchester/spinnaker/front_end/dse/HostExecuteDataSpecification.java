@@ -41,8 +41,8 @@ import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 import uk.ac.manchester.spinnaker.storage.StorageException;
-import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 
 /**
  * Executes the host based data specification.

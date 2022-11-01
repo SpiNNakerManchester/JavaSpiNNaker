@@ -33,6 +33,7 @@ import uk.ac.manchester.spinnaker.messages.model.SARKField;
 import uk.ac.manchester.spinnaker.messages.model.SARKStruct;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 
 /**
  * Get a description of the heap.

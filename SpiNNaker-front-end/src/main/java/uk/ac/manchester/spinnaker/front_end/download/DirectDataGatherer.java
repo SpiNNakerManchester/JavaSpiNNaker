@@ -37,8 +37,8 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
-import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 
 /**
  * A data gatherer that can fetch DSE regions.

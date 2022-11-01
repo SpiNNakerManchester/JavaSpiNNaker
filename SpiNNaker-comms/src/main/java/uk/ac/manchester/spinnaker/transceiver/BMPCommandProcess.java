@@ -21,8 +21,9 @@ import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
-import static uk.ac.manchester.spinnaker.transceiver.ProcessException.makeInstance;
+import static uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.BMP_RETRIES;
 import static uk.ac.manchester.spinnaker.transceiver.TxrxProcess.RETRY_DELAY_MS;
+import static uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException.makeInstance;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.IOException;
@@ -43,6 +44,9 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.BMPSendFailedException;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.BMPSendTimedOutException;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
@@ -68,9 +72,6 @@ class BMPCommandProcess<R extends BMPResponse> {
 			(int) (MSEC_PER_SEC * BMP_TIMEOUT);
 
 	private static final String TIMEOUT_TOKEN = "BMP timed out";
-
-	/** Number of times we retry a BMP action. */
-	static final int BMP_RETRIES = 3;
 
 	private final ConnectionSelector<BMPConnection> connectionSelector;
 

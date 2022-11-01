@@ -29,8 +29,8 @@ import com.google.errorprone.annotations.MustBeClosed;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 
 /**
  * A context class that loads up the system router tables while it is active.

@@ -40,6 +40,7 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.messages.scp.RouterAlloc;
 import uk.ac.manchester.spinnaker.messages.scp.RouterInit;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 
 /**
  * A process for reading and writing the multicast routing table of a SpiNNaker

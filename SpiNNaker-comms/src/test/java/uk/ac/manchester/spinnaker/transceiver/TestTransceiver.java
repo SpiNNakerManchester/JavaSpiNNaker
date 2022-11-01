@@ -53,6 +53,8 @@ import uk.ac.manchester.spinnaker.machine.VirtualMachine;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandMessage;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIODataMessage;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessageHandler;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.SpinnmanException;
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 
 @NotThreadSafe
@@ -288,7 +290,7 @@ class MockWriteTransceiver extends Transceiver {
 	MockWriteTransceiver(MachineVersion version,
 			Collection<Connection> connections)
 			throws IOException, SpinnmanException,
-			uk.ac.manchester.spinnaker.transceiver.ProcessException,
+			uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException,
 			InterruptedException {
 		super(version, connections, null, null, null, null, null);
 	}

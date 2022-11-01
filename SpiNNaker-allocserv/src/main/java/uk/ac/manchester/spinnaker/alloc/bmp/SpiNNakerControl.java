@@ -24,7 +24,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
-import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 
 /**
  * How to tell a SpiNNaker BMP (specifically one that manages a frame) to turn

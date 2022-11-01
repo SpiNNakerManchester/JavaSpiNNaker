@@ -21,7 +21,7 @@ import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.transceiver.FillDataType;
-import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 import uk.ac.manchester.spinnaker.utils.Slice;
 
 /**

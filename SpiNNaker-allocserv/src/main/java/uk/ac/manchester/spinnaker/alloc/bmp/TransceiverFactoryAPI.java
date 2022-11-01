@@ -21,7 +21,7 @@ import java.io.IOException;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
-import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.SpinnmanException;
 
 /**
  * Creates transceivers for talking to the BMPs of machines. Note that each

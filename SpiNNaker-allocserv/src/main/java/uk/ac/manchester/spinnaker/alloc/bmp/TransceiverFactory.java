@@ -46,11 +46,11 @@ import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
-import uk.ac.manchester.spinnaker.transceiver.BMPSendTimedOutException;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
-import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.BMPSendTimedOutException;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.SpinnmanException;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**

@@ -32,7 +32,7 @@ import java.io.OutputStream;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.transceiver.FillDataType;
-import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 import uk.ac.manchester.spinnaker.utils.Slice;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 

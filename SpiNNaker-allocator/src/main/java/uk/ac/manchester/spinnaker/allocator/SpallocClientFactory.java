@@ -66,8 +66,8 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.messages.model.Version;
-import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.SpinnmanException;
 import uk.ac.manchester.spinnaker.utils.Daemon;
 
 /**

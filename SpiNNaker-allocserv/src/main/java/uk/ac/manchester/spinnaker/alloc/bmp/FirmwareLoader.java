@@ -66,7 +66,7 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters;
 import uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
-import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 
 /**
  * Handles loading of firmware into a BMP or an FPGA.

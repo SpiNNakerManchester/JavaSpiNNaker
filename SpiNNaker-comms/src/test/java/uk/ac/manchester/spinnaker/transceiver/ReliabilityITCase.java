@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 
 @Tag("integration")
 @NotThreadSafe

@@ -32,6 +32,7 @@ import uk.ac.manchester.spinnaker.messages.bmp.BMPReadMemory;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.transceiver.Accumulator.BufferAccumulator;
 import uk.ac.manchester.spinnaker.transceiver.Accumulator.FileAccumulator;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 
 /** A process for reading memory on a BMP. */
 class BMPReadMemoryProcess extends BMPCommandProcess<BMPResponse> {

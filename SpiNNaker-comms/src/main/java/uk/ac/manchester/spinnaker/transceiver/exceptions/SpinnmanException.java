@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver;
+package uk.ac.manchester.spinnaker.transceiver.exceptions;
 
 /**
  * Basic exception from the transceiver.
@@ -22,11 +22,21 @@ package uk.ac.manchester.spinnaker.transceiver;
 public class SpinnmanException extends Exception {
 	private static final long serialVersionUID = 4307580491294281556L;
 
-	SpinnmanException(String message) {
+	/**
+	 * @param message
+	 *            The exception message.
+	 */
+	public SpinnmanException(String message) {
 		super(message);
 	}
 
-	SpinnmanException(String message, Throwable cause) {
+	/**
+	 * @param message
+	 *            The exception message.
+	 * @param cause
+	 *            The exception cause.
+	 */
+	public SpinnmanException(String message, Throwable cause) {
 		super(message, cause);
 	}
 }

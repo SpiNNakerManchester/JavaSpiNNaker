@@ -31,9 +31,9 @@ import uk.ac.manchester.spinnaker.front_end.BasicExecutor.SimpleCallable;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
-import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.SpinnmanException;
 
 /**
  * Common base for executing data specifications.

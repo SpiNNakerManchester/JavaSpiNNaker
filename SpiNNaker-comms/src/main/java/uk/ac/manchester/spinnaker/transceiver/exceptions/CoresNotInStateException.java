@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver;
+package uk.ac.manchester.spinnaker.transceiver.exceptions;
 
 import static java.lang.Float.POSITIVE_INFINITY;
 import static java.lang.String.format;
@@ -48,8 +48,8 @@ public class CoresNotInStateException extends SpinnmanException {
 	/** Which cores have failed. */
 	private CoreSubsets failedCores;
 
-	CoresNotInStateException(Integer timeout, Set<CPUState> expectedStates,
-			CoreSubsets failedCores) {
+	public CoresNotInStateException(Integer timeout,
+			Set<CPUState> expectedStates, CoreSubsets failedCores) {
 		this(convertTimeout(timeout), expectedStates, failedCores);
 	}
 

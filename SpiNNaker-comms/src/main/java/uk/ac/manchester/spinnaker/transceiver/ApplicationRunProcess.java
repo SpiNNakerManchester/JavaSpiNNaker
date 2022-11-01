@@ -23,6 +23,7 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.scp.ApplicationRun;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 
 /** Launch an application. */
 class ApplicationRunProcess extends TxrxProcess {

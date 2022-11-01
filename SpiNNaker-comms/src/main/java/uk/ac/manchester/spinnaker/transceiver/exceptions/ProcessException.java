@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver;
+package uk.ac.manchester.spinnaker.transceiver.exceptions;
 
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
@@ -59,7 +59,8 @@ public class ProcessException extends SpinnmanException {
 	}
 
 	/**
-	 * Create an exception.
+	 * Create an exception. Picks the correct exception class based on the
+	 * cause.
 	 *
 	 * @param core
 	 *            What core were we talking to.
@@ -69,7 +70,7 @@ public class ProcessException extends SpinnmanException {
 	 * @throws InterruptedException
 	 *             If the cause was an interrupt, it is immediately rethrown.
 	 */
-	static ProcessException makeInstance(HasCoreLocation core,
+	public static ProcessException makeInstance(HasCoreLocation core,
 			Throwable cause) throws InterruptedException {
 		if (requireNonNull(cause) instanceof UnexpectedResponseCodeException) {
 			var urc = (UnexpectedResponseCodeException) cause;

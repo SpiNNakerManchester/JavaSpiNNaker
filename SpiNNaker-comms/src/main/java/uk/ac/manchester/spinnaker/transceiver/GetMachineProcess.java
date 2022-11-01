@@ -49,6 +49,7 @@ import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.messages.model.P2PTable;
 import uk.ac.manchester.spinnaker.messages.scp.GetChipInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 
 /** A process for getting the machine details over a set of connections. */
 class GetMachineProcess extends TxrxProcess {

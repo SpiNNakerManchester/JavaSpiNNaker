@@ -31,6 +31,7 @@ import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGet;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 
 /** Gets IP tags and reverse IP tags. */
 class GetTagsProcess extends TxrxProcess {

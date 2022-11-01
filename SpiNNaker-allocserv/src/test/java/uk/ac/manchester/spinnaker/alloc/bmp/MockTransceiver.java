@@ -45,8 +45,8 @@ import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
-import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.UnimplementedBMPTransceiver;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**

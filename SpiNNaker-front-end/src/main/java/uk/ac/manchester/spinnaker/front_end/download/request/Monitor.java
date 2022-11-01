@@ -32,8 +32,8 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.ValidP;
 import uk.ac.manchester.spinnaker.machine.ValidX;
 import uk.ac.manchester.spinnaker.machine.ValidY;
-import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 
 /**
  * Extra monitor core information.

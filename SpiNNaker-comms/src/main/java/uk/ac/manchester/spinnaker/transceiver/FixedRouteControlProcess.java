@@ -27,6 +27,7 @@ import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.scp.FixedRouteInitialise;
 import uk.ac.manchester.spinnaker.messages.scp.FixedRouteRead;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 
 /** Load a fixed route routing entry onto a chip, and read it back again. */
 class FixedRouteControlProcess extends TxrxProcess {

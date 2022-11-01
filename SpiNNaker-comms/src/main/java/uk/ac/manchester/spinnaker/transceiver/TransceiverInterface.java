@@ -96,6 +96,8 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.SpinnmanException;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
@@ -955,8 +957,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 			@NotNull InputStream executable, @Positive int numBytes,
 			@NotNull AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
-		execute(core, Set.of(core.getP()), executable, numBytes, appID,
-				wait);
+		execute(core, Set.of(core.getP()), executable, numBytes, appID, wait);
 	}
 
 	/**
@@ -1432,6 +1433,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 					for (var info : coresNotReady.values()) {
 						f.format("\n%s", info.getStatusDescription());
 					}
+					// TODO Use a CoresNotInStateException?
 					throw new SpinnmanException(f.toString());
 				}
 			}
@@ -1823,8 +1825,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 * Write to the user<sub>0</sub> register of a core.
 	 *
 	 * @param core
-	 *            The coordinates of the core whose register is to be
-	 *            written to
+	 *            The coordinates of the core whose register is to be written to
 	 * @param value
 	 *            The word of data that is to be written.
 	 * @throws IOException
@@ -1843,8 +1844,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 * Write to the user<sub>0</sub> register of a core.
 	 *
 	 * @param core
-	 *            The coordinates of the core whose register is to be
-	 *            written to
+	 *            The coordinates of the core whose register is to be written to
 	 * @param pointer
 	 *            The pointer/address that is to be written to the register.
 	 * @throws IOException
@@ -1865,8 +1865,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 * Write to the user<sub>1</sub> register of a core.
 	 *
 	 * @param core
-	 *            The coordinates of the core whose register is to be
-	 *            written to
+	 *            The coordinates of the core whose register is to be written to
 	 * @param value
 	 *            The word of data that is to be written.
 	 * @throws IOException
@@ -1906,8 +1905,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 * Write to the user<sub>2</sub> register of a core.
 	 *
 	 * @param core
-	 *            The coordinates of the core whose register is to be
-	 *            written to
+	 *            The coordinates of the core whose register is to be written to
 	 * @param value
 	 *            The word of data that is to be written.
 	 * @throws IOException

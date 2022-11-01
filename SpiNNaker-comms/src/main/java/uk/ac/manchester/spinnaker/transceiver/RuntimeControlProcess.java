@@ -41,6 +41,7 @@ import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
 import uk.ac.manchester.spinnaker.messages.scp.ClearIOBUF;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory.Response;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 import uk.ac.manchester.spinnaker.messages.scp.UpdateProvenanceAndExit;
 import uk.ac.manchester.spinnaker.messages.scp.UpdateRuntime;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;

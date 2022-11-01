@@ -33,6 +33,7 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.Constants;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 import uk.ac.manchester.spinnaker.messages.bmp.WriteSerialFlash;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;

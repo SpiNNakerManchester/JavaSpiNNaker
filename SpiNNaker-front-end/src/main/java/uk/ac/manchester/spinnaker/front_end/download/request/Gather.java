@@ -33,8 +33,8 @@ import uk.ac.manchester.spinnaker.machine.ValidP;
 import uk.ac.manchester.spinnaker.machine.ValidX;
 import uk.ac.manchester.spinnaker.machine.ValidY;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
-import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 
 /**
  * Data speed up packet gatherer description.

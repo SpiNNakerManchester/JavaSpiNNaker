@@ -64,6 +64,7 @@ import uk.ac.manchester.spinnaker.messages.model.FirmwareDescriptors;
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
@@ -76,6 +77,9 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * @author Donal Fellows
  */
 public interface BMPTransceiverInterface extends AutoCloseable {
+	/** Number of times we retry a BMP action. */
+	int BMP_RETRIES = 3;
+
 	/**
 	 * Set the default BMP coordinates, at least for cabinet and frame.
 	 *

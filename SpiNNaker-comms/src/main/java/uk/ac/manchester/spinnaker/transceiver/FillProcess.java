@@ -33,6 +33,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.scp.FillRequest;
 import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 
 /** A process for filling memory. */
 class FillProcess extends TxrxProcess {

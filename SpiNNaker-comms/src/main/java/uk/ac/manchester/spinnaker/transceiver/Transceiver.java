@@ -49,7 +49,6 @@ import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.software_watchdog_count;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.y_size;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.BOOT_CHIP;
-import static uk.ac.manchester.spinnaker.transceiver.BMPCommandProcess.BMP_RETRIES;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.EXECUTABLE_ADDRESS;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTER_DIAGNOSTIC_COUNTER;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTER_FILTERS;
@@ -161,6 +160,9 @@ import uk.ac.manchester.spinnaker.messages.scp.SetLED;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.CoresNotInStateException;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.SpinnmanException;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**

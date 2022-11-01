@@ -26,8 +26,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_RETRY_DEFAULT;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT_DEFAULT;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
-import static uk.ac.manchester.spinnaker.transceiver.ProcessException.makeInstance;
-import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
+import static uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException.makeInstance;
 import static uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
 
 import java.io.IOException;
@@ -54,6 +53,11 @@ import uk.ac.manchester.spinnaker.messages.scp.NoResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.DuplicateSequenceNumberException;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.SendFailedException;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.SendTimedOutException;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.TxrxCommand;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
@@ -357,7 +361,7 @@ public class TxrxProcess {
 	 * @author Andrew Rowley
 	 * @author Donal Fellows
 	 */
-	class RequestPipeline {
+	private class RequestPipeline {
 		/** The connection over which the communication is to take place. */
 		private final SCPConnection connection;
 
@@ -387,7 +391,8 @@ public class TxrxProcess {
 		 *            The type of response expected to the request in the
 		 *            message.
 		 */
-		private final class Request<T extends SCPResponse> {
+		private final class Request<T extends SCPResponse>
+				implements TxrxCommand {
 			/** Request in progress. */
 			private final SCPRequest<T> request;
 
@@ -469,12 +474,8 @@ public class TxrxProcess {
 				}
 			}
 
-			/**
-			 * Which core is the destination of the request?
-			 *
-			 * @return The core location.
-			 */
-			private HasCoreLocation getDestination() {
+			@Override
+			public HasCoreLocation getDestination() {
 				return request.sdpHeader.getDestination();
 			}
 
@@ -488,13 +489,14 @@ public class TxrxProcess {
 				failure = new Failure(request, exception);
 			}
 
-			/**
-			 * Get the command being sent in the request.
-			 *
-			 * @return The request's SCP command.
-			 */
-			private CommandCode getCommand() {
+			@Override
+			public CommandCode getCommand() {
 				return request.scpRequestHeader.command;
+			}
+
+			@Override
+			public List<String> getRetryReason() {
+				return retryReason;
 			}
 		}
 
@@ -752,61 +754,6 @@ public class TxrxProcess {
 							+ "restart=%d,timeouts=%d)",
 					numRequests, outstandingRequests.size(), numResent,
 					numRetryCodeResent, numTimeouts);
-		}
-	}
-
-	/**
-	 * Indicates that a request timed out.
-	 */
-	static class SendTimedOutException extends SocketTimeoutException {
-		private static final long serialVersionUID = -7911020002602751941L;
-
-		/**
-		 * @param req
-		 *            The request that timed out.
-		 * @param timeout
-		 *            The length of timeout, in milliseconds.
-		 */
-		SendTimedOutException(RequestPipeline.Request<?> req, int timeout,
-				int seqNum) {
-			super(format(
-					"Operation %s timed out after %f seconds with seq num %d",
-					req.getCommand(), timeout / (double) MSEC_PER_SEC, seqNum));
-		}
-	}
-
-	/**
-	 * Indicates that a request could not be sent.
-	 */
-	static class SendFailedException extends IOException {
-		private static final long serialVersionUID = -5555562816486761027L;
-
-		/**
-		 * @param req
-		 *            The request that timed out.
-		 * @param numRetries
-		 *            How many attempts to send it were made.
-		 */
-		SendFailedException(RequestPipeline.Request<?> req, int numRetries) {
-			super(format(
-					"Errors sending request %s to %d,%d,%d over %d retries: %s",
-					req.getCommand(), req.getDestination().getX(),
-					req.getDestination().getY(), req.getDestination().getP(),
-					numRetries, req.retryReason));
-		}
-	}
-
-	/**
-	 * There's a duplicate sequence number! This really shouldn't happen.
-	 *
-	 * @author Donal Fellows
-	 */
-	static class DuplicateSequenceNumberException
-			extends IllegalThreadStateException {
-		private static final long serialVersionUID = -4033792283948201730L;
-
-		DuplicateSequenceNumberException() {
-			super("duplicate sequence number catastrophe");
 		}
 	}
 }

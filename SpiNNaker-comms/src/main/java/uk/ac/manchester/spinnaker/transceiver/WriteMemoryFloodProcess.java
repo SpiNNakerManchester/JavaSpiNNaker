@@ -33,6 +33,7 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillData;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillEnd;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillStart;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 
 /** A process for writing memory on multiple SpiNNaker chips at once. */
 class WriteMemoryFloodProcess extends TxrxProcess {

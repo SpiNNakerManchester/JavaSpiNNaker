@@ -32,6 +32,7 @@ import uk.ac.manchester.spinnaker.messages.bmp.ReadSerialFlash;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.transceiver.Accumulator.BufferAccumulator;
 import uk.ac.manchester.spinnaker.transceiver.Accumulator.FileAccumulator;
+import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 
 /** A process for reading serial flash on a BMP. */
 class BMPReadSerialFlashProcess extends BMPCommandProcess<BMPResponse> {
