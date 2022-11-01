@@ -70,7 +70,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
  * @author Andrew Rowley
  * @author Donal Fellows
  */
-public class SCPRequestPipeline implements AsyncCommsTask {
+class SCPRequestPipeline implements AsyncCommsTask {
 	/**
 	 * The name of a <em>system property</em> that can override the default
 	 * timeouts. If specified as an integer, it gives the number of milliseconds
@@ -317,7 +317,7 @@ public class SCPRequestPipeline implements AsyncCommsTask {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public SCPRequestPipeline(SCPConnection connection, int numChannels,
+	SCPRequestPipeline(SCPConnection connection, int numChannels,
 			int intermediateChannelWaits, int numRetries, int packetTimeout,
 			RetryTracker retryTracker) {
 		this.connection = connection;
