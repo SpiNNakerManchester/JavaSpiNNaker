@@ -148,7 +148,7 @@ class TxrxProcess {
 	 * @param exception
 	 *            The exception that was causing the problem
 	 */
-	private void receiveError(SCPRequest<?> request, Throwable exception) {
+	private void receiveError(SCPRequest<?> request, Exception exception) {
 		this.failure = new Failure(request, exception);
 	}
 
@@ -259,9 +259,9 @@ class TxrxProcess {
 	private static class Failure {
 		private final SCPRequest<?> req;
 
-		private final Throwable exn;
+		private final Exception exn;
 
-		Failure(SCPRequest<?> req, Throwable exn) {
+		Failure(SCPRequest<?> req, Exception exn) {
 			this.req = req;
 			this.exn = exn;
 		}

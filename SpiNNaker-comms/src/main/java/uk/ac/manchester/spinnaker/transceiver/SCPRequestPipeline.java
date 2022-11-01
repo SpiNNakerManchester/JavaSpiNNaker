@@ -188,7 +188,7 @@ class SCPRequestPipeline implements AsyncCommsTask {
 		private final Consumer<T> callback;
 
 		/** Callback function for errors. */
-		private final BiConsumer<SCPRequest<?>, Throwable> errorCallback;
+		private final BiConsumer<SCPRequest<T>, Exception> errorCallback;
 
 		/** Retry reasons. */
 		private final List<String> retryReason;
@@ -207,7 +207,7 @@ class SCPRequestPipeline implements AsyncCommsTask {
 		 *            The failure callback.
 		 */
 		private Request(SCPRequest<T> request, Consumer<T> callback,
-				BiConsumer<SCPRequest<?>, Throwable> errorCallback) {
+				BiConsumer<SCPRequest<T>, Exception> errorCallback) {
 			this.request = request;
 			this.requestData = request.getMessageData(connection.getChip());
 			this.callback = callback;
@@ -280,7 +280,7 @@ class SCPRequestPipeline implements AsyncCommsTask {
 		 * @param exception
 		 *            The problem that is being reported.
 		 */
-		private void handleError(Throwable exception) {
+		private void handleError(Exception exception) {
 			if (errorCallback != null) {
 				errorCallback.accept(request, exception);
 			}
@@ -337,7 +337,7 @@ class SCPRequestPipeline implements AsyncCommsTask {
 	@Override
 	public <T extends CheckOKResponse> void sendRequest(SCPRequest<T> request,
 			Consumer<T> callback,
-			BiConsumer<SCPRequest<?>, Throwable> errorCallback)
+			BiConsumer<SCPRequest<T>, Exception> errorCallback)
 			throws IOException, InterruptedException {
 		requireNonNull(errorCallback);
 		// If all the channels are used, start to receive packets
@@ -384,7 +384,7 @@ class SCPRequestPipeline implements AsyncCommsTask {
 	 */
 	private <T extends CheckOKResponse> Request<T> registerRequest(
 			SCPRequest<T> request, Consumer<T> callback,
-			BiConsumer<SCPRequest<?>, Throwable> errorCallback) {
+			BiConsumer<SCPRequest<T>, Exception> errorCallback) {
 		synchronized (outstandingRequests) {
 			int sequence = toUnsignedInt(request.scpRequestHeader
 					.issueSequenceNumber(outstandingRequests.keySet()));

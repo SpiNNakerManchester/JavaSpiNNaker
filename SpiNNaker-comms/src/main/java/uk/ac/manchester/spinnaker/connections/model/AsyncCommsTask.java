@@ -53,7 +53,7 @@ public interface AsyncCommsTask {
 	 */
 	<T extends CheckOKResponse> void sendRequest(SCPRequest<T> request,
 			Consumer<T> callback,
-			BiConsumer<SCPRequest<?>, Throwable> errorCallback)
+			BiConsumer<SCPRequest<T>, Exception> errorCallback)
 			throws IOException, InterruptedException;
 
 	/**
