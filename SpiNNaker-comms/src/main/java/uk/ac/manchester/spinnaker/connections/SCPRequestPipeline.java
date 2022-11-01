@@ -221,7 +221,7 @@ public class SCPRequestPipeline implements AsyncCommsTask {
 				throw new InterruptedIOException(
 						"interrupted while waiting to send");
 			}
-			connection.send(requestData.asReadOnlyBuffer());
+			connection.send(requestData);
 			nextSendTime = nanoTime() + INTER_SEND_INTERVAL_NS;
 		}
 
