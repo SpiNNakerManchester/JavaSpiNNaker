@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.connections.model;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import java.io.IOException;
 import java.util.function.BiConsumer;
@@ -30,7 +30,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
  * packet reordering and discarding, and these are situations that have been
  * seen for real.
  */
-public interface AsyncCommsTask {
+interface AsyncCommsTask {
 	/**
 	 * Add an SCP request to the set to be sent.
 	 *
