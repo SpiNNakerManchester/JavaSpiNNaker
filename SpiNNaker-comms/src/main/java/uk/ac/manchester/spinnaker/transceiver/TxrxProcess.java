@@ -121,16 +121,22 @@ public class TxrxProcess {
 	 * The number of outstanding responses to wait for before continuing
 	 * sending requests.
 	 */
-	private final int numWaits;
+	final int numWaits;
 
 	/** The number of requests to send before checking for responses. */
-	private final int numChannels;
+	final int numChannels;
 
 	/**
 	 * The number of times to resend any packet for any reason before an
 	 * error is triggered.
 	 */
-	private final int numRetries;
+	final int numRetries;
+
+	/**
+	 * The number of elapsed milliseconds after sending a packet before it
+	 * is considered a timeout.
+	 */
+	final int packetTimeout;
 
 	/**
 	 * How to select how to communicate.
@@ -138,12 +144,6 @@ public class TxrxProcess {
 	private final ConnectionSelector<? extends SCPConnection> selector;
 
 	private final Map<SCPConnection, RequestPipeline> requestPipelines;
-
-	/**
-	 * The number of elapsed milliseconds after sending a packet before it
-	 * is considered a timeout.
-	 */
-	private final int packetTimeout;
 
 	/**
 	 * An object used to track how many retries have been done, or
@@ -155,6 +155,8 @@ public class TxrxProcess {
 	private Failure failure;
 
 	/**
+	 * @param <Conn>
+	 *            The type of connection.
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param retryTracker
@@ -162,14 +164,16 @@ public class TxrxProcess {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	protected TxrxProcess(
-			ConnectionSelector<? extends SCPConnection> connectionSelector,
+	protected <Conn extends SCPConnection> TxrxProcess(
+			ConnectionSelector<Conn> connectionSelector,
 			RetryTracker retryTracker) {
 		this(connectionSelector, SCP_RETRIES, SCP_TIMEOUT, DEFAULT_NUM_CHANNELS,
 				DEFAULT_INTERMEDIATE_CHANNEL_WAITS, retryTracker);
 	}
 
 	/**
+	 * @param <Conn>
+	 *            The type of connection.
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param numRetries
@@ -185,8 +189,8 @@ public class TxrxProcess {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	protected TxrxProcess(
-			ConnectionSelector<? extends SCPConnection> connectionSelector,
+	protected <Conn extends SCPConnection> TxrxProcess(
+			ConnectionSelector<Conn> connectionSelector,
 			int numRetries, int timeout, int numChannels,
 			int intermediateChannelWaits, RetryTracker retryTracker) {
 		this.requestPipelines = new HashMap<>();
@@ -206,7 +210,7 @@ public class TxrxProcess {
 	 *            The request it will handle.
 	 * @return The pipeline instance.
 	 */
-	private RequestPipeline getPipeline(SCPRequest<?> request) {
+	private RequestPipeline pipeline(SCPRequest<?> request) {
 		return requestPipelines.computeIfAbsent(
 				selector.getNextConnection(request), RequestPipeline::new);
 	}
@@ -214,7 +218,7 @@ public class TxrxProcess {
 	/**
 	 * Put the state in such a way that it definitely isn't recording an error.
 	 */
-	private void resetState() {
+	private void resetFailureState() {
 		this.failure = null;
 	}
 
@@ -244,9 +248,9 @@ public class TxrxProcess {
 	/**
 	 * Send a request. The actual payload of the response to this request is to
 	 * be considered to be uninteresting provided it doesn't indicate a failure.
+	 * In particular, the response is <em>just</em> a {@link CheckOKResponse}
+	 * and not one of its subclasses.
 	 *
-	 * @param <Resp>
-	 *            The type of response expected to the request.
 	 * @param request
 	 *            The request to send.
 	 * @throws IOException
@@ -254,8 +258,8 @@ public class TxrxProcess {
 	 * @throws InterruptedException
 	 *             If communications are interrupted while preparing to send.
 	 */
-	protected final <Resp extends CheckOKResponse> void sendRequest(
-			SCPRequest<Resp> request) throws IOException, InterruptedException {
+	protected final void sendRequest(SCPRequest<CheckOKResponse> request)
+			throws IOException, InterruptedException {
 		sendRequest(request, null);
 	}
 
@@ -278,7 +282,7 @@ public class TxrxProcess {
 	protected final <Resp extends CheckOKResponse> void sendRequest(
 			SCPRequest<Resp> request, Consumer<Resp> callback)
 			throws IOException, InterruptedException {
-		getPipeline(request).sendRequest(request, callback);
+		pipeline(request).send(request, callback);
 	}
 
 	/**
@@ -301,7 +305,7 @@ public class TxrxProcess {
 			SCPRequest<Resp> request)
 			throws IOException, ProcessException, InterruptedException {
 		var holder = new ValueHolder<Resp>();
-		resetState();
+		resetFailureState();
 		sendRequest(request, holder::setValue);
 		finishBatch();
 		return holder.getValue();
@@ -319,9 +323,14 @@ public class TxrxProcess {
 	 */
 	protected final void sendOneWayRequest(SCPRequest<NoResponse> request)
 			throws IOException, InterruptedException {
-		getPipeline(request).sendOneWayRequest(request);
+		pipeline(request).send(request);
 	}
 
+	/**
+	 * States that a particular request failed with a particular exception. The
+	 * request should not be retried once this has been generated.
+	 */
+	// TODO make into a record once on a new enough language profile
 	private static class Failure {
 		private final SCPRequest<?> req;
 
@@ -339,10 +348,10 @@ public class TxrxProcess {
 	 * <p>
 	 * This class implements an SCP windowing, first suggested by Andrew Mundy.
 	 * This extends the idea by having both send and receive windows. These are
-	 * represented by the <i>numChannels</i> and the <i>numWaits</i> fields of
-	 * the enclosing class respectively. This seems to help with the timeout
-	 * issue; when a timeout is received, all requests for which a reply has not
-	 * been received can also timeout.
+	 * represented by the {@link TxrxProcess#numChannels} and the
+	 * {@link TxrxProcess#numWaits} fields of the enclosing class respectively.
+	 * This seems to help with the timeout issue; when a timeout is received,
+	 * all requests for which a reply has not been received can also timeout.
 	 *
 	 * @author Andrew Mundy
 	 * @author Andrew Rowley
@@ -350,7 +359,7 @@ public class TxrxProcess {
 	 */
 	class RequestPipeline {
 		/** The connection over which the communication is to take place. */
-		private SCPConnection connection;
+		private final SCPConnection connection;
 
 		/** The number of requests issued to this pipeline. */
 		private int numRequests;
@@ -366,7 +375,8 @@ public class TxrxProcess {
 
 		/** A dictionary of sequence number &rarr; requests in progress. */
 		// @GuardedBy("itself") // Not needed: synchronized map
-		private final Map<Integer, Request<?>> outstandingRequests;
+		private final Map<Integer, Request<?>> outstandingRequests =
+				synchronizedMap(new HashMap<>());
 
 		private long nextSendTime = 0;
 
@@ -497,16 +507,11 @@ public class TxrxProcess {
 		 */
 		RequestPipeline(SCPConnection connection) {
 			this.connection = connection;
-
-			outstandingRequests = synchronizedMap(new HashMap<>());
-			numRequests = 0;
-			numTimeouts = 0;
-			numResent = 0;
-			numRetryCodeResent = 0;
 		}
 
 		/**
-		 * Add an SCP request to the set to be sent.
+		 * Add an SCP request to the set to be sent. The request expects a
+		 * reply.
 		 *
 		 * @param <T>
 		 *            The type of response expected to the request.
@@ -521,17 +526,15 @@ public class TxrxProcess {
 		 * @throws InterruptedException
 		 *             If communications are interrupted (prior to sending).
 		 */
-		<T extends CheckOKResponse> void sendRequest(SCPRequest<T> request,
+		<T extends CheckOKResponse> void send(SCPRequest<T> request,
 				Consumer<T> callback) throws IOException, InterruptedException {
 			// If all the channels are used, start to receive packets
 			while (outstandingRequests.size() >= numChannels) {
 				multiRetrieve(numWaits);
 			}
 
-			var req = registerRequest(request, callback);
-
 			// Send the request
-			req.send();
+			registerRequest(request, callback).send();
 		}
 
 		/**
@@ -545,7 +548,10 @@ public class TxrxProcess {
 		 *            A callback function to call when the response has been
 		 *            received; takes an SCPResponse as a parameter, or a
 		 *            {@code null} if the response doesn't need to be processed.
-		 * @return The registered (but unsent) request.
+		 * @return The prepared and registered (but unsent) request.
+		 * @throws DuplicateSequenceNumberException
+		 *             If we couldn't mint a sequence number. Really shouldn't
+		 *             happen!
 		 */
 		private <T extends CheckOKResponse> Request<T> registerRequest(
 				SCPRequest<T> request, Consumer<T> callback) {
@@ -553,8 +559,8 @@ public class TxrxProcess {
 				int sequence = toUnsignedInt(request.scpRequestHeader
 						.issueSequenceNumber(outstandingRequests.keySet()));
 
-				log.debug("sending message with sequence {}", sequence);
 				var req = new Request<>(request, callback);
+				log.debug("sending message with sequence {}", sequence);
 				if (outstandingRequests.put(sequence, req) != null) {
 					throw new DuplicateSequenceNumberException();
 				}
@@ -564,11 +570,23 @@ public class TxrxProcess {
 		}
 
 		/**
+		 * Update the packet but don't remember it; it's a one-shot.
+		 *
+		 * @param request
+		 *            The one-way SCP request to be sent
+		 * @return The prepared (but unsent) request.
+		 */
+		private Request<NoResponse> unregisteredRequest(
+				SCPRequest<NoResponse> request) {
+			// Update the packet with a (non-valuable) sequence number
+			request.scpRequestHeader.issueSequenceNumber(Set.of());
+			log.debug("sending one-way message");
+			return new Request<>(request, null);
+		}
+
+		/**
 		 * Send a one-way request.
 		 *
-		 * @param <T>
-		 *            The type of response, which must be {@link NoResponse} or
-		 *            a subclass.
 		 * @param request
 		 *            The one-way SCP request to be sent.
 		 * @throws IOException
@@ -576,15 +594,13 @@ public class TxrxProcess {
 		 * @throws InterruptedException
 		 *             If communications are interrupted (prior to sending).
 		 */
-		<T extends NoResponse> void sendOneWayRequest(SCPRequest<T> request)
+		void send(SCPRequest<NoResponse> request)
 				throws IOException, InterruptedException {
 			// Wait for all current in-flight responses to be received
 			finish();
 
-			// Update the packet with a (non-valuable) sequence number
-			request.scpRequestHeader.issueSequenceNumber(Set.of());
-			// Send the request
-			new Request<>(request, null).send();
+			// Send the request without registering it
+			unregisteredRequest(request).send();
 		}
 
 		/**
@@ -605,18 +621,18 @@ public class TxrxProcess {
 		/**
 		 * Receives responses until there are only numPackets responses left.
 		 *
-		 * @param numPackets
+		 * @param numPacketsOutstanding
 		 *            The number of packets that can remain after running.
 		 * @throws IOException
 		 *             If anything goes wrong with receiving a packet.
 		 * @throws InterruptedException
 		 *             If communications are interrupted.
 		 */
-		private void multiRetrieve(int numPackets)
+		private void multiRetrieve(int numPacketsOutstanding)
 				throws IOException, InterruptedException {
 			// While there are still more packets in progress than some
 			// threshold
-			while (outstandingRequests.size() > numPackets) {
+			while (outstandingRequests.size() > numPacketsOutstanding) {
 				try {
 					// Receive the next response
 					singleRetrieve();
@@ -731,12 +747,11 @@ public class TxrxProcess {
 
 		@Override
 		public String toString() {
-			return "SCPPipe[channels=" + numChannels + ",width="
-					+ numWaits + "resendLim" + numRetries
-					+ "] (req=" + numRequests + ",outstanding="
-					+ outstandingRequests.size() + ",resent=" + numResent
-					+ ",restart=" + numRetryCodeResent + ",timeouts="
-					+ numTimeouts + ")";
+			return format(
+					"ReqPipe(req=%d,outstanding=%d,resent=%d,"
+							+ "restart=%d,timeouts=%d)",
+					numRequests, outstandingRequests.size(), numResent,
+					numRetryCodeResent, numTimeouts);
 		}
 	}
 
@@ -747,8 +762,6 @@ public class TxrxProcess {
 		private static final long serialVersionUID = -7911020002602751941L;
 
 		/**
-		 * Instantiate.
-		 *
 		 * @param req
 		 *            The request that timed out.
 		 * @param timeout
@@ -769,8 +782,6 @@ public class TxrxProcess {
 		private static final long serialVersionUID = -5555562816486761027L;
 
 		/**
-		 * Instantiate.
-		 *
 		 * @param req
 		 *            The request that timed out.
 		 * @param numRetries
