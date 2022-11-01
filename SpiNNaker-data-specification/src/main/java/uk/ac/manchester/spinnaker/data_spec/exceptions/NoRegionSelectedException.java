@@ -14,39 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec;
+package uk.ac.manchester.spinnaker.data_spec.exceptions;
+
+import uk.ac.manchester.spinnaker.data_spec.Commands;
 
 /**
- * Exceptions thrown by the Data Specification code.
+ * An exception that indicates that a memory region has not been selected.
  */
-public class DataSpecificationException extends Exception {
-	private static final long serialVersionUID = 6442679259006679916L;
+public class NoRegionSelectedException extends DataSpecificationException {
+	private static final long serialVersionUID = -3704038507680648327L;
 
 	/**
-	 * Create an exception.
-	 *
 	 * @param msg
 	 *            The message in the exception.
 	 */
-	public DataSpecificationException(String msg) {
+	public NoRegionSelectedException(String msg) {
 		super(msg);
 	}
 
 	/**
-	 * Create an exception.
+	 * @param command
+	 *            What command was using memory without a region selected.
 	 */
-	DataSpecificationException() {
-	}
-
-	/**
-	 * Create an exception.
-	 *
-	 * @param msg
-	 *            The message in the exception.
-	 * @param cause
-	 *            The cause of the exception.
-	 */
-	public DataSpecificationException(String msg, Throwable cause) {
-		super(msg, cause);
+	public NoRegionSelectedException(Commands command) {
+		super("no region has been selected for writing by " + command);
 	}
 }

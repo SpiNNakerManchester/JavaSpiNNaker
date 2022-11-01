@@ -26,6 +26,9 @@ import java.nio.channels.AcceptPendingException;
 
 import org.junit.jupiter.api.Test;
 
+import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
+import uk.ac.manchester.spinnaker.data_spec.exceptions.UnimplementedDSECommandException;
+
 class TestOperationMapper {
 	private static final int KEY = PRINT_STRUCT.value << COMMAND.offset;
 

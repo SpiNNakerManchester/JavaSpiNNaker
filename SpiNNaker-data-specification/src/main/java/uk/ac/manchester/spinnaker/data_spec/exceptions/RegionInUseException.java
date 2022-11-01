@@ -14,8 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package uk.ac.manchester.spinnaker.data_spec.exceptions;
+
 /**
- * Data specification executor. The main class here is
- * {@link uk.ac.manchester.spinnaker.data_spec.Executor Executor}.
+ * An exception that indicates that a region has already been allocated.
  */
-package uk.ac.manchester.spinnaker.data_spec;
+public class RegionInUseException extends DataSpecificationException {
+	private static final long serialVersionUID = 5490046026344412303L;
+
+	/**
+	 * State that a particular region is in use.
+	 *
+	 * @param key
+	 *            The region key for the region that is in use
+	 */
+	public RegionInUseException(int key) {
+		super("region " + key + " was already allocated");
+	}
+}

@@ -30,6 +30,8 @@ import java.util.stream.Stream;
 
 import com.google.errorprone.annotations.DoNotCall;
 
+import uk.ac.manchester.spinnaker.data_spec.exceptions.RegionInUseException;
+
 /**
  * A collection of memory regions. Note that the collection cannot be modified
  * by the standard collection API; those modification operations will fail. The

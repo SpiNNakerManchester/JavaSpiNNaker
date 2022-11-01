@@ -38,6 +38,9 @@ import java.nio.ByteBuffer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
+import uk.ac.manchester.spinnaker.data_spec.exceptions.ExecuteBreakInstruction;
+
 public class TestDataSpecExecutor {
 	@Test
 	void testSimpleSpec() throws IOException, DataSpecificationException {

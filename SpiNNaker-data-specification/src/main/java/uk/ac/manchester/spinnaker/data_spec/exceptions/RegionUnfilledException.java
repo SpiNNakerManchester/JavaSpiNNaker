@@ -14,18 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec;
+package uk.ac.manchester.spinnaker.data_spec.exceptions;
+
+import uk.ac.manchester.spinnaker.data_spec.Commands;
 
 /**
- * A special exception that indicates that a
- * {@link uk.ac.manchester.spinnaker.data_spec.Commands#BREAK BREAK} was
- * encountered.
+ * An exception that indicates that a memory region is being used that was
+ * originally requested to be unfilled.
  */
-public class ExecuteBreakInstruction extends DataSpecificationException {
-	private static final long serialVersionUID = -4902287652556707319L;
+public class RegionUnfilledException extends DataSpecificationException {
+	private static final long serialVersionUID = -3485312741873589073L;
 
-	/** Create an instance. */
-	ExecuteBreakInstruction() {
-		super("BREAK instruction reached");
+	/**
+	 * @param region
+	 *            What region are we talking about.
+	 * @param command
+	 *            What command wanted to use the region.
+	 */
+	public RegionUnfilledException(int region, Commands command) {
+		super("Region " + region + " was requested unfilled, but command "
+				+ command + " requests its use");
 	}
 }

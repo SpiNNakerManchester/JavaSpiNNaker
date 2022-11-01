@@ -32,6 +32,8 @@ import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 
+import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
+
 /**
  * Clever stuff to turn a method annotated with {@link Operation @Operation}
  * into a {@link Callable}.

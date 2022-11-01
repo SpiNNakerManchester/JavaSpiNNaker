@@ -14,9 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec;
+package uk.ac.manchester.spinnaker.data_spec.exceptions;
 
 import static java.lang.String.format;
+
+import uk.ac.manchester.spinnaker.data_spec.Commands;
 
 /**
  * An exception which occurs when trying to execute an unimplemented command.
@@ -26,14 +28,12 @@ public class UnimplementedDSECommandException
 	private static final long serialVersionUID = -2215740111501788733L;
 
 	/**
-	 * Create an instance.
-	 *
 	 * @param index
 	 *            Where the command was located.
 	 * @param command
 	 *            The command that was unimplemented.
 	 */
-	UnimplementedDSECommandException(int index, Commands command) {
+	public UnimplementedDSECommandException(int index, Commands command) {
 		super(format(
 				"Command %s (at index %d) in the data specification "
 						+ "executor has not yet been implemented",
@@ -41,14 +41,12 @@ public class UnimplementedDSECommandException
 	}
 
 	/**
-	 * Create an instance.
-	 *
 	 * @param index
 	 *            Where the opcode was located.
 	 * @param opcode
 	 *            The opcode that couldn't be converted into a command.
 	 */
-	UnimplementedDSECommandException(int index, int opcode) {
+	public UnimplementedDSECommandException(int index, int opcode) {
 		super(format("unknown opcocode (%d) at index %d", opcode, index));
 	}
 }

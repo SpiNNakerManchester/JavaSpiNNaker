@@ -30,11 +30,11 @@ import java.util.Map;
 import com.google.errorprone.annotations.Immutable;
 import com.google.errorprone.annotations.MustBeClosed;
 
-import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReal;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReference;
 import uk.ac.manchester.spinnaker.data_spec.Reference;
+import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
@@ -186,8 +186,11 @@ class ExecutionContext implements AutoCloseable {
 		}
 	}
 
-	static class DanglingReferenceException
-			extends DataSpecificationException {
+	/**
+	 * An exception that indicates a failure to resolve references between
+	 * regions.
+	 */
+	static class DanglingReferenceException extends DataSpecificationException {
 		private static final long serialVersionUID = -5070252348099737363L;
 
 		DanglingReferenceException(Reference ref, RegionToRef reg,

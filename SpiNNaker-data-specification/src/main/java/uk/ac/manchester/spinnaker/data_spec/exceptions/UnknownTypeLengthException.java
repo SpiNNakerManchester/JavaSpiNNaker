@@ -14,21 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec;
+package uk.ac.manchester.spinnaker.data_spec.exceptions;
+
+import uk.ac.manchester.spinnaker.data_spec.Commands;
 
 /**
- * An exception that indicates that a region has already been allocated.
+ * An exception that indicates that the value of the requested type is unknown.
  */
-public class RegionInUseException extends DataSpecificationException {
-	private static final long serialVersionUID = 5490046026344412303L;
+public class UnknownTypeLengthException extends DataSpecificationException {
+	private static final long serialVersionUID = 8012093021275095441L;
 
 	/**
-	 * State that a particular region is in use.
-	 *
-	 * @param key
-	 *            The region key for the region that is in use
+	 * @param dataLen
+	 *            How long a set of data was requested.
+	 * @param command
+	 *            What command was being executed.
 	 */
-	RegionInUseException(int key) {
-		super("region " + key + " was already allocated");
+	public UnknownTypeLengthException(int dataLen, Commands command) {
+		super("Unknown data length " + dataLen + " during command " + command);
 	}
 }
