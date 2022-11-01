@@ -332,7 +332,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 			}
 
 			private void send() throws IOException {
-				connection.send(requestData.asReadOnlyBuffer());
+				connection.send(requestData);
 			}
 
 			private void resend(String reason) throws IOException {
