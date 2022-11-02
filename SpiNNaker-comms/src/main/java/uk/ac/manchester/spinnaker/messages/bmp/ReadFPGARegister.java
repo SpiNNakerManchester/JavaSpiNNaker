@@ -24,7 +24,6 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.FPGA;
-import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * Requests the data from a FPGA's register.
@@ -43,7 +42,8 @@ public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 	 */
 	public ReadFPGARegister(FPGA fpga, MemoryLocation register,
 			BMPBoard board) {
-		super(board, CMD_LINK_READ, register.address, WORD_SIZE, fpga.value);
+		super("Read FPGA Register", board, CMD_LINK_READ, register.address,
+				WORD_SIZE, fpga.value);
 		if (!register.isAligned()) {
 			throw new IllegalArgumentException(
 					"FPGA register addresses must be aligned");
@@ -60,13 +60,13 @@ public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 	}
 
 	/** An SCP response to a request for the contents of an FPGA register. */
-	public static final class Response extends BMPRequest.BMPResponse {
+	public final class Response
+			extends BMPRequest<ReadFPGARegister.Response>.BMPResponse {
 		/** The ADC information. */
 		public final int fpgaRegister;
 
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
-			super("Read FPGA register", CMD_LINK_READ, buffer);
+		private Response(ByteBuffer buffer) throws Exception {
+			super(buffer);
 			fpgaRegister = buffer.getInt();
 		}
 	}

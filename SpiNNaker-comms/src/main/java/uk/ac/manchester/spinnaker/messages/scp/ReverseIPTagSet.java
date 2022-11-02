@@ -28,15 +28,12 @@ import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.STRI
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.THREE_BITS_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
 
-import java.nio.ByteBuffer;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.tags.TagID;
-import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
 
 /**
@@ -45,7 +42,7 @@ import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
  *
  * @see IPTagSet
  */
-public class ReverseIPTagSet extends SCPRequest<CheckOKResponse> {
+public class ReverseIPTagSet extends SimpleRequest {
 	/**
 	 * @param chip
 	 *            The chip to set the tag on.
@@ -61,7 +58,7 @@ public class ReverseIPTagSet extends SCPRequest<CheckOKResponse> {
 	public ReverseIPTagSet(@Valid @NotNull HasChipLocation chip,
 			@Valid @NotNull HasCoreLocation destination, @UDPPort int port,
 			@TagID int tag, int sdpPort) {
-		super(chip.getScampCore(), CMD_IPTAG,
+		super("Set Reverse IP Tag", chip.getScampCore(), CMD_IPTAG,
 				argument1(sdpPort, destination, tag),
 				argument2(destination, port), 0);
 	}
@@ -80,11 +77,5 @@ public class ReverseIPTagSet extends SCPRequest<CheckOKResponse> {
 	private static int argument2(HasCoreLocation destination, int port) {
 		return (destination.getX() << DEST_X_FIELD)
 				| (destination.getY() << DEST_Y_FIELD) | (port & PORT_MASK);
-	}
-
-	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new CheckOKResponse("Set Reverse IP Tag", CMD_IPTAG, buffer);
 	}
 }

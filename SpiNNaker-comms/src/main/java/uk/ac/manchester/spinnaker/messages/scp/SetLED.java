@@ -18,23 +18,22 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_LED;
 
-import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
 
-/** A request to change the state of an BMPSetLED. */
-public class SetLED extends SCPRequest<CheckOKResponse> {
+/** A request to change the state of a per-chip LED. */
+public class SetLED extends SimpleRequest {
 	/**
 	 * @param core
-	 *            The SpiNNaker core that will set the BMPSetLED
+	 *            The SpiNNaker core that will set the per-chip LED
 	 * @param ledStates
-	 *            A mapping of BMPSetLED index to operation to apply.
+	 *            A mapping of LED index to operation to apply.
 	 */
 	public SetLED(HasCoreLocation core, Map<Integer, LEDAction> ledStates) {
-		super(core, CMD_LED, argument1(ledStates));
+		super("Set LED", core, CMD_LED, argument1(ledStates));
 	}
 
 	private static Integer argument1(Map<Integer, LEDAction> ledStates) {
@@ -43,10 +42,5 @@ public class SetLED extends SCPRequest<CheckOKResponse> {
 			encoded |= e.getValue().value << (2 * e.getKey());
 		}
 		return encoded;
-	}
-
-	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Set BMPSetLED", CMD_LED, buffer);
 	}
 }

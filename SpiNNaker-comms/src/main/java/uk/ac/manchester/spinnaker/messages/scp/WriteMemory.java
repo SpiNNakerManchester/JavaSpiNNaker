@@ -26,7 +26,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /** A request to write memory on a chip. */
-public class WriteMemory extends SCPRequest<CheckOKResponse> {
+public class WriteMemory extends SimpleRequest {
 	/**
 	 * @param core
 	 *            the core to write via
@@ -38,7 +38,8 @@ public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	 */
 	public WriteMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			ByteBuffer data) {
-		super(core, CMD_WRITE, baseAddress.address, data.remaining(),
+		super("Write Memory", core, CMD_WRITE, baseAddress.address,
+				data.remaining(),
 				efficientTransferUnit(baseAddress, data.remaining()).value,
 				data);
 	}
@@ -54,14 +55,9 @@ public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	 */
 	public WriteMemory(HasChipLocation chip, MemoryLocation baseAddress,
 			ByteBuffer data) {
-		super(chip.getScampCore(), CMD_WRITE, baseAddress.address,
-				data.remaining(),
+		super("Write Memory", chip.getScampCore(), CMD_WRITE,
+				baseAddress.address, data.remaining(),
 				efficientTransferUnit(baseAddress, data.remaining()).value,
 				data);
-	}
-
-	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Write", CMD_WRITE, buffer);
 	}
 }

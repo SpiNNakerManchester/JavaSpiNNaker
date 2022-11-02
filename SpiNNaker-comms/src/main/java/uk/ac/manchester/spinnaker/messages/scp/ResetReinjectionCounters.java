@@ -18,26 +18,19 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.ReinjectorCommand.RESET_COUNTERS;
 
-import java.nio.ByteBuffer;
-
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
  * An SCP Request to reset the statistics counters of the dropped packet
  * reinjection.
  */
-public class ResetReinjectionCounters extends SCPRequest<CheckOKResponse> {
+public class ResetReinjectionCounters extends SimpleRequest {
 	/**
 	 * @param core
 	 *            The coordinates of the monitor core.
 	 */
 	public ResetReinjectionCounters(HasCoreLocation core) {
-		super(new ReinjectionSDPHeader(core), RESET_COUNTERS, 0, 0, 0, null);
-	}
-
-	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Reset dropped packet reinjection counters",
-				RESET_COUNTERS, buffer);
+		super("Reset dropped packet reinjection counters", core, RESET_COUNTERS,
+				0, 0, 0, null);
 	}
 }

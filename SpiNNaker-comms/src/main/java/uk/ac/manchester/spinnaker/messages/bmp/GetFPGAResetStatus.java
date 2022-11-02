@@ -29,27 +29,32 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 /** Get the reset status of a board's FPGAs. */
 public class GetFPGAResetStatus
 		extends BMPRequest<GetFPGAResetStatus.Response> {
-	/** @param board Which board to get the FPGA reset status of. */
-	public GetFPGAResetStatus(BMPBoard board) {
-		super(board, CMD_READ, IO_PORT_CONTROL_WORD, WORD_SIZE, WORD.value);
-	}
-
 	private static final int IO_PORT_CONTROL_WORD = 0x2009c034;
+
+	private static final int XIL_RST_BIT = 14;
+
+	/**
+	 * @param board
+	 *            Which board to get the FPGA reset status of.
+	 */
+	public GetFPGAResetStatus(BMPBoard board) {
+		super("Read FPGA Reset Status", board, CMD_READ, IO_PORT_CONTROL_WORD,
+				WORD_SIZE, WORD.value);
+	}
 
 	@Override
 	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
 		return new Response(buffer);
 	}
 
-	private static final int XIL_RST_BIT = 14;
-
 	/** The response to a request to get the FPGA reset status of a board. */
-	public static final class Response extends BMPRequest.BMPResponse {
+	public final class Response
+			extends BMPRequest<GetFPGAResetStatus.Response>.BMPResponse {
 		private int ioPortControlWord;
 
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
-			super("Read XIL_RST", CMD_READ, buffer);
+			super(buffer);
 			buffer.order(LITTLE_ENDIAN);
 			ioPortControlWord = buffer.getInt();
 		}

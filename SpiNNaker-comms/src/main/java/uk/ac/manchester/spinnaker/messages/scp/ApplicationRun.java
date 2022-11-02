@@ -20,8 +20,6 @@ import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_NUM_CORES;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE3;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_AR;
 
-import java.nio.ByteBuffer;
-
 import javax.validation.Valid;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
@@ -31,7 +29,7 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
 /**
  * A request to run an application.
  */
-public class ApplicationRun extends SCPRequest<CheckOKResponse> {
+public class ApplicationRun extends SimpleRequest {
 	private static final int WAIT_BIT = 18;
 
 	/**
@@ -59,7 +57,8 @@ public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 	 */
 	public ApplicationRun(AppID appId, @Valid HasChipLocation chip,
 			Iterable<@ValidP Integer> processors, boolean wait) {
-		super(chip.getScampCore(), CMD_AR, argument1(appId, processors, wait));
+		super("Run Application", chip.getScampCore(), CMD_AR,
+				argument1(appId, processors, wait));
 	}
 
 	private static int argument1(AppID appId, Iterable<Integer> processors,
@@ -77,10 +76,5 @@ public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 			processorMask |= 1 << WAIT_BIT;
 		}
 		return processorMask;
-	}
-
-	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Run Application", CMD_AR, buffer);
 	}
 }

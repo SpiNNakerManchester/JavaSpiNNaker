@@ -18,8 +18,6 @@ package uk.ac.manchester.spinnaker.messages.bmp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_FLASH_WRITE;
 
-import java.nio.ByteBuffer;
-
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 
@@ -27,7 +25,7 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
  * A request to write memory to flash on a BMP. Must have already been prepared
  * with {@link EraseFlash}.
  */
-public class WriteFlashBuffer extends BMPRequest<BMPRequest.BMPResponse> {
+public class WriteFlashBuffer extends SimpleRequest {
 	/** The size of chunk that will be transferred. Fixed. */
 	public static final int FLASH_CHUNK_SIZE = 4096;
 
@@ -41,14 +39,7 @@ public class WriteFlashBuffer extends BMPRequest<BMPRequest.BMPResponse> {
 	 */
 	public WriteFlashBuffer(BMPBoard board, MemoryLocation baseAddress,
 			boolean erase) {
-		super(board, CMD_FLASH_WRITE, baseAddress.address, FLASH_CHUNK_SIZE,
-				erase ? 1 : 0);
-	}
-
-	@Override
-	public BMPRequest.BMPResponse getSCPResponse(ByteBuffer buffer)
-			throws Exception {
-		return new BMPRequest.BMPResponse("Transfer chunk to flash",
-				CMD_FLASH_WRITE, buffer);
+		super("Transfer Chunk to Flash", board, CMD_FLASH_WRITE,
+				baseAddress.address, FLASH_CHUNK_SIZE, erase ? 1 : 0);
 	}
 }

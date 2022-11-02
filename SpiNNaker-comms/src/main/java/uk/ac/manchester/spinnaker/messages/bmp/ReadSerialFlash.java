@@ -24,7 +24,6 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
-import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /** An SCP request to read a region of serial flash from a BMP. */
 public class ReadSerialFlash extends BMPRequest<ReadSerialFlash.Response> {
@@ -45,7 +44,8 @@ public class ReadSerialFlash extends BMPRequest<ReadSerialFlash.Response> {
 	 *            The number of bytes to read, between 1 and 256
 	 */
 	public ReadSerialFlash(BMPBoard board, MemoryLocation address, int size) {
-		super(board, CMD_BMP_SF, address.address, validate(size), 0);
+		super("Read Serial Flash", board, CMD_BMP_SF, address.address,
+				validate(size), 0);
 	}
 
 	@Override
@@ -56,12 +56,13 @@ public class ReadSerialFlash extends BMPRequest<ReadSerialFlash.Response> {
 	/**
 	 * An SCP response to a request to read a region of memory on a chip.
 	 */
-	public static class Response extends BMPRequest.BMPResponse {
+	public final class Response
+			extends BMPRequest<ReadSerialFlash.Response>.BMPResponse {
 		/** The data read, in a little-endian read-only buffer. */
 		public final ByteBuffer data;
 
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
-			super("Read Serial Flash", CMD_BMP_SF, buffer);
+		private Response(ByteBuffer buffer) throws Exception {
+			super(buffer);
 			this.data = buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 		}
 	}

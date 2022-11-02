@@ -23,7 +23,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
-import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
@@ -37,7 +36,7 @@ public class ReadCANStatus extends BMPRequest<ReadCANStatus.Response> {
 	/** Create a request. */
 	public ReadCANStatus() {
 		// The CAN status is shared between all BMPs; it's how they communicate
-		super(FRAME_ROOT, CMD_BMP_INFO, CAN_STATUS.value);
+		super("Read CAN Status", FRAME_ROOT, CMD_BMP_INFO, CAN_STATUS.value);
 	}
 
 	@Override
@@ -46,7 +45,8 @@ public class ReadCANStatus extends BMPRequest<ReadCANStatus.Response> {
 	}
 
 	/** An SCP response to a request for the CAN status. */
-	public static final class Response extends BMPRequest.BMPResponse {
+	public final class Response
+			extends BMPRequest<ReadCANStatus.Response>.BMPResponse {
 		/**
 		 * The status data. The byte at {@code x} is zero if the BMP with that
 		 * index is disabled.
@@ -68,9 +68,8 @@ public class ReadCANStatus extends BMPRequest<ReadCANStatus.Response> {
 			return boards::iterator;
 		}
 
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
-			super("Read CAN Status", CMD_BMP_INFO, buffer);
+		private Response(ByteBuffer buffer) throws Exception {
+			super(buffer);
 			statusData = new byte[buffer.remaining()];
 			buffer.get(statusData);
 		}

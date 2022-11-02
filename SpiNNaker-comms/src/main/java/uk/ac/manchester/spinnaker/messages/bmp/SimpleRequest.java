@@ -16,46 +16,17 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.DEFAULT_PORT;
-
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
-import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
-import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
-import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /**
- * The base class of a request following the BMP protocol.
- *
- * @author Donal Fellows
- * @param <T>
- *            The type of the response to the request.
+ * A request that has a response with no payload.
  */
-public abstract class BMPRequest<T extends BMPRequest<T>.BMPResponse>
-		extends SCPRequest<T> {
-	private String operation;
-
-	private SCPCommand command;
-
-	private static SDPHeader bmpHeader(int board) {
-		return new SDPHeader(REPLY_EXPECTED, new BMPLocation(board),
-				DEFAULT_PORT);
-	}
-
-	private static SDPHeader bmpHeader(BMPBoard board) {
-		return bmpHeader(board.board);
-	}
-
-	private static SDPHeader bmpHeader(Collection<BMPBoard> boards) {
-		return bmpHeader(
-				boards.stream().mapToInt(b -> b.board).min().orElse(0));
-	}
-
+@SuppressWarnings("rawtypes")
+public abstract class SimpleRequest extends BMPRequest<BMPRequest.BMPResponse> {
 	/**
 	 * Make a request.
 	 *
@@ -67,10 +38,8 @@ public abstract class BMPRequest<T extends BMPRequest<T>.BMPResponse>
 	 * @param command
 	 *            The command to send
 	 */
-	BMPRequest(String operation, BMPBoard board, SCPCommand command) {
-		super(bmpHeader(board), command, 0, 0, 0, NO_DATA);
-		this.operation = operation;
-		this.command = command;
+	SimpleRequest(String operation, BMPBoard board, SCPCommand command) {
+		super(operation, board, command);
 	}
 
 	/**
@@ -86,11 +55,9 @@ public abstract class BMPRequest<T extends BMPRequest<T>.BMPResponse>
 	 * @param argument1
 	 *            The first argument
 	 */
-	BMPRequest(String operation, BMPBoard board, SCPCommand command,
+	SimpleRequest(String operation, BMPBoard board, SCPCommand command,
 			int argument1) {
-		super(bmpHeader(board), command, argument1, 0, 0, NO_DATA);
-		this.operation = operation;
-		this.command = command;
+		super(operation, board, command, argument1);
 	}
 
 	/**
@@ -108,11 +75,9 @@ public abstract class BMPRequest<T extends BMPRequest<T>.BMPResponse>
 	 * @param argument2
 	 *            The second argument
 	 */
-	BMPRequest(String operation, BMPBoard board, SCPCommand command,
+	SimpleRequest(String operation, BMPBoard board, SCPCommand command,
 			int argument1, int argument2) {
-		super(bmpHeader(board), command, argument1, argument2, 0, NO_DATA);
-		this.operation = operation;
-		this.command = command;
+		super(operation, board, command, argument1, argument2);
 	}
 
 	/**
@@ -132,12 +97,9 @@ public abstract class BMPRequest<T extends BMPRequest<T>.BMPResponse>
 	 * @param argument3
 	 *            The third argument
 	 */
-	BMPRequest(String operation, BMPBoard board, SCPCommand command,
+	SimpleRequest(String operation, BMPBoard board, SCPCommand command,
 			int argument1, int argument2, int argument3) {
-		super(bmpHeader(board), command, argument1, argument2, argument3,
-				NO_DATA);
-		this.operation = operation;
-		this.command = command;
+		super(operation, board, command, argument1, argument2, argument3);
 	}
 
 	/**
@@ -159,11 +121,9 @@ public abstract class BMPRequest<T extends BMPRequest<T>.BMPResponse>
 	 * @param data
 	 *            The payload
 	 */
-	BMPRequest(String operation, BMPBoard board, SCPCommand command,
+	SimpleRequest(String operation, BMPBoard board, SCPCommand command,
 			int argument1, int argument2, int argument3, ByteBuffer data) {
-		super(bmpHeader(board), command, argument1, argument2, argument3, data);
-		this.operation = operation;
-		this.command = command;
+		super(operation, board, command, argument1, argument2, argument3, data);
 	}
 
 	/**
@@ -179,11 +139,9 @@ public abstract class BMPRequest<T extends BMPRequest<T>.BMPResponse>
 	 * @param argument1
 	 *            The first argument
 	 */
-	BMPRequest(String operation, Collection<BMPBoard> boards,
+	SimpleRequest(String operation, Collection<BMPBoard> boards,
 			SCPCommand command, int argument1) {
-		super(bmpHeader(boards), command, argument1, 0, 0, NO_DATA);
-		this.operation = operation;
-		this.command = command;
+		super(operation, boards, command, argument1);
 	}
 
 	/**
@@ -201,42 +159,14 @@ public abstract class BMPRequest<T extends BMPRequest<T>.BMPResponse>
 	 * @param argument2
 	 *            The second argument
 	 */
-	BMPRequest(String operation, Collection<BMPBoard> boards,
+	SimpleRequest(String operation, Collection<BMPBoard> boards,
 			SCPCommand command, int argument1, int argument2) {
-		super(bmpHeader(boards), command, argument1, argument2, 0, NO_DATA);
-		this.operation = operation;
-		this.command = command;
+		super(operation, boards, command, argument1, argument2);
 	}
 
-	/**
-	 * Set the description of the high-level operation that this request is part
-	 * of. This is just used for error reporting. Note that all requests have an
-	 * operation specified by default; only use this where you want to override
-	 * it.
-	 *
-	 * @param operation
-	 *            The description to set.
-	 */
-	public void setOperation(String operation) {
-		this.operation = operation;
-	}
-
-	/**
-	 * Represents an SCP request thats tailored for the BMP connection. This
-	 * basic class handles checking that the result is OK; subclasses manage
-	 * deserializing any returned payload.
-	 */
-	public class BMPResponse extends SCPResponse {
-		/**
-		 * Make a response object.
-		 *
-		 * @param buffer
-		 *            The buffer to read the response from.
-		 * @throws UnexpectedResponseCodeException
-		 *             If the response is not a success.
-		 */
-		BMPResponse(ByteBuffer buffer) throws UnexpectedResponseCodeException {
-			super(buffer, operation, command);
-		}
+	@Override
+	public final BMPResponse getSCPResponse(ByteBuffer buffer)
+			throws Exception {
+		return new BMPResponse(buffer);
 	}
 }

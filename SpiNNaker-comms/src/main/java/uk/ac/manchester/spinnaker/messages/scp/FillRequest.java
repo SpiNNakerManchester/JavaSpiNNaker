@@ -18,13 +18,11 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_FILL;
 
-import java.nio.ByteBuffer;
-
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /** An SCP request to fill a region of memory on a chip with repeated data. */
-public final class FillRequest extends SCPRequest<CheckOKResponse> {
+public final class FillRequest extends SimpleRequest {
 	/**
 	 * @param chip
 	 *            The chip to read from
@@ -37,11 +35,7 @@ public final class FillRequest extends SCPRequest<CheckOKResponse> {
 	 */
 	public FillRequest(HasChipLocation chip, MemoryLocation baseAddress,
 			int data, int size) {
-		super(chip.getScampCore(), CMD_FILL, baseAddress.address, data, size);
-	}
-
-	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Fill", CMD_FILL, buffer);
+		super("Fill Memory", chip.getScampCore(), CMD_FILL, baseAddress.address,
+				data, size);
 	}
 }

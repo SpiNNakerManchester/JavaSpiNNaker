@@ -24,13 +24,11 @@ import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE3;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_NNP;
 
-import java.nio.ByteBuffer;
-
 import uk.ac.manchester.spinnaker.machine.ValidP;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 
 /** A request to start a flood fill of data. */
-public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
+public final class FloodFillEnd extends SimpleRequest {
 	private static final int MAGIC1 = 0x3f;
 
 	private static final int MAGIC2 = 0x18;
@@ -78,7 +76,8 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	 */
 	public FloodFillEnd(byte nearestNeighbourID, AppID appID,
 			Iterable<@ValidP Integer> processors, boolean wait) {
-		super(BOOT_MONITOR_CORE, CMD_NNP, argument1(nearestNeighbourID),
+		super("Flood Fill", BOOT_MONITOR_CORE, CMD_NNP,
+				argument1(nearestNeighbourID),
 				argument2(appID, processors, wait), NNP_FORWARD_RETRY);
 	}
 
@@ -102,10 +101,5 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 			processorMask |= 1 << WAIT_BIT;
 		}
 		return processorMask;
-	}
-
-	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Flood Fill", CMD_NNP, buffer);
 	}
 }

@@ -25,7 +25,6 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
-import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * SCP Request for the IP address data from a BMP.
@@ -36,7 +35,7 @@ public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
 	 *            which board to request the IP address data from
 	 */
 	public ReadIPAddress(BMPBoard board) {
-		super(board, CMD_BMP_INFO, IP_ADDR.value);
+		super("Read IP Address Data", board, CMD_BMP_INFO, IP_ADDR.value);
 	}
 
 	@Override
@@ -45,7 +44,8 @@ public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
 	}
 
 	/** An SCP response to a request for IP address information. */
-	public static final class Response extends BMPRequest.BMPResponse {
+	public final class Response
+			extends BMPRequest<ReadIPAddress.Response>.BMPResponse {
 		/** The IP address of the BMP. */
 		public final InetAddress bmpIPAddress;
 
@@ -70,9 +70,8 @@ public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
 			return getByAddress(bytes);
 		}
 
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException, UnknownHostException {
-			super("Read IP Address Data", CMD_BMP_INFO, buffer);
+		private Response(ByteBuffer buffer) throws Exception {
+			super(buffer);
 			byte[] bmpChunk = getChunk(buffer);
 			byte[] spinChunk = getChunk(buffer);
 			bmpIPAddress = getIP(bmpChunk);

@@ -27,27 +27,26 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
  * Upload a chunk of FPGA initialisation data. Must have been set up by
  * {@link InitFPGA}. Upload process will be terminated by {@link ResetFPGA}.
  */
-public class WriteFPGAData extends BMPRequest<BMPRequest.BMPResponse> {
+public class WriteFPGAData extends SimpleRequest {
 	/**
-	 * @param board Which board to upload the FPGA data to.
-	 * @param data What data to upload.
+	 * @param board
+	 *            Which board to upload the FPGA data to.
+	 * @param data
+	 *            What data to upload.
 	 */
 	public WriteFPGAData(BMPBoard board, byte[] data) {
-		super(board, CMD_XILINX, LoadData.code, data.length, 0,
-				ByteBuffer.wrap(data));
+		super("Load Data into FPGA Buffer", board, CMD_XILINX, LoadData.code,
+				data.length, 0, ByteBuffer.wrap(data));
 	}
 
 	/**
-	 * @param board Which board to upload the FPGA data to.
-	 * @param data What data to upload.
+	 * @param board
+	 *            Which board to upload the FPGA data to.
+	 * @param data
+	 *            What data to upload.
 	 */
 	public WriteFPGAData(BMPBoard board, ByteBuffer data) {
-		super(board, CMD_XILINX, LoadData.code, data.remaining(), 0, data);
-	}
-
-	@Override
-	public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new BMPResponse("Load data into XILINX buffer", CMD_XILINX,
-				buffer);
+		super("Load Data into FPGA Buffer", board, CMD_XILINX, LoadData.code,
+				data.remaining(), 0, data);
 	}
 }

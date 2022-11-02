@@ -18,28 +18,19 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.RouterTableCommand.SAVE_APPLICATION_ROUTES;
 
-import java.nio.ByteBuffer;
-
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
  * An SDP Request to save the currently-installed application multicast router
  * table.
  */
-public class RouterTableSaveApplicationRoutes
-		extends SCPRequest<CheckOKResponse> {
+public class RouterTableSaveApplicationRoutes extends SimpleRequest {
 	/**
 	 * @param core
 	 *            The coordinates of the monitor core.
 	 */
 	public RouterTableSaveApplicationRoutes(HasCoreLocation core) {
-		super(new RouterTableSDPHeader(core), SAVE_APPLICATION_ROUTES, 0, 0, 0,
-				null);
-	}
-
-	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Save application multicast routes",
-				SAVE_APPLICATION_ROUTES, buffer);
+		super("Save application multicast routes", core,
+				SAVE_APPLICATION_ROUTES, 0, 0, 0, null);
 	}
 }

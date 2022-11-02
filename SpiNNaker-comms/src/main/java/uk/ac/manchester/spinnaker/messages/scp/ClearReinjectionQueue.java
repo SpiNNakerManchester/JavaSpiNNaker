@@ -18,23 +18,16 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.ReinjectorCommand.CLEAR;
 
-import java.nio.ByteBuffer;
-
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
-/** An SCP Request to set the dropped packet reinjected packet types. */
-public class ClearReinjectionQueue extends SCPRequest<CheckOKResponse> {
+/** An SCP Request to clear the dropped packet reinjection queue. */
+public class ClearReinjectionQueue extends SimpleRequest {
 	/**
 	 * @param core
 	 *            The coordinates of the monitor core.
 	 */
 	public ClearReinjectionQueue(HasCoreLocation core) {
-		super(new ReinjectionSDPHeader(core), CLEAR, 0, 0, 0, null);
-	}
-
-	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Set reinjected packet types", CLEAR,
-				buffer);
+		super("Clear dropped packet reinjection queue", core, CLEAR, 0, 0, 0,
+				null);
 	}
 }

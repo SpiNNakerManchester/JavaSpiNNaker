@@ -22,11 +22,13 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
 
 /**
  * A request to alter the LEDs on a board.
  */
+@SuppressWarnings("rawtypes")
 public class BMPSetLED extends BMPRequest<BMPRequest.BMPResponse> {
 	/**
 	 * Make a request.
@@ -40,7 +42,8 @@ public class BMPSetLED extends BMPRequest<BMPRequest.BMPResponse> {
 	 */
 	public BMPSetLED(Collection<Integer> leds, LEDAction action,
 			Collection<BMPBoard> boards) {
-		super(boards, CMD_LED, argument1(action, leds), argument2(boards));
+		super("Set LEDs of BMP", boards, CMD_LED, argument1(action, leds),
+				argument2(boards));
 	}
 
 	private static int argument1(LEDAction action, Collection<Integer> leds) {
@@ -53,6 +56,6 @@ public class BMPSetLED extends BMPRequest<BMPRequest.BMPResponse> {
 
 	@Override
 	public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new BMPResponse("Set the LEDs of a board", CMD_LED, buffer);
+		return new BMPResponse(buffer);
 	}
 }

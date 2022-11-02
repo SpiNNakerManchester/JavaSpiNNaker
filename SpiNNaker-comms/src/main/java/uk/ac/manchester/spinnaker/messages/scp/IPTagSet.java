@@ -28,7 +28,6 @@ import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.THRE
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.USE_SENDER_BIT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
 
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import javax.validation.Valid;
@@ -39,7 +38,6 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.tags.TagID;
-import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
 
 /**
@@ -48,7 +46,7 @@ import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
  *
  * @see ReverseIPTagSet
  */
-public class IPTagSet extends SCPRequest<CheckOKResponse> {
+public class IPTagSet extends SimpleRequest {
 	private static final Logger log = getLogger(IPTagSet.class);
 
 	private static final int INADDRSZ = 4;
@@ -74,8 +72,9 @@ public class IPTagSet extends SCPRequest<CheckOKResponse> {
 			@Size(min = INADDRSZ, max = INADDRSZ) byte[] host,
 			@UDPPort int port, @TagID int tag, boolean strip,
 			boolean useSender) {
-		super(chip.getScampCore(), CMD_IPTAG, argument1(tag, strip, useSender),
-				argument2(port), argument3(host));
+		super("Set IP Tag", chip.getScampCore(), CMD_IPTAG,
+				argument1(tag, strip, useSender), argument2(port),
+				argument3(host));
 		if (useSender && host != null && !Arrays.equals(host, INADDR_ANY)) {
 			log.warn("IPTag has real host address but useSender was true");
 		}
@@ -98,11 +97,5 @@ public class IPTagSet extends SCPRequest<CheckOKResponse> {
 		return range(0, host.length)
 				.map(i -> toUnsignedInt(host[host.length - 1 - i]))
 				.reduce(0, (i, j) -> (i << BYTE_SHIFT) | j);
-	}
-
-	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new CheckOKResponse("Set IP Tag", CMD_IPTAG, buffer);
 	}
 }

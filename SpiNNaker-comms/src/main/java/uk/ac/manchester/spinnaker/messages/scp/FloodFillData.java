@@ -29,7 +29,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /** A request to start a flood fill of data. */
-public class FloodFillData extends SCPRequest<CheckOKResponse> {
+public class FloodFillData extends SimpleRequest {
 	private static final int MAGIC1 = 0x3f;
 
 	private static final int MAGIC2 = 0x1A;
@@ -71,9 +71,9 @@ public class FloodFillData extends SCPRequest<CheckOKResponse> {
 	 */
 	public FloodFillData(byte nearestNeighbourID, int blockNumber,
 			MemoryLocation baseAddress, byte[] data, int offset, int length) {
-		super(BOOT_MONITOR_CORE, CMD_FFD, argument1(nearestNeighbourID),
-				argument2(blockNumber, length), baseAddress.address,
-				wrap(data, offset, length));
+		super("Flood Fill", BOOT_MONITOR_CORE, CMD_FFD,
+				argument1(nearestNeighbourID), argument2(blockNumber, length),
+				baseAddress.address, wrap(data, offset, length));
 	}
 
 	/**
@@ -90,7 +90,8 @@ public class FloodFillData extends SCPRequest<CheckOKResponse> {
 	 */
 	public FloodFillData(byte nearestNeighbourID, int blockNumber,
 			MemoryLocation baseAddress, ByteBuffer data) {
-		super(BOOT_MONITOR_CORE, CMD_FFD, argument1(nearestNeighbourID),
+		super("Flood Fill", BOOT_MONITOR_CORE, CMD_FFD,
+				argument1(nearestNeighbourID),
 				argument2(blockNumber, data.remaining()), baseAddress.address,
 				data);
 	}
@@ -101,10 +102,5 @@ public class FloodFillData extends SCPRequest<CheckOKResponse> {
 
 	private static int argument2(int blockNumber, int size) {
 		return (blockNumber << BYTE2) | ((size / WORD_SIZE - 1) << BYTE1);
-	}
-
-	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Flood Fill", CMD_FFD, buffer);
 	}
 }

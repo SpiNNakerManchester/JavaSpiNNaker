@@ -36,7 +36,6 @@ public class CheckOKResponse extends SCPResponse {
 	 */
 	public CheckOKResponse(String operation, Enum<?> command,
 			ByteBuffer buffer) throws UnexpectedResponseCodeException {
-		super(buffer);
-		throwIfNotOK(operation, command);
+		super(buffer, operation, command);
 	}
 }

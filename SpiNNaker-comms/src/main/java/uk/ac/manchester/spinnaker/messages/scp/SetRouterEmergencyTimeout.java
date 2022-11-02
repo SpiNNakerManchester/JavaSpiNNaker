@@ -19,15 +19,13 @@ package uk.ac.manchester.spinnaker.messages.scp;
 import static uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus.encodeTimeout;
 import static uk.ac.manchester.spinnaker.messages.scp.ReinjectorCommand.SET_ROUTER_EMERGENCY_TIMEOUT;
 
-import java.nio.ByteBuffer;
-
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
  * An SCP Request to set the router emergency timeout for dropped packet
  * reinjection.
  */
-public class SetRouterEmergencyTimeout extends SCPRequest<CheckOKResponse> {
+public class SetRouterEmergencyTimeout extends SimpleRequest {
 	/**
 	 * @param core
 	 *            The coordinates of the monitor core.
@@ -38,13 +36,8 @@ public class SetRouterEmergencyTimeout extends SCPRequest<CheckOKResponse> {
 	 */
 	public SetRouterEmergencyTimeout(HasCoreLocation core, int timeoutMantissa,
 			int timeoutExponent) {
-		super(new ReinjectionSDPHeader(core), SET_ROUTER_EMERGENCY_TIMEOUT,
+		super("Set router emergency timeout", core,
+				SET_ROUTER_EMERGENCY_TIMEOUT,
 				encodeTimeout(timeoutMantissa, timeoutExponent), 0, 0, null);
-	}
-
-	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Set router emergency timeout",
-				SET_ROUTER_EMERGENCY_TIMEOUT, buffer);
 	}
 }

@@ -38,6 +38,8 @@ public abstract class SCPResponse {
 	/**
 	 * Reads a packet from a bytestring of data. Subclasses must also
 	 * deserialize any payload <i>after</i> calling this constructor.
+	 * <p>
+	 * This constructor does not check the result code.
 	 *
 	 * @param buffer
 	 *            the buffer to deserialise from
@@ -53,9 +55,12 @@ public abstract class SCPResponse {
 	}
 
 	/**
-	 * Throw an exception if the response is not an {@linkplain SCPResult#RC_OK
-	 * OK}.
+	 * Reads a packet from a bytestring of data and throw if it was a failure
+	 * (not an {@linkplain SCPResult#RC_OK RC_OK}). Subclasses must also
+	 * deserialize any payload <i>after</i> calling this constructor.
 	 *
+	 * @param buffer
+	 *            the buffer to deserialise from
 	 * @param operation
 	 *            The overall operation that was being done.
 	 * @param command
@@ -63,11 +68,12 @@ public abstract class SCPResponse {
 	 * @throws UnexpectedResponseCodeException
 	 *             If the response was a failure.
 	 * @throws UnroutableMessageException
-	 *             If the response was specifically that the message couldn't
-	 *             be routed.
+	 *             If the response was specifically that the message couldn't be
+	 *             routed.
 	 */
-	protected final void throwIfNotOK(String operation, Enum<?> command)
+	protected SCPResponse(ByteBuffer buffer, String operation, Enum<?> command)
 			throws UnexpectedResponseCodeException {
+		this(buffer);
 		switch (result) {
 		case RC_OK:
 			return;

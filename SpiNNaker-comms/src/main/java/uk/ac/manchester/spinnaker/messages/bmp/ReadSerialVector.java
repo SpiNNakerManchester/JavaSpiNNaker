@@ -24,7 +24,6 @@ import java.nio.IntBuffer;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
-import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * SCP Request for the serial data vector from the BMP.
@@ -35,7 +34,7 @@ public class ReadSerialVector extends BMPRequest<ReadSerialVector.Response> {
 	 *            which board to request the serial data from
 	 */
 	public ReadSerialVector(BMPBoard board) {
-		super(board, CMD_BMP_INFO, SERIAL.value);
+		super("Read Serial Data Vector", board, CMD_BMP_INFO, SERIAL.value);
 	}
 
 	@Override
@@ -44,13 +43,13 @@ public class ReadSerialVector extends BMPRequest<ReadSerialVector.Response> {
 	}
 
 	/** An SCP response to a request for serial data. */
-	public static final class Response extends BMPRequest.BMPResponse {
+	public final class Response
+			extends BMPRequest<ReadSerialVector.Response>.BMPResponse {
 		/** The serial data. */
 		public final SerialVector vector;
 
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
-			super("Read serial data vector", CMD_BMP_INFO, buffer);
+		private Response(ByteBuffer buffer) throws Exception {
+			super(buffer);
 			vector = new SerialVector(buffer.asIntBuffer());
 		}
 	}

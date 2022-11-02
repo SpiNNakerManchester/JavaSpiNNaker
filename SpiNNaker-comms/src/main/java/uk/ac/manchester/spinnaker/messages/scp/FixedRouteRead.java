@@ -61,7 +61,7 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
-			super("Read Fixed RoutingEntry route", CMD_RTR, buffer);
+			super("Read Fixed Route", CMD_RTR, buffer);
 			route = buffer.getInt();
 		}
 

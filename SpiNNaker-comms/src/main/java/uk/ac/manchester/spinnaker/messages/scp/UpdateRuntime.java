@@ -18,15 +18,12 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.RunningCommand.NEW_RUNTIME_ID;
 
-import java.nio.ByteBuffer;
-
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * An SCP Request to update the runtime info on a core.
  */
-public class UpdateRuntime extends SCPRequest<CheckOKResponse> {
+public class UpdateRuntime extends SimpleRequest {
 	/**
 	 * @param core
 	 *            The SpiNNaker core to update the runtime info of.
@@ -37,17 +34,11 @@ public class UpdateRuntime extends SCPRequest<CheckOKResponse> {
 	 */
 	public UpdateRuntime(HasCoreLocation core, int runTime,
 			boolean infiniteRun) {
-		super(new RunningSDPHeader(core, true), NEW_RUNTIME_ID, runTime,
+		super("update runtime", core, NEW_RUNTIME_ID, runTime,
 				bool(infiniteRun), bool(true), null);
 	}
 
 	private static int bool(boolean value) {
 		return value ? 1 : 0;
-	}
-
-	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new CheckOKResponse("update runtime", NEW_RUNTIME_ID, buffer);
 	}
 }

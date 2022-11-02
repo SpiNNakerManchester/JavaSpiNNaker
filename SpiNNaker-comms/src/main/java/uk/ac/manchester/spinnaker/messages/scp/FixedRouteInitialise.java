@@ -19,13 +19,11 @@ package uk.ac.manchester.spinnaker.messages.scp;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
 
-import java.nio.ByteBuffer;
-
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 
 /** Sets a fixed route entry. */
-public final class FixedRouteInitialise extends SCPRequest<CheckOKResponse> {
+public final class FixedRouteInitialise extends SimpleRequest {
 	private static int argument1(AppID appID) {
 		return appID.appID << BYTE1;
 	}
@@ -39,11 +37,7 @@ public final class FixedRouteInitialise extends SCPRequest<CheckOKResponse> {
 	 *            The ID of the application
 	 */
 	public FixedRouteInitialise(HasChipLocation chip, int entry, AppID appID) {
-		super(chip.getScampCore(), CMD_RTR, argument1(appID), entry);
-	}
-
-	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Fixed Route Initialise", CMD_RTR, buffer);
+		super("Fixed Route Initialise", chip.getScampCore(), CMD_RTR,
+				argument1(appID), entry);
 	}
 }

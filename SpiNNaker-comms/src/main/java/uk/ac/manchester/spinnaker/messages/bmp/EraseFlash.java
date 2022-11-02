@@ -23,7 +23,6 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
-import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /** A request to erase flash memory on a BMP. */
 public final class EraseFlash extends BMPRequest<EraseFlash.Response> {
@@ -42,8 +41,8 @@ public final class EraseFlash extends BMPRequest<EraseFlash.Response> {
 	 *             If the baseAddress or size make no sense
 	 */
 	public EraseFlash(BMPBoard board, MemoryLocation baseAddress, int size) {
-		super(board, CMD_FLASH_ERASE, baseAddress.address,
-				baseAddress.address + size);
+		super("Erase BMP Flash Memory", board, CMD_FLASH_ERASE,
+				baseAddress.address, baseAddress.address + size);
 		// Check that we've been actually asked to do something sane!
 		if (size <= 0) {
 			throw new IllegalArgumentException("no data");
@@ -66,13 +65,13 @@ public final class EraseFlash extends BMPRequest<EraseFlash.Response> {
 	}
 
 	/** The response from a request to erase flash. */
-	public static final class Response extends BMPRequest.BMPResponse {
+	public final class Response
+			extends BMPRequest<EraseFlash.Response>.BMPResponse {
 		/** Where the buffer is located. */
 		public final MemoryLocation address;
 
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
-			super("Erase flash memory", CMD_FLASH_ERASE, buffer);
+		private Response(ByteBuffer buffer) throws Exception {
+			super(buffer);
 			address = new MemoryLocation(buffer.getInt());
 		}
 	}

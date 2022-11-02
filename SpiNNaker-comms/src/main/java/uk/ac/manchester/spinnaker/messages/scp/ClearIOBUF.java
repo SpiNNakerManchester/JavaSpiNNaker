@@ -18,26 +18,17 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.RunningCommand.CLEAR_IOBUF;
 
-import java.nio.ByteBuffer;
-
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * An SCP Request to clear the IOBUF on a core.
  */
-public class ClearIOBUF extends SCPRequest<CheckOKResponse> {
+public class ClearIOBUF extends SimpleRequest {
 	/**
 	 * @param core
 	 *            The core to clear the IOBUF of.
 	 */
 	public ClearIOBUF(HasCoreLocation core) {
-		super(new RunningSDPHeader(core, true), CLEAR_IOBUF, 0, 0, 1, null);
-	}
-
-	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new CheckOKResponse("clear iobuf", CLEAR_IOBUF, buffer);
+		super("clear iobuf", core, CLEAR_IOBUF, 0, 0, 1, null);
 	}
 }

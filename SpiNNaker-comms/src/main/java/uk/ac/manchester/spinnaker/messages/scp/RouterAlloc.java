@@ -57,7 +57,7 @@ public class RouterAlloc extends SCPRequest<RouterAlloc.Response> {
 
 	/** An SCP response to a request to allocate router entries. */
 	public static class Response extends CheckOKResponse {
-		/** The base entry index allocated within the router, or 0 if none. */
+		/** The base entry index allocated within the router. */
 		public final int baseIndex;
 
 		Response(int size, ByteBuffer buffer) throws Exception {

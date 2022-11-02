@@ -16,10 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_POWER;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
-import java.nio.ByteBuffer;
 import java.util.Collection;
 
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
@@ -32,7 +31,7 @@ import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
  * respond to power commands not sent to BMP 0. Because of this, this message
  * should <i>always</i> be sent to BMP 0!
  */
-public class SetPower extends BMPRequest<BMPRequest.BMPResponse> {
+public class SetPower extends SimpleRequest {
 	private static final int DELAY_SHIFT = 16;
 
 	private static final BMPBoard FRAME_ROOT = new BMPBoard(0);
@@ -48,8 +47,8 @@ public class SetPower extends BMPRequest<BMPRequest.BMPResponse> {
 	 */
 	public SetPower(PowerCommand powerCommand, Collection<BMPBoard> boards,
 			double delay) {
-		super(FRAME_ROOT, CMD_BMP_POWER, argument1(delay, powerCommand),
-				argument2(boards));
+		super("Set Board Power State", FRAME_ROOT, CMD_BMP_POWER,
+				argument1(delay, powerCommand), argument2(boards));
 	}
 
 	private static int argument1(double delay, PowerCommand powerCommand) {
@@ -59,10 +58,5 @@ public class SetPower extends BMPRequest<BMPRequest.BMPResponse> {
 
 	private static int argument2(Collection<BMPBoard> boards) {
 		return boards.stream().mapToInt(board -> 1 << board.board).sum();
-	}
-
-	@Override
-	public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new BMPResponse("powering request", CMD_BMP_POWER, buffer);
 	}
 }

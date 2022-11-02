@@ -24,12 +24,10 @@ import static uk.ac.manchester.spinnaker.messages.scp.Bits.TOP_BIT;
 import static uk.ac.manchester.spinnaker.messages.scp.Constants.APP_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_NNP;
 
-import java.nio.ByteBuffer;
-
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 
 /** An SCP Request to stop an application. */
-public final class ApplicationStop extends SCPRequest<CheckOKResponse> {
+public final class ApplicationStop extends SimpleRequest {
 	// TODO Better names for these constants
 	private static final int SHIFT = 28;
 
@@ -57,12 +55,7 @@ public final class ApplicationStop extends SCPRequest<CheckOKResponse> {
 	 *            The ID of the application
 	 */
 	public ApplicationStop(AppID appID) {
-		super(BOOT_MONITOR_CORE, CMD_NNP, argument1(), argument2(appID),
-				argument3());
-	}
-
-	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Send Stop", CMD_NNP, buffer);
+		super("Send Stop", BOOT_MONITOR_CORE, CMD_NNP, argument1(),
+				argument2(appID), argument3());
 	}
 }

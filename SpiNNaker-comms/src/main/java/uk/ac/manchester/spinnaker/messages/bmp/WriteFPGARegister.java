@@ -36,7 +36,7 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
  * @see <a href="https://github.com/SpiNNakerManchester/spio/">The SpI/O project
  *      on GitHub</a>
  */
-public class WriteFPGARegister extends BMPRequest<BMPRequest.BMPResponse> {
+public class WriteFPGARegister extends SimpleRequest {
 	/**
 	 * @param fpga
 	 *            FPGA (0, 1 or 2 on SpiNN-5 board) to communicate with.
@@ -52,8 +52,8 @@ public class WriteFPGARegister extends BMPRequest<BMPRequest.BMPResponse> {
 	 */
 	public WriteFPGARegister(FPGA fpga, MemoryLocation register, int value,
 			BMPBoard board) {
-		super(board, CMD_LINK_WRITE, register.address, WORD_SIZE, fpga.value,
-				data(value));
+		super("Write FPGA Register", board, CMD_LINK_WRITE, register.address,
+				WORD_SIZE, fpga.value, data(value));
 		if (!register.isAligned()) {
 			throw new IllegalArgumentException(
 					"FPGA register addresses must be aligned");
@@ -69,11 +69,5 @@ public class WriteFPGARegister extends BMPRequest<BMPRequest.BMPResponse> {
 		buffer.putInt(value);
 		buffer.flip();
 		return buffer;
-	}
-
-	@Override
-	public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new BMPResponse("Send FPGA register write", CMD_LINK_WRITE,
-				buffer);
 	}
 }

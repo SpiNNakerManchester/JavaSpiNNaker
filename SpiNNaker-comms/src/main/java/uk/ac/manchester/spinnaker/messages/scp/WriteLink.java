@@ -25,7 +25,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /** A request to write memory on a neighbouring chip. */
-public class WriteLink extends SCPRequest<CheckOKResponse> {
+public class WriteLink extends SimpleRequest {
 	/**
 	 * @param core
 	 *            the core to write via
@@ -39,12 +39,7 @@ public class WriteLink extends SCPRequest<CheckOKResponse> {
 	 */
 	public WriteLink(HasCoreLocation core, Direction link,
 			MemoryLocation baseAddress, ByteBuffer data) {
-		super(core, CMD_LINK_WRITE, baseAddress.address, data.remaining(),
-				link.id, data);
-	}
-
-	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Write Memory", CMD_LINK_WRITE, buffer);
+		super("Write Memory", core, CMD_LINK_WRITE, baseAddress.address,
+				data.remaining(), link.id, data);
 	}
 }

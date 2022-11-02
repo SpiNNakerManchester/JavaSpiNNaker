@@ -24,12 +24,10 @@ import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE3;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.TOP_BIT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_NNP;
 
-import java.nio.ByteBuffer;
-
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 /** A request to start a flood fill of data. */
-public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
+public final class FloodFillStart extends SimpleRequest {
 	private static final int MAGIC1 = 0x3F;
 
 	private static final int MAGIC2 = 0x18;
@@ -74,7 +72,7 @@ public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
 	 */
 	public FloodFillStart(byte nearestNeighbourID, int numBlocks,
 			HasChipLocation chip) {
-		super(BOOT_MONITOR_CORE, CMD_NNP,
+		super("Flood Fill", BOOT_MONITOR_CORE, CMD_NNP,
 				argument1(nearestNeighbourID, numBlocks), argument2(chip),
 				NNP_FORWARD_RETRY);
 	}
@@ -99,10 +97,5 @@ public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
 		return (((chip.getX() & HIGH_BITS_MASK) << BYTE3)
 				+ ((chip.getY() & HIGH_BITS_MASK) << BYTE2) + (MAGIC3 << BYTE2)
 				+ (1 << m));
-	}
-
-	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Flood Fill", CMD_NNP, buffer);
 	}
 }

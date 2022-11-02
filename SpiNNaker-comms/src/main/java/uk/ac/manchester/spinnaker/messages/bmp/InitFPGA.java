@@ -19,12 +19,10 @@ package uk.ac.manchester.spinnaker.messages.bmp;
 import static uk.ac.manchester.spinnaker.messages.bmp.XilinxCommand.Init;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_XILINX;
 
-import java.nio.ByteBuffer;
-
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 
 /** Start an initialisation of the FPGAs. Terminated by {@link ResetFPGA}. */
-public class InitFPGA extends BMPRequest<BMPRequest.BMPResponse> {
+public class InitFPGA extends SimpleRequest {
 	/**
 	 * @param board
 	 *            Which board's FPGA to initialise.
@@ -32,11 +30,6 @@ public class InitFPGA extends BMPRequest<BMPRequest.BMPResponse> {
 	 *            Which FPGAs on the board to initialise.
 	 */
 	public InitFPGA(BMPBoard board, int mask) {
-		super(board, CMD_XILINX, Init.code, mask);
-	}
-
-	@Override
-	public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new BMPResponse("Init XILINX", CMD_XILINX, buffer);
+		super("Init FPGA", board, CMD_XILINX, Init.code, mask);
 	}
 }

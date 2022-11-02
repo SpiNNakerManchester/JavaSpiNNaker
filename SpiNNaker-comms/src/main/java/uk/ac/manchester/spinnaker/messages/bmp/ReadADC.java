@@ -23,7 +23,6 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
-import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * SCP Request for the data from the BMP including voltages and temperature.
@@ -34,7 +33,7 @@ public class ReadADC extends BMPRequest<ReadADC.Response> {
 	 *            which board to request the ADC register from
 	 */
 	public ReadADC(BMPBoard board) {
-		super(board, CMD_BMP_INFO, ADC.value);
+		super("Read ADC Data", board, CMD_BMP_INFO, ADC.value);
 	}
 
 	@Override
@@ -43,13 +42,13 @@ public class ReadADC extends BMPRequest<ReadADC.Response> {
 	}
 
 	/** An SCP response to a request for ADC information. */
-	public static final class Response extends BMPRequest.BMPResponse {
+	public final class Response
+			extends BMPRequest<ReadADC.Response>.BMPResponse {
 		/** The ADC information. */
 		public final ADCInfo adcInfo;
 
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
-			super("Read ADC", CMD_BMP_INFO, buffer);
+		private Response(ByteBuffer buffer) throws Exception {
+			super(buffer);
 			adcInfo = new ADCInfo(buffer);
 		}
 	}

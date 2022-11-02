@@ -25,7 +25,7 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 
 /** A request to write memory on a BMP. */
-public class BMPWriteMemory extends BMPRequest<BMPRequest.BMPResponse> {
+public class BMPWriteMemory extends SimpleRequest {
 	/**
 	 * @param board
 	 *            the board with the BMP to write the memory of
@@ -38,14 +38,9 @@ public class BMPWriteMemory extends BMPRequest<BMPRequest.BMPResponse> {
 	 */
 	public BMPWriteMemory(BMPBoard board, MemoryLocation baseAddress,
 			ByteBuffer data) {
-		super(board, CMD_WRITE, baseAddress.address, data.remaining(),
+		super("Write BMP Memory", board, CMD_WRITE, baseAddress.address,
+				data.remaining(),
 				efficientTransferUnit(baseAddress, data.remaining()).value,
 				data);
-	}
-
-	@Override
-	public BMPRequest.BMPResponse getSCPResponse(ByteBuffer buffer)
-			throws Exception {
-		return new BMPRequest.BMPResponse("Write", CMD_WRITE, buffer);
 	}
 }

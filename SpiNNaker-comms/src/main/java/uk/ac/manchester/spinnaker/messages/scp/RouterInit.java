@@ -21,14 +21,12 @@ import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.HALF1;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
 
-import java.nio.ByteBuffer;
-
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 
 /** A request to initialise the router on a chip. */
-public class RouterInit extends SCPRequest<CheckOKResponse> {
+public class RouterInit extends SimpleRequest {
 	/** One reserved for SCAMP. */
 	private static final int MAX_ENTRIES = 1023;
 
@@ -49,10 +47,9 @@ public class RouterInit extends SCPRequest<CheckOKResponse> {
 	 *             If a bad address or entry count is given
 	 */
 	public RouterInit(HasChipLocation chip, int numEntries,
-			MemoryLocation tableAddress, int baseIndex,
-			AppID appID) {
-		super(chip.getScampCore(), CMD_RTR, argument1(numEntries, appID),
-				tableAddress.address, baseIndex);
+			MemoryLocation tableAddress, int baseIndex, AppID appID) {
+		super("Router Init", chip.getScampCore(), CMD_RTR,
+				argument1(numEntries, appID), tableAddress.address, baseIndex);
 		if (baseIndex < 0) {
 			throw new IllegalArgumentException(
 					"baseIndex must not be negative");
@@ -68,10 +65,5 @@ public class RouterInit extends SCPRequest<CheckOKResponse> {
 					"numEntries must be no more than " + MAX_ENTRIES);
 		}
 		return (numEntries << HALF1) | (appID.appID << BYTE1) | (2 << BYTE0);
-	}
-
-	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Router Init", CMD_RTR, buffer);
 	}
 }

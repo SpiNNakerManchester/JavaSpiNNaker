@@ -33,7 +33,7 @@ public class GetBMPVersion extends BMPRequest<GetBMPVersion.Response> {
 	 *            The board to get the version from
 	 */
 	public GetBMPVersion(BMPBoard board) {
-		super(board, CMD_VER);
+		super("Read BMP Version", board, CMD_VER);
 	}
 
 	@Override
@@ -42,13 +42,14 @@ public class GetBMPVersion extends BMPRequest<GetBMPVersion.Response> {
 	}
 
 	/** An SCP response to a request for the version of software running. */
-	public static final class Response extends BMPRequest.BMPResponse {
+	public final class Response
+			extends BMPRequest<GetBMPVersion.Response>.BMPResponse {
 		/** The version information received. */
 		public final VersionInfo versionInfo;
 
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
-			super("Read Version", CMD_VER, buffer);
+			super(buffer);
 			versionInfo = new VersionInfo(buffer, true);
 		}
 	}

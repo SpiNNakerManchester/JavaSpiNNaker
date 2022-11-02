@@ -27,7 +27,7 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 /**
  * A request to write to serial flash on a BMP.
  */
-public class WriteSerialFlash extends BMPRequest<BMPRequest.BMPResponse> {
+public class WriteSerialFlash extends SimpleRequest {
 	/** The size of chunk that will be transferred. Fixed. */
 	public static final int FLASH_CHUNK_SIZE = 256;
 
@@ -42,8 +42,9 @@ public class WriteSerialFlash extends BMPRequest<BMPRequest.BMPResponse> {
 	 */
 	public WriteSerialFlash(BMPBoard board, MemoryLocation baseAddress,
 			ByteBuffer data) {
-		super(board, CMD_BMP_SF, baseAddress.address, FLASH_CHUNK_SIZE,
-				WRITE.value, condition(data));
+		super("Transfer Chunk to Serial Flash", board, CMD_BMP_SF,
+				baseAddress.address, FLASH_CHUNK_SIZE, WRITE.value,
+				condition(data));
 	}
 
 	private static ByteBuffer condition(ByteBuffer data) {
@@ -54,12 +55,5 @@ public class WriteSerialFlash extends BMPRequest<BMPRequest.BMPResponse> {
 			return b;
 		}
 		return data;
-	}
-
-	@Override
-	public BMPRequest.BMPResponse getSCPResponse(ByteBuffer buffer)
-			throws Exception {
-		return new BMPRequest.BMPResponse("Transfer chunk to flash",
-				CMD_BMP_SF, buffer);
 	}
 }
