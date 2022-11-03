@@ -18,18 +18,15 @@ package uk.ac.manchester.spinnaker.messages.bmp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_LED;
 
-import java.nio.ByteBuffer;
 import java.util.Collection;
 
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
 
 /**
  * A request to alter the LEDs on a board.
  */
-@SuppressWarnings("rawtypes")
-public class BMPSetLED extends BMPRequest<BMPRequest.BMPResponse> {
+public class BMPSetLED extends SimpleRequest {
 	/**
 	 * Make a request.
 	 *
@@ -52,10 +49,5 @@ public class BMPSetLED extends BMPRequest<BMPRequest.BMPResponse> {
 
 	private static int argument2(Collection<BMPBoard> boards) {
 		return boards.stream().mapToInt(board -> 1 << board.board).sum();
-	}
-
-	@Override
-	public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new BMPResponse(buffer);
 	}
 }

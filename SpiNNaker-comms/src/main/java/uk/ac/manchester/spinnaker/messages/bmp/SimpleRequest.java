@@ -25,8 +25,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
 /**
  * A request that has a response with no payload.
  */
-@SuppressWarnings("rawtypes")
-public abstract class SimpleRequest extends BMPRequest<BMPRequest.BMPResponse> {
+public abstract class SimpleRequest extends BMPRequest<SimpleRequest.Response> {
 	/**
 	 * Make a request.
 	 *
@@ -165,8 +164,17 @@ public abstract class SimpleRequest extends BMPRequest<BMPRequest.BMPResponse> {
 	}
 
 	@Override
-	public final BMPResponse getSCPResponse(ByteBuffer buffer)
-			throws Exception {
-		return new BMPResponse(buffer);
+	public final Response getSCPResponse(ByteBuffer buffer) throws Exception {
+		return new Response(buffer);
+	}
+
+	/**
+	 * A response to a BMP request that only checks whether the request was
+	 * successful, but doesn't include a payload.
+	 */
+	public final class Response extends BMPRequest<Response>.BMPResponse {
+		Response(ByteBuffer buffer) throws Exception {
+			super(buffer);
+		}
 	}
 }
