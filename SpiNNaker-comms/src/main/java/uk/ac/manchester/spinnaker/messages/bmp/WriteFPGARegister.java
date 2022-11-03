@@ -16,12 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_LINK_WRITE;
-
-import java.nio.ByteBuffer;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.word;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
@@ -53,7 +50,7 @@ public class WriteFPGARegister extends SimpleRequest {
 	public WriteFPGARegister(FPGA fpga, MemoryLocation register, int value,
 			BMPBoard board) {
 		super("Write FPGA Register", board, CMD_LINK_WRITE, register.address,
-				WORD_SIZE, fpga.value, data(value));
+				WORD_SIZE, fpga.value, word(value));
 		if (!register.isAligned()) {
 			throw new IllegalArgumentException(
 					"FPGA register addresses must be aligned");
@@ -62,12 +59,5 @@ public class WriteFPGARegister extends SimpleRequest {
 			throw new IllegalArgumentException(
 					"cannot write multiple FPGAs at once with this message");
 		}
-	}
-
-	private static ByteBuffer data(int value) {
-		var buffer = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
-		buffer.putInt(value);
-		buffer.flip();
-		return buffer;
 	}
 }

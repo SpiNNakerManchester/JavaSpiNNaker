@@ -27,6 +27,8 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 /** A request to write memory on a neighbouring chip. */
 public class WriteLink extends SimpleRequest {
 	/**
+	 * @param operation
+	 *            The higher-level operation being performed.
 	 * @param core
 	 *            the core to write via
 	 * @param link
@@ -37,9 +39,9 @@ public class WriteLink extends SimpleRequest {
 	 *            The data to write (up to 256 bytes); the <i>position</i> of
 	 *            the buffer must be the point where the data starts.
 	 */
-	public WriteLink(HasCoreLocation core, Direction link,
+	public WriteLink(String operation, HasCoreLocation core, Direction link,
 			MemoryLocation baseAddress, ByteBuffer data) {
-		super("Write Memory", core, CMD_LINK_WRITE, baseAddress.address,
+		super(operation, core, CMD_LINK_WRITE, baseAddress.address,
 				data.remaining(), link.id, data);
 	}
 }

@@ -30,6 +30,8 @@ class ApplicationRunProcess extends TxrxProcess {
 	/**
 	 * Create.
 	 *
+	 * @param <Conn>
+	 *            The type of connection(s) to use to send these messages.
 	 * @param connectionSelector
 	 *            How to choose where to send messages.
 	 * @param retryTracker
@@ -37,8 +39,8 @@ class ApplicationRunProcess extends TxrxProcess {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	ApplicationRunProcess(
-			ConnectionSelector<? extends SCPConnection> connectionSelector,
+	<Conn extends SCPConnection> ApplicationRunProcess(
+			ConnectionSelector<Conn> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}

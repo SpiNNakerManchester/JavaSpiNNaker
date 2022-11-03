@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_BYTES;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.CPU_INFO;
 
 import java.io.IOException;
@@ -33,7 +34,9 @@ import com.google.errorprone.annotations.InlineMe;
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+import uk.ac.manchester.spinnaker.messages.Constants;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Support utilities.
@@ -164,5 +167,41 @@ public abstract class Utils {
 		var crc = new CRC32();
 		crc.update(crcbuf);
 		return (int) crc.getValue();
+	}
+
+	/**
+	 * Convert a value to a little-endian word in a buffer.
+	 *
+	 * @param value
+	 *            The value to convert.
+	 * @return The newly-allocated buffer, {@link Constants#WORD_SIZE} long,
+	 *         flipped.
+	 */
+	@UsedInJavadocOnly(Constants.class)
+	public static ByteBuffer word(int value) {
+		return allocate(WORD_SIZE).order(LITTLE_ENDIAN).putInt(value).flip();
+	}
+
+	/**
+	 * Convert a value to a single byte in a buffer.
+	 *
+	 * @param value
+	 *            The value to convert.
+	 * @return The newly-allocated buffer, 1 long, flipped.
+	 */
+	static ByteBuffer oneByte(int value) {
+		return allocate(1).put((byte) value).flip();
+	}
+
+	/**
+	 * Convert a value to a single byte in a buffer.
+	 *
+	 * @param value
+	 *            The value to convert.
+	 * @return The newly-allocated buffer, 8 long, flipped.
+	 */
+	static ByteBuffer oneLong(long value) {
+		return allocate(WORD_SIZE * 2).order(LITTLE_ENDIAN).putLong(value)
+				.flip();
 	}
 }

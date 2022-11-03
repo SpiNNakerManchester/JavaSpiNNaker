@@ -216,9 +216,8 @@ final class GetHeapProcess extends TxrxProcess {
 	private IntBuffer readFromAddress(HasChipLocation chip,
 			MemoryLocation address, long size)
 			throws IOException, ProcessException, InterruptedException {
-		return synchronousCall(
-				new ReadMemory(chip, address, (int) size)).data
-						.asIntBuffer();
+		return synchronousCall(new ReadMemory("Read Heap Layout",
+				chip.getScampCore(), address, (int) size)).data.asIntBuffer();
 	}
 
 	@SARKStruct("heap_t")

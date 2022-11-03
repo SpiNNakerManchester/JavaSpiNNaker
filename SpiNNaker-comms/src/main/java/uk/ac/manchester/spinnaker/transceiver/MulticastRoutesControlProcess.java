@@ -191,7 +191,7 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 		for (int i = 0; i < NUM_READS; i++) {
 			int offset = i * ENTRIES_PER_READ;
 			sendRequest(
-					new ReadMemory(chip,
+					new ReadMemory("Get Routes", chip.getScampCore(),
 							baseAddress.add(offset * BYTES_PER_ENTRY),
 							UDP_MESSAGE_MAX_SIZE),
 					response -> addRoutes(response.data, offset, routes,

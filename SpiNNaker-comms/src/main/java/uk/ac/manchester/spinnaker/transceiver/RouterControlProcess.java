@@ -475,16 +475,19 @@ class RouterControlProcess extends TxrxProcess {
 		var cr = new ValueHolder<Integer>();
 		var es = new ValueHolder<Integer>();
 		var reg = new int[NUM_REGISTERS];
+		var core = chip.getScampCore();
 
 		sendRequest(
-				new ReadMemory(chip, ROUTER_CONTROL, REGISTER),
+				new ReadMemory("Get Router Diagnostics", core, ROUTER_CONTROL,
+						REGISTER),
 				response -> cr.setValue(response.data.getInt()));
 		sendRequest(
-				new ReadMemory(chip, ROUTER_ERROR, REGISTER),
+				new ReadMemory("Get Router Diagnostics", core, ROUTER_ERROR,
+						REGISTER),
 				response -> es.setValue(response.data.getInt()));
 		sendRequest(
-				new ReadMemory(chip, ROUTER_DIAGNOSTICS,
-						NUM_REGISTERS * REGISTER),
+				new ReadMemory("Get Router Diagnostics", core,
+						ROUTER_DIAGNOSTICS, NUM_REGISTERS * REGISTER),
 				response -> response.data.asIntBuffer().get(reg));
 
 		finishBatch();

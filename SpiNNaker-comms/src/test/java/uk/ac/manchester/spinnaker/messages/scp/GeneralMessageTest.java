@@ -286,7 +286,7 @@ class GeneralMessageTest {
 			@Test
 			void fillRequest() {
 				assertEquals(NO_PAYLOAD,
-						length(new FillRequest(ZERO_ZERO, NULL, 0, 0)));
+						length(new FillRequest(ZERO_ZERO_ZERO, NULL, 0, 0)));
 			}
 
 			@Test
@@ -354,13 +354,13 @@ class GeneralMessageTest {
 			void writeLink() {
 				var b = allocate(128);
 				assertEquals(152,
-						length(new WriteLink(ZERO_ZERO_ZERO, EAST, NULL, b)));
+						length(new WriteLink("gorp", ZERO_ZERO_ZERO, EAST, NULL,
+								b)));
 			}
 
 			@Test
 			void writeMemory() {
 				var b = allocate(128);
-				assertEquals(152, length(new WriteMemory(ZERO_ZERO, NULL, b)));
 				assertEquals(152,
 						length(new WriteMemory(ZERO_ZERO_ZERO, NULL, b)));
 			}

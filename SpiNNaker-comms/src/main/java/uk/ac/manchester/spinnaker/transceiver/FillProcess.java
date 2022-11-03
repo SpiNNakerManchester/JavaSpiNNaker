@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.scp.FillRequest;
 import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
@@ -107,7 +108,7 @@ class FillProcess extends TxrxProcess {
 		}
 		buffer.flip();
 
-		generateWriteMessages(chip, baseAddress, size, buffer);
+		generateWriteMessages(chip.getScampCore(), baseAddress, size, buffer);
 
 		/*
 		 * Wait for all the packets to be confirmed and then check there are no
@@ -116,7 +117,7 @@ class FillProcess extends TxrxProcess {
 		finishBatch();
 	}
 
-	private void generateWriteMessages(HasChipLocation chip,
+	private void generateWriteMessages(HasCoreLocation scampCore,
 			MemoryLocation base, int size, ByteBuffer buffer)
 			throws IOException, InterruptedException {
 		int toWrite = size;
@@ -129,7 +130,8 @@ class FillProcess extends TxrxProcess {
 			preBytes.limit(extraBytes);
 			// Send the preBytes to make the memory aligned
 			if (preBytes.hasRemaining()) {
-				sendRequest(new WriteMemory(chip, base, preBytes));
+				sendRequest(new WriteMemory("Fill Memory", scampCore, base,
+						preBytes));
 			}
 			toWrite -= extraBytes;
 			address = address.add(extraBytes);
@@ -138,7 +140,7 @@ class FillProcess extends TxrxProcess {
 		// Fill as much as possible using the bulk operation, FillRequest
 		int bulkBytes = (extraBytes != 0) ? size - ALIGNMENT : size;
 		if (bulkBytes != 0) {
-			sendRequest(new FillRequest(chip, address,
+			sendRequest(new FillRequest(scampCore, address,
 					buffer.getInt(extraBytes), bulkBytes));
 			toWrite -= bulkBytes;
 			address.add(bulkBytes);
@@ -152,7 +154,8 @@ class FillProcess extends TxrxProcess {
 			buffer.position(buffer.limit() - base.subWordAlignment());
 			buffer.limit(buffer.position() + toWrite);
 			if (buffer.hasRemaining()) {
-				sendRequest(new WriteMemory(chip, address, buffer));
+				sendRequest(new WriteMemory("Fill Memory", scampCore, address,
+						buffer));
 			}
 		}
 	}

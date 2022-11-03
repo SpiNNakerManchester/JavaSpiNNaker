@@ -28,6 +28,7 @@ import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.scp.ReadLink;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
@@ -39,7 +40,11 @@ import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 
 /** A process for reading memory on a SpiNNaker chip. */
 class ReadMemoryProcess extends TxrxProcess {
+	private final String operation;
+
 	/**
+	 * @param <Conn>
+	 *            The type of connections to use.
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param retryTracker
@@ -47,10 +52,28 @@ class ReadMemoryProcess extends TxrxProcess {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	ReadMemoryProcess(
-			ConnectionSelector<? extends SCPConnection> connectionSelector,
+	<Conn extends SCPConnection> ReadMemoryProcess(
+			ConnectionSelector<Conn> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
+		operation = "Read";
+	}
+
+	/**
+	 * @param <Conn>
+	 *            The type of connections to use.
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
+	 */
+	<Conn extends SCPConnection> ReadMemoryProcess(
+			ConnectionSelector<Conn> connectionSelector,
+			RetryTracker retryTracker, String operation) {
+		super(connectionSelector, retryTracker);
+		this.operation = operation;
 	}
 
 	/**
@@ -74,13 +97,15 @@ class ReadMemoryProcess extends TxrxProcess {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	private <T> T readMemory(HasChipLocation chip, MemoryLocation baseAddress,
+	private <T> T readMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			int size, Accumulator<T> a)
 			throws IOException, ProcessException, InterruptedException {
 		for (int offset = 0, chunk; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
 			final int thisOffset = offset;
-			sendRequest(new ReadMemory(chip, baseAddress.add(offset), chunk),
+			sendRequest(
+					new ReadMemory(operation, core, baseAddress.add(offset),
+							chunk),
 					response -> a.add(thisOffset, response.data));
 		}
 		finishBatch();
@@ -110,15 +135,15 @@ class ReadMemoryProcess extends TxrxProcess {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	private <T> T readLink(HasChipLocation chip, Direction linkDirection,
+	private <T> T readLink(HasCoreLocation core, Direction linkDirection,
 			MemoryLocation baseAddress, int size, Accumulator<T> a)
 			throws IOException, ProcessException, InterruptedException {
 		for (int offset = 0, chunk; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
 			int thisOffset = offset;
 			sendRequest(
-					new ReadLink(chip, linkDirection, baseAddress.add(offset),
-							chunk),
+					new ReadLink(operation, core, linkDirection,
+							baseAddress.add(offset), chunk),
 					response -> a.add(thisOffset, response.data));
 		}
 		finishBatch();
@@ -147,7 +172,8 @@ class ReadMemoryProcess extends TxrxProcess {
 	void readLink(HasChipLocation chip, Direction linkDirection,
 			MemoryLocation baseAddress, ByteBuffer receivingBuffer)
 			throws IOException, ProcessException, InterruptedException {
-		readLink(chip, linkDirection, baseAddress, receivingBuffer.remaining(),
+		readLink(chip.getScampCore(), linkDirection, baseAddress,
+				receivingBuffer.remaining(),
 				new BufferAccumulator(receivingBuffer));
 	}
 
@@ -171,7 +197,8 @@ class ReadMemoryProcess extends TxrxProcess {
 	void readMemory(HasChipLocation chip, MemoryLocation baseAddress,
 			ByteBuffer receivingBuffer)
 			throws IOException, ProcessException, InterruptedException {
-		readMemory(chip, baseAddress, receivingBuffer.remaining(),
+		readMemory(chip.getScampCore(), baseAddress,
+				receivingBuffer.remaining(),
 				new BufferAccumulator(receivingBuffer));
 	}
 
@@ -197,7 +224,7 @@ class ReadMemoryProcess extends TxrxProcess {
 	ByteBuffer readLink(HasChipLocation chip, Direction linkDirection,
 			MemoryLocation baseAddress, int size)
 			throws IOException, ProcessException, InterruptedException {
-		return readLink(chip, linkDirection, baseAddress, size,
+		return readLink(chip.getScampCore(), linkDirection, baseAddress, size,
 				new BufferAccumulator(size));
 	}
 
@@ -221,7 +248,8 @@ class ReadMemoryProcess extends TxrxProcess {
 	ByteBuffer readMemory(HasChipLocation chip, MemoryLocation baseAddress,
 			int size)
 			throws IOException, ProcessException, InterruptedException {
-		return readMemory(chip, baseAddress, size, new BufferAccumulator(size));
+		return readMemory(chip.getScampCore(), baseAddress, size,
+				new BufferAccumulator(size));
 	}
 
 	/**
@@ -249,7 +277,7 @@ class ReadMemoryProcess extends TxrxProcess {
 	void readLink(HasChipLocation chip, Direction linkDirection,
 			MemoryLocation baseAddress, int size, RandomAccessFile dataFile)
 			throws IOException, ProcessException, InterruptedException {
-		readLink(chip, linkDirection, baseAddress, size,
+		readLink(chip.getScampCore(), linkDirection, baseAddress, size,
 				new FileAccumulator(dataFile));
 	}
 
@@ -276,7 +304,8 @@ class ReadMemoryProcess extends TxrxProcess {
 	void readMemory(HasChipLocation chip, MemoryLocation baseAddress, int size,
 			RandomAccessFile dataFile)
 			throws IOException, ProcessException, InterruptedException {
-		readMemory(chip, baseAddress, size, new FileAccumulator(dataFile));
+		readMemory(chip.getScampCore(), baseAddress, size,
+				new FileAccumulator(dataFile));
 	}
 
 	/**
@@ -304,7 +333,7 @@ class ReadMemoryProcess extends TxrxProcess {
 			MemoryLocation baseAddress, int size, File dataFile)
 			throws IOException, ProcessException, InterruptedException {
 		try (var s = new RandomAccessFile(dataFile, "rw")) {
-			readLink(chip, linkDirection, baseAddress, size,
+			readLink(chip.getScampCore(), linkDirection, baseAddress, size,
 					new FileAccumulator(s));
 		}
 	}
@@ -359,7 +388,7 @@ class ReadMemoryProcess extends TxrxProcess {
 			BufferManagerStorage storage) throws IOException, ProcessException,
 			StorageException, InterruptedException {
 		var buffer = new byte[region.size];
-		readMemory(region.core.asChipLocation(), region.startAddress,
+		readMemory(region.core.getScampCore(), region.startAddress,
 				region.size, new BufferAccumulator(buffer));
 		storage.appendRecordingContents(region, buffer);
 	}

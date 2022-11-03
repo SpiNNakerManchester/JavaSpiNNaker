@@ -34,6 +34,7 @@ import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.SF_BL_ADDR;
 import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.SF_BL_LEN;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.crc;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.fill;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.word;
 
 import java.io.File;
 import java.io.IOException;
@@ -1289,10 +1290,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	default void writeBMPMemory(@Valid BMPCoords bmp, @Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, int dataWord)
 			throws IOException, ProcessException, InterruptedException {
-		var data = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
-		data.putInt(dataWord);
-		data.flip();
-		writeBMPMemory(bmp, board, baseAddress, data);
+		writeBMPMemory(bmp, board, baseAddress, word(dataWord));
 	}
 
 	/**

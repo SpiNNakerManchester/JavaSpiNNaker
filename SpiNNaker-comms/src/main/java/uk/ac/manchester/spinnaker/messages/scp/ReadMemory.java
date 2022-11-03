@@ -30,6 +30,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 
 /** An SCP request to read a region of memory. */
 public class ReadMemory extends SCPRequest<ReadMemory.Response> {
+	private String operation = "Read";
+
 	private static int validate(int size) {
 		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
 			throw new IllegalArgumentException(
@@ -49,6 +51,23 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	public ReadMemory(HasCoreLocation core, MemoryLocation address, int size) {
 		super(core, CMD_READ, address.address, validate(size),
 				efficientTransferUnit(address, size).value);
+	}
+
+	/**
+	 * @param operation
+	 *            The description of the higher level operation this is part of.
+	 * @param core
+	 *            The core to read via
+	 * @param address
+	 *            The positive base address to start the read from
+	 * @param size
+	 *            The number of bytes to read, between 1 and 256
+	 */
+	public ReadMemory(String operation, HasCoreLocation core,
+			MemoryLocation address, int size) {
+		super(core, CMD_READ, address.address, validate(size),
+				efficientTransferUnit(address, size).value);
+		this.operation = operation;
 	}
 
 	/**
@@ -72,12 +91,12 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	/**
 	 * An SCP response to a request to read a region of memory on a chip.
 	 */
-	public static class Response extends CheckOKResponse {
+	public class Response extends CheckOKResponse {
 		/** The data read, in a little-endian read-only buffer. */
 		public final ByteBuffer data;
 
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
-			super("Read", CMD_READ, buffer);
+			super(operation, CMD_READ, buffer);
 			this.data = buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 		}
 	}

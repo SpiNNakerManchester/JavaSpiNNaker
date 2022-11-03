@@ -38,6 +38,8 @@ import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 /** A process for writing memory on multiple SpiNNaker chips at once. */
 class WriteMemoryFloodProcess extends TxrxProcess {
 	/**
+	 * @param <Conn>
+	 *            The type of connections to use.
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param retryTracker
@@ -45,8 +47,8 @@ class WriteMemoryFloodProcess extends TxrxProcess {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	WriteMemoryFloodProcess(
-			ConnectionSelector<? extends SCPConnection> connectionSelector,
+	<Conn extends SCPConnection> WriteMemoryFloodProcess(
+			ConnectionSelector<Conn> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}

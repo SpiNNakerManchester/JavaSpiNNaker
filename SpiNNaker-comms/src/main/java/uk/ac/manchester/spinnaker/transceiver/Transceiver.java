@@ -21,7 +21,6 @@ import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
 import static java.net.InetAddress.getByAddress;
-import static java.nio.ByteBuffer.allocate;
 import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
@@ -54,6 +53,8 @@ import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTE
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTER_FILTERS;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.SYS_VARS;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.defaultBMPforMachine;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.oneByte;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.word;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.File;
@@ -1420,18 +1421,13 @@ public class Transceiver extends UDPTransceiver
 				.updateProvenanceAndExit(coreSubsets);
 	}
 
-	private static ByteBuffer oneByte(int value) {
-		var data = allocate(1);
-		data.put((byte) value).flip();
-		return data;
-	}
-
 	@Override
 	@ParallelSafe
 	public void setWatchDogTimeoutOnChip(HasChipLocation chip, int watchdog)
 			throws IOException, ProcessException, InterruptedException {
 		// write data
-		writeMemory(chip, SYS_VARS.add(software_watchdog_count.offset),
+		writeMemoryOp("Set Watchdog Timeout", chip.getScampCore(),
+				SYS_VARS.add(software_watchdog_count.offset),
 				oneByte(watchdog));
 	}
 
@@ -1441,8 +1437,13 @@ public class Transceiver extends UDPTransceiver
 			boolean watchdog)
 			throws IOException, ProcessException, InterruptedException {
 		// write data
-		writeMemory(chip, SYS_VARS.add(software_watchdog_count.offset), oneByte(
-				watchdog ? (Integer) software_watchdog_count.getDefault() : 0));
+		writeMemoryOp(
+				watchdog ? "Enable Watchdog Timer" : "Disable Watchdog Timer",
+				chip.getScampCore(),
+				SYS_VARS.add(software_watchdog_count.offset),
+				oneByte(watchdog
+						? (Integer) software_watchdog_count.getDefault()
+						: 0));
 	}
 
 	@Override
@@ -1545,7 +1546,8 @@ public class Transceiver extends UDPTransceiver
 		// Lock against updates
 		try (var lock = new ExecuteLock(chip)) {
 			// Write the executable
-			writeMemory(chip, EXECUTABLE_ADDRESS, executable, numBytes);
+			writeMemoryOp("Load Executable", chip.getScampCore(),
+					EXECUTABLE_ADDRESS, executable, numBytes);
 
 			// Request the start of the executable
 			simpleProcess(new ApplicationRun(appID, chip, processors, wait));
@@ -1561,7 +1563,8 @@ public class Transceiver extends UDPTransceiver
 		// Lock against updates
 		try (var lock = new ExecuteLock(chip)) {
 			// Write the executable
-			writeMemory(chip, EXECUTABLE_ADDRESS, executable);
+			writeMemoryOp("Load Executable", chip.getScampCore(),
+					EXECUTABLE_ADDRESS, executable);
 
 			// Request the start of the executable
 			simpleProcess(new ApplicationRun(appID, chip, processors, wait));
@@ -1576,7 +1579,8 @@ public class Transceiver extends UDPTransceiver
 		// Lock against updates
 		try (var lock = new ExecuteLock(chip)) {
 			// Write the executable
-			writeMemory(chip, EXECUTABLE_ADDRESS, executable);
+			writeMemoryOp("Load Executable", chip.getScampCore(),
+					EXECUTABLE_ADDRESS, executable);
 
 			// Request the start of the executable
 			simpleProcess(new ApplicationRun(appID, chip, processors, wait));
@@ -1637,17 +1641,17 @@ public class Transceiver extends UDPTransceiver
 		}
 	}
 
-	private <T extends BMPRequest.BMPResponse> T bmpCall(BMPCoords bmp,
+	private <T extends BMPRequest<T>.BMPResponse> T bmpCall(BMPCoords bmp,
 			BMPRequest<T> request)
 			throws IOException, ProcessException, InterruptedException {
-		return new BMPCommandProcess<T>(bmpConnection(bmp), this)
+		return new BMPCommandProcess(bmpConnection(bmp), this)
 				.execute(request);
 	}
 
-	private <T extends BMPRequest.BMPResponse> T bmpCall(BMPCoords bmp,
+	private <T extends BMPRequest<T>.BMPResponse> T bmpCall(BMPCoords bmp,
 			int timeout, int retries, BMPRequest<T> request)
 			throws IOException, ProcessException, InterruptedException {
-		return new BMPCommandProcess<T>(bmpConnection(bmp), timeout, this)
+		return new BMPCommandProcess(bmpConnection(bmp), timeout, this)
 				.execute(request, retries);
 	}
 
@@ -1885,7 +1889,7 @@ public class Transceiver extends UDPTransceiver
 				.map(BMPBoard::new);
 	}
 
-	private WriteMemoryProcess writeProcess(long size) {
+	private WriteMemoryProcess writeProcess(String operation, long size) {
 		if (size > LARGE_DATA_WRITE_THRESHOLD) {
 			/*
 			 * If there's more than a (tunable) threshold of data to move, we
@@ -1893,10 +1897,10 @@ public class Transceiver extends UDPTransceiver
 			 * we don't overload SCAMP. Overloading SCAMP *really* slows things
 			 * down!
 			 */
-			return new WriteMemoryProcess(scpSelector,
+			return new WriteMemoryProcess(operation, scpSelector,
 					LARGE_WRITE_PARALLEL_MESSAGE_COUNT, this);
 		}
-		return new WriteMemoryProcess(scpSelector, this);
+		return new WriteMemoryProcess(operation, scpSelector, this);
 	}
 
 	@Override
@@ -1904,8 +1908,8 @@ public class Transceiver extends UDPTransceiver
 	public void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException, InterruptedException {
-		writeProcess(numBytes).writeMemory(core, baseAddress, dataStream,
-				numBytes);
+		writeProcess("Write Memory", numBytes).writeMemory(core, baseAddress,
+				dataStream, numBytes);
 	}
 
 	@Override
@@ -1913,8 +1917,8 @@ public class Transceiver extends UDPTransceiver
 	public void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			File dataFile)
 			throws IOException, ProcessException, InterruptedException {
-		writeProcess(dataFile.length()).writeMemory(core, baseAddress,
-				dataFile);
+		writeProcess("Write Memory", dataFile.length()).writeMemory(core,
+				baseAddress, dataFile);
 	}
 
 	@Override
@@ -1922,7 +1926,122 @@ public class Transceiver extends UDPTransceiver
 	public void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			ByteBuffer data)
 			throws IOException, ProcessException, InterruptedException {
-		writeProcess(data.remaining()).writeMemory(core, baseAddress, data);
+		writeProcess("Write Memory", data.remaining()).writeMemory(core,
+				baseAddress, data);
+	}
+
+	/**
+	 * Write to memory addressable by a core.
+	 *
+	 * @param operation
+	 *            A description of the higher-level operation being done.
+	 * @param core
+	 *            The coordinates of the core where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
+	 *            The data that is to be written. The data should be from the
+	 *            <i>position</i> to the <i>limit</i>.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
+	 */
+	@ParallelSafe
+	private void writeMemoryOp(String operation, HasCoreLocation core,
+			MemoryLocation baseAddress, ByteBuffer data)
+			throws IOException, ProcessException, InterruptedException {
+		writeProcess(operation, data.remaining()).writeMemory(core, baseAddress,
+				data);
+	}
+
+	/**
+	 * Write to memory addressable by a core.
+	 *
+	 * @param operation
+	 *            A description of the higher-level operation being done.
+	 * @param core
+	 *            The coordinates of the core where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
+	 *            The data that is to be written as a little-endian word.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
+	 */
+	@ParallelSafe
+	private void writeMemoryOp(String operation, HasCoreLocation core,
+			MemoryLocation baseAddress, int data)
+			throws IOException, ProcessException, InterruptedException {
+		writeMemoryOp(operation, core, baseAddress, word(data));
+	}
+
+	/**
+	 * Write to memory addressable by a core.
+	 *
+	 * @param operation
+	 *            A description of the higher-level operation being done.
+	 * @param core
+	 *            The coordinates of the core where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataStream
+	 *            The data that is to be written.
+	 * @param numBytes
+	 *            Number of bytes to write from the stream.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
+	 */
+	@ParallelSafe
+	private void writeMemoryOp(String operation, HasCoreLocation core,
+			MemoryLocation baseAddress, InputStream dataStream, int numBytes)
+			throws IOException, ProcessException, InterruptedException {
+		writeProcess(operation, numBytes).writeMemory(core, baseAddress,
+				dataStream, numBytes);
+	}
+
+	/**
+	 * Write to memory addressable by a core.
+	 *
+	 * @param operation
+	 *            A description of the higher-level operation being done.
+	 * @param core
+	 *            The coordinates of the core where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataFile
+	 *            The file of data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
+	 */
+	@ParallelSafe
+	private void writeMemoryOp(String operation, HasCoreLocation core,
+			MemoryLocation baseAddress, File dataFile)
+			throws IOException, ProcessException, InterruptedException {
+		writeProcess(operation, dataFile.length()).writeMemory(core,
+				baseAddress, dataFile);
 	}
 
 	@Override
@@ -1930,8 +2049,8 @@ public class Transceiver extends UDPTransceiver
 	public void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			MemoryLocation baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, ProcessException, InterruptedException {
-		writeProcess(numBytes).writeLink(core, link, baseAddress, dataStream,
-				numBytes);
+		writeProcess("Write Neighbour Memory", numBytes).writeLink(core, link,
+				baseAddress, dataStream, numBytes);
 	}
 
 	@Override
@@ -1939,8 +2058,8 @@ public class Transceiver extends UDPTransceiver
 	public void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			MemoryLocation baseAddress, File dataFile)
 			throws IOException, ProcessException, InterruptedException {
-		writeProcess(dataFile.length()).writeLink(core, link, baseAddress,
-				dataFile);
+		writeProcess("Write Neighbour Memory", dataFile.length())
+				.writeLink(core, link, baseAddress, dataFile);
 	}
 
 	@Override
@@ -1948,7 +2067,8 @@ public class Transceiver extends UDPTransceiver
 	public void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			MemoryLocation baseAddress, ByteBuffer data)
 			throws IOException, ProcessException, InterruptedException {
-		writeProcess(data.remaining()).writeLink(core, link, baseAddress, data);
+		writeProcess("Write Neighbour Memory", data.remaining()).writeLink(core,
+				link, baseAddress, data);
 	}
 
 	@Override
@@ -1996,8 +2116,8 @@ public class Transceiver extends UDPTransceiver
 	public ByteBuffer readMemory(HasCoreLocation core,
 			MemoryLocation baseAddress, int length)
 			throws IOException, ProcessException, InterruptedException {
-		return new ReadMemoryProcess(scpSelector, this).readMemory(core,
-				baseAddress, length);
+		return new ReadMemoryProcess(scpSelector, this, "Read Memory")
+				.readMemory(core, baseAddress, length);
 	}
 
 	@Override
@@ -2005,7 +2125,8 @@ public class Transceiver extends UDPTransceiver
 	public void readRegion(BufferManagerStorage.Region region,
 			BufferManagerStorage storage) throws IOException, ProcessException,
 			StorageException, InterruptedException {
-		new ReadMemoryProcess(scpSelector, this).readMemory(region, storage);
+		new ReadMemoryProcess(scpSelector, this, "Read Region")
+				.readMemory(region, storage);
 	}
 
 	@Override
@@ -2014,8 +2135,8 @@ public class Transceiver extends UDPTransceiver
 	public ByteBuffer readNeighbourMemory(HasCoreLocation core, Direction link,
 			MemoryLocation baseAddress, int length)
 			throws IOException, ProcessException, InterruptedException {
-		return new ReadMemoryProcess(scpSelector, this).readLink(core, link,
-				baseAddress, length);
+		return new ReadMemoryProcess(scpSelector, this, "Read Link")
+				.readLink(core, link, baseAddress, length);
 	}
 
 	@Override
@@ -2345,7 +2466,8 @@ public class Transceiver extends UDPTransceiver
 
 		var address =
 				ROUTER_FILTERS.add(position * ROUTER_DIAGNOSTIC_FILTER_SIZE);
-		writeMemory(chip, address, diagnosticFilter.getFilterWord());
+		writeMemoryOp("Set Router Diagnostic Filters", chip.getScampCore(),
+				address, diagnosticFilter.getFilterWord());
 	}
 
 	@Override
@@ -2360,7 +2482,9 @@ public class Transceiver extends UDPTransceiver
 		}
 		var address =
 				ROUTER_FILTERS.add(position * ROUTER_DIAGNOSTIC_FILTER_SIZE);
-		var response = simpleProcess(new ReadMemory(chip, address, WORD_SIZE));
+		var response =
+				simpleProcess(new ReadMemory("Get Router Diagnostic Filter",
+						chip.getScampCore(), address, WORD_SIZE));
 		return new DiagnosticFilter(response.data.getInt());
 	}
 
@@ -2382,7 +2506,8 @@ public class Transceiver extends UDPTransceiver
 				clearData |= 1 << (counterID + ENABLE_SHIFT);
 			}
 		}
-		writeMemory(chip, ROUTER_DIAGNOSTIC_COUNTER, clearData);
+		writeMemoryOp("Clear Router Diagnostic Counters", chip.getScampCore(),
+				ROUTER_DIAGNOSTIC_COUNTER, clearData);
 	}
 
 	@Override

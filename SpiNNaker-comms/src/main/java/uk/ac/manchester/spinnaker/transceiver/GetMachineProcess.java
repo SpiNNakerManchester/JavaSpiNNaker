@@ -138,9 +138,11 @@ class GetMachineProcess extends TxrxProcess {
 		// Get the P2P table; 8 entries are packed into each 32-bit word
 		var p2pColumnData = new ArrayList<ByteBuffer>();
 		for (int column = 0; column < size.width; column++) {
-			p2pColumnData.add(synchronousCall(new ReadMemory(bootChip,
-					ROUTER_P2P.add(getColumnOffset(column)),
-					getNumColumnBytes(size.height))).data);
+			p2pColumnData
+					.add(synchronousCall(new ReadMemory("Get Router P2P Table",
+							bootChip.getScampCore(),
+							ROUTER_P2P.add(getColumnOffset(column)),
+							getNumColumnBytes(size.height))).data);
 			// TODO work out why multiple calls at once is a problem
 		}
 		var p2pTable = new P2PTable(size, p2pColumnData);

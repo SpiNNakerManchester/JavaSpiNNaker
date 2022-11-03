@@ -42,7 +42,6 @@ import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.transceiver.exceptions.BMPSendFailedException;
 import uk.ac.manchester.spinnaker.transceiver.exceptions.BMPSendTimedOutException;
@@ -54,11 +53,9 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * <p>
  * Does not inherit from {@link TxrxProcess} for ugly type reasons.
  *
- * @param <R>
- *            The type of the response; implicit in the type of the request.
  * @author Donal Fellows
  */
-class BMPCommandProcess<R extends BMPResponse> {
+class BMPCommandProcess {
 	private static final Logger log = getLogger(BMPCommandProcess.class);
 
 	/*
@@ -117,7 +114,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * Do a synchronous call of a BMP operation, sending the given message and
 	 * completely processing the interaction before returning its response.
 	 *
-	 * @param <T>
+	 * @param <R>
 	 *            The real type of the response
 	 * @param request
 	 *            The request to send
@@ -129,8 +126,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	@SuppressWarnings("unchecked")
-	<T extends R> T execute(BMPRequest<T> request)
+	<R extends BMPRequest<R>.BMPResponse> R execute(BMPRequest<R> request)
 			throws IOException, ProcessException, InterruptedException {
 		var holder = new ValueHolder<R>();
 		/*
@@ -139,20 +135,20 @@ class BMPCommandProcess<R extends BMPResponse> {
 		 */
 		var requestPipeline = new RequestPipeline(
 				connectionSelector.getNextConnection(request));
-		requestPipeline.sendRequest((BMPRequest<R>) request, holder::setValue);
+		requestPipeline.sendRequest(request, holder::setValue);
 		requestPipeline.finish();
 		if (exception != null) {
 			throw makeInstance(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
-		return (T) holder.getValue();
+		return holder.getValue();
 	}
 
 	/**
 	 * Do a synchronous call of a BMP operation, sending the given message and
 	 * completely processing the interaction before returning its response.
 	 *
-	 * @param <T>
+	 * @param <R>
 	 *            The real type of the response
 	 * @param request
 	 *            The request to send
@@ -166,8 +162,8 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	@SuppressWarnings("unchecked")
-	<T extends R> T execute(BMPRequest<T> request, int retries)
+	<R extends BMPRequest<R>.BMPResponse> R execute(BMPRequest<R> request,
+			int retries)
 			throws IOException, ProcessException, InterruptedException {
 		var holder = new ValueHolder<R>();
 		/*
@@ -176,14 +172,13 @@ class BMPCommandProcess<R extends BMPResponse> {
 		 */
 		var requestPipeline = new RequestPipeline(
 				connectionSelector.getNextConnection(request));
-		requestPipeline.sendRequest((BMPRequest<R>) request, retries,
-				holder::setValue);
+		requestPipeline.sendRequest(request, retries, holder::setValue);
 		requestPipeline.finish();
 		if (exception != null) {
 			throw makeInstance(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
-		return (T) holder.getValue();
+		return holder.getValue();
 	}
 
 	/**
@@ -191,7 +186,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * the given messages and completely processing the interaction before doing
 	 * the next one.
 	 *
-	 * @param <T>
+	 * @param <R>
 	 *            The real type of the responses
 	 * @param requests
 	 *            The sequence of requests to send; note that these are handled
@@ -205,8 +200,8 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	@SuppressWarnings("unchecked")
-	<T extends R> List<T> execute(Iterable<? extends BMPRequest<T>> requests)
+	<R extends BMPRequest<R>.BMPResponse> List<R> execute(
+			Iterable<? extends BMPRequest<R>> requests)
 			throws IOException, ProcessException, InterruptedException {
 		var results = new ArrayList<R>();
 		RequestPipeline requestPipeline = null;
@@ -220,14 +215,14 @@ class BMPCommandProcess<R extends BMPResponse> {
 				requestPipeline = new RequestPipeline(
 						connectionSelector.getNextConnection(request));
 			}
-			requestPipeline.sendRequest((BMPRequest<R>) request, results::add);
+			requestPipeline.sendRequest(request, results::add);
 			requestPipeline.finish();
 		}
 		if (exception != null) {
 			throw makeInstance(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
-		return (List<T>) results;
+		return results;
 	}
 
 	/**
@@ -235,7 +230,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * the given messages and completely processing the interaction before doing
 	 * the next one.
 	 *
-	 * @param <T>
+	 * @param <R>
 	 *            The real type of the response
 	 * @param requests
 	 *            The sequence of requests to send; note that these are handled
@@ -251,9 +246,8 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	@SuppressWarnings("unchecked")
-	<T extends R> List<T> execute(Iterable<? extends BMPRequest<T>> requests,
-			int retries)
+	<R extends BMPRequest<R>.BMPResponse> List<R> execute(
+			Iterable<? extends BMPRequest<R>> requests, int retries)
 			throws IOException, ProcessException, InterruptedException {
 		var results = new ArrayList<R>();
 		RequestPipeline requestPipeline = null;
@@ -267,15 +261,14 @@ class BMPCommandProcess<R extends BMPResponse> {
 				requestPipeline = new RequestPipeline(
 						connectionSelector.getNextConnection(request));
 			}
-			requestPipeline.sendRequest((BMPRequest<R>) request, retries,
-					results::add);
+			requestPipeline.sendRequest(request, retries, results::add);
 			requestPipeline.finish();
 		}
 		if (exception != null) {
 			throw makeInstance(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
-		return (List<T>) results;
+		return results;
 	}
 
 	/**
@@ -298,11 +291,11 @@ class BMPCommandProcess<R extends BMPResponse> {
 		private BMPConnection connection;
 
 		/** A dictionary of sequence number &rarr; requests in progress. */
-		private final Map<Integer, Request> requests =
+		private final Map<Integer, Request<?>> requests =
 				synchronizedMap(new HashMap<>());
 
 		/** Per message record. */
-		private final class Request {
+		private final class Request<R extends BMPRequest<R>.BMPResponse> {
 			/** request in progress. */
 			private final BMPRequest<R> request;
 
@@ -387,14 +380,15 @@ class BMPCommandProcess<R extends BMPResponse> {
 		 * @throws IOException
 		 *             If things go really wrong.
 		 */
-		private void sendRequest(BMPRequest<R> request, Consumer<R> callback)
+		private <R extends BMPRequest<R>.BMPResponse> void sendRequest(
+				BMPRequest<R> request, Consumer<R> callback)
 				throws IOException {
 			// Get the next sequence to be used and store it in the header
 			int sequence = request.scpRequestHeader
 					.issueSequenceNumber(requests.keySet());
 
 			// Send the request, keeping track of how many are sent
-			var req = new Request(request, callback);
+			var req = new Request<>(request, callback);
 			if (requests.put(sequence, req) != null) {
 				throw new RuntimeException(
 						"duplicate sequence number catastrophe");
@@ -416,14 +410,15 @@ class BMPCommandProcess<R extends BMPResponse> {
 		 * @throws IOException
 		 *             If things go really wrong.
 		 */
-		private void sendRequest(BMPRequest<R> request, int retries,
-				Consumer<R> callback) throws IOException {
+		private <R extends BMPRequest<R>.BMPResponse> void sendRequest(
+				BMPRequest<R> request, int retries, Consumer<R> callback)
+				throws IOException {
 			// Get the next sequence to be used and store it in the header
 			int sequence = request.scpRequestHeader
 					.issueSequenceNumber(requests.keySet());
 
 			// Send the request, keeping track of how many are sent
-			var req = new Request(request, retries, callback);
+			var req = new Request<>(request, retries, callback);
 			if (requests.put(sequence, req) != null) {
 				throw new RuntimeException(
 						"duplicate sequence number catastrophe");
@@ -508,7 +503,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 			toRemove.stream().forEach(requests::remove);
 		}
 
-		private void resend(Request req, Object reason) throws IOException {
+		private void resend(Request<?> req, Object reason) throws IOException {
 			if (!req.hasRetries()) {
 				// Report timeouts as timeout exception
 				if (req.allTimeoutFailures()) {

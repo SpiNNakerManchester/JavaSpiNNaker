@@ -43,7 +43,11 @@ import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
  * Write to memory on SpiNNaker.
  */
 class WriteMemoryProcess extends TxrxProcess {
+	private final String operation;
+
 	/**
+	 * @param <Conn>
+	 *            The type of connections to use.
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param retryTracker
@@ -51,13 +55,33 @@ class WriteMemoryProcess extends TxrxProcess {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	WriteMemoryProcess(
-			ConnectionSelector<? extends SCPConnection> connectionSelector,
+	<Conn extends SCPConnection> WriteMemoryProcess(
+			ConnectionSelector<Conn> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
+		operation = "Write Memory";
 	}
 
 	/**
+	 * @param <Conn>
+	 *            The type of connections to use.
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
+	 */
+	<Conn extends SCPConnection> WriteMemoryProcess(String operation,
+			ConnectionSelector<Conn> connectionSelector,
+			RetryTracker retryTracker) {
+		super(connectionSelector, retryTracker);
+		this.operation = operation;
+	}
+
+	/**
+	 * @param <Conn>
+	 *            The type of connections to use.
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param numChannels
@@ -67,11 +91,32 @@ class WriteMemoryProcess extends TxrxProcess {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	WriteMemoryProcess(
-			ConnectionSelector<? extends SCPConnection> connectionSelector,
-			int numChannels, RetryTracker retryTracker) {
+	<Conn extends SCPConnection> WriteMemoryProcess(
+			ConnectionSelector<Conn> connectionSelector, int numChannels,
+			RetryTracker retryTracker) {
 		super(connectionSelector, SCP_RETRIES, SCP_TIMEOUT, numChannels,
 				max(numChannels / 2, 1), retryTracker);
+		operation = "Write Memory";
+	}
+
+	/**
+	 * @param <Conn>
+	 *            The type of connections to use.
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 * @param numChannels
+	 *            The number of parallel communications to support
+	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
+	 */
+	<Conn extends SCPConnection> WriteMemoryProcess(String operation,
+			ConnectionSelector<Conn> connectionSelector, int numChannels,
+			RetryTracker retryTracker) {
+		super(connectionSelector, SCP_RETRIES, SCP_TIMEOUT, numChannels,
+				max(numChannels / 2, 1), retryTracker);
+		this.operation = operation;
 	}
 
 	/**
@@ -118,8 +163,9 @@ class WriteMemoryProcess extends TxrxProcess {
 	void writeLink(HasCoreLocation core, Direction linkDirection,
 			MemoryLocation baseAddress, ByteBuffer data)
 			throws IOException, ProcessException, InterruptedException {
-		writeMemoryFlow(baseAddress, data, (addr, bytes) -> new WriteLink(core,
-				linkDirection, addr, bytes));
+		writeMemoryFlow(baseAddress, data,
+				(addr, bytes) -> new WriteLink(operation, core, linkDirection,
+						addr, bytes));
 	}
 
 	/**
@@ -146,8 +192,9 @@ class WriteMemoryProcess extends TxrxProcess {
 	void writeLink(HasCoreLocation core, Direction linkDirection,
 			MemoryLocation baseAddress, InputStream data, int bytesToWrite)
 			throws IOException, ProcessException, InterruptedException {
-		writeMemoryFlow(baseAddress, data, bytesToWrite, (addr,
-				bytes) -> new WriteLink(core, linkDirection, addr, bytes));
+		writeMemoryFlow(baseAddress, data, bytesToWrite,
+				(addr, bytes) -> new WriteLink(operation, core, linkDirection,
+						addr, bytes));
 	}
 
 	/**
@@ -174,8 +221,9 @@ class WriteMemoryProcess extends TxrxProcess {
 			MemoryLocation baseAddress, File dataFile)
 			throws IOException, ProcessException, InterruptedException {
 		try (var data = buffer(new FileInputStream(dataFile))) {
-			writeMemoryFlow(baseAddress, data, (int) dataFile.length(), (addr,
-					bytes) -> new WriteLink(core, linkDirection, addr, bytes));
+			writeMemoryFlow(baseAddress, data, (int) dataFile.length(),
+					(addr, bytes) -> new WriteLink(operation, core,
+							linkDirection, addr, bytes));
 		}
 	}
 
@@ -201,8 +249,14 @@ class WriteMemoryProcess extends TxrxProcess {
 	void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			ByteBuffer data)
 			throws IOException, ProcessException, InterruptedException {
+		// Optimise the single-message case
+		if (data.remaining() < UDP_MESSAGE_MAX_SIZE) {
+			synchronousCall(
+					new WriteMemory(operation, core, baseAddress, data));
+			return;
+		}
 		writeMemoryFlow(baseAddress, data,
-				(addr, bytes) -> new WriteMemory(core, addr, bytes));
+				(addr, bytes) -> new WriteMemory(operation, core, addr, bytes));
 	}
 
 	/**
@@ -228,7 +282,7 @@ class WriteMemoryProcess extends TxrxProcess {
 			InputStream data, int bytesToWrite)
 			throws IOException, ProcessException, InterruptedException {
 		writeMemoryFlow(baseAddress, data, bytesToWrite,
-				(addr, bytes) -> new WriteMemory(core, addr, bytes));
+				(addr, bytes) -> new WriteMemory(operation, core, addr, bytes));
 	}
 
 	/**
@@ -253,8 +307,8 @@ class WriteMemoryProcess extends TxrxProcess {
 			File dataFile)
 			throws IOException, ProcessException, InterruptedException {
 		try (var data = buffer(new FileInputStream(dataFile))) {
-			writeMemoryFlow(baseAddress, data, (int) dataFile.length(),
-					(addr, bytes) -> new WriteMemory(core, addr, bytes));
+			writeMemoryFlow(baseAddress, data, (int) dataFile.length(), (addr,
+					bytes) -> new WriteMemory(operation, core, addr, bytes));
 		}
 	}
 

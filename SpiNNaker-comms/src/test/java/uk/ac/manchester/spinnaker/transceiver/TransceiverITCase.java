@@ -20,7 +20,6 @@ import static java.lang.Math.random;
 import static java.lang.Thread.sleep;
 import static java.net.InetAddress.getLocalHost;
 import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.sort;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.range;
@@ -397,8 +396,7 @@ public class TransceiverITCase {
 			 */
 			long longVal = 123456789123456789L;
 			int intVal = 123456789;
-			var longData = allocate(8).order(LITTLE_ENDIAN);
-			longData.putLong(longVal).flip();
+			var longData = Utils.oneLong(longVal);
 
 			section("Test reading/writing blobs", () -> {
 				txrx.writeMemory(SCAMP, MEM, longData);

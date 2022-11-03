@@ -30,6 +30,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 
 /** An SCP request to read a region of memory via a link on a chip. */
 public class ReadLink extends SCPRequest<ReadLink.Response> {
+	private final String operation;
+
 	private static int validate(int size) {
 		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
 			throw new IllegalArgumentException(
@@ -52,6 +54,27 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 			MemoryLocation baseAddress, int size) {
 		super(core, CMD_LINK_READ, baseAddress.address, validate(size),
 				link.id);
+		this.operation = "Read Link";
+	}
+
+	/**
+	 * @param operation
+	 *            The higher-level description of the operation, for error
+	 *            messages.
+	 * @param core
+	 *            the core to read via
+	 * @param link
+	 *            The direction of the link down which to send the query
+	 * @param baseAddress
+	 *            The positive base address to start the read from
+	 * @param size
+	 *            The number of bytes to read, between 1 and 256
+	 */
+	public ReadLink(String operation, HasCoreLocation core, Direction link,
+			MemoryLocation baseAddress, int size) {
+		super(core, CMD_LINK_READ, baseAddress.address, validate(size),
+				link.id);
+		this.operation = operation;
 	}
 
 	/**
@@ -66,8 +89,7 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	 */
 	public ReadLink(HasChipLocation chip, Direction link,
 			MemoryLocation baseAddress, int size) {
-		super(chip.getScampCore(), CMD_LINK_READ, baseAddress.address,
-				validate(size), link.id);
+		this(chip.getScampCore(), link, baseAddress, size);
 	}
 
 	@Override
@@ -79,12 +101,12 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	 * An SCP response to a request to read a region of memory via a link on a
 	 * chip.
 	 */
-	public static class Response extends CheckOKResponse {
+	public final class Response extends CheckOKResponse {
 		/** The data read. */
 		public final ByteBuffer data;
 
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
-			super("Read Link", CMD_LINK_READ, buffer);
+			super(operation, CMD_LINK_READ, buffer);
 			this.data = buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 		}
 	}

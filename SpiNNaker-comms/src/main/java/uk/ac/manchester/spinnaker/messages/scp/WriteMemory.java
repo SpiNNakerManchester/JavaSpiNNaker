@@ -21,7 +21,6 @@ import static uk.ac.manchester.spinnaker.messages.scp.TransferUnit.efficientTran
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
@@ -45,18 +44,21 @@ public class WriteMemory extends SimpleRequest {
 	}
 
 	/**
-	 * @param chip
-	 *            the chip to write via
+	 * @param operation
+	 *            The higher level operation that this is part of, for error
+	 *            reporting.
+	 * @param core
+	 *            the core to write via
 	 * @param baseAddress
-	 *            The positive base address to start the read from
+	 *            The positive base address to start the write at
 	 * @param data
 	 *            Between 1 and 256 bytes to write; the <i>position</i> of the
 	 *            buffer must be the point where the data starts.
 	 */
-	public WriteMemory(HasChipLocation chip, MemoryLocation baseAddress,
-			ByteBuffer data) {
-		super("Write Memory", chip.getScampCore(), CMD_WRITE,
-				baseAddress.address, data.remaining(),
+	public WriteMemory(String operation, HasCoreLocation core,
+			MemoryLocation baseAddress, ByteBuffer data) {
+		super(operation, core, CMD_WRITE, baseAddress.address,
+				data.remaining(),
 				efficientTransferUnit(baseAddress, data.remaining()).value,
 				data);
 	}

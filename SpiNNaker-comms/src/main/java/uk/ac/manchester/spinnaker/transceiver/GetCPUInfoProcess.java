@@ -68,8 +68,8 @@ class GetCPUInfoProcess extends TxrxProcess {
 		for (var core : requireNonNull(coreSubsets,
 				"must have actual core subset to iterate over")) {
 			sendRequest(
-					new ReadMemory(core.getScampCore(), getVcpuAddress(core),
-							CPU_INFO_BYTES),
+					new ReadMemory("Get CPU Info", core.getScampCore(),
+							getVcpuAddress(core), CPU_INFO_BYTES),
 					response -> cpuInfo.add(new CPUInfo(core, response.data)));
 		}
 		finishBatch();

@@ -61,6 +61,8 @@ class RuntimeControlProcess extends TxrxProcess {
 
 	private static final int WORD = 4;
 
+	private static final String READ_IOBUF = "Read IOBUF";
+
 	private final Queue<NextRead> nextReads = new ArrayDeque<>();
 
 	private final Queue<ExtraRead> extraReads = new ArrayDeque<>();
@@ -191,7 +193,7 @@ class RuntimeControlProcess extends TxrxProcess {
 		// Get the IOBuf address for each core
 		for (var core : requireNonNull(cores,
 				"must have actual core subset to iterate over")) {
-			sendRequest(new ReadMemory(core.getScampCore(),
+			sendRequest(new ReadMemory(READ_IOBUF, core.getScampCore(),
 					getVcpuAddress(core).add(CPU_IOBUF_ADDRESS_OFFSET), WORD),
 					response -> issueReadForIOBufHead(core, 0,
 							new MemoryLocation(response.data.getInt()),
@@ -317,7 +319,7 @@ class RuntimeControlProcess extends TxrxProcess {
 		 * @return the message implied by this object
 		 */
 		ReadMemory message() {
-			return new ReadMemory(core.getScampCore(), base, size);
+			return new ReadMemory(READ_IOBUF, core.getScampCore(), base, size);
 		}
 	}
 
@@ -344,7 +346,7 @@ class RuntimeControlProcess extends TxrxProcess {
 		 * @return the message implied by this object
 		 */
 		ReadMemory message() {
-			return new ReadMemory(core.getScampCore(), base, size);
+			return new ReadMemory(READ_IOBUF, core.getScampCore(), base, size);
 		}
 	}
 }
