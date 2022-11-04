@@ -40,6 +40,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_DEFAULT_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.bmp.ReadSerialVector.SerialVector.SERIAL_LENGTH;
+import static uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer.FLASH_CHUNK_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime.TIMEOUT_2560_ms;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
@@ -55,6 +56,7 @@ import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTE
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTER_FILTERS;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.SYS_VARS;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.defaultBMPforMachine;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.File;
@@ -73,6 +75,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 
@@ -1834,30 +1839,31 @@ public class Transceiver extends UDPTransceiver
 		bmpCall(bmp, new WriteFlashBuffer(board, address, true));
 	}
 
-	@Deprecated
 	@Override
-	public MemoryLocation eraseBMPFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int size)
-			throws IOException, ProcessException, InterruptedException {
-		return bmpCall(bmp, new EraseFlash(board, baseAddress, size)).address;
-	}
+	public void writeFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data,
+			boolean update)
+			throws ProcessException, IOException, InterruptedException {
+		if (!data.hasRemaining()) {
+			// Zero length write?
+			log.warn("zero length write to flash ignored");
+			return;
+		}
 
-	@Deprecated
-	@Override
-	public void chunkBMPFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation address)
-			throws IOException, ProcessException, InterruptedException {
-		bmpCall(bmp, new WriteFlashBuffer(board, address, false));
-	}
+		int size = data.remaining();
+		var workingBuffer =
+				bmpCall(bmp, new EraseFlash(board, baseAddress, size)).address;
+		var targetAddr = baseAddress;
+		for (var buf : sliceUp(data, FLASH_CHUNK_SIZE)) {
+			writeBMPMemory(bmp, board, workingBuffer, buf);
+			bmpCall(bmp, new WriteFlashBuffer(board, targetAddr, false));
+			targetAddr = targetAddr.add(FLASH_CHUNK_SIZE);
+		}
 
-	@Deprecated
-	@Override
-	public void copyBMPFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int size)
-			throws IOException, ProcessException, InterruptedException {
-		// NB: no retries of this! Not idempotent!
-		bmpCall(bmp, (int) (MSEC_PER_SEC * BMP_TIMEOUT), 0,
-				new UpdateFlash(board, baseAddress, size));
+		if (update) {
+			bmpCall(bmp, (int) (MSEC_PER_SEC * BMP_TIMEOUT), 0,
+					new UpdateFlash(board, baseAddress, size));
+		}
 	}
 
 	@Override

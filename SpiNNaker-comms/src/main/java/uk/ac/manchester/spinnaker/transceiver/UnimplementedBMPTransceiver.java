@@ -22,6 +22,9 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
@@ -157,25 +160,10 @@ public abstract class UnimplementedBMPTransceiver
 	}
 
 	@Override
-	@Deprecated
-	public MemoryLocation eraseBMPFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int size)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	@Deprecated
-	public void chunkBMPFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation address) throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	@Deprecated
-	public void copyBMPFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int size)
-			throws IOException, ProcessException {
+	public void writeFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data,
+			boolean update)
+			throws ProcessException, IOException, InterruptedException {
 		throw new UnsupportedOperationException();
 	}
 

@@ -26,11 +26,12 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInProtocol.computeNumPackets;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -42,7 +43,6 @@ import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
@@ -362,12 +362,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	}
 
 	private static List<Byte> list(ByteBuffer buffer) {
-		var l = new ArrayList<Byte>();
-		var b = buffer.asReadOnlyBuffer();
-		while (b.hasRemaining()) {
-			l.add(b.get());
-		}
-		return l;
+		return sliceUp(buffer, 1).map(ByteBuffer::get).toList();
 	}
 
 	private static List<String> describeChunk(Chunk<Byte> chunk) {

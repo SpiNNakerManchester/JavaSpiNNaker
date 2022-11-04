@@ -151,7 +151,8 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 *            The third argument.
 	 * @param data
 	 *            The additional data. Starts at the <i>position</i> and goes to
-	 *            the <i>limit</i>.
+	 *            the <i>limit</i>. The position and limit of the buffer will
+	 *            not be updated by this constructor.
 	 */
 	protected SCPRequest(HasCoreLocation core, SCPCommand command,
 			int argument1, int argument2, int argument3, ByteBuffer data) {
@@ -174,7 +175,8 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 *            The third argument.
 	 * @param data
 	 *            The additional data. Starts at the <i>position</i> and goes to
-	 *            the <i>limit</i>.
+	 *            the <i>limit</i>. The position and limit of the buffer will
+	 *            not be updated by this constructor.
 	 */
 	protected SCPRequest(SDPHeader sdpHeader, CommandCode command,
 			int argument1, int argument2, int argument3, ByteBuffer data) {
@@ -183,7 +185,7 @@ public abstract class SCPRequest<T extends SCPResponse>
 		this.argument1 = argument1;
 		this.argument2 = argument2;
 		this.argument3 = argument3;
-		this.data = data;
+		this.data = data.duplicate();
 	}
 
 	@Override

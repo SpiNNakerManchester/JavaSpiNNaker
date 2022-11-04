@@ -35,7 +35,9 @@ public class WriteLink extends SCPRequest<CheckOKResponse> {
 	 *            The positive base address to start the write at
 	 * @param data
 	 *            The data to write (up to 256 bytes); the <i>position</i> of
-	 *            the buffer must be the point where the data starts.
+	 *            the buffer must be the point where the data starts. The
+	 *            position and limit of the buffer will not be updated by this
+	 *            constructor.
 	 */
 	public WriteLink(HasCoreLocation core, Direction link,
 			MemoryLocation baseAddress, ByteBuffer data) {
