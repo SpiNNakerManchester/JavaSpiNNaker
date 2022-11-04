@@ -185,7 +185,7 @@ public abstract class SCPRequest<T extends SCPResponse>
 		this.argument1 = argument1;
 		this.argument2 = argument2;
 		this.argument3 = argument3;
-		this.data = data.duplicate();
+		this.data = nonNull(data) ? data.duplicate() : null;
 	}
 
 	@Override
