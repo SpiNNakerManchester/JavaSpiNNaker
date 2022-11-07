@@ -97,7 +97,7 @@
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>  		<strong class="jxr_keyword">this</strong>.operand1 = operand1;
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  		<strong class="jxr_keyword">this</strong>.operand2 = operand2;
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  		<strong class="jxr_keyword">this</strong>.operand3 = operand3;
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>  		<strong class="jxr_keyword">this</strong>.data = buffer.asReadOnlyBuffer();
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>  		<strong class="jxr_keyword">this</strong>.data = buffer.duplicate();
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>  		<strong class="jxr_keyword">if</strong> (data.remaining() &gt; BOOT_PACKET_SIZE) {
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>  			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>  					<span class="jxr_string">"A boot packet can contain at most 256 words of data"</span>);

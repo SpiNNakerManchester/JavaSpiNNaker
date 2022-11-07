@@ -75,12 +75,6 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.connections.model">uk.ac.manchester.spinnaker.connections.model</a></th>
-<td class="colLast">
-<div class="block">Abstract model classes for connections.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.eieio">uk.ac.manchester.spinnaker.messages.eieio</a></th>
 <td class="colLast">
 <div class="block">The messages of the EIEIO protocol.</div>
@@ -91,34 +85,6 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="classUses">
 <ul class="blockList">
-<li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.connections.model">
-<!--   -->
-</a>
-<h2>Uses of <a href="../EIEIOCommandMessage.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EIEIOCommandMessage</a> in <a href="../../../connections/model/package-summary.html">uk.ac.manchester.spinnaker.connections.model</a></h2>
-<div class="useSummary">
-<table>
-<caption><span>Methods in <a href="../../../connections/model/package-summary.html">uk.ac.manchester.spinnaker.connections.model</a> with parameters of type <a href="../EIEIOCommandMessage.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EIEIOCommandMessage</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Method</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">EIEIOMessageHandler.</span><code><span class="memberNameLink"><a href="../../../connections/model/EIEIOMessageHandler.html#handleCommand(uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandMessage)">handleCommand</a></span>&#8203;(<a href="../EIEIOCommandMessage.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EIEIOCommandMessage</a>&nbsp;message)</code></th>
-<td class="colLast">
-<div class="block">Handle an EIEIO command message.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
 <li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.messages.eieio">
 <!--   -->
@@ -235,6 +201,27 @@ loadScripts(document, 'script');</script>
 <div class="block">Reads the content of an EIEIO command message and returns an object
  identifying the command which was contained in the packet, including any
  parameter, if required by the command.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../package-summary.html">uk.ac.manchester.spinnaker.messages.eieio</a> with parameters of type <a href="../EIEIOCommandMessage.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EIEIOCommandMessage</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">EIEIOMessageHandler.</span><code><span class="memberNameLink"><a href="../EIEIOMessageHandler.html#handleCommand(uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandMessage)">handleCommand</a></span>&#8203;(<a href="../EIEIOCommandMessage.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EIEIOCommandMessage</a>&nbsp;message)</code></th>
+<td class="colLast">
+<div class="block">Handle an EIEIO command message.</div>
 </td>
 </tr>
 </tbody>

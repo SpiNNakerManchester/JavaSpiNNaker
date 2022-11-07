@@ -19,8 +19,8 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":6,"i1":6};
-var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
+<script type="text/javascript">var data = {"i0":18,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],16:["t5","Default Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
@@ -90,11 +90,11 @@ loadScripts(document, 'script');</script>
 <section class="description">
 <dl>
 <dt>All Superinterfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Closeable.html?is-external=true" title="class or interface in java.io" class="externalLink">Closeable</a></code>, <code><a href="SocketHolder.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SocketHolder</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Closeable.html?is-external=true" title="class or interface in java.io" class="externalLink">Closeable</a></code></dd>
 </dl>
 <dl>
 <dt>All Known Subinterfaces:</dt>
-<dd><code><a href="EIEIOReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">EIEIOReceiver</a></code>, <code><a href="EIEIOSender.html" title="interface in uk.ac.manchester.spinnaker.connections.model">EIEIOSender</a></code>, <code><a href="NotificationReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">NotificationReceiver</a></code>, <code><a href="NotificationSender.html" title="interface in uk.ac.manchester.spinnaker.connections.model">NotificationSender</a></code>, <code><a href="SCPSender.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPSender</a></code>, <code><a href="SCPSenderReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPSenderReceiver</a></code>, <code><a href="SDPReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SDPReceiver</a></code>, <code><a href="SDPSender.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SDPSender</a></code></dd>
+<dd><code><a href="SCPSenderReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPSenderReceiver</a></code></dd>
 </dl>
 <dl>
 <dt>All Known Implementing Classes:</dt>
@@ -102,8 +102,10 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <pre>public interface <span class="typeNameLabel">Connection</span>
-extends <a href="SocketHolder.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SocketHolder</a></pre>
-<div class="block">An abstract connection to the SpiNNaker board over some medium.</div>
+extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Closeable.html?is-external=true" title="class or interface in java.io" class="externalLink">Closeable</a></pre>
+<div class="block">An abstract connection to the SpiNNaker board over some medium. This resource
+ class holds a network socket (or a proxy for one) and can answer basic
+ questions about it.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -114,7 +116,7 @@ extends <a href="SocketHolder.html" title="interface in uk.ac.manchester.spinnak
 </a>
 <h2>Method Summary</h2>
 <div class="memberSummary">
-<div role="tablist" aria-orientation="horizontal"><button role="tab" aria-selected="true" aria-controls="memberSummary_tabpanel" tabindex="0" onkeydown="switchTab(event)" id="t0" class="activeTableTab">All Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t2" class="tableTab" onclick="show(2);">Instance Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t3" class="tableTab" onclick="show(4);">Abstract Methods</button></div>
+<div role="tablist" aria-orientation="horizontal"><button role="tab" aria-selected="true" aria-controls="memberSummary_tabpanel" tabindex="0" onkeydown="switchTab(event)" id="t0" class="activeTableTab">All Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t2" class="tableTab" onclick="show(2);">Instance Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t3" class="tableTab" onclick="show(4);">Abstract Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t5" class="tableTab" onclick="show(16);">Default Methods</button></div>
 <div id="memberSummary_tabpanel" role="tabpanel">
 <table aria-labelledby="t0">
 <thead>
@@ -126,17 +128,75 @@ extends <a href="SocketHolder.html" title="interface in uk.ac.manchester.spinnak
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
+<td class="colFirst"><code>default int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#convertTimeout(java.lang.Integer)">convertTimeout</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<td class="colLast">
+<div class="block">Convert a timeout into a primitive type.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i1">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getLocalIPAddress()">getLocalIPAddress</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor" id="i2">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getLocalPort()">getLocalPort</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor" id="i3">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRemoteIPAddress()">getRemoteIPAddress</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor" id="i4">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRemotePort()">getRemotePort</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor" id="i5">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isClosed()">isClosed</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Determines if the medium is closed at this point in time.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i1">
+<tr class="altColor" id="i6">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isConnected()">isConnected</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Determines if the medium is connected at this point in time.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i7">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#receive(java.lang.Integer)">receive</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<td class="colLast">
+<div class="block">Receive data from the connection.</div>
+</td>
+</tr>
+<tr class="altColor" id="i8">
+<td class="colFirst"><code><a href="../UDPPacket.html" title="class in uk.ac.manchester.spinnaker.connections">UDPPacket</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#receiveWithAddress(int)">receiveWithAddress</a></span>&#8203;(int&nbsp;timeout)</code></th>
+<td class="colLast">
+<div class="block">Receive data from the connection along with the address where the data
+ was received from.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i9">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#send(java.nio.ByteBuffer)">send</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
+<td class="colLast">
+<div class="block">Send data down this connection.</div>
+</td>
+</tr>
+<tr class="altColor" id="i10">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#sendTo(java.nio.ByteBuffer,java.net.InetAddress,int)">sendTo</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;address,
+int&nbsp;port)</code></th>
+<td class="colLast">
+<div class="block">Send data down this connection.</div>
 </td>
 </tr>
 </tbody>
@@ -148,11 +208,6 @@ extends <a href="SocketHolder.html" title="interface in uk.ac.manchester.spinnak
 <a id="methods.inherited.from.class.java.io.Closeable">
 <!--   -->
 </a><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Closeable.html?is-external=true#close()" title="class or interface in java.io" class="externalLink">close</a></code></div>
-<div class="inheritedList">
-<h3>Methods inherited from interface&nbsp;uk.ac.manchester.spinnaker.connections.model.<a href="SocketHolder.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SocketHolder</a></h3>
-<a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.connections.model.SocketHolder">
-<!--   -->
-</a><code><a href="SocketHolder.html#convertTimeout(java.lang.Integer)">convertTimeout</a>, <a href="SocketHolder.html#getLocalIPAddress()">getLocalIPAddress</a>, <a href="SocketHolder.html#getLocalPort()">getLocalPort</a>, <a href="SocketHolder.html#getRemoteIPAddress()">getRemoteIPAddress</a>, <a href="SocketHolder.html#getRemotePort()">getRemotePort</a></code></div>
 </section>
 </li>
 </ul>
@@ -193,6 +248,142 @@ extends <a href="SocketHolder.html" title="interface in uk.ac.manchester.spinnak
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>true if the medium is closed, false otherwise</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getLocalIPAddress()">getLocalIPAddress</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a></span>&nbsp;<span class="memberName">getLocalIPAddress</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the local (host) IP address of the socket. Expected to be an IPv4
+         address when talking to SpiNNaker.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getLocalPort()">getLocalPort</a></h3>
+<div class="memberSignature"><span class="returnType">int</span>&nbsp;<span class="memberName">getLocalPort</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the local (host) port of the socket.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getRemoteIPAddress()">getRemoteIPAddress</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a></span>&nbsp;<span class="memberName">getRemoteIPAddress</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the remote (board) IP address of the socket. Expected to be an
+         IPv4 address when talking to SpiNNaker.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getRemotePort()">getRemotePort</a></h3>
+<div class="memberSignature"><span class="returnType">int</span>&nbsp;<span class="memberName">getRemotePort</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the remote (board) port of the socket.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="convertTimeout(java.lang.Integer)">convertTimeout</a></h3>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">convertTimeout</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span></div>
+<div class="block">Convert a timeout into a primitive type.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>timeout</code> - The timeout in milliseconds, or <code>null</code> to wait
+            "forever".</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The primitive timeout.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="receive(java.lang.Integer)">receive</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></span>&nbsp;<span class="memberName">receive</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/SocketTimeoutException.html?is-external=true" title="class or interface in java.net" class="externalLink">SocketTimeoutException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
+<div class="block">Receive data from the connection.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>timeout</code> - The timeout in milliseconds, or <code>null</code> to wait forever</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The data received, in a little-endian buffer</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/SocketTimeoutException.html?is-external=true" title="class or interface in java.net" class="externalLink">SocketTimeoutException</a></code> - If a timeout occurs before any data is received</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/EOFException.html?is-external=true" title="class or interface in java.io" class="externalLink">EOFException</a></code> - If the connection is closed</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If an error occurs receiving the data</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If communications are interrupted.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="receiveWithAddress(int)">receiveWithAddress</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="../UDPPacket.html" title="class in uk.ac.manchester.spinnaker.connections">UDPPacket</a></span>&nbsp;<span class="memberName">receiveWithAddress</span>&#8203;(<span class="arguments">int&nbsp;timeout)</span>
+                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/SocketTimeoutException.html?is-external=true" title="class or interface in java.net" class="externalLink">SocketTimeoutException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block">Receive data from the connection along with the address where the data
+ was received from.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>timeout</code> - The timeout in milliseconds</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The datagram packet received; caller is responsible for only
+         accessing the valid part of the buffer.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/SocketTimeoutException.html?is-external=true" title="class or interface in java.net" class="externalLink">SocketTimeoutException</a></code> - If a timeout occurs before any data is received</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/EOFException.html?is-external=true" title="class or interface in java.io" class="externalLink">EOFException</a></code> - If the connection is closed</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If an error occurs receiving the data</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="send(java.nio.ByteBuffer)">send</a></h3>
+<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">send</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</span>
+   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block">Send data down this connection.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>data</code> - The data to be sent</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/EOFException.html?is-external=true" title="class or interface in java.io" class="externalLink">EOFException</a></code> - If the connection is closed</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If there is an error sending the data</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If the data buffer doesn't hold a message; zero-length
+             messages are not supported!</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="sendTo(java.nio.ByteBuffer,java.net.InetAddress,int)">sendTo</a></h3>
+<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">sendTo</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;address,
+int&nbsp;port)</span>
+     throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block">Send data down this connection.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>data</code> - The data to be sent</dd>
+<dd><code>address</code> - Where to send (must be non-<code>null</code>)</dd>
+<dd><code>port</code> - What port to send to (must be non-zero)</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/EOFException.html?is-external=true" title="class or interface in java.io" class="externalLink">EOFException</a></code> - If the connection is closed</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If there is an error sending the data</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If the data packet doesn't hold a real message; zero-length
+             messages are not supported!</dd>
 </dl>
 </section>
 </li>

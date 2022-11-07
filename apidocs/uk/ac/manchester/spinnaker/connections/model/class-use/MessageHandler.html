@@ -81,15 +81,9 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.connections.model">uk.ac.manchester.spinnaker.connections.model</a></th>
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.eieio">uk.ac.manchester.spinnaker.messages.eieio</a></th>
 <td class="colLast">
-<div class="block">Abstract model classes for connections.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver</a></th>
-<td class="colLast">
-<div class="block">How to actually talk to a SpiNNaker machine.</div>
+<div class="block">The messages of the EIEIO protocol.</div>
 </td>
 </tr>
 </tbody>
@@ -126,13 +120,13 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.connections.model">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.messages.eieio">
 <!--   -->
 </a>
-<h2>Uses of <a href="../MessageHandler.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageHandler</a> in <a href="../package-summary.html">uk.ac.manchester.spinnaker.connections.model</a></h2>
+<h2>Uses of <a href="../MessageHandler.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageHandler</a> in <a href="../../../messages/eieio/package-summary.html">uk.ac.manchester.spinnaker.messages.eieio</a></h2>
 <div class="useSummary">
 <table>
-<caption><span>Subinterfaces of <a href="../MessageHandler.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageHandler</a> in <a href="../package-summary.html">uk.ac.manchester.spinnaker.connections.model</a></span><span class="tabEnd">&nbsp;</span></caption>
+<caption><span>Subinterfaces of <a href="../MessageHandler.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageHandler</a> in <a href="../../../messages/eieio/package-summary.html">uk.ac.manchester.spinnaker.messages.eieio</a></span><span class="tabEnd">&nbsp;</span></caption>
 <thead>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
@@ -143,57 +137,9 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>interface&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../EIEIOMessageHandler.html" title="interface in uk.ac.manchester.spinnaker.connections.model">EIEIOMessageHandler</a></span></code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../messages/eieio/EIEIOMessageHandler.html" title="interface in uk.ac.manchester.spinnaker.messages.eieio">EIEIOMessageHandler</a></span></code></th>
 <td class="colLast">
 <div class="block">Handles a message received from an EIEIO connection.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.transceiver">
-<!--   -->
-</a>
-<h2>Uses of <a href="../MessageHandler.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageHandler</a> in <a href="../../../transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></h2>
-<div class="useSummary">
-<table>
-<caption><span>Methods in <a href="../../../transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a> with parameters of type <a href="../MessageHandler.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageHandler</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Method</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>&lt;T&gt;&nbsp;<a href="../../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;T&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">UDPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UDPTransceiver.html#registerUDPListener(uk.ac.manchester.spinnaker.connections.model.MessageHandler,uk.ac.manchester.spinnaker.transceiver.UDPTransceiver.ConnectionFactory)">registerUDPListener</a></span>&#8203;(<a href="../MessageHandler.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageHandler</a>&lt;T&gt;&nbsp;callback,
-<a href="../../../transceiver/UDPTransceiver.ConnectionFactory.html" title="interface in uk.ac.manchester.spinnaker.transceiver">UDPTransceiver.ConnectionFactory</a>&lt;? extends <a href="../../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;T&gt;&gt;&nbsp;connectionFactory)</code></th>
-<td class="colLast">
-<div class="block">Register a callback for a certain type of traffic to be received via UDP.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>&lt;T&gt;&nbsp;<a href="../../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;T&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">UDPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UDPTransceiver.html#registerUDPListener(uk.ac.manchester.spinnaker.connections.model.MessageHandler,uk.ac.manchester.spinnaker.transceiver.UDPTransceiver.ConnectionFactory,int)">registerUDPListener</a></span>&#8203;(<a href="../MessageHandler.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageHandler</a>&lt;T&gt;&nbsp;callback,
-<a href="../../../transceiver/UDPTransceiver.ConnectionFactory.html" title="interface in uk.ac.manchester.spinnaker.transceiver">UDPTransceiver.ConnectionFactory</a>&lt;? extends <a href="../../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;T&gt;&gt;&nbsp;connectionFactory,
-int&nbsp;localPort)</code></th>
-<td class="colLast">
-<div class="block">Register a callback for a certain type of traffic to be received via UDP.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>&lt;T&gt;&nbsp;<a href="../../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;T&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">UDPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UDPTransceiver.html#registerUDPListener(uk.ac.manchester.spinnaker.connections.model.MessageHandler,uk.ac.manchester.spinnaker.transceiver.UDPTransceiver.ConnectionFactory,java.lang.Integer,java.net.InetAddress)">registerUDPListener</a></span>&#8203;(<a href="../MessageHandler.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageHandler</a>&lt;T&gt;&nbsp;callback,
-<a href="../../../transceiver/UDPTransceiver.ConnectionFactory.html" title="interface in uk.ac.manchester.spinnaker.transceiver">UDPTransceiver.ConnectionFactory</a>&lt;? extends <a href="../../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;T&gt;&gt;&nbsp;connectionFactory,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;localPort,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost)</code></th>
-<td class="colLast">
-<div class="block">Register a callback for a certain type of traffic to be received via UDP.</div>
 </td>
 </tr>
 </tbody>

@@ -102,7 +102,7 @@ loadScripts(document, 'script');</script>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Closeable.html?is-external=true" title="class or interface in java.io" class="externalLink">Closeable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Runnable</a></code></dd>
 </dl>
 <hr>
-<pre>public class <span class="typeNameLabel">ConnectionListener&lt;MessageType&gt;</span>
+<pre>public final class <span class="typeNameLabel">ConnectionListener&lt;MessageType&gt;</span>
 extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Thread.html?is-external=true" title="class or interface in java.lang" class="externalLink">Thread</a>
 implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Closeable.html?is-external=true" title="class or interface in java.io" class="externalLink">Closeable</a></pre>
 <div class="block">Thread that listens to a connection and calls callbacks with new messages
@@ -182,14 +182,14 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.connections.model.MessageReceiver)">ConnectionListener</a></span>&#8203;(<a href="model/MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a>&lt;<a href="ConnectionListener.html" title="type parameter in ConnectionListener">MessageType</a>&gt;&nbsp;connection)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.connections.UDPConnection)">ConnectionListener</a></span>&#8203;(<a href="UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;<a href="ConnectionListener.html" title="type parameter in ConnectionListener">MessageType</a>&gt;&nbsp;connection)</code></th>
 <td class="colLast">
 <div class="block">Create a connection listener with the default number of listening threads
  and the default OS-level timeout.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.connections.model.MessageReceiver,int,int)">ConnectionListener</a></span>&#8203;(<a href="model/MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a>&lt;<a href="ConnectionListener.html" title="type parameter in ConnectionListener">MessageType</a>&gt;&nbsp;connection,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.connections.UDPConnection,int,int)">ConnectionListener</a></span>&#8203;(<a href="UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;<a href="ConnectionListener.html" title="type parameter in ConnectionListener">MessageType</a>&gt;&nbsp;connection,
 int&nbsp;numProcesses,
 int&nbsp;timeout)</code></th>
 <td class="colLast">
@@ -303,9 +303,9 @@ int&nbsp;timeout)</code></th>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.connections.model.MessageReceiver)">ConnectionListener</a></h3>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.connections.UDPConnection)">ConnectionListener</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/MustBeClosed.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@MustBeClosed</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="memberName">ConnectionListener</span>&#8203;(<span class="arguments"><a href="model/MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a>&lt;<a href="ConnectionListener.html" title="type parameter in ConnectionListener">MessageType</a>&gt;&nbsp;connection)</span></div>
+</span><span class="modifiers">public</span>&nbsp;<span class="memberName">ConnectionListener</span>&#8203;(<span class="arguments"><a href="UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;<a href="ConnectionListener.html" title="type parameter in ConnectionListener">MessageType</a>&gt;&nbsp;connection)</span></div>
 <div class="block">Create a connection listener with the default number of listening threads
  and the default OS-level timeout.</div>
 <dl>
@@ -316,9 +316,9 @@ int&nbsp;timeout)</code></th>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.connections.model.MessageReceiver,int,int)">ConnectionListener</a></h3>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.connections.UDPConnection,int,int)">ConnectionListener</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/MustBeClosed.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@MustBeClosed</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="memberName">ConnectionListener</span>&#8203;(<span class="arguments"><a href="model/MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a>&lt;<a href="ConnectionListener.html" title="type parameter in ConnectionListener">MessageType</a>&gt;&nbsp;connection,
+</span><span class="modifiers">public</span>&nbsp;<span class="memberName">ConnectionListener</span>&#8203;(<span class="arguments"><a href="UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;<a href="ConnectionListener.html" title="type parameter in ConnectionListener">MessageType</a>&gt;&nbsp;connection,
 int&nbsp;numProcesses,
 int&nbsp;timeout)</span></div>
 <div class="block">Create a connection listener.</div>
@@ -344,7 +344,7 @@ int&nbsp;timeout)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="run()">run</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">run</span>()</div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">run</span>()</div>
 <div class="block">Receive messages and dispatch them to the registered
  <a href="model/MessageHandler.html" title="interface in uk.ac.manchester.spinnaker.connections.model">handlers</a>. Stops running when
  <a href="#close()">closed</a>.</div>

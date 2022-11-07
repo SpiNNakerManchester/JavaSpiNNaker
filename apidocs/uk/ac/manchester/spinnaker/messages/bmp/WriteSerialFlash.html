@@ -276,7 +276,8 @@ extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 <dd><code>board</code> - the board with the BMP to write the flash of</dd>
 <dd><code>baseAddress</code> - The positive base address where the chunk is located</dd>
 <dd><code>data</code> - The data to transfer; up to <a href="#FLASH_CHUNK_SIZE"><code>FLASH_CHUNK_SIZE</code></a> bytes.
-            This does <em>not</em> update the buffer position.</dd>
+            The position and limit of the buffer will not be updated by
+            this constructor.</dd>
 </dl>
 </section>
 </li>

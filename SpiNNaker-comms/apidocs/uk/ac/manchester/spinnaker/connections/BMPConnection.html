@@ -95,7 +95,7 @@ loadScripts(document, 'script');</script>
 <section class="description">
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Closeable.html?is-external=true" title="class or interface in java.io" class="externalLink">Closeable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code>, <code><a href="model/Connection.html" title="interface in uk.ac.manchester.spinnaker.connections.model">Connection</a></code>, <code><a href="model/MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a>&lt;<a href="../messages/sdp/SDPMessage.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPMessage</a>&gt;</code>, <code><a href="model/SCPReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPReceiver</a></code>, <code><a href="model/SCPSender.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPSender</a></code>, <code><a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPSenderReceiver</a></code>, <code><a href="model/SocketHolder.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SocketHolder</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Closeable.html?is-external=true" title="class or interface in java.io" class="externalLink">Closeable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code>, <code><a href="model/Connection.html" title="interface in uk.ac.manchester.spinnaker.connections.model">Connection</a></code>, <code><a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPSenderReceiver</a></code></dd>
 </dl>
 <hr>
 <pre>public class <span class="typeNameLabel">BMPConnection</span>
@@ -196,7 +196,7 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 <td class="colFirst"><code><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/ChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">ChipLocation</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getChip()">getChip</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Defined to satisfy the <a href="model/SCPSender.html" title="interface in uk.ac.manchester.spinnaker.connections.model"><code>SCPSender</code></a> interface.</div>
+<div class="block">Defined to satisfy the <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model"><code>SCPSenderReceiver</code></a> interface.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i1">
@@ -240,7 +240,7 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 <h3>Methods inherited from class&nbsp;uk.ac.manchester.spinnaker.connections.<a href="UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a></h3>
 <a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.connections.UDPConnection">
 <!--   -->
-</a><code><a href="UDPConnection.html#close()">close</a>, <a href="UDPConnection.html#doReceive(int)">doReceive</a>, <a href="UDPConnection.html#doReceiveWithAddress(int)">doReceiveWithAddress</a>, <a href="UDPConnection.html#doSend(java.nio.ByteBuffer)">doSend</a>, <a href="UDPConnection.html#doSendTo(java.nio.ByteBuffer,java.net.InetAddress,int)">doSendTo</a>, <a href="UDPConnection.html#getLocalAddress()">getLocalAddress</a>, <a href="UDPConnection.html#getLocalIPAddress()">getLocalIPAddress</a>, <a href="UDPConnection.html#getLocalPort()">getLocalPort</a>, <a href="UDPConnection.html#getRemoteAddress()">getRemoteAddress</a>, <a href="UDPConnection.html#getRemoteIPAddress()">getRemoteIPAddress</a>, <a href="UDPConnection.html#getRemotePort()">getRemotePort</a>, <a href="UDPConnection.html#isClosed()">isClosed</a>, <a href="UDPConnection.html#isConnected()">isConnected</a>, <a href="UDPConnection.html#receive(int)">receive</a>, <a href="UDPConnection.html#receive(java.lang.Integer)">receive</a>, <a href="UDPConnection.html#receiveWithAddress(int)">receiveWithAddress</a>, <a href="UDPConnection.html#send(java.net.DatagramPacket)">send</a>, <a href="UDPConnection.html#send(java.nio.ByteBuffer)">send</a>, <a href="UDPConnection.html#sendPortTriggerMessage(java.net.InetAddress)">sendPortTriggerMessage</a>, <a href="UDPConnection.html#sendTo(byte%5B%5D,java.net.InetAddress,int)">sendTo</a>, <a href="UDPConnection.html#sendTo(java.net.DatagramPacket,java.net.InetAddress,int)">sendTo</a>, <a href="UDPConnection.html#sendTo(java.nio.ByteBuffer,java.net.InetAddress,int)">sendTo</a>, <a href="UDPConnection.html#setReceivePacketSize(int)">setReceivePacketSize</a>, <a href="UDPConnection.html#toString()">toString</a></code></div>
+</a><code><a href="UDPConnection.html#close()">close</a>, <a href="UDPConnection.html#doReceive(int)">doReceive</a>, <a href="UDPConnection.html#doReceiveWithAddress(int)">doReceiveWithAddress</a>, <a href="UDPConnection.html#doSend(java.nio.ByteBuffer)">doSend</a>, <a href="UDPConnection.html#doSendTo(java.nio.ByteBuffer,java.net.InetAddress,int)">doSendTo</a>, <a href="UDPConnection.html#getLocalAddress()">getLocalAddress</a>, <a href="UDPConnection.html#getLocalIPAddress()">getLocalIPAddress</a>, <a href="UDPConnection.html#getLocalPort()">getLocalPort</a>, <a href="UDPConnection.html#getRemoteAddress()">getRemoteAddress</a>, <a href="UDPConnection.html#getRemoteIPAddress()">getRemoteIPAddress</a>, <a href="UDPConnection.html#getRemotePort()">getRemotePort</a>, <a href="UDPConnection.html#isClosed()">isClosed</a>, <a href="UDPConnection.html#isConnected()">isConnected</a>, <a href="UDPConnection.html#receive(int)">receive</a>, <a href="UDPConnection.html#receive(java.lang.Integer)">receive</a>, <a href="UDPConnection.html#receiveMessage()">receiveMessage</a>, <a href="UDPConnection.html#receiveWithAddress(int)">receiveWithAddress</a>, <a href="UDPConnection.html#send(java.net.DatagramPacket)">send</a>, <a href="UDPConnection.html#send(java.nio.ByteBuffer)">send</a>, <a href="UDPConnection.html#sendPortTriggerMessage(java.net.InetAddress)">sendPortTriggerMessage</a>, <a href="UDPConnection.html#sendTo(byte%5B%5D,java.net.InetAddress,int)">sendTo</a>, <a href="UDPConnection.html#sendTo(java.net.DatagramPacket,java.net.InetAddress,int)">sendTo</a>, <a href="UDPConnection.html#sendTo(java.nio.ByteBuffer,java.net.InetAddress,int)">sendTo</a>, <a href="UDPConnection.html#setReceivePacketSize(int)">setReceivePacketSize</a>, <a href="UDPConnection.html#toString()">toString</a></code></div>
 <div class="inheritedList">
 <h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
@@ -255,27 +255,12 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 <h3>Methods inherited from interface&nbsp;uk.ac.manchester.spinnaker.connections.model.<a href="model/Connection.html" title="interface in uk.ac.manchester.spinnaker.connections.model">Connection</a></h3>
 <a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.connections.model.Connection">
 <!--   -->
-</a><code><a href="model/Connection.html#isClosed()">isClosed</a>, <a href="model/Connection.html#isConnected()">isConnected</a></code></div>
+</a><code><a href="model/Connection.html#convertTimeout(java.lang.Integer)">convertTimeout</a>, <a href="model/Connection.html#getLocalIPAddress()">getLocalIPAddress</a>, <a href="model/Connection.html#getLocalPort()">getLocalPort</a>, <a href="model/Connection.html#getRemoteIPAddress()">getRemoteIPAddress</a>, <a href="model/Connection.html#getRemotePort()">getRemotePort</a>, <a href="model/Connection.html#isClosed()">isClosed</a>, <a href="model/Connection.html#isConnected()">isConnected</a>, <a href="model/Connection.html#receive(java.lang.Integer)">receive</a>, <a href="model/Connection.html#receiveWithAddress(int)">receiveWithAddress</a>, <a href="model/Connection.html#send(java.nio.ByteBuffer)">send</a>, <a href="model/Connection.html#sendTo(java.nio.ByteBuffer,java.net.InetAddress,int)">sendTo</a></code></div>
 <div class="inheritedList">
-<h3>Methods inherited from interface&nbsp;uk.ac.manchester.spinnaker.connections.model.<a href="model/MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a></h3>
-<a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.connections.model.MessageReceiver">
+<h3>Methods inherited from interface&nbsp;uk.ac.manchester.spinnaker.connections.model.<a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPSenderReceiver</a></h3>
+<a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver">
 <!--   -->
-</a><code><a href="model/MessageReceiver.html#receiveMessage()">receiveMessage</a></code></div>
-<div class="inheritedList">
-<h3>Methods inherited from interface&nbsp;uk.ac.manchester.spinnaker.connections.model.<a href="model/SCPReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPReceiver</a></h3>
-<a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.connections.model.SCPReceiver">
-<!--   -->
-</a><code><a href="model/SCPReceiver.html#receiveSCPResponse(java.lang.Integer)">receiveSCPResponse</a></code></div>
-<div class="inheritedList">
-<h3>Methods inherited from interface&nbsp;uk.ac.manchester.spinnaker.connections.model.<a href="model/SCPSender.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPSender</a></h3>
-<a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.connections.model.SCPSender">
-<!--   -->
-</a><code><a href="model/SCPSender.html#getSCPData(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">getSCPData</a></code></div>
-<div class="inheritedList">
-<h3>Methods inherited from interface&nbsp;uk.ac.manchester.spinnaker.connections.model.<a href="model/SocketHolder.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SocketHolder</a></h3>
-<a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.connections.model.SocketHolder">
-<!--   -->
-</a><code><a href="model/SocketHolder.html#convertTimeout(java.lang.Integer)">convertTimeout</a>, <a href="model/SocketHolder.html#getLocalIPAddress()">getLocalIPAddress</a>, <a href="model/SocketHolder.html#getLocalPort()">getLocalPort</a>, <a href="model/SocketHolder.html#getRemoteIPAddress()">getRemoteIPAddress</a>, <a href="model/SocketHolder.html#getRemotePort()">getRemotePort</a></code></div>
+</a><code><a href="model/SCPSenderReceiver.html#getSCPData(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">getSCPData</a>, <a href="model/SCPSenderReceiver.html#receiveSCPResponse(java.lang.Integer)">receiveSCPResponse</a></code></div>
 </section>
 </li>
 </ul>
@@ -335,7 +320,7 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 <h3><a id="send(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">send</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">send</span>&#8203;(<span class="arguments"><a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;?&gt;&nbsp;scpRequest)</span>
                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="model/SCPSender.html#send(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">SCPSender</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="model/SCPSenderReceiver.html#send(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">SCPSenderReceiver</a></code></span></div>
 <div class="block">Sends an SCP request down this connection.
  <p>
  Messages must have the following properties:
@@ -352,7 +337,7 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
  number\ last assigned + 1) % 65536</i> will be used</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="model/SCPSender.html#send(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">send</a></code>&nbsp;in interface&nbsp;<code><a href="model/SCPSender.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPSender</a></code></dd>
+<dd><code><a href="model/SCPSenderReceiver.html#send(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">send</a></code>&nbsp;in interface&nbsp;<code><a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPSenderReceiver</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>scpRequest</code> - message packet to send</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -378,11 +363,11 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 <section class="detail">
 <h3><a id="getChip()">getChip</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/ChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">ChipLocation</a></span>&nbsp;<span class="memberName">getChip</span>()</div>
-<div class="block">Defined to satisfy the <a href="model/SCPSender.html" title="interface in uk.ac.manchester.spinnaker.connections.model"><code>SCPSender</code></a> interface. Always
+<div class="block">Defined to satisfy the <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model"><code>SCPSenderReceiver</code></a> interface. Always
  <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/ChipLocation.html?is-external=true#ZERO_ZERO" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">0,0</a> for a BMP.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="model/SCPSender.html#getChip()">getChip</a></code>&nbsp;in interface&nbsp;<code><a href="model/SCPSender.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPSender</a></code></dd>
+<dd><code><a href="model/SCPSenderReceiver.html#getChip()">getChip</a></code>&nbsp;in interface&nbsp;<code><a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPSenderReceiver</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The chip at which messages sent down this connection will arrive
          at first.</dd>
@@ -395,12 +380,12 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="../messages/scp/SCPResultMessage.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPResultMessage</a></span>&nbsp;<span class="memberName">receiveSCPResponse</span>&#8203;(<span class="arguments">int&nbsp;timeout)</span>
                                     throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="model/SCPReceiver.html#receiveSCPResponse(int)">SCPReceiver</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="model/SCPSenderReceiver.html#receiveSCPResponse(int)">SCPSenderReceiver</a></code></span></div>
 <div class="block">Receives an SCP response from this connection. Blocks until a message has
  been received, or a timeout occurs.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="model/SCPReceiver.html#receiveSCPResponse(int)">receiveSCPResponse</a></code>&nbsp;in interface&nbsp;<code><a href="model/SCPReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPReceiver</a></code></dd>
+<dd><code><a href="model/SCPSenderReceiver.html#receiveSCPResponse(int)">receiveSCPResponse</a></code>&nbsp;in interface&nbsp;<code><a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPSenderReceiver</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>timeout</code> - The time in milliseconds to wait for the message to arrive, or
             until the connection is closed.</dd>
@@ -421,12 +406,12 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="../messages/sdp/SDPMessage.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPMessage</a></span>&nbsp;<span class="memberName">receiveMessage</span>&#8203;(<span class="arguments">int&nbsp;timeout)</span>
                           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="model/MessageReceiver.html#receiveMessage(int)">MessageReceiver</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="UDPConnection.html#receiveMessage(int)">UDPConnection</a></code></span></div>
 <div class="block">Receives a SpiNNaker message from this connection. Blocks until a message
  has been received, or a timeout occurs.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="model/MessageReceiver.html#receiveMessage(int)">receiveMessage</a></code>&nbsp;in interface&nbsp;<code><a href="model/MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a>&lt;<a href="../messages/sdp/SDPMessage.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPMessage</a>&gt;</code></dd>
+<dd><code><a href="UDPConnection.html#receiveMessage(int)">receiveMessage</a></code>&nbsp;in class&nbsp;<code><a href="UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;<a href="../messages/sdp/SDPMessage.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPMessage</a>&gt;</code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>timeout</code> - The time in seconds to wait for the message to arrive, or
             until the connection is closed.</dd>

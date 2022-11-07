@@ -25,28 +25,28 @@
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">package</strong> uk.ac.manchester.spinnaker.connections;
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.util.Objects.isNull;
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.util.concurrent.TimeUnit.MILLISECONDS;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.util.stream.Collectors.toList;
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.slf4j.LoggerFactory.getLogger;
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> java.io.Closeable;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> java.io.EOFException;
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> java.net.SocketTimeoutException;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> java.util.HashSet;
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> java.util.List;
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.ExecutionException;
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.LinkedBlockingQueue;
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.ThreadPoolExecutor;
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> com.google.errorprone.annotations.MustBeClosed;
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> com.google.errorprone.annotations.concurrent.GuardedBy;
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.connections.model.MessageHandler;
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.connections.model.MessageReceiver;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.util.Objects.requireNonNull;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.util.concurrent.TimeUnit.MILLISECONDS;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.util.stream.Collectors.toList;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.slf4j.LoggerFactory.getLogger;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> java.io.Closeable;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> java.io.EOFException;
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> java.net.SocketTimeoutException;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> java.util.HashSet;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.ExecutionException;
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.LinkedBlockingQueue;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.ThreadPoolExecutor;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> com.google.errorprone.annotations.MustBeClosed;
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> com.google.errorprone.annotations.concurrent.GuardedBy;
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.connections.model.MessageHandler;
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment"> * Thread that listens to a connection and calls callbacks with new messages</em>
@@ -55,7 +55,7 @@
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment"> * @param &lt;MessageType&gt;</em>
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment"> *            The type of message being listened for by the connection.</em>
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> ConnectionListener&lt;MessageType&gt; <strong class="jxr_keyword">extends</strong> Thread
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> ConnectionListener&lt;MessageType&gt; <strong class="jxr_keyword">extends</strong> Thread
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  		<strong class="jxr_keyword">implements</strong> Closeable {
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  	<em class="jxr_javadoccomment">/** What size of thread pool to use by default. */</em>
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> POOL_SIZE = 4;
@@ -83,7 +83,7 @@
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>  	@GuardedBy(<span class="jxr_string">"callbacks"</span>)
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>  	<strong class="jxr_keyword">private</strong> List&lt;MessageHandler&lt;MessageType&gt;&gt; callbacksCheckpointed;
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>  
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> MessageReceiver&lt;MessageType&gt; connection;
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> UDPConnection&lt;MessageType&gt; connection;
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>  
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">volatile</strong> <strong class="jxr_keyword">boolean</strong> done;
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  
@@ -97,7 +97,7 @@
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_javadoccomment">	 *            The connection to listen to.</em>
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  	@MustBeClosed
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>  	<strong class="jxr_keyword">public</strong> <a name="ConnectionListener" href="../../../../../uk/ac/manchester/spinnaker/connections/ConnectionListener.html#ConnectionListener">ConnectionListener</a>(MessageReceiver&lt;MessageType&gt; connection) {
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>  	<strong class="jxr_keyword">public</strong> <a name="ConnectionListener" href="../../../../../uk/ac/manchester/spinnaker/connections/ConnectionListener.html#ConnectionListener">ConnectionListener</a>(UDPConnection&lt;MessageType&gt; connection) {
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>  		<strong class="jxr_keyword">this</strong>(connection, POOL_SIZE, TIMEOUT);
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>  	}
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>  
@@ -113,7 +113,7 @@
 <a class="jxr_linenumber" name="L105" href="#L105">105</a> <em class="jxr_javadoccomment">	 *            0, wait indefinitely.</em>
 <a class="jxr_linenumber" name="L106" href="#L106">106</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L107" href="#L107">107</a> 	@MustBeClosed
-<a class="jxr_linenumber" name="L108" href="#L108">108</a> 	<strong class="jxr_keyword">public</strong> <a name="ConnectionListener" href="../../../../../uk/ac/manchester/spinnaker/connections/ConnectionListener.html#ConnectionListener">ConnectionListener</a>(MessageReceiver&lt;MessageType&gt; connection,
+<a class="jxr_linenumber" name="L108" href="#L108">108</a> 	<strong class="jxr_keyword">public</strong> <a name="ConnectionListener" href="../../../../../uk/ac/manchester/spinnaker/connections/ConnectionListener.html#ConnectionListener">ConnectionListener</a>(UDPConnection&lt;MessageType&gt; connection,
 <a class="jxr_linenumber" name="L109" href="#L109">109</a> 			<strong class="jxr_keyword">int</strong> numProcesses, <strong class="jxr_keyword">int</strong> timeout) {
 <a class="jxr_linenumber" name="L110" href="#L110">110</a> 		<strong class="jxr_keyword">super</strong>(<span class="jxr_string">"Connection listener for connection "</span> + connection);
 <a class="jxr_linenumber" name="L111" href="#L111">111</a> 		setDaemon(<strong class="jxr_keyword">true</strong>);
@@ -136,7 +136,7 @@
 <a class="jxr_linenumber" name="L128" href="#L128">128</a> <em class="jxr_javadoccomment">	 * {@linkplain #close() closed}.</em>
 <a class="jxr_linenumber" name="L129" href="#L129">129</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L130" href="#L130">130</a> 	@Override
-<a class="jxr_linenumber" name="L131" href="#L131">131</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">void</strong> run() {
+<a class="jxr_linenumber" name="L131" href="#L131">131</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> run() {
 <a class="jxr_linenumber" name="L132" href="#L132">132</a> 		<strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L133" href="#L133">133</a> 			<strong class="jxr_keyword">while</strong> (!done) {
 <a class="jxr_linenumber" name="L134" href="#L134">134</a> 				<strong class="jxr_keyword">try</strong> {
@@ -208,7 +208,7 @@
 <a class="jxr_linenumber" name="L200" href="#L200">200</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addCallback(MessageHandler&lt;MessageType&gt; callback) {
 <a class="jxr_linenumber" name="L201" href="#L201">201</a> 		<strong class="jxr_keyword">synchronized</strong> (callbacks) {
 <a class="jxr_linenumber" name="L202" href="#L202">202</a> 			callbacksCheckpointed = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L203" href="#L203">203</a> 			callbacks.add(callback);
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> 			callbacks.add(requireNonNull(callback));
 <a class="jxr_linenumber" name="L204" href="#L204">204</a> 		}
 <a class="jxr_linenumber" name="L205" href="#L205">205</a> 	}
 <a class="jxr_linenumber" name="L206" href="#L206">206</a> 

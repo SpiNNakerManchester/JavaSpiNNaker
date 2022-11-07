@@ -116,13 +116,6 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../RoundRobinConnectionSelector.html" title="class in uk.ac.manchester.spinnaker.connections">RoundRobinConnectionSelector</a>&lt;T extends <a href="../model/Connection.html" title="interface in uk.ac.manchester.spinnaker.connections.model">Connection</a>&gt;</span></code></th>
-<td class="colLast">
-<div class="block">A selector that spreads messages across all the connections it has.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../SingletonConnectionSelector.html" title="class in uk.ac.manchester.spinnaker.connections">SingletonConnectionSelector</a>&lt;T extends <a href="../model/Connection.html" title="interface in uk.ac.manchester.spinnaker.connections.model">Connection</a>&gt;</span></code></th>
 <td class="colLast">
 <div class="block">A selector that only ever handles a single connection.</div>
@@ -212,6 +205,33 @@ loadScripts(document, 'script');</script>
 <td class="colLast">
 <div class="block">Get the version of SCAMP which is running on the board.</div>
 </td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="useSummary">
+<table>
+<caption><span>Constructors in <a href="../../transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a> with parameters of type <a href="../ConnectionSelector.html" title="interface in uk.ac.manchester.spinnaker.connections">ConnectionSelector</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Constructor</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../transceiver/TxrxProcess.html#%3Cinit%3E(uk.ac.manchester.spinnaker.connections.ConnectionSelector,int,int,int,int,uk.ac.manchester.spinnaker.transceiver.RetryTracker)">TxrxProcess</a></span>&#8203;(<a href="../ConnectionSelector.html" title="interface in uk.ac.manchester.spinnaker.connections">ConnectionSelector</a>&lt;Conn&gt;&nbsp;connectionSelector,
+int&nbsp;numRetries,
+int&nbsp;timeout,
+int&nbsp;numChannels,
+int&nbsp;intermediateChannelWaits,
+<a href="../../transceiver/RetryTracker.html" title="interface in uk.ac.manchester.spinnaker.transceiver">RetryTracker</a>&nbsp;retryTracker)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../transceiver/TxrxProcess.html#%3Cinit%3E(uk.ac.manchester.spinnaker.connections.ConnectionSelector,uk.ac.manchester.spinnaker.transceiver.RetryTracker)">TxrxProcess</a></span>&#8203;(<a href="../ConnectionSelector.html" title="interface in uk.ac.manchester.spinnaker.connections">ConnectionSelector</a>&lt;Conn&gt;&nbsp;connectionSelector,
+<a href="../../transceiver/RetryTracker.html" title="interface in uk.ac.manchester.spinnaker.transceiver">RetryTracker</a>&nbsp;retryTracker)</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
 </table>

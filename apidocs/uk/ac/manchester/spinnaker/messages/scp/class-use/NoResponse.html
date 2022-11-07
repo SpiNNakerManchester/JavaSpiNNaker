@@ -75,21 +75,15 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.connections">uk.ac.manchester.spinnaker.connections</a></th>
-<td class="colLast">
-<div class="block">Classes used to model types of connections that talk to SpiNNaker.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.connections.model">uk.ac.manchester.spinnaker.connections.model</a></th>
-<td class="colLast">
-<div class="block">Abstract model classes for connections.</div>
-</td>
-</tr>
-<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp</a></th>
 <td class="colLast">
 <div class="block">The messages of SpiNNaker Control Protocol (SCP).</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver</a></th>
+<td class="colLast">
+<div class="block">How to actually talk to a SpiNNaker machine.</div>
 </td>
 </tr>
 </tbody>
@@ -97,60 +91,6 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="classUses">
 <ul class="blockList">
-<li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.connections">
-<!--   -->
-</a>
-<h2>Uses of <a href="../NoResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">NoResponse</a> in <a href="../../../connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a></h2>
-<div class="useSummary">
-<table>
-<caption><span>Methods in <a href="../../../connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a> with type parameters of type <a href="../NoResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">NoResponse</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Method</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>&lt;T extends <a href="../NoResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">NoResponse</a>&gt;<br>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SCPRequestPipeline.</span><code><span class="memberNameLink"><a href="../../../connections/SCPRequestPipeline.html#sendOneWayRequest(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">sendOneWayRequest</a></span>&#8203;(<a href="../SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;T&gt;&nbsp;request)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.connections.model">
-<!--   -->
-</a>
-<h2>Uses of <a href="../NoResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">NoResponse</a> in <a href="../../../connections/model/package-summary.html">uk.ac.manchester.spinnaker.connections.model</a></h2>
-<div class="useSummary">
-<table>
-<caption><span>Methods in <a href="../../../connections/model/package-summary.html">uk.ac.manchester.spinnaker.connections.model</a> with type parameters of type <a href="../NoResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">NoResponse</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Method</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>&lt;T extends <a href="../NoResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">NoResponse</a>&gt;<br>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">AsyncCommsTask.</span><code><span class="memberNameLink"><a href="../../../connections/model/AsyncCommsTask.html#sendOneWayRequest(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">sendOneWayRequest</a></span>&#8203;(<a href="../SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;T&gt;&nbsp;request)</code></th>
-<td class="colLast">
-<div class="block">Send a one-way request.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
 <li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.messages.scp">
 <!--   -->
@@ -171,6 +111,34 @@ loadScripts(document, 'script');</script>
 <td class="colFirst"><code><a href="../NoResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">NoResponse</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">UpdateProvenanceAndExit.</span><code><span class="memberNameLink"><a href="../UpdateProvenanceAndExit.html#getSCPResponse(java.nio.ByteBuffer)">getSCPResponse</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</code></th>
 <td class="colLast">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.transceiver">
+<!--   -->
+</a>
+<h2>Uses of <a href="../NoResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">NoResponse</a> in <a href="../../../transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Method parameters in <a href="../../../transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a> with type arguments of type <a href="../NoResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">NoResponse</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>protected void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TxrxProcess.</span><code><span class="memberNameLink"><a href="../../../transceiver/TxrxProcess.html#sendOneWayRequest(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">sendOneWayRequest</a></span>&#8203;(<a href="../SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="../NoResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">NoResponse</a>&gt;&nbsp;request)</code></th>
+<td class="colLast">
+<div class="block">Send a one-way request.</div>
+</td>
 </tr>
 </tbody>
 </table>

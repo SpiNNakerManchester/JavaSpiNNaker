@@ -488,7 +488,8 @@ int&nbsp;argument3,
 <dd><code>argument2</code> - The second argument.</dd>
 <dd><code>argument3</code> - The third argument.</dd>
 <dd><code>data</code> - The additional data. Starts at the <i>position</i> and goes to
-            the <i>limit</i>.</dd>
+            the <i>limit</i>. The position and limit of the buffer will
+            not be updated by this constructor.</dd>
 </dl>
 </section>
 </li>
@@ -510,7 +511,8 @@ int&nbsp;argument3,
 <dd><code>argument2</code> - The second argument.</dd>
 <dd><code>argument3</code> - The third argument.</dd>
 <dd><code>data</code> - The additional data. Starts at the <i>position</i> and goes to
-            the <i>limit</i>.</dd>
+            the <i>limit</i>. The position and limit of the buffer will
+            not be updated by this constructor.</dd>
 </dl>
 </section>
 </li>
@@ -535,7 +537,11 @@ int&nbsp;argument3,
  <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteOrder.html?is-external=true#LITTLE_ENDIAN" title="class or interface in java.nio" class="externalLink">little-endian</a> and that its
  <i>position</i> is at the point where they should begin writing. Once it
  has finished, the <i>position</i> should be immediately after the last
- byte written by this method.</div>
+ byte written by this method.
+ <p>
+ Calling this method <em>should not</em> update the internal state of the
+ message. It <em>should</em> be possible to add the message to multiple
+ buffers without special precautions by the caller.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>buffer</code> - The buffer to write into.</dd>

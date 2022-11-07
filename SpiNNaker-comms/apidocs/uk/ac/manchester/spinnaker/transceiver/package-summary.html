@@ -100,12 +100,6 @@ loadScripts(document, 'script');</script>
 <div class="block">The interface supported by the <a href="Transceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver"><code>Transceiver</code></a>.</div>
 </td>
 </tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="UDPTransceiver.ConnectionFactory.html" title="interface in uk.ac.manchester.spinnaker.transceiver">UDPTransceiver.ConnectionFactory</a>&lt;Conn extends <a href="../connections/UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;?&gt;&gt;</th>
-<td class="colLast">
-<div class="block">How to manufacture new instances of a connection as required.</div>
-</td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -146,19 +140,26 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="TxrxProcess.html" title="class in uk.ac.manchester.spinnaker.transceiver">TxrxProcess</a></th>
+<td class="colLast">
+<div class="block">A process for talking to SpiNNaker efficiently that uses multiple connections
+ in communication (if appropriate).</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="UDPTransceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver">UDPTransceiver</a></th>
 <td class="colLast">
 <div class="block">A simple transceiver for UDP connections.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="UnimplementedBMPTransceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver">UnimplementedBMPTransceiver</a></th>
 <td class="colLast">
 <div class="block">A transceiver where every operation (except the few mandatory ones) fails
  with <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/UnsupportedOperationException.html?is-external=true" title="class or interface in java.lang" class="externalLink"><code>UnsupportedOperationException</code></a>.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="Utils.html" title="class in uk.ac.manchester.spinnaker.transceiver">Utils</a></th>
 <td class="colLast">
 <div class="block">Support utilities.</div>

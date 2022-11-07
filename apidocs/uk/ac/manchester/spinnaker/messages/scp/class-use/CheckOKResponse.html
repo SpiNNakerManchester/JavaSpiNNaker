@@ -75,21 +75,15 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.connections">uk.ac.manchester.spinnaker.connections</a></th>
-<td class="colLast">
-<div class="block">Classes used to model types of connections that talk to SpiNNaker.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.connections.model">uk.ac.manchester.spinnaker.connections.model</a></th>
-<td class="colLast">
-<div class="block">Abstract model classes for connections.</div>
-</td>
-</tr>
-<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp</a></th>
 <td class="colLast">
 <div class="block">The messages of SpiNNaker Control Protocol (SCP).</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver</a></th>
+<td class="colLast">
+<div class="block">How to actually talk to a SpiNNaker machine.</div>
 </td>
 </tr>
 </tbody>
@@ -97,64 +91,6 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="classUses">
 <ul class="blockList">
-<li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.connections">
-<!--   -->
-</a>
-<h2>Uses of <a href="../CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a> in <a href="../../../connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a></h2>
-<div class="useSummary">
-<table>
-<caption><span>Methods in <a href="../../../connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a> with type parameters of type <a href="../CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Method</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>&lt;T extends <a href="../CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;<br>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SCPRequestPipeline.</span><code><span class="memberNameLink"><a href="../../../connections/SCPRequestPipeline.html#sendRequest(uk.ac.manchester.spinnaker.messages.scp.SCPRequest,java.util.function.Consumer,java.util.function.BiConsumer)">sendRequest</a></span>&#8203;(<a href="../SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;T&gt;&nbsp;request,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;T&gt;&nbsp;callback,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/BiConsumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">BiConsumer</a>&lt;<a href="../SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;?&gt;,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Throwable</a>&gt;&nbsp;errorCallback)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.connections.model">
-<!--   -->
-</a>
-<h2>Uses of <a href="../CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a> in <a href="../../../connections/model/package-summary.html">uk.ac.manchester.spinnaker.connections.model</a></h2>
-<div class="useSummary">
-<table>
-<caption><span>Methods in <a href="../../../connections/model/package-summary.html">uk.ac.manchester.spinnaker.connections.model</a> with type parameters of type <a href="../CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Method</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>&lt;T extends <a href="../CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;<br>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">AsyncCommsTask.</span><code><span class="memberNameLink"><a href="../../../connections/model/AsyncCommsTask.html#sendRequest(uk.ac.manchester.spinnaker.messages.scp.SCPRequest,java.util.function.Consumer,java.util.function.BiConsumer)">sendRequest</a></span>&#8203;(<a href="../SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;T&gt;&nbsp;request,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;T&gt;&nbsp;callback,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/BiConsumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">BiConsumer</a>&lt;<a href="../SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;?&gt;,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Throwable</a>&gt;&nbsp;errorCallback)</code></th>
-<td class="colLast">
-<div class="block">Add an SCP request to the set to be sent.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
 <li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.messages.scp">
 <!--   -->
@@ -399,6 +335,64 @@ loadScripts(document, 'script');</script>
 <td class="colFirst"><code><a href="../CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">WriteMemory.</span><code><span class="memberNameLink"><a href="../WriteMemory.html#getSCPResponse(java.nio.ByteBuffer)">getSCPResponse</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</code></th>
 <td class="colLast">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.transceiver">
+<!--   -->
+</a>
+<h2>Uses of <a href="../CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a> in <a href="../../../transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../../../transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a> with type parameters of type <a href="../CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>protected &lt;Resp extends <a href="../CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;<br>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TxrxProcess.</span><code><span class="memberNameLink"><a href="../../../transceiver/TxrxProcess.html#sendRequest(uk.ac.manchester.spinnaker.messages.scp.SCPRequest,java.util.function.Consumer)">sendRequest</a></span>&#8203;(<a href="../SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;Resp&gt;&nbsp;request,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;Resp&gt;&nbsp;callback)</code></th>
+<td class="colLast">
+<div class="block">Send a request.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected &lt;Resp extends <a href="../CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;<br>Resp</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TxrxProcess.</span><code><span class="memberNameLink"><a href="../../../transceiver/TxrxProcess.html#synchronousCall(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">synchronousCall</a></span>&#8203;(<a href="../SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;Resp&gt;&nbsp;request)</code></th>
+<td class="colLast">
+<div class="block">Do a synchronous call of an SCP operation, sending the given message and
+ completely processing the interaction before returning its response.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="useSummary">
+<table>
+<caption><span>Method parameters in <a href="../../../transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a> with type arguments of type <a href="../CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>protected void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TxrxProcess.</span><code><span class="memberNameLink"><a href="../../../transceiver/TxrxProcess.html#sendRequest(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">sendRequest</a></span>&#8203;(<a href="../SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="../CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;&nbsp;request)</code></th>
+<td class="colLast">
+<div class="block">Send a request.</div>
+</td>
 </tr>
 </tbody>
 </table>

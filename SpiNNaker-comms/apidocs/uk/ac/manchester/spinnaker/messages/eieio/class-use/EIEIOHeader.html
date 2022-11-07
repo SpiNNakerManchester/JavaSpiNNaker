@@ -81,12 +81,6 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.connections.model">uk.ac.manchester.spinnaker.connections.model</a></th>
-<td class="colLast">
-<div class="block">Abstract model classes for connections.</div>
-</td>
-</tr>
-<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.eieio">uk.ac.manchester.spinnaker.messages.eieio</a></th>
 <td class="colLast">
 <div class="block">The messages of the EIEIO protocol.</div>
@@ -147,32 +141,6 @@ int&nbsp;port)</code></th>
 </section>
 </li>
 <li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.connections.model">
-<!--   -->
-</a>
-<h2>Uses of <a href="../EIEIOHeader.html" title="interface in uk.ac.manchester.spinnaker.messages.eieio">EIEIOHeader</a> in <a href="../../../connections/model/package-summary.html">uk.ac.manchester.spinnaker.connections.model</a></h2>
-<div class="useSummary">
-<table>
-<caption><span>Method parameters in <a href="../../../connections/model/package-summary.html">uk.ac.manchester.spinnaker.connections.model</a> with type arguments of type <a href="../EIEIOHeader.html" title="interface in uk.ac.manchester.spinnaker.messages.eieio">EIEIOHeader</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Method</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">EIEIOMessageHandler.</span><code><span class="memberNameLink"><a href="../../../connections/model/EIEIOMessageHandler.html#handle(uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessage)">handle</a></span>&#8203;(<a href="../EIEIOMessage.html" title="interface in uk.ac.manchester.spinnaker.messages.eieio">EIEIOMessage</a>&lt;? extends <a href="../EIEIOHeader.html" title="interface in uk.ac.manchester.spinnaker.messages.eieio">EIEIOHeader</a>&gt;&nbsp;message)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
-<li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.messages.eieio">
 <!--   -->
 </a>
@@ -222,6 +190,25 @@ int&nbsp;port)</code></th>
 <td class="colLast">
 <div class="block">EIEIO header for data packets.</div>
 </td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="useSummary">
+<table>
+<caption><span>Method parameters in <a href="../package-summary.html">uk.ac.manchester.spinnaker.messages.eieio</a> with type arguments of type <a href="../EIEIOHeader.html" title="interface in uk.ac.manchester.spinnaker.messages.eieio">EIEIOHeader</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>default void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">EIEIOMessageHandler.</span><code><span class="memberNameLink"><a href="../EIEIOMessageHandler.html#handle(uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessage)">handle</a></span>&#8203;(<a href="../EIEIOMessage.html" title="interface in uk.ac.manchester.spinnaker.messages.eieio">EIEIOMessage</a>&lt;? extends <a href="../EIEIOHeader.html" title="interface in uk.ac.manchester.spinnaker.messages.eieio">EIEIOHeader</a>&gt;&nbsp;message)</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
 </table>

@@ -75,12 +75,6 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.connections">uk.ac.manchester.spinnaker.connections</a></th>
-<td class="colLast">
-<div class="block">Classes used to model types of connections that talk to SpiNNaker.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver</a></th>
 <td class="colLast">
 <div class="block">How to actually talk to a SpiNNaker machine.</div>
@@ -91,37 +85,6 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="classUses">
 <ul class="blockList">
-<li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.connections">
-<!--   -->
-</a>
-<h2>Uses of <a href="../RetryTracker.html" title="interface in uk.ac.manchester.spinnaker.transceiver">RetryTracker</a> in <a href="../../connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a></h2>
-<div class="useSummary">
-<table>
-<caption><span>Constructors in <a href="../../connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a> with parameters of type <a href="../RetryTracker.html" title="interface in uk.ac.manchester.spinnaker.transceiver">RetryTracker</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Constructor</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../connections/SCPRequestPipeline.html#%3Cinit%3E(uk.ac.manchester.spinnaker.connections.SCPConnection,int,int,int,int,uk.ac.manchester.spinnaker.transceiver.RetryTracker)">SCPRequestPipeline</a></span>&#8203;(<a href="../../connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a>&nbsp;connection,
-int&nbsp;numChannels,
-int&nbsp;intermediateChannelWaits,
-int&nbsp;numRetries,
-int&nbsp;packetTimeout,
-<a href="../RetryTracker.html" title="interface in uk.ac.manchester.spinnaker.transceiver">RetryTracker</a>&nbsp;retryTracker)</code></th>
-<td class="colLast">
-<div class="block">Create a request handling pipeline.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
 <li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.transceiver">
 <!--   -->
@@ -144,6 +107,33 @@ int&nbsp;packetTimeout,
 <td class="colLast">
 <div class="block">An encapsulation of various communications with the SpiNNaker board.</div>
 </td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="useSummary">
+<table>
+<caption><span>Constructors in <a href="../package-summary.html">uk.ac.manchester.spinnaker.transceiver</a> with parameters of type <a href="../RetryTracker.html" title="interface in uk.ac.manchester.spinnaker.transceiver">RetryTracker</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Constructor</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../TxrxProcess.html#%3Cinit%3E(uk.ac.manchester.spinnaker.connections.ConnectionSelector,int,int,int,int,uk.ac.manchester.spinnaker.transceiver.RetryTracker)">TxrxProcess</a></span>&#8203;(<a href="../../connections/ConnectionSelector.html" title="interface in uk.ac.manchester.spinnaker.connections">ConnectionSelector</a>&lt;Conn&gt;&nbsp;connectionSelector,
+int&nbsp;numRetries,
+int&nbsp;timeout,
+int&nbsp;numChannels,
+int&nbsp;intermediateChannelWaits,
+<a href="../RetryTracker.html" title="interface in uk.ac.manchester.spinnaker.transceiver">RetryTracker</a>&nbsp;retryTracker)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../TxrxProcess.html#%3Cinit%3E(uk.ac.manchester.spinnaker.connections.ConnectionSelector,uk.ac.manchester.spinnaker.transceiver.RetryTracker)">TxrxProcess</a></span>&#8203;(<a href="../../connections/ConnectionSelector.html" title="interface in uk.ac.manchester.spinnaker.connections">ConnectionSelector</a>&lt;Conn&gt;&nbsp;connectionSelector,
+<a href="../RetryTracker.html" title="interface in uk.ac.manchester.spinnaker.transceiver">RetryTracker</a>&nbsp;retryTracker)</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
 </table>

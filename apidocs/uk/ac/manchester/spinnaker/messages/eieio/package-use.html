@@ -81,15 +81,15 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.connections.model">uk.ac.manchester.spinnaker.connections.model</a></th>
-<td class="colLast">
-<div class="block">Abstract model classes for connections.</div>
-</td>
-</tr>
-<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.eieio">uk.ac.manchester.spinnaker.messages.eieio</a></th>
 <td class="colLast">
 <div class="block">The messages of the EIEIO protocol.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver</a></th>
+<td class="colLast">
+<div class="block">How to actually talk to a SpiNNaker machine.</div>
 </td>
 </tr>
 </tbody>
@@ -132,49 +132,6 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/EIEIOMessage.html#uk.ac.manchester.spinnaker.connections">EIEIOMessage</a></th>
-<td class="colLast">
-<div class="block">An EIEIO message's basic operations.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.connections.model">
-<!--   -->
-</a>
-<div class="useSummary">
-<table>
-<caption><span>Classes in <a href="package-summary.html">uk.ac.manchester.spinnaker.messages.eieio</a> used by <a href="../../connections/model/package-summary.html">uk.ac.manchester.spinnaker.connections.model</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Class</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<th class="colFirst" scope="row"><a href="class-use/EIEIOCommandMessage.html#uk.ac.manchester.spinnaker.connections.model">EIEIOCommandMessage</a></th>
-<td class="colLast">
-<div class="block">An EIEIO message containing a command.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="class-use/EIEIODataMessage.html#uk.ac.manchester.spinnaker.connections.model">EIEIODataMessage</a></th>
-<td class="colLast">
-<div class="block">An EIEIO message containing data.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colFirst" scope="row"><a href="class-use/EIEIOHeader.html#uk.ac.manchester.spinnaker.connections.model">EIEIOHeader</a></th>
-<td class="colLast">
-<div class="block">Marker interface for headers in EIEIO.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="class-use/EIEIOMessage.html#uk.ac.manchester.spinnaker.connections.model">EIEIOMessage</a></th>
 <td class="colLast">
 <div class="block">An EIEIO message's basic operations.</div>
 </td>
@@ -263,6 +220,31 @@ loadScripts(document, 'script');</script>
 <th class="colFirst" scope="row"><a href="class-use/EIEIOType.html#uk.ac.manchester.spinnaker.messages.eieio">EIEIOType</a></th>
 <td class="colLast">
 <div class="block">Possible types of EIEIO packets.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.transceiver">
+<!--   -->
+</a>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="package-summary.html">uk.ac.manchester.spinnaker.messages.eieio</a> used by <a href="../../transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/EIEIOMessageHandler.html#uk.ac.manchester.spinnaker.transceiver">EIEIOMessageHandler</a></th>
+<td class="colLast">
+<div class="block">Handles a message received from an EIEIO connection.</div>
 </td>
 </tr>
 </tbody>

@@ -87,6 +87,12 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.eieio">uk.ac.manchester.spinnaker.messages.eieio</a></th>
+<td class="colLast">
+<div class="block">The messages of the EIEIO protocol.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver</a></th>
 <td class="colLast">
 <div class="block">How to actually talk to a SpiNNaker machine.</div>
@@ -112,101 +118,21 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colFirst" scope="row"><a href="class-use/AsyncCommsTask.html#uk.ac.manchester.spinnaker.connections">AsyncCommsTask</a></th>
-<td class="colLast">
-<div class="block">A task for managing the sending of messages to SpiNNaker and receiving the
- responses.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="class-use/BootReceiver.html#uk.ac.manchester.spinnaker.connections">BootReceiver</a></th>
-<td class="colLast">
-<div class="block">A receiver of SpiNNaker boot messages.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colFirst" scope="row"><a href="class-use/BootSender.html#uk.ac.manchester.spinnaker.connections">BootSender</a></th>
-<td class="colLast">
-<div class="block">A sender of SpiNNaker Boot messages.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/Connection.html#uk.ac.manchester.spinnaker.connections">Connection</a></th>
 <td class="colLast">
 <div class="block">An abstract connection to the SpiNNaker board over some medium.</div>
 </td>
 </tr>
-<tr class="altColor">
-<th class="colFirst" scope="row"><a href="class-use/EIEIOReceiver.html#uk.ac.manchester.spinnaker.connections">EIEIOReceiver</a></th>
-<td class="colLast">
-<div class="block">A receiver of EIEIO data or commands.</div>
-</td>
-</tr>
 <tr class="rowColor">
-<th class="colFirst" scope="row"><a href="class-use/EIEIOSender.html#uk.ac.manchester.spinnaker.connections">EIEIOSender</a></th>
-<td class="colLast">
-<div class="block">A sender of EIEIO messages.</div>
-</td>
-</tr>
-<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/MessageHandler.html#uk.ac.manchester.spinnaker.connections">MessageHandler</a></th>
 <td class="colLast">
 <div class="block">Handles a message received from a connection.</div>
 </td>
 </tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="class-use/MessageReceiver.html#uk.ac.manchester.spinnaker.connections">MessageReceiver</a></th>
-<td class="colLast">
-<div class="block">A receiver of SpiNNaker messages.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colFirst" scope="row"><a href="class-use/NotificationReceiver.html#uk.ac.manchester.spinnaker.connections">NotificationReceiver</a></th>
-<td class="colLast">
-<div class="block">A receiver of notification messages.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="class-use/NotificationSender.html#uk.ac.manchester.spinnaker.connections">NotificationSender</a></th>
-<td class="colLast">
-<div class="block">A sender of notification protocol messages.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colFirst" scope="row"><a href="class-use/SCPReceiver.html#uk.ac.manchester.spinnaker.connections">SCPReceiver</a></th>
-<td class="colLast">
-<div class="block">Receives an SCP response from a socket.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="class-use/SCPSender.html#uk.ac.manchester.spinnaker.connections">SCPSender</a></th>
-<td class="colLast">
-<div class="block">A sender of SCP messages.</div>
-</td>
-</tr>
 <tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/SCPSenderReceiver.html#uk.ac.manchester.spinnaker.connections">SCPSenderReceiver</a></th>
 <td class="colLast">
-<div class="block">Combo-interface.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="class-use/SDPReceiver.html#uk.ac.manchester.spinnaker.connections">SDPReceiver</a></th>
-<td class="colLast">
-<div class="block">A receiver of SDP messages.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colFirst" scope="row"><a href="class-use/SDPSender.html#uk.ac.manchester.spinnaker.connections">SDPSender</a></th>
-<td class="colLast">
-<div class="block">A sender of SDP messages.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="class-use/SocketHolder.html#uk.ac.manchester.spinnaker.connections">SocketHolder</a></th>
-<td class="colLast">
-<div class="block">Indicates a resource class that holds a network socket and that can answer
- basic questions about it.</div>
+<div class="block">Sends an SCP request and receives a response to it.</div>
 </td>
 </tr>
 </tbody>
@@ -234,35 +160,29 @@ loadScripts(document, 'script');</script>
 <div class="block">An abstract connection to the SpiNNaker board over some medium.</div>
 </td>
 </tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="class-use/MessageHandler.html#uk.ac.manchester.spinnaker.connections.model">MessageHandler</a></th>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.messages.eieio">
+<!--   -->
+</a>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="package-summary.html">uk.ac.manchester.spinnaker.connections.model</a> used by <a href="../../messages/eieio/package-summary.html">uk.ac.manchester.spinnaker.messages.eieio</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/MessageHandler.html#uk.ac.manchester.spinnaker.messages.eieio">MessageHandler</a></th>
 <td class="colLast">
 <div class="block">Handles a message received from a connection.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colFirst" scope="row"><a href="class-use/MessageReceiver.html#uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a></th>
-<td class="colLast">
-<div class="block">A receiver of SpiNNaker messages.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="class-use/SCPReceiver.html#uk.ac.manchester.spinnaker.connections.model">SCPReceiver</a></th>
-<td class="colLast">
-<div class="block">Receives an SCP response from a socket.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colFirst" scope="row"><a href="class-use/SCPSender.html#uk.ac.manchester.spinnaker.connections.model">SCPSender</a></th>
-<td class="colLast">
-<div class="block">A sender of SCP messages.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="class-use/SocketHolder.html#uk.ac.manchester.spinnaker.connections.model">SocketHolder</a></th>
-<td class="colLast">
-<div class="block">Indicates a resource class that holds a network socket and that can answer
- basic questions about it.</div>
 </td>
 </tr>
 </tbody>
@@ -288,18 +208,6 @@ loadScripts(document, 'script');</script>
 <th class="colFirst" scope="row"><a href="class-use/Connection.html#uk.ac.manchester.spinnaker.transceiver">Connection</a></th>
 <td class="colLast">
 <div class="block">An abstract connection to the SpiNNaker board over some medium.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="class-use/EIEIOMessageHandler.html#uk.ac.manchester.spinnaker.transceiver">EIEIOMessageHandler</a></th>
-<td class="colLast">
-<div class="block">Handles a message received from an EIEIO connection.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colFirst" scope="row"><a href="class-use/MessageHandler.html#uk.ac.manchester.spinnaker.transceiver">MessageHandler</a></th>
-<td class="colLast">
-<div class="block">Handles a message received from a connection.</div>
 </td>
 </tr>
 </tbody>

@@ -202,6 +202,34 @@ loadScripts(document, 'script');</script>
 </tbody>
 </table>
 </div>
+<div class="useSummary">
+<table>
+<caption><span>Constructors in <a href="../package-summary.html">uk.ac.manchester.spinnaker.connections</a> with parameters of type <a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Constructor</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ConnectionListener.html#%3Cinit%3E(uk.ac.manchester.spinnaker.connections.UDPConnection)">ConnectionListener</a></span>&#8203;(<a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;<a href="../ConnectionListener.html" title="type parameter in ConnectionListener">MessageType</a>&gt;&nbsp;connection)</code></th>
+<td class="colLast">
+<div class="block">Create a connection listener with the default number of listening threads
+ and the default OS-level timeout.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ConnectionListener.html#%3Cinit%3E(uk.ac.manchester.spinnaker.connections.UDPConnection,int,int)">ConnectionListener</a></span>&#8203;(<a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;<a href="../ConnectionListener.html" title="type parameter in ConnectionListener">MessageType</a>&gt;&nbsp;connection,
+int&nbsp;numProcesses,
+int&nbsp;timeout)</code></th>
+<td class="colLast">
+<div class="block">Create a connection listener.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 </li>
 <li class="blockList">
@@ -209,68 +237,6 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a>
 <h2>Uses of <a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a> in <a href="../../transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></h2>
-<div class="useSummary">
-<table>
-<caption><span>Classes in <a href="../../transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a> with type parameters of type <a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Interface</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>static interface&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../transceiver/UDPTransceiver.ConnectionFactory.html" title="interface in uk.ac.manchester.spinnaker.transceiver">UDPTransceiver.ConnectionFactory</a>&lt;Conn extends <a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;?&gt;&gt;</span></code></th>
-<td class="colLast">
-<div class="block">How to manufacture new instances of a connection as required.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="useSummary">
-<table>
-<caption><span>Methods in <a href="../../transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a> that return <a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Method</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>&lt;T&gt;&nbsp;<a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;T&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">UDPTransceiver.</span><code><span class="memberNameLink"><a href="../../transceiver/UDPTransceiver.html#registerUDPListener(uk.ac.manchester.spinnaker.connections.model.MessageHandler,uk.ac.manchester.spinnaker.transceiver.UDPTransceiver.ConnectionFactory)">registerUDPListener</a></span>&#8203;(<a href="../model/MessageHandler.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageHandler</a>&lt;T&gt;&nbsp;callback,
-<a href="../../transceiver/UDPTransceiver.ConnectionFactory.html" title="interface in uk.ac.manchester.spinnaker.transceiver">UDPTransceiver.ConnectionFactory</a>&lt;? extends <a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;T&gt;&gt;&nbsp;connectionFactory)</code></th>
-<td class="colLast">
-<div class="block">Register a callback for a certain type of traffic to be received via UDP.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>&lt;T&gt;&nbsp;<a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;T&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">UDPTransceiver.</span><code><span class="memberNameLink"><a href="../../transceiver/UDPTransceiver.html#registerUDPListener(uk.ac.manchester.spinnaker.connections.model.MessageHandler,uk.ac.manchester.spinnaker.transceiver.UDPTransceiver.ConnectionFactory,int)">registerUDPListener</a></span>&#8203;(<a href="../model/MessageHandler.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageHandler</a>&lt;T&gt;&nbsp;callback,
-<a href="../../transceiver/UDPTransceiver.ConnectionFactory.html" title="interface in uk.ac.manchester.spinnaker.transceiver">UDPTransceiver.ConnectionFactory</a>&lt;? extends <a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;T&gt;&gt;&nbsp;connectionFactory,
-int&nbsp;localPort)</code></th>
-<td class="colLast">
-<div class="block">Register a callback for a certain type of traffic to be received via UDP.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>&lt;T&gt;&nbsp;<a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;T&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">UDPTransceiver.</span><code><span class="memberNameLink"><a href="../../transceiver/UDPTransceiver.html#registerUDPListener(uk.ac.manchester.spinnaker.connections.model.MessageHandler,uk.ac.manchester.spinnaker.transceiver.UDPTransceiver.ConnectionFactory,java.lang.Integer,java.net.InetAddress)">registerUDPListener</a></span>&#8203;(<a href="../model/MessageHandler.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageHandler</a>&lt;T&gt;&nbsp;callback,
-<a href="../../transceiver/UDPTransceiver.ConnectionFactory.html" title="interface in uk.ac.manchester.spinnaker.transceiver">UDPTransceiver.ConnectionFactory</a>&lt;? extends <a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;T&gt;&gt;&nbsp;connectionFactory,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;localPort,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost)</code></th>
-<td class="colLast">
-<div class="block">Register a callback for a certain type of traffic to be received via UDP.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
 <div class="useSummary">
 <table>
 <caption><span>Methods in <a href="../../transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a> with parameters of type <a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a></span><span class="tabEnd">&nbsp;</span></caption>
@@ -292,47 +258,6 @@ int&nbsp;localPort)</code></th>
              <a href="../UDPConnection.html#sendPortTriggerMessage(java.net.InetAddress)"><code>sendPortTriggerMessage(InetAddress)</code></a>
              directly instead.</div>
 </div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="useSummary">
-<table>
-<caption><span>Method parameters in <a href="../../transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a> with type arguments of type <a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Method</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>&lt;T&gt;&nbsp;<a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;T&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">UDPTransceiver.</span><code><span class="memberNameLink"><a href="../../transceiver/UDPTransceiver.html#registerUDPListener(uk.ac.manchester.spinnaker.connections.model.MessageHandler,uk.ac.manchester.spinnaker.transceiver.UDPTransceiver.ConnectionFactory)">registerUDPListener</a></span>&#8203;(<a href="../model/MessageHandler.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageHandler</a>&lt;T&gt;&nbsp;callback,
-<a href="../../transceiver/UDPTransceiver.ConnectionFactory.html" title="interface in uk.ac.manchester.spinnaker.transceiver">UDPTransceiver.ConnectionFactory</a>&lt;? extends <a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;T&gt;&gt;&nbsp;connectionFactory)</code></th>
-<td class="colLast">
-<div class="block">Register a callback for a certain type of traffic to be received via UDP.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>&lt;T&gt;&nbsp;<a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;T&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">UDPTransceiver.</span><code><span class="memberNameLink"><a href="../../transceiver/UDPTransceiver.html#registerUDPListener(uk.ac.manchester.spinnaker.connections.model.MessageHandler,uk.ac.manchester.spinnaker.transceiver.UDPTransceiver.ConnectionFactory,int)">registerUDPListener</a></span>&#8203;(<a href="../model/MessageHandler.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageHandler</a>&lt;T&gt;&nbsp;callback,
-<a href="../../transceiver/UDPTransceiver.ConnectionFactory.html" title="interface in uk.ac.manchester.spinnaker.transceiver">UDPTransceiver.ConnectionFactory</a>&lt;? extends <a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;T&gt;&gt;&nbsp;connectionFactory,
-int&nbsp;localPort)</code></th>
-<td class="colLast">
-<div class="block">Register a callback for a certain type of traffic to be received via UDP.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>&lt;T&gt;&nbsp;<a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;T&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">UDPTransceiver.</span><code><span class="memberNameLink"><a href="../../transceiver/UDPTransceiver.html#registerUDPListener(uk.ac.manchester.spinnaker.connections.model.MessageHandler,uk.ac.manchester.spinnaker.transceiver.UDPTransceiver.ConnectionFactory,java.lang.Integer,java.net.InetAddress)">registerUDPListener</a></span>&#8203;(<a href="../model/MessageHandler.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageHandler</a>&lt;T&gt;&nbsp;callback,
-<a href="../../transceiver/UDPTransceiver.ConnectionFactory.html" title="interface in uk.ac.manchester.spinnaker.transceiver">UDPTransceiver.ConnectionFactory</a>&lt;? extends <a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;T&gt;&gt;&nbsp;connectionFactory,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;localPort,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost)</code></th>
-<td class="colLast">
-<div class="block">Register a callback for a certain type of traffic to be received via UDP.</div>
 </td>
 </tr>
 </tbody>

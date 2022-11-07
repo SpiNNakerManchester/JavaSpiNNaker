@@ -302,7 +302,11 @@ implements <a href="../SerializableMessage.html" title="interface in uk.ac.manch
  <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteOrder.html?is-external=true#LITTLE_ENDIAN" title="class or interface in java.nio" class="externalLink">little-endian</a> and that its
  <i>position</i> is at the point where they should begin writing. Once it
  has finished, the <i>position</i> should be immediately after the last
- byte written by this method.</div>
+ byte written by this method.
+ <p>
+ Calling this method <em>should not</em> update the internal state of the
+ message. It <em>should</em> be possible to add the message to multiple
+ buffers without special precautions by the caller.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../SerializableMessage.html#addToBuffer(java.nio.ByteBuffer)">addToBuffer</a></code>&nbsp;in interface&nbsp;<code><a href="../SerializableMessage.html" title="interface in uk.ac.manchester.spinnaker.messages">SerializableMessage</a></code></dd>

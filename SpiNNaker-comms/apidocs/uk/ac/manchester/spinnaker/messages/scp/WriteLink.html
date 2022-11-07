@@ -222,7 +222,9 @@ extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 <dd><code>link</code> - The ID of the link down which to send the write</dd>
 <dd><code>baseAddress</code> - The positive base address to start the write at</dd>
 <dd><code>data</code> - The data to write (up to 256 bytes); the <i>position</i> of
-            the buffer must be the point where the data starts.</dd>
+            the buffer must be the point where the data starts. The
+            position and limit of the buffer will not be updated by this
+            constructor.</dd>
 </dl>
 </section>
 </li>

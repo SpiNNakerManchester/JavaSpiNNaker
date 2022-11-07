@@ -42,21 +42,22 @@
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_javadoccomment">	 * @param data</em>
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_javadoccomment">	 *            Between 1 and 256 bytes to write; the &lt;i&gt;position&lt;/i&gt; of the</em>
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment">	 *            buffer must be the point where the data starts, and the data</em>
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment">	 *            must extend up to the &lt;i&gt;limit&lt;/i&gt;.</em>
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  	<strong class="jxr_keyword">public</strong> <a name="BMPWriteMemory" href="../../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPWriteMemory.html#BMPWriteMemory">BMPWriteMemory</a>(<a name="BMPBoard" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/BMPBoard.html#BMPBoard">BMPBoard</a> board, <a name="MemoryLocation" href="../../../../../../uk/ac/manchester/spinnaker/machine/MemoryLocation.html#MemoryLocation">MemoryLocation</a> baseAddress,
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  			ByteBuffer data) {
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  		<strong class="jxr_keyword">super</strong>(board, CMD_WRITE, baseAddress.address, data.remaining(),
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  				efficientTransferUnit(baseAddress, data.remaining()).value,
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  				data);
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  	}
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  	@Override
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  	<strong class="jxr_keyword">public</strong> BMPRequest.BMPResponse getSCPResponse(ByteBuffer buffer)
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  			<strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> BMPRequest.BMPResponse(<span class="jxr_string">"Write"</span>, CMD_WRITE, buffer);
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  	}
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  }
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment">	 *            must extend up to the &lt;i&gt;limit&lt;/i&gt;. The position and limit of</em>
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment">	 *            the buffer will not be updated by this constructor.</em>
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  	<strong class="jxr_keyword">public</strong> <a name="BMPWriteMemory" href="../../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPWriteMemory.html#BMPWriteMemory">BMPWriteMemory</a>(<a name="BMPBoard" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/BMPBoard.html#BMPBoard">BMPBoard</a> board, <a name="MemoryLocation" href="../../../../../../uk/ac/manchester/spinnaker/machine/MemoryLocation.html#MemoryLocation">MemoryLocation</a> baseAddress,
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  			ByteBuffer data) {
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  		<strong class="jxr_keyword">super</strong>(board, CMD_WRITE, baseAddress.address, data.remaining(),
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  				efficientTransferUnit(baseAddress, data.remaining()).value,
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  				data);
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  	}
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  	@Override
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  	<strong class="jxr_keyword">public</strong> BMPRequest.BMPResponse getSCPResponse(ByteBuffer buffer)
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  			<strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> BMPRequest.BMPResponse(<span class="jxr_string">"Write"</span>, CMD_WRITE, buffer);
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  	}
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

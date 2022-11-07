@@ -273,6 +273,10 @@ implements <a href="../SerializableMessage.html" title="interface in uk.ac.manch
  has finished, the <i>position</i> should be immediately after the last
  byte written by this method.
  <p>
+ Calling this method <em>should not</em> update the internal state of the
+ message. It <em>should</em> be possible to add the message to multiple
+ buffers without special precautions by the caller.
+ <p>
  This must not be called until after a
  <a href="#issueSequenceNumber(java.util.Set)">sequence number is set</a>.</div>
 <dl>
