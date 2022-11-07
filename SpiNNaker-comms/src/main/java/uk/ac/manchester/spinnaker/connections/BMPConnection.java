@@ -23,7 +23,6 @@ import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import java.io.IOException;
 import java.util.Collection;
 
-import uk.ac.manchester.spinnaker.connections.model.SCPSender;
 import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
@@ -33,7 +32,6 @@ import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
-import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * A connection for talking to one or more Board Management Processors (BMPs). A
@@ -83,13 +81,12 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 	}
 
 	/**
-	 * Defined to satisfy the {@link SCPSender} interface. Always
+	 * Defined to satisfy the {@link SCPSenderReceiver} interface. Always
 	 * {@linkplain ChipLocation#ZERO_ZERO 0,0} for a BMP.
 	 *
 	 * @return {@inheritDoc}
 	 */
 	@Override
-	@UsedInJavadocOnly(SCPSender.class)
 	public ChipLocation getChip() {
 		return ZERO_ZERO;
 	}
