@@ -83,9 +83,8 @@ public class TestDataSpecExecutor {
 		var expectedR0 = new int[] {
 			0, 1, 2, 0, 0, 4
 		};
-		var r0data = region0.getRegionData().asReadOnlyBuffer()
-				.order(LITTLE_ENDIAN);
-		r0data.flip();
+		var r0data =
+				region0.getRegionData().duplicate().order(LITTLE_ENDIAN).flip();
 		var dst = new int[expectedR0.length];
 		r0data.asIntBuffer().get(dst);
 		assertArrayEquals(expectedR0, dst);

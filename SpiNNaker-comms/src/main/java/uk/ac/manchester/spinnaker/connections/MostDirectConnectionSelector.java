@@ -104,19 +104,6 @@ public final class MostDirectConnectionSelector<C extends SCPSenderReceiver>
 		return connections.containsKey(ethernetChip.asChipLocation());
 	}
 
-	/**
-	 * Tests if this connection selector will be able to make a direct
-	 * connection to the board containing a given chip.
-	 *
-	 * @param chip
-	 *            A chip on the board that we are testing for direct routing to.
-	 * @return True iff we can talk directly to the board using a connection
-	 *         that this selector knows about.
-	 */
-	public boolean hasConnectionToBoardOf(Chip chip) {
-		return hasDirectConnectionFor(machine.getChipAt(chip.nearestEthernet));
-	}
-
 	@Override
 	public Machine getMachine() {
 		return machine;
