@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.google.errorprone.annotations.ForOverride;
-import com.google.errorprone.annotations.FormatString;
+import com.google.errorprone.annotations.FormatMethod;
 
 /**
  * A helper class for JSON deserializers.
@@ -119,7 +119,8 @@ abstract class DeserializerHelper<T> extends StdDeserializer<T> {
 	 * @throws IOException
 	 *             The exception <em>always</em> thrown.
 	 */
-	private void inputMismatch(@FormatString String msg, Object... args)
+	@FormatMethod
+	private void inputMismatch(String msg, Object... args)
 			throws IOException {
 		CONTEXT.get().reportInputMismatch(_valueClass, msg, args);
 	}
