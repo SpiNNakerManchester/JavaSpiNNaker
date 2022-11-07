@@ -16,7 +16,16 @@
  */
 package uk.ac.manchester.spinnaker.alloc.client;
 
-/** States that a job might be in. */
+/**
+ * States that a job might be in.
+ * <p>
+ * Jobs start in {@link #UNKNOWN}, then go immediately to {@link #QUEUED}, then
+ * to {@link #POWER} before entering {@link #READY}. Whenever the power status
+ * of a job is changed, it goes back into {@link #POWER} before going back to
+ * {@link #READY}. When a job is destroyed, it enters {@link #DESTROYED},
+ * possibly indirectly via {@link #POWER}. Jobs never leave {@link #DESTROYED}
+ * except to cease to exist.
+ */
 public enum State {
 	/**
 	 * The job ID requested was not recognised, or is in the initial state.
