@@ -36,6 +36,7 @@ import static uk.ac.manchester.spinnaker.messages.model.FPGA.FPGA_SW_W;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.LEDO;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.SCRM;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.SLEN;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.slice;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.FileNotFoundException;
@@ -344,25 +345,6 @@ public class FirmwareLoader {
 		var slice = target.duplicate();
 		slice.position(offset);
 		slice.put(source);
-	}
-
-	/**
-	 * Make a slice of a byte buffer without modifying the original buffer.
-	 *
-	 * @param src
-	 *            The originating buffer.
-	 * @param from
-	 *            The offset into the originating buffer where the slice starts.
-	 * @param len
-	 *            The length of the slice.
-	 * @return The little-endian slice. This will be read-only if and only if
-	 *         the original buffer is read-only.
-	 */
-	private static ByteBuffer slice(ByteBuffer src, int from, int len) {
-		var s = src.duplicate();
-		s.position(from);
-		s.limit(from + len);
-		return s.slice().order(LITTLE_ENDIAN);
 	}
 
 	private ByteBuffer readFlashData()

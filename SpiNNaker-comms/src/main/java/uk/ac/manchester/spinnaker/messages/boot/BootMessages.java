@@ -41,6 +41,8 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import com.google.errorprone.annotations.FormatMethod;
+
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 
@@ -101,6 +103,22 @@ public class BootMessages {
 		}
 	}
 
+	/**
+	 * A problem with loading a boot image.
+	 */
+	private static final class BootImageException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		private BootImageException(String msg, Throwable cause) {
+			super(msg, cause);
+		}
+
+		@FormatMethod
+		private BootImageException(String format, Object... args) {
+			super(format(format, args));
+		}
+	}
+
 	private static ByteBuffer readBootImage(URL bootImage) {
 		// NB: This data is BIG endian!
 		var buffer =
@@ -114,28 +132,29 @@ public class BootMessages {
 		} catch (EOFException e) {
 			// EOF signifies end of file; nothing to do here
 		} catch (IOException e) {
-			throw new Error("could not load boot image: " + BOOT_IMAGE, e);
+			throw new BootImageException(
+					"could not load boot image: " + BOOT_IMAGE, e);
 		}
 
 		// Sanity-check the results
 		if (buffer.position() > BOOT_IMAGE_MAX_BYTES) {
-			throw new Error(format(
+			throw new BootImageException(
 					"The boot file is too big at %d bytes"
 							+ " (only files up to 32KiB are acceptable)",
-					buffer.position()));
+					buffer.position());
 		}
 		if (buffer.position() % WORD_SIZE != 0) {
 			// This ought to be unreachable...
-			throw new Error(format(
+			throw new BootImageException(
 					"The boot file size of %d bytes must be divisible by 4",
-					buffer.position()));
+					buffer.position());
 		}
 		if (buffer.position() < BOOT_STRUCT_REPLACE_OFFSET
 				+ BOOT_STRUCT_REPLACE_LENGTH) {
-			throw new Error(format(
+			throw new BootImageException(
 					"The boot file size of %d bytes is not large enough to"
 							+ " contain the boot configuration",
-					buffer.position()));
+					buffer.position());
 		}
 
 		buffer.limit(buffer.position());
@@ -180,7 +199,7 @@ public class BootMessages {
 		this(SystemVariableBootValues.get(boardVersion), extraBootValues);
 	}
 
-	private BootMessage getBootMessage(int blockID) {
+	private BootDataBlock getBootMessage(int blockID) {
 		/*
 		 * Compute the data in the payload; note that this is a pure byte
 		 * sequence right now so endianness checks are moot.
@@ -201,9 +220,8 @@ public class BootMessages {
 		var finish = new EndOfBootMessages();
 
 		// Concatenate everything in the right order
-		var imageMessages = range(0, numDataPackets)
-				.mapToObj(this::getBootMessage);
 		return concat(Stream.of(start),
-				concat(imageMessages, Stream.of(finish)));
+				concat(range(0, numDataPackets).mapToObj(this::getBootMessage),
+						Stream.of(finish)));
 	}
 }

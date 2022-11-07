@@ -18,14 +18,14 @@ package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
-import static java.util.Optional.empty;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.read;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.slice;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
-import java.util.Optional;
 
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
@@ -81,12 +81,10 @@ class BMPWriteSerialFlashProcess extends BMPCommandProcess {
 			private int offset = data.position();
 
 			@Override
-			Optional<ByteBuffer> prepareSendBuffer(int chunkSize) {
-				var buffer = data.asReadOnlyBuffer();
-				buffer.position(offset);
-				buffer.limit(offset + chunkSize);
+			ByteBuffer prepareSendBuffer(int chunkSize) {
+				var buffer = slice(data, offset, chunkSize);
 				offset += chunkSize;
-				return Optional.of(buffer);
+				return buffer;
 			}
 		});
 	}
@@ -115,26 +113,13 @@ class BMPWriteSerialFlashProcess extends BMPCommandProcess {
 		var exn = new ValueHolder<IOException>();
 		var workingBuffer = allocate(UDP_MESSAGE_MAX_SIZE);
 		execute(new BMPWriteSFIterable(board, baseAddress, bytesToWrite) {
-			private ByteBuffer readChunk(int chunkSize) throws IOException {
-				var buffer = workingBuffer.duplicate();
-				// After this, chunkSize is REAL chunk size or -1
-				chunkSize = data.read(buffer.array(), buffer.arrayOffset(),
-						chunkSize);
-				if (chunkSize < 1) {
-					// Read failed to generate anything we want to send
-					return null;
-				}
-				buffer.limit(chunkSize);
-				return buffer;
-			}
-
 			@Override
-			Optional<ByteBuffer> prepareSendBuffer(int chunkSize) {
+			ByteBuffer prepareSendBuffer(int chunkSize) {
 				try {
-					return Optional.ofNullable(readChunk(chunkSize));
+					return read(data, workingBuffer, chunkSize);
 				} catch (IOException e) {
 					exn.setValue(e); // Smuggle the exception out!
-					return empty();
+					return null;
 				}
 			}
 		});
@@ -182,11 +167,10 @@ abstract class BMPWriteSFIterable implements Iterable<WriteSerialFlash> {
 	 * @param plannedSize
 	 *            What size the chunk should be. Up to
 	 *            {@link Constants#UDP_MESSAGE_MAX_SIZE}.
-	 * @return The wrapped chunk, or {@link Optional#empty()} if no chunk
-	 *         available.
+	 * @return The chunk, or {@code null} if no chunk available.
 	 */
 	@UsedInJavadocOnly(Constants.class)
-	abstract Optional<ByteBuffer> prepareSendBuffer(int plannedSize);
+	abstract ByteBuffer prepareSendBuffer(int plannedSize);
 
 	@Override
 	public Iterator<WriteSerialFlash> iterator() {
@@ -196,10 +180,9 @@ abstract class BMPWriteSFIterable implements Iterable<WriteSerialFlash> {
 				if (sizeRemaining < 1) {
 					return false;
 				}
-				var bb = prepareSendBuffer(
+				sendBuffer = prepareSendBuffer(
 						min(sizeRemaining, UDP_MESSAGE_MAX_SIZE));
-				sendBuffer = bb.orElse(null);
-				return bb.isPresent();
+				return sendBuffer != null;
 			}
 
 			@Override

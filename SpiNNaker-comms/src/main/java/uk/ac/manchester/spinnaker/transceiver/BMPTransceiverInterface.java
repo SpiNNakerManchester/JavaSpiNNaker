@@ -16,13 +16,11 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
-import static java.lang.Math.min;
 import static java.lang.Thread.interrupted;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-import static uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer.FLASH_CHUNK_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.BLACKLIST_BLANK;
@@ -1754,83 +1752,6 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 			throws ProcessException, IOException, InterruptedException;
 
 	/**
-	 * Prepare a transfer area for writing to the flash memory of a BMP.
-	 *
-	 * @param bmp
-	 *            Which BMP are we talking to?
-	 * @param board
-	 *            Which board's BMP are we writing to?
-	 * @param baseAddress
-	 *            Where in flash will we write?
-	 * @param size
-	 *            How much data will we write.
-	 * @return The location of the working buffer on the BMP
-	 * @deprecated This operation should not be used directly.
-	 * @see #writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 */
-	@Deprecated
-	@CheckReturnValue
-	MemoryLocation eraseBMPFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
-			@NotNull MemoryLocation baseAddress, @Positive int size)
-			throws IOException, ProcessException, InterruptedException;
-
-	/**
-	 * Move an uploaded chunk of data into the working buffer for writing to the
-	 * flash memory of a BMP.
-	 *
-	 * @param bmp
-	 *            Which BMP are we talking to?
-	 * @param board
-	 *            Which board's BMP are we writing to?
-	 * @param address
-	 *            Where in the working buffer will we copy to?
-	 * @deprecated This operation should not be used directly.
-	 * @see #writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)
-	 * @see #eraseBMPFlash(BMPCoords,BMPBoard,MemoryLocation,int)
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 */
-	@Deprecated
-	void chunkBMPFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
-			@NotNull MemoryLocation address)
-			throws IOException, ProcessException, InterruptedException;
-
-	/**
-	 * Finalise the writing of the flash memory of a BMP.
-	 *
-	 * @param bmp
-	 *            Which BMP are we talking to?
-	 * @param board
-	 *            Which board's BMP are we writing to?
-	 * @param baseAddress
-	 *            Where in flash will we write?
-	 * @param size
-	 *            How much data will we write.
-	 * @deprecated This operation should not be used directly.
-	 * @see #writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 */
-	@Deprecated
-	void copyBMPFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
-			@NotNull MemoryLocation baseAddress, @Positive int size)
-			throws IOException, ProcessException, InterruptedException;
-
-	/**
 	 * Write a {@linkplain WriteFlashBuffer#FLASH_CHUNK_SIZE fixed size} chunk
 	 * to flash memory of a BMP with erase. The data must have already been
 	 * written to the flash buffer.
@@ -1921,36 +1842,10 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	default void writeFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
+	void writeFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data,
 			boolean update)
-			throws ProcessException, IOException, InterruptedException {
-		int size = data.remaining();
-		var workingBuffer = eraseBMPFlash(bmp, board, baseAddress, size);
-		var targetAddr = baseAddress;
-		int offset = 0;
-
-		while (true) {
-			var buf = data.asReadOnlyBuffer();
-			buf.position(offset)
-					.limit(min(offset + FLASH_CHUNK_SIZE, buf.capacity()));
-			int length = buf.remaining();
-			if (length == 0) {
-				break;
-			}
-
-			writeBMPMemory(bmp, board, workingBuffer, buf);
-			chunkBMPFlash(bmp, board, targetAddr);
-			if (length < FLASH_CHUNK_SIZE) {
-				break;
-			}
-			targetAddr = targetAddr.add(FLASH_CHUNK_SIZE);
-			offset += FLASH_CHUNK_SIZE;
-		}
-		if (update) {
-			copyBMPFlash(bmp, board, baseAddress, size);
-		}
-	}
+			throws ProcessException, IOException, InterruptedException;
 }
 
 interface BMPConstants {

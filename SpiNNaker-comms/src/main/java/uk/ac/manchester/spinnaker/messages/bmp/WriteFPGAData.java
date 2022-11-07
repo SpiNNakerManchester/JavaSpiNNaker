@@ -43,7 +43,8 @@ public class WriteFPGAData extends SimpleRequest {
 	 * @param board
 	 *            Which board to upload the FPGA data to.
 	 * @param data
-	 *            What data to upload.
+	 *            What data to upload. The position and limit of the buffer will
+	 *            not be updated by this method.
 	 */
 	public WriteFPGAData(BMPBoard board, ByteBuffer data) {
 		super("Load Data into FPGA Buffer", board, CMD_XILINX, LoadData.code,

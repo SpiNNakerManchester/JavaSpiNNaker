@@ -49,7 +49,8 @@ import uk.ac.manchester.spinnaker.transceiver.exceptions.ProcessException;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
- * A process for handling communicating with the BMP.
+ * A process for handling communicating with the BMP. Note that BMPs have
+ * significantly lower limits for the number of messages in flight than SCAMP.
  * <p>
  * Does not inherit from {@link TxrxProcess} for ugly type reasons.
  *

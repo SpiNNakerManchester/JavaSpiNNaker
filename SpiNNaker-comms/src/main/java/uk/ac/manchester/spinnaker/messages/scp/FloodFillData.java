@@ -86,7 +86,8 @@ public class FloodFillData extends SimpleRequest {
 	 * @param data
 	 *            The data to load, starting at the <i>position</i> and going to
 	 *            the <i>limit</i>. Must be between 4 and 256 bytes and the size
-	 *            must be divisible by 4
+	 *            must be divisible by 4. The position and limit of the buffer
+	 *            will not be updated by this constructor.
 	 */
 	public FloodFillData(byte nearestNeighbourID, int blockNumber,
 			MemoryLocation baseAddress, ByteBuffer data) {

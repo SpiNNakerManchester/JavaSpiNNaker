@@ -33,7 +33,9 @@ public class WriteMemory extends SimpleRequest {
 	 *            The positive base address to start the write at
 	 * @param data
 	 *            Between 1 and 256 bytes to write; the <i>position</i> of the
-	 *            buffer must be the point where the data starts.
+	 *            buffer must be the point where the data starts. The position
+	 *            and limit of the buffer will not be updated by this
+	 *            constructor.
 	 */
 	public WriteMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			ByteBuffer data) {

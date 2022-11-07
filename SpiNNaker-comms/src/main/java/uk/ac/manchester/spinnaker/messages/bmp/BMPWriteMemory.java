@@ -34,7 +34,8 @@ public class BMPWriteMemory extends SimpleRequest {
 	 * @param data
 	 *            Between 1 and 256 bytes to write; the <i>position</i> of the
 	 *            buffer must be the point where the data starts, and the data
-	 *            must extend up to the <i>limit</i>.
+	 *            must extend up to the <i>limit</i>. The position and limit of
+	 *            the buffer will not be updated by this constructor.
 	 */
 	public BMPWriteMemory(BMPBoard board, MemoryLocation baseAddress,
 			ByteBuffer data) {

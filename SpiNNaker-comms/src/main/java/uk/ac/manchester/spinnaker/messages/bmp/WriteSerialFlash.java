@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.messages.bmp;
 
 import static uk.ac.manchester.spinnaker.messages.bmp.SerialFlashOp.WRITE;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_SF;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.limitSlice;
 
 import java.nio.ByteBuffer;
 
@@ -38,22 +39,13 @@ public class WriteSerialFlash extends SimpleRequest {
 	 *            The positive base address where the chunk is located
 	 * @param data
 	 *            The data to transfer; up to {@link #FLASH_CHUNK_SIZE} bytes.
-	 *            This does <em>not</em> update the buffer position.
+	 *            The position and limit of the buffer will not be updated by
+	 *            this constructor.
 	 */
 	public WriteSerialFlash(BMPBoard board, MemoryLocation baseAddress,
 			ByteBuffer data) {
 		super("Transfer Chunk to Serial Flash", board, CMD_BMP_SF,
 				baseAddress.address, FLASH_CHUNK_SIZE, WRITE.value,
-				condition(data));
-	}
-
-	private static ByteBuffer condition(ByteBuffer data) {
-		// Just in case
-		if (data.remaining() > FLASH_CHUNK_SIZE) {
-			var b = data.duplicate();
-			b.limit(b.position() + FLASH_CHUNK_SIZE);
-			return b;
-		}
-		return data;
+				limitSlice(data, FLASH_CHUNK_SIZE));
 	}
 }

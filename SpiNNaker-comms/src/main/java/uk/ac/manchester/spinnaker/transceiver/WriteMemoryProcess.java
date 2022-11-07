@@ -17,10 +17,11 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.max;
-import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
 import static org.apache.commons.io.IOUtils.buffer;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.read;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -133,7 +134,10 @@ class WriteMemoryProcess extends TxrxProcess {
 		 * @param baseAddress
 		 *            The base address to write to.
 		 * @param data
-		 *            The block of data to write with this message.
+		 *            The block of data to write with this message. Note that it
+		 *            is important that this method does not change the position
+		 *            or limit of this buffer; the relevant message constructors
+		 *            have this property.
 		 * @return The message to send.
 		 */
 		T getMessage(MemoryLocation baseAddress, ByteBuffer data);
@@ -152,7 +156,8 @@ class WriteMemoryProcess extends TxrxProcess {
 	 * @param data
 	 *            The buffer of data to be copied. The copied region extends
 	 *            from the <i>position</i> (inclusive) to the <i>limit</i>
-	 *            (exclusive).
+	 *            (exclusive). The position and limit of the buffer will
+	 *            not be updated by this method.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -238,7 +243,8 @@ class WriteMemoryProcess extends TxrxProcess {
 	 * @param data
 	 *            The buffer of data to be copied. The copied region extends
 	 *            from the <i>position</i> (inclusive) to the <i>limit</i>
-	 *            (exclusive).
+	 *            (exclusive). The position and limit of the buffer will
+	 *            not be updated by this method.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -334,18 +340,10 @@ class WriteMemoryProcess extends TxrxProcess {
 			MemoryLocation baseAddress, ByteBuffer data,
 			MessageProvider<T> msgProvider)
 			throws IOException, ProcessException, InterruptedException {
-		int offset = data.position();
-		int bytesToWrite = data.remaining();
 		var writePosition = baseAddress;
-		while (bytesToWrite > 0) {
-			int bytesToSend = min(bytesToWrite, UDP_MESSAGE_MAX_SIZE);
-			var tmp = data.asReadOnlyBuffer();
-			tmp.position(offset);
-			tmp.limit(offset + bytesToSend);
-			sendRequest(msgProvider.getMessage(writePosition, tmp));
-			offset += bytesToSend;
-			writePosition = writePosition.add(bytesToSend);
-			bytesToWrite -= bytesToSend;
+		for (var bb : sliceUp(data, UDP_MESSAGE_MAX_SIZE)) {
+			sendRequest(msgProvider.getMessage(writePosition, bb));
+			writePosition = writePosition.add(bb.remaining());
 		}
 		finishBatch();
 	}
@@ -375,19 +373,15 @@ class WriteMemoryProcess extends TxrxProcess {
 			MessageProvider<T> msgProvider)
 			throws IOException, ProcessException, InterruptedException {
 		var writePosition = baseAddress;
-		var workingBuffer = allocate(UDP_MESSAGE_MAX_SIZE);
 		while (bytesToWrite > 0) {
-			int bytesToSend = min(bytesToWrite, UDP_MESSAGE_MAX_SIZE);
-			var tmp = workingBuffer.duplicate();
-			bytesToSend =
-					data.read(tmp.array(), tmp.arrayOffset(), bytesToSend);
-			if (bytesToSend <= 0) {
+			// One buffer per message; lifetime extends until batch end
+			var tmp = read(data, allocate(UDP_MESSAGE_MAX_SIZE), bytesToWrite);
+			if (tmp == null) {
 				break;
 			}
-			tmp.limit(bytesToSend);
 			sendRequest(msgProvider.getMessage(writePosition, tmp));
-			writePosition = writePosition.add(bytesToSend);
-			bytesToWrite -= bytesToSend;
+			writePosition = writePosition.add(tmp.remaining());
+			bytesToWrite -= tmp.remaining();
 		}
 		finishBatch();
 	}
