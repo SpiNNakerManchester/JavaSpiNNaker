@@ -19,7 +19,13 @@
 <script type="text/javascript" src="script-dir/jquery-ui.js"></script>
 </head>
 <body class="package-index">
-<script type="text/javascript">var pathtoroot = "./";
+<script type="text/javascript">var data = {"i0":2,"i1":1,"i2":1,"i3":1,"i4":1,"i5":1,"i6":1,"i7":1,"i8":1,"i9":1,"i10":1,"i11":1,"i12":1,"i13":1,"i14":1,"i15":1};
+var tabs = {65535:["t0","All Packages"],1:["t1","Communications"],2:["t2","Allocation Service"]};
+var altColor = "altColor";
+var rowColor = "rowColor";
+var tableTab = "tableTab";
+var activeTableTab = "activeTableTab";
+var pathtoroot = "./";
 loadScripts(document, 'script');</script>
 <noscript>
 <div>JavaScript is disabled on your browser.</div>
@@ -65,8 +71,9 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="contentContainer">
 <div class="overviewSummary">
-<table>
-<caption><span>Communications</span><span class="tabEnd">&nbsp;</span></caption>
+<div role="tablist" aria-orientation="horizontal"><button role="tab" aria-selected="true" aria-controls="overviewSummary_tabpanel" tabindex="0" onkeydown="switchTab(event)" id="t0" class="activeTableTab">All Packages</button><button role="tab" aria-selected="false" aria-controls="overviewSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t1" class="tableTab" onclick="show(1);">Communications</button><button role="tab" aria-selected="false" aria-controls="overviewSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t2" class="tableTab" onclick="show(2);">Allocation Service</button></div>
+<div id="overviewSummary_tabpanel" role="tabpanel">
+<table aria-labelledby="t0">
 <thead>
 <tr>
 <th class="colFirst" scope="col">Package</th>
@@ -75,90 +82,96 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
+<th class="colFirst" scope="row"><a href="uk/ac/manchester/spinnaker/allocator/package-summary.html">uk.ac.manchester.spinnaker.allocator</a></th>
+<td class="colLast">
+<div class="block">Java client for the SpiNNaker allocation service.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i1">
 <th class="colFirst" scope="row"><a href="uk/ac/manchester/spinnaker/connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a></th>
 <td class="colLast">
 <div class="block">Classes used to model types of connections that talk to SpiNNaker.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i1">
+<tr class="altColor" id="i2">
 <th class="colFirst" scope="row"><a href="uk/ac/manchester/spinnaker/connections/model/package-summary.html">uk.ac.manchester.spinnaker.connections.model</a></th>
 <td class="colLast">
 <div class="block">Abstract model classes for connections.</div>
 </td>
 </tr>
-<tr class="altColor" id="i2">
+<tr class="rowColor" id="i3">
 <th class="colFirst" scope="row"><a href="uk/ac/manchester/spinnaker/io/package-summary.html">uk.ac.manchester.spinnaker.io</a></th>
 <td class="colLast">
 <div class="block">Pretending that a SpiNNaker machine is simple I/O.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="altColor" id="i4">
 <th class="colFirst" scope="row"><a href="uk/ac/manchester/spinnaker/messages/package-summary.html">uk.ac.manchester.spinnaker.messages</a></th>
 <td class="colLast">
 <div class="block">Generic support classes for messages.</div>
 </td>
 </tr>
-<tr class="altColor" id="i4">
+<tr class="rowColor" id="i5">
 <th class="colFirst" scope="row"><a href="uk/ac/manchester/spinnaker/messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></th>
 <td class="colLast">
 <div class="block">Messages that talk to the BMP.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i5">
+<tr class="altColor" id="i6">
 <th class="colFirst" scope="row"><a href="uk/ac/manchester/spinnaker/messages/boot/package-summary.html">uk.ac.manchester.spinnaker.messages.boot</a></th>
 <td class="colLast">
 <div class="block">Messages used to boot a SpiNNaker board.</div>
 </td>
 </tr>
-<tr class="altColor" id="i6">
+<tr class="rowColor" id="i7">
 <th class="colFirst" scope="row"><a href="uk/ac/manchester/spinnaker/messages/eieio/package-summary.html">uk.ac.manchester.spinnaker.messages.eieio</a></th>
 <td class="colLast">
 <div class="block">The messages of the EIEIO protocol.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i7">
+<tr class="altColor" id="i8">
 <th class="colFirst" scope="row"><a href="uk/ac/manchester/spinnaker/messages/model/package-summary.html">uk.ac.manchester.spinnaker.messages.model</a></th>
 <td class="colLast">
 <div class="block">Model support classes for the communication messages.</div>
 </td>
 </tr>
-<tr class="altColor" id="i8">
+<tr class="rowColor" id="i9">
 <th class="colFirst" scope="row"><a href="uk/ac/manchester/spinnaker/messages/notification/package-summary.html">uk.ac.manchester.spinnaker.messages.notification</a></th>
 <td class="colLast">
 <div class="block">The messages of the notification protocol.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i9">
+<tr class="altColor" id="i10">
 <th class="colFirst" scope="row"><a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></th>
 <td class="colLast">
 <div class="block">The messages of SpiNNaker Control Protocol (SCP).</div>
 </td>
 </tr>
-<tr class="altColor" id="i10">
+<tr class="rowColor" id="i11">
 <th class="colFirst" scope="row"><a href="uk/ac/manchester/spinnaker/messages/sdp/package-summary.html">uk.ac.manchester.spinnaker.messages.sdp</a></th>
 <td class="colLast">
 <div class="block">Messages sent and received by SDP (the SpiNNaker Datagram Protocol).</div>
 </td>
 </tr>
-<tr class="rowColor" id="i11">
+<tr class="altColor" id="i12">
 <th class="colFirst" scope="row"><a href="uk/ac/manchester/spinnaker/spalloc/package-summary.html">uk.ac.manchester.spinnaker.spalloc</a></th>
 <td class="colLast">
 <div class="block">SpiNNaker old-style machine allocation client.</div>
 </td>
 </tr>
-<tr class="altColor" id="i12">
+<tr class="rowColor" id="i13">
 <th class="colFirst" scope="row"><a href="uk/ac/manchester/spinnaker/spalloc/exceptions/package-summary.html">uk.ac.manchester.spinnaker.spalloc.exceptions</a></th>
 <td class="colLast">
 <div class="block">Exceptions of the spalloc client.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i13">
+<tr class="altColor" id="i14">
 <th class="colFirst" scope="row"><a href="uk/ac/manchester/spinnaker/spalloc/messages/package-summary.html">uk.ac.manchester.spinnaker.spalloc.messages</a></th>
 <td class="colLast">
 <div class="block">Commands to send to Spalloc, and responses received from Spalloc.</div>
 </td>
 </tr>
-<tr class="altColor" id="i14">
+<tr class="rowColor" id="i15">
 <th class="colFirst" scope="row"><a href="uk/ac/manchester/spinnaker/transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></th>
 <td class="colLast">
 <div class="block">How to actually talk to a SpiNNaker machine.</div>
@@ -166,6 +179,7 @@ loadScripts(document, 'script');</script>
 </tr>
 </tbody>
 </table>
+</div>
 </div>
 </div>
 </main>
