@@ -261,16 +261,13 @@ class RuntimeControlProcess extends TxrxProcess {
 			int bytesToRead) {
 		// Create a buffer for the data
 		var buffer = allocate(bytesToRead).order(LITTLE_ENDIAN);
-		synchronized (buffer) {
-			iobuf.get(read.core).put(read.blockID, buffer);
-
-			// Put the data from this packet into the buffer
-			int packetBytes = min(response.data.remaining(), bytesToRead);
-			if (packetBytes > 0) {
-				buffer.put(response.data);
-			}
-			return packetBytes;
+		// Put the data from this packet into the buffer
+		int packetBytes = min(response.data.remaining(), bytesToRead);
+		if (packetBytes > 0) {
+			buffer.put(response.data);
 		}
+		iobuf.get(read.core).put(read.blockID, buffer);
+		return packetBytes;
 	}
 
 	private void issueReadsForIOBufTail(NextRead read, int bytesToRead,
