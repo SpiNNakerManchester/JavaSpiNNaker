@@ -165,7 +165,7 @@ class FastDataInProtocol {
 
 	private int putBuffer(ByteBuffer data, int position, ByteBuffer payload) {
 		var slice = slice(data, position,
-				min(data.remaining(), payload.remaining()));
+				min(data.remaining() - position, payload.remaining()));
 		payload.put(slice).flip();
 		return slice.position();
 	}
