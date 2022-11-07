@@ -74,7 +74,11 @@ import uk.ac.manchester.spinnaker.utils.Daemon;
  * A factory for clients to connect to the Spalloc service.
  * <p>
  * <strong>Implementation Note:</strong> Neither this class nor the client
- * classes it creates maintain state that needs to be closed explicitly.
+ * classes it creates maintain state that needs to be closed explicitly
+ * <em>except</em> for
+ * {@linkplain SpallocClient.Job#getConnection(HasChipLocation) proxied
+ * connections} and {@linkplain SpallocClient.Job#getTransceiver()
+ * transceivers}, as connections and transceivers usually need to be closed.
  *
  * @author Donal Fellows
  */

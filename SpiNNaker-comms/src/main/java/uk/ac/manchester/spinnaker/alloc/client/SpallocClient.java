@@ -356,9 +356,11 @@ public interface SpallocClient {
 		/**
 		 * Create a proxied transceiver for talking to the boards of the job.
 		 * The transceiver will be configured so that it can talk to all the
-		 * boards of the job and nothing else.
+		 * boards of the job and nothing else; the BMP(s) will <em>not</em> be
+		 * accessible by this transceiver.
 		 *
-		 * @return The transceiver.
+		 * @return The transceiver. It is the caller's responsibility to close
+		 *         this transceiver at the right time.
 		 * @throws IOException
 		 *             If communication fails or the job is deleted.
 		 * @throws InterruptedException
