@@ -42,10 +42,8 @@ public abstract class ByteBufferUtils {
 	 *         the original buffer is read-only.
 	 */
 	public static ByteBuffer slice(ByteBuffer src, int from, int len) {
-		var s = src.duplicate();
-		s.position(from);
-		s.limit(from + len);
-		return s.slice().order(LITTLE_ENDIAN);
+		var s = src.duplicate().position(from).slice();
+		return s.limit(len).order(LITTLE_ENDIAN);
 	}
 
 	/**
