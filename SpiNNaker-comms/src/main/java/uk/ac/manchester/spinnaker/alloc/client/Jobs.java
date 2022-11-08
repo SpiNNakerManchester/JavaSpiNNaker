@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.client;
 
+import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.readOnlyCopy;
+
 import java.net.URI;
 import java.util.List;
 
@@ -30,7 +32,7 @@ class Jobs {
 	URI prev;
 
 	public void setJobs(List<URI> jobs) {
-		this.jobs = jobs;
+		this.jobs = readOnlyCopy(jobs);
 	}
 
 	public void setNext(URI next) {

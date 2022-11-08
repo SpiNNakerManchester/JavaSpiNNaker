@@ -33,6 +33,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.asDir;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByNameQuietly;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
@@ -106,22 +107,6 @@ public class SpallocClientFactory {
 	static final JsonMapper JSON_MAPPER = JsonMapper.builder()
 			.findAndAddModules().disable(WRITE_DATES_AS_TIMESTAMPS)
 			.propertyNamingStrategy(KEBAB_CASE).build();
-
-	/**
-	 * Add a {@code /} to the end of the path part of a URI.
-	 *
-	 * @param uri
-	 *            The URI to amend. Assumed to be HTTP or HTTPS.
-	 * @return The amended URI.
-	 */
-	static URI asDir(URI uri) {
-		var path = uri.getPath();
-		if (!path.endsWith("/")) {
-			path += "/";
-			uri = uri.resolve(path);
-		}
-		return uri;
-	}
 
 	/**
 	 * Read an object from a stream.

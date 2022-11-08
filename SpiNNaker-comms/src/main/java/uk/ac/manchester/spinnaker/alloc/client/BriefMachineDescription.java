@@ -16,6 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.alloc.client;
 
+import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.asDir;
+import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.readOnlyCopy;
+
 import java.net.URI;
 import java.util.List;
 
@@ -52,7 +55,7 @@ class BriefMachineDescription {
 	}
 
 	public void setUri(URI uri) {
-		this.uri = SpallocClientFactory.asDir(uri);
+		this.uri = asDir(uri);
 	}
 
 	public void setWidth(int width) {
@@ -65,11 +68,11 @@ class BriefMachineDescription {
 
 	@JsonAlias("dead-boards")
 	public void setDeadBoards(List<BoardCoords> deadBoards) {
-		this.deadBoards = deadBoards;
+		this.deadBoards = readOnlyCopy(deadBoards);
 	}
 
 	@JsonAlias("dead-links")
 	public void setDeadLinks(List<DeadLink> deadLinks) {
-		this.deadLinks = deadLinks;
+		this.deadLinks = readOnlyCopy(deadLinks);
 	}
 }

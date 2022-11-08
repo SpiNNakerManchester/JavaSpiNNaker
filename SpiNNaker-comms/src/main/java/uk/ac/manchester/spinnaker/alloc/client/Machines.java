@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.client;
 
+import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.readOnlyCopy;
+
 import java.util.List;
 
 class Machines {
@@ -23,6 +25,6 @@ class Machines {
 	List<BriefMachineDescription> machines;
 
 	public void setMachines(List<BriefMachineDescription> machines) {
-		this.machines = machines;
+		this.machines = readOnlyCopy(machines);
 	}
 }

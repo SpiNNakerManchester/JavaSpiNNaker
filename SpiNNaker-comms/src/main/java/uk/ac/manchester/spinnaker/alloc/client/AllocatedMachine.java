@@ -18,9 +18,9 @@ package uk.ac.manchester.spinnaker.alloc.client;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
+import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.readOnlyCopy;
 
 import java.util.List;
-import java.util.Objects;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -182,16 +182,12 @@ public final class AllocatedMachine {
 			this.machineName = machineName;
 		}
 
-		private static <T> List<T> clone(List<T> list) {
-			return Objects.isNull(list) ? List.of() : List.copyOf(list);
-		}
-
 		void withConnections(List<ConnectionInfo> connections) {
-			this.connections = clone(connections);
+			this.connections = readOnlyCopy(connections);
 		}
 
 		void withBoards(List<BoardCoordinates> boards) {
-			this.boards = clone(boards);
+			this.boards = readOnlyCopy(boards);
 		}
 
 		AllocatedMachine build() {
