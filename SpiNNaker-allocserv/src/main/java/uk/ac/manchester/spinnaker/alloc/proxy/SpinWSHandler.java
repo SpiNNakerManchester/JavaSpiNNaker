@@ -70,10 +70,6 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 		implements HandshakeInterceptor {
 	private static final Logger log = getLogger(SpinWSHandler.class);
 
-	private static final String JOB = SpinWSHandler.class + ":job";
-
-	private static final String PROXY = SpinWSHandler.class + ":proxy";
-
 	@Autowired
 	private SpallocAPI spallocCore;
 
@@ -101,6 +97,43 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	/** The {@link #PATH} as a template. */
 	private final UriTemplate template = new UriTemplate(PATH);
 
+	/**
+	 * Type-safe session property descriptor.
+	 *
+	 * @param <T>
+	 *            The type of the property.
+	 */
+	private static final class Property<T> {
+		private final String name;
+
+		private final Class<T> cls;
+
+		/**
+		 * @param name
+		 *            The name of the property.
+		 * @param cls
+		 *            The class of the property.
+		 */
+		Property(String name, Class<T> cls) {
+			this.name = SpinWSHandler.class + ":" + name;
+			this.cls = cls;
+		}
+
+		T get(WebSocketSession session) {
+			return cls.cast(session.getAttributes().get(name));
+		}
+
+		void put(Map<String, Object> attributes, T value) {
+			attributes.put(name, value);
+		}
+	}
+
+	private static final Property<Job> JOB =
+			new Property<>("job", Job.class);
+
+	private static final Property<ProxyCore> PROXY =
+			new Property<>("proxy", ProxyCore.class);
+
 	// -----------------------------------------------------------
 	// Satisfy the APIs that we use to plug into Spring
 
@@ -127,7 +160,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 			Map<String, Object> attributes) {
 		return lookUpJobFromPath(request).map(job -> {
 			// If we have a job, remember it and succeed
-			attributes.put(JOB, job);
+			JOB.put(attributes, job);
 			return job;
 		}).isPresent();
 	}
@@ -140,19 +173,19 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) {
-		initProxyCore(session, attr(session, JOB));
+		initProxyCore(session, JOB.get(session));
 	}
 
 	@Override
 	public void afterConnectionClosed(WebSocketSession session,
 			CloseStatus status) {
-		closed(session, attr(session, PROXY), attr(session, JOB));
+		closed(session, PROXY.get(session), JOB.get(session));
 	}
 
 	@Override
 	protected void handleBinaryMessage(WebSocketSession session,
 			BinaryMessage message) throws Exception {
-		delegateToProxy(message, attr(session, PROXY));
+		delegateToProxy(message, PROXY.get(session));
 	}
 
 	@Override
@@ -193,12 +226,6 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 		return permit.authorize(() -> spallocCore.getJob(permit, jobId));
 	}
 
-	@SuppressWarnings({"unchecked", "TypeParameterUnusedInFormals"})
-	private static <T> T attr(WebSocketSession session, String key) {
-		// Fetch something from the attributes and auto-cast it
-		return (T) session.getAttributes().get(key);
-	}
-
 	/**
 	 * Connection established and job looked up. Make a proxy.
 	 *
@@ -220,7 +247,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 				.orElseThrow(
 						() -> new RequestFailedException(SERVICE_UNAVAILABLE,
 								"job not in state where proxying permitted"));
-		session.getAttributes().put(PROXY, proxy);
+		PROXY.put(session.getAttributes(), proxy);
 		job.rememberProxy(proxy);
 		log.debug("user {} has web socket {} connected for job {}",
 				session.getPrincipal(), session, job.getId());
