@@ -270,14 +270,13 @@ public class SpallocClientFactory {
 		}
 
 		final Machine getMachine(String name) throws IOException {
-			Machine m;
-			do {
-				m = machineMap.get(name);
-				if (isNull(m)) {
-					client.listMachines();
+			while (true) {
+				Machine m = machineMap.get(name);
+				if (nonNull(m)) {
+					return m;
 				}
-			} while (isNull(m));
-			return m;
+				client.listMachines();
+			}
 		}
 
 		private WhereIs whereis(HttpURLConnection conn) throws IOException {

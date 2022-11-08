@@ -24,17 +24,16 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.connections.model.NotificationReceiver;
-import uk.ac.manchester.spinnaker.connections.model.NotificationSender;
 import uk.ac.manchester.spinnaker.messages.notification.AbstractNotificationMessage;
 import uk.ac.manchester.spinnaker.messages.notification.NotificationMessage;
 
 /**
  * A UDP connection for sending and receiving notification protocol messages.
+ * These messages go between programs on host; they <em>do not</em> go to and
+ * from SpiNNaker and are not constrained by SpiNNaker's message size rules.
  */
 public class NotificationConnection
-		extends UDPConnection<NotificationMessage>
-		implements NotificationReceiver, NotificationSender {
+		extends UDPConnection<NotificationMessage> {
 	private static final int NOTIFICATION_MESSAGE_BUFFER_SIZE = 65535;
 
 	/**
@@ -104,7 +103,14 @@ public class NotificationConnection
 		return allocate(NOTIFICATION_MESSAGE_BUFFER_SIZE).order(LITTLE_ENDIAN);
 	}
 
-	@Override
+	/**
+	 * Sends a notification message down this connection.
+	 *
+	 * @param notificationMessage
+	 *            The notification message to be sent
+	 * @throws IOException
+	 *             If there is an error sending the message
+	 */
 	public void sendNotification(NotificationMessage notificationMessage)
 			throws IOException {
 		var b = newMessageBuffer();

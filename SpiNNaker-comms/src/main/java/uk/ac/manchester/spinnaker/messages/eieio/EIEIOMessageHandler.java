@@ -14,12 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.connections.model;
+package uk.ac.manchester.spinnaker.messages.eieio;
 
-import uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandMessage;
-import uk.ac.manchester.spinnaker.messages.eieio.EIEIODataMessage;
-import uk.ac.manchester.spinnaker.messages.eieio.EIEIOHeader;
-import uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessage;
+import uk.ac.manchester.spinnaker.connections.model.MessageHandler;
 
 /**
  * Handles a message received from an EIEIO connection.

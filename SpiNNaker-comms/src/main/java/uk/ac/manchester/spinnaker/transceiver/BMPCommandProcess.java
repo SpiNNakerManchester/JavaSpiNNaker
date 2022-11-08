@@ -21,10 +21,10 @@ import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.RETRY_DELAY_MS;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
 import static uk.ac.manchester.spinnaker.transceiver.ProcessException.makeInstance;
+import static uk.ac.manchester.spinnaker.transceiver.TxrxProcess.RETRY_DELAY_MS;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.IOException;
@@ -48,15 +48,14 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
- * A process for handling communicating with the BMP.
+ * A process for handling communicating with the BMP. Note that BMPs have
+ * significantly lower limits for the number of messages in flight than SCAMP.
  * <p>
  * Does not inherit from {@link TxrxProcess} for ugly type reasons.
  *
  * @param <R>
  *            The type of the response; implicit in the type of the request.
  * @author Donal Fellows
- * @see uk.ac.manchester.spinnaker.connections.SCPRequestPipeline
- *      SCPRequestPipeline
  */
 class BMPCommandProcess<R extends BMPResponse> {
 	private static final Logger log = getLogger(BMPCommandProcess.class);
@@ -334,7 +333,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 			}
 
 			private void send() throws IOException {
-				connection.send(requestData.asReadOnlyBuffer());
+				connection.send(requestData);
 			}
 
 			private void resend(String reason) throws IOException {

@@ -21,6 +21,7 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_BYTES;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.CPU_INFO;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.slice;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -159,11 +160,8 @@ public abstract class Utils {
 	 * @return The CRC (as a signed integer).
 	 */
 	static int crc(ByteBuffer buffer, int start, int len) {
-		var crcbuf = buffer.duplicate();
-		crcbuf.position(start);
-		crcbuf.limit(start + len);
 		var crc = new CRC32();
-		crc.update(crcbuf);
+		crc.update(slice(buffer, start, len));
 		return (int) crc.getValue();
 	}
 }

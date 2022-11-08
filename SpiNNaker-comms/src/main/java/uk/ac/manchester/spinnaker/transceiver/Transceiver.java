@@ -42,6 +42,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_DEFAULT_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.bmp.ReadSerialVector.SerialVector.SERIAL_LENGTH;
+import static uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer.FLASH_CHUNK_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime.TIMEOUT_2560_ms;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
@@ -57,6 +58,7 @@ import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTE
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTER_FILTERS;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.SYS_VARS;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.defaultBMPforMachine;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.File;
@@ -76,6 +78,9 @@ import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.CheckReturnValue;
@@ -92,12 +97,7 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SDPConnection;
 import uk.ac.manchester.spinnaker.connections.SingletonConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
-import uk.ac.manchester.spinnaker.connections.model.BootReceiver;
-import uk.ac.manchester.spinnaker.connections.model.BootSender;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
-import uk.ac.manchester.spinnaker.connections.model.SCPReceiver;
-import uk.ac.manchester.spinnaker.connections.model.SCPSender;
-import uk.ac.manchester.spinnaker.connections.model.SDPSender;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
@@ -284,19 +284,10 @@ public class Transceiver extends UDPTransceiver
 	 * A boot send connection. There can only be one in the current system, or
 	 * otherwise bad things can happen!
 	 */
-	private BootSender bootSendConnection;
-
-	/**
-	 * A list of all connections that can be used to send SCP messages.
-	 * <p>
-	 * Note that some of these might not be able to receive SCP; this could be
-	 * useful if they are just using SCP to send a command that doesn't expect a
-	 * response.
-	 */
-	private final List<SCPSender> scpSenderConnections = new ArrayList<>();
+	private BootConnection bootConnection;
 
 	/** A list of all connections that can be used to send SDP messages. */
-	private final List<SDPSender> sdpSenderConnections = new ArrayList<>();
+	private final List<SDPConnection> sdpConnections = new ArrayList<>();
 
 	/**
 	 * A map of IP address &rarr; SCAMP connection. These are those that can be
@@ -663,15 +654,12 @@ public class Transceiver extends UDPTransceiver
 	 */
 	private void identifyConnection(Connection conn) {
 		// locate the only boot send conn
-		if (conn instanceof BootSender) {
-			if (nonNull(bootSendConnection)) {
+		if (conn instanceof BootConnection) {
+			if (nonNull(bootConnection)) {
 				throw new IllegalArgumentException(
 						"Only a single BootSender can be specified");
 			}
-			bootSendConnection = (BootSender) conn;
-		} else if (conn instanceof BootReceiver) {
-			// non-sending boot receivers aren't supported; warn about them
-			log.warn("unhandled boot connection: {}", conn);
+			bootConnection = (BootConnection) conn;
 		}
 
 		// Locate any connections listening on a UDP port
@@ -679,32 +667,22 @@ public class Transceiver extends UDPTransceiver
 			registerConnection((UDPConnection<?>) conn);
 		}
 
-		/*
-		 * Locate any connections that can send SCP (that are not BMP
-		 * connections)
-		 */
-		if (conn instanceof SCPSender && !(conn instanceof BMPConnection)) {
-			scpSenderConnections.add((SCPSender) conn);
-		}
-
 		// Locate any connections that can send SDP
-		if (conn instanceof SDPSender) {
-			sdpSenderConnections.add((SDPSender) conn);
+		if (conn instanceof SDPConnection) {
+			sdpConnections.add((SDPConnection) conn);
 		}
 
 		// Locate any connections that can send and receive SCP
-		if (conn instanceof SCPSender && conn instanceof SCPReceiver) {
-			// If it is a BMP connection, add it here
-			if (conn instanceof BMPConnection) {
-				var bmpc = (BMPConnection) conn;
-				bmpConnections.add(bmpc);
-				bmpSelectors.put(bmpc.getCoords(),
-						new SingletonConnectionSelector<>(bmpc));
-			} else if (conn instanceof SCPConnection) {
-				var scpc = (SCPConnection) conn;
-				scpConnections.add(scpc);
-				udpScpConnections.put(scpc.getRemoteIPAddress(), scpc);
-			}
+		// If it is a BMP connection, add it here
+		if (conn instanceof BMPConnection) {
+			var bmpc = (BMPConnection) conn;
+			bmpConnections.add(bmpc);
+			bmpSelectors.put(bmpc.getCoords(),
+					new SingletonConnectionSelector<>(bmpc));
+		} else if (conn instanceof SCPConnection) {
+			var scpc = (SCPConnection) conn;
+			scpConnections.add(scpc);
+			udpScpConnections.put(scpc.getRemoteIPAddress(), scpc);
 		}
 	}
 
@@ -798,11 +776,16 @@ public class Transceiver extends UDPTransceiver
 	 *
 	 * @param <C>
 	 *            the connection type
+	 * @param conn
+	 *            the connection to use if it is not {@code null}
 	 * @param connections
 	 *            the list of connections to locate a random one from
 	 * @return a connection object
 	 */
-	private static <C> C getRandomConnection(List<C> connections) {
+	private static <C> C useOrRandomConnection(C conn, List<C> connections) {
+		if (nonNull(conn)) {
+			return conn;
+		}
 		if (connections.isEmpty()) {
 			return null;
 		}
@@ -891,21 +874,13 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public void sendSCPMessage(SCPRequest<?> message, SCPConnection connection)
 			throws IOException {
-		SCPSender c = connection;
-		if (isNull(c)) {
-			c = getRandomConnection(scpSenderConnections);
-		}
-		c.send(message);
+		useOrRandomConnection(connection, scpConnections).send(message);
 	}
 
 	@Override
 	public void sendSDPMessage(SDPMessage message, SDPConnection connection)
 			throws IOException {
-		SDPSender c = connection;
-		if (isNull(c)) {
-			c = getRandomConnection(sdpSenderConnections);
-		}
-		c.send(message);
+		useOrRandomConnection(connection, sdpConnections).send(message);
 	}
 
 	/**
@@ -960,7 +935,7 @@ public class Transceiver extends UDPTransceiver
 		appIDTracker = new AppIdTracker();
 
 		log.info("Detected a machine on IP address {} which has {}",
-				bootSendConnection.getRemoteIPAddress(),
+				bootConnection.getRemoteIPAddress(),
 				machine.coresAndLinkOutputString());
 	}
 
@@ -1013,7 +988,6 @@ public class Transceiver extends UDPTransceiver
 
 			// check if it works
 			if (checkConnection(conn, chip)) {
-				scpSenderConnections.add(conn);
 				allConnections.add(conn);
 				udpScpConnections.put(ipAddress, conn);
 				scpConnections.add(conn);
@@ -1131,7 +1105,7 @@ public class Transceiver extends UDPTransceiver
 		var bootMessages = new BootMessages(version, extraBootValues);
 		var msgs = bootMessages.getMessages().iterator();
 		while (msgs.hasNext()) {
-			bootSendConnection.sendBootMessage(msgs.next());
+			bootConnection.sendBootMessage(msgs.next());
 		}
 		sleep(POST_BOOT_DELAY);
 	}
@@ -1867,30 +1841,31 @@ public class Transceiver extends UDPTransceiver
 		bmpCall(bmp, new WriteFlashBuffer(board, address, true));
 	}
 
-	@Deprecated
 	@Override
-	public MemoryLocation eraseBMPFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int size)
-			throws IOException, ProcessException, InterruptedException {
-		return bmpCall(bmp, new EraseFlash(board, baseAddress, size)).address;
-	}
+	public void writeFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
+			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data,
+			boolean update)
+			throws ProcessException, IOException, InterruptedException {
+		if (!data.hasRemaining()) {
+			// Zero length write?
+			log.warn("zero length write to flash ignored");
+			return;
+		}
 
-	@Deprecated
-	@Override
-	public void chunkBMPFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation address)
-			throws IOException, ProcessException, InterruptedException {
-		bmpCall(bmp, new WriteFlashBuffer(board, address, false));
-	}
+		int size = data.remaining();
+		var workingBuffer =
+				bmpCall(bmp, new EraseFlash(board, baseAddress, size)).address;
+		var targetAddr = baseAddress;
+		for (var buf : sliceUp(data, FLASH_CHUNK_SIZE)) {
+			writeBMPMemory(bmp, board, workingBuffer, buf);
+			bmpCall(bmp, new WriteFlashBuffer(board, targetAddr, false));
+			targetAddr = targetAddr.add(FLASH_CHUNK_SIZE);
+		}
 
-	@Deprecated
-	@Override
-	public void copyBMPFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int size)
-			throws IOException, ProcessException, InterruptedException {
-		// NB: no retries of this! Not idempotent!
-		bmpCall(bmp, (int) (MSEC_PER_SEC * BMP_TIMEOUT), 0,
-				new UpdateFlash(board, baseAddress, size));
+		if (update) {
+			bmpCall(bmp, (int) (MSEC_PER_SEC * BMP_TIMEOUT), 0,
+					new UpdateFlash(board, baseAddress, size));
+		}
 	}
 
 	@Override

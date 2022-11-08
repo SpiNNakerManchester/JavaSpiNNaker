@@ -59,8 +59,8 @@ public final class CommandLineCheck {
 		for (var m : client.listMachines()) {
 			var where = m.getBoard(new TriadCoords(0, 0, 1));
 			if (isNull(where)) {
-				System.out.println(
-						"board (0,0,1) not in machine " + m.getName());
+				System.out.format("board (0,0,1) not in machine %s%n",
+						m.getName());
 				continue;
 			}
 			System.out.println(where.getMachineHandle().getWidth());

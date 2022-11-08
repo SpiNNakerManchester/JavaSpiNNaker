@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.connections;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -38,7 +39,6 @@ import com.google.errorprone.annotations.MustBeClosed;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.connections.model.MessageHandler;
-import uk.ac.manchester.spinnaker.connections.model.MessageReceiver;
 
 /**
  * Thread that listens to a connection and calls callbacks with new messages
@@ -47,7 +47,7 @@ import uk.ac.manchester.spinnaker.connections.model.MessageReceiver;
  * @param <MessageType>
  *            The type of message being listened for by the connection.
  */
-public class ConnectionListener<MessageType> extends Thread
+public final class ConnectionListener<MessageType> extends Thread
 		implements Closeable {
 	/** What size of thread pool to use by default. */
 	public static final int POOL_SIZE = 4;
@@ -75,7 +75,7 @@ public class ConnectionListener<MessageType> extends Thread
 	@GuardedBy("callbacks")
 	private List<MessageHandler<MessageType>> callbacksCheckpointed;
 
-	private final MessageReceiver<MessageType> connection;
+	private final UDPConnection<MessageType> connection;
 
 	private volatile boolean done;
 
@@ -89,7 +89,7 @@ public class ConnectionListener<MessageType> extends Thread
 	 *            The connection to listen to.
 	 */
 	@MustBeClosed
-	public ConnectionListener(MessageReceiver<MessageType> connection) {
+	public ConnectionListener(UDPConnection<MessageType> connection) {
 		this(connection, POOL_SIZE, TIMEOUT);
 	}
 
@@ -105,7 +105,7 @@ public class ConnectionListener<MessageType> extends Thread
 	 *            0, wait indefinitely.
 	 */
 	@MustBeClosed
-	public ConnectionListener(MessageReceiver<MessageType> connection,
+	public ConnectionListener(UDPConnection<MessageType> connection,
 			int numProcesses, int timeout) {
 		super("Connection listener for connection " + connection);
 		setDaemon(true);
@@ -128,7 +128,7 @@ public class ConnectionListener<MessageType> extends Thread
 	 * {@linkplain #close() closed}.
 	 */
 	@Override
-	public final void run() {
+	public void run() {
 		try {
 			while (!done) {
 				try {
@@ -200,7 +200,7 @@ public class ConnectionListener<MessageType> extends Thread
 	public void addCallback(MessageHandler<MessageType> callback) {
 		synchronized (callbacks) {
 			callbacksCheckpointed = null;
-			callbacks.add(callback);
+			callbacks.add(requireNonNull(callback));
 		}
 	}
 

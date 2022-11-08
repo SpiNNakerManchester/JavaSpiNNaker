@@ -20,6 +20,7 @@ import static java.lang.Integer.compare;
 import static java.lang.Integer.parseInt;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -154,7 +155,7 @@ public final class PhysicalCoords implements Comparable<PhysicalCoords> {
 	static final class Deserializer extends DeserializerHelper<PhysicalCoords> {
 		private static final long serialVersionUID = 1L;
 
-		protected Deserializer() {
+		Deserializer() {
 			super(PhysicalCoords.class);
 		}
 
@@ -189,13 +190,18 @@ public final class PhysicalCoords implements Comparable<PhysicalCoords> {
 					unknownProperty(name);
 				}
 			}
-			checkMissingProperty("c", c, "f", f, "b", b);
+			missingProperty("c", c, "f", f, "b", b);
 			return new PhysicalCoords(c, f, b);
 		}
 
 		@Override
 		PhysicalCoords deserializeString(String string) {
 			return new PhysicalCoords(string);
+		}
+
+		@Override
+		public List<Object> getKnownPropertyNames() {
+			return List.of("c", "f", "b");
 		}
 	}
 }

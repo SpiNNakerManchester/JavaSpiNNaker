@@ -46,10 +46,14 @@ abstract class ListFetchingIter<T> implements Iterator<List<T>> {
 
 	private List<T> handles = null;
 
+	private boolean noneWaiting() {
+		return isNull(handles);
+	}
+
 	@Override
 	public final boolean hasNext() {
 		if (!done) {
-			if (isNull(handles) && canFetchMore()) {
+			if (noneWaiting() && canFetchMore()) {
 				try {
 					handles = fetchNext();
 				} catch (IOException e) {
@@ -57,7 +61,7 @@ abstract class ListFetchingIter<T> implements Iterator<List<T>> {
 					handles = null;
 				}
 			}
-			if (isNull(handles) || handles.isEmpty()) {
+			if (noneWaiting() || handles.isEmpty()) {
 				done = true;
 			}
 		}
@@ -66,7 +70,7 @@ abstract class ListFetchingIter<T> implements Iterator<List<T>> {
 
 	@Override
 	public final List<T> next() {
-		if (isNull(handles)) {
+		if (noneWaiting()) {
 			throw new NoSuchElementException("no more");
 		}
 		try {

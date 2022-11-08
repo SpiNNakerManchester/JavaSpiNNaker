@@ -26,13 +26,10 @@ import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_
 import java.io.IOException;
 import java.net.InetAddress;
 
-import uk.ac.manchester.spinnaker.connections.model.BootReceiver;
-import uk.ac.manchester.spinnaker.connections.model.BootSender;
 import uk.ac.manchester.spinnaker.messages.boot.BootMessage;
 
 /** A connection to the SpiNNaker board that uses UDP to for booting. */
-public class BootConnection extends UDPConnection<BootMessage>
-		implements BootSender, BootReceiver {
+public class BootConnection extends UDPConnection<BootMessage> {
 	// Determined by Ethernet MTU, not by SDP buffer size
 	private static final int BOOT_MESSAGE_SIZE = 1500;
 
@@ -106,7 +103,14 @@ public class BootConnection extends UDPConnection<BootMessage>
 		return new BootMessage(receive(timeout));
 	}
 
-	@Override
+	/**
+	 * Sends a SpiNNaker boot message using this connection.
+	 *
+	 * @param bootMessage
+	 *            The message to be sent
+	 * @throws IOException
+	 *             If there is an error sending the message
+	 */
 	public void sendBootMessage(BootMessage bootMessage) throws IOException {
 		var b = allocate(BOOT_MESSAGE_SIZE).order(BIG_ENDIAN);
 		bootMessage.addToBuffer(b);

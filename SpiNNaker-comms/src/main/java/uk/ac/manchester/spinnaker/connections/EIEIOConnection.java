@@ -24,8 +24,6 @@ import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import uk.ac.manchester.spinnaker.connections.model.EIEIOReceiver;
-import uk.ac.manchester.spinnaker.connections.model.EIEIOSender;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommand;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandID;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandMessage;
@@ -34,8 +32,7 @@ import uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessage;
 
 /** A UDP connection for sending and receiving raw EIEIO messages. */
 public class EIEIOConnection
-		extends UDPConnection<EIEIOMessage<? extends EIEIOHeader>>
-		implements EIEIOReceiver, EIEIOSender {
+		extends UDPConnection<EIEIOMessage<? extends EIEIOHeader>> {
 	/**
 	 * Create an EIEIO connection only available for listening, using default
 	 * local port.
@@ -105,7 +102,14 @@ public class EIEIOConnection
 		super(true);
 	}
 
-	@Override
+	/**
+	 * Sends an EIEIO message down this connection.
+	 *
+	 * @param eieioMessage
+	 *            The EIEIO message to be sent
+	 * @throws IOException
+	 *             If there is an error sending the message
+	 */
 	public void sendEIEIOMessage(EIEIOMessage<?> eieioMessage)
 			throws IOException {
 		var b = newMessageBuffer();
