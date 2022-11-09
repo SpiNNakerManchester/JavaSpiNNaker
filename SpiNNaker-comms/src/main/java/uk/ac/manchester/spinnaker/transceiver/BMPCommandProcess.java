@@ -187,9 +187,9 @@ class BMPCommandProcess<R extends BMPResponse> {
 	}
 
 	/**
-	 * Do a synchronous call of a sequence of BMP operations, sending each of
-	 * the given messages and completely processing the interaction before doing
-	 * the next one.
+	 * Do a synchronous call of a sequence of BMP operations to the same host,
+	 * sending each of the given messages and completely processing the
+	 * interaction before doing the next one.
 	 *
 	 * @param <T>
 	 *            The real type of the responses
@@ -209,17 +209,9 @@ class BMPCommandProcess<R extends BMPResponse> {
 	<T extends R> List<T> execute(Iterable<? extends BMPRequest<T>> requests)
 			throws IOException, ProcessException, InterruptedException {
 		var results = new ArrayList<R>();
-		RequestPipeline requestPipeline = null;
 		for (var request : requests) {
-			if (requestPipeline == null) {
-				/*
-				 * If no pipeline built yet, build one on the connection
-				 * selected for it.
-				 */
-
-				requestPipeline = new RequestPipeline(
-						connectionSelector.getNextConnection(request));
-			}
+			var requestPipeline = new RequestPipeline(
+					connectionSelector.getNextConnection(request));
 			requestPipeline.sendRequest((BMPRequest<R>) request, results::add);
 			requestPipeline.finish();
 		}

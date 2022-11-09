@@ -763,12 +763,13 @@ public class MachineStateControl extends DatabaseAwareBean {
 		 *            The SQL to create the operation to carry out. Must
 		 *            generate an ID, so presumably is an {@code INSERT}.
 		 * @param args
-		 *            Values to bind to parameters in the SQL.
+		 *            Values to bind to parameters in the SQL. The first
+		 *            parameter <em>must</em> be the board ID! Presumably that
+		 *            will be the board that the operation refers to.
 		 */
 		@MustBeClosed
-		@SuppressWarnings("CompileTimeConstant")
 		Op(@CompileTimeConstant final String operation, Object... args) {
-			boardId = ((Integer) args[0]).intValue(); // TODO yuck!
+			boardId = (Integer) args[0];
 			epoch = epochs.getBlacklistEpoch();
 			op = execute(conn -> {
 				try (var readReq = conn.update(operation)) {

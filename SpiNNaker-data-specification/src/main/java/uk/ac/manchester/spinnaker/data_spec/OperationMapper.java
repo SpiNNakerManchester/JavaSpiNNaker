@@ -17,8 +17,10 @@
 package uk.ac.manchester.spinnaker.data_spec;
 
 import static java.lang.String.format;
+import static java.util.Arrays.stream;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.lang.ref.WeakReference;
@@ -26,6 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.slf4j.Logger;
@@ -79,58 +82,63 @@ abstract class OperationMapper {
 				 * the same weak reference for all the method wrappers that we
 				 * create.
 				 */
-				k -> manufactureCallables(new WeakReference<>(k),
-						OPS_MAP.computeIfAbsent(k.getClass(),
+				__ -> manufactureCallables(new WeakReference<>(funcs),
+						OPS_MAP.computeIfAbsent(funcs.getClass(),
 								OperationMapper::getOperations)));
 		return map.get(opcode);
 	}
 
 	private static Map<Commands, Callable> manufactureCallables(
 			WeakReference<FunctionAPI> objref, Map<Commands, Method> ops) {
-		Map<Commands, Callable> map = new HashMap<>();
-		// Note that getOperations() below ensures the safety of this
-		ops.forEach((c, m) -> {
+		return ops.entrySet().stream().collect(toMap(Map.Entry::getKey, e -> {
+			var c = e.getKey();
+			var m = e.getValue();
+			// Note that validateOperationMethod() below ensures safety of this
 			if (m.getReturnType().equals(Void.TYPE)) {
-				map.put(c, cmd -> doVoidCall(objref.get(), m, c, cmd));
+				return cmd -> doVoidCall(objref.get(), m, c, cmd);
 			} else {
-				map.put(c, cmd -> doIntCall(objref.get(), m, c, cmd));
+				return cmd -> doIntCall(objref.get(), m, c, cmd);
 			}
-		});
-		return map;
+		}));
 	}
 
-	private static Map<Commands, Method> getOperations(
-			Class<? extends FunctionAPI> cls) {
-		var ops = new HashMap<Commands, Method>();
-		for (var m : cls.getMethods()) {
-			// Skip methods without the annotation. They're no problem.
-			if (!m.isAnnotationPresent(Operation.class)) {
-				continue;
-			}
-			var c = m.getAnnotation(Operation.class).value();
+	private static Map<Commands, Method> getOperations(Class<?> cls) {
+		return stream(cls.getMethods())
+				.filter(m -> m.isAnnotationPresent(Operation.class))
+				.collect(toMap(m -> m.getAnnotation(Operation.class).value(),
+						m -> validateOperationMethod(cls, m)));
+	}
 
-			/*
-			 * If there are any arguments, or the method has a return type that
-			 * isn't void or int, or the annotation value is null, that's an
-			 * error.
-			 */
-			if (m.getParameterCount() != 0
-					|| !(m.getReturnType().equals(Void.TYPE)
-							|| m.getReturnType().equals(Integer.TYPE))
-					|| c == null) {
-				throw new IllegalArgumentException(
-						format("bad Operation annotation on method %s of %s",
-								m.getName(), cls));
-			}
-			if (log.isDebugEnabled()) {
-				log.debug(
-						"discovered operation {} on {} is "
-								+ "implemented by {}()",
-						c.name(), cls, m.getName());
-			}
-			ops.put(c, m);
+	private static final Set<Class<?>> ALLOWED_RETURN_TYPES =
+			Set.of(Void.TYPE, Integer.TYPE);
+
+	/**
+	 * If there are any arguments, or the method has a return type that isn't
+	 * {@code void} or {@code int}, that's an error.
+	 *
+	 * @param cls
+	 *            The class, for the exception message.
+	 * @param m
+	 *            The (annotated) method to check.
+	 * @return The checked method.
+	 */
+	private static Method validateOperationMethod(Class<?> cls, Method m) {
+		if (m.getParameterCount() != 0
+				|| !ALLOWED_RETURN_TYPES.contains(m.getReturnType())) {
+			throw new IllegalArgumentException(
+					format("bad Operation annotation on method %s of %s",
+							m.getName(), cls));
 		}
-		return ops;
+		return m;
+	}
+
+	private static void preCall(FunctionAPI funcs, Commands command,
+			int encodedOpcode) {
+		requireNonNull(funcs, "unexpectedly early deallocation");
+		funcs.unpack(encodedOpcode);
+		if (log.isDebugEnabled()) {
+			log.debug("EXEC: {} ({})", command, format("%08x", encodedOpcode));
+		}
 	}
 
 	/**
@@ -141,11 +149,7 @@ abstract class OperationMapper {
 	private static int doIntCall(FunctionAPI funcs, Method method,
 			Commands command, int encodedOpcode)
 			throws DataSpecificationException {
-		requireNonNull(funcs, "unexpectedly early deallocation");
-		funcs.unpack(encodedOpcode);
-		if (log.isDebugEnabled()) {
-			log.debug("EXEC: {} ({})", command, format("%08x", encodedOpcode));
-		}
+		preCall(funcs, command, encodedOpcode);
 		try {
 			try {
 				return (int) method.invoke(funcs);
@@ -171,11 +175,7 @@ abstract class OperationMapper {
 	private static int doVoidCall(FunctionAPI funcs, Method method,
 			Commands command, int encodedOpcode)
 			throws DataSpecificationException {
-		requireNonNull(funcs, "unexpectedly early deallocation");
-		funcs.unpack(encodedOpcode);
-		if (log.isDebugEnabled()) {
-			log.debug("EXEC: {} ({})", command, format("%08x", encodedOpcode));
-		}
+		preCall(funcs, command, encodedOpcode);
 		try {
 			try {
 				method.invoke(funcs);

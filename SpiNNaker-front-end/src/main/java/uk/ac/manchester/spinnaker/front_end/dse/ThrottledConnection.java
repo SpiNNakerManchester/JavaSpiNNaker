@@ -167,7 +167,7 @@ class ThrottledConnection implements Closeable {
 		// Prevent reuse of existing socket IDs for other boards
 		CLOSER.schedule(() -> {
 			try {
-				Object name = null;
+				var name = "";
 				if (log.isInfoEnabled()) {
 					name = c.toString();
 				}

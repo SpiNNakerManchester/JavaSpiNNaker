@@ -45,7 +45,6 @@ import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -581,11 +580,7 @@ final class ClientSession implements Session {
 	/** Helper for digging CSRF token info out of HTML. */
 	private Stream<String> getCSRF(String line) {
 		var m = CSRF_ID_RE.matcher(line);
-		Set<String> s = Set.of();
-		if (m.find()) {
-			s = Set.of(m.group(1));
-		}
-		return s.stream();
+		return m.find() ? Stream.of(m.group(1)) : Stream.empty();
 	}
 
 	/**
