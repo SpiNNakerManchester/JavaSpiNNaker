@@ -84,10 +84,10 @@ loadScripts(document, 'script');</script>
 <pre><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/annotation/Documented.html?is-external=true" title="class or interface in java.lang.annotation" class="externalLink">@Documented</a>
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/annotation/Retention.html?is-external=true" title="class or interface in java.lang.annotation" class="externalLink">@Retention</a>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/annotation/RetentionPolicy.html?is-external=true#RUNTIME" title="class or interface in java.lang.annotation" class="externalLink">RUNTIME</a>)
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/annotation/Target.html?is-external=true" title="class or interface in java.lang.annotation" class="externalLink">@Target</a>({<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/annotation/ElementType.html?is-external=true#METHOD" title="class or interface in java.lang.annotation" class="externalLink">METHOD</a>,<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/annotation/ElementType.html?is-external=true#FIELD" title="class or interface in java.lang.annotation" class="externalLink">FIELD</a>,<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/annotation/ElementType.html?is-external=true#PARAMETER" title="class or interface in java.lang.annotation" class="externalLink">PARAMETER</a>,<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/annotation/ElementType.html?is-external=true#TYPE_USE" title="class or interface in java.lang.annotation" class="externalLink">TYPE_USE</a>})
-@Positive
-@Max(21L)
-@Constraint(validatedBy={})
-@ReportAsSingleViolation
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/Max.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Max</a>(21L)
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Constraint.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Constraint</a>(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Constraint.html?is-external=true#validatedBy()" title="class or interface in javax.validation" class="externalLink">validatedBy</a>={})
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/ReportAsSingleViolation.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@ReportAsSingleViolation</a>
 public @interface <span class="memberNameLabel">ValidTriadHeight</span></pre>
 <div class="block">Validates that a machine's height (in triads) is in a sane range.</div>
 <dl>
@@ -129,7 +129,7 @@ public @interface <span class="memberNameLabel">ValidTriadHeight</span></pre>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;? extends javax.validation.Payload&gt;[]</code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;? extends <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Payload.html?is-external=true" title="class or interface in javax.validation" class="externalLink">Payload</a>&gt;[]</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#payload()">payload</a></span></code></th>
 <td class="colLast">
 <div class="block">Payload info.</div>
@@ -184,7 +184,7 @@ public @interface <span class="memberNameLabel">ValidTriadHeight</span></pre>
 <li class="blockList">
 <section class="detail">
 <h3><a id="payload()">payload</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;? extends javax.validation.Payload&gt;[]</span>&nbsp;<span class="memberName">payload</span></div>
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;? extends <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Payload.html?is-external=true" title="class or interface in javax.validation" class="externalLink">Payload</a>&gt;[]</span>&nbsp;<span class="memberName">payload</span></div>
 <div class="block">Payload info. Required by validation spec.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>

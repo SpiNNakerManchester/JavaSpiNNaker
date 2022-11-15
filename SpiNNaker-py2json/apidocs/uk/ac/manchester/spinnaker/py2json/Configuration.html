@@ -122,7 +122,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>@NotEmpty(message="there must be at least one machine described") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;@Valid <a href="Machine.html" title="class in uk.ac.manchester.spinnaker.py2json">Machine</a>&gt;</code></td>
+<td class="colFirst"><code><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotEmpty.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotEmpty</a>(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotEmpty.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="there must be at least one machine described") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="Machine.html" title="class in uk.ac.manchester.spinnaker.py2json">Machine</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#machines">machines</a></span></code></th>
 <td class="colLast">
 <div class="block">The machines to manage.</div>
@@ -209,8 +209,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="machines">machines</a></h3>
-<div class="memberSignature"><span class="annotations">@NotEmpty(message="there must be at least one machine described")
-</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@NotEmpty(message="there must be at least one machine described") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;@Valid <a href="Machine.html" title="class in uk.ac.manchester.spinnaker.py2json">Machine</a>&gt;</span>&nbsp;<span class="memberName">machines</span></div>
+<div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotEmpty.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotEmpty</a>(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotEmpty.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="there must be at least one machine described")
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotEmpty.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotEmpty</a>(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotEmpty.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="there must be at least one machine described") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="Machine.html" title="class in uk.ac.manchester.spinnaker.py2json">Machine</a>&gt;</span>&nbsp;<span class="memberName">machines</span></div>
 <div class="block">The machines to manage.</div>
 </section>
 </li>
@@ -233,7 +233,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="timeoutCheckInterval">timeoutCheckInterval</a></h3>
-<div class="memberSignature"><span class="annotations">@Positive
+<div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>
 </span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive double</span>&nbsp;<span class="memberName">timeoutCheckInterval</span></div>
 <div class="block">How often (in seconds) to check for timeouts.</div>
 </section>
@@ -241,7 +241,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="maxRetiredJobs">maxRetiredJobs</a></h3>
-<div class="memberSignature"><span class="annotations">@PositiveOrZero
+<div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>
 </span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.PositiveOrZero int</span>&nbsp;<span class="memberName">maxRetiredJobs</span></div>
 <div class="block">How many retired jobs to retain.</div>
 </section>
@@ -249,7 +249,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="secondsBeforeFree">secondsBeforeFree</a></h3>
-<div class="memberSignature"><span class="annotations">@PositiveOrZero
+<div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>
 </span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.PositiveOrZero int</span>&nbsp;<span class="memberName">secondsBeforeFree</span></div>
 <div class="block">Time to wait before freeing.</div>
 </section>

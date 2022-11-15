@@ -158,8 +158,8 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../../../alloc/admin/MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">MachineStateControl.</span><code><span class="memberNameLink"><a href="../../../alloc/admin/MachineStateControl.html#findPhysical(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">findPhysical</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-@Valid @NotNull <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">MachineStateControl.</span><code><span class="memberNameLink"><a href="../../../alloc/admin/MachineStateControl.html#findPhysical(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">findPhysical</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotBlank.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotBlank</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Look up a board for management.</div>
 </td>
@@ -186,7 +186,7 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>@Valid <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a></code></td>
+<td class="colFirst"><code><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.HasBoardCoords.</span><code><span class="memberNameLink"><a href="../../../alloc/allocator/SpallocAPI.HasBoardCoords.html#physical">physical</a></span></code></th>
 <td class="colLast">
 <div class="block">The physical coordinates, or <code>null</code>.</div>
@@ -208,7 +208,7 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../../../alloc/allocator/SpallocAPI.BoardLocation.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.BoardLocation</a>&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Machine.</span><code><span class="memberNameLink"><a href="../../../alloc/allocator/SpallocAPI.Machine.html#getBoardByPhysicalCoords(uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">getBoardByPhysicalCoords</a></span>&#8203;(@Valid @NotNull <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Machine.</span><code><span class="memberNameLink"><a href="../../../alloc/allocator/SpallocAPI.Machine.html#getBoardByPhysicalCoords(uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">getBoardByPhysicalCoords</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Get a description of the location of a board given the physical
  coordinates of the board.</div>
@@ -256,7 +256,7 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code><a href="../../../allocator/WhereIs.html" title="class in uk.ac.manchester.spinnaker.allocator">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Machine.</span><code><span class="memberNameLink"><a href="../../../allocator/SpallocClient.Machine.html#getBoard(uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">getBoard</a></span>&#8203;(@NotNull @Valid <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Machine.</span><code><span class="memberNameLink"><a href="../../../allocator/SpallocClient.Machine.html#getBoard(uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">getBoard</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Given physical coordinates, return more info about a board.</div>
 </td>
@@ -330,7 +330,7 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>@NotNull <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;@Valid <a href="../TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a>,&#8203;@Valid <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&gt;</code></td>
+<td class="colFirst"><code><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../TriadCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">TriadCoords</a>,&#8203;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Machine.</span><code><span class="memberNameLink"><a href="../../../py2json/Machine.html#boardLocations">boardLocations</a></span></code></th>
 <td class="colLast">
 <div class="block">The logical-to-physical board location map.</div>
@@ -359,17 +359,17 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>default <a href="../../../spalloc/messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../../spalloc/SpallocAPI.html#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">getBoardPosition</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-@Valid <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../../spalloc/SpallocAPI.html#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">getBoardPosition</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotBlank.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotBlank</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Get the logical location of a board.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../../../spalloc/messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../../spalloc/SpallocAPI.html#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords,java.lang.Integer)">getBoardPosition</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-@Valid <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords,
-@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../../spalloc/SpallocAPI.html#getBoardPosition(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords,java.lang.Integer)">getBoardPosition</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotBlank.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotBlank</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Get the logical location of a board.</div>
 </td>
@@ -383,17 +383,17 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>default <a href="../../../spalloc/messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../../spalloc/SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-@Valid <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../../spalloc/SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">whereIs</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotBlank.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotBlank</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Locate a board within a machine.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code><a href="../../../spalloc/messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../../spalloc/SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords,java.lang.Integer)">whereIs</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-@Valid <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords,
-@Positive <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.</span><code><span class="memberNameLink"><a href="../../../spalloc/SpallocAPI.html#whereIs(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords,java.lang.Integer)">whereIs</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotBlank.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotBlank</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Locate a board within a machine.</div>
 </td>
@@ -453,15 +453,15 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../spalloc/messages/GetBoardAtPositionCommand.html#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">GetBoardAtPositionCommand</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-@Valid <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../spalloc/messages/GetBoardAtPositionCommand.html#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">GetBoardAtPositionCommand</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotBlank.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotBlank</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Create a request.</div>
 </td>
 </tr>
 <tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../spalloc/messages/WhereIsMachineBoardPhysicalCommand.html#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">WhereIsMachineBoardPhysicalCommand</a></span>&#8203;(@NotBlank <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-@Valid @NotNull <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../spalloc/messages/WhereIsMachineBoardPhysicalCommand.html#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">WhereIsMachineBoardPhysicalCommand</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotBlank.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotBlank</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../PhysicalCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">PhysicalCoords</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Create a request to locate a board on a machine.</div>
 </td>

@@ -124,7 +124,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a></code></td>
+<td class="colFirst"><code><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#core">core</a></span></code></th>
 <td class="colLast">
 <div class="block">What core owned the region? Note that the region might be retrieved
@@ -171,7 +171,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>@NotNull <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a></code></td>
+<td class="colFirst"><code><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#startAddress">startAddress</a></span></code></th>
 <td class="colLast">
 <div class="block">Where should the data be downloaded from? <em>This is not necessarily
@@ -271,8 +271,8 @@ int&nbsp;size)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="core">core</a></h3>
-<div class="memberSignature"><span class="annotations">@Valid
-</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@Valid <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a></span>&nbsp;<span class="memberName">core</span></div>
+<div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a></span>&nbsp;<span class="memberName">core</span></div>
 <div class="block">What core owned the region? Note that the region might be retrieved
  from another core of the same chip.</div>
 </section>
@@ -288,8 +288,8 @@ int&nbsp;size)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="startAddress">startAddress</a></h3>
-<div class="memberSignature"><span class="annotations">@NotNull
-</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@NotNull <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a></span>&nbsp;<span class="memberName">startAddress</span></div>
+<div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a></span>&nbsp;<span class="memberName">startAddress</span></div>
 <div class="block">Where should the data be downloaded from? <em>This is not necessarily
  the start of the region.</em></div>
 </section>
@@ -297,7 +297,7 @@ int&nbsp;size)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="size">size</a></h3>
-<div class="memberSignature"><span class="annotations">@Positive
+<div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>
 </span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive int</span>&nbsp;<span class="memberName">size</span></div>
 <div class="block">How much data should be downloaded? <em>This is not necessarily the
  size of the region.</em></div>
@@ -306,7 +306,7 @@ int&nbsp;size)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="realSize">realSize</a></h3>
-<div class="memberSignature"><span class="annotations">@Positive
+<div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>
 </span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive int</span>&nbsp;<span class="memberName">realSize</span></div>
 <div class="block">How much data was originally requested?</div>
 </section>
@@ -314,7 +314,7 @@ int&nbsp;size)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="initialIgnore">initialIgnore</a></h3>
-<div class="memberSignature"><span class="annotations">@PositiveOrZero
+<div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>
 </span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.PositiveOrZero int</span>&nbsp;<span class="memberName">initialIgnore</span></div>
 <div class="block">How many extra bytes are being read at the start of the region in
  order to get an aligned read?</div>
@@ -323,7 +323,7 @@ int&nbsp;size)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="finalIgnore">finalIgnore</a></h3>
-<div class="memberSignature"><span class="annotations">@PositiveOrZero
+<div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>
 </span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.PositiveOrZero int</span>&nbsp;<span class="memberName">finalIgnore</span></div>
 <div class="block">How many extra bytes are being read at the end of the region in order
  to get an aligned read?</div>

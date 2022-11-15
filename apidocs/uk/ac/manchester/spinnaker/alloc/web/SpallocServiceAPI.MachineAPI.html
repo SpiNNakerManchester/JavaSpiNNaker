@@ -93,7 +93,7 @@ loadScripts(document, 'script');</script>
 <dd><a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceAPI</a></dd>
 </dl>
 <hr>
-<pre>@Path("machines/{name}")
+<pre><a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/Path.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Path</a>("machines/{name}")
 public static interface <span class="typeNameLabel">SpallocServiceAPI.MachineAPI</span></pre>
 <div class="block">Interface to a particular machine.</div>
 <dl>
@@ -124,7 +124,7 @@ public static interface <span class="typeNameLabel">SpallocServiceAPI.MachineAPI
 <tr class="altColor" id="i0">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#describeMachine(boolean,javax.ws.rs.container.AsyncResponse)">describeMachine</a></span>&#8203;(boolean&nbsp;wait,
-javax.ws.rs.container.AsyncResponse&nbsp;response)</code></th>
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/container/AsyncResponse.html?is-external=true" title="class or interface in javax.ws.rs.container" class="externalLink">AsyncResponse</a>&nbsp;response)</code></th>
 <td class="colLast">
 <div class="block">Describe the basic info about a machine.</div>
 </td>
@@ -184,13 +184,13 @@ javax.ws.rs.container.AsyncResponse&nbsp;response)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="describeMachine(boolean,javax.ws.rs.container.AsyncResponse)">describeMachine</a></h3>
-<div class="memberSignature"><span class="annotations">@GET
-@Path("/")
-@Produces("application/json")
-</span><span class="returnType">void</span>&nbsp;<span class="memberName">describeMachine</span>&#8203;(<span class="arguments">@QueryParam("wait") @DefaultValue("false")
+<div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/GET.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@GET</a>
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/Path.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Path</a>("/")
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/Produces.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Produces</a>("application/json")
+</span><span class="returnType">void</span>&nbsp;<span class="memberName">describeMachine</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/QueryParam.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@QueryParam</a>("wait") <a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/DefaultValue.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@DefaultValue</a>("false")
 boolean&nbsp;wait,
-@Suspended
-javax.ws.rs.container.AsyncResponse&nbsp;response)</span></div>
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/container/Suspended.html?is-external=true" title="class or interface in javax.ws.rs.container" class="externalLink">@Suspended</a>
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/container/AsyncResponse.html?is-external=true" title="class or interface in javax.ws.rs.container" class="externalLink">AsyncResponse</a>&nbsp;response)</span></div>
 <div class="block">Describe the basic info about a machine.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -202,14 +202,14 @@ javax.ws.rs.container.AsyncResponse&nbsp;response)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="whereIsLogicalPosition(@uk.ac.manchester.spinnaker.machine.board.ValidTriadXint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadYint,@uk.ac.manchester.spinnaker.machine.board.ValidTriadZint)">whereIsLogicalPosition</a></h3>
-<div class="memberSignature"><span class="annotations">@GET
-@Path("logical-board")
-@Produces("application/json")
-</span><span class="returnType"><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></span>&nbsp;<span class="memberName">whereIsLogicalPosition</span>&#8203;(<span class="arguments">@QueryParam("x") <a href="../../machine/board/ValidTriadX.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadX</a>
+<div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/GET.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@GET</a>
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/Path.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Path</a>("logical-board")
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/Produces.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Produces</a>("application/json")
+</span><span class="returnType"><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></span>&nbsp;<span class="memberName">whereIsLogicalPosition</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/QueryParam.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@QueryParam</a>("x") <a href="../../machine/board/ValidTriadX.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadX</a>
 @uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
-@QueryParam("y") <a href="../../machine/board/ValidTriadY.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadY</a>
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/QueryParam.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@QueryParam</a>("y") <a href="../../machine/board/ValidTriadY.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadY</a>
 @uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
-@QueryParam("z") @DefaultValue("0") <a href="../../machine/board/ValidTriadZ.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadZ</a>
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/QueryParam.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@QueryParam</a>("z") <a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/DefaultValue.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@DefaultValue</a>("0") <a href="../../machine/board/ValidTriadZ.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidTriadZ</a>
 @uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z)</span></div>
 <div class="block">Get the location description of a board given its logical coords.</div>
 <dl>
@@ -225,14 +225,14 @@ javax.ws.rs.container.AsyncResponse&nbsp;response)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="whereIsPhysicalPosition(@uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidFrameNumberint,@uk.ac.manchester.spinnaker.machine.board.ValidBoardNumberint)">whereIsPhysicalPosition</a></h3>
-<div class="memberSignature"><span class="annotations">@GET
-@Path("physical-board")
-@Produces("application/json")
-</span><span class="returnType"><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></span>&nbsp;<span class="memberName">whereIsPhysicalPosition</span>&#8203;(<span class="arguments">@QueryParam("cabinet") @DefaultValue("0") <a href="../../machine/board/ValidCabinetNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidCabinetNumber</a>
+<div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/GET.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@GET</a>
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/Path.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Path</a>("physical-board")
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/Produces.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Produces</a>("application/json")
+</span><span class="returnType"><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></span>&nbsp;<span class="memberName">whereIsPhysicalPosition</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/QueryParam.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@QueryParam</a>("cabinet") <a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/DefaultValue.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@DefaultValue</a>("0") <a href="../../machine/board/ValidCabinetNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidCabinetNumber</a>
 @uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;cabinet,
-@QueryParam("frame") @DefaultValue("0") <a href="../../machine/board/ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidFrameNumber</a>
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/QueryParam.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@QueryParam</a>("frame") <a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/DefaultValue.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@DefaultValue</a>("0") <a href="../../machine/board/ValidFrameNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidFrameNumber</a>
 @uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;frame,
-@QueryParam("board") <a href="../../machine/board/ValidBoardNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidBoardNumber</a>
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/QueryParam.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@QueryParam</a>("board") <a href="../../machine/board/ValidBoardNumber.html" title="annotation in uk.ac.manchester.spinnaker.machine.board">@ValidBoardNumber</a>
 @uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;board)</span></div>
 <div class="block">Get the location description of a board given its physical coords.</div>
 <dl>
@@ -248,12 +248,12 @@ javax.ws.rs.container.AsyncResponse&nbsp;response)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="whereIsMachineChipLocation(@uk.ac.manchester.spinnaker.machine.ValidXint,@uk.ac.manchester.spinnaker.machine.ValidYint)">whereIsMachineChipLocation</a></h3>
-<div class="memberSignature"><span class="annotations">@GET
-@Path("chip")
-@Produces("application/json")
-</span><span class="returnType"><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></span>&nbsp;<span class="memberName">whereIsMachineChipLocation</span>&#8203;(<span class="arguments">@QueryParam("x") <a href="../../machine/ValidX.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidX</a>
+<div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/GET.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@GET</a>
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/Path.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Path</a>("chip")
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/Produces.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Produces</a>("application/json")
+</span><span class="returnType"><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></span>&nbsp;<span class="memberName">whereIsMachineChipLocation</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/QueryParam.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@QueryParam</a>("x") <a href="../../machine/ValidX.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidX</a>
 @uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;x,
-@QueryParam("y") <a href="../../machine/ValidY.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidY</a>
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/QueryParam.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@QueryParam</a>("y") <a href="../../machine/ValidY.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidY</a>
 @uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;y)</span></div>
 <div class="block">Get the location description of a board given the global coordinates
  of a chip on the board.</div>
@@ -269,10 +269,10 @@ javax.ws.rs.container.AsyncResponse&nbsp;response)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="whereIsIPAddress(java.lang.String)">whereIsIPAddress</a></h3>
-<div class="memberSignature"><span class="annotations">@GET
-@Path("board-ip")
-@Produces("application/json")
-</span><span class="returnType"><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></span>&nbsp;<span class="memberName">whereIsIPAddress</span>&#8203;(<span class="arguments">@QueryParam("address") <a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a>
+<div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/GET.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@GET</a>
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/Path.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Path</a>("board-ip")
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/Produces.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Produces</a>("application/json")
+</span><span class="returnType"><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></span>&nbsp;<span class="memberName">whereIsIPAddress</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/QueryParam.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@QueryParam</a>("address") <a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a>
 <a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</span></div>
 <div class="block">Get the location description of a board given its ethernet chip's IP
  address.</div>

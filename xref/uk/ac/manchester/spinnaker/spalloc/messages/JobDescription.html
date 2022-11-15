@@ -36,7 +36,7 @@
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> com.fasterxml.jackson.annotation.JsonProperty;
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> com.google.errorprone.annotations.CanIgnoreReturnValue;
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_javadoccomment"> * A description of the state of a job.</em>
@@ -203,117 +203,149 @@
 <a class="jxr_linenumber" name="L195" href="#L195">195</a> 		<strong class="jxr_keyword">return</strong> builder.toString();
 <a class="jxr_linenumber" name="L196" href="#L196">196</a> 	}
 <a class="jxr_linenumber" name="L197" href="#L197">197</a> 
-<a class="jxr_linenumber" name="L198" href="#L198">198</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> Builder {
-<a class="jxr_linenumber" name="L199" href="#L199">199</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> jobID;
-<a class="jxr_linenumber" name="L200" href="#L200">200</a> 
-<a class="jxr_linenumber" name="L201" href="#L201">201</a> 		<strong class="jxr_keyword">private</strong> String owner;
-<a class="jxr_linenumber" name="L202" href="#L202">202</a> 
-<a class="jxr_linenumber" name="L203" href="#L203">203</a> 		<strong class="jxr_keyword">private</strong> Double startTime;
+<a class="jxr_linenumber" name="L198" href="#L198">198</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L199" href="#L199">199</a> <em class="jxr_javadoccomment">	 * Builder for {@link JobDescription}.</em>
+<a class="jxr_linenumber" name="L200" href="#L200">200</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L201" href="#L201">201</a> 	@JsonPOJOBuilder(withPrefix = <span class="jxr_string">"set"</span>)
+<a class="jxr_linenumber" name="L202" href="#L202">202</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> Builder {
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> jobID;
 <a class="jxr_linenumber" name="L204" href="#L204">204</a> 
-<a class="jxr_linenumber" name="L205" href="#L205">205</a> 		<strong class="jxr_keyword">private</strong> <a name="State" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/State.html#State">State</a> state;
+<a class="jxr_linenumber" name="L205" href="#L205">205</a> 		<strong class="jxr_keyword">private</strong> String owner;
 <a class="jxr_linenumber" name="L206" href="#L206">206</a> 
-<a class="jxr_linenumber" name="L207" href="#L207">207</a> 		<strong class="jxr_keyword">private</strong> Boolean power;
+<a class="jxr_linenumber" name="L207" href="#L207">207</a> 		<strong class="jxr_keyword">private</strong> Double startTime;
 <a class="jxr_linenumber" name="L208" href="#L208">208</a> 
-<a class="jxr_linenumber" name="L209" href="#L209">209</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">double</strong> keepAlive;
+<a class="jxr_linenumber" name="L209" href="#L209">209</a> 		<strong class="jxr_keyword">private</strong> <a name="State" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/State.html#State">State</a> state;
 <a class="jxr_linenumber" name="L210" href="#L210">210</a> 
-<a class="jxr_linenumber" name="L211" href="#L211">211</a> 		<strong class="jxr_keyword">private</strong> String reason;
+<a class="jxr_linenumber" name="L211" href="#L211">211</a> 		<strong class="jxr_keyword">private</strong> Boolean power;
 <a class="jxr_linenumber" name="L212" href="#L212">212</a> 
-<a class="jxr_linenumber" name="L213" href="#L213">213</a> 		<strong class="jxr_keyword">private</strong> String machine;
+<a class="jxr_linenumber" name="L213" href="#L213">213</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">double</strong> keepAlive;
 <a class="jxr_linenumber" name="L214" href="#L214">214</a> 
-<a class="jxr_linenumber" name="L215" href="#L215">215</a> 		<strong class="jxr_keyword">private</strong> List&lt;Integer&gt; args;
+<a class="jxr_linenumber" name="L215" href="#L215">215</a> 		<strong class="jxr_keyword">private</strong> String reason;
 <a class="jxr_linenumber" name="L216" href="#L216">216</a> 
-<a class="jxr_linenumber" name="L217" href="#L217">217</a> 		<strong class="jxr_keyword">private</strong> Map&lt;String, Object&gt; kwargs;
+<a class="jxr_linenumber" name="L217" href="#L217">217</a> 		<strong class="jxr_keyword">private</strong> String machine;
 <a class="jxr_linenumber" name="L218" href="#L218">218</a> 
-<a class="jxr_linenumber" name="L219" href="#L219">219</a> 		<strong class="jxr_keyword">private</strong> List&lt;BoardCoordinates&gt; boards = List.of();
+<a class="jxr_linenumber" name="L219" href="#L219">219</a> 		<strong class="jxr_keyword">private</strong> List&lt;Integer&gt; args;
 <a class="jxr_linenumber" name="L220" href="#L220">220</a> 
-<a class="jxr_linenumber" name="L221" href="#L221">221</a> 		<strong class="jxr_keyword">private</strong> String keepAliveHost;
+<a class="jxr_linenumber" name="L221" href="#L221">221</a> 		<strong class="jxr_keyword">private</strong> Map&lt;String, Object&gt; kwargs;
 <a class="jxr_linenumber" name="L222" href="#L222">222</a> 
-<a class="jxr_linenumber" name="L223" href="#L223">223</a> 		@CanIgnoreReturnValue
-<a class="jxr_linenumber" name="L224" href="#L224">224</a> 		@JsonProperty(<span class="jxr_string">"job_id"</span>)
-<a class="jxr_linenumber" name="L225" href="#L225">225</a> 		<strong class="jxr_keyword">public</strong> Builder withJobID(<strong class="jxr_keyword">int</strong> jobID) {
-<a class="jxr_linenumber" name="L226" href="#L226">226</a> 			<strong class="jxr_keyword">this</strong>.jobID = jobID;
-<a class="jxr_linenumber" name="L227" href="#L227">227</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
-<a class="jxr_linenumber" name="L228" href="#L228">228</a> 		}
-<a class="jxr_linenumber" name="L229" href="#L229">229</a> 
-<a class="jxr_linenumber" name="L230" href="#L230">230</a> 		@CanIgnoreReturnValue
-<a class="jxr_linenumber" name="L231" href="#L231">231</a> 		<strong class="jxr_keyword">public</strong> Builder withOwner(String owner) {
-<a class="jxr_linenumber" name="L232" href="#L232">232</a> 			<strong class="jxr_keyword">this</strong>.owner = owner;
-<a class="jxr_linenumber" name="L233" href="#L233">233</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
-<a class="jxr_linenumber" name="L234" href="#L234">234</a> 		}
-<a class="jxr_linenumber" name="L235" href="#L235">235</a> 
-<a class="jxr_linenumber" name="L236" href="#L236">236</a> 		@CanIgnoreReturnValue
-<a class="jxr_linenumber" name="L237" href="#L237">237</a> 		@JsonProperty(<span class="jxr_string">"start_time"</span>)
-<a class="jxr_linenumber" name="L238" href="#L238">238</a> 		<strong class="jxr_keyword">public</strong> Builder withStartTime(Double startTime) {
-<a class="jxr_linenumber" name="L239" href="#L239">239</a> 			<strong class="jxr_keyword">this</strong>.startTime = startTime;
-<a class="jxr_linenumber" name="L240" href="#L240">240</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
+<a class="jxr_linenumber" name="L223" href="#L223">223</a> 		<strong class="jxr_keyword">private</strong> List&lt;BoardCoordinates&gt; boards = List.of();
+<a class="jxr_linenumber" name="L224" href="#L224">224</a> 
+<a class="jxr_linenumber" name="L225" href="#L225">225</a> 		<strong class="jxr_keyword">private</strong> String keepAliveHost;
+<a class="jxr_linenumber" name="L226" href="#L226">226</a> 
+<a class="jxr_linenumber" name="L227" href="#L227">227</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L228" href="#L228">228</a> <em class="jxr_javadoccomment">		 * @param jobID The job's identifier.</em>
+<a class="jxr_linenumber" name="L229" href="#L229">229</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L230" href="#L230">230</a> 		@JsonProperty(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L231" href="#L231">231</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setJobID(<strong class="jxr_keyword">int</strong> jobID) {
+<a class="jxr_linenumber" name="L232" href="#L232">232</a> 			<strong class="jxr_keyword">this</strong>.jobID = jobID;
+<a class="jxr_linenumber" name="L233" href="#L233">233</a> 		}
+<a class="jxr_linenumber" name="L234" href="#L234">234</a> 
+<a class="jxr_linenumber" name="L235" href="#L235">235</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L236" href="#L236">236</a> <em class="jxr_javadoccomment">		 * @param owner</em>
+<a class="jxr_linenumber" name="L237" href="#L237">237</a> <em class="jxr_javadoccomment">		 *            The job's owner.</em>
+<a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L239" href="#L239">239</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setOwner(String owner) {
+<a class="jxr_linenumber" name="L240" href="#L240">240</a> 			<strong class="jxr_keyword">this</strong>.owner = owner;
 <a class="jxr_linenumber" name="L241" href="#L241">241</a> 		}
 <a class="jxr_linenumber" name="L242" href="#L242">242</a> 
-<a class="jxr_linenumber" name="L243" href="#L243">243</a> 		@CanIgnoreReturnValue
-<a class="jxr_linenumber" name="L244" href="#L244">244</a> 		<strong class="jxr_keyword">public</strong> Builder withState(<a name="State" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/State.html#State">State</a> state) {
-<a class="jxr_linenumber" name="L245" href="#L245">245</a> 			<strong class="jxr_keyword">this</strong>.state = state;
-<a class="jxr_linenumber" name="L246" href="#L246">246</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
-<a class="jxr_linenumber" name="L247" href="#L247">247</a> 		}
-<a class="jxr_linenumber" name="L248" href="#L248">248</a> 
-<a class="jxr_linenumber" name="L249" href="#L249">249</a> 		@CanIgnoreReturnValue
-<a class="jxr_linenumber" name="L250" href="#L250">250</a> 		<strong class="jxr_keyword">public</strong> Builder withPower(Boolean power) {
-<a class="jxr_linenumber" name="L251" href="#L251">251</a> 			<strong class="jxr_keyword">this</strong>.power = power;
-<a class="jxr_linenumber" name="L252" href="#L252">252</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
-<a class="jxr_linenumber" name="L253" href="#L253">253</a> 		}
-<a class="jxr_linenumber" name="L254" href="#L254">254</a> 
-<a class="jxr_linenumber" name="L255" href="#L255">255</a> 		@CanIgnoreReturnValue
-<a class="jxr_linenumber" name="L256" href="#L256">256</a> 		@JsonProperty(<span class="jxr_string">"keepalive"</span>)
-<a class="jxr_linenumber" name="L257" href="#L257">257</a> 		<strong class="jxr_keyword">public</strong> Builder withKeepAlive(<strong class="jxr_keyword">double</strong> keepAlive) {
-<a class="jxr_linenumber" name="L258" href="#L258">258</a> 			<strong class="jxr_keyword">this</strong>.keepAlive = keepAlive;
-<a class="jxr_linenumber" name="L259" href="#L259">259</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
-<a class="jxr_linenumber" name="L260" href="#L260">260</a> 		}
-<a class="jxr_linenumber" name="L261" href="#L261">261</a> 
-<a class="jxr_linenumber" name="L262" href="#L262">262</a> 		@CanIgnoreReturnValue
-<a class="jxr_linenumber" name="L263" href="#L263">263</a> 		<strong class="jxr_keyword">public</strong> Builder withReason(String reason) {
-<a class="jxr_linenumber" name="L264" href="#L264">264</a> 			<strong class="jxr_keyword">this</strong>.reason = reason;
-<a class="jxr_linenumber" name="L265" href="#L265">265</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
+<a class="jxr_linenumber" name="L243" href="#L243">243</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L244" href="#L244">244</a> <em class="jxr_javadoccomment">		 * @param startTime</em>
+<a class="jxr_linenumber" name="L245" href="#L245">245</a> <em class="jxr_javadoccomment">		 *            When the job started, in seconds from the epoch.</em>
+<a class="jxr_linenumber" name="L246" href="#L246">246</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L247" href="#L247">247</a> 		@JsonProperty(<span class="jxr_string">"start_time"</span>)
+<a class="jxr_linenumber" name="L248" href="#L248">248</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setStartTime(Double startTime) {
+<a class="jxr_linenumber" name="L249" href="#L249">249</a> 			<strong class="jxr_keyword">this</strong>.startTime = startTime;
+<a class="jxr_linenumber" name="L250" href="#L250">250</a> 		}
+<a class="jxr_linenumber" name="L251" href="#L251">251</a> 
+<a class="jxr_linenumber" name="L252" href="#L252">252</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L253" href="#L253">253</a> <em class="jxr_javadoccomment">		 * @param state</em>
+<a class="jxr_linenumber" name="L254" href="#L254">254</a> <em class="jxr_javadoccomment">		 *            The job state.</em>
+<a class="jxr_linenumber" name="L255" href="#L255">255</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L256" href="#L256">256</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setState(<a name="State" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/State.html#State">State</a> state) {
+<a class="jxr_linenumber" name="L257" href="#L257">257</a> 			<strong class="jxr_keyword">this</strong>.state = state;
+<a class="jxr_linenumber" name="L258" href="#L258">258</a> 		}
+<a class="jxr_linenumber" name="L259" href="#L259">259</a> 
+<a class="jxr_linenumber" name="L260" href="#L260">260</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L261" href="#L261">261</a> <em class="jxr_javadoccomment">		 * @param power</em>
+<a class="jxr_linenumber" name="L262" href="#L262">262</a> <em class="jxr_javadoccomment">		 *            Whether the job's allocated boards are powered on.</em>
+<a class="jxr_linenumber" name="L263" href="#L263">263</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L264" href="#L264">264</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setPower(Boolean power) {
+<a class="jxr_linenumber" name="L265" href="#L265">265</a> 			<strong class="jxr_keyword">this</strong>.power = power;
 <a class="jxr_linenumber" name="L266" href="#L266">266</a> 		}
 <a class="jxr_linenumber" name="L267" href="#L267">267</a> 
-<a class="jxr_linenumber" name="L268" href="#L268">268</a> 		@CanIgnoreReturnValue
-<a class="jxr_linenumber" name="L269" href="#L269">269</a> 		@JsonProperty(<span class="jxr_string">"allocated_machine_name"</span>)
-<a class="jxr_linenumber" name="L270" href="#L270">270</a> 		<strong class="jxr_keyword">public</strong> Builder withMachine(String machine) {
-<a class="jxr_linenumber" name="L271" href="#L271">271</a> 			<strong class="jxr_keyword">this</strong>.machine = machine;
-<a class="jxr_linenumber" name="L272" href="#L272">272</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
-<a class="jxr_linenumber" name="L273" href="#L273">273</a> 		}
-<a class="jxr_linenumber" name="L274" href="#L274">274</a> 
-<a class="jxr_linenumber" name="L275" href="#L275">275</a> 		@CanIgnoreReturnValue
-<a class="jxr_linenumber" name="L276" href="#L276">276</a> 		<strong class="jxr_keyword">public</strong> Builder withArgs(List&lt;Integer&gt; args) {
-<a class="jxr_linenumber" name="L277" href="#L277">277</a> 			<strong class="jxr_keyword">this</strong>.args = isNull(args) ? List.of() : List.copyOf(args);
-<a class="jxr_linenumber" name="L278" href="#L278">278</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
-<a class="jxr_linenumber" name="L279" href="#L279">279</a> 		}
-<a class="jxr_linenumber" name="L280" href="#L280">280</a> 
-<a class="jxr_linenumber" name="L281" href="#L281">281</a> 		@CanIgnoreReturnValue
-<a class="jxr_linenumber" name="L282" href="#L282">282</a> 		<strong class="jxr_keyword">public</strong> Builder withKwargs(Map&lt;String, Object&gt; kwargs) {
-<a class="jxr_linenumber" name="L283" href="#L283">283</a> 			<strong class="jxr_keyword">this</strong>.kwargs = isNull(args) ? Map.of()
-<a class="jxr_linenumber" name="L284" href="#L284">284</a> 					<em class="jxr_comment">// Careful: could be null values in map!</em>
-<a class="jxr_linenumber" name="L285" href="#L285">285</a> 					: unmodifiableMap(<strong class="jxr_keyword">new</strong> HashMap&lt;&gt;(kwargs));
-<a class="jxr_linenumber" name="L286" href="#L286">286</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
-<a class="jxr_linenumber" name="L287" href="#L287">287</a> 		}
-<a class="jxr_linenumber" name="L288" href="#L288">288</a> 
-<a class="jxr_linenumber" name="L289" href="#L289">289</a> 		@CanIgnoreReturnValue
-<a class="jxr_linenumber" name="L290" href="#L290">290</a> 		<strong class="jxr_keyword">public</strong> Builder withBoards(List&lt;BoardCoordinates&gt; boards) {
-<a class="jxr_linenumber" name="L291" href="#L291">291</a> 			<strong class="jxr_keyword">this</strong>.boards = isNull(boards) ? List.of() : List.copyOf(boards);
-<a class="jxr_linenumber" name="L292" href="#L292">292</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
-<a class="jxr_linenumber" name="L293" href="#L293">293</a> 		}
-<a class="jxr_linenumber" name="L294" href="#L294">294</a> 
-<a class="jxr_linenumber" name="L295" href="#L295">295</a> 		@CanIgnoreReturnValue
-<a class="jxr_linenumber" name="L296" href="#L296">296</a> 		@JsonProperty(<span class="jxr_string">"keepalivehost"</span>)
-<a class="jxr_linenumber" name="L297" href="#L297">297</a> 		<strong class="jxr_keyword">public</strong> Builder withKeepAliveHost(String keepAliveHost) {
-<a class="jxr_linenumber" name="L298" href="#L298">298</a> 			<strong class="jxr_keyword">this</strong>.keepAliveHost = keepAliveHost;
-<a class="jxr_linenumber" name="L299" href="#L299">299</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
+<a class="jxr_linenumber" name="L268" href="#L268">268</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> <em class="jxr_javadoccomment">		 * @param keepAlive</em>
+<a class="jxr_linenumber" name="L270" href="#L270">270</a> <em class="jxr_javadoccomment">		 *            The job's maximum keepalive interval, in seconds.</em>
+<a class="jxr_linenumber" name="L271" href="#L271">271</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L272" href="#L272">272</a> 		@JsonProperty(<span class="jxr_string">"keepalive"</span>)
+<a class="jxr_linenumber" name="L273" href="#L273">273</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setKeepAlive(<strong class="jxr_keyword">double</strong> keepAlive) {
+<a class="jxr_linenumber" name="L274" href="#L274">274</a> 			<strong class="jxr_keyword">this</strong>.keepAlive = keepAlive;
+<a class="jxr_linenumber" name="L275" href="#L275">275</a> 		}
+<a class="jxr_linenumber" name="L276" href="#L276">276</a> 
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L278" href="#L278">278</a> <em class="jxr_javadoccomment">		 * @param reason</em>
+<a class="jxr_linenumber" name="L279" href="#L279">279</a> <em class="jxr_javadoccomment">		 *            The reason why the job terminated.</em>
+<a class="jxr_linenumber" name="L280" href="#L280">280</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L281" href="#L281">281</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setReason(String reason) {
+<a class="jxr_linenumber" name="L282" href="#L282">282</a> 			<strong class="jxr_keyword">this</strong>.reason = reason;
+<a class="jxr_linenumber" name="L283" href="#L283">283</a> 		}
+<a class="jxr_linenumber" name="L284" href="#L284">284</a> 
+<a class="jxr_linenumber" name="L285" href="#L285">285</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L286" href="#L286">286</a> <em class="jxr_javadoccomment">		 * @param machine</em>
+<a class="jxr_linenumber" name="L287" href="#L287">287</a> <em class="jxr_javadoccomment">		 *            The name of the machine that the job is allocated to.</em>
+<a class="jxr_linenumber" name="L288" href="#L288">288</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L289" href="#L289">289</a> 		@JsonProperty(<span class="jxr_string">"allocated_machine_name"</span>)
+<a class="jxr_linenumber" name="L290" href="#L290">290</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setMachine(String machine) {
+<a class="jxr_linenumber" name="L291" href="#L291">291</a> 			<strong class="jxr_keyword">this</strong>.machine = machine;
+<a class="jxr_linenumber" name="L292" href="#L292">292</a> 		}
+<a class="jxr_linenumber" name="L293" href="#L293">293</a> 
+<a class="jxr_linenumber" name="L294" href="#L294">294</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L295" href="#L295">295</a> <em class="jxr_javadoccomment">		 * @param args</em>
+<a class="jxr_linenumber" name="L296" href="#L296">296</a> <em class="jxr_javadoccomment">		 *            The positional arguments used to create the job.</em>
+<a class="jxr_linenumber" name="L297" href="#L297">297</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L298" href="#L298">298</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setArgs(List&lt;Integer&gt; args) {
+<a class="jxr_linenumber" name="L299" href="#L299">299</a> 			<strong class="jxr_keyword">this</strong>.args = isNull(args) ? List.of() : List.copyOf(args);
 <a class="jxr_linenumber" name="L300" href="#L300">300</a> 		}
 <a class="jxr_linenumber" name="L301" href="#L301">301</a> 
-<a class="jxr_linenumber" name="L302" href="#L302">302</a> 		<strong class="jxr_keyword">public</strong> <a name="JobDescription" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/JobDescription.html#JobDescription">JobDescription</a> build() {
-<a class="jxr_linenumber" name="L303" href="#L303">303</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="JobDescription" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/JobDescription.html#JobDescription">JobDescription</a>(jobID, owner, startTime, state, power,
-<a class="jxr_linenumber" name="L304" href="#L304">304</a> 					keepAlive, reason, machine, args, kwargs, boards,
-<a class="jxr_linenumber" name="L305" href="#L305">305</a> 					keepAliveHost);
-<a class="jxr_linenumber" name="L306" href="#L306">306</a> 		}
-<a class="jxr_linenumber" name="L307" href="#L307">307</a> 	}
-<a class="jxr_linenumber" name="L308" href="#L308">308</a> }
+<a class="jxr_linenumber" name="L302" href="#L302">302</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L303" href="#L303">303</a> <em class="jxr_javadoccomment">		 * @param kwargs</em>
+<a class="jxr_linenumber" name="L304" href="#L304">304</a> <em class="jxr_javadoccomment">		 *            The keyword arguments used to create the job.</em>
+<a class="jxr_linenumber" name="L305" href="#L305">305</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L306" href="#L306">306</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setKwargs(Map&lt;String, Object&gt; kwargs) {
+<a class="jxr_linenumber" name="L307" href="#L307">307</a> 			<strong class="jxr_keyword">this</strong>.kwargs = isNull(args) ? Map.of()
+<a class="jxr_linenumber" name="L308" href="#L308">308</a> 					<em class="jxr_comment">// Careful: could be null values in map!</em>
+<a class="jxr_linenumber" name="L309" href="#L309">309</a> 					: unmodifiableMap(<strong class="jxr_keyword">new</strong> HashMap&lt;&gt;(kwargs));
+<a class="jxr_linenumber" name="L310" href="#L310">310</a> 		}
+<a class="jxr_linenumber" name="L311" href="#L311">311</a> 
+<a class="jxr_linenumber" name="L312" href="#L312">312</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L313" href="#L313">313</a> <em class="jxr_javadoccomment">		 * @param boards</em>
+<a class="jxr_linenumber" name="L314" href="#L314">314</a> <em class="jxr_javadoccomment">		 *            The boards allocated to the job and their locations.</em>
+<a class="jxr_linenumber" name="L315" href="#L315">315</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L316" href="#L316">316</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setBoards(List&lt;BoardCoordinates&gt; boards) {
+<a class="jxr_linenumber" name="L317" href="#L317">317</a> 			<strong class="jxr_keyword">this</strong>.boards = isNull(boards) ? List.of() : List.copyOf(boards);
+<a class="jxr_linenumber" name="L318" href="#L318">318</a> 		}
+<a class="jxr_linenumber" name="L319" href="#L319">319</a> 
+<a class="jxr_linenumber" name="L320" href="#L320">320</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L321" href="#L321">321</a> <em class="jxr_javadoccomment">		 * @param keepAliveHost</em>
+<a class="jxr_linenumber" name="L322" href="#L322">322</a> <em class="jxr_javadoccomment">		 *            The host believed to be keeping the job alive.</em>
+<a class="jxr_linenumber" name="L323" href="#L323">323</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L324" href="#L324">324</a> 		@JsonProperty(<span class="jxr_string">"keepalivehost"</span>)
+<a class="jxr_linenumber" name="L325" href="#L325">325</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setKeepAliveHost(String keepAliveHost) {
+<a class="jxr_linenumber" name="L326" href="#L326">326</a> 			<strong class="jxr_keyword">this</strong>.keepAliveHost = keepAliveHost;
+<a class="jxr_linenumber" name="L327" href="#L327">327</a> 		}
+<a class="jxr_linenumber" name="L328" href="#L328">328</a> 
+<a class="jxr_linenumber" name="L329" href="#L329">329</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L330" href="#L330">330</a> <em class="jxr_javadoccomment">		 * Build an instance of the immutable {@link JobDescription}.</em>
+<a class="jxr_linenumber" name="L331" href="#L331">331</a> <em class="jxr_javadoccomment">		 *</em>
+<a class="jxr_linenumber" name="L332" href="#L332">332</a> <em class="jxr_javadoccomment">		 * @return The instance.</em>
+<a class="jxr_linenumber" name="L333" href="#L333">333</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L334" href="#L334">334</a> 		<strong class="jxr_keyword">public</strong> <a name="JobDescription" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/JobDescription.html#JobDescription">JobDescription</a> build() {
+<a class="jxr_linenumber" name="L335" href="#L335">335</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="JobDescription" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/JobDescription.html#JobDescription">JobDescription</a>(jobID, owner, startTime, state, power,
+<a class="jxr_linenumber" name="L336" href="#L336">336</a> 					keepAlive, reason, machine, args, kwargs, boards,
+<a class="jxr_linenumber" name="L337" href="#L337">337</a> 					keepAliveHost);
+<a class="jxr_linenumber" name="L338" href="#L338">338</a> 		}
+<a class="jxr_linenumber" name="L339" href="#L339">339</a> 	}
+<a class="jxr_linenumber" name="L340" href="#L340">340</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>
