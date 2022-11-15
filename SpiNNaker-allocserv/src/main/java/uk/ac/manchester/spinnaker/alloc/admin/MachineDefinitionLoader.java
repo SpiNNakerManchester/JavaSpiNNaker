@@ -487,7 +487,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			return maxRetiredJobs;
 		}
 
-		public void setMaxRetiredJobs(int maxRetiredJobs) {
+		void setMaxRetiredJobs(int maxRetiredJobs) {
 			this.maxRetiredJobs = maxRetiredJobs;
 		}
 

@@ -136,7 +136,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<goals>
 							<goal>minify</goal>
 						</goals>
-						<phase>generate-resources</phase>
+						<phase>process-resources</phase>
 						<configuration>
 							<sourceDir>js</sourceDir>
 							<targetDir>META-INF/public-web-resources</targetDir>

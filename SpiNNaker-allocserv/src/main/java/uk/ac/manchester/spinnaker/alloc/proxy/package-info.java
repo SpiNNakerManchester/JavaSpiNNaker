@@ -27,7 +27,7 @@
  * followed by some payload data (of length limited by the maximum size of a
  * SpiNNaker SDP or SpiNNaker boot message; the framing does not itself impose a
  * maximum message length):
- * <p>
+ * </p>
  * <table border="1" class="protocol">
  * <caption style="display:none">Protocol inside web socket</caption>
  * <tr>
