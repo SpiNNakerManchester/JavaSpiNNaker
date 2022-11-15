@@ -20,7 +20,6 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.errorprone.annotations.Immutable;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -165,7 +164,10 @@ public final class WhereIs {
 				+ " boardChip: " + boardChip + " physical: " + physical;
 	}
 
-	@JsonPOJOBuilder
+	/**
+	 * Builder for {@link WhereIs}.
+	 */
+	@JsonPOJOBuilder(withPrefix = "set")
 	public static class Builder {
 		private ChipLocation jobChip;
 
@@ -181,48 +183,67 @@ public final class WhereIs {
 
 		private BoardPhysicalCoordinates physical;
 
-		@CanIgnoreReturnValue
-		public Builder withJobChip(ChipLocation jobChip) {
+		/**
+		 * @param jobChip
+		 *            The chip location relative to the job's allocation.
+		 */
+		public void setJobChip(ChipLocation jobChip) {
 			this.jobChip = jobChip;
-			return this;
 		}
 
-		@CanIgnoreReturnValue
-		public Builder withJobId(Integer jobId) {
+		/**
+		 * @param jobId
+		 *            The job id.
+		 */
+		public void setJobId(Integer jobId) {
 			this.jobId = jobId;
-			return this;
 		}
 
-		@CanIgnoreReturnValue
-		public Builder withChip(ChipLocation chip) {
+		/**
+		 * @param chip
+		 *            The absolute chip location.
+		 */
+		public void setChip(ChipLocation chip) {
 			this.chip = chip;
-			return this;
 		}
 
-		@CanIgnoreReturnValue
-		public Builder withLogical(BoardCoordinates logical) {
+		/**
+		 * @param logical
+		 *            The logical coordinates of the board.
+		 */
+		public void setLogical(BoardCoordinates logical) {
 			this.logical = logical;
-			return this;
 		}
 
-		@CanIgnoreReturnValue
-		public Builder withMachine(String machine) {
+		/**
+		 * @param machine
+		 *            The name of the machine.
+		 */
+		public void setMachine(String machine) {
 			this.machine = machine;
-			return this;
 		}
 
-		@CanIgnoreReturnValue
-		public Builder withBoardChip(ChipLocation boardChip) {
+		/**
+		 * @param boardChip
+		 *            The chip location relative to its board.
+		 */
+		public void setBoardChip(ChipLocation boardChip) {
 			this.boardChip = boardChip;
-			return this;
 		}
 
-		@CanIgnoreReturnValue
-		public Builder withPhysical(BoardPhysicalCoordinates physical) {
+		/**
+		 * @param physical
+		 *            The physical coordinates of the board.
+		 */
+		public void setPhysical(BoardPhysicalCoordinates physical) {
 			this.physical = physical;
-			return this;
 		}
 
+		/**
+		 * Build an instance of the immutable {@link WhereIs}.
+		 *
+		 * @return The instance.
+		 */
 		public WhereIs build() {
 			return new WhereIs(jobChip, jobId, chip, logical, machine,
 					boardChip, physical);

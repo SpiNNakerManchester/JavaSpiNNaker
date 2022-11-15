@@ -171,9 +171,9 @@ class V1TaskImpl extends V1CompatTask {
 		var job = getJob(jobId);
 		job.access(host());
 		var js = new JobState.Builder();
-		js.withKeepalive(timestamp(job.getKeepaliveTimestamp()));
-		js.withKeepalivehost(job.getKeepaliveHost().orElse(""));
-		js.withPower(job.getMachine().map(m -> {
+		js.setKeepalive(timestamp(job.getKeepaliveTimestamp()));
+		js.setKeepalivehost(job.getKeepaliveHost().orElse(""));
+		js.setPower(job.getMachine().map(m -> {
 			try {
 				return m.getPower() == ON;
 			} catch (DataAccessException e) {
@@ -181,9 +181,9 @@ class V1TaskImpl extends V1CompatTask {
 				return false;
 			}
 		}).orElse(false));
-		js.withReason(job.getReason().orElse(""));
-		js.withStartTime(timestamp(job.getStartTime()));
-		js.withState(state(job));
+		js.setReason(job.getReason().orElse(""));
+		js.setStartTime(timestamp(job.getStartTime()));
+		js.setState(state(job));
 		return js.build();
 	}
 
@@ -330,27 +330,28 @@ class V1TaskImpl extends V1CompatTask {
 
 		private static JobDescription buildJobDescription(V1TaskImpl task,
 				Job job) {
-			var jd = new JobDescription.Builder() //
-					.withJobID(job.getId()) //
-					.withOwner("") // Default to information shrouded
-					.withKeepAlive(timestamp(job.getKeepaliveTimestamp()))
-					.withKeepAliveHost(job.getKeepaliveHost().orElse(""))
-					.withReason(job.getReason().orElse(""))
-					.withStartTime(timestamp(job.getStartTime()))
-					.withState(state(job));
+			var jd = new JobDescription.Builder();
+			jd.setJobID(job.getId());
+			jd.setOwner("");
+			jd.setKeepAlive(timestamp(job.getKeepaliveTimestamp()));
+			jd.setKeepAliveHost(job.getKeepaliveHost().orElse(""));
+			jd.setReason(job.getReason().orElse(""));
+			jd.setStartTime(timestamp(job.getStartTime()));
+			jd.setState(state(job));
 			job.getOriginalRequest().map(task::parseCommand).ifPresent(cmd -> {
 				// In order to get here, this must be safe
 				// Validation was when job was created
 				@SuppressWarnings({ "unchecked", "rawtypes" })
 				List<Integer> args = (List) cmd.getArgs();
-				jd.withArgs(args).withKwargs(cmd.getKwargs())
-						// Override shrouded owner from above
-						.withOwner(cmd.getKwargs().get("owner").toString());
+				jd.setArgs(args);
+				jd.setKwargs(cmd.getKwargs());
+				// Override shrouded owner from above
+				jd.setOwner(cmd.getKwargs().get("owner").toString());
 			});
 			job.getMachine().ifPresent(sm -> {
-				jd.withMachine(sm.getMachine().getName())
-						.withBoards(sm.getBoards()) //
-						.withPower(sm.getPower() == ON);
+				jd.setMachine(sm.getMachine().getName());
+				jd.setBoards(sm.getBoards());
+				jd.setPower(sm.getPower() == ON);
 			});
 			return jd.build();
 		}
@@ -451,16 +452,16 @@ class V1TaskImpl extends V1CompatTask {
 	}
 
 	private static WhereIs makeWhereIs(BoardLocation bl) {
-		var wi = new WhereIs.Builder() //
-				.withMachine(bl.getMachine()) //
-				.withLogical(bl.getLogical()) //
-				.withPhysical(bl.getPhysical()) //
-				.withChip(bl.getChip()) //
-				.withBoardChip(bl.getBoardChip());
+		var wi = new WhereIs.Builder();
+		wi.setMachine(bl.getMachine());
+		wi.setLogical(bl.getLogical());
+		wi.setPhysical(bl.getPhysical());
+		wi.setChip(bl.getChip());
+		wi.setBoardChip(bl.getBoardChip());
 		var j = bl.getJob();
 		if (nonNull(j)) {
-			wi.withJobId(j.getId()).withJobChip(
-					bl.getChipRelativeTo(j.getRootChip().orElseThrow()));
+			wi.setJobId(j.getId());
+			wi.setJobChip(bl.getChipRelativeTo(j.getRootChip().orElseThrow()));
 		}
 		return wi.build();
 	}
