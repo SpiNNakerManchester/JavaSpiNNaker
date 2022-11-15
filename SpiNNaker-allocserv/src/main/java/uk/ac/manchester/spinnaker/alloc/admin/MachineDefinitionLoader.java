@@ -418,13 +418,14 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	}
 
 	/**
-	 * A configuration description. JSON-serializable. Largely ignored as it
-	 * represents configuration settings that we handle elsewhere. However, the
+	 * A configuration description. JSON-deserializable (the only supported
+	 * mechanism for generating an instance). Largely ignored as it represents
+	 * configuration settings that we handle elsewhere. However, the
 	 * {@code machines} property <em>is</em> interesting.
 	 *
 	 * @author Donal Fellows
 	 */
-	static final class Configuration {
+	public static final class Configuration {
 		private @NotNull List<@Valid Machine> machines;
 
 		@TCPPort
@@ -447,7 +448,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			return machines;
 		}
 
-		public void setMachines(List<Machine> machines) {
+		void setMachines(List<Machine> machines) {
 			this.machines = copy(machines);
 		}
 
@@ -456,7 +457,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			return port;
 		}
 
-		public void setPort(int port) {
+		void setPort(int port) {
 			this.port = port;
 		}
 
@@ -468,7 +469,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			return ip;
 		}
 
-		public void setIp(String ip) {
+		void setIp(String ip) {
 			this.ip = ip;
 		}
 
@@ -477,7 +478,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			return timeoutCheckInterval;
 		}
 
-		public void setTimeoutCheckInterval(double timeoutCheckInterval) {
+		void setTimeoutCheckInterval(double timeoutCheckInterval) {
 			this.timeoutCheckInterval = timeoutCheckInterval;
 		}
 
@@ -495,7 +496,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			return secondsBeforeFree;
 		}
 
-		public void setSecondsBeforeFree(int secondsBeforeFree) {
+		void setSecondsBeforeFree(int secondsBeforeFree) {
 			this.secondsBeforeFree = secondsBeforeFree;
 		}
 

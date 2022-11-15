@@ -49,164 +49,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
  * The main proxy class for a particular web socket session. It's bound to a
- * job, which should be running at the time that the web socket is opened. The
- * protocol that is supported is a binary protocol that has five messages:
- * <table border="1" class="protocol">
- * <caption style="display:none">Protocol inside web socket</caption>
- * <tr>
- * <th>Name</th>
- * <th>Request Layout (words)</th>
- * <th>Response Layout (words)</th>
- * </tr>
- * <tr>
- * <td rowspan=2>
- * {@linkplain #openConnectedChannel(ByteBuffer) Open Connected Channel}</td>
- * <td><table border="1" class="protocolrequest">
- * <caption style="display:none">Request</caption>
- * <tr>
- * <td>{@link ProxyOp#OPEN 0}
- * <td>Correlation&nbsp;ID
- * <td>Chip&nbsp;X
- * <td>Chip&nbsp;Y
- * <td>UDP&nbsp;Port on Chip
- * </tr>
- * </table>
- * </td>
- * <td><table border="1" class="protocolresponse">
- * <caption style="display:none">Response</caption>
- * <tr>
- * <td>{@link ProxyOp#OPEN 0}
- * <td>Correlation&nbsp;ID
- * <td>Channel&nbsp;ID
- * </tr>
- * </table>
- * </td>
- * </tr>
- * <tr>
- * <td colspan=2>Establish a UDP socket that will talk to the given Ethernet
- * chip within the allocation. Returns an ID that can be used to refer to that
- * channel. Note that opening a socket declares that you are prepared to receive
- * messages from SpiNNaker on it, but does not mean that SpiNNaker will send any
- * messages that way. The correlation ID is caller-nominated, and just passed
- * back uninterpreted in the response message.</td>
- * </tr>
- * <tr>
- * <td rowspan=2>
- * {@linkplain #closeChannel(ByteBuffer) Close Channel}</td>
- * <td><table border="1" class="protocolrequest">
- * <caption style="display:none">Request</caption>
- * <tr>
- * <td>{@link ProxyOp#CLOSE 1}
- * <td>Correlation&nbsp;ID
- * <td>Channel&nbsp;ID
- * </tr>
- * </table>
- * </td>
- * <td><table border="1" class="protocolresponse">
- * <caption style="display:none">Response</caption>
- * <tr>
- * <td>{@link ProxyOp#CLOSE 1}
- * <td>Correlation&nbsp;ID
- * <td>Channel&nbsp;ID (if closed) or {@code 0} (not closed)
- * </tr>
- * </table>
- * </td>
- * </tr>
- * <tr>
- * <td colspan=2>Close an established UDP socket, given its ID. Returns the ID
- * on success, and zero on failure (e.g., because the socket is already closed).
- * The correlation ID is caller-nominated, and just passed back uninterpreted in
- * the response message. The channel may have been opened with either <em>Open
- * Connected Channel</em> or <em>Open Unconnected Channel</em>.</td>
- * </tr>
- * <tr>
- * <td rowspan=2>
- * {@linkplain #sendMessage(ByteBuffer) Send Message}</td>
- * <td><table border="1" class="protocolrequest">
- * <caption style="display:none">Request</caption>
- * <tr>
- * <td>{@link ProxyOp#MESSAGE 2}
- * <td>Channel&nbsp;ID
- * <td>Raw&nbsp;message&nbsp;bytes...
- * </tr>
- * </table>
- * </td>
- * <td>N/A</td>
- * </tr>
- * <tr>
- * <td colspan=2>Send a message to SpiNNaker on a particular established UDP
- * configuration. This is technically one-way, but messages come back in the
- * same format (i.e., a 4 byte prefix to say that it is a message, and another 4
- * bytes to say what socket this is talking about). The raw message bytes
- * (<em>including</em> the half-word of ethernet frame padding) follow the
- * header. Messages sent on connections opened with <em>Open Unconnected
- * Channel</em> will be ignored.</td>
- * </tr>
- * <tr>
- * <td rowspan=2>
- * {@linkplain #openUnconnectedChannel(ByteBuffer) Open Unconnected Channel}
- * </td>
- * <td><table border="1" class="protocolrequest">
- * <caption style="display:none">Request</caption>
- * <tr>
- * <td>{@link ProxyOp#OPEN_UNCONNECTED 3}
- * <td>Correlation&nbsp;ID
- * </tr>
- * </table>
- * </td>
- * <td><table border="1" class="protocolresponse">
- * <caption style="display:none">Response</caption>
- * <tr>
- * <td>{@link ProxyOp#OPEN_UNCONNECTED 3}
- * <td>Correlation&nbsp;ID
- * <td>Channel&nbsp;ID
- * <td>IP&nbsp;Address
- * <td>UDP&nbsp;Port on Server
- * </tr>
- * </table>
- * </td>
- * </tr>
- * <tr>
- * <td colspan=2>Establish a UDP socket that will receive from the allocation.
- * Returns an ID that can be used to refer to that channel. Note that opening a
- * socket declares that you are prepared to receive messages from SpiNNaker on
- * it, but does not mean that SpiNNaker will send any messages that way. The
- * correlation ID is caller-nominated, and just passed back uninterpreted in the
- * response message. Also included in the response message is the IPv4 address
- * (big-endian binary encoding; one word) and server UDP port for the
- * connection, allowing the client to instruct SpiNNaker to send messages to the
- * socket on the server side of the channel (which is not necessarily accessible
- * from anything other than SpiNNaker). No guarantee is made about whether any
- * message from anything other than a board in the job will be passed on.
- * Sending on the channel will only be possible with the <em>Send Message
- * To</em> operation.</td>
- * </tr>
- * <tr>
- * <td rowspan=2>
- * {@linkplain #sendMessageTo(ByteBuffer) Send Message To}</td>
- * <td><table border="1" class="protocolrequest">
- * <caption style="display:none">Request</caption>
- * <tr>
- * <td>{@link ProxyOp#MESSAGE_TO 4}
- * <td>Channel&nbsp;ID
- * <td>Chip&nbsp;X
- * <td>Chip&nbsp;Y
- * <td>UDP&nbsp;Port on Chip
- * <td>Raw&nbsp;message&nbsp;bytes...
- * </tr>
- * </table>
- * </td>
- * <td>N/A</td>
- * </tr>
- * <tr>
- * <td colspan=2>Send a message to a SpiNNaker board (identified by coordinates
- * of its ethernet chip) to a given UDP port. This is one-way. The raw message
- * bytes (<em>including</em> the half-word of ethernet frame padding) follow the
- * header. The channel must have been opened with <em>Open Unconnected
- * Channel</em>. Any responses come back as standard messages; if doing calls
- * with this, it is advised to only have one in flight at a time.</td>
- * </tr>
- * </table>
+ * job, which should be running at the time that the web socket is opened.
  *
  * @author Donal Fellows
  */
@@ -327,10 +170,10 @@ public class ProxyCore implements AutoCloseable {
 	}
 
 	/**
-	 * Open a connected channel. Note that no control over the local (to the
-	 * service) port number or address is provided, nor is a mechanism given to
-	 * easily make available what address is used (though it can be obtained
-	 * from the IPTag).
+	 * Open a connected channel in response to a {@link ProxyOp#OPEN} message.
+	 * Note that no control over the local (to the service) port number or
+	 * address is provided, nor is a mechanism given to easily make available
+	 * what address is used (though it can be obtained from the IPTag).
 	 *
 	 * @param message
 	 *            The message received. The initial 4-byte type code will have
@@ -397,9 +240,10 @@ public class ProxyCore implements AutoCloseable {
 	}
 
 	/**
-	 * Open an unconnected channel. Note that no control over the local (to the
-	 * service) port number or address is provided, but the IP address and port
-	 * opened are in the return message.
+	 * Open an unconnected channel in response to a
+	 * {@link ProxyOp#OPEN_UNCONNECTED} message. Note that no control over the
+	 * local (to the service) port number or address is provided, but the IP
+	 * address and port opened are in the return message.
 	 *
 	 * @param message
 	 *            The message received. The initial 4-byte type code will have
@@ -451,7 +295,8 @@ public class ProxyCore implements AutoCloseable {
 	}
 
 	/**
-	 * Close a channel. It's not an error to close a channel twice
+	 * Close a channel in response to a {@link ProxyOp#CLOSE} message. It's not
+	 * an error to close a channel twice
 	 *
 	 * @param message
 	 *            The message received. The initial 4-byte type code will have
@@ -487,8 +332,8 @@ public class ProxyCore implements AutoCloseable {
 	}
 
 	/**
-	 * Send a message on a channel. It's not an error to send on a
-	 * non-existant or closed channel.
+	 * Send a message on a channel in response to a {@link ProxyOp#MESSAGE}
+	 * message. It's not an error to send on a non-existant or closed channel.
 	 *
 	 * @param message
 	 *            The message received. The initial 4-byte type code will have
@@ -514,9 +359,10 @@ public class ProxyCore implements AutoCloseable {
 	}
 
 	/**
-	 * Send a message to a particular destination on a channel. It's not an
-	 * error to send on a non-existent or closed channel. It is an error to
-	 * use this operation on a channel that has a bound remote host address.
+	 * Send a message to a particular destination on a channel in response to a
+	 * {@link ProxyOp#MESSAGE_TO} message. It's not an error to send on a
+	 * non-existent or closed channel. It is an error to use this operation on a
+	 * channel that has a bound remote host address.
 	 *
 	 * @param message
 	 *            The message received. The initial 4-byte type code will have
