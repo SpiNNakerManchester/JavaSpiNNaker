@@ -68,9 +68,7 @@ class JsonTest {
 		@Test
 		void testBoardPhysicalCoordinates() throws IOException, JSONException {
 			var r = new BoardPhysicalCoordinates(0, 1, 2);
-			JSONAssert.assertEquals(
-					"[0, 1, 2]",
-					serialize(r), true);
+			JSONAssert.assertEquals("[0, 1, 2]", serialize(r), true);
 		}
 
 		@Test
@@ -78,6 +76,7 @@ class JsonTest {
 			var r = new JobMachineInfo(0, 0,
 					List.of(new Connection(ZERO_ZERO, "2.3.4.5")),
 					"gorp", List.of(new BoardCoordinates(0, 1, 2)));
+
 			JSONAssert.assertEquals(
 					"{ 'boards': [[0,1,2]], "
 							+ "'connections': [[[0,0],'2.3.4.5']], "
@@ -89,14 +88,14 @@ class JsonTest {
 
 		@Test
 		void testJobState() throws IOException, JSONException {
-			var r = new JobState.Builder() //
-					.withState(State.POWER) //
-					.withStartTime(123) //
-					.withPower(false) //
-					.withReason("gorp") //
-					.withKeepalive(321) //
-					.withKeepalivehost("127.0.0.1") //
-					.build();
+			var r = new JobState.Builder();
+			r.setState(State.POWER);
+			r.setStartTime(123);
+			r.setPower(false);
+			r.setReason("gorp");
+			r.setKeepalive(321);
+			r.setKeepalivehost("127.0.0.1");
+
 			JSONAssert.assertEquals(
 					"{ 'state': 2, "
 							+ "'start_time': 123, "
@@ -104,17 +103,23 @@ class JsonTest {
 							+ "'reason': 'gorp', "
 							+ "'keepalive': 321, "
 							+ "'keepalivehost': '127.0.0.1' }",
-					serialize(r), true);
+					serialize(r.build()), true);
 		}
 
 		@Test
 		void testJobDescription() throws IOException, JSONException {
-			var r = new JobDescription[1];
-			r[0] = new JobDescription.Builder().withJobID(1)
-					.withArgs(List.of(0)).withKwargs(Map.of())
-					.withKeepAlive(123).withKeepAliveHost("127.0.0.1")
-					.withMachine("foo").withOwner("bar").withPower(false)
-					.withStartTime(321.).withState(State.POWER).build();
+			var r = new JobDescription.Builder();
+			r.setJobID(1);
+			r.setArgs(List.of(0));
+			r.setKwargs(Map.of());
+			r.setKeepAlive(123);
+			r.setKeepAliveHost("127.0.0.1");
+			r.setMachine("foo");
+			r.setOwner("bar");
+			r.setPower(false);
+			r.setStartTime(321.);
+			r.setState(State.POWER);
+
 			JSONAssert.assertEquals(
 					"[{ 'allocated_machine_name': 'foo', "
 							+ "'args': [0], "
@@ -129,19 +134,19 @@ class JsonTest {
 							+ "'state': 2, "
 							+ "'start_time': 321 "
 							+ "}]",
-					serialize(r), true);
+					serialize(new JobDescription[] {r.build()}), true);
 		}
 
 		@Test
 		void testMachine() throws IOException, JSONException {
-			var r = new Machine[1];
-			r[0] = new Machine("gorp", List.of("foo", "bar"), 0, 0, null, null);
-			JSONAssert
-					.assertEquals(
-							"[{ 'name': 'gorp', 'tags': ['foo', 'bar'], "
-									+ "'dead_boards': [], 'dead_links': [], "
-									+ "'height': 0, 'width': 0 }]",
-							serialize(r), true);
+			var r = new Machine("gorp", List.of("foo", "bar"), 0, 0, null,
+					null);
+
+			JSONAssert.assertEquals(
+					"[{ 'name': 'gorp', 'tags': ['foo', 'bar'], "
+							+ "'dead_boards': [], 'dead_links': [], "
+							+ "'height': 0, 'width': 0 }]",
+					serialize(new Machine[] {r}), true);
 		}
 
 		@Test
@@ -150,11 +155,12 @@ class JsonTest {
 					new ChipLocation(0, 0), new BoardCoordinates(0, 1, 2),
 					"gorp", new ChipLocation(0, 0),
 					new BoardPhysicalCoordinates(0, 1, 2));
+
 			JSONAssert.assertEquals(
 					"{'chip': [0,0], 'board_chip': [0,0],"
-					+ "'job_chip': [0,0], 'job_id': 0,"
-					+ "'logical': [0,1,2], 'physical': [0,1,2],"
-					+ "'machine': 'gorp'}",
+							+ "'job_chip': [0,0], 'job_id': 0,"
+							+ "'logical': [0,1,2], 'physical': [0,1,2],"
+							+ "'machine': 'gorp'}",
 					serialize(r), true);
 		}
 	}
