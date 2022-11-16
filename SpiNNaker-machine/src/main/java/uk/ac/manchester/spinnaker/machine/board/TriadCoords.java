@@ -20,6 +20,7 @@ import static java.lang.Integer.compare;
 import static java.lang.Integer.parseInt;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -179,7 +180,7 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 	static final class Deserializer extends DeserializerHelper<TriadCoords> {
 		private static final long serialVersionUID = 1L;
 
-		protected Deserializer() {
+		Deserializer() {
 			super(TriadCoords.class);
 		}
 
@@ -220,6 +221,11 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 		@Override
 		TriadCoords deserializeString(String string) {
 			return new TriadCoords(string);
+		}
+
+		@Override
+		public List<Object> getKnownPropertyNames() {
+			return List.of("x", "y", "z");
 		}
 	}
 }

@@ -29,8 +29,10 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
  */
 public class WriteFPGAData extends BMPRequest<BMPRequest.BMPResponse> {
 	/**
-	 * @param board Which board to upload the FPGA data to.
-	 * @param data What data to upload.
+	 * @param board
+	 *            Which board to upload the FPGA data to.
+	 * @param data
+	 *            What data to upload.
 	 */
 	public WriteFPGAData(BMPBoard board, byte[] data) {
 		super(board, CMD_XILINX, LoadData.code, data.length, 0,
@@ -38,8 +40,11 @@ public class WriteFPGAData extends BMPRequest<BMPRequest.BMPResponse> {
 	}
 
 	/**
-	 * @param board Which board to upload the FPGA data to.
-	 * @param data What data to upload.
+	 * @param board
+	 *            Which board to upload the FPGA data to.
+	 * @param data
+	 *            What data to upload. The position and limit of the buffer will
+	 *            not be updated by this method.
 	 */
 	public WriteFPGAData(BMPBoard board, ByteBuffer data) {
 		super(board, CMD_XILINX, LoadData.code, data.remaining(), 0, data);

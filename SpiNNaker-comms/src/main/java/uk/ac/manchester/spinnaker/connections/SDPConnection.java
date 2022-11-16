@@ -22,15 +22,12 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.InetAddress;
 
-import uk.ac.manchester.spinnaker.connections.model.SDPReceiver;
-import uk.ac.manchester.spinnaker.connections.model.SDPSender;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 
 /** A UDP socket connection that talks SDP to SpiNNaker. */
-public class SDPConnection extends UDPConnection<SDPMessage>
-		implements SDPReceiver, SDPSender {
+public class SDPConnection extends UDPConnection<SDPMessage> {
 	private ChipLocation chip;
 
 	/**
@@ -91,7 +88,14 @@ public class SDPConnection extends UDPConnection<SDPMessage>
 		this.chip = remoteChip.asChipLocation();
 	}
 
-	@Override
+	/**
+	 * Sends an SDP message down this connection.
+	 *
+	 * @param sdpMessage
+	 *            The SDP message to be sent
+	 * @throws IOException
+	 *             If there is an error sending the message.
+	 */
 	public void send(SDPMessage sdpMessage) throws IOException {
 		send(sdpMessage.getMessageData(chip));
 	}

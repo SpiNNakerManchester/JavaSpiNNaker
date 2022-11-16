@@ -28,6 +28,7 @@ import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.download.MissingSequenceNumbersMessage.createMessages;
 import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.io.IOException;
@@ -482,12 +483,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 	}
 
 	private static List<Byte> list(ByteBuffer buffer) {
-		var l = new ArrayList<Byte>();
-		var b = buffer.asReadOnlyBuffer();
-		while (b.hasRemaining()) {
-			l.add(b.get());
-		}
-		return l;
+		return sliceUp(buffer, 1).map(ByteBuffer::get).toList();
 	}
 
 	private static List<String> describeChunk(Chunk<Byte> chunk) {
