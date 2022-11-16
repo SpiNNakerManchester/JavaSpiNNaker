@@ -17,9 +17,11 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.ceil;
-import static java.lang.Math.min;
+import static java.nio.ByteBuffer.allocate;
 import static org.apache.commons.io.IOUtils.buffer;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.read;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -76,22 +78,15 @@ class WriteMemoryFloodProcess extends TxrxProcess {
 	void writeMemory(byte nearestNeighbourID, MemoryLocation baseAddress,
 			ByteBuffer data)
 			throws IOException, ProcessException, InterruptedException {
-		data = data.asReadOnlyBuffer();
 		int numBytes = data.remaining();
 		synchronousCall(
 				new FloodFillStart(nearestNeighbourID, numBlocks(numBytes)));
 
 		int blockID = 0;
-		while (numBytes > 0) {
-			int chunk = min(numBytes, UDP_MESSAGE_MAX_SIZE);
-			var tmp = data.duplicate();
-			tmp.limit(tmp.position() + chunk);
-			sendRequest(new FloodFillData(nearestNeighbourID, blockID,
-					baseAddress, tmp));
-			blockID++;
-			numBytes -= chunk;
-			baseAddress = baseAddress.add(chunk);
-			data.position(data.position() + chunk);
+		for (var slice : sliceUp(data, UDP_MESSAGE_MAX_SIZE)) {
+			sendRequest(new FloodFillData(nearestNeighbourID, blockID++,
+					baseAddress, slice));
+			baseAddress = baseAddress.add(slice.remaining());
 		}
 		finishBatch();
 
@@ -127,18 +122,17 @@ class WriteMemoryFloodProcess extends TxrxProcess {
 
 		int blockID = 0;
 		while (numBytes > 0) {
-			int chunk = min(numBytes, UDP_MESSAGE_MAX_SIZE);
-			// Allocate a new array each time; assume message hold a ref to it
-			var buffer = new byte[chunk];
-			chunk = dataStream.read(buffer);
-			if (chunk <= 0) {
+			// Allocate a new buffer each time; assume message holds ref to it
+			var tmp =
+					read(dataStream, allocate(UDP_MESSAGE_MAX_SIZE), numBytes);
+			if (tmp == null) {
 				break;
 			}
 			sendRequest(new FloodFillData(nearestNeighbourID, blockID,
-					baseAddress, buffer, 0, chunk));
+					baseAddress, tmp));
 			blockID++;
-			numBytes -= chunk;
-			baseAddress = baseAddress.add(chunk);
+			numBytes -= tmp.remaining();
+			baseAddress = baseAddress.add(tmp.remaining());
 		}
 		finishBatch();
 

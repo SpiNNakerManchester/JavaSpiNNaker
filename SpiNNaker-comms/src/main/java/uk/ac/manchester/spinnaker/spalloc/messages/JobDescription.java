@@ -28,7 +28,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * A description of the state of a job.
@@ -195,6 +195,10 @@ public final class JobDescription {
 		return builder.toString();
 	}
 
+	/**
+	 * Builder for {@link JobDescription}.
+	 */
+	@JsonPOJOBuilder(withPrefix = "set")
 	public static class Builder {
 		private int jobID;
 
@@ -220,85 +224,113 @@ public final class JobDescription {
 
 		private String keepAliveHost;
 
-		@CanIgnoreReturnValue
+		/**
+		 * @param jobID The job's identifier.
+		 */
 		@JsonProperty("job_id")
-		public Builder withJobID(int jobID) {
+		public void setJobID(int jobID) {
 			this.jobID = jobID;
-			return this;
 		}
 
-		@CanIgnoreReturnValue
-		public Builder withOwner(String owner) {
+		/**
+		 * @param owner
+		 *            The job's owner.
+		 */
+		public void setOwner(String owner) {
 			this.owner = owner;
-			return this;
 		}
 
-		@CanIgnoreReturnValue
+		/**
+		 * @param startTime
+		 *            When the job started, in seconds from the epoch.
+		 */
 		@JsonProperty("start_time")
-		public Builder withStartTime(Double startTime) {
+		public void setStartTime(Double startTime) {
 			this.startTime = startTime;
-			return this;
 		}
 
-		@CanIgnoreReturnValue
-		public Builder withState(State state) {
+		/**
+		 * @param state
+		 *            The job state.
+		 */
+		public void setState(State state) {
 			this.state = state;
-			return this;
 		}
 
-		@CanIgnoreReturnValue
-		public Builder withPower(Boolean power) {
+		/**
+		 * @param power
+		 *            Whether the job's allocated boards are powered on.
+		 */
+		public void setPower(Boolean power) {
 			this.power = power;
-			return this;
 		}
 
-		@CanIgnoreReturnValue
+		/**
+		 * @param keepAlive
+		 *            The job's maximum keepalive interval, in seconds.
+		 */
 		@JsonProperty("keepalive")
-		public Builder withKeepAlive(double keepAlive) {
+		public void setKeepAlive(double keepAlive) {
 			this.keepAlive = keepAlive;
-			return this;
 		}
 
-		@CanIgnoreReturnValue
-		public Builder withReason(String reason) {
+		/**
+		 * @param reason
+		 *            The reason why the job terminated.
+		 */
+		public void setReason(String reason) {
 			this.reason = reason;
-			return this;
 		}
 
-		@CanIgnoreReturnValue
+		/**
+		 * @param machine
+		 *            The name of the machine that the job is allocated to.
+		 */
 		@JsonProperty("allocated_machine_name")
-		public Builder withMachine(String machine) {
+		public void setMachine(String machine) {
 			this.machine = machine;
-			return this;
 		}
 
-		@CanIgnoreReturnValue
-		public Builder withArgs(List<Integer> args) {
+		/**
+		 * @param args
+		 *            The positional arguments used to create the job.
+		 */
+		public void setArgs(List<Integer> args) {
 			this.args = isNull(args) ? List.of() : List.copyOf(args);
-			return this;
 		}
 
-		@CanIgnoreReturnValue
-		public Builder withKwargs(Map<String, Object> kwargs) {
+		/**
+		 * @param kwargs
+		 *            The keyword arguments used to create the job.
+		 */
+		public void setKwargs(Map<String, Object> kwargs) {
 			this.kwargs = isNull(args) ? Map.of()
 					// Careful: could be null values in map!
 					: unmodifiableMap(new HashMap<>(kwargs));
-			return this;
 		}
 
-		@CanIgnoreReturnValue
-		public Builder withBoards(List<BoardCoordinates> boards) {
+		/**
+		 * @param boards
+		 *            The boards allocated to the job and their locations.
+		 */
+		public void setBoards(List<BoardCoordinates> boards) {
 			this.boards = isNull(boards) ? List.of() : List.copyOf(boards);
-			return this;
 		}
 
-		@CanIgnoreReturnValue
+		/**
+		 * @param keepAliveHost
+		 *            The host believed to be keeping the job alive.
+		 */
 		@JsonProperty("keepalivehost")
-		public Builder withKeepAliveHost(String keepAliveHost) {
+		public void setKeepAliveHost(String keepAliveHost) {
 			this.keepAliveHost = keepAliveHost;
-			return this;
 		}
 
+		/**
+		 * Build an instance of the immutable {@link JobDescription}.
+		 *
+		 * @return The instance.
+		 */
 		public JobDescription build() {
 			return new JobDescription(jobID, owner, startTime, state, power,
 					keepAlive, reason, machine, args, kwargs, boards,

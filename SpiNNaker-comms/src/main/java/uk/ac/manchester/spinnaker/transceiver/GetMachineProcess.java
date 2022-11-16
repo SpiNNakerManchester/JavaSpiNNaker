@@ -19,8 +19,6 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.lang.Math.min;
 import static java.util.Collections.unmodifiableMap;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_RETRIES;
-import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.IDLE;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTable.getColumnOffset;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTable.getNumColumnBytes;

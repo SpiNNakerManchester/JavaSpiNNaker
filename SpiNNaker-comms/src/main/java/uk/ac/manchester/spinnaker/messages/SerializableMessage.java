@@ -35,6 +35,10 @@ public interface SerializableMessage {
 	 * <i>position</i> is at the point where they should begin writing. Once it
 	 * has finished, the <i>position</i> should be immediately after the last
 	 * byte written by this method.
+	 * <p>
+	 * Calling this method <em>should not</em> update the internal state of the
+	 * message. It <em>should</em> be possible to add the message to multiple
+	 * buffers without special precautions by the caller.
 	 *
 	 * @param buffer
 	 *            The buffer to write into.

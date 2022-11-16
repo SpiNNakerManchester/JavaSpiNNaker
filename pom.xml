@@ -44,7 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<log4j.version>2.19.0</log4j.version>
 
 		<spring.version>5.3.23</spring.version>
-		<spring.boot.version>2.7.4</spring.boot.version>
+		<spring.boot.version>2.7.5</spring.boot.version>
 		<!--
 		DKF: if you update spring.boot.version, also update the annotation
 		  processor binding in Eclipse for SpiNNaker-allocserv:
@@ -54,13 +54,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		  Failure to do this leads to strange misbehaviour in tooltips when
 		  editing application.yml
 		-->
-		<spring.security.version>5.7.3</spring.security.version>
+		<spring.security.version>5.7.5</spring.security.version>
 
 		<cxf.version>3.5.4</cxf.version>
-		<jackson.version>2.14.0-rc2</jackson.version>
-		<sqlite.version>3.39.3.0</sqlite.version>
-		<keycloak.version>19.0.3</keycloak.version>
-		<swagger.version>4.14.3</swagger.version>
+		<jackson.version>2.14.0</jackson.version>
+		<sqlite.version>3.39.4.0</sqlite.version>
+		<keycloak.version>20.0.1</keycloak.version>
+		<swagger.version>4.15.0</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.3</jython.version>
 		<error-prone.version>2.16</error-prone.version>
@@ -300,7 +300,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<dependency>
 				<groupId>info.picocli</groupId>
 				<artifactId>picocli</artifactId>
-				<version>4.6.3</version>
+				<version>4.7.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.keycloak</groupId>
@@ -379,7 +379,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>
-					<version>3.4.0</version>
+					<version>3.4.1</version>
 					<configuration>
 						<filters>
 							<filter>
@@ -446,7 +446,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							</group>
 							<group>
 								<title>Communications</title>
-								<packages>uk.ac.manchester.spinnaker.connections*:uk.ac.manchester.spinnaker.io:uk.ac.manchester.spinnaker.messages*:uk.ac.manchester.spinnaker.transceiver*:uk.ac.manchester.spinnaker.spalloc*</packages>
+								<packages>uk.ac.manchester.spinnaker.connections*:uk.ac.manchester.spinnaker.alloc.client:uk.ac.manchester.spinnaker.io:uk.ac.manchester.spinnaker.messages*:uk.ac.manchester.spinnaker.transceiver*:uk.ac.manchester.spinnaker.spalloc*</packages>
 							</group>
 							<group>
 								<title>Data Management</title>
@@ -473,7 +473,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<link>https://javaee.github.io/javaee-spec/javadocs/</link>
 							-->
 							<link>https://errorprone.info/api/latest/</link>
+							<link>https://javadoc.io/doc/javax.validation/validation-api/latest/</link>
+							<link>https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/</link>
 						</links>
+						<doclint>all</doclint>
 						<notimestamp>true</notimestamp>
 						<additionalOptions>
 							<additionalOption>-html5</additionalOption>
@@ -582,8 +585,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<exclude>**/.dbeaver/**</exclude>
 							<exclude>**/*.erd</exclude>
 							<exclude>**/node_modules/**</exclude>
+							<exclude>**/.settings/**</exclude>
+							<exclude>**/.checkstyle</exclude>
+							<exclude>**/.classpath</exclude>
+							<exclude>**/.project</exclude>
 						</excludes>
 						<consoleOutput>true</consoleOutput>
+						<parseSCMIgnoresAsExcludes>true</parseSCMIgnoresAsExcludes>
+						<useEclipseDefaultExcludes>true</useEclipseDefaultExcludes>
+						<excludeSubProjects>true</excludeSubProjects>
 					</configuration>
 				</plugin>
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
@@ -705,7 +715,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<module>SpiNNaker-front-end</module>
 		<module>SpiNNaker-allocserv</module>
 		<module>SpiNNaker-py2json</module>
-		<module>SpiNNaker-allocator</module>
 	</modules>
 	<name>SpiNNaker Java Host</name>
 	<description>Implementation of the host software for SpiNNaker in Java.</description>
@@ -984,6 +993,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<link>https://javaee.github.io/javaee-spec/javadocs/</link>
 								<link>https://cxf.apache.org/javadoc/latest-3.0.x/</link>
 								<link>https://errorprone.info/api/latest/</link>
+								<link>https://javadoc.io/doc/javax.validation/validation-api/latest/</link>
+								<link>https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/</link>
 							</links>
 						</configuration>
 					</plugin>
