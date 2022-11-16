@@ -250,6 +250,11 @@ public class MachineStateControl extends DatabaseAwareBean {
 			return format("(%d,%d,%d)", x, y, z);
 		}
 
+		/**
+		 * Convert this active object to a static record.
+		 *
+		 * @return The static (conceptually serialisable) record object.
+		 */
 		public BoardRecord toBoardRecord() {
 			var br = new BoardRecord();
 			br.setId(id);

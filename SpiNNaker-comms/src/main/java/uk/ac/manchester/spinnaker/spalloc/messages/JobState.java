@@ -20,7 +20,6 @@ import javax.validation.constraints.Positive;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.errorprone.annotations.Immutable;
 
 /**
@@ -91,7 +90,10 @@ public final class JobState {
 				+ keepAlive + " reason: " + reason;
 	}
 
-	@JsonPOJOBuilder
+	/**
+	 * Builder for {@link JobState}.
+	 */
+	@JsonPOJOBuilder(withPrefix = "set")
 	public static class Builder {
 		private State state = null;
 
@@ -105,42 +107,59 @@ public final class JobState {
 
 		private String keepalivehost;
 
-		@CanIgnoreReturnValue
-		public Builder withState(State state) {
+		/**
+		 * @param state
+		 *            The state of the job.
+		 */
+		public void setState(State state) {
 			this.state = state;
-			return this;
 		}
 
-		@CanIgnoreReturnValue
-		public Builder withPower(Boolean power) {
+		/**
+		 * @param power
+		 *            whether the job's boards are powered.
+		 */
+		public void setPower(Boolean power) {
 			this.power = power;
-			return this;
 		}
 
-		@CanIgnoreReturnValue
-		public Builder withKeepalive(double keepAlive) {
+		/**
+		 * @param keepAlive
+		 *            The keepalive interval, in seconds.
+		 */
+		public void setKeepalive(double keepAlive) {
 			this.keepAlive = keepAlive;
-			return this;
 		}
 
-		@CanIgnoreReturnValue
-		public Builder withStartTime(double startTime) {
+		/**
+		 * @param startTime
+		 *            The time the job started, in seconds from the epoch.
+		 */
+		public void setStartTime(double startTime) {
 			this.startTime = startTime;
-			return this;
 		}
 
-		@CanIgnoreReturnValue
-		public Builder withReason(String reason) {
+		/**
+		 * @param reason
+		 *            The reason why the job was destroyed.
+		 */
+		public void setReason(String reason) {
 			this.reason = reason;
-			return this;
 		}
 
-		@CanIgnoreReturnValue
-		public Builder withKeepalivehost(String keepalivehost) {
+		/**
+		 * @param keepalivehost
+		 *            The host keeping the job alive.
+		 */
+		public void setKeepalivehost(String keepalivehost) {
 			this.keepalivehost = keepalivehost;
-			return this;
 		}
 
+		/**
+		 * Build an instance of the immutable {@link JobState}.
+		 *
+		 * @return The instance.
+		 */
 		public JobState build() {
 			return new JobState(state, power, keepAlive, startTime, reason,
 					keepalivehost);
