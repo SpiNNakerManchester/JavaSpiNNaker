@@ -472,6 +472,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<!-- This isn't modular so javadoc 14 gets snooty
 							<link>https://javaee.github.io/javaee-spec/javadocs/</link>
 							-->
+							<link>https://jakarta.ee/specifications/servlet/4.0/apidocs/</link>
 							<link>https://errorprone.info/api/latest/</link>
 							<link>https://javadoc.io/doc/javax.validation/validation-api/latest/</link>
 							<link>https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/</link>
@@ -990,7 +991,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<link>https://docs.spring.io/spring-framework/docs/current/javadoc-api/</link>
 								<link>https://docs.spring.io/spring-security/site/docs/current/api/</link>
 								<link>https://docs.spring.io/spring-boot/docs/current/api/</link>
-								<link>https://javaee.github.io/javaee-spec/javadocs/</link>
+								<link>https://jakarta.ee/specifications/servlet/4.0/apidocs/</link>
 								<link>https://cxf.apache.org/javadoc/latest-3.0.x/</link>
 								<link>https://errorprone.info/api/latest/</link>
 								<link>https://javadoc.io/doc/javax.validation/validation-api/latest/</link>
