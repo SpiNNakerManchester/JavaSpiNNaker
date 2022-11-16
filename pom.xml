@@ -59,7 +59,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<cxf.version>3.5.4</cxf.version>
 		<jackson.version>2.14.0</jackson.version>
 		<sqlite.version>3.39.4.0</sqlite.version>
-		<keycloak.version>20.0.0</keycloak.version>
+		<keycloak.version>20.0.1</keycloak.version>
 		<swagger.version>4.15.0</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.3</jython.version>
@@ -446,7 +446,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							</group>
 							<group>
 								<title>Communications</title>
-								<packages>uk.ac.manchester.spinnaker.connections*:uk.ac.manchester.spinnaker.io:uk.ac.manchester.spinnaker.messages*:uk.ac.manchester.spinnaker.transceiver*:uk.ac.manchester.spinnaker.spalloc*uk.ac.manchester.spinnaker.alloc.client*</packages>
+								<packages>uk.ac.manchester.spinnaker.connections*:uk.ac.manchester.spinnaker.alloc.client:uk.ac.manchester.spinnaker.io:uk.ac.manchester.spinnaker.messages*:uk.ac.manchester.spinnaker.transceiver*:uk.ac.manchester.spinnaker.spalloc*</packages>
 							</group>
 							<group>
 								<title>Data Management</title>
@@ -473,7 +473,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<link>https://javaee.github.io/javaee-spec/javadocs/</link>
 							-->
 							<link>https://errorprone.info/api/latest/</link>
+							<link>https://javadoc.io/doc/javax.validation/validation-api/latest/</link>
+							<link>https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/</link>
 						</links>
+						<doclint>all</doclint>
 						<notimestamp>true</notimestamp>
 						<additionalOptions>
 							<additionalOption>-html5</additionalOption>
@@ -582,8 +585,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<exclude>**/.dbeaver/**</exclude>
 							<exclude>**/*.erd</exclude>
 							<exclude>**/node_modules/**</exclude>
+							<exclude>**/.settings/**</exclude>
+							<exclude>**/.checkstyle</exclude>
+							<exclude>**/.classpath</exclude>
+							<exclude>**/.project</exclude>
 						</excludes>
 						<consoleOutput>true</consoleOutput>
+						<parseSCMIgnoresAsExcludes>true</parseSCMIgnoresAsExcludes>
+						<useEclipseDefaultExcludes>true</useEclipseDefaultExcludes>
+						<excludeSubProjects>true</excludeSubProjects>
 					</configuration>
 				</plugin>
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
@@ -983,6 +993,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<link>https://javaee.github.io/javaee-spec/javadocs/</link>
 								<link>https://cxf.apache.org/javadoc/latest-3.0.x/</link>
 								<link>https://errorprone.info/api/latest/</link>
+								<link>https://javadoc.io/doc/javax.validation/validation-api/latest/</link>
+								<link>https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/</link>
 							</links>
 						</configuration>
 					</plugin>

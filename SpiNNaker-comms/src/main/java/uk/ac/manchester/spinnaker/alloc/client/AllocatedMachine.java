@@ -135,6 +135,12 @@ public final class AllocatedMachine {
 		@IPAddress
 		private final String hostname;
 
+		/**
+		 * @param chip
+		 *            Which root chip (of a board) is this about?
+		 * @param hostname
+		 *            What's the IP address of the chip?
+		 */
 		public ConnectionInfo(@JsonProperty("chip") ChipLocation chip,
 				@JsonProperty("hostname") String hostname) {
 			this.chip = chip;
