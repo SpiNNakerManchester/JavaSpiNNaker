@@ -2,13 +2,13 @@ uk.ac.manchester.spinnaker.alloc
 uk.ac.manchester.spinnaker.alloc.admin
 uk.ac.manchester.spinnaker.alloc.allocator
 uk.ac.manchester.spinnaker.alloc.bmp
+uk.ac.manchester.spinnaker.alloc.client
 uk.ac.manchester.spinnaker.alloc.compat
 uk.ac.manchester.spinnaker.alloc.db
 uk.ac.manchester.spinnaker.alloc.model
 uk.ac.manchester.spinnaker.alloc.proxy
 uk.ac.manchester.spinnaker.alloc.security
 uk.ac.manchester.spinnaker.alloc.web
-uk.ac.manchester.spinnaker.allocator
 uk.ac.manchester.spinnaker.connections
 uk.ac.manchester.spinnaker.connections.model
 uk.ac.manchester.spinnaker.data_spec
