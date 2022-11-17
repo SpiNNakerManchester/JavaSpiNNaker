@@ -870,19 +870,6 @@ final class Oops extends RuntimeException {
 	}
 }
 
-/**
- * An exception that a task operation may throw.
- *
- * @author Donal Fellows
- */
-final class TaskException extends Exception {
-	private static final long serialVersionUID = 1L;
-
-	TaskException(String msg) {
-		super(msg);
-	}
-}
-
 final class UnknownIOException extends IOException {
 	private static final long serialVersionUID = -852489744228393668L;
 
