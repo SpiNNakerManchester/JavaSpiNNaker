@@ -65,7 +65,8 @@ class DbBasicTest extends MemDBTestBase {
 		}
 
 		// Not supported by SQLite
-		assertThrows(Exception.class, () -> c.createSQLXML());
+		assertThrows(Exception.class,
+				() -> ((java.sql.Connection) c).createSQLXML());
 	}
 
 	@Test
