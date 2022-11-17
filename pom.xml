@@ -476,11 +476,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							-->
 							<link>https://jakarta.ee/specifications/servlet/4.0/apidocs/</link>
 							<link>https://errorprone.info/api/latest/</link>
-							<link>https://javadoc.io/doc/javax.validation/validation-api/latest/</link>
-							<link>https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/</link>
 							<link>https://fasterxml.github.io/jackson-core/javadoc/${jackson.doc.version}/</link>
 							<link>https://fasterxml.github.io/jackson-databind/javadoc/${jackson.doc.version}/</link>
+							<link>https://www.slf4j.org/api/</link>
 						</links>
+						<offlineLinks>
+							<!-- Internal property used below: See https://issues.apache.org/jira/browse/MNG-7038 and https://stackoverflow.com/a/41387133/301832 -->
+							<offlineLink>
+								<url>https://javadoc.io/doc/javax.validation/validation-api/latest/</url>
+								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/javax.validation</location>
+							</offlineLink>
+							<offlineLink>
+								<url>https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/</url>
+								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/javax.ws.rs</location>
+							</offlineLink>
+							<offlineLink>
+								<url>https://javadoc.io/doc/org.keycloak/keycloak-client-registration-api/latest/</url>
+								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/org.keycloak.client</location>
+							</offlineLink>
+							<offlineLink>
+								<url>https://javadoc.io/doc/org.keycloak/keycloak-core/latest/</url>
+								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/org.keycloak.core</location>
+							</offlineLink>
+						</offlineLinks>
 						<doclint>all</doclint>
 						<notimestamp>true</notimestamp>
 						<additionalOptions>
@@ -594,6 +612,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<exclude>**/.checkstyle</exclude>
 							<exclude>**/.classpath</exclude>
 							<exclude>**/.project</exclude>
+							<exclude>**/package-list</exclude>
 						</excludes>
 						<consoleOutput>true</consoleOutput>
 						<parseSCMIgnoresAsExcludes>true</parseSCMIgnoresAsExcludes>
@@ -998,10 +1017,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<link>https://jakarta.ee/specifications/servlet/4.0/apidocs/</link>
 								<link>https://cxf.apache.org/javadoc/latest-3.0.x/</link>
 								<link>https://errorprone.info/api/latest/</link>
-								<link>https://javadoc.io/doc/javax.validation/validation-api/latest/</link>
-								<link>https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/</link>
 								<link>https://fasterxml.github.io/jackson-core/javadoc/${jackson.doc.version}/</link>
 								<link>https://fasterxml.github.io/jackson-databind/javadoc/${jackson.doc.version}/</link>
+								<link>https://www.slf4j.org/api/</link>
 							</links>
 						</configuration>
 					</plugin>
