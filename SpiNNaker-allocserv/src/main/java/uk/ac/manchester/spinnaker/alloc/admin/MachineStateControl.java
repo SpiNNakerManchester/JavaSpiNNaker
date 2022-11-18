@@ -60,8 +60,8 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.StateControlProperties
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.Epoch;
 import uk.ac.manchester.spinnaker.alloc.bmp.BlacklistStore;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.BoardIssueReport;
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;

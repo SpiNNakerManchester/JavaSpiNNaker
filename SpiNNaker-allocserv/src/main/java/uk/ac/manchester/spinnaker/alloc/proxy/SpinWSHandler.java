@@ -154,43 +154,80 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 		executor.shutdown();
 	}
 
+	/**
+	 * Look up the job that websocket is being created for and attach it to the
+	 * websocket's attributes. {@inheritDoc}
+	 *
+	 * @return Whether we found the job and attached it.
+	 */
 	@Override
 	public boolean beforeHandshake(ServerHttpRequest request,
 			ServerHttpResponse response, WebSocketHandler wsHandler,
 			Map<String, Object> attributes) {
-		return lookUpJobFromPath(request).map(job -> {
-			// If we have a job, remember it and succeed
-			JOB.put(attributes, job);
-			return job;
-		}).isPresent();
+		var j = lookUpJobFromPath(request);
+		// If we have a job, remember it and succeed
+		j.ifPresent(job -> JOB.put(attributes, job));
+		return j.isPresent();
 	}
 
+	/** Empty method to satisfy interface. {@inheritDoc} */
 	@Override
 	public void afterHandshake(ServerHttpRequest request,
 			ServerHttpResponse response, WebSocketHandler wsHandler,
 			Exception exception) {
 	}
 
+	/**
+	 * Websocket established; connect to the proxy handler.
+	 *
+	 * @param session
+	 *            The websocket session to connect.
+	 */
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) {
 		initProxyCore(session, JOB.get(session));
 	}
 
+	/**
+	 * Websocket closed; disconnect the proxy handler.
+	 *
+	 * @param session
+	 *            The websocket session to disconnect.
+	 * @param status
+	 *            Why the session closed. (Unimportant for this code)
+	 */
 	@Override
 	public void afterConnectionClosed(WebSocketSession session,
 			CloseStatus status) {
 		closed(session, PROXY.get(session), JOB.get(session));
 	}
 
+	/**
+	 * Websocket message received, dispatch it to the proxy for handling.
+	 *
+	 * @param session
+	 *            The websocket session that the message was received on.
+	 * @param message
+	 *            The received message.
+	 */
 	@Override
 	protected void handleBinaryMessage(WebSocketSession session,
 			BinaryMessage message) throws Exception {
 		delegateToProxy(message, PROXY.get(session));
 	}
 
+	/**
+	 * Log exceptions from the transport level. Except for {@link EOFException}
+	 * because that's just fine and comes up in a normal disconnect.
+	 *
+	 * @param session
+	 *            The websocket session that had the error.
+	 * @param exception
+	 *            What happened.
+	 */
 	@Override
 	public void handleTransportError(WebSocketSession session,
-			Throwable exception) throws Exception {
+			Throwable exception) {
 		if (!(exception instanceof EOFException)) {
 			// We don't log EOFException
 			log.warn("transport error for {}", session, exception);

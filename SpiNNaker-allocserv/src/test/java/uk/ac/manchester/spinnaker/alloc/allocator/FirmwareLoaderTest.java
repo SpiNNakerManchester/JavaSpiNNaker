@@ -39,7 +39,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask.TestAPI;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
 import uk.ac.manchester.spinnaker.alloc.bmp.MockTransceiver;
 import uk.ac.manchester.spinnaker.alloc.bmp.TransceiverFactory;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.messages.model.FPGA;
 

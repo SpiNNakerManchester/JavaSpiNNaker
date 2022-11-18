@@ -24,8 +24,8 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 
