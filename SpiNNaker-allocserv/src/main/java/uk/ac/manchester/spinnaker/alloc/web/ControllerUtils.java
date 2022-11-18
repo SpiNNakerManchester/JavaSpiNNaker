@@ -94,7 +94,7 @@ public abstract class ControllerUtils {
 	 * @author Donal Fellows
 	 */
 	@Immutable
-	public static class ViewFactory {
+	public static final class ViewFactory {
 		private final String view;
 
 		/**

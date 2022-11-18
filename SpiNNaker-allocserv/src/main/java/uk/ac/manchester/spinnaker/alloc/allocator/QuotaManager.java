@@ -33,10 +33,10 @@ import com.google.errorprone.annotations.RestrictedApi;
 
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Query;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Update;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 
 /**
