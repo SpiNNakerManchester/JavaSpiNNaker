@@ -50,9 +50,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connected;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Transacted;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connected;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Transacted;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 
