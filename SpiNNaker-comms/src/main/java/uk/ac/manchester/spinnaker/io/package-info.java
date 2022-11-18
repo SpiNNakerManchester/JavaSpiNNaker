@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Pretending that a SpiNNaker machine is simple I/O.
+ * Pretending that a SpiNNaker machine is simple I/O. Note that this package is
+ * likely to be removed soon as it is unused and not likely to become used.
  */
+@Deprecated(forRemoval = true)
 package uk.ac.manchester.spinnaker.io;

@@ -646,6 +646,11 @@ public class SpallocClientFactory {
 			conns.add(new ProxiedBootConnection(ws));
 			return new ProxiedTransceiver(conns, ws);
 		}
+
+		@Override
+		public String toString() {
+			return "Job(" + uri + ")";
+		}
 	}
 
 	private static final class MachineImpl extends Common implements Machine {

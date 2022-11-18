@@ -114,7 +114,9 @@ public abstract class UDPTransceiver implements Closeable {
 
 		private Pair(UDPConnection<T> connection, boolean register) {
 			this(connection);
-			addConnection(this.connection);
+			if (register) {
+				addConnection(this.connection);
+			}
 		}
 
 		@SuppressWarnings("MustBeClosed")
