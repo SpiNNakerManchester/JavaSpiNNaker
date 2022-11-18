@@ -196,21 +196,21 @@ extends <a href="SQLQueries.html" title="class in uk.ac.manchester.spinnaker.all
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code>protected &lt;T&gt;&nbsp;T</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#execute(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectedWithResult)">execute</a></span>&#8203;(<a href="DatabaseEngine.ConnectedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.ConnectedWithResult</a>&lt;T&gt;&nbsp;operation)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#execute(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.ConnectedWithResult)">execute</a></span>&#8203;(<a href="DatabaseAPI.ConnectedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.ConnectedWithResult</a>&lt;T&gt;&nbsp;operation)</code></th>
 <td class="colLast">
 <div class="block">A connection manager and nestable transaction runner.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code>protected &lt;T&gt;&nbsp;T</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#executeRead(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectedWithResult)">executeRead</a></span>&#8203;(<a href="DatabaseEngine.ConnectedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.ConnectedWithResult</a>&lt;T&gt;&nbsp;operation)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#executeRead(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.ConnectedWithResult)">executeRead</a></span>&#8203;(<a href="DatabaseAPI.ConnectedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.ConnectedWithResult</a>&lt;T&gt;&nbsp;operation)</code></th>
 <td class="colLast">
 <div class="block">A connection manager and nestable read-only transaction runner (it is an
  error to do an <code>UPDATE</code> using this transaction).</div>
 </td>
 </tr>
 <tr class="altColor" id="i2">
-<td class="colFirst"><code>protected <a href="DatabaseEngine.Connection.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.Connection</a></code></td>
+<td class="colFirst"><code>protected <a href="DatabaseAPI.Connection.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connection</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getConnection()">getConnection</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get a connection to the application database.</div>
@@ -258,7 +258,7 @@ extends <a href="SQLQueries.html" title="class in uk.ac.manchester.spinnaker.all
 <section class="detail">
 <h3><a id="getConnection()">getConnection</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/MustBeClosed.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@MustBeClosed</a>
-</span><span class="modifiers">protected final</span>&nbsp;<span class="returnType"><a href="DatabaseEngine.Connection.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.Connection</a></span>&nbsp;<span class="memberName">getConnection</span>()</div>
+</span><span class="modifiers">protected final</span>&nbsp;<span class="returnType"><a href="DatabaseAPI.Connection.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connection</a></span>&nbsp;<span class="memberName">getConnection</span>()</div>
 <div class="block">Get a connection to the application database. Connections <em>may</em> be
  shared, but might not be (especially in the case of testing databases).</div>
 <dl>
@@ -269,8 +269,8 @@ extends <a href="SQLQueries.html" title="class in uk.ac.manchester.spinnaker.all
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="execute(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectedWithResult)">execute</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="typeParameters">&lt;T&gt;</span>&nbsp;<span class="returnType">T</span>&nbsp;<span class="memberName">execute</span>&#8203;(<span class="arguments"><a href="DatabaseEngine.ConnectedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.ConnectedWithResult</a>&lt;T&gt;&nbsp;operation)</span></div>
+<h3><a id="execute(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.ConnectedWithResult)">execute</a></h3>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="typeParameters">&lt;T&gt;</span>&nbsp;<span class="returnType">T</span>&nbsp;<span class="memberName">execute</span>&#8203;(<span class="arguments"><a href="DatabaseAPI.ConnectedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.ConnectedWithResult</a>&lt;T&gt;&nbsp;operation)</span></div>
 <div class="block">A connection manager and nestable transaction runner. If the
  <code>operation</code> completes normally (and this isn't a nested use), the
  transaction commits. If an exception is thrown, the transaction is rolled
@@ -292,8 +292,8 @@ extends <a href="SQLQueries.html" title="class in uk.ac.manchester.spinnaker.all
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="executeRead(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectedWithResult)">executeRead</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="typeParameters">&lt;T&gt;</span>&nbsp;<span class="returnType">T</span>&nbsp;<span class="memberName">executeRead</span>&#8203;(<span class="arguments"><a href="DatabaseEngine.ConnectedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.ConnectedWithResult</a>&lt;T&gt;&nbsp;operation)</span></div>
+<h3><a id="executeRead(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.ConnectedWithResult)">executeRead</a></h3>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="typeParameters">&lt;T&gt;</span>&nbsp;<span class="returnType">T</span>&nbsp;<span class="memberName">executeRead</span>&#8203;(<span class="arguments"><a href="DatabaseAPI.ConnectedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.ConnectedWithResult</a>&lt;T&gt;&nbsp;operation)</span></div>
 <div class="block">A connection manager and nestable read-only transaction runner (it is an
  error to do an <code>UPDATE</code> using this transaction). If the
  <code>operation</code> completes normally (and this isn't a nested use), the

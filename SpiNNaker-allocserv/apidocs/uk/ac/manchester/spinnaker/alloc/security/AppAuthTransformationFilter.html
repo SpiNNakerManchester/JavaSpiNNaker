@@ -97,7 +97,7 @@ loadScripts(document, 'script');</script>
 <section class="description">
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd><code>javax.servlet.Filter</code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/Aware.html?is-external=true" title="class or interface in org.springframework.beans.factory" class="externalLink">Aware</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/BeanNameAware.html?is-external=true" title="class or interface in org.springframework.beans.factory" class="externalLink">BeanNameAware</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/DisposableBean.html?is-external=true" title="class or interface in org.springframework.beans.factory" class="externalLink">DisposableBean</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/InitializingBean.html?is-external=true" title="class or interface in org.springframework.beans.factory" class="externalLink">InitializingBean</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/EnvironmentAware.html?is-external=true" title="class or interface in org.springframework.context" class="externalLink">EnvironmentAware</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/env/EnvironmentCapable.html?is-external=true" title="class or interface in org.springframework.core.env" class="externalLink">EnvironmentCapable</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/context/ServletContextAware.html?is-external=true" title="class or interface in org.springframework.web.context" class="externalLink">ServletContextAware</a></code></dd>
+<dd><code><a href="https://jakarta.ee/specifications/servlet/4.0/apidocs/javax/servlet/Filter.html?is-external=true" title="class or interface in javax.servlet" class="externalLink">Filter</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/Aware.html?is-external=true" title="class or interface in org.springframework.beans.factory" class="externalLink">Aware</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/BeanNameAware.html?is-external=true" title="class or interface in org.springframework.beans.factory" class="externalLink">BeanNameAware</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/DisposableBean.html?is-external=true" title="class or interface in org.springframework.beans.factory" class="externalLink">DisposableBean</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/InitializingBean.html?is-external=true" title="class or interface in org.springframework.beans.factory" class="externalLink">InitializingBean</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/EnvironmentAware.html?is-external=true" title="class or interface in org.springframework.context" class="externalLink">EnvironmentAware</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/env/EnvironmentCapable.html?is-external=true" title="class or interface in org.springframework.core.env" class="externalLink">EnvironmentCapable</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/context/ServletContextAware.html?is-external=true" title="class or interface in org.springframework.web.context" class="externalLink">ServletContextAware</a></code></dd>
 </dl>
 <hr>
 <pre><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Component.html?is-external=true" title="class or interface in org.springframework.stereotype" class="externalLink">@Component</a>
@@ -176,7 +176,7 @@ extends <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-ap
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code>static void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#clearToken(javax.servlet.http.HttpServletRequest)">clearToken</a></span>&#8203;(javax.servlet.http.HttpServletRequest&nbsp;request)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#clearToken(javax.servlet.http.HttpServletRequest)">clearToken</a></span>&#8203;(<a href="https://jakarta.ee/specifications/servlet/4.0/apidocs/javax/servlet/http/HttpServletRequest.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletRequest</a>&nbsp;request)</code></th>
 <td class="colLast">
 <div class="block">Ensure that any authentication token that was bound into the session is
  removed.</div>
@@ -184,14 +184,14 @@ extends <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-ap
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code>protected void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#doFilterInternal(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse,javax.servlet.FilterChain)">doFilterInternal</a></span>&#8203;(javax.servlet.http.HttpServletRequest&nbsp;request,
-javax.servlet.http.HttpServletResponse&nbsp;response,
-javax.servlet.FilterChain&nbsp;chain)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#doFilterInternal(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse,javax.servlet.FilterChain)">doFilterInternal</a></span>&#8203;(<a href="https://jakarta.ee/specifications/servlet/4.0/apidocs/javax/servlet/http/HttpServletRequest.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletRequest</a>&nbsp;request,
+<a href="https://jakarta.ee/specifications/servlet/4.0/apidocs/javax/servlet/http/HttpServletResponse.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletResponse</a>&nbsp;response,
+<a href="https://jakarta.ee/specifications/servlet/4.0/apidocs/javax/servlet/FilterChain.html?is-external=true" title="class or interface in javax.servlet" class="externalLink">FilterChain</a>&nbsp;chain)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i2">
 <td class="colFirst"><code>protected boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#shouldNotFilter(javax.servlet.http.HttpServletRequest)">shouldNotFilter</a></span>&#8203;(javax.servlet.http.HttpServletRequest&nbsp;request)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#shouldNotFilter(javax.servlet.http.HttpServletRequest)">shouldNotFilter</a></span>&#8203;(<a href="https://jakarta.ee/specifications/servlet/4.0/apidocs/javax/servlet/http/HttpServletRequest.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletRequest</a>&nbsp;request)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
@@ -245,37 +245,37 @@ javax.servlet.FilterChain&nbsp;chain)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="shouldNotFilter(javax.servlet.http.HttpServletRequest)">shouldNotFilter</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">shouldNotFilter</span>&#8203;(<span class="arguments">javax.servlet.http.HttpServletRequest&nbsp;request)</span>
-                           throws <span class="exceptions">javax.servlet.ServletException</span></div>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">shouldNotFilter</span>&#8203;(<span class="arguments"><a href="https://jakarta.ee/specifications/servlet/4.0/apidocs/javax/servlet/http/HttpServletRequest.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletRequest</a>&nbsp;request)</span>
+                           throws <span class="exceptions"><a href="https://jakarta.ee/specifications/servlet/4.0/apidocs/javax/servlet/ServletException.html?is-external=true" title="class or interface in javax.servlet" class="externalLink">ServletException</a></span></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
 <dd><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/OncePerRequestFilter.html?is-external=true#shouldNotFilter(javax.servlet.http.HttpServletRequest)" title="class or interface in org.springframework.web.filter" class="externalLink">shouldNotFilter</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/OncePerRequestFilter.html?is-external=true" title="class or interface in org.springframework.web.filter" class="externalLink">OncePerRequestFilter</a></code></dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>javax.servlet.ServletException</code></dd>
+<dd><code><a href="https://jakarta.ee/specifications/servlet/4.0/apidocs/javax/servlet/ServletException.html?is-external=true" title="class or interface in javax.servlet" class="externalLink">ServletException</a></code></dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="doFilterInternal(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse,javax.servlet.FilterChain)">doFilterInternal</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">doFilterInternal</span>&#8203;(<span class="arguments">javax.servlet.http.HttpServletRequest&nbsp;request,
-javax.servlet.http.HttpServletResponse&nbsp;response,
-javax.servlet.FilterChain&nbsp;chain)</span>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">doFilterInternal</span>&#8203;(<span class="arguments"><a href="https://jakarta.ee/specifications/servlet/4.0/apidocs/javax/servlet/http/HttpServletRequest.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletRequest</a>&nbsp;request,
+<a href="https://jakarta.ee/specifications/servlet/4.0/apidocs/javax/servlet/http/HttpServletResponse.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletResponse</a>&nbsp;response,
+<a href="https://jakarta.ee/specifications/servlet/4.0/apidocs/javax/servlet/FilterChain.html?is-external=true" title="class or interface in javax.servlet" class="externalLink">FilterChain</a>&nbsp;chain)</span>
                          throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
-javax.servlet.ServletException</span></div>
+<a href="https://jakarta.ee/specifications/servlet/4.0/apidocs/javax/servlet/ServletException.html?is-external=true" title="class or interface in javax.servlet" class="externalLink">ServletException</a></span></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/OncePerRequestFilter.html?is-external=true#doFilterInternal(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse,javax.servlet.FilterChain)" title="class or interface in org.springframework.web.filter" class="externalLink">doFilterInternal</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/OncePerRequestFilter.html?is-external=true" title="class or interface in org.springframework.web.filter" class="externalLink">OncePerRequestFilter</a></code></dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code></dd>
-<dd><code>javax.servlet.ServletException</code></dd>
+<dd><code><a href="https://jakarta.ee/specifications/servlet/4.0/apidocs/javax/servlet/ServletException.html?is-external=true" title="class or interface in javax.servlet" class="externalLink">ServletException</a></code></dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="clearToken(javax.servlet.http.HttpServletRequest)">clearToken</a></h3>
-<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">clearToken</span>&#8203;(<span class="arguments">javax.servlet.http.HttpServletRequest&nbsp;request)</span></div>
+<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">clearToken</span>&#8203;(<span class="arguments"><a href="https://jakarta.ee/specifications/servlet/4.0/apidocs/javax/servlet/http/HttpServletRequest.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletRequest</a>&nbsp;request)</span></div>
 <div class="block">Ensure that any authentication token that was bound into the session is
  removed.</div>
 <dl>

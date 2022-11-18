@@ -263,7 +263,7 @@ extends <a href="../db/DatabaseAwareBean.html" title="class in uk.ac.manchester.
 <h3>Methods inherited from class&nbsp;uk.ac.manchester.spinnaker.alloc.db.<a href="../db/DatabaseAwareBean.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseAwareBean</a></h3>
 <a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean">
 <!--   -->
-</a><code><a href="../db/DatabaseAwareBean.html#execute(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectedWithResult)">execute</a>, <a href="../db/DatabaseAwareBean.html#executeRead(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectedWithResult)">executeRead</a>, <a href="../db/DatabaseAwareBean.html#getConnection()">getConnection</a></code></div>
+</a><code><a href="../db/DatabaseAwareBean.html#execute(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.ConnectedWithResult)">execute</a>, <a href="../db/DatabaseAwareBean.html#executeRead(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.ConnectedWithResult)">executeRead</a>, <a href="../db/DatabaseAwareBean.html#getConnection()">getConnection</a></code></div>
 <div class="inheritedList">
 <h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
@@ -303,8 +303,8 @@ extends <a href="../db/DatabaseAwareBean.html" title="class in uk.ac.manchester.
 <h3><a id="readMachineDefinitions(java.io.File)">readMachineDefinitions</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="MachineDefinitionLoader.Machine.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineDefinitionLoader.Machine</a>&gt;</span>&nbsp;<span class="memberName">readMachineDefinitions</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;file)</span>
                                                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
-com.fasterxml.jackson.core.JsonParseException,
-com.fasterxml.jackson.databind.JsonMappingException</span></div>
+<a href="https://fasterxml.github.io/jackson-core/javadoc/2.14/com/fasterxml/jackson/core/JsonParseException.html?is-external=true" title="class or interface in com.fasterxml.jackson.core" class="externalLink">JsonParseException</a>,
+<a href="https://fasterxml.github.io/jackson-databind/javadoc/2.14/com/fasterxml/jackson/databind/JsonMappingException.html?is-external=true" title="class or interface in com.fasterxml.jackson.databind" class="externalLink">JsonMappingException</a></span></div>
 <div class="block">Read a JSON-converted traditional spalloc configuration and get the
  machine definitions from inside.</div>
 <dl>
@@ -314,8 +314,8 @@ com.fasterxml.jackson.databind.JsonMappingException</span></div>
 <dd>The machines from that file. Not <code>null</code>.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong with file access.</dd>
-<dd><code>com.fasterxml.jackson.core.JsonParseException</code> - if underlying input contains invalid JSON content</dd>
-<dd><code>com.fasterxml.jackson.databind.JsonMappingException</code> - if the input JSON structure does not match the structure of
+<dd><code><a href="https://fasterxml.github.io/jackson-core/javadoc/2.14/com/fasterxml/jackson/core/JsonParseException.html?is-external=true" title="class or interface in com.fasterxml.jackson.core" class="externalLink">JsonParseException</a></code> - if underlying input contains invalid JSON content</dd>
+<dd><code><a href="https://fasterxml.github.io/jackson-databind/javadoc/2.14/com/fasterxml/jackson/databind/JsonMappingException.html?is-external=true" title="class or interface in com.fasterxml.jackson.databind" class="externalLink">JsonMappingException</a></code> - if the input JSON structure does not match the structure of
              JSONified spalloc configuration</dd>
 </dl>
 </section>
@@ -325,8 +325,8 @@ com.fasterxml.jackson.databind.JsonMappingException</span></div>
 <h3><a id="readMachineDefinitions(java.io.InputStream)">readMachineDefinitions</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="MachineDefinitionLoader.Machine.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineDefinitionLoader.Machine</a>&gt;</span>&nbsp;<span class="memberName">readMachineDefinitions</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/InputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">InputStream</a>&nbsp;stream)</span>
                                                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
-com.fasterxml.jackson.core.JsonParseException,
-com.fasterxml.jackson.databind.JsonMappingException</span></div>
+<a href="https://fasterxml.github.io/jackson-core/javadoc/2.14/com/fasterxml/jackson/core/JsonParseException.html?is-external=true" title="class or interface in com.fasterxml.jackson.core" class="externalLink">JsonParseException</a>,
+<a href="https://fasterxml.github.io/jackson-databind/javadoc/2.14/com/fasterxml/jackson/databind/JsonMappingException.html?is-external=true" title="class or interface in com.fasterxml.jackson.databind" class="externalLink">JsonMappingException</a></span></div>
 <div class="block">Read a JSON-converted traditional spalloc configuration and get the
  machine definitions from inside.</div>
 <dl>
@@ -336,8 +336,8 @@ com.fasterxml.jackson.databind.JsonMappingException</span></div>
 <dd>The machines from that stream.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong with file access.</dd>
-<dd><code>com.fasterxml.jackson.core.JsonParseException</code> - if underlying input contains invalid JSON content</dd>
-<dd><code>com.fasterxml.jackson.databind.JsonMappingException</code> - if the input JSON structure does not match the structure of
+<dd><code><a href="https://fasterxml.github.io/jackson-core/javadoc/2.14/com/fasterxml/jackson/core/JsonParseException.html?is-external=true" title="class or interface in com.fasterxml.jackson.core" class="externalLink">JsonParseException</a></code> - if underlying input contains invalid JSON content</dd>
+<dd><code><a href="https://fasterxml.github.io/jackson-databind/javadoc/2.14/com/fasterxml/jackson/databind/JsonMappingException.html?is-external=true" title="class or interface in com.fasterxml.jackson.databind" class="externalLink">JsonMappingException</a></code> - if the input JSON structure does not match the structure of
              JSONified spalloc configuration</dd>
 </dl>
 </section>
@@ -346,16 +346,16 @@ com.fasterxml.jackson.databind.JsonMappingException</span></div>
 <section class="detail">
 <h3><a id="loadMachineDefinitions(java.io.InputStream)">loadMachineDefinitions</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">loadMachineDefinitions</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/InputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">InputStream</a>&nbsp;stream)</span>
-                            throws <span class="exceptions">com.fasterxml.jackson.core.JsonParseException,
-com.fasterxml.jackson.databind.JsonMappingException,
+                            throws <span class="exceptions"><a href="https://fasterxml.github.io/jackson-core/javadoc/2.14/com/fasterxml/jackson/core/JsonParseException.html?is-external=true" title="class or interface in com.fasterxml.jackson.core" class="externalLink">JsonParseException</a>,
+<a href="https://fasterxml.github.io/jackson-databind/javadoc/2.14/com/fasterxml/jackson/databind/JsonMappingException.html?is-external=true" title="class or interface in com.fasterxml.jackson.databind" class="externalLink">JsonMappingException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">Add the machine definitions in the given stream to the database.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>stream</code> - The JSON configuration file.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>com.fasterxml.jackson.core.JsonParseException</code> - if underlying input contains invalid JSON content</dd>
-<dd><code>com.fasterxml.jackson.databind.JsonMappingException</code> - if the input JSON structure does not match the structure of
+<dd><code><a href="https://fasterxml.github.io/jackson-core/javadoc/2.14/com/fasterxml/jackson/core/JsonParseException.html?is-external=true" title="class or interface in com.fasterxml.jackson.core" class="externalLink">JsonParseException</a></code> - if underlying input contains invalid JSON content</dd>
+<dd><code><a href="https://fasterxml.github.io/jackson-databind/javadoc/2.14/com/fasterxml/jackson/databind/JsonMappingException.html?is-external=true" title="class or interface in com.fasterxml.jackson.databind" class="externalLink">JsonMappingException</a></code> - if the input JSON structure does not match the structure of
              JSONified spalloc configuration</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the file can't be read</dd>
 </dl>

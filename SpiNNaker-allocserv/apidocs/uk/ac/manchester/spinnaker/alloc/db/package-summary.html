@@ -83,32 +83,62 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colFirst" scope="row"><a href="DatabaseEngine.Connected.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.Connected</a></th>
+<th class="colFirst" scope="row"><a href="DatabaseAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI</a></th>
+<td class="colLast">
+<div class="block">The primary interface to the database.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="DatabaseAPI.Connected.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connected</a></th>
 <td class="colLast">
 <div class="block">Some code that may be run within a transaction and which will be given a
  new connection for the duration.</div>
 </td>
 </tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="DatabaseEngine.ConnectedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.ConnectedWithResult</a>&lt;T&gt;</th>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="DatabaseAPI.ConnectedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.ConnectedWithResult</a>&lt;T&gt;</th>
 <td class="colLast">
 <div class="block">Some code that may be run within a transaction that returns a result and
  which will be given a new connection for the duration.</div>
 </td>
 </tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="DatabaseAPI.Connection.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connection</a></th>
+<td class="colLast">
+<div class="block">Connections made by the database engine bean.</div>
+</td>
+</tr>
 <tr class="altColor">
-<th class="colFirst" scope="row"><a href="DatabaseEngine.Transacted.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.Transacted</a></th>
+<th class="colFirst" scope="row"><a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Query</a></th>
+<td class="colLast">
+<div class="block">Wrapping a prepared query to be more suitable for Java 8 onwards.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="DatabaseAPI.StatementCommon.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.StatementCommon</a></th>
+<td class="colLast">
+<div class="block">Common shared API between <a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><code>DatabaseAPI.Query</code></a> and <a href="DatabaseAPI.Update.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><code>DatabaseAPI.Update</code></a>.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="DatabaseAPI.Transacted.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Transacted</a></th>
 <td class="colLast">
 <div class="block">Some code that may be run within a transaction.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colFirst" scope="row"><a href="DatabaseEngine.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.TransactedWithResult</a>&lt;T&gt;</th>
+<th class="colFirst" scope="row"><a href="DatabaseAPI.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.TransactedWithResult</a>&lt;T&gt;</th>
 <td class="colLast">
 <div class="block">Some code that may be run within a transaction that returns a result.</div>
 </td>
 </tr>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="DatabaseAPI.Update.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Update</a></th>
+<td class="colLast">
+<div class="block">Wrapping a prepared update to be more suitable for Java 8 onwards.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="SQLiteFlags.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">SQLiteFlags</a></th>
 <td class="colLast">
 <div class="block">Flags in SQLite that the driver doesn't name for us.</div>
@@ -148,44 +178,38 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colFirst" scope="row"><a href="DatabaseEngine.StatementWrapper.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.StatementWrapper</a></th>
-<td class="colLast">
-<div class="block">Common shared code between <a href="DatabaseEngine.Query.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><code>DatabaseEngine.Query</code></a> and <a href="DatabaseEngine.Update.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><code>DatabaseEngine.Update</code></a>.</div>
-</td>
-</tr>
-<tr class="altColor">
 <th class="colFirst" scope="row"><a href="Row.html" title="class in uk.ac.manchester.spinnaker.alloc.db">Row</a></th>
 <td class="colLast">
 <div class="block">A restricted form of result set.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="SQLExceptionMapper.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLExceptionMapper</a></th>
 <td class="colLast">
 <div class="block">Handler for <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/SQLException.html?is-external=true" title="class or interface in java.sql" class="externalLink"><code>SQLException</code></a>.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></th>
 <td class="colLast">
 <div class="block">The literal SQL queries used in this package.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="TerminationNotifyingThreadFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.db">TerminationNotifyingThreadFactory</a></th>
 <td class="colLast">
 <div class="block">A thread factory that makes it possible to get a notification when a thread
  terminates.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="UncheckedConnection.html" title="class in uk.ac.manchester.spinnaker.alloc.db">UncheckedConnection</a></th>
 <td class="colLast">
 <div class="block">A connection that guarantees to not throw <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/SQLException.html?is-external=true" title="class or interface in java.sql" class="externalLink"><code>SQLException</code></a> from many of
  its methods.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="Utils.html" title="class in uk.ac.manchester.spinnaker.alloc.db">Utils</a></th>
 <td class="colLast">
 <div class="block">Miscellaneous database-related utility operations.</div>

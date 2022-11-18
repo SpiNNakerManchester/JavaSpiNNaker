@@ -75,13 +75,7 @@ loadScripts(document, 'script');</script>
 <ul>
 <li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DataAccessExceptionMapper.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DataAccessExceptionMapper</span></a> (implements javax.ws.rs.ext.<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/ext/ExceptionMapper.html?is-external=true" title="class or interface in javax.ws.rs.ext" class="externalLink">ExceptionMapper</a>&lt;E&gt;)</li>
 <li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseAwareBean.AbstractSQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DatabaseAwareBean.AbstractSQL</span></a> (implements java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a>)</li>
-<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DatabaseEngine</span></a></li>
-<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseEngine.StatementWrapper.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DatabaseEngine.StatementWrapper</span></a> (implements java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a>)
-<ul>
-<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseEngine.Query.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DatabaseEngine.Query</span></a></li>
-<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseEngine.Update.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DatabaseEngine.Update</span></a></li>
-</ul>
-</li>
+<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DatabaseEngine</span></a> (implements uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI</a>)</li>
 <li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="Row.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">Row</span></a></li>
 <li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="SQLExceptionMapper.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">SQLExceptionMapper</span></a> (implements javax.ws.rs.ext.<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/ext/ExceptionMapper.html?is-external=true" title="class or interface in javax.ws.rs.ext" class="externalLink">ExceptionMapper</a>&lt;E&gt;)</li>
 <li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">SQLQueries</span></a>
@@ -90,11 +84,7 @@ loadScripts(document, 'script');</script>
 </ul>
 </li>
 <li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="TerminationNotifyingThreadFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">TerminationNotifyingThreadFactory</span></a> (implements java.util.concurrent.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/ThreadFactory.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">ThreadFactory</a>)</li>
-<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="UncheckedConnection.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">UncheckedConnection</span></a> (implements java.sql.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Connection.html?is-external=true" title="class or interface in java.sql" class="externalLink">Connection</a>)
-<ul>
-<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseEngine.Connection.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DatabaseEngine.Connection</span></a></li>
-</ul>
-</li>
+<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="UncheckedConnection.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">UncheckedConnection</span></a> (implements java.sql.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Connection.html?is-external=true" title="class or interface in java.sql" class="externalLink">Connection</a>)</li>
 <li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="Utils.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">Utils</span></a></li>
 </ul>
 </li>
@@ -103,10 +93,22 @@ loadScripts(document, 'script');</script>
 <section class="hierarchy">
 <h2 title="Interface Hierarchy">Interface Hierarchy</h2>
 <ul>
-<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseEngine.Connected.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DatabaseEngine.Connected</span></a></li>
-<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseEngine.ConnectedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DatabaseEngine.ConnectedWithResult</span></a>&lt;T&gt;</li>
-<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseEngine.Transacted.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DatabaseEngine.Transacted</span></a></li>
-<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseEngine.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DatabaseEngine.TransactedWithResult</span></a>&lt;T&gt;</li>
+<li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink"><span class="typeNameLink">AutoCloseable</span></a>
+<ul>
+<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseAPI.Connection.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DatabaseAPI.Connection</span></a></li>
+<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseAPI.StatementCommon.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DatabaseAPI.StatementCommon</span></a>
+<ul>
+<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DatabaseAPI.Query</span></a></li>
+<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseAPI.Update.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DatabaseAPI.Update</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DatabaseAPI</span></a></li>
+<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseAPI.Connected.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DatabaseAPI.Connected</span></a></li>
+<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseAPI.ConnectedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DatabaseAPI.ConnectedWithResult</span></a>&lt;T&gt;</li>
+<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseAPI.Transacted.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DatabaseAPI.Transacted</span></a></li>
+<li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseAPI.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">DatabaseAPI.TransactedWithResult</span></a>&lt;T&gt;</li>
 <li class="circle">uk.ac.manchester.spinnaker.alloc.db.<a href="SQLiteFlags.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">SQLiteFlags</span></a></li>
 </ul>
 </section>

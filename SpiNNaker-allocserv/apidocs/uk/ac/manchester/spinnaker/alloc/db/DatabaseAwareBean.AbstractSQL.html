@@ -131,7 +131,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>protected <a href="DatabaseEngine.Connection.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.Connection</a></code></td>
+<td class="colFirst"><code>protected <a href="DatabaseAPI.Connection.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connection</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#conn">conn</a></span></code></th>
 <td class="colLast">
 <div class="block">The connection.</div>
@@ -168,7 +168,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>protected </code></td>
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection)">AbstractSQL</a></span>&#8203;(<a href="DatabaseEngine.Connection.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.Connection</a>&nbsp;conn)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection)">AbstractSQL</a></span>&#8203;(<a href="DatabaseAPI.Connection.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connection</a>&nbsp;conn)</code></th>
 <td class="colLast">
 <div class="block">Use an existing connection.</div>
 </td>
@@ -202,21 +202,21 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i1">
-<td class="colFirst"><code><a href="DatabaseEngine.Connection.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.Connection</a></code></td>
+<td class="colFirst"><code><a href="DatabaseAPI.Connection.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connection</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getConnection()">getConnection</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i2">
 <td class="colFirst"><code>&lt;T&gt;&nbsp;T</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#transaction(boolean,uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.TransactedWithResult)">transaction</a></span>&#8203;(boolean&nbsp;lockForWriting,
-<a href="DatabaseEngine.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.TransactedWithResult</a>&lt;T&gt;&nbsp;action)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#transaction(boolean,uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)">transaction</a></span>&#8203;(boolean&nbsp;lockForWriting,
+<a href="DatabaseAPI.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.TransactedWithResult</a>&lt;T&gt;&nbsp;action)</code></th>
 <td class="colLast">
 <div class="block">A nestable transaction runner.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code>&lt;T&gt;&nbsp;T</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#transaction(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.TransactedWithResult)">transaction</a></span>&#8203;(<a href="DatabaseEngine.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.TransactedWithResult</a>&lt;T&gt;&nbsp;action)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#transaction(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)">transaction</a></span>&#8203;(<a href="DatabaseAPI.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.TransactedWithResult</a>&lt;T&gt;&nbsp;action)</code></th>
 <td class="colLast">
 <div class="block">A nestable transaction runner.</div>
 </td>
@@ -246,7 +246,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <li class="blockList">
 <section class="detail">
 <h3><a id="conn">conn</a></h3>
-<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType"><a href="DatabaseEngine.Connection.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.Connection</a></span>&nbsp;<span class="memberName">conn</span></div>
+<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType"><a href="DatabaseAPI.Connection.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connection</a></span>&nbsp;<span class="memberName">conn</span></div>
 <div class="block">The connection.</div>
 </section>
 </li>
@@ -269,8 +269,8 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection)">AbstractSQL</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="memberName">AbstractSQL</span>&#8203;(<span class="arguments"><a href="DatabaseEngine.Connection.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.Connection</a>&nbsp;conn)</span></div>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection)">AbstractSQL</a></h3>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="memberName">AbstractSQL</span>&#8203;(<span class="arguments"><a href="DatabaseAPI.Connection.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connection</a>&nbsp;conn)</span></div>
 <div class="block">Use an existing connection. Caller looks after its management.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -290,8 +290,8 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="transaction(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.TransactedWithResult)">transaction</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="typeParameters">&lt;T&gt;</span>&nbsp;<span class="returnType">T</span>&nbsp;<span class="memberName">transaction</span>&#8203;(<span class="arguments"><a href="DatabaseEngine.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.TransactedWithResult</a>&lt;T&gt;&nbsp;action)</span></div>
+<h3><a id="transaction(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)">transaction</a></h3>
+<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="typeParameters">&lt;T&gt;</span>&nbsp;<span class="returnType">T</span>&nbsp;<span class="memberName">transaction</span>&#8203;(<span class="arguments"><a href="DatabaseAPI.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.TransactedWithResult</a>&lt;T&gt;&nbsp;action)</span></div>
 <div class="block">A nestable transaction runner. If the <code>action</code> completes
  normally (and this isn't a nested use), the transaction commits. If a
  runtime exception is thrown, the transaction is rolled back (and the
@@ -308,9 +308,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="transaction(boolean,uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.TransactedWithResult)">transaction</a></h3>
+<h3><a id="transaction(boolean,uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)">transaction</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="typeParameters">&lt;T&gt;</span>&nbsp;<span class="returnType">T</span>&nbsp;<span class="memberName">transaction</span>&#8203;(<span class="arguments">boolean&nbsp;lockForWriting,
-<a href="DatabaseEngine.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.TransactedWithResult</a>&lt;T&gt;&nbsp;action)</span></div>
+<a href="DatabaseAPI.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.TransactedWithResult</a>&lt;T&gt;&nbsp;action)</span></div>
 <div class="block">A nestable transaction runner. If the <code>action</code> completes
  normally (and this isn't a nested use), the transaction commits. If a
  runtime exception is thrown, the transaction is rolled back (and the
@@ -332,7 +332,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <li class="blockList">
 <section class="detail">
 <h3><a id="getConnection()">getConnection</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="DatabaseEngine.Connection.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.Connection</a></span>&nbsp;<span class="memberName">getConnection</span>()</div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="DatabaseAPI.Connection.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connection</a></span>&nbsp;<span class="memberName">getConnection</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The encapsulated connection.</dd>
