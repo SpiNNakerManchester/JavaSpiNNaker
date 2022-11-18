@@ -22,9 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.errorprone.annotations.MustBeClosed;
 
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectedWithResult;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.TransactedWithResult;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.ConnectedWithResult;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult;
 
 /**
  * A support class to make accessing the database a bit simpler. It factors out

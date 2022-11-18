@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
- * Because Spring otherwise can't apply {@link PostFilter} to {@link Stream}.
+ * Because Spring otherwise can't apply {@link PostFilter} to {@link Optional}.
  *
  * @author Donal Fellows
  * @see <a href="https://stackoverflow.com/q/66107075/301832">Stack Overflow</a>

@@ -124,7 +124,8 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * @author Donal Fellows
  */
 @Service
-public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
+public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
+		implements DatabaseAPI {
 	private static final Logger log = getLogger(DatabaseEngine.class);
 
 	/**
@@ -373,13 +374,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		warnOnLongTransactions = true;
 	}
 
-	/**
-	 * Create an engine interface for an in-memory database. This is intended
-	 * mainly for testing purposes. Note that various coupled automatic services
-	 * are disabled, in particular connections are not closed automatically.
-	 *
-	 * @return The in-memory database interface.
-	 */
+	@Override
 	public DatabaseEngine getInMemoryDB() {
 		return new DatabaseEngine(this);
 	}
@@ -500,7 +495,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			throw mapException(e, null);
 		}
 		// Note that we don't close the wrapper; this is deliberate!
-		var wrapper = new Connection(conn);
+		var wrapper = new ConnectionImpl(conn);
 		synchronized (this) {
 			wrapper.transaction(true, () -> {
 				wrapper.exec(sqlDDLFile);
@@ -525,7 +520,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *            Where to apply the updates.
 	 * @see #schemaUpdates
 	 */
-	private void execSchemaUpdates(Connection wrapper) {
+	private void execSchemaUpdates(ConnectionImpl wrapper) {
 		for (var r : schemaUpdates) {
 			try {
 				wrapper.exec(r);
@@ -612,12 +607,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		try {
 			long start = currentTimeMillis();
 			// NB: Not a standard query! Safe, because we know we have an int
-			try (var conn = getConnection()) {
-				conn.unwrap(SQLiteConnection.class).setBusyTimeout(0);
-				conn.transaction(true, () -> {
-					conn.exec(
-							format("PRAGMA analysis_limit=%d; PRAGMA optimize;",
-									props.getAnalysisLimit()));
+			try (var conn = getConnection(); var c = (ConnectionImpl) conn) {
+				c.unwrap(SQLiteConnection.class).setBusyTimeout(0);
+				c.transaction(true, () -> {
+					c.exec(format("PRAGMA analysis_limit=%d; PRAGMA optimize;",
+							props.getAnalysisLimit()));
 				});
 			} catch (DataAccessException e) {
 				/*
@@ -683,12 +677,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * checked exceptions. The connection is thread-bound, and will be cleaned
 	 * up correctly when the thread exits (ideal for thread pools).
 	 */
-	public final class Connection extends UncheckedConnection {
+	final class ConnectionImpl extends UncheckedConnection
+			implements Connection {
 		private boolean inTransaction;
 
 		private boolean isLockedForWrites;
 
-		private Connection(java.sql.Connection c) {
+		private ConnectionImpl(java.sql.Connection c) {
 			super(c);
 			inTransaction = false;
 		}
@@ -799,20 +794,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			}
 		}
 
-		/**
-		 * A nestable transaction runner. If the {@code operation} completes
-		 * normally (and this isn't a nested use), the transaction commits. If
-		 * an exception is thrown, the transaction is rolled back.
-		 *
-		 * @param lockForWriting
-		 *            Whether to lock for writing. Multiple read locks can be
-		 *            held at once, but only one write lock. Locks
-		 *            <em>cannot</em> be upgraded (because that causes
-		 *            deadlocks).
-		 * @param operation
-		 *            The operation to run
-		 * @see #transaction(DatabaseEngine.TransactedWithResult)
-		 */
+		@Override
 		public void transaction(boolean lockForWriting, Transacted operation) {
 			// Use the other method, ignoring the result value
 			transaction(lockForWriting, () -> {
@@ -821,54 +803,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			});
 		}
 
-		/**
-		 * A nestable transaction runner. If the {@code operation} completes
-		 * normally (and this isn't a nested use), the transaction commits. If
-		 * an exception is thrown, the transaction is rolled back. This uses a
-		 * write lock.
-		 *
-		 * @param operation
-		 *            The operation to run
-		 * @see #transaction(DatabaseEngine.TransactedWithResult)
-		 */
+		@Override
 		public void transaction(Transacted operation) {
 			transaction(true, operation);
 		}
 
-		/**
-		 * A nestable transaction runner. If the {@code operation} completes
-		 * normally (and this isn't a nested use), the transaction commits. If
-		 * an exception is thrown, the transaction is rolled back. This uses a
-		 * write lock.
-		 *
-		 * @param <T>
-		 *            The type of the result of {@code operation}
-		 * @param operation
-		 *            The operation to run
-		 * @return the value returned by {@code operation}
-		 * @see #transaction(DatabaseEngine.Transacted)
-		 */
+		@Override
 		public <T> T transaction(TransactedWithResult<T> operation) {
 			return transaction(true, operation);
 		}
 
-		/**
-		 * A nestable transaction runner. If the {@code operation} completes
-		 * normally (and this isn't a nested use), the transaction commits. If
-		 * an exception is thrown, the transaction is rolled back.
-		 *
-		 * @param <T>
-		 *            The type of the result of {@code operation}
-		 * @param lockForWriting
-		 *            Whether to lock for writing. Multiple read locks can be
-		 *            held at once, but only one write lock. Locks
-		 *            <em>cannot</em> be upgraded (because that causes
-		 *            deadlocks).
-		 * @param operation
-		 *            The operation to run
-		 * @return the value returned by {@code operation}
-		 * @see #transaction(DatabaseEngine.Transacted)
-		 */
+		@Override
 		public <T> T transaction(boolean lockForWriting,
 				TransactedWithResult<T> operation) {
 			var context = getDebugContext();
@@ -962,227 +907,51 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			}
 		}
 
-		// @formatter:off
-		/**
-		 * Create a new query. Usage pattern:
-		 * <pre>
-		 * try (var q = conn.query(SQL_SELECT)) {
-		 *     for (var row : u.call(argument1, argument2)) {
-		 *         // Do something with the row
-		 *     }
-		 * }
-		 * </pre>
-		 * or:
-		 * <pre>
-		 * try (var q = conn.query(SQL_SELECT)) {
-		 *     u.call(argument1, argument2).forEach(row -&gt; {
-		 *         // Do something with the row
-		 *     });
-		 * }
-		 * </pre>
-		 *
-		 * @param sql
-		 *            The SQL of the query.
-		 * @return The query object.
-		 * @see #query(Resource)
-		 * @see #update(String)
-		 * @see SQLQueries
-		 */
-		// @formatter:on
+		@Override
 		public Query query(@CompileTimeConstant String sql) {
-			return new Query(this, false, sql);
+			return new QueryImpl(this, false, sql);
 		}
 
-		// @formatter:off
-		/**
-		 * Create a new query. Usage pattern:
-		 * <pre>
-		 * try (var q = conn.query(SQL_SELECT)) {
-		 *     for (var row : u.call(argument1, argument2)) {
-		 *         // Do something with the row
-		 *     }
-		 * }
-		 * </pre>
-		 * or:
-		 * <pre>
-		 * try (var q = conn.query(SQL_SELECT)) {
-		 *     u.call(argument1, argument2).forEach(row -&gt; {
-		 *         // Do something with the row
-		 *     });
-		 * }
-		 * </pre>
-		 *
-		 * @param sql
-		 *            The SQL of the query.
-		 * @param lockType
-		 *            Whether we expect to have a write lock. This is vital
-		 * @return The query object.
-		 * @see #query(Resource)
-		 * @see #update(String)
-		 * @see SQLQueries
-		 */
-		// @formatter:on
+		@Override
 		public Query query(@CompileTimeConstant String sql, boolean lockType) {
-			return new Query(this, lockType, sql);
+			return new QueryImpl(this, lockType, sql);
 		}
 
-		// @formatter:off
-		/**
-		 * Create a new query.
-		 * <pre>
-		 * try (var q = conn.query(sqlSelectResource)) {
-		 *     for (var row : u.call(argument1, argument2)) {
-		 *         // Do something with the row
-		 *     }
-		 * }
-		 * </pre>
-		 * or:
-		 * <pre>
-		 * try (var q = conn.query(sqlSelectResource)) {
-		 *     u.call(argument1, argument2).forEach(row -&gt; {
-		 *         // Do something with the row
-		 *     });
-		 * }
-		 * </pre>
-		 *
-		 * @param sqlResource
-		 *            Reference to the SQL of the query.
-		 * @return The query object.
-		 * @see #query(String)
-		 * @see #update(Resource)
-		 * @see SQLQueries
-		 */
-		// @formatter:on
+		@Override
 		public Query query(Resource sqlResource) {
-			return new Query(this, false, readSQL(sqlResource));
+			return new QueryImpl(this, false, readSQL(sqlResource));
 		}
 
-		// @formatter:off
-		/**
-		 * Create a new query.
-		 * <pre>
-		 * try (var q = conn.query(sqlSelectResource)) {
-		 *     for (var row : u.call(argument1, argument2)) {
-		 *         // Do something with the row
-		 *     }
-		 * }
-		 * </pre>
-		 * or:
-		 * <pre>
-		 * try (var q = conn.query(sqlSelectResource)) {
-		 *     u.call(argument1, argument2).forEach(row -&gt; {
-		 *         // Do something with the row
-		 *     });
-		 * }
-		 * </pre>
-		 *
-		 * @param sqlResource
-		 *            Reference to the SQL of the query.
-		 * @param lockType
-		 *            Whether we expect to have a write lock. This is vital
-		 *            only when the query is an {@code UPDATE RETURNING}.
-		 * @return The query object.
-		 * @see #query(String)
-		 * @see #update(Resource)
-		 * @see SQLQueries
-		 */
-		// @formatter:on
+		@Override
 		public Query query(Resource sqlResource, boolean lockType) {
-			return new Query(this, lockType, readSQL(sqlResource));
+			return new QueryImpl(this, lockType, readSQL(sqlResource));
 		}
 
-		// @formatter:off
-		/**
-		 * Create a new update. Usage pattern:
-		 * <pre>
-		 * try (var u = conn.update(SQL_UPDATE)) {
-		 *     int numRows = u.call(argument1, argument2);
-		 * }
-		 * </pre>
-		 * or:
-		 * <pre>
-		 * try (var u = conn.update(SQL_INSERT)) {
-		 *     for (var key : u.keys(argument1, argument2)) {
-		 *         // Do something with the key
-		 *     }
-		 * }
-		 * </pre>
-		 * or even:
-		 * <pre>
-		 * try (var u = conn.update(SQL_INSERT)) {
-		 *     u.key(argument1, argument2).ifPresent(key -&gt; {
-		 *         // Do something with the key
-		 *     });
-		 * }
-		 * </pre>
-		 * <p>
-		 * <strong>Note:</strong> If you use a {@code RETURNING} clause then
-		 * you should use a {@link Query} with the {@code lockType} set to
-		 * {@code true}.
-		 *
-		 * @param sql
-		 *            The SQL of the update.
-		 * @return The update object.
-		 * @see #update(Resource)
-		 * @see #query(String)
-		 * @see SQLQueries
-		 */
-		// @formatter:on
+		@Override
 		public Update update(@CompileTimeConstant String sql) {
-			return new Update(this, sql);
+			return new UpdateImpl(this, sql);
 		}
 
-		// @formatter:off
-		/**
-		 * Create a new update.
-		 * <pre>
-		 * try (var u = conn.update(sqlUpdateResource)) {
-		 *     int numRows = u.call(argument1, argument2);
-		 * }
-		 * </pre>
-		 * or:
-		 * <pre>
-		 * try (var u = conn.update(sqlInsertResource)) {
-		 *     for (var key : u.keys(argument1, argument2)) {
-		 *         // Do something with the key
-		 *     }
-		 * }
-		 * </pre>
-		 * or even:
-		 * <pre>
-		 * try (var u = conn.update(sqlInsertResource)) {
-		 *     u.key(argument1, argument2).ifPresent(key -&gt; {
-		 *         // Do something with the key
-		 *     });
-		 * }
-		 * </pre>
-		 * <p>
-		 * <strong>Note:</strong> If you use a {@code RETURNING} clause then
-		 * you should use a {@link Query} with the {@code lockType} set to
-		 * {@code true}.
-		 *
-		 * @param sqlResource
-		 *            Reference to the SQL of the update.
-		 * @return The update object.
-		 * @see #update(String)
-		 * @see #query(Resource)
-		 * @see SQLQueries
-		 */
-		// @formatter:on
+		@Override
 		public Update update(Resource sqlResource) {
-			return new Update(this, readSQL(sqlResource));
+			return new UpdateImpl(this, readSQL(sqlResource));
 		}
 
 		/**
 		 * Run some SQL where the result is of no interest.
 		 *
 		 * @param sql
-		 *            The SQL to run. Probably DDL. This may contain multiple
-		 *            statements.
+		 *            The SQL to run. Probably DDL. This <em>may</em> contain
+		 *            multiple statements. This <em>may</em> be generated code,
+		 *            but if so you <em>must</em> ensure that there are no
+		 *            possible SQL injection errors.
 		 * @see #query(String)
 		 * @see #update(String)
+		 * @deprecated Prefer query() or update() wherever possible, as they are
+		 *             proofed against SQL injection.
 		 */
-		void exec(String sql) {
+		@Deprecated
+		public void exec(String sql) {
 			checkInTransaction(true);
 			try (var s = createStatement()) {
 				// MUST be executeUpdate() to run multiple statements at once!
@@ -1201,56 +970,39 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * Run some SQL where the result is of no interest.
 		 *
 		 * @param sqlResource
-		 *            Reference to the SQL to run. Probably DDL. This may
-		 *            contain multiple statements.
+		 *            Reference to the SQL to run. Probably DDL. This
+		 *            <em>may</em> contain multiple statements.
 		 * @see #query(Resource)
 		 * @see #update(Resource)
+		 * @deprecated Prefer query() or update() wherever possible, as they are
+		 *             proofed against SQL injection.
 		 */
-		void exec(Resource sqlResource) {
+		@Deprecated
+		public void exec(Resource sqlResource) {
 			exec(readSQL(sqlResource));
 		}
 	}
 
 	private boolean threadCacheConnections = false;
 
-	/**
-	 * Get a connection. This connection is thread-bound and pooled; it <em>must
-	 * not</em> be passed to other threads. They should get their own
-	 * connections instead. The connection has auto-commit disabled; use the
-	 * {@link Connection#transaction(DatabaseEngine.TransactedWithResult)
-	 * transaction()} method instead.
-	 * <p>
-	 * Note that if an in-memory database is used (see
-	 * {@link #getInMemoryDB()}), that DB can <em>only</em> be accessed from the
-	 * connection returned from this method; the next call to this method
-	 * (whether from the current thread or another one) will get an independent
-	 * database. Such in-memory databases are not subject to thread-bound
-	 * cleanup actions; they're simply deleted from memory when no longer used
-	 * (but the connection should be {@code close()}d after use for efficiency
-	 * nonetheless).
-	 * <p>
-	 * This would be marked with {@link MustBeClosed} except that causes a mess
-	 * elsewhere.
-	 *
-	 * @return A configured initialised connection to the database.
-	 */
+	@Override
 	@MustBeClosed
 	public Connection getConnection() {
 		if (isNull(dbPath)) {
 			// In-memory DB (dbPath null) always must be initialised
 			var conn = openDatabaseConnection();
 			initDBConn(conn);
-			return new Connection(threadBound(conn));
+			return new ConnectionImpl(threadBound(conn));
 		}
 		synchronized (this) {
 			if (threadCacheConnections && !isLongTermThread()) {
 				var conn = getCachedDatabaseConnection();
 				maybeInit(conn);
-				return new Connection(uncloseableThreadBound(conn));
+				return new ConnectionImpl(uncloseableThreadBound(conn));
 			} else {
 				var conn = openDatabaseConnection();
 				maybeInit(conn);
-				return new Connection(threadBound(conn));
+				return new ConnectionImpl(threadBound(conn));
 			}
 		}
 	}
@@ -1263,13 +1015,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 	}
 
-	/**
-	 * Creates a backup of the database. <em>This operation should only be
-	 * called by administrators.</em>
-	 *
-	 * @param backupFilename
-	 *            The backup file to create.
-	 */
+	@Override
 	public void createBackup(File backupFilename) {
 		try (var conn = getCachedDatabaseConnection()) {
 			conn.getDatabase().backup(MAIN_DB_NAME,
@@ -1282,15 +1028,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 	}
 
-	/**
-	 * Restores the database from backup. <em>This operation should only be
-	 * called by administrators.</em>
-	 *
-	 * @param backupFilename
-	 *            The backup file to restore from.
-	 * @throws PermissionDeniedDataAccessException
-	 *             If the backup cannot be read.
-	 */
+	@Override
 	public void restoreFromBackup(File backupFilename) {
 		if (!backupFilename.isFile() || !backupFilename.canRead()) {
 			throw new PermissionDeniedDataAccessException(
@@ -1352,22 +1090,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		return null;
 	}
 
-	/**
-	 * A connection manager and transaction runner. If the {@code operation}
-	 * completes normally (and this isn't a nested use), the transaction
-	 * commits. If an exception is thrown, the transaction is rolled back. The
-	 * connection is closed up in any case.
-	 *
-	 * @param lockForWriting
-	 *            Whether to lock for writing. Multiple read locks can be held
-	 *            at once, but only one write lock. Locks <em>cannot</em> be
-	 *            upgraded (because that causes deadlocks).
-	 * @param operation
-	 *            The operation to run
-	 * @throws RuntimeException
-	 *             If something goes wrong with the database access or the
-	 *             contained code.
-	 */
+	@Override
 	public void executeVoid(boolean lockForWriting, Connected operation) {
 		try (var conn = getConnection()) {
 			conn.transaction(lockForWriting, () -> {
@@ -1377,128 +1100,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 	}
 
-	/**
-	 * A connection manager and transaction runner. If the {@code operation}
-	 * completes normally (and this isn't a nested use), the transaction
-	 * commits. If an exception is thrown, the transaction is rolled back. The
-	 * connection is closed up in any case. This uses a write lock.
-	 *
-	 * @param operation
-	 *            The operation to run
-	 * @throws RuntimeException
-	 *             If something goes wrong with the database access or the
-	 *             contained code.
-	 */
-	public void executeVoid(Connected operation) {
-		executeVoid(true, operation);
-	}
-
-	/**
-	 * A connection manager and transaction runner. If the {@code operation}
-	 * completes normally (and this isn't a nested use), the transaction
-	 * commits. If an exception is thrown, the transaction is rolled back. The
-	 * connection is closed up in any case.
-	 *
-	 * @param <T>
-	 *            The type of the result of {@code operation}
-	 * @param lockForWriting
-	 *            Whether to lock for writing. Multiple read locks can be held
-	 *            at once, but only one write lock. Locks <em>cannot</em> be
-	 *            upgraded (because that causes deadlocks).
-	 * @param operation
-	 *            The operation to run
-	 * @return the value returned by {@code operation}
-	 * @throws RuntimeException
-	 *             If something other than database access goes wrong with the
-	 *             contained code.
-	 */
+	@Override
 	public <T> T execute(boolean lockForWriting,
 			ConnectedWithResult<T> operation) {
 		try (var conn = getConnection()) {
 			return conn.transaction(lockForWriting, () -> operation.act(conn));
 		}
-	}
-
-	/**
-	 * A connection manager and transaction runner. If the {@code operation}
-	 * completes normally (and this isn't a nested use), the transaction
-	 * commits. If an exception is thrown, the transaction is rolled back. The
-	 * connection is closed up in any case. This uses a write lock.
-	 *
-	 * @param <T>
-	 *            The type of the result of {@code operation}
-	 * @param operation
-	 *            The operation to run
-	 * @return the value returned by {@code operation}
-	 * @throws RuntimeException
-	 *             If something other than database access goes wrong with the
-	 *             contained code.
-	 */
-	public <T> T execute(ConnectedWithResult<T> operation) {
-		return execute(true, operation);
-	}
-
-	/**
-	 * Some code that may be run within a transaction.
-	 */
-	@FunctionalInterface
-	public interface Transacted {
-		/**
-		 * The operation to run.
-		 */
-		void act();
-	}
-
-	/**
-	 * Some code that may be run within a transaction that returns a result.
-	 *
-	 * @param <T>
-	 *            The type of the result of the code.
-	 */
-	@FunctionalInterface
-	public interface TransactedWithResult<T> {
-		/**
-		 * The operation to run.
-		 *
-		 * @return The result of the operation.
-		 */
-		T act();
-	}
-
-	/**
-	 * Some code that may be run within a transaction and which will be given a
-	 * new connection for the duration.
-	 */
-	@FunctionalInterface
-	public interface Connected {
-		/**
-		 * The operation to run.
-		 *
-		 * @param connection
-		 *            The newly-created connection. Do not save beyond the scope
-		 *            of this action.
-		 */
-		void act(Connection connection);
-	}
-
-	/**
-	 * Some code that may be run within a transaction that returns a result and
-	 * which will be given a new connection for the duration.
-	 *
-	 * @param <T>
-	 *            The type of the result of the code.
-	 */
-	@FunctionalInterface
-	public interface ConnectedWithResult<T> {
-		/**
-		 * The operation to run.
-		 *
-		 * @param connection
-		 *            The newly-created connection. Do not save beyond the scope
-		 *            of this action.
-		 * @return The result of the operation.
-		 */
-		T act(Connection connection);
 	}
 
 	/**
@@ -1530,12 +1137,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 	}
 
-	/**
-	 * Common shared code between {@link Query} and {@link Update}.
-	 *
-	 * @author Donal Fellows
-	 */
-	public abstract static class StatementWrapper implements AutoCloseable {
+	private abstract static class StatementWrapper implements StatementCommon {
 		/** The statement being managed. */
 		final PreparedStatement s;
 
@@ -1543,9 +1145,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		ResultSet rs;
 
 		/** The database connection. */
-		final Connection conn;
+		final ConnectionImpl conn;
 
-		StatementWrapper(Connection conn, String sql) {
+		StatementWrapper(ConnectionImpl conn, String sql) {
 			this.conn = conn;
 			s = conn.prepareStatement(sql);
 			rs = null;
@@ -1612,11 +1214,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			}
 		}
 
-		/**
-		 * Get the number of arguments expected when calling this statement.
-		 *
-		 * @return The number of arguments. Types are arbitrary (because SQLite)
-		 */
+		@Override
 		public final int getNumArguments() {
 			try {
 				return s.getParameterMetaData().getParameterCount();
@@ -1625,12 +1223,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			}
 		}
 
-		/**
-		 * Get the set of names of columns produced when calling this statement.
-		 *
-		 * @return A set of names. The order is the order in the SQL producing
-		 *         the result set, but this should normally be insignificant.
-		 */
+		@Override
 		public final Set<String> getRowColumnNames() {
 			try {
 				return columnNames(s.getMetaData());
@@ -1660,24 +1253,15 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *
 	 * @author Donal Fellows
 	 */
-	public final class Query extends StatementWrapper {
-		private Query(Connection conn, boolean lockType, String sql) {
+	private final class QueryImpl extends StatementWrapper implements Query {
+		private QueryImpl(ConnectionImpl conn, boolean lockType, String sql) {
 			super(conn, sql);
 			this.lockType = lockType;
 		}
 
 		private final boolean lockType;
 
-		/**
-		 * Run the query on the given arguments.
-		 *
-		 * @param arguments
-		 *            Positional argument to the query
-		 * @return The results, wrapped as a one-shot iterable. The
-		 *         {@linkplain Row rows} in the iterable <em>must not</em> be
-		 *         retained by callers; they may share state and might not
-		 *         outlive the iteration.
-		 */
+		@Override
 		public MappableIterable<Row> call(Object... arguments) {
 			conn.checkInTransaction(lockType);
 			closeResults();
@@ -1733,15 +1317,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			};
 		}
 
-		/**
-		 * Run the query on the given arguments. The query must be one that only
-		 * produces a single row result.
-		 *
-		 * @param arguments
-		 *            Positional argument to the query
-		 * @return The single row with the results, or empty if there is no such
-		 *         row.
-		 */
+		@Override
 		public Optional<Row> call1(Object... arguments) {
 			conn.checkInTransaction(lockType);
 			try {
@@ -1763,23 +1339,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 	}
 
-	/**
-	 * Wrapping a prepared update to be more suitable for Java 8 onwards.
-	 *
-	 * @author Donal Fellows
-	 */
-	public final class Update extends StatementWrapper {
-		private Update(Connection conn, String sql) {
+	private final class UpdateImpl extends StatementWrapper implements Update {
+		private UpdateImpl(ConnectionImpl conn, String sql) {
 			super(conn, sql);
 		}
 
-		/**
-		 * Run the update on the given arguments.
-		 *
-		 * @param arguments
-		 *            Positional argument to the query
-		 * @return The number of rows updated
-		 */
+		@Override
 		public int call(Object... arguments) {
 			conn.checkInTransaction(true);
 			closeResults();
@@ -1795,13 +1360,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			}
 		}
 
-		/**
-		 * Run the update on the given arguments.
-		 *
-		 * @param arguments
-		 *            Positional arguments to the query
-		 * @return The integer primary keys generated by the update.
-		 */
+		@Override
 		public MappableIterable<Integer> keys(Object... arguments) {
 			conn.checkInTransaction(true);
 			/*
@@ -1870,13 +1429,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			};
 		}
 
-		/**
-		 * Run the update on the given arguments.
-		 *
-		 * @param arguments
-		 *            Positional arguments to the query
-		 * @return The integer primary key generated by the update.
-		 */
+		@Override
 		public Optional<Integer> key(Object... arguments) {
 			conn.checkInTransaction(true);
 			closeResults();
