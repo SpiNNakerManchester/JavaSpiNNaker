@@ -45,9 +45,10 @@ public final class CommandLineCheck {
 
 	public static void main(String... args)
 			throws IOException, InterruptedException {
+		// TODO add support for using a bearer token with this code
 		var a = new CommandLineCheck(args);
-		var factory = new SpallocClientFactory();
-		var client = factory.createClient(a.baseUrl, a.username, a.password);
+		var factory = new SpallocClientFactory(a.baseUrl);
+		var client = factory.login(a.username, a.password);
 
 		// Just so that the server gets its logging out the way first
 		Thread.sleep(SHORT_SLEEP);

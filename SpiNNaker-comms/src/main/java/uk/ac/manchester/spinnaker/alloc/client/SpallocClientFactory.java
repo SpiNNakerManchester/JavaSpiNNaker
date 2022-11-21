@@ -108,6 +108,18 @@ public class SpallocClientFactory {
 			.findAndAddModules().disable(WRITE_DATES_AS_TIMESTAMPS)
 			.propertyNamingStrategy(KEBAB_CASE).build();
 
+	private final URI baseUrl;
+
+	/**
+	 * Create a factory that can talk to a given service.
+	 *
+	 * @param baseUrl
+	 *            Where the server is.
+	 */
+	public SpallocClientFactory(URI baseUrl) {
+		this.baseUrl = asDir(baseUrl);
+	}
+
 	/**
 	 * Read an object from a stream.
 	 *
@@ -222,25 +234,37 @@ public class SpallocClientFactory {
 	}
 
 	/**
-	 * Create a client.
+	 * Create a client and log in.
 	 *
-	 * @param baseUrl
-	 *            Where the server is.
 	 * @param username
 	 *            The username to log in with.
 	 * @param password
 	 *            The password to log in with.
-	 * @return client API for the given server
+	 * @return The client API for the given server.
 	 * @throws IOException
 	 *             If the server doesn't respond or logging in fails.
 	 */
-	public SpallocClient createClient(URI baseUrl, String username,
-			String password) throws IOException {
+	public SpallocClient login(String username, String password)
+			throws IOException {
 		var s = new ClientSession(baseUrl, username, password);
 
 		return new ClientImpl(s, s.discoverRoot());
 	}
-	// TODO Make a constructor that takes a bearer token
+
+	/**
+	 * Create a client and log in.
+	 *
+	 * @param bearerToken
+	 *            The HBP/EBRAINS bearer token to authenticate with.
+	 * @return The client API for the given server.
+	 * @throws IOException
+	 *             If the server doesn't respond or logging in fails.
+	 */
+	public SpallocClient login(String bearerToken) throws IOException {
+		var s = new ClientSession(baseUrl, bearerToken);
+
+		return new ClientImpl(s, s.discoverRoot());
+	}
 
 	private abstract static class Common {
 		private final SpallocClient client;
