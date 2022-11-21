@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -125,8 +125,10 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E()">SpallocClientFactory</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.net.URI)">SpallocClientFactory</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URI.html?is-external=true" title="class or interface in java.net" class="externalLink">URI</a>&nbsp;baseUrl)</code></th>
+<td class="colLast">
+<div class="block">Create a factory that can talk to a given service.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -153,11 +155,17 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code><a href="SpallocClient.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createClient(java.net.URI,java.lang.String,java.lang.String)">createClient</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URI.html?is-external=true" title="class or interface in java.net" class="externalLink">URI</a>&nbsp;baseUrl,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;username,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#login(java.lang.String)">login</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;bearerToken)</code></th>
+<td class="colLast">
+<div class="block">Create a client and log in.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i1">
+<td class="colFirst"><code><a href="SpallocClient.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#login(java.lang.String,java.lang.String)">login</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;username,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;password)</code></th>
 <td class="colLast">
-<div class="block">Create a client.</div>
+<div class="block">Create a client and log in.</div>
 </td>
 </tr>
 </tbody>
@@ -184,8 +192,13 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;()">SpallocClientFactory</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SpallocClientFactory</span>()</div>
+<h3><a id="&lt;init&gt;(java.net.URI)">SpallocClientFactory</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SpallocClientFactory</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URI.html?is-external=true" title="class or interface in java.net" class="externalLink">URI</a>&nbsp;baseUrl)</span></div>
+<div class="block">Create a factory that can talk to a given service.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>baseUrl</code> - Where the server is.</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -200,19 +213,33 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="createClient(java.net.URI,java.lang.String,java.lang.String)">createClient</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="SpallocClient.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient</a></span>&nbsp;<span class="memberName">createClient</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URI.html?is-external=true" title="class or interface in java.net" class="externalLink">URI</a>&nbsp;baseUrl,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;username,
+<h3><a id="login(java.lang.String,java.lang.String)">login</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="SpallocClient.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient</a></span>&nbsp;<span class="memberName">login</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;username,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;password)</span>
-                           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
-<div class="block">Create a client.</div>
+                    throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block">Create a client and log in.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>baseUrl</code> - Where the server is.</dd>
 <dd><code>username</code> - The username to log in with.</dd>
 <dd><code>password</code> - The password to log in with.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>client API for the given server</dd>
+<dd>The client API for the given server.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the server doesn't respond or logging in fails.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="login(java.lang.String)">login</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="SpallocClient.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient</a></span>&nbsp;<span class="memberName">login</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;bearerToken)</span>
+                    throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block">Create a client and log in.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>bearerToken</code> - The HBP/EBRAINS bearer token to authenticate with.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The client API for the given server.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the server doesn't respond or logging in fails.</dd>
 </dl>
