@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [14]
+        java: [17]
     env:
       SETTINGS_FILE: .github/settings.xml
       SITE_DIR: target/staging

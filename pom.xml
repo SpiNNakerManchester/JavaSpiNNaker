@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.release>11</maven.compiler.release>
+		<maven.compiler.release>17</maven.compiler.release>
 		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
 		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 
@@ -471,10 +471,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<link>https://docs.spring.io/spring-framework/docs/current/javadoc-api/</link>
 							<link>https://docs.spring.io/spring-security/site/docs/current/api/</link>
 							<link>https://docs.spring.io/spring-boot/docs/current/api/</link>
-							<!-- This isn't modular so javadoc 14 gets snooty
-							<link>https://javaee.github.io/javaee-spec/javadocs/</link>
-							-->
 							<link>https://jakarta.ee/specifications/servlet/4.0/apidocs/</link>
+							<link>https://cxf.apache.org/javadoc/latest-3.0.x/</link>
 							<link>https://errorprone.info/api/latest/</link>
 							<link>https://fasterxml.github.io/jackson-core/javadoc/${jackson.doc.version}/</link>
 							<link>https://fasterxml.github.io/jackson-databind/javadoc/${jackson.doc.version}/</link>
@@ -739,6 +737,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<module>SpiNNaker-front-end</module>
 		<module>SpiNNaker-allocserv</module>
 		<module>SpiNNaker-py2json</module>
+		<module>keycloak-management-client</module>
 	</modules>
 	<name>SpiNNaker Java Host</name>
 	<description>Implementation of the host software for SpiNNaker in Java.</description>
@@ -955,13 +954,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</build>
 		</profile>
 		<profile>
-			<!-- This module needs Java 11 to build at all. -->
-			<id>KeycloakClient</id>
-			<modules>
-				<module>keycloak-management-client</module>
-			</modules>
-		</profile>
-		<profile>
 			<id>CheckForFIXME</id>
 			<!-- See https://stackoverflow.com/q/18129106/301832-->
 			<build>
@@ -994,34 +986,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								</goals>
 							</execution>
 						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>Java17extras</id>
-			<activation>
-				<jdk>[17,)</jdk>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-						<configuration>
-							<links>
-								<!-- Repeat these -->
-								<link>https://docs.spring.io/spring-framework/docs/current/javadoc-api/</link>
-								<link>https://docs.spring.io/spring-security/site/docs/current/api/</link>
-								<link>https://docs.spring.io/spring-boot/docs/current/api/</link>
-								<link>https://jakarta.ee/specifications/servlet/4.0/apidocs/</link>
-								<link>https://cxf.apache.org/javadoc/latest-3.0.x/</link>
-								<link>https://errorprone.info/api/latest/</link>
-								<link>https://fasterxml.github.io/jackson-core/javadoc/${jackson.doc.version}/</link>
-								<link>https://fasterxml.github.io/jackson-databind/javadoc/${jackson.doc.version}/</link>
-								<link>https://www.slf4j.org/api/</link>
-							</links>
-						</configuration>
 					</plugin>
 				</plugins>
 			</build>
