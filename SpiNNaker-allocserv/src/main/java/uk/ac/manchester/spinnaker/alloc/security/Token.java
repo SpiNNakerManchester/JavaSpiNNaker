@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.security;
 
 import java.io.Serializable;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 import org.springframework.security.core.Authentication;
 

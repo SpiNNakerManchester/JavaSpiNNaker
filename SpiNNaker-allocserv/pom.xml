@@ -380,9 +380,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-api</artifactId>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+		    <groupId>jakarta.mail</groupId>
+		    <artifactId>jakarta.mail-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
