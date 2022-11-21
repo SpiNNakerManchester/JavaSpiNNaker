@@ -25,7 +25,6 @@ import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.asDir;
 import static uk.ac.manchester.spinnaker.alloc.client.ProxyProtocol.CLOSE;
 import static uk.ac.manchester.spinnaker.alloc.client.ProxyProtocol.MSG;
 import static uk.ac.manchester.spinnaker.alloc.client.ProxyProtocol.MSG_TO;
@@ -106,6 +105,8 @@ final class ClientSession implements Session {
 
 	private final String password;
 
+	private final String bearerToken;
+
 	private String session;
 
 	private String csrfHeader;
@@ -116,24 +117,45 @@ final class ClientSession implements Session {
 	 * Create a session and log it in.
 	 *
 	 * @param baseUri
-	 *            The service base URI. <em>Must</em> be absolute! <em>Must
-	 *            not</em> include a username or password!
+	 *            The service base URI. <em>Must</em> be absolute! Must end in a
+	 *            {@code /} character! <em>Must not</em> include a username or
+	 *            password!
 	 * @param username
-	 *            The username to use
+	 *            The username to use. Not {@code null}.
 	 * @param password
-	 *            The password to use
+	 *            The password to use. Not {@code null}.
 	 * @throws IOException
 	 *             If things go wrong.
 	 */
 	ClientSession(URI baseUri, String username, String password)
 			throws IOException {
-		this.baseUri = asDir(baseUri);
+		this.baseUri = baseUri;
 		this.username = username;
 		this.password = password;
+		this.bearerToken = null;
 		// This does the actual logging in process
 		renew(false);
 	}
-	// TODO make a constructor that takes a bearer token
+
+	/**
+	 * Create a session and log it in.
+	 *
+	 * @param baseUri
+	 *            The service base URI. <em>Must</em> be absolute! <em>Must
+	 *            not</em> include a username or password!
+	 * @param bearerToken
+	 *            The bearer token to use. Not {@code null}.
+	 * @throws IOException
+	 *             If things go wrong.
+	 */
+	ClientSession(URI baseUri, String bearerToken) throws IOException {
+		this.baseUri = baseUri;
+		this.username = null;
+		this.password = null;
+		this.bearerToken = requireNonNull(bearerToken);
+		// This does the actual logging in process
+		renew(false);
+	}
 
 	private static HttpURLConnection createConnection(URI url)
 			throws IOException {
@@ -615,10 +637,16 @@ final class ClientSession implements Session {
 	private void logSessionIn(String tempCsrf) throws IOException {
 		var c = connection(LOGIN_HANDLER, true);
 		c.setRequestMethod("POST");
-		writeForm(c,
-				ofEntries(entry("_csrf", tempCsrf), entry("submit", "submit"),
-						entry("username", username),
-						entry("password", password)));
+		if (nonNull(username)) {
+			writeForm(c, ofEntries(entry("_csrf", tempCsrf),
+					entry("submit", "submit"), entry("username", username),
+					entry("password", password)));
+		} else {
+			// TODO does this work?
+			c.addRequestProperty("Authorization", "Bearer " + bearerToken);
+			writeForm(c, ofEntries(entry("_csrf", tempCsrf),
+					entry("submit", "submit")));
+		}
 		try (var ignored = checkForError(c, "login failed")) {
 			/*
 			 * The result should be a redirect; the body is irrelevant but the
