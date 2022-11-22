@@ -289,7 +289,8 @@ public final class UserRecord {
 		return isInternal;
 	}
 
-	void setInternal(boolean internal) {
+	/** @param internal Whether this is an internal user. */
+	public void setInternal(boolean internal) {
 		this.isInternal = internal;
 	}
 
