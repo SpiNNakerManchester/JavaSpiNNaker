@@ -496,7 +496,7 @@
 <a class="jxr_linenumber" name="L488" href="#L488">488</a> <em class="jxr_javadoccomment">	 *            The file being uploaded</em>
 <a class="jxr_linenumber" name="L489" href="#L489">489</a> <em class="jxr_javadoccomment">	 * @return the model and view</em>
 <a class="jxr_linenumber" name="L490" href="#L490">490</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L491" href="#L491">491</a> 	@PostMapping(path = MACHINE_PATH, params = MACHINE_FILE_PARAM)
+<a class="jxr_linenumber" name="L491" href="#L491">491</a> 	@PostMapping(path = MACHINE_PATH)
 <a class="jxr_linenumber" name="L492" href="#L492">492</a> 	ModelAndView defineMachine(
 <a class="jxr_linenumber" name="L493" href="#L493">493</a> 			@NotNull @RequestParam(MACHINE_FILE_PARAM) MultipartFile file);
 <a class="jxr_linenumber" name="L494" href="#L494">494</a> 
