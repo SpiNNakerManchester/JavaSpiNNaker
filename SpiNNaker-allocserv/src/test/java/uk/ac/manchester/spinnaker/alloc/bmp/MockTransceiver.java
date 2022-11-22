@@ -23,6 +23,7 @@ import static java.util.Collections.unmodifiableMap;
 import static org.apache.commons.io.IOUtils.readFully;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
+// TODO use ByteBuffer.slice(int,int) from Java 14 onwards
 import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.slice;
 
 import java.io.IOException;
@@ -49,9 +50,7 @@ import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
-import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.UnimplementedBMPTransceiver;
-import uk.ac.manchester.spinnaker.utils.ByteBufferUtils;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
@@ -174,12 +173,12 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 
 	@Override
 	public VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board) {
+		log.info("readBMPVersion({},{})", bmp, board);
 		return version;
 	}
 
 	@Override
-	public String readBoardSerialNumber(BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException {
+	public String readBoardSerialNumber(BMPCoords bmp, BMPBoard board) {
 		log.info("readBoardSerialNumber({},{})", bmp, board);
 		return SERIAL_NUMBER;
 	}
@@ -202,7 +201,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 		log.info("readSerialFlash({},{},{},{})", bmp, board, baseAddress,
 				length);
 		// Pad to length
-		var b = ByteBufferUtils.slice(flash, baseAddress.address, length);
+		var b = slice(flash, baseAddress.address, length);
 		if (baseAddress.address == SERIAL_FLASH_BLACKLIST_OFFSET) {
 			b.put(new Blacklist(blacklistData).getRawData());
 			b.position(0);
@@ -212,11 +211,15 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 
 	@Override
 	public ByteBuffer readBMPMemory(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int length)
-			throws IOException, ProcessException {
+			MemoryLocation baseAddress, int length) {
 		log.info("readBMPMemory({},{},{},{})", bmp, board, baseAddress, length);
-		// TODO use ByteBuffer.slice(int,int) from Java 14 onwards
 		return slice(memory, baseAddress.address, length);
+	}
+
+	@Override
+	public MemoryLocation getSerialFlashBuffer(BMPCoords bmp, BMPBoard board) {
+		log.info("getSerialFlashBuffer({},{})", bmp, board);
+		return MemoryLocation.NULL;
 	}
 
 	@Override
@@ -224,14 +227,14 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 			MemoryLocation baseAddress, ByteBuffer data) {
 		log.info("writeBMPMemory({},{},{}:{})", bmp, board, baseAddress,
 				data.remaining());
-		slice(memory, baseAddress.address, data.remaining()).put(data);
+		slice(memory, baseAddress.address, data.remaining())
+				.put(data.duplicate());
 	}
 
 	@Override
 	public void writeFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data,
-			boolean update)
-			throws ProcessException, IOException, InterruptedException {
+			boolean update) {
 		log.info("writeFlash({},{},{},{})", bmp, board, baseAddress,
 				data.remaining());
 		var blData = data.duplicate().position(BMP_FLASH_BLACKLIST_OFFSET);
@@ -284,7 +287,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 		log.info("readSerialFlashCRC({},{},{},{})", bmp, board, baseAddress,
 				length);
 		var crc = new CRC32();
-		crc.update(ByteBufferUtils.slice(flash, baseAddress.address, length));
+		crc.update(slice(flash, baseAddress.address, length));
 		return (int) (crc.getValue() & CRC_MASK);
 	}
 }
