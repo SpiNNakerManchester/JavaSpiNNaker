@@ -1094,7 +1094,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @param length
 	 *            The length of the data to be read in bytes
 	 * @return A little-endian buffer of data read, positioned at the start of
-	 *         the data
+	 *         the data. The buffer will be writable, but writes will not be
+	 *         automatically reflected anywhere.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -1123,7 +1124,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @param length
 	 *            The length of the data to be read in bytes
 	 * @return A little-endian buffer of data read, positioned at the start of
-	 *         the data
+	 *         the data. The buffer will be writable, but writes will not be
+	 *         automatically reflected anywhere.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -1346,7 +1348,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @param length
 	 *            The length of the data to be read in bytes
 	 * @return A little-endian buffer of data read, positioned at the start of
-	 *         the data
+	 *         the data. The buffer will be writable, but writes will not be
+	 *         automatically reflected anywhere.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -1375,7 +1378,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 * @param length
 	 *            The length of the data to be read in bytes
 	 * @return A little-endian buffer of data read, positioned at the start of
-	 *         the data
+	 *         the data. The buffer will be writable, but writes will not be
+	 *         automatically reflected anywhere.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException

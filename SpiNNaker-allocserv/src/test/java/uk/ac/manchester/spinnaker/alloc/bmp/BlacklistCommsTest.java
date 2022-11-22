@@ -94,11 +94,18 @@ class BlacklistCommsTest extends TestSupport {
 		MockTransceiver.installIntoFactory(txrxFactory);
 		this.txrxFactory = txrxFactory.getTestAPI();
 		exec = newSingleThreadExecutor();
+		this.bmpCtrl.clearBmpException();
 	}
 
 	@AfterEach
 	void stopExecutor() {
 		exec.shutdown();
+		var exn = bmpCtrl.getBmpException();
+		assertDoesNotThrow(() -> {
+			if (exn != null) {
+				throw new Exception(exn);
+			}
+		}, "BMP controller must not have thrown, but did");
 	}
 
 	/**
