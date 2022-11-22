@@ -60,6 +60,9 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
 public final class MockTransceiver extends UnimplementedBMPTransceiver {
 	private static final Logger log = getLogger(MockTransceiver.class);
 
+	private static final MemoryLocation FLASH_DATA_ADDRESS =
+			new MemoryLocation(0x1000);
+
 	/**
 	 * Install this mock transceiver as the thing to be manufactured by the
 	 * given transceiver factory.
@@ -178,8 +181,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 	}
 
 	@Override
-	public String readBoardSerialNumber(BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException {
+	public String readBoardSerialNumber(BMPCoords bmp, BMPBoard board) {
 		log.info("readBoardSerialNumber({},{})", bmp, board);
 		return SERIAL_NUMBER;
 	}
@@ -212,11 +214,16 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 
 	@Override
 	public ByteBuffer readBMPMemory(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int length)
-			throws IOException, ProcessException {
+			MemoryLocation baseAddress, int length) {
 		log.info("readBMPMemory({},{},{},{})", bmp, board, baseAddress, length);
 		// TODO use ByteBuffer.slice(int,int) from Java 14 onwards
 		return slice(memory, baseAddress.address, length);
+	}
+
+	@Override
+	public MemoryLocation getSerialFlashBuffer(BMPCoords bmp, BMPBoard board) {
+		log.info("getSerialFlashBuffer({},{})", bmp, board);
+		return FLASH_DATA_ADDRESS;
 	}
 
 	@Override
@@ -230,8 +237,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 	@Override
 	public void writeFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data,
-			boolean update)
-			throws ProcessException, IOException, InterruptedException {
+			boolean update) {
 		log.info("writeFlash({},{},{},{})", bmp, board, baseAddress,
 				data.remaining());
 		var blData = data.duplicate().position(BMP_FLASH_BLACKLIST_OFFSET);
