@@ -57,9 +57,9 @@ public final class UserRecord {
 
 	private Boolean hasPassword;
 
-	private Boolean isEnabled;
+	private Boolean enabled;
 
-	private Boolean isLocked;
+	private Boolean locked;
 
 	private TrustLevel trustLevel;
 
@@ -180,16 +180,24 @@ public final class UserRecord {
 	 *         <em>cannot</em> log into the service until explicitly enabled.
 	 */
 	public Boolean getEnabled() {
-		return isEnabled;
+		return enabled;
 	}
 
 	/**
-	 * @param isEnabled
+	 * @return Whether this account is enabled. Disabled accounts
+	 *         <em>cannot</em> log into the service until explicitly enabled.
+	 */
+	public boolean isEnabled() {
+		return nonNull(enabled) && enabled;
+	}
+
+	/**
+	 * @param enabled
 	 *            Whether this account is enabled. Disabled accounts
 	 *            <em>cannot</em> log into the service until explicitly enabled.
 	 */
-	public void setEnabled(Boolean isEnabled) {
-		this.isEnabled = isEnabled;
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	/**
@@ -198,17 +206,26 @@ public final class UserRecord {
 	 *         to {@code false} to force an unlock.
 	 */
 	public Boolean getLocked() {
-		return isLocked;
+		return locked;
 	}
 
 	/**
-	 * @param isLocked
+	 * @return Whether this account is temporarily locked. Locked accounts
+	 *         should unlock automatically after 24 hours. Can be explicitly set
+	 *         to {@code false} to force an unlock.
+	 */
+	public boolean isLocked() {
+		return nonNull(locked) && locked;
+	}
+
+	/**
+	 * @param locked
 	 *            Whether this account is temporarily locked. Locked accounts
 	 *            should unlock automatically after 24 hours. Can be explicitly
 	 *            set to {@code false} to force an unlock.
 	 */
-	public void setLocked(Boolean isLocked) {
-		this.isLocked = isLocked;
+	public void setLocked(Boolean locked) {
+		this.locked = locked;
 	}
 
 	/**
