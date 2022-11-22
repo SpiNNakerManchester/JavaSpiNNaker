@@ -488,7 +488,7 @@ public interface AdminController {
 	 *            The file being uploaded
 	 * @return the model and view
 	 */
-	@PostMapping(path = MACHINE_PATH, params = MACHINE_FILE_PARAM)
+	@PostMapping(path = MACHINE_PATH)
 	ModelAndView defineMachine(
 			@NotNull @RequestParam(MACHINE_FILE_PARAM) MultipartFile file);
 
