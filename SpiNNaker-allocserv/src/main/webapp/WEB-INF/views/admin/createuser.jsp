@@ -37,8 +37,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<form:label path="hasPassword">Has Password: </form:label>
 	<form:checkbox path="hasPassword"/>
 	<br>
-	<form:label path="isEnabled">Is enabled? </form:label>
-	<form:checkbox path="isEnabled"/>
+	<form:label path="enabled">Is enabled? </form:label>
+	<form:checkbox path="enabled"/>
 	<p>
 	<input type="submit" value="Create" />
 </form:form>

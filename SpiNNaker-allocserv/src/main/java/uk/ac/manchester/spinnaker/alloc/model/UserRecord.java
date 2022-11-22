@@ -184,14 +184,6 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return Whether this account is enabled. Disabled accounts
-	 *         <em>cannot</em> log into the service until explicitly enabled.
-	 */
-	public boolean isEnabled() {
-		return nonNull(enabled) && enabled;
-	}
-
-	/**
 	 * @param enabled
 	 *            Whether this account is enabled. Disabled accounts
 	 *            <em>cannot</em> log into the service until explicitly enabled.
@@ -207,15 +199,6 @@ public final class UserRecord {
 	 */
 	public Boolean getLocked() {
 		return locked;
-	}
-
-	/**
-	 * @return Whether this account is temporarily locked. Locked accounts
-	 *         should unlock automatically after 24 hours. Can be explicitly set
-	 *         to {@code false} to force an unlock.
-	 */
-	public boolean isLocked() {
-		return nonNull(locked) && locked;
 	}
 
 	/**
