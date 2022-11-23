@@ -125,8 +125,7 @@ public abstract class BackgroundSupport {
 			// Known exception mappers for these
 			response.resume(e);
 		} catch (Exception e) {
-			response.resume(
-					new RequestFailedException("unexpected server problem", e));
+			response.resume(new RequestFailedException(e));
 		}
 	}
 }
