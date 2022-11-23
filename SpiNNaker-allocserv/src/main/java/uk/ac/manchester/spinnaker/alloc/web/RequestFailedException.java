@@ -144,7 +144,8 @@ public class RequestFailedException extends RuntimeException {
 		if (getCause() instanceof WebApplicationException) {
 			return ((WebApplicationException) getCause()).getResponse();
 		}
-		return status(code).type(TEXT_PLAIN).entity(message).build();
+		return status(code).type(TEXT_PLAIN).entity(
+                message + ": " + getCause()).build();
 	}
 
 	private void log(Logger log) {
