@@ -431,7 +431,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		@TCPPort
 		private int port;
 
-		@IPAddress
+		@IPAddress(nullOK = true, emptyOK = true)
 		private String ip;
 
 		@Positive
