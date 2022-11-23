@@ -371,486 +371,488 @@
 <a class="jxr_linenumber" name="L363" href="#L363">363</a> 	@Override
 <a class="jxr_linenumber" name="L364" href="#L364">364</a> 	@Action(<span class="jxr_string">"getting the user-creation UI"</span>)
 <a class="jxr_linenumber" name="L365" href="#L365">365</a> 	<strong class="jxr_keyword">public</strong> ModelAndView getUserCreationForm() {
-<a class="jxr_linenumber" name="L366" href="#L366">366</a> 		<strong class="jxr_keyword">return</strong> addStandardContext(
-<a class="jxr_linenumber" name="L367" href="#L367">367</a> 				CREATE_USER_VIEW.view(USER_OBJ, <strong class="jxr_keyword">new</strong> <a name="UserRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/UserRecord.html#UserRecord">UserRecord</a>()));
-<a class="jxr_linenumber" name="L368" href="#L368">368</a> 	}
-<a class="jxr_linenumber" name="L369" href="#L369">369</a> 
-<a class="jxr_linenumber" name="L370" href="#L370">370</a> 	@Override
-<a class="jxr_linenumber" name="L371" href="#L371">371</a> 	@Action(<span class="jxr_string">"creating a user"</span>)
-<a class="jxr_linenumber" name="L372" href="#L372">372</a> 	<strong class="jxr_keyword">public</strong> ModelAndView createUser(<a name="UserRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/UserRecord.html#UserRecord">UserRecord</a> user, ModelMap model,
-<a class="jxr_linenumber" name="L373" href="#L373">373</a> 			RedirectAttributes attrs) {
-<a class="jxr_linenumber" name="L374" href="#L374">374</a> 		user.initCreationDefaults();
-<a class="jxr_linenumber" name="L375" href="#L375">375</a> 		<strong class="jxr_keyword">var</strong> realUser = userManager.createUser(user)
-<a class="jxr_linenumber" name="L376" href="#L376">376</a> 				.orElseThrow(() -&gt; <strong class="jxr_keyword">new</strong> AdminException(
-<a class="jxr_linenumber" name="L377" href="#L377">377</a> 						<span class="jxr_string">"user creation failed (duplicate username?)"</span>));
-<a class="jxr_linenumber" name="L378" href="#L378">378</a> 		<strong class="jxr_keyword">int</strong> id = realUser.getUserId();
-<a class="jxr_linenumber" name="L379" href="#L379">379</a> 		log.info(<span class="jxr_string">"created user ID={} username={}"</span>, id, realUser.getUserName());
-<a class="jxr_linenumber" name="L380" href="#L380">380</a> 		addNotice(attrs, <span class="jxr_string">"created "</span> + realUser.getUserName());
-<a class="jxr_linenumber" name="L381" href="#L381">381</a> 		<strong class="jxr_keyword">return</strong> redirectTo(showUserFormUrl(id), attrs);
-<a class="jxr_linenumber" name="L382" href="#L382">382</a> 	}
-<a class="jxr_linenumber" name="L383" href="#L383">383</a> 
-<a class="jxr_linenumber" name="L384" href="#L384">384</a> 	@Override
-<a class="jxr_linenumber" name="L385" href="#L385">385</a> 	@Action(<span class="jxr_string">"getting info about a user"</span>)
-<a class="jxr_linenumber" name="L386" href="#L386">386</a> 	<strong class="jxr_keyword">public</strong> ModelAndView showUserForm(<strong class="jxr_keyword">int</strong> id) {
-<a class="jxr_linenumber" name="L387" href="#L387">387</a> 		<strong class="jxr_keyword">var</strong> mav = USER_DETAILS_VIEW.view();
-<a class="jxr_linenumber" name="L388" href="#L388">388</a> 		<strong class="jxr_keyword">var</strong> user = userManager.getUser(id, <strong class="jxr_keyword">this</strong>::showGroupInfoUrl)
-<a class="jxr_linenumber" name="L389" href="#L389">389</a> 				.orElseThrow(NoUser::<strong class="jxr_keyword">new</strong>);
-<a class="jxr_linenumber" name="L390" href="#L390">390</a> 		addUser(mav, user);
-<a class="jxr_linenumber" name="L391" href="#L391">391</a> 		addUrl(mav, <span class="jxr_string">"deleteUri"</span>, deleteUserUrl(id));
-<a class="jxr_linenumber" name="L392" href="#L392">392</a> 		<strong class="jxr_keyword">return</strong> addStandardContext(mav);
-<a class="jxr_linenumber" name="L393" href="#L393">393</a> 	}
-<a class="jxr_linenumber" name="L394" href="#L394">394</a> 
-<a class="jxr_linenumber" name="L395" href="#L395">395</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L396" href="#L396">396</a> <em class="jxr_javadoccomment">	 * Get URL for calling {@link #showUserForm(int) showUserForm()} later.</em>
-<a class="jxr_linenumber" name="L397" href="#L397">397</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L398" href="#L398">398</a> <em class="jxr_javadoccomment">	 * @param id</em>
-<a class="jxr_linenumber" name="L399" href="#L399">399</a> <em class="jxr_javadoccomment">	 *            User ID</em>
-<a class="jxr_linenumber" name="L400" href="#L400">400</a> <em class="jxr_javadoccomment">	 * @return URL</em>
-<a class="jxr_linenumber" name="L401" href="#L401">401</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L402" href="#L402">402</a> 	<strong class="jxr_keyword">private</strong> URI showUserFormUrl(<strong class="jxr_keyword">int</strong> id) {
-<a class="jxr_linenumber" name="L403" href="#L403">403</a> 		<strong class="jxr_keyword">return</strong> uri(admin().showUserForm(id));
-<a class="jxr_linenumber" name="L404" href="#L404">404</a> 	}
-<a class="jxr_linenumber" name="L405" href="#L405">405</a> 
-<a class="jxr_linenumber" name="L406" href="#L406">406</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L407" href="#L407">407</a> <em class="jxr_javadoccomment">	 * Get URL for calling {@link #showUserForm(int) showUserForm()} later.</em>
-<a class="jxr_linenumber" name="L408" href="#L408">408</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L409" href="#L409">409</a> <em class="jxr_javadoccomment">	 * @param member</em>
-<a class="jxr_linenumber" name="L410" href="#L410">410</a> <em class="jxr_javadoccomment">	 *            Record referring to user</em>
-<a class="jxr_linenumber" name="L411" href="#L411">411</a> <em class="jxr_javadoccomment">	 * @return URL</em>
-<a class="jxr_linenumber" name="L412" href="#L412">412</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L413" href="#L413">413</a> 	<strong class="jxr_keyword">private</strong> URI showUserFormUrl(<a name="MemberRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/MemberRecord.html#MemberRecord">MemberRecord</a> member) {
-<a class="jxr_linenumber" name="L414" href="#L414">414</a> 		<strong class="jxr_keyword">return</strong> uri(admin().showUserForm(member.getUserId()));
-<a class="jxr_linenumber" name="L415" href="#L415">415</a> 	}
-<a class="jxr_linenumber" name="L416" href="#L416">416</a> 
-<a class="jxr_linenumber" name="L417" href="#L417">417</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L418" href="#L418">418</a> <em class="jxr_javadoccomment">	 * Get URL for calling {@link #showUserForm(int) showUserForm()} later.</em>
-<a class="jxr_linenumber" name="L419" href="#L419">419</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L420" href="#L420">420</a> <em class="jxr_javadoccomment">	 * @param user</em>
-<a class="jxr_linenumber" name="L421" href="#L421">421</a> <em class="jxr_javadoccomment">	 *            Record referring to user</em>
-<a class="jxr_linenumber" name="L422" href="#L422">422</a> <em class="jxr_javadoccomment">	 * @return URL</em>
-<a class="jxr_linenumber" name="L423" href="#L423">423</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L424" href="#L424">424</a> 	<strong class="jxr_keyword">private</strong> URI showUserFormUrl(<a name="UserRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/UserRecord.html#UserRecord">UserRecord</a> user) {
-<a class="jxr_linenumber" name="L425" href="#L425">425</a> 		<strong class="jxr_keyword">return</strong> uri(admin().showUserForm(user.getUserId()));
-<a class="jxr_linenumber" name="L426" href="#L426">426</a> 	}
-<a class="jxr_linenumber" name="L427" href="#L427">427</a> 
-<a class="jxr_linenumber" name="L428" href="#L428">428</a> 	@Override
-<a class="jxr_linenumber" name="L429" href="#L429">429</a> 	@Action(<span class="jxr_string">"updating a user's details"</span>)
-<a class="jxr_linenumber" name="L430" href="#L430">430</a> 	<strong class="jxr_keyword">public</strong> ModelAndView submitUserForm(<strong class="jxr_keyword">int</strong> id, <a name="UserRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/UserRecord.html#UserRecord">UserRecord</a> user, ModelMap model,
-<a class="jxr_linenumber" name="L431" href="#L431">431</a> 			Principal principal) {
-<a class="jxr_linenumber" name="L432" href="#L432">432</a> 		<strong class="jxr_keyword">var</strong> adminUser = principal.getName();
-<a class="jxr_linenumber" name="L433" href="#L433">433</a> 		user.setUserId(<strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L434" href="#L434">434</a> 		log.info(<span class="jxr_string">"updating user ID={}"</span>, id);
-<a class="jxr_linenumber" name="L435" href="#L435">435</a> 		<strong class="jxr_keyword">var</strong> mav = USER_DETAILS_VIEW.view(model);
-<a class="jxr_linenumber" name="L436" href="#L436">436</a> 		addUser(mav,
-<a class="jxr_linenumber" name="L437" href="#L437">437</a> 				userManager
-<a class="jxr_linenumber" name="L438" href="#L438">438</a> 						.updateUser(id, user, adminUser, <strong class="jxr_keyword">this</strong>::showGroupInfoUrl)
-<a class="jxr_linenumber" name="L439" href="#L439">439</a> 						.orElseThrow(NoUser::<strong class="jxr_keyword">new</strong>));
-<a class="jxr_linenumber" name="L440" href="#L440">440</a> 		<strong class="jxr_keyword">return</strong> addStandardContext(mav);
-<a class="jxr_linenumber" name="L441" href="#L441">441</a> 	}
-<a class="jxr_linenumber" name="L442" href="#L442">442</a> 
-<a class="jxr_linenumber" name="L443" href="#L443">443</a> 	@Override
-<a class="jxr_linenumber" name="L444" href="#L444">444</a> 	@Action(<span class="jxr_string">"deleting a user"</span>)
-<a class="jxr_linenumber" name="L445" href="#L445">445</a> 	<strong class="jxr_keyword">public</strong> ModelAndView deleteUser(<strong class="jxr_keyword">int</strong> id, Principal principal,
-<a class="jxr_linenumber" name="L446" href="#L446">446</a> 			RedirectAttributes attrs) {
-<a class="jxr_linenumber" name="L447" href="#L447">447</a> 		<strong class="jxr_keyword">var</strong> adminUser = principal.getName();
-<a class="jxr_linenumber" name="L448" href="#L448">448</a> 		<strong class="jxr_keyword">var</strong> deletedUsername = userManager.deleteUser(id, adminUser).orElseThrow(
-<a class="jxr_linenumber" name="L449" href="#L449">449</a> 				() -&gt; <strong class="jxr_keyword">new</strong> AdminException(<span class="jxr_string">"could not delete that user"</span>));
-<a class="jxr_linenumber" name="L450" href="#L450">450</a> 		log.info(<span class="jxr_string">"deleted user ID={} username={}"</span>, id, deletedUsername);
-<a class="jxr_linenumber" name="L451" href="#L451">451</a> 		<em class="jxr_comment">// Not sure that these are the correct place</em>
-<a class="jxr_linenumber" name="L452" href="#L452">452</a> 		<strong class="jxr_keyword">var</strong> mav = redirectTo(uri(admin().listUsers()), attrs);
-<a class="jxr_linenumber" name="L453" href="#L453">453</a> 		addNotice(attrs, <span class="jxr_string">"deleted "</span> + deletedUsername);
-<a class="jxr_linenumber" name="L454" href="#L454">454</a> 		addUser(attrs, <strong class="jxr_keyword">new</strong> <a name="UserRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/UserRecord.html#UserRecord">UserRecord</a>());
-<a class="jxr_linenumber" name="L455" href="#L455">455</a> 		<strong class="jxr_keyword">return</strong> mav;
-<a class="jxr_linenumber" name="L456" href="#L456">456</a> 	}
-<a class="jxr_linenumber" name="L457" href="#L457">457</a> 
-<a class="jxr_linenumber" name="L458" href="#L458">458</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L459" href="#L459">459</a> <em class="jxr_javadoccomment">	 * Get URL for calling</em>
-<a class="jxr_linenumber" name="L460" href="#L460">460</a> <em class="jxr_javadoccomment">	 * {@link #deleteUser(int, Principal, RedirectAttributes) deleteUser()}</em>
-<a class="jxr_linenumber" name="L461" href="#L461">461</a> <em class="jxr_javadoccomment">	 * later.</em>
-<a class="jxr_linenumber" name="L462" href="#L462">462</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L463" href="#L463">463</a> <em class="jxr_javadoccomment">	 * @param id</em>
-<a class="jxr_linenumber" name="L464" href="#L464">464</a> <em class="jxr_javadoccomment">	 *            User ID</em>
-<a class="jxr_linenumber" name="L465" href="#L465">465</a> <em class="jxr_javadoccomment">	 * @return URL</em>
-<a class="jxr_linenumber" name="L466" href="#L466">466</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L467" href="#L467">467</a> 	<strong class="jxr_keyword">private</strong> URI deleteUserUrl(<strong class="jxr_keyword">int</strong> id) {
-<a class="jxr_linenumber" name="L468" href="#L468">468</a> 		<strong class="jxr_keyword">return</strong> uri(admin().deleteUser(id, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>));
-<a class="jxr_linenumber" name="L469" href="#L469">469</a> 	}
-<a class="jxr_linenumber" name="L470" href="#L470">470</a> 
-<a class="jxr_linenumber" name="L471" href="#L471">471</a> 	@Override
-<a class="jxr_linenumber" name="L472" href="#L472">472</a> 	@Action(<span class="jxr_string">"listing the groups"</span>)
-<a class="jxr_linenumber" name="L473" href="#L473">473</a> 	<strong class="jxr_keyword">public</strong> ModelAndView listGroups() {
-<a class="jxr_linenumber" name="L474" href="#L474">474</a> 		<strong class="jxr_keyword">var</strong> mav = GROUP_LIST_VIEW.view();
-<a class="jxr_linenumber" name="L475" href="#L475">475</a> 		addLocalGroupList(mav,
-<a class="jxr_linenumber" name="L476" href="#L476">476</a> 				userManager.listGroups(INTERNAL, <strong class="jxr_keyword">this</strong>::showGroupInfoUrl));
-<a class="jxr_linenumber" name="L477" href="#L477">477</a> 		addOrganisationList(mav,
-<a class="jxr_linenumber" name="L478" href="#L478">478</a> 				userManager.listGroups(ORGANISATION, <strong class="jxr_keyword">this</strong>::showGroupInfoUrl));
-<a class="jxr_linenumber" name="L479" href="#L479">479</a> 		addCollabratoryList(mav,
-<a class="jxr_linenumber" name="L480" href="#L480">480</a> 				userManager.listGroups(COLLABRATORY, <strong class="jxr_keyword">this</strong>::showGroupInfoUrl));
-<a class="jxr_linenumber" name="L481" href="#L481">481</a> 		<strong class="jxr_keyword">return</strong> addStandardContext(mav);
-<a class="jxr_linenumber" name="L482" href="#L482">482</a> 	}
-<a class="jxr_linenumber" name="L483" href="#L483">483</a> 
-<a class="jxr_linenumber" name="L484" href="#L484">484</a> 	@Override
-<a class="jxr_linenumber" name="L485" href="#L485">485</a> 	@Action(<span class="jxr_string">"getting info about a group"</span>)
-<a class="jxr_linenumber" name="L486" href="#L486">486</a> 	<strong class="jxr_keyword">public</strong> ModelAndView showGroupInfo(<strong class="jxr_keyword">int</strong> id) {
-<a class="jxr_linenumber" name="L487" href="#L487">487</a> 		<strong class="jxr_keyword">var</strong> mav = GROUP_DETAILS_VIEW.view();
-<a class="jxr_linenumber" name="L488" href="#L488">488</a> 		<strong class="jxr_keyword">var</strong> userLocations = <strong class="jxr_keyword">new</strong> HashMap&lt;String, URI&gt;();
-<a class="jxr_linenumber" name="L489" href="#L489">489</a> 		addGroup(mav, userManager.getGroup(id, m -&gt; {
-<a class="jxr_linenumber" name="L490" href="#L490">490</a> 			userLocations.put(m.getUserName(), showUserFormUrl(m));
-<a class="jxr_linenumber" name="L491" href="#L491">491</a> 			<strong class="jxr_keyword">return</strong> uri(admin().removeUserFromGroup(id, m.getUserId(), <strong class="jxr_keyword">null</strong>));
-<a class="jxr_linenumber" name="L492" href="#L492">492</a> 		}).orElseThrow(NoGroup::<strong class="jxr_keyword">new</strong>));
-<a class="jxr_linenumber" name="L493" href="#L493">493</a> 		addUserList(mav, userLocations);
-<a class="jxr_linenumber" name="L494" href="#L494">494</a> 		addUrl(mav, <span class="jxr_string">"deleteUri"</span>, uri(admin().deleteGroup(id, <strong class="jxr_keyword">null</strong>)));
-<a class="jxr_linenumber" name="L495" href="#L495">495</a> 		addUrl(mav, <span class="jxr_string">"addUserUri"</span>, uri(admin().addUserToGroup(id, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>)));
-<a class="jxr_linenumber" name="L496" href="#L496">496</a> 		addUrl(mav, <span class="jxr_string">"addQuotaUri"</span>, uri(admin().adjustGroupQuota(id, 0, <strong class="jxr_keyword">null</strong>)));
-<a class="jxr_linenumber" name="L497" href="#L497">497</a> 		<strong class="jxr_keyword">return</strong> addStandardContext(mav);
-<a class="jxr_linenumber" name="L498" href="#L498">498</a> 	}
-<a class="jxr_linenumber" name="L499" href="#L499">499</a> 
-<a class="jxr_linenumber" name="L500" href="#L500">500</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L501" href="#L501">501</a> <em class="jxr_javadoccomment">	 * Get URL for calling {@link #showGroupInfo(int) showGroupInfo()} later.</em>
-<a class="jxr_linenumber" name="L502" href="#L502">502</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L503" href="#L503">503</a> <em class="jxr_javadoccomment">	 * @param id</em>
-<a class="jxr_linenumber" name="L504" href="#L504">504</a> <em class="jxr_javadoccomment">	 *            Group ID</em>
-<a class="jxr_linenumber" name="L505" href="#L505">505</a> <em class="jxr_javadoccomment">	 * @return URL</em>
-<a class="jxr_linenumber" name="L506" href="#L506">506</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L507" href="#L507">507</a> 	<strong class="jxr_keyword">private</strong> URI showGroupInfoUrl(<strong class="jxr_keyword">int</strong> id) {
-<a class="jxr_linenumber" name="L508" href="#L508">508</a> 		<strong class="jxr_keyword">return</strong> uri(admin().showGroupInfo(id));
-<a class="jxr_linenumber" name="L509" href="#L509">509</a> 	}
-<a class="jxr_linenumber" name="L510" href="#L510">510</a> 
-<a class="jxr_linenumber" name="L511" href="#L511">511</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L512" href="#L512">512</a> <em class="jxr_javadoccomment">	 * Get URL for calling {@link #showGroupInfo(int) showGroupInfo()} later.</em>
-<a class="jxr_linenumber" name="L513" href="#L513">513</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L514" href="#L514">514</a> <em class="jxr_javadoccomment">	 * @param membership</em>
-<a class="jxr_linenumber" name="L515" href="#L515">515</a> <em class="jxr_javadoccomment">	 *            Record referring to group</em>
-<a class="jxr_linenumber" name="L516" href="#L516">516</a> <em class="jxr_javadoccomment">	 * @return URL</em>
-<a class="jxr_linenumber" name="L517" href="#L517">517</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L518" href="#L518">518</a> 	<strong class="jxr_keyword">private</strong> URI showGroupInfoUrl(<a name="MemberRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/MemberRecord.html#MemberRecord">MemberRecord</a> membership) {
-<a class="jxr_linenumber" name="L519" href="#L519">519</a> 		<strong class="jxr_keyword">return</strong> uri(admin().showGroupInfo(membership.getGroupId()));
-<a class="jxr_linenumber" name="L520" href="#L520">520</a> 	}
-<a class="jxr_linenumber" name="L521" href="#L521">521</a> 
-<a class="jxr_linenumber" name="L522" href="#L522">522</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L523" href="#L523">523</a> <em class="jxr_javadoccomment">	 * Get URL for calling {@link #showGroupInfo(int) showGroupInfo()} later.</em>
-<a class="jxr_linenumber" name="L524" href="#L524">524</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L525" href="#L525">525</a> <em class="jxr_javadoccomment">	 * @param group</em>
-<a class="jxr_linenumber" name="L526" href="#L526">526</a> <em class="jxr_javadoccomment">	 *            Record referring to group</em>
-<a class="jxr_linenumber" name="L527" href="#L527">527</a> <em class="jxr_javadoccomment">	 * @return URL</em>
-<a class="jxr_linenumber" name="L528" href="#L528">528</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L529" href="#L529">529</a> 	<strong class="jxr_keyword">private</strong> URI showGroupInfoUrl(<a name="GroupRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/GroupRecord.html#GroupRecord">GroupRecord</a> group) {
-<a class="jxr_linenumber" name="L530" href="#L530">530</a> 		<strong class="jxr_keyword">return</strong> uri(admin().showGroupInfo(group.getGroupId()));
-<a class="jxr_linenumber" name="L531" href="#L531">531</a> 	}
-<a class="jxr_linenumber" name="L532" href="#L532">532</a> 
-<a class="jxr_linenumber" name="L533" href="#L533">533</a> 	@Override
-<a class="jxr_linenumber" name="L534" href="#L534">534</a> 	@Action(<span class="jxr_string">"getting the group-creation UI"</span>)
-<a class="jxr_linenumber" name="L535" href="#L535">535</a> 	<strong class="jxr_keyword">public</strong> ModelAndView getGroupCreationForm() {
-<a class="jxr_linenumber" name="L536" href="#L536">536</a> 		<strong class="jxr_keyword">return</strong> addStandardContext(
-<a class="jxr_linenumber" name="L537" href="#L537">537</a> 				CREATE_GROUP_VIEW.view(GROUP_OBJ, <strong class="jxr_keyword">new</strong> CreateGroupModel()));
-<a class="jxr_linenumber" name="L538" href="#L538">538</a> 	}
-<a class="jxr_linenumber" name="L539" href="#L539">539</a> 
-<a class="jxr_linenumber" name="L540" href="#L540">540</a> 	@Override
-<a class="jxr_linenumber" name="L541" href="#L541">541</a> 	@Action(<span class="jxr_string">"creating a group"</span>)
-<a class="jxr_linenumber" name="L542" href="#L542">542</a> 	<strong class="jxr_keyword">public</strong> ModelAndView createGroup(CreateGroupModel groupRequest,
-<a class="jxr_linenumber" name="L543" href="#L543">543</a> 			RedirectAttributes attrs) {
-<a class="jxr_linenumber" name="L544" href="#L544">544</a> 		<strong class="jxr_keyword">var</strong> realGroup =
-<a class="jxr_linenumber" name="L545" href="#L545">545</a> 				userManager.createGroup(groupRequest.toGroupRecord(), INTERNAL)
-<a class="jxr_linenumber" name="L546" href="#L546">546</a> 						.orElseThrow(() -&gt; <strong class="jxr_keyword">new</strong> AdminException(
-<a class="jxr_linenumber" name="L547" href="#L547">547</a> 								<span class="jxr_string">"group creation failed (duplicate name?)"</span>));
-<a class="jxr_linenumber" name="L548" href="#L548">548</a> 		<strong class="jxr_keyword">int</strong> id = realGroup.getGroupId();
-<a class="jxr_linenumber" name="L549" href="#L549">549</a> 		log.info(<span class="jxr_string">"created group ID={} name={}"</span>, id, realGroup.getGroupName());
-<a class="jxr_linenumber" name="L550" href="#L550">550</a> 		addNotice(attrs, <span class="jxr_string">"created "</span> + realGroup.getGroupName());
-<a class="jxr_linenumber" name="L551" href="#L551">551</a> 		<strong class="jxr_keyword">return</strong> redirectTo(showGroupInfoUrl(id), attrs);
-<a class="jxr_linenumber" name="L552" href="#L552">552</a> 	}
-<a class="jxr_linenumber" name="L553" href="#L553">553</a> 
-<a class="jxr_linenumber" name="L554" href="#L554">554</a> 	@Override
-<a class="jxr_linenumber" name="L555" href="#L555">555</a> 	@Action(<span class="jxr_string">"adding a user to a group"</span>)
-<a class="jxr_linenumber" name="L556" href="#L556">556</a> 	<strong class="jxr_keyword">public</strong> ModelAndView addUserToGroup(<strong class="jxr_keyword">int</strong> id, String user,
-<a class="jxr_linenumber" name="L557" href="#L557">557</a> 			RedirectAttributes attrs) {
-<a class="jxr_linenumber" name="L558" href="#L558">558</a> 		<strong class="jxr_keyword">var</strong> g = userManager.getGroup(id, <strong class="jxr_keyword">null</strong>).orElseThrow(NoGroup::<strong class="jxr_keyword">new</strong>);
-<a class="jxr_linenumber" name="L559" href="#L559">559</a> 		<strong class="jxr_keyword">var</strong> u = userManager.getUser(user, <strong class="jxr_keyword">null</strong>).orElseThrow(NoUser::<strong class="jxr_keyword">new</strong>);
-<a class="jxr_linenumber" name="L560" href="#L560">560</a> 		<strong class="jxr_keyword">if</strong> (userManager.addUserToGroup(u, g).isPresent()) {
-<a class="jxr_linenumber" name="L561" href="#L561">561</a> 			log.info(<span class="jxr_string">"added user {} to group {}"</span>, u.getUserName(),
-<a class="jxr_linenumber" name="L562" href="#L562">562</a> 					g.getGroupName());
-<a class="jxr_linenumber" name="L563" href="#L563">563</a> 			addNotice(attrs, format(<span class="jxr_string">"added user %s to group %s"</span>,
-<a class="jxr_linenumber" name="L564" href="#L564">564</a> 					u.getUserName(), g.getGroupName()));
-<a class="jxr_linenumber" name="L565" href="#L565">565</a> 		} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L566" href="#L566">566</a> 			addNotice(attrs, format(<span class="jxr_string">"user %s is already a member of group %s"</span>,
-<a class="jxr_linenumber" name="L567" href="#L567">567</a> 					u.getUserName(), g.getGroupName()));
-<a class="jxr_linenumber" name="L568" href="#L568">568</a> 		}
-<a class="jxr_linenumber" name="L569" href="#L569">569</a> 		<strong class="jxr_keyword">return</strong> redirectTo(showGroupInfoUrl(id), attrs);
-<a class="jxr_linenumber" name="L570" href="#L570">570</a> 	}
-<a class="jxr_linenumber" name="L571" href="#L571">571</a> 
-<a class="jxr_linenumber" name="L572" href="#L572">572</a> 	@Override
-<a class="jxr_linenumber" name="L573" href="#L573">573</a> 	@Action(<span class="jxr_string">"removing a user from a group"</span>)
-<a class="jxr_linenumber" name="L574" href="#L574">574</a> 	<strong class="jxr_keyword">public</strong> ModelAndView removeUserFromGroup(<strong class="jxr_keyword">int</strong> id, <strong class="jxr_keyword">int</strong> userid,
-<a class="jxr_linenumber" name="L575" href="#L575">575</a> 			RedirectAttributes attrs) {
-<a class="jxr_linenumber" name="L576" href="#L576">576</a> 		<strong class="jxr_keyword">var</strong> g = userManager.getGroup(id, <strong class="jxr_keyword">null</strong>).orElseThrow(NoGroup::<strong class="jxr_keyword">new</strong>);
-<a class="jxr_linenumber" name="L577" href="#L577">577</a> 		<strong class="jxr_keyword">var</strong> u = userManager.getUser(userid, <strong class="jxr_keyword">null</strong>).orElseThrow(NoUser::<strong class="jxr_keyword">new</strong>);
-<a class="jxr_linenumber" name="L578" href="#L578">578</a> 		<strong class="jxr_keyword">if</strong> (userManager.removeUserFromGroup(u, g)) {
-<a class="jxr_linenumber" name="L579" href="#L579">579</a> 			log.info(<span class="jxr_string">"removed user {} from group {}"</span>, u.getUserName(),
-<a class="jxr_linenumber" name="L580" href="#L580">580</a> 					g.getGroupName());
-<a class="jxr_linenumber" name="L581" href="#L581">581</a> 			addNotice(attrs, format(<span class="jxr_string">"removed user %s from group %s"</span>,
-<a class="jxr_linenumber" name="L582" href="#L582">582</a> 					u.getUserName(), g.getGroupName()));
-<a class="jxr_linenumber" name="L583" href="#L583">583</a> 		} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L584" href="#L584">584</a> 			addNotice(attrs,
-<a class="jxr_linenumber" name="L585" href="#L585">585</a> 					format(<span class="jxr_string">"user %s is already not a member of group %s"</span>,
-<a class="jxr_linenumber" name="L586" href="#L586">586</a> 							u.getUserName(), g.getGroupName()));
-<a class="jxr_linenumber" name="L587" href="#L587">587</a> 		}
-<a class="jxr_linenumber" name="L588" href="#L588">588</a> 		<strong class="jxr_keyword">return</strong> redirectTo(showGroupInfoUrl(id), attrs);
-<a class="jxr_linenumber" name="L589" href="#L589">589</a> 	}
-<a class="jxr_linenumber" name="L590" href="#L590">590</a> 
-<a class="jxr_linenumber" name="L591" href="#L591">591</a> 	@Override
-<a class="jxr_linenumber" name="L592" href="#L592">592</a> 	@Action(<span class="jxr_string">"adjusting a group's quota"</span>)
-<a class="jxr_linenumber" name="L593" href="#L593">593</a> 	<strong class="jxr_keyword">public</strong> ModelAndView adjustGroupQuota(<strong class="jxr_keyword">int</strong> id, <strong class="jxr_keyword">int</strong> delta,
-<a class="jxr_linenumber" name="L594" href="#L594">594</a> 			RedirectAttributes attrs) {
-<a class="jxr_linenumber" name="L595" href="#L595">595</a> 		quotaManager.addQuota(id, delta * BOARD_HOUR).ifPresent(aq -&gt; {
-<a class="jxr_linenumber" name="L596" href="#L596">596</a> 			log.info(<span class="jxr_string">"adjusted quota for group {} to {}"</span>, aq.getName(),
-<a class="jxr_linenumber" name="L597" href="#L597">597</a> 					aq.getQuota());
-<a class="jxr_linenumber" name="L598" href="#L598">598</a> 			<em class="jxr_comment">// addNotice(attrs, "quota updated");</em>
-<a class="jxr_linenumber" name="L599" href="#L599">599</a> 		});
-<a class="jxr_linenumber" name="L600" href="#L600">600</a> 		<strong class="jxr_keyword">return</strong> redirectTo(showGroupInfoUrl(id), attrs);
-<a class="jxr_linenumber" name="L601" href="#L601">601</a> 	}
-<a class="jxr_linenumber" name="L602" href="#L602">602</a> 
-<a class="jxr_linenumber" name="L603" href="#L603">603</a> 	@Override
-<a class="jxr_linenumber" name="L604" href="#L604">604</a> 	@Action(<span class="jxr_string">"deleting a group"</span>)
-<a class="jxr_linenumber" name="L605" href="#L605">605</a> 	<strong class="jxr_keyword">public</strong> ModelAndView deleteGroup(<strong class="jxr_keyword">int</strong> id, RedirectAttributes attrs) {
-<a class="jxr_linenumber" name="L606" href="#L606">606</a> 		<strong class="jxr_keyword">var</strong> deletedGroupName =
-<a class="jxr_linenumber" name="L607" href="#L607">607</a> 				userManager.deleteGroup(id).orElseThrow(NoGroup::<strong class="jxr_keyword">new</strong>);
-<a class="jxr_linenumber" name="L608" href="#L608">608</a> 		log.info(<span class="jxr_string">"deleted group ID={} groupname={}"</span>, id, deletedGroupName);
-<a class="jxr_linenumber" name="L609" href="#L609">609</a> 		addNotice(attrs, <span class="jxr_string">"deleted "</span> + deletedGroupName);
-<a class="jxr_linenumber" name="L610" href="#L610">610</a> 		<strong class="jxr_keyword">return</strong> redirectTo(uri(admin().listGroups()), attrs);
-<a class="jxr_linenumber" name="L611" href="#L611">611</a> 	}
-<a class="jxr_linenumber" name="L612" href="#L612">612</a> 
-<a class="jxr_linenumber" name="L613" href="#L613">613</a> 	@Override
-<a class="jxr_linenumber" name="L614" href="#L614">614</a> 	@Action(<span class="jxr_string">"getting the UI for finding boards"</span>)
-<a class="jxr_linenumber" name="L615" href="#L615">615</a> 	<strong class="jxr_keyword">public</strong> ModelAndView boards() {
-<a class="jxr_linenumber" name="L616" href="#L616">616</a> 		<strong class="jxr_keyword">var</strong> mav = BOARD_VIEW.view();
-<a class="jxr_linenumber" name="L617" href="#L617">617</a> 		addBoard(mav, <strong class="jxr_keyword">new</strong> <a name="BoardRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html#BoardRecord">BoardRecord</a>());
-<a class="jxr_linenumber" name="L618" href="#L618">618</a> 		addMachineList(mav, getMachineNames(<strong class="jxr_keyword">true</strong>));
-<a class="jxr_linenumber" name="L619" href="#L619">619</a> 		<strong class="jxr_keyword">return</strong> addStandardContext(mav);
-<a class="jxr_linenumber" name="L620" href="#L620">620</a> 	}
-<a class="jxr_linenumber" name="L621" href="#L621">621</a> 
-<a class="jxr_linenumber" name="L622" href="#L622">622</a> 	<strong class="jxr_keyword">private</strong> Optional&lt;BoardState&gt; getBoardState(<a name="BoardRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html#BoardRecord">BoardRecord</a> board) {
-<a class="jxr_linenumber" name="L623" href="#L623">623</a> 		<strong class="jxr_keyword">if</strong> (nonNull(board.getId())) {
-<a class="jxr_linenumber" name="L624" href="#L624">624</a> 			<strong class="jxr_keyword">return</strong> machineController.findId(board.getId());
-<a class="jxr_linenumber" name="L625" href="#L625">625</a> 		} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (board.isTriadCoordPresent()) {
-<a class="jxr_linenumber" name="L626" href="#L626">626</a> 			<strong class="jxr_keyword">return</strong> machineController.findTriad(board.getMachineName(),
-<a class="jxr_linenumber" name="L627" href="#L627">627</a> 					<strong class="jxr_keyword">new</strong> <a name="TriadCoords" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/TriadCoords.html#TriadCoords">TriadCoords</a>(board.getX(), board.getY(), board.getZ()));
-<a class="jxr_linenumber" name="L628" href="#L628">628</a> 		} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (board.isPhysicalCoordPresent()) {
-<a class="jxr_linenumber" name="L629" href="#L629">629</a> 			<strong class="jxr_keyword">return</strong> machineController.findPhysical(board.getMachineName(),
-<a class="jxr_linenumber" name="L630" href="#L630">630</a> 					<strong class="jxr_keyword">new</strong> <a name="PhysicalCoords" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html#PhysicalCoords">PhysicalCoords</a>(board.getCabinet(), board.getFrame(),
-<a class="jxr_linenumber" name="L631" href="#L631">631</a> 							board.getBoard()));
-<a class="jxr_linenumber" name="L632" href="#L632">632</a> 		} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (board.isAddressPresent()) {
-<a class="jxr_linenumber" name="L633" href="#L633">633</a> 			<strong class="jxr_keyword">return</strong> machineController.findIP(board.getMachineName(),
-<a class="jxr_linenumber" name="L634" href="#L634">634</a> 					board.getIpAddress());
-<a class="jxr_linenumber" name="L635" href="#L635">635</a> 		} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L636" href="#L636">636</a> 			<em class="jxr_comment">// unreachable because of validation</em>
-<a class="jxr_linenumber" name="L637" href="#L637">637</a> 			<strong class="jxr_keyword">return</strong> Optional.empty();
-<a class="jxr_linenumber" name="L638" href="#L638">638</a> 		}
-<a class="jxr_linenumber" name="L639" href="#L639">639</a> 	}
-<a class="jxr_linenumber" name="L640" href="#L640">640</a> 
-<a class="jxr_linenumber" name="L641" href="#L641">641</a> 	<em class="jxr_comment">// TODO should we refactor into multiple methods?</em>
-<a class="jxr_linenumber" name="L642" href="#L642">642</a> 	@Override
-<a class="jxr_linenumber" name="L643" href="#L643">643</a> 	@Action(<span class="jxr_string">"processing changes to a board's configuration"</span>)
-<a class="jxr_linenumber" name="L644" href="#L644">644</a> 	<strong class="jxr_keyword">public</strong> ModelAndView board(<a name="BoardRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html#BoardRecord">BoardRecord</a> board, ModelMap model) {
-<a class="jxr_linenumber" name="L645" href="#L645">645</a> 		<strong class="jxr_keyword">var</strong> bs = getBoardState(board).orElseThrow(NoBoard::<strong class="jxr_keyword">new</strong>);
-<a class="jxr_linenumber" name="L646" href="#L646">646</a> 
-<a class="jxr_linenumber" name="L647" href="#L647">647</a> 		inflateBoardRecord(board, bs);
+<a class="jxr_linenumber" name="L366" href="#L366">366</a> 		<strong class="jxr_keyword">var</strong> userForm = <strong class="jxr_keyword">new</strong> <a name="UserRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/UserRecord.html#UserRecord">UserRecord</a>();
+<a class="jxr_linenumber" name="L367" href="#L367">367</a> 		userForm.setInternal(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L368" href="#L368">368</a> 		<strong class="jxr_keyword">return</strong> addStandardContext(
+<a class="jxr_linenumber" name="L369" href="#L369">369</a> 				CREATE_USER_VIEW.view(USER_OBJ, userForm));
+<a class="jxr_linenumber" name="L370" href="#L370">370</a> 	}
+<a class="jxr_linenumber" name="L371" href="#L371">371</a> 
+<a class="jxr_linenumber" name="L372" href="#L372">372</a> 	@Override
+<a class="jxr_linenumber" name="L373" href="#L373">373</a> 	@Action(<span class="jxr_string">"creating a user"</span>)
+<a class="jxr_linenumber" name="L374" href="#L374">374</a> 	<strong class="jxr_keyword">public</strong> ModelAndView createUser(<a name="UserRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/UserRecord.html#UserRecord">UserRecord</a> user, ModelMap model,
+<a class="jxr_linenumber" name="L375" href="#L375">375</a> 			RedirectAttributes attrs) {
+<a class="jxr_linenumber" name="L376" href="#L376">376</a> 		user.initCreationDefaults();
+<a class="jxr_linenumber" name="L377" href="#L377">377</a> 		<strong class="jxr_keyword">var</strong> realUser = userManager.createUser(user)
+<a class="jxr_linenumber" name="L378" href="#L378">378</a> 				.orElseThrow(() -&gt; <strong class="jxr_keyword">new</strong> AdminException(
+<a class="jxr_linenumber" name="L379" href="#L379">379</a> 						<span class="jxr_string">"user creation failed (duplicate username?)"</span>));
+<a class="jxr_linenumber" name="L380" href="#L380">380</a> 		<strong class="jxr_keyword">int</strong> id = realUser.getUserId();
+<a class="jxr_linenumber" name="L381" href="#L381">381</a> 		log.info(<span class="jxr_string">"created user ID={} username={}"</span>, id, realUser.getUserName());
+<a class="jxr_linenumber" name="L382" href="#L382">382</a> 		addNotice(attrs, <span class="jxr_string">"created "</span> + realUser.getUserName());
+<a class="jxr_linenumber" name="L383" href="#L383">383</a> 		<strong class="jxr_keyword">return</strong> redirectTo(showUserFormUrl(id), attrs);
+<a class="jxr_linenumber" name="L384" href="#L384">384</a> 	}
+<a class="jxr_linenumber" name="L385" href="#L385">385</a> 
+<a class="jxr_linenumber" name="L386" href="#L386">386</a> 	@Override
+<a class="jxr_linenumber" name="L387" href="#L387">387</a> 	@Action(<span class="jxr_string">"getting info about a user"</span>)
+<a class="jxr_linenumber" name="L388" href="#L388">388</a> 	<strong class="jxr_keyword">public</strong> ModelAndView showUserForm(<strong class="jxr_keyword">int</strong> id) {
+<a class="jxr_linenumber" name="L389" href="#L389">389</a> 		<strong class="jxr_keyword">var</strong> mav = USER_DETAILS_VIEW.view();
+<a class="jxr_linenumber" name="L390" href="#L390">390</a> 		<strong class="jxr_keyword">var</strong> user = userManager.getUser(id, <strong class="jxr_keyword">this</strong>::showGroupInfoUrl)
+<a class="jxr_linenumber" name="L391" href="#L391">391</a> 				.orElseThrow(NoUser::<strong class="jxr_keyword">new</strong>);
+<a class="jxr_linenumber" name="L392" href="#L392">392</a> 		addUser(mav, user);
+<a class="jxr_linenumber" name="L393" href="#L393">393</a> 		addUrl(mav, <span class="jxr_string">"deleteUri"</span>, deleteUserUrl(id));
+<a class="jxr_linenumber" name="L394" href="#L394">394</a> 		<strong class="jxr_keyword">return</strong> addStandardContext(mav);
+<a class="jxr_linenumber" name="L395" href="#L395">395</a> 	}
+<a class="jxr_linenumber" name="L396" href="#L396">396</a> 
+<a class="jxr_linenumber" name="L397" href="#L397">397</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L398" href="#L398">398</a> <em class="jxr_javadoccomment">	 * Get URL for calling {@link #showUserForm(int) showUserForm()} later.</em>
+<a class="jxr_linenumber" name="L399" href="#L399">399</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L400" href="#L400">400</a> <em class="jxr_javadoccomment">	 * @param id</em>
+<a class="jxr_linenumber" name="L401" href="#L401">401</a> <em class="jxr_javadoccomment">	 *            User ID</em>
+<a class="jxr_linenumber" name="L402" href="#L402">402</a> <em class="jxr_javadoccomment">	 * @return URL</em>
+<a class="jxr_linenumber" name="L403" href="#L403">403</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L404" href="#L404">404</a> 	<strong class="jxr_keyword">private</strong> URI showUserFormUrl(<strong class="jxr_keyword">int</strong> id) {
+<a class="jxr_linenumber" name="L405" href="#L405">405</a> 		<strong class="jxr_keyword">return</strong> uri(admin().showUserForm(id));
+<a class="jxr_linenumber" name="L406" href="#L406">406</a> 	}
+<a class="jxr_linenumber" name="L407" href="#L407">407</a> 
+<a class="jxr_linenumber" name="L408" href="#L408">408</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L409" href="#L409">409</a> <em class="jxr_javadoccomment">	 * Get URL for calling {@link #showUserForm(int) showUserForm()} later.</em>
+<a class="jxr_linenumber" name="L410" href="#L410">410</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L411" href="#L411">411</a> <em class="jxr_javadoccomment">	 * @param member</em>
+<a class="jxr_linenumber" name="L412" href="#L412">412</a> <em class="jxr_javadoccomment">	 *            Record referring to user</em>
+<a class="jxr_linenumber" name="L413" href="#L413">413</a> <em class="jxr_javadoccomment">	 * @return URL</em>
+<a class="jxr_linenumber" name="L414" href="#L414">414</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L415" href="#L415">415</a> 	<strong class="jxr_keyword">private</strong> URI showUserFormUrl(<a name="MemberRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/MemberRecord.html#MemberRecord">MemberRecord</a> member) {
+<a class="jxr_linenumber" name="L416" href="#L416">416</a> 		<strong class="jxr_keyword">return</strong> uri(admin().showUserForm(member.getUserId()));
+<a class="jxr_linenumber" name="L417" href="#L417">417</a> 	}
+<a class="jxr_linenumber" name="L418" href="#L418">418</a> 
+<a class="jxr_linenumber" name="L419" href="#L419">419</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L420" href="#L420">420</a> <em class="jxr_javadoccomment">	 * Get URL for calling {@link #showUserForm(int) showUserForm()} later.</em>
+<a class="jxr_linenumber" name="L421" href="#L421">421</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L422" href="#L422">422</a> <em class="jxr_javadoccomment">	 * @param user</em>
+<a class="jxr_linenumber" name="L423" href="#L423">423</a> <em class="jxr_javadoccomment">	 *            Record referring to user</em>
+<a class="jxr_linenumber" name="L424" href="#L424">424</a> <em class="jxr_javadoccomment">	 * @return URL</em>
+<a class="jxr_linenumber" name="L425" href="#L425">425</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L426" href="#L426">426</a> 	<strong class="jxr_keyword">private</strong> URI showUserFormUrl(<a name="UserRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/UserRecord.html#UserRecord">UserRecord</a> user) {
+<a class="jxr_linenumber" name="L427" href="#L427">427</a> 		<strong class="jxr_keyword">return</strong> uri(admin().showUserForm(user.getUserId()));
+<a class="jxr_linenumber" name="L428" href="#L428">428</a> 	}
+<a class="jxr_linenumber" name="L429" href="#L429">429</a> 
+<a class="jxr_linenumber" name="L430" href="#L430">430</a> 	@Override
+<a class="jxr_linenumber" name="L431" href="#L431">431</a> 	@Action(<span class="jxr_string">"updating a user's details"</span>)
+<a class="jxr_linenumber" name="L432" href="#L432">432</a> 	<strong class="jxr_keyword">public</strong> ModelAndView submitUserForm(<strong class="jxr_keyword">int</strong> id, <a name="UserRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/UserRecord.html#UserRecord">UserRecord</a> user, ModelMap model,
+<a class="jxr_linenumber" name="L433" href="#L433">433</a> 			Principal principal) {
+<a class="jxr_linenumber" name="L434" href="#L434">434</a> 		<strong class="jxr_keyword">var</strong> adminUser = principal.getName();
+<a class="jxr_linenumber" name="L435" href="#L435">435</a> 		user.setUserId(<strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L436" href="#L436">436</a> 		log.info(<span class="jxr_string">"updating user ID={}"</span>, id);
+<a class="jxr_linenumber" name="L437" href="#L437">437</a> 		<strong class="jxr_keyword">var</strong> mav = USER_DETAILS_VIEW.view(model);
+<a class="jxr_linenumber" name="L438" href="#L438">438</a> 		addUser(mav,
+<a class="jxr_linenumber" name="L439" href="#L439">439</a> 				userManager
+<a class="jxr_linenumber" name="L440" href="#L440">440</a> 						.updateUser(id, user, adminUser, <strong class="jxr_keyword">this</strong>::showGroupInfoUrl)
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> 						.orElseThrow(NoUser::<strong class="jxr_keyword">new</strong>));
+<a class="jxr_linenumber" name="L442" href="#L442">442</a> 		<strong class="jxr_keyword">return</strong> addStandardContext(mav);
+<a class="jxr_linenumber" name="L443" href="#L443">443</a> 	}
+<a class="jxr_linenumber" name="L444" href="#L444">444</a> 
+<a class="jxr_linenumber" name="L445" href="#L445">445</a> 	@Override
+<a class="jxr_linenumber" name="L446" href="#L446">446</a> 	@Action(<span class="jxr_string">"deleting a user"</span>)
+<a class="jxr_linenumber" name="L447" href="#L447">447</a> 	<strong class="jxr_keyword">public</strong> ModelAndView deleteUser(<strong class="jxr_keyword">int</strong> id, Principal principal,
+<a class="jxr_linenumber" name="L448" href="#L448">448</a> 			RedirectAttributes attrs) {
+<a class="jxr_linenumber" name="L449" href="#L449">449</a> 		<strong class="jxr_keyword">var</strong> adminUser = principal.getName();
+<a class="jxr_linenumber" name="L450" href="#L450">450</a> 		<strong class="jxr_keyword">var</strong> deletedUsername = userManager.deleteUser(id, adminUser).orElseThrow(
+<a class="jxr_linenumber" name="L451" href="#L451">451</a> 				() -&gt; <strong class="jxr_keyword">new</strong> AdminException(<span class="jxr_string">"could not delete that user"</span>));
+<a class="jxr_linenumber" name="L452" href="#L452">452</a> 		log.info(<span class="jxr_string">"deleted user ID={} username={}"</span>, id, deletedUsername);
+<a class="jxr_linenumber" name="L453" href="#L453">453</a> 		<em class="jxr_comment">// Not sure that these are the correct place</em>
+<a class="jxr_linenumber" name="L454" href="#L454">454</a> 		<strong class="jxr_keyword">var</strong> mav = redirectTo(uri(admin().listUsers()), attrs);
+<a class="jxr_linenumber" name="L455" href="#L455">455</a> 		addNotice(attrs, <span class="jxr_string">"deleted "</span> + deletedUsername);
+<a class="jxr_linenumber" name="L456" href="#L456">456</a> 		addUser(attrs, <strong class="jxr_keyword">new</strong> <a name="UserRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/UserRecord.html#UserRecord">UserRecord</a>());
+<a class="jxr_linenumber" name="L457" href="#L457">457</a> 		<strong class="jxr_keyword">return</strong> mav;
+<a class="jxr_linenumber" name="L458" href="#L458">458</a> 	}
+<a class="jxr_linenumber" name="L459" href="#L459">459</a> 
+<a class="jxr_linenumber" name="L460" href="#L460">460</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L461" href="#L461">461</a> <em class="jxr_javadoccomment">	 * Get URL for calling</em>
+<a class="jxr_linenumber" name="L462" href="#L462">462</a> <em class="jxr_javadoccomment">	 * {@link #deleteUser(int, Principal, RedirectAttributes) deleteUser()}</em>
+<a class="jxr_linenumber" name="L463" href="#L463">463</a> <em class="jxr_javadoccomment">	 * later.</em>
+<a class="jxr_linenumber" name="L464" href="#L464">464</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L465" href="#L465">465</a> <em class="jxr_javadoccomment">	 * @param id</em>
+<a class="jxr_linenumber" name="L466" href="#L466">466</a> <em class="jxr_javadoccomment">	 *            User ID</em>
+<a class="jxr_linenumber" name="L467" href="#L467">467</a> <em class="jxr_javadoccomment">	 * @return URL</em>
+<a class="jxr_linenumber" name="L468" href="#L468">468</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L469" href="#L469">469</a> 	<strong class="jxr_keyword">private</strong> URI deleteUserUrl(<strong class="jxr_keyword">int</strong> id) {
+<a class="jxr_linenumber" name="L470" href="#L470">470</a> 		<strong class="jxr_keyword">return</strong> uri(admin().deleteUser(id, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>));
+<a class="jxr_linenumber" name="L471" href="#L471">471</a> 	}
+<a class="jxr_linenumber" name="L472" href="#L472">472</a> 
+<a class="jxr_linenumber" name="L473" href="#L473">473</a> 	@Override
+<a class="jxr_linenumber" name="L474" href="#L474">474</a> 	@Action(<span class="jxr_string">"listing the groups"</span>)
+<a class="jxr_linenumber" name="L475" href="#L475">475</a> 	<strong class="jxr_keyword">public</strong> ModelAndView listGroups() {
+<a class="jxr_linenumber" name="L476" href="#L476">476</a> 		<strong class="jxr_keyword">var</strong> mav = GROUP_LIST_VIEW.view();
+<a class="jxr_linenumber" name="L477" href="#L477">477</a> 		addLocalGroupList(mav,
+<a class="jxr_linenumber" name="L478" href="#L478">478</a> 				userManager.listGroups(INTERNAL, <strong class="jxr_keyword">this</strong>::showGroupInfoUrl));
+<a class="jxr_linenumber" name="L479" href="#L479">479</a> 		addOrganisationList(mav,
+<a class="jxr_linenumber" name="L480" href="#L480">480</a> 				userManager.listGroups(ORGANISATION, <strong class="jxr_keyword">this</strong>::showGroupInfoUrl));
+<a class="jxr_linenumber" name="L481" href="#L481">481</a> 		addCollabratoryList(mav,
+<a class="jxr_linenumber" name="L482" href="#L482">482</a> 				userManager.listGroups(COLLABRATORY, <strong class="jxr_keyword">this</strong>::showGroupInfoUrl));
+<a class="jxr_linenumber" name="L483" href="#L483">483</a> 		<strong class="jxr_keyword">return</strong> addStandardContext(mav);
+<a class="jxr_linenumber" name="L484" href="#L484">484</a> 	}
+<a class="jxr_linenumber" name="L485" href="#L485">485</a> 
+<a class="jxr_linenumber" name="L486" href="#L486">486</a> 	@Override
+<a class="jxr_linenumber" name="L487" href="#L487">487</a> 	@Action(<span class="jxr_string">"getting info about a group"</span>)
+<a class="jxr_linenumber" name="L488" href="#L488">488</a> 	<strong class="jxr_keyword">public</strong> ModelAndView showGroupInfo(<strong class="jxr_keyword">int</strong> id) {
+<a class="jxr_linenumber" name="L489" href="#L489">489</a> 		<strong class="jxr_keyword">var</strong> mav = GROUP_DETAILS_VIEW.view();
+<a class="jxr_linenumber" name="L490" href="#L490">490</a> 		<strong class="jxr_keyword">var</strong> userLocations = <strong class="jxr_keyword">new</strong> HashMap&lt;String, URI&gt;();
+<a class="jxr_linenumber" name="L491" href="#L491">491</a> 		addGroup(mav, userManager.getGroup(id, m -&gt; {
+<a class="jxr_linenumber" name="L492" href="#L492">492</a> 			userLocations.put(m.getUserName(), showUserFormUrl(m));
+<a class="jxr_linenumber" name="L493" href="#L493">493</a> 			<strong class="jxr_keyword">return</strong> uri(admin().removeUserFromGroup(id, m.getUserId(), <strong class="jxr_keyword">null</strong>));
+<a class="jxr_linenumber" name="L494" href="#L494">494</a> 		}).orElseThrow(NoGroup::<strong class="jxr_keyword">new</strong>));
+<a class="jxr_linenumber" name="L495" href="#L495">495</a> 		addUserList(mav, userLocations);
+<a class="jxr_linenumber" name="L496" href="#L496">496</a> 		addUrl(mav, <span class="jxr_string">"deleteUri"</span>, uri(admin().deleteGroup(id, <strong class="jxr_keyword">null</strong>)));
+<a class="jxr_linenumber" name="L497" href="#L497">497</a> 		addUrl(mav, <span class="jxr_string">"addUserUri"</span>, uri(admin().addUserToGroup(id, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>)));
+<a class="jxr_linenumber" name="L498" href="#L498">498</a> 		addUrl(mav, <span class="jxr_string">"addQuotaUri"</span>, uri(admin().adjustGroupQuota(id, 0, <strong class="jxr_keyword">null</strong>)));
+<a class="jxr_linenumber" name="L499" href="#L499">499</a> 		<strong class="jxr_keyword">return</strong> addStandardContext(mav);
+<a class="jxr_linenumber" name="L500" href="#L500">500</a> 	}
+<a class="jxr_linenumber" name="L501" href="#L501">501</a> 
+<a class="jxr_linenumber" name="L502" href="#L502">502</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L503" href="#L503">503</a> <em class="jxr_javadoccomment">	 * Get URL for calling {@link #showGroupInfo(int) showGroupInfo()} later.</em>
+<a class="jxr_linenumber" name="L504" href="#L504">504</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L505" href="#L505">505</a> <em class="jxr_javadoccomment">	 * @param id</em>
+<a class="jxr_linenumber" name="L506" href="#L506">506</a> <em class="jxr_javadoccomment">	 *            Group ID</em>
+<a class="jxr_linenumber" name="L507" href="#L507">507</a> <em class="jxr_javadoccomment">	 * @return URL</em>
+<a class="jxr_linenumber" name="L508" href="#L508">508</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L509" href="#L509">509</a> 	<strong class="jxr_keyword">private</strong> URI showGroupInfoUrl(<strong class="jxr_keyword">int</strong> id) {
+<a class="jxr_linenumber" name="L510" href="#L510">510</a> 		<strong class="jxr_keyword">return</strong> uri(admin().showGroupInfo(id));
+<a class="jxr_linenumber" name="L511" href="#L511">511</a> 	}
+<a class="jxr_linenumber" name="L512" href="#L512">512</a> 
+<a class="jxr_linenumber" name="L513" href="#L513">513</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L514" href="#L514">514</a> <em class="jxr_javadoccomment">	 * Get URL for calling {@link #showGroupInfo(int) showGroupInfo()} later.</em>
+<a class="jxr_linenumber" name="L515" href="#L515">515</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L516" href="#L516">516</a> <em class="jxr_javadoccomment">	 * @param membership</em>
+<a class="jxr_linenumber" name="L517" href="#L517">517</a> <em class="jxr_javadoccomment">	 *            Record referring to group</em>
+<a class="jxr_linenumber" name="L518" href="#L518">518</a> <em class="jxr_javadoccomment">	 * @return URL</em>
+<a class="jxr_linenumber" name="L519" href="#L519">519</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L520" href="#L520">520</a> 	<strong class="jxr_keyword">private</strong> URI showGroupInfoUrl(<a name="MemberRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/MemberRecord.html#MemberRecord">MemberRecord</a> membership) {
+<a class="jxr_linenumber" name="L521" href="#L521">521</a> 		<strong class="jxr_keyword">return</strong> uri(admin().showGroupInfo(membership.getGroupId()));
+<a class="jxr_linenumber" name="L522" href="#L522">522</a> 	}
+<a class="jxr_linenumber" name="L523" href="#L523">523</a> 
+<a class="jxr_linenumber" name="L524" href="#L524">524</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L525" href="#L525">525</a> <em class="jxr_javadoccomment">	 * Get URL for calling {@link #showGroupInfo(int) showGroupInfo()} later.</em>
+<a class="jxr_linenumber" name="L526" href="#L526">526</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L527" href="#L527">527</a> <em class="jxr_javadoccomment">	 * @param group</em>
+<a class="jxr_linenumber" name="L528" href="#L528">528</a> <em class="jxr_javadoccomment">	 *            Record referring to group</em>
+<a class="jxr_linenumber" name="L529" href="#L529">529</a> <em class="jxr_javadoccomment">	 * @return URL</em>
+<a class="jxr_linenumber" name="L530" href="#L530">530</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L531" href="#L531">531</a> 	<strong class="jxr_keyword">private</strong> URI showGroupInfoUrl(<a name="GroupRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/GroupRecord.html#GroupRecord">GroupRecord</a> group) {
+<a class="jxr_linenumber" name="L532" href="#L532">532</a> 		<strong class="jxr_keyword">return</strong> uri(admin().showGroupInfo(group.getGroupId()));
+<a class="jxr_linenumber" name="L533" href="#L533">533</a> 	}
+<a class="jxr_linenumber" name="L534" href="#L534">534</a> 
+<a class="jxr_linenumber" name="L535" href="#L535">535</a> 	@Override
+<a class="jxr_linenumber" name="L536" href="#L536">536</a> 	@Action(<span class="jxr_string">"getting the group-creation UI"</span>)
+<a class="jxr_linenumber" name="L537" href="#L537">537</a> 	<strong class="jxr_keyword">public</strong> ModelAndView getGroupCreationForm() {
+<a class="jxr_linenumber" name="L538" href="#L538">538</a> 		<strong class="jxr_keyword">return</strong> addStandardContext(
+<a class="jxr_linenumber" name="L539" href="#L539">539</a> 				CREATE_GROUP_VIEW.view(GROUP_OBJ, <strong class="jxr_keyword">new</strong> CreateGroupModel()));
+<a class="jxr_linenumber" name="L540" href="#L540">540</a> 	}
+<a class="jxr_linenumber" name="L541" href="#L541">541</a> 
+<a class="jxr_linenumber" name="L542" href="#L542">542</a> 	@Override
+<a class="jxr_linenumber" name="L543" href="#L543">543</a> 	@Action(<span class="jxr_string">"creating a group"</span>)
+<a class="jxr_linenumber" name="L544" href="#L544">544</a> 	<strong class="jxr_keyword">public</strong> ModelAndView createGroup(CreateGroupModel groupRequest,
+<a class="jxr_linenumber" name="L545" href="#L545">545</a> 			RedirectAttributes attrs) {
+<a class="jxr_linenumber" name="L546" href="#L546">546</a> 		<strong class="jxr_keyword">var</strong> realGroup =
+<a class="jxr_linenumber" name="L547" href="#L547">547</a> 				userManager.createGroup(groupRequest.toGroupRecord(), INTERNAL)
+<a class="jxr_linenumber" name="L548" href="#L548">548</a> 						.orElseThrow(() -&gt; <strong class="jxr_keyword">new</strong> AdminException(
+<a class="jxr_linenumber" name="L549" href="#L549">549</a> 								<span class="jxr_string">"group creation failed (duplicate name?)"</span>));
+<a class="jxr_linenumber" name="L550" href="#L550">550</a> 		<strong class="jxr_keyword">int</strong> id = realGroup.getGroupId();
+<a class="jxr_linenumber" name="L551" href="#L551">551</a> 		log.info(<span class="jxr_string">"created group ID={} name={}"</span>, id, realGroup.getGroupName());
+<a class="jxr_linenumber" name="L552" href="#L552">552</a> 		addNotice(attrs, <span class="jxr_string">"created "</span> + realGroup.getGroupName());
+<a class="jxr_linenumber" name="L553" href="#L553">553</a> 		<strong class="jxr_keyword">return</strong> redirectTo(showGroupInfoUrl(id), attrs);
+<a class="jxr_linenumber" name="L554" href="#L554">554</a> 	}
+<a class="jxr_linenumber" name="L555" href="#L555">555</a> 
+<a class="jxr_linenumber" name="L556" href="#L556">556</a> 	@Override
+<a class="jxr_linenumber" name="L557" href="#L557">557</a> 	@Action(<span class="jxr_string">"adding a user to a group"</span>)
+<a class="jxr_linenumber" name="L558" href="#L558">558</a> 	<strong class="jxr_keyword">public</strong> ModelAndView addUserToGroup(<strong class="jxr_keyword">int</strong> id, String user,
+<a class="jxr_linenumber" name="L559" href="#L559">559</a> 			RedirectAttributes attrs) {
+<a class="jxr_linenumber" name="L560" href="#L560">560</a> 		<strong class="jxr_keyword">var</strong> g = userManager.getGroup(id, <strong class="jxr_keyword">null</strong>).orElseThrow(NoGroup::<strong class="jxr_keyword">new</strong>);
+<a class="jxr_linenumber" name="L561" href="#L561">561</a> 		<strong class="jxr_keyword">var</strong> u = userManager.getUser(user, <strong class="jxr_keyword">null</strong>).orElseThrow(NoUser::<strong class="jxr_keyword">new</strong>);
+<a class="jxr_linenumber" name="L562" href="#L562">562</a> 		<strong class="jxr_keyword">if</strong> (userManager.addUserToGroup(u, g).isPresent()) {
+<a class="jxr_linenumber" name="L563" href="#L563">563</a> 			log.info(<span class="jxr_string">"added user {} to group {}"</span>, u.getUserName(),
+<a class="jxr_linenumber" name="L564" href="#L564">564</a> 					g.getGroupName());
+<a class="jxr_linenumber" name="L565" href="#L565">565</a> 			addNotice(attrs, format(<span class="jxr_string">"added user %s to group %s"</span>,
+<a class="jxr_linenumber" name="L566" href="#L566">566</a> 					u.getUserName(), g.getGroupName()));
+<a class="jxr_linenumber" name="L567" href="#L567">567</a> 		} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L568" href="#L568">568</a> 			addNotice(attrs, format(<span class="jxr_string">"user %s is already a member of group %s"</span>,
+<a class="jxr_linenumber" name="L569" href="#L569">569</a> 					u.getUserName(), g.getGroupName()));
+<a class="jxr_linenumber" name="L570" href="#L570">570</a> 		}
+<a class="jxr_linenumber" name="L571" href="#L571">571</a> 		<strong class="jxr_keyword">return</strong> redirectTo(showGroupInfoUrl(id), attrs);
+<a class="jxr_linenumber" name="L572" href="#L572">572</a> 	}
+<a class="jxr_linenumber" name="L573" href="#L573">573</a> 
+<a class="jxr_linenumber" name="L574" href="#L574">574</a> 	@Override
+<a class="jxr_linenumber" name="L575" href="#L575">575</a> 	@Action(<span class="jxr_string">"removing a user from a group"</span>)
+<a class="jxr_linenumber" name="L576" href="#L576">576</a> 	<strong class="jxr_keyword">public</strong> ModelAndView removeUserFromGroup(<strong class="jxr_keyword">int</strong> id, <strong class="jxr_keyword">int</strong> userid,
+<a class="jxr_linenumber" name="L577" href="#L577">577</a> 			RedirectAttributes attrs) {
+<a class="jxr_linenumber" name="L578" href="#L578">578</a> 		<strong class="jxr_keyword">var</strong> g = userManager.getGroup(id, <strong class="jxr_keyword">null</strong>).orElseThrow(NoGroup::<strong class="jxr_keyword">new</strong>);
+<a class="jxr_linenumber" name="L579" href="#L579">579</a> 		<strong class="jxr_keyword">var</strong> u = userManager.getUser(userid, <strong class="jxr_keyword">null</strong>).orElseThrow(NoUser::<strong class="jxr_keyword">new</strong>);
+<a class="jxr_linenumber" name="L580" href="#L580">580</a> 		<strong class="jxr_keyword">if</strong> (userManager.removeUserFromGroup(u, g)) {
+<a class="jxr_linenumber" name="L581" href="#L581">581</a> 			log.info(<span class="jxr_string">"removed user {} from group {}"</span>, u.getUserName(),
+<a class="jxr_linenumber" name="L582" href="#L582">582</a> 					g.getGroupName());
+<a class="jxr_linenumber" name="L583" href="#L583">583</a> 			addNotice(attrs, format(<span class="jxr_string">"removed user %s from group %s"</span>,
+<a class="jxr_linenumber" name="L584" href="#L584">584</a> 					u.getUserName(), g.getGroupName()));
+<a class="jxr_linenumber" name="L585" href="#L585">585</a> 		} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L586" href="#L586">586</a> 			addNotice(attrs,
+<a class="jxr_linenumber" name="L587" href="#L587">587</a> 					format(<span class="jxr_string">"user %s is already not a member of group %s"</span>,
+<a class="jxr_linenumber" name="L588" href="#L588">588</a> 							u.getUserName(), g.getGroupName()));
+<a class="jxr_linenumber" name="L589" href="#L589">589</a> 		}
+<a class="jxr_linenumber" name="L590" href="#L590">590</a> 		<strong class="jxr_keyword">return</strong> redirectTo(showGroupInfoUrl(id), attrs);
+<a class="jxr_linenumber" name="L591" href="#L591">591</a> 	}
+<a class="jxr_linenumber" name="L592" href="#L592">592</a> 
+<a class="jxr_linenumber" name="L593" href="#L593">593</a> 	@Override
+<a class="jxr_linenumber" name="L594" href="#L594">594</a> 	@Action(<span class="jxr_string">"adjusting a group's quota"</span>)
+<a class="jxr_linenumber" name="L595" href="#L595">595</a> 	<strong class="jxr_keyword">public</strong> ModelAndView adjustGroupQuota(<strong class="jxr_keyword">int</strong> id, <strong class="jxr_keyword">int</strong> delta,
+<a class="jxr_linenumber" name="L596" href="#L596">596</a> 			RedirectAttributes attrs) {
+<a class="jxr_linenumber" name="L597" href="#L597">597</a> 		quotaManager.addQuota(id, delta * BOARD_HOUR).ifPresent(aq -&gt; {
+<a class="jxr_linenumber" name="L598" href="#L598">598</a> 			log.info(<span class="jxr_string">"adjusted quota for group {} to {}"</span>, aq.getName(),
+<a class="jxr_linenumber" name="L599" href="#L599">599</a> 					aq.getQuota());
+<a class="jxr_linenumber" name="L600" href="#L600">600</a> 			<em class="jxr_comment">// addNotice(attrs, "quota updated");</em>
+<a class="jxr_linenumber" name="L601" href="#L601">601</a> 		});
+<a class="jxr_linenumber" name="L602" href="#L602">602</a> 		<strong class="jxr_keyword">return</strong> redirectTo(showGroupInfoUrl(id), attrs);
+<a class="jxr_linenumber" name="L603" href="#L603">603</a> 	}
+<a class="jxr_linenumber" name="L604" href="#L604">604</a> 
+<a class="jxr_linenumber" name="L605" href="#L605">605</a> 	@Override
+<a class="jxr_linenumber" name="L606" href="#L606">606</a> 	@Action(<span class="jxr_string">"deleting a group"</span>)
+<a class="jxr_linenumber" name="L607" href="#L607">607</a> 	<strong class="jxr_keyword">public</strong> ModelAndView deleteGroup(<strong class="jxr_keyword">int</strong> id, RedirectAttributes attrs) {
+<a class="jxr_linenumber" name="L608" href="#L608">608</a> 		<strong class="jxr_keyword">var</strong> deletedGroupName =
+<a class="jxr_linenumber" name="L609" href="#L609">609</a> 				userManager.deleteGroup(id).orElseThrow(NoGroup::<strong class="jxr_keyword">new</strong>);
+<a class="jxr_linenumber" name="L610" href="#L610">610</a> 		log.info(<span class="jxr_string">"deleted group ID={} groupname={}"</span>, id, deletedGroupName);
+<a class="jxr_linenumber" name="L611" href="#L611">611</a> 		addNotice(attrs, <span class="jxr_string">"deleted "</span> + deletedGroupName);
+<a class="jxr_linenumber" name="L612" href="#L612">612</a> 		<strong class="jxr_keyword">return</strong> redirectTo(uri(admin().listGroups()), attrs);
+<a class="jxr_linenumber" name="L613" href="#L613">613</a> 	}
+<a class="jxr_linenumber" name="L614" href="#L614">614</a> 
+<a class="jxr_linenumber" name="L615" href="#L615">615</a> 	@Override
+<a class="jxr_linenumber" name="L616" href="#L616">616</a> 	@Action(<span class="jxr_string">"getting the UI for finding boards"</span>)
+<a class="jxr_linenumber" name="L617" href="#L617">617</a> 	<strong class="jxr_keyword">public</strong> ModelAndView boards() {
+<a class="jxr_linenumber" name="L618" href="#L618">618</a> 		<strong class="jxr_keyword">var</strong> mav = BOARD_VIEW.view();
+<a class="jxr_linenumber" name="L619" href="#L619">619</a> 		addBoard(mav, <strong class="jxr_keyword">new</strong> <a name="BoardRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html#BoardRecord">BoardRecord</a>());
+<a class="jxr_linenumber" name="L620" href="#L620">620</a> 		addMachineList(mav, getMachineNames(<strong class="jxr_keyword">true</strong>));
+<a class="jxr_linenumber" name="L621" href="#L621">621</a> 		<strong class="jxr_keyword">return</strong> addStandardContext(mav);
+<a class="jxr_linenumber" name="L622" href="#L622">622</a> 	}
+<a class="jxr_linenumber" name="L623" href="#L623">623</a> 
+<a class="jxr_linenumber" name="L624" href="#L624">624</a> 	<strong class="jxr_keyword">private</strong> Optional&lt;BoardState&gt; getBoardState(<a name="BoardRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html#BoardRecord">BoardRecord</a> board) {
+<a class="jxr_linenumber" name="L625" href="#L625">625</a> 		<strong class="jxr_keyword">if</strong> (nonNull(board.getId())) {
+<a class="jxr_linenumber" name="L626" href="#L626">626</a> 			<strong class="jxr_keyword">return</strong> machineController.findId(board.getId());
+<a class="jxr_linenumber" name="L627" href="#L627">627</a> 		} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (board.isTriadCoordPresent()) {
+<a class="jxr_linenumber" name="L628" href="#L628">628</a> 			<strong class="jxr_keyword">return</strong> machineController.findTriad(board.getMachineName(),
+<a class="jxr_linenumber" name="L629" href="#L629">629</a> 					<strong class="jxr_keyword">new</strong> <a name="TriadCoords" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/TriadCoords.html#TriadCoords">TriadCoords</a>(board.getX(), board.getY(), board.getZ()));
+<a class="jxr_linenumber" name="L630" href="#L630">630</a> 		} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (board.isPhysicalCoordPresent()) {
+<a class="jxr_linenumber" name="L631" href="#L631">631</a> 			<strong class="jxr_keyword">return</strong> machineController.findPhysical(board.getMachineName(),
+<a class="jxr_linenumber" name="L632" href="#L632">632</a> 					<strong class="jxr_keyword">new</strong> <a name="PhysicalCoords" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html#PhysicalCoords">PhysicalCoords</a>(board.getCabinet(), board.getFrame(),
+<a class="jxr_linenumber" name="L633" href="#L633">633</a> 							board.getBoard()));
+<a class="jxr_linenumber" name="L634" href="#L634">634</a> 		} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (board.isAddressPresent()) {
+<a class="jxr_linenumber" name="L635" href="#L635">635</a> 			<strong class="jxr_keyword">return</strong> machineController.findIP(board.getMachineName(),
+<a class="jxr_linenumber" name="L636" href="#L636">636</a> 					board.getIpAddress());
+<a class="jxr_linenumber" name="L637" href="#L637">637</a> 		} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L638" href="#L638">638</a> 			<em class="jxr_comment">// unreachable because of validation</em>
+<a class="jxr_linenumber" name="L639" href="#L639">639</a> 			<strong class="jxr_keyword">return</strong> Optional.empty();
+<a class="jxr_linenumber" name="L640" href="#L640">640</a> 		}
+<a class="jxr_linenumber" name="L641" href="#L641">641</a> 	}
+<a class="jxr_linenumber" name="L642" href="#L642">642</a> 
+<a class="jxr_linenumber" name="L643" href="#L643">643</a> 	<em class="jxr_comment">// TODO should we refactor into multiple methods?</em>
+<a class="jxr_linenumber" name="L644" href="#L644">644</a> 	@Override
+<a class="jxr_linenumber" name="L645" href="#L645">645</a> 	@Action(<span class="jxr_string">"processing changes to a board's configuration"</span>)
+<a class="jxr_linenumber" name="L646" href="#L646">646</a> 	<strong class="jxr_keyword">public</strong> ModelAndView board(<a name="BoardRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html#BoardRecord">BoardRecord</a> board, ModelMap model) {
+<a class="jxr_linenumber" name="L647" href="#L647">647</a> 		<strong class="jxr_keyword">var</strong> bs = getBoardState(board).orElseThrow(NoBoard::<strong class="jxr_keyword">new</strong>);
 <a class="jxr_linenumber" name="L648" href="#L648">648</a> 
-<a class="jxr_linenumber" name="L649" href="#L649">649</a> 		<strong class="jxr_keyword">if</strong> (board.isEnabledDefined()) {
-<a class="jxr_linenumber" name="L650" href="#L650">650</a> 			<em class="jxr_comment">// We're doing a set</em>
-<a class="jxr_linenumber" name="L651" href="#L651">651</a> 			log.info(<span class="jxr_string">"setting board-allocatable state for board {} to {}"</span>, bs,
-<a class="jxr_linenumber" name="L652" href="#L652">652</a> 					board.isEnabled());
-<a class="jxr_linenumber" name="L653" href="#L653">653</a> 			bs.setState(board.isEnabled());
-<a class="jxr_linenumber" name="L654" href="#L654">654</a> 			spalloc.purgeDownCache();
-<a class="jxr_linenumber" name="L655" href="#L655">655</a> 		}
-<a class="jxr_linenumber" name="L656" href="#L656">656</a> 
-<a class="jxr_linenumber" name="L657" href="#L657">657</a> 		board.setEnabled(bs.getState());
-<a class="jxr_linenumber" name="L658" href="#L658">658</a> 		addBlacklistData(bs, model);
-<a class="jxr_linenumber" name="L659" href="#L659">659</a> 		inflateBoardRecord(board, bs);
-<a class="jxr_linenumber" name="L660" href="#L660">660</a> 		addBoard(model, board);
-<a class="jxr_linenumber" name="L661" href="#L661">661</a> 		addMachineList(model, getMachineNames(<strong class="jxr_keyword">true</strong>));
-<a class="jxr_linenumber" name="L662" href="#L662">662</a> 		<strong class="jxr_keyword">return</strong> addStandardContext(BOARD_VIEW.view(model));
-<a class="jxr_linenumber" name="L663" href="#L663">663</a> 	}
-<a class="jxr_linenumber" name="L664" href="#L664">664</a> 
-<a class="jxr_linenumber" name="L665" href="#L665">665</a> 	@Override
-<a class="jxr_linenumber" name="L666" href="#L666">666</a> 	@Action(<span class="jxr_string">"saving changes to a board blacklist"</span>)
-<a class="jxr_linenumber" name="L667" href="#L667">667</a> 	<strong class="jxr_keyword">public</strong> ModelAndView blacklistSave(BlacklistData bldata, ModelMap model) {
-<a class="jxr_linenumber" name="L668" href="#L668">668</a> 		<strong class="jxr_keyword">var</strong> bs = readAndRememberBoardState(model);
-<a class="jxr_linenumber" name="L669" href="#L669">669</a> 
-<a class="jxr_linenumber" name="L670" href="#L670">670</a> 		<strong class="jxr_keyword">if</strong> (bldata.isPresent()) {
-<a class="jxr_linenumber" name="L671" href="#L671">671</a> 			machineController.writeBlacklistToDB(bs,
-<a class="jxr_linenumber" name="L672" href="#L672">672</a> 					bldata.getParsedBlacklist());
-<a class="jxr_linenumber" name="L673" href="#L673">673</a> 		}
-<a class="jxr_linenumber" name="L674" href="#L674">674</a> 		addBlacklistData(bs, model);
-<a class="jxr_linenumber" name="L675" href="#L675">675</a> 
-<a class="jxr_linenumber" name="L676" href="#L676">676</a> 		addMachineList(model, getMachineNames(<strong class="jxr_keyword">true</strong>));
-<a class="jxr_linenumber" name="L677" href="#L677">677</a> 		<strong class="jxr_keyword">return</strong> addStandardContext(BOARD_VIEW.view(model));
-<a class="jxr_linenumber" name="L678" href="#L678">678</a> 	}
-<a class="jxr_linenumber" name="L679" href="#L679">679</a> 
-<a class="jxr_linenumber" name="L680" href="#L680">680</a> 	@Override
-<a class="jxr_linenumber" name="L681" href="#L681">681</a> 	@Async
-<a class="jxr_linenumber" name="L682" href="#L682">682</a> 	@Action(<span class="jxr_string">"fetching a live board blacklist from the machine"</span>)
-<a class="jxr_linenumber" name="L683" href="#L683">683</a> 	<strong class="jxr_keyword">public</strong> CompletableFuture&lt;ModelAndView&gt; blacklistFetch(BlacklistData bldata,
-<a class="jxr_linenumber" name="L684" href="#L684">684</a> 			ModelMap model) {
-<a class="jxr_linenumber" name="L685" href="#L685">685</a> 		<strong class="jxr_keyword">var</strong> bs = readAndRememberBoardState(model);
-<a class="jxr_linenumber" name="L686" href="#L686">686</a> 
-<a class="jxr_linenumber" name="L687" href="#L687">687</a> 		log.info(<span class="jxr_string">"pulling blacklist from board {}"</span>, bs);
-<a class="jxr_linenumber" name="L688" href="#L688">688</a> 		machineController.pullBlacklist(bs);
-<a class="jxr_linenumber" name="L689" href="#L689">689</a> 		addBlacklistData(bs, model);
-<a class="jxr_linenumber" name="L690" href="#L690">690</a> 
-<a class="jxr_linenumber" name="L691" href="#L691">691</a> 		addMachineList(model, getMachineNames(<strong class="jxr_keyword">true</strong>));
-<a class="jxr_linenumber" name="L692" href="#L692">692</a> 		<strong class="jxr_keyword">return</strong> completedFuture(addStandardContext(BOARD_VIEW.view(model)));
-<a class="jxr_linenumber" name="L693" href="#L693">693</a> 	}
-<a class="jxr_linenumber" name="L694" href="#L694">694</a> 
-<a class="jxr_linenumber" name="L695" href="#L695">695</a> 	@Override
-<a class="jxr_linenumber" name="L696" href="#L696">696</a> 	@Async
-<a class="jxr_linenumber" name="L697" href="#L697">697</a> 	@Action(<span class="jxr_string">"pushing a board blacklist to the machine"</span>)
-<a class="jxr_linenumber" name="L698" href="#L698">698</a> 	<strong class="jxr_keyword">public</strong> CompletableFuture&lt;ModelAndView&gt; blacklistPush(BlacklistData bldata,
-<a class="jxr_linenumber" name="L699" href="#L699">699</a> 			ModelMap model) {
-<a class="jxr_linenumber" name="L700" href="#L700">700</a> 		<strong class="jxr_keyword">var</strong> bs = readAndRememberBoardState(model);
-<a class="jxr_linenumber" name="L701" href="#L701">701</a> 
-<a class="jxr_linenumber" name="L702" href="#L702">702</a> 		log.info(<span class="jxr_string">"pushing blacklist to board {}"</span>, bs);
-<a class="jxr_linenumber" name="L703" href="#L703">703</a> 		machineController.pushBlacklist(bs);
-<a class="jxr_linenumber" name="L704" href="#L704">704</a> 		addBlacklistData(bs, model);
-<a class="jxr_linenumber" name="L705" href="#L705">705</a> 
-<a class="jxr_linenumber" name="L706" href="#L706">706</a> 		addMachineList(model, getMachineNames(<strong class="jxr_keyword">true</strong>));
-<a class="jxr_linenumber" name="L707" href="#L707">707</a> 		<strong class="jxr_keyword">return</strong> completedFuture(addStandardContext(BOARD_VIEW.view(model)));
-<a class="jxr_linenumber" name="L708" href="#L708">708</a> 	}
-<a class="jxr_linenumber" name="L709" href="#L709">709</a> 
-<a class="jxr_linenumber" name="L710" href="#L710">710</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L711" href="#L711">711</a> <em class="jxr_javadoccomment">	 * Get the board record from the model and inflate a board state control</em>
-<a class="jxr_linenumber" name="L712" href="#L712">712</a> <em class="jxr_javadoccomment">	 * object.</em>
-<a class="jxr_linenumber" name="L713" href="#L713">713</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L714" href="#L714">714</a> <em class="jxr_javadoccomment">	 * @param model</em>
-<a class="jxr_linenumber" name="L715" href="#L715">715</a> <em class="jxr_javadoccomment">	 *            The model.</em>
-<a class="jxr_linenumber" name="L716" href="#L716">716</a> <em class="jxr_javadoccomment">	 * @return The board state control object. &lt;em&gt;This object should not be put</em>
-<a class="jxr_linenumber" name="L717" href="#L717">717</a> <em class="jxr_javadoccomment">	 *         in the model as it is DB-aware!&lt;/em&gt;</em>
-<a class="jxr_linenumber" name="L718" href="#L718">718</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L719" href="#L719">719</a> 	<strong class="jxr_keyword">private</strong> BoardState readAndRememberBoardState(ModelMap model) {
-<a class="jxr_linenumber" name="L720" href="#L720">720</a> 		<strong class="jxr_keyword">var</strong> br = (<a name="BoardRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html#BoardRecord">BoardRecord</a>) model.get(BOARD_OBJ);
-<a class="jxr_linenumber" name="L721" href="#L721">721</a> 		<strong class="jxr_keyword">var</strong> bs = getBoardState(br).orElseThrow(NoBoard::<strong class="jxr_keyword">new</strong>);
-<a class="jxr_linenumber" name="L722" href="#L722">722</a> 		inflateBoardRecord(br, bs);
-<a class="jxr_linenumber" name="L723" href="#L723">723</a> 		br.setEnabled(bs.getState());
-<a class="jxr_linenumber" name="L724" href="#L724">724</a> 		<em class="jxr_comment">// Replace the state in the model with the current values</em>
-<a class="jxr_linenumber" name="L725" href="#L725">725</a> 		addBoard(model, br);
-<a class="jxr_linenumber" name="L726" href="#L726">726</a> 		<strong class="jxr_keyword">return</strong> bs;
-<a class="jxr_linenumber" name="L727" href="#L727">727</a> 	}
-<a class="jxr_linenumber" name="L728" href="#L728">728</a> 
-<a class="jxr_linenumber" name="L729" href="#L729">729</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L730" href="#L730">730</a> <em class="jxr_javadoccomment">	 * Add current blacklist data to model.</em>
-<a class="jxr_linenumber" name="L731" href="#L731">731</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L732" href="#L732">732</a> <em class="jxr_javadoccomment">	 * @param board</em>
-<a class="jxr_linenumber" name="L733" href="#L733">733</a> <em class="jxr_javadoccomment">	 *            Which board's blacklist data to add.</em>
-<a class="jxr_linenumber" name="L734" href="#L734">734</a> <em class="jxr_javadoccomment">	 * @param model</em>
-<a class="jxr_linenumber" name="L735" href="#L735">735</a> <em class="jxr_javadoccomment">	 *            The model to add it to.</em>
-<a class="jxr_linenumber" name="L736" href="#L736">736</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L737" href="#L737">737</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> addBlacklistData(BoardState board, ModelMap model) {
-<a class="jxr_linenumber" name="L738" href="#L738">738</a> 		<strong class="jxr_keyword">var</strong> bldata = <strong class="jxr_keyword">new</strong> BlacklistData();
-<a class="jxr_linenumber" name="L739" href="#L739">739</a> 		bldata.setId(board.id);
-<a class="jxr_linenumber" name="L740" href="#L740">740</a> 		<strong class="jxr_keyword">var</strong> bl = machineController.readBlacklistFromDB(board);
-<a class="jxr_linenumber" name="L741" href="#L741">741</a> 		bldata.setPresent(bl.isPresent());
-<a class="jxr_linenumber" name="L742" href="#L742">742</a> 		bl.map(Blacklist::render).ifPresent(bldata::setBlacklist);
-<a class="jxr_linenumber" name="L743" href="#L743">743</a> 		bldata.setSynched(machineController.isBlacklistSynched(board));
-<a class="jxr_linenumber" name="L744" href="#L744">744</a> 
-<a class="jxr_linenumber" name="L745" href="#L745">745</a> 		addBlacklist(model, bldata);
-<a class="jxr_linenumber" name="L746" href="#L746">746</a> 		addUrl(model, BLACKLIST_URI, uri(admin().blacklistSave(<strong class="jxr_keyword">null</strong>, model)));
-<a class="jxr_linenumber" name="L747" href="#L747">747</a> 	}
-<a class="jxr_linenumber" name="L748" href="#L748">748</a> 
-<a class="jxr_linenumber" name="L749" href="#L749">749</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L750" href="#L750">750</a> <em class="jxr_javadoccomment">	 * Copy settings from the record out of the DB.</em>
-<a class="jxr_linenumber" name="L751" href="#L751">751</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L752" href="#L752">752</a> <em class="jxr_javadoccomment">	 * @param br</em>
-<a class="jxr_linenumber" name="L753" href="#L753">753</a> <em class="jxr_javadoccomment">	 *            Where the values are copied to. A partial state.</em>
-<a class="jxr_linenumber" name="L754" href="#L754">754</a> <em class="jxr_javadoccomment">	 * @param bs</em>
-<a class="jxr_linenumber" name="L755" href="#L755">755</a> <em class="jxr_javadoccomment">	 *            Where the values are copied from. A complete state from the</em>
-<a class="jxr_linenumber" name="L756" href="#L756">756</a> <em class="jxr_javadoccomment">	 *            DB.</em>
-<a class="jxr_linenumber" name="L757" href="#L757">757</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L758" href="#L758">758</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> inflateBoardRecord(<a name="BoardRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html#BoardRecord">BoardRecord</a> br, BoardState bs) {
-<a class="jxr_linenumber" name="L759" href="#L759">759</a> 		<em class="jxr_comment">// Inflate the coordinates</em>
-<a class="jxr_linenumber" name="L760" href="#L760">760</a> 		br.setId(bs.id);
-<a class="jxr_linenumber" name="L761" href="#L761">761</a> 		br.setX(bs.x);
-<a class="jxr_linenumber" name="L762" href="#L762">762</a> 		br.setY(bs.y);
-<a class="jxr_linenumber" name="L763" href="#L763">763</a> 		br.setZ(bs.z);
-<a class="jxr_linenumber" name="L764" href="#L764">764</a> 		br.setCabinet(bs.cabinet);
-<a class="jxr_linenumber" name="L765" href="#L765">765</a> 		br.setFrame(bs.frame);
-<a class="jxr_linenumber" name="L766" href="#L766">766</a> 		br.setBoard(bs.board);
-<a class="jxr_linenumber" name="L767" href="#L767">767</a> 		br.setIpAddress(bs.address);
-<a class="jxr_linenumber" name="L768" href="#L768">768</a> 		br.setMachineName(bs.machineName);
-<a class="jxr_linenumber" name="L769" href="#L769">769</a> 
-<a class="jxr_linenumber" name="L770" href="#L770">770</a> 		<em class="jxr_comment">// Inflate the other properties</em>
-<a class="jxr_linenumber" name="L771" href="#L771">771</a> 		br.setPowered(bs.getPower());
-<a class="jxr_linenumber" name="L772" href="#L772">772</a> 		br.setLastPowerOff(bs.getPowerOffTime().orElse(<strong class="jxr_keyword">null</strong>));
-<a class="jxr_linenumber" name="L773" href="#L773">773</a> 		br.setLastPowerOn(bs.getPowerOnTime().orElse(<strong class="jxr_keyword">null</strong>));
-<a class="jxr_linenumber" name="L774" href="#L774">774</a> 		br.setJobId(bs.getAllocatedJob().orElse(<strong class="jxr_keyword">null</strong>));
-<a class="jxr_linenumber" name="L775" href="#L775">775</a> 		br.setReports(bs.getReports());
-<a class="jxr_linenumber" name="L776" href="#L776">776</a> 	}
-<a class="jxr_linenumber" name="L777" href="#L777">777</a> 
-<a class="jxr_linenumber" name="L778" href="#L778">778</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L779" href="#L779">779</a> <em class="jxr_javadoccomment">	 * {@inheritDoc}</em>
-<a class="jxr_linenumber" name="L780" href="#L780">780</a> <em class="jxr_javadoccomment">	 * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L781" href="#L781">781</a> <em class="jxr_javadoccomment">	 * &lt;strong&gt;Implementation note:&lt;/strong&gt; This is the baseline information</em>
-<a class="jxr_linenumber" name="L782" href="#L782">782</a> <em class="jxr_javadoccomment">	 * that {@code admin/machine.jsp} needs.</em>
-<a class="jxr_linenumber" name="L783" href="#L783">783</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L784" href="#L784">784</a> 	@Override
-<a class="jxr_linenumber" name="L785" href="#L785">785</a> 	@Action(<span class="jxr_string">"getting a machine's configuration"</span>)
-<a class="jxr_linenumber" name="L786" href="#L786">786</a> 	<strong class="jxr_keyword">public</strong> ModelAndView machineManagement() {
-<a class="jxr_linenumber" name="L787" href="#L787">787</a> 		<strong class="jxr_keyword">var</strong> mav = MACHINE_VIEW.view();
-<a class="jxr_linenumber" name="L788" href="#L788">788</a> 		addMachineList(mav, getMachineNames(<strong class="jxr_keyword">true</strong>));
-<a class="jxr_linenumber" name="L789" href="#L789">789</a> 		<strong class="jxr_keyword">var</strong> tagging = machineController.getMachineTagging();
-<a class="jxr_linenumber" name="L790" href="#L790">790</a> 		tagging.forEach(
-<a class="jxr_linenumber" name="L791" href="#L791">791</a> 				t -&gt; t.setUrl(uri(system().getMachineInfo(t.getName()))));
-<a class="jxr_linenumber" name="L792" href="#L792">792</a> 		addMachineTagging(mav, tagging);
-<a class="jxr_linenumber" name="L793" href="#L793">793</a> 		addMachineReports(mav, machineController.getMachineReports());
-<a class="jxr_linenumber" name="L794" href="#L794">794</a> 		<strong class="jxr_keyword">return</strong> addStandardContext(mav);
-<a class="jxr_linenumber" name="L795" href="#L795">795</a> 	}
-<a class="jxr_linenumber" name="L796" href="#L796">796</a> 
-<a class="jxr_linenumber" name="L797" href="#L797">797</a> 	@Override
-<a class="jxr_linenumber" name="L798" href="#L798">798</a> 	@Action(<span class="jxr_string">"retagging a machine"</span>)
-<a class="jxr_linenumber" name="L799" href="#L799">799</a> 	<strong class="jxr_keyword">public</strong> ModelAndView retagMachine(String machineName, String newTags) {
-<a class="jxr_linenumber" name="L800" href="#L800">800</a> 		<strong class="jxr_keyword">var</strong> tags =
-<a class="jxr_linenumber" name="L801" href="#L801">801</a> 				stream(newTags.split(<span class="jxr_string">","</span>)).map(String::strip).collect(toSet());
-<a class="jxr_linenumber" name="L802" href="#L802">802</a> 		machineController.updateTags(machineName, tags);
-<a class="jxr_linenumber" name="L803" href="#L803">803</a> 		log.info(<span class="jxr_string">"retagged {} to have tags {}"</span>, machineName, tags);
-<a class="jxr_linenumber" name="L804" href="#L804">804</a> 		<strong class="jxr_keyword">return</strong> machineManagement();
-<a class="jxr_linenumber" name="L805" href="#L805">805</a> 	}
-<a class="jxr_linenumber" name="L806" href="#L806">806</a> 
-<a class="jxr_linenumber" name="L807" href="#L807">807</a> 	@Override
-<a class="jxr_linenumber" name="L808" href="#L808">808</a> 	@Action(<span class="jxr_string">"disabling a machine"</span>)
-<a class="jxr_linenumber" name="L809" href="#L809">809</a> 	<strong class="jxr_keyword">public</strong> ModelAndView disableMachine(String machineName) {
-<a class="jxr_linenumber" name="L810" href="#L810">810</a> 		machineController.setMachineState(machineName, false);
-<a class="jxr_linenumber" name="L811" href="#L811">811</a> 		log.info(<span class="jxr_string">"marked {} as out of service"</span>, machineName);
-<a class="jxr_linenumber" name="L812" href="#L812">812</a> 		<strong class="jxr_keyword">return</strong> machineManagement();
-<a class="jxr_linenumber" name="L813" href="#L813">813</a> 	}
-<a class="jxr_linenumber" name="L814" href="#L814">814</a> 
-<a class="jxr_linenumber" name="L815" href="#L815">815</a> 	@Override
-<a class="jxr_linenumber" name="L816" href="#L816">816</a> 	@Action(<span class="jxr_string">"enabling a machine"</span>)
-<a class="jxr_linenumber" name="L817" href="#L817">817</a> 	<strong class="jxr_keyword">public</strong> ModelAndView enableMachine(String machineName) {
-<a class="jxr_linenumber" name="L818" href="#L818">818</a> 		machineController.setMachineState(machineName, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L819" href="#L819">819</a> 		log.info(<span class="jxr_string">"marked {} as in service"</span>, machineName);
-<a class="jxr_linenumber" name="L820" href="#L820">820</a> 		<strong class="jxr_keyword">return</strong> machineManagement();
-<a class="jxr_linenumber" name="L821" href="#L821">821</a> 	}
-<a class="jxr_linenumber" name="L822" href="#L822">822</a> 
-<a class="jxr_linenumber" name="L823" href="#L823">823</a> 	@Override
-<a class="jxr_linenumber" name="L824" href="#L824">824</a> 	@Action(<span class="jxr_string">"defining a machine"</span>)
-<a class="jxr_linenumber" name="L825" href="#L825">825</a> 	<strong class="jxr_keyword">public</strong> ModelAndView defineMachine(MultipartFile file) {
-<a class="jxr_linenumber" name="L826" href="#L826">826</a> 		<strong class="jxr_keyword">var</strong> machines = extractMachineDefinitions(file);
-<a class="jxr_linenumber" name="L827" href="#L827">827</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> m : machines) {
-<a class="jxr_linenumber" name="L828" href="#L828">828</a> 			machineDefiner.loadMachineDefinition(m);
-<a class="jxr_linenumber" name="L829" href="#L829">829</a> 			log.info(<span class="jxr_string">"defined machine {}"</span>, m.getName());
-<a class="jxr_linenumber" name="L830" href="#L830">830</a> 		}
-<a class="jxr_linenumber" name="L831" href="#L831">831</a> 		<strong class="jxr_keyword">var</strong> mav = machineManagement();
-<a class="jxr_linenumber" name="L832" href="#L832">832</a> 		<em class="jxr_comment">// Tailor with extra objects here</em>
-<a class="jxr_linenumber" name="L833" href="#L833">833</a> 		mav.addObject(DEFINED_MACHINES_OBJ, machines);
-<a class="jxr_linenumber" name="L834" href="#L834">834</a> 		<strong class="jxr_keyword">return</strong> mav;
-<a class="jxr_linenumber" name="L835" href="#L835">835</a> 	}
-<a class="jxr_linenumber" name="L836" href="#L836">836</a> 
-<a class="jxr_linenumber" name="L837" href="#L837">837</a> 	<strong class="jxr_keyword">private</strong> List&lt;Machine&gt; extractMachineDefinitions(MultipartFile file) {
-<a class="jxr_linenumber" name="L838" href="#L838">838</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> input = buffer(file.getInputStream())) {
-<a class="jxr_linenumber" name="L839" href="#L839">839</a> 			<strong class="jxr_keyword">return</strong> machineDefiner.readMachineDefinitions(input);
-<a class="jxr_linenumber" name="L840" href="#L840">840</a> 		} <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L841" href="#L841">841</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> AdminException(
-<a class="jxr_linenumber" name="L842" href="#L842">842</a> 					<span class="jxr_string">"problem with processing file: "</span> + e.getMessage());
-<a class="jxr_linenumber" name="L843" href="#L843">843</a> 		}
-<a class="jxr_linenumber" name="L844" href="#L844">844</a> 	}
-<a class="jxr_linenumber" name="L845" href="#L845">845</a> }
+<a class="jxr_linenumber" name="L649" href="#L649">649</a> 		inflateBoardRecord(board, bs);
+<a class="jxr_linenumber" name="L650" href="#L650">650</a> 
+<a class="jxr_linenumber" name="L651" href="#L651">651</a> 		<strong class="jxr_keyword">if</strong> (board.isEnabledDefined()) {
+<a class="jxr_linenumber" name="L652" href="#L652">652</a> 			<em class="jxr_comment">// We're doing a set</em>
+<a class="jxr_linenumber" name="L653" href="#L653">653</a> 			log.info(<span class="jxr_string">"setting board-allocatable state for board {} to {}"</span>, bs,
+<a class="jxr_linenumber" name="L654" href="#L654">654</a> 					board.isEnabled());
+<a class="jxr_linenumber" name="L655" href="#L655">655</a> 			bs.setState(board.isEnabled());
+<a class="jxr_linenumber" name="L656" href="#L656">656</a> 			spalloc.purgeDownCache();
+<a class="jxr_linenumber" name="L657" href="#L657">657</a> 		}
+<a class="jxr_linenumber" name="L658" href="#L658">658</a> 
+<a class="jxr_linenumber" name="L659" href="#L659">659</a> 		board.setEnabled(bs.getState());
+<a class="jxr_linenumber" name="L660" href="#L660">660</a> 		addBlacklistData(bs, model);
+<a class="jxr_linenumber" name="L661" href="#L661">661</a> 		inflateBoardRecord(board, bs);
+<a class="jxr_linenumber" name="L662" href="#L662">662</a> 		addBoard(model, board);
+<a class="jxr_linenumber" name="L663" href="#L663">663</a> 		addMachineList(model, getMachineNames(<strong class="jxr_keyword">true</strong>));
+<a class="jxr_linenumber" name="L664" href="#L664">664</a> 		<strong class="jxr_keyword">return</strong> addStandardContext(BOARD_VIEW.view(model));
+<a class="jxr_linenumber" name="L665" href="#L665">665</a> 	}
+<a class="jxr_linenumber" name="L666" href="#L666">666</a> 
+<a class="jxr_linenumber" name="L667" href="#L667">667</a> 	@Override
+<a class="jxr_linenumber" name="L668" href="#L668">668</a> 	@Action(<span class="jxr_string">"saving changes to a board blacklist"</span>)
+<a class="jxr_linenumber" name="L669" href="#L669">669</a> 	<strong class="jxr_keyword">public</strong> ModelAndView blacklistSave(BlacklistData bldata, ModelMap model) {
+<a class="jxr_linenumber" name="L670" href="#L670">670</a> 		<strong class="jxr_keyword">var</strong> bs = readAndRememberBoardState(model);
+<a class="jxr_linenumber" name="L671" href="#L671">671</a> 
+<a class="jxr_linenumber" name="L672" href="#L672">672</a> 		<strong class="jxr_keyword">if</strong> (bldata.isPresent()) {
+<a class="jxr_linenumber" name="L673" href="#L673">673</a> 			machineController.writeBlacklistToDB(bs,
+<a class="jxr_linenumber" name="L674" href="#L674">674</a> 					bldata.getParsedBlacklist());
+<a class="jxr_linenumber" name="L675" href="#L675">675</a> 		}
+<a class="jxr_linenumber" name="L676" href="#L676">676</a> 		addBlacklistData(bs, model);
+<a class="jxr_linenumber" name="L677" href="#L677">677</a> 
+<a class="jxr_linenumber" name="L678" href="#L678">678</a> 		addMachineList(model, getMachineNames(<strong class="jxr_keyword">true</strong>));
+<a class="jxr_linenumber" name="L679" href="#L679">679</a> 		<strong class="jxr_keyword">return</strong> addStandardContext(BOARD_VIEW.view(model));
+<a class="jxr_linenumber" name="L680" href="#L680">680</a> 	}
+<a class="jxr_linenumber" name="L681" href="#L681">681</a> 
+<a class="jxr_linenumber" name="L682" href="#L682">682</a> 	@Override
+<a class="jxr_linenumber" name="L683" href="#L683">683</a> 	@Async
+<a class="jxr_linenumber" name="L684" href="#L684">684</a> 	@Action(<span class="jxr_string">"fetching a live board blacklist from the machine"</span>)
+<a class="jxr_linenumber" name="L685" href="#L685">685</a> 	<strong class="jxr_keyword">public</strong> CompletableFuture&lt;ModelAndView&gt; blacklistFetch(BlacklistData bldata,
+<a class="jxr_linenumber" name="L686" href="#L686">686</a> 			ModelMap model) {
+<a class="jxr_linenumber" name="L687" href="#L687">687</a> 		<strong class="jxr_keyword">var</strong> bs = readAndRememberBoardState(model);
+<a class="jxr_linenumber" name="L688" href="#L688">688</a> 
+<a class="jxr_linenumber" name="L689" href="#L689">689</a> 		log.info(<span class="jxr_string">"pulling blacklist from board {}"</span>, bs);
+<a class="jxr_linenumber" name="L690" href="#L690">690</a> 		machineController.pullBlacklist(bs);
+<a class="jxr_linenumber" name="L691" href="#L691">691</a> 		addBlacklistData(bs, model);
+<a class="jxr_linenumber" name="L692" href="#L692">692</a> 
+<a class="jxr_linenumber" name="L693" href="#L693">693</a> 		addMachineList(model, getMachineNames(<strong class="jxr_keyword">true</strong>));
+<a class="jxr_linenumber" name="L694" href="#L694">694</a> 		<strong class="jxr_keyword">return</strong> completedFuture(addStandardContext(BOARD_VIEW.view(model)));
+<a class="jxr_linenumber" name="L695" href="#L695">695</a> 	}
+<a class="jxr_linenumber" name="L696" href="#L696">696</a> 
+<a class="jxr_linenumber" name="L697" href="#L697">697</a> 	@Override
+<a class="jxr_linenumber" name="L698" href="#L698">698</a> 	@Async
+<a class="jxr_linenumber" name="L699" href="#L699">699</a> 	@Action(<span class="jxr_string">"pushing a board blacklist to the machine"</span>)
+<a class="jxr_linenumber" name="L700" href="#L700">700</a> 	<strong class="jxr_keyword">public</strong> CompletableFuture&lt;ModelAndView&gt; blacklistPush(BlacklistData bldata,
+<a class="jxr_linenumber" name="L701" href="#L701">701</a> 			ModelMap model) {
+<a class="jxr_linenumber" name="L702" href="#L702">702</a> 		<strong class="jxr_keyword">var</strong> bs = readAndRememberBoardState(model);
+<a class="jxr_linenumber" name="L703" href="#L703">703</a> 
+<a class="jxr_linenumber" name="L704" href="#L704">704</a> 		log.info(<span class="jxr_string">"pushing blacklist to board {}"</span>, bs);
+<a class="jxr_linenumber" name="L705" href="#L705">705</a> 		machineController.pushBlacklist(bs);
+<a class="jxr_linenumber" name="L706" href="#L706">706</a> 		addBlacklistData(bs, model);
+<a class="jxr_linenumber" name="L707" href="#L707">707</a> 
+<a class="jxr_linenumber" name="L708" href="#L708">708</a> 		addMachineList(model, getMachineNames(<strong class="jxr_keyword">true</strong>));
+<a class="jxr_linenumber" name="L709" href="#L709">709</a> 		<strong class="jxr_keyword">return</strong> completedFuture(addStandardContext(BOARD_VIEW.view(model)));
+<a class="jxr_linenumber" name="L710" href="#L710">710</a> 	}
+<a class="jxr_linenumber" name="L711" href="#L711">711</a> 
+<a class="jxr_linenumber" name="L712" href="#L712">712</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L713" href="#L713">713</a> <em class="jxr_javadoccomment">	 * Get the board record from the model and inflate a board state control</em>
+<a class="jxr_linenumber" name="L714" href="#L714">714</a> <em class="jxr_javadoccomment">	 * object.</em>
+<a class="jxr_linenumber" name="L715" href="#L715">715</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L716" href="#L716">716</a> <em class="jxr_javadoccomment">	 * @param model</em>
+<a class="jxr_linenumber" name="L717" href="#L717">717</a> <em class="jxr_javadoccomment">	 *            The model.</em>
+<a class="jxr_linenumber" name="L718" href="#L718">718</a> <em class="jxr_javadoccomment">	 * @return The board state control object. &lt;em&gt;This object should not be put</em>
+<a class="jxr_linenumber" name="L719" href="#L719">719</a> <em class="jxr_javadoccomment">	 *         in the model as it is DB-aware!&lt;/em&gt;</em>
+<a class="jxr_linenumber" name="L720" href="#L720">720</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L721" href="#L721">721</a> 	<strong class="jxr_keyword">private</strong> BoardState readAndRememberBoardState(ModelMap model) {
+<a class="jxr_linenumber" name="L722" href="#L722">722</a> 		<strong class="jxr_keyword">var</strong> br = (<a name="BoardRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html#BoardRecord">BoardRecord</a>) model.get(BOARD_OBJ);
+<a class="jxr_linenumber" name="L723" href="#L723">723</a> 		<strong class="jxr_keyword">var</strong> bs = getBoardState(br).orElseThrow(NoBoard::<strong class="jxr_keyword">new</strong>);
+<a class="jxr_linenumber" name="L724" href="#L724">724</a> 		inflateBoardRecord(br, bs);
+<a class="jxr_linenumber" name="L725" href="#L725">725</a> 		br.setEnabled(bs.getState());
+<a class="jxr_linenumber" name="L726" href="#L726">726</a> 		<em class="jxr_comment">// Replace the state in the model with the current values</em>
+<a class="jxr_linenumber" name="L727" href="#L727">727</a> 		addBoard(model, br);
+<a class="jxr_linenumber" name="L728" href="#L728">728</a> 		<strong class="jxr_keyword">return</strong> bs;
+<a class="jxr_linenumber" name="L729" href="#L729">729</a> 	}
+<a class="jxr_linenumber" name="L730" href="#L730">730</a> 
+<a class="jxr_linenumber" name="L731" href="#L731">731</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L732" href="#L732">732</a> <em class="jxr_javadoccomment">	 * Add current blacklist data to model.</em>
+<a class="jxr_linenumber" name="L733" href="#L733">733</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L734" href="#L734">734</a> <em class="jxr_javadoccomment">	 * @param board</em>
+<a class="jxr_linenumber" name="L735" href="#L735">735</a> <em class="jxr_javadoccomment">	 *            Which board's blacklist data to add.</em>
+<a class="jxr_linenumber" name="L736" href="#L736">736</a> <em class="jxr_javadoccomment">	 * @param model</em>
+<a class="jxr_linenumber" name="L737" href="#L737">737</a> <em class="jxr_javadoccomment">	 *            The model to add it to.</em>
+<a class="jxr_linenumber" name="L738" href="#L738">738</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L739" href="#L739">739</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> addBlacklistData(BoardState board, ModelMap model) {
+<a class="jxr_linenumber" name="L740" href="#L740">740</a> 		<strong class="jxr_keyword">var</strong> bldata = <strong class="jxr_keyword">new</strong> BlacklistData();
+<a class="jxr_linenumber" name="L741" href="#L741">741</a> 		bldata.setId(board.id);
+<a class="jxr_linenumber" name="L742" href="#L742">742</a> 		<strong class="jxr_keyword">var</strong> bl = machineController.readBlacklistFromDB(board);
+<a class="jxr_linenumber" name="L743" href="#L743">743</a> 		bldata.setPresent(bl.isPresent());
+<a class="jxr_linenumber" name="L744" href="#L744">744</a> 		bl.map(Blacklist::render).ifPresent(bldata::setBlacklist);
+<a class="jxr_linenumber" name="L745" href="#L745">745</a> 		bldata.setSynched(machineController.isBlacklistSynched(board));
+<a class="jxr_linenumber" name="L746" href="#L746">746</a> 
+<a class="jxr_linenumber" name="L747" href="#L747">747</a> 		addBlacklist(model, bldata);
+<a class="jxr_linenumber" name="L748" href="#L748">748</a> 		addUrl(model, BLACKLIST_URI, uri(admin().blacklistSave(<strong class="jxr_keyword">null</strong>, model)));
+<a class="jxr_linenumber" name="L749" href="#L749">749</a> 	}
+<a class="jxr_linenumber" name="L750" href="#L750">750</a> 
+<a class="jxr_linenumber" name="L751" href="#L751">751</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L752" href="#L752">752</a> <em class="jxr_javadoccomment">	 * Copy settings from the record out of the DB.</em>
+<a class="jxr_linenumber" name="L753" href="#L753">753</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L754" href="#L754">754</a> <em class="jxr_javadoccomment">	 * @param br</em>
+<a class="jxr_linenumber" name="L755" href="#L755">755</a> <em class="jxr_javadoccomment">	 *            Where the values are copied to. A partial state.</em>
+<a class="jxr_linenumber" name="L756" href="#L756">756</a> <em class="jxr_javadoccomment">	 * @param bs</em>
+<a class="jxr_linenumber" name="L757" href="#L757">757</a> <em class="jxr_javadoccomment">	 *            Where the values are copied from. A complete state from the</em>
+<a class="jxr_linenumber" name="L758" href="#L758">758</a> <em class="jxr_javadoccomment">	 *            DB.</em>
+<a class="jxr_linenumber" name="L759" href="#L759">759</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L760" href="#L760">760</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> inflateBoardRecord(<a name="BoardRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html#BoardRecord">BoardRecord</a> br, BoardState bs) {
+<a class="jxr_linenumber" name="L761" href="#L761">761</a> 		<em class="jxr_comment">// Inflate the coordinates</em>
+<a class="jxr_linenumber" name="L762" href="#L762">762</a> 		br.setId(bs.id);
+<a class="jxr_linenumber" name="L763" href="#L763">763</a> 		br.setX(bs.x);
+<a class="jxr_linenumber" name="L764" href="#L764">764</a> 		br.setY(bs.y);
+<a class="jxr_linenumber" name="L765" href="#L765">765</a> 		br.setZ(bs.z);
+<a class="jxr_linenumber" name="L766" href="#L766">766</a> 		br.setCabinet(bs.cabinet);
+<a class="jxr_linenumber" name="L767" href="#L767">767</a> 		br.setFrame(bs.frame);
+<a class="jxr_linenumber" name="L768" href="#L768">768</a> 		br.setBoard(bs.board);
+<a class="jxr_linenumber" name="L769" href="#L769">769</a> 		br.setIpAddress(bs.address);
+<a class="jxr_linenumber" name="L770" href="#L770">770</a> 		br.setMachineName(bs.machineName);
+<a class="jxr_linenumber" name="L771" href="#L771">771</a> 
+<a class="jxr_linenumber" name="L772" href="#L772">772</a> 		<em class="jxr_comment">// Inflate the other properties</em>
+<a class="jxr_linenumber" name="L773" href="#L773">773</a> 		br.setPowered(bs.getPower());
+<a class="jxr_linenumber" name="L774" href="#L774">774</a> 		br.setLastPowerOff(bs.getPowerOffTime().orElse(<strong class="jxr_keyword">null</strong>));
+<a class="jxr_linenumber" name="L775" href="#L775">775</a> 		br.setLastPowerOn(bs.getPowerOnTime().orElse(<strong class="jxr_keyword">null</strong>));
+<a class="jxr_linenumber" name="L776" href="#L776">776</a> 		br.setJobId(bs.getAllocatedJob().orElse(<strong class="jxr_keyword">null</strong>));
+<a class="jxr_linenumber" name="L777" href="#L777">777</a> 		br.setReports(bs.getReports());
+<a class="jxr_linenumber" name="L778" href="#L778">778</a> 	}
+<a class="jxr_linenumber" name="L779" href="#L779">779</a> 
+<a class="jxr_linenumber" name="L780" href="#L780">780</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L781" href="#L781">781</a> <em class="jxr_javadoccomment">	 * {@inheritDoc}</em>
+<a class="jxr_linenumber" name="L782" href="#L782">782</a> <em class="jxr_javadoccomment">	 * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L783" href="#L783">783</a> <em class="jxr_javadoccomment">	 * &lt;strong&gt;Implementation note:&lt;/strong&gt; This is the baseline information</em>
+<a class="jxr_linenumber" name="L784" href="#L784">784</a> <em class="jxr_javadoccomment">	 * that {@code admin/machine.jsp} needs.</em>
+<a class="jxr_linenumber" name="L785" href="#L785">785</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L786" href="#L786">786</a> 	@Override
+<a class="jxr_linenumber" name="L787" href="#L787">787</a> 	@Action(<span class="jxr_string">"getting a machine's configuration"</span>)
+<a class="jxr_linenumber" name="L788" href="#L788">788</a> 	<strong class="jxr_keyword">public</strong> ModelAndView machineManagement() {
+<a class="jxr_linenumber" name="L789" href="#L789">789</a> 		<strong class="jxr_keyword">var</strong> mav = MACHINE_VIEW.view();
+<a class="jxr_linenumber" name="L790" href="#L790">790</a> 		addMachineList(mav, getMachineNames(<strong class="jxr_keyword">true</strong>));
+<a class="jxr_linenumber" name="L791" href="#L791">791</a> 		<strong class="jxr_keyword">var</strong> tagging = machineController.getMachineTagging();
+<a class="jxr_linenumber" name="L792" href="#L792">792</a> 		tagging.forEach(
+<a class="jxr_linenumber" name="L793" href="#L793">793</a> 				t -&gt; t.setUrl(uri(system().getMachineInfo(t.getName()))));
+<a class="jxr_linenumber" name="L794" href="#L794">794</a> 		addMachineTagging(mav, tagging);
+<a class="jxr_linenumber" name="L795" href="#L795">795</a> 		addMachineReports(mav, machineController.getMachineReports());
+<a class="jxr_linenumber" name="L796" href="#L796">796</a> 		<strong class="jxr_keyword">return</strong> addStandardContext(mav);
+<a class="jxr_linenumber" name="L797" href="#L797">797</a> 	}
+<a class="jxr_linenumber" name="L798" href="#L798">798</a> 
+<a class="jxr_linenumber" name="L799" href="#L799">799</a> 	@Override
+<a class="jxr_linenumber" name="L800" href="#L800">800</a> 	@Action(<span class="jxr_string">"retagging a machine"</span>)
+<a class="jxr_linenumber" name="L801" href="#L801">801</a> 	<strong class="jxr_keyword">public</strong> ModelAndView retagMachine(String machineName, String newTags) {
+<a class="jxr_linenumber" name="L802" href="#L802">802</a> 		<strong class="jxr_keyword">var</strong> tags =
+<a class="jxr_linenumber" name="L803" href="#L803">803</a> 				stream(newTags.split(<span class="jxr_string">","</span>)).map(String::strip).collect(toSet());
+<a class="jxr_linenumber" name="L804" href="#L804">804</a> 		machineController.updateTags(machineName, tags);
+<a class="jxr_linenumber" name="L805" href="#L805">805</a> 		log.info(<span class="jxr_string">"retagged {} to have tags {}"</span>, machineName, tags);
+<a class="jxr_linenumber" name="L806" href="#L806">806</a> 		<strong class="jxr_keyword">return</strong> machineManagement();
+<a class="jxr_linenumber" name="L807" href="#L807">807</a> 	}
+<a class="jxr_linenumber" name="L808" href="#L808">808</a> 
+<a class="jxr_linenumber" name="L809" href="#L809">809</a> 	@Override
+<a class="jxr_linenumber" name="L810" href="#L810">810</a> 	@Action(<span class="jxr_string">"disabling a machine"</span>)
+<a class="jxr_linenumber" name="L811" href="#L811">811</a> 	<strong class="jxr_keyword">public</strong> ModelAndView disableMachine(String machineName) {
+<a class="jxr_linenumber" name="L812" href="#L812">812</a> 		machineController.setMachineState(machineName, false);
+<a class="jxr_linenumber" name="L813" href="#L813">813</a> 		log.info(<span class="jxr_string">"marked {} as out of service"</span>, machineName);
+<a class="jxr_linenumber" name="L814" href="#L814">814</a> 		<strong class="jxr_keyword">return</strong> machineManagement();
+<a class="jxr_linenumber" name="L815" href="#L815">815</a> 	}
+<a class="jxr_linenumber" name="L816" href="#L816">816</a> 
+<a class="jxr_linenumber" name="L817" href="#L817">817</a> 	@Override
+<a class="jxr_linenumber" name="L818" href="#L818">818</a> 	@Action(<span class="jxr_string">"enabling a machine"</span>)
+<a class="jxr_linenumber" name="L819" href="#L819">819</a> 	<strong class="jxr_keyword">public</strong> ModelAndView enableMachine(String machineName) {
+<a class="jxr_linenumber" name="L820" href="#L820">820</a> 		machineController.setMachineState(machineName, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L821" href="#L821">821</a> 		log.info(<span class="jxr_string">"marked {} as in service"</span>, machineName);
+<a class="jxr_linenumber" name="L822" href="#L822">822</a> 		<strong class="jxr_keyword">return</strong> machineManagement();
+<a class="jxr_linenumber" name="L823" href="#L823">823</a> 	}
+<a class="jxr_linenumber" name="L824" href="#L824">824</a> 
+<a class="jxr_linenumber" name="L825" href="#L825">825</a> 	@Override
+<a class="jxr_linenumber" name="L826" href="#L826">826</a> 	@Action(<span class="jxr_string">"defining a machine"</span>)
+<a class="jxr_linenumber" name="L827" href="#L827">827</a> 	<strong class="jxr_keyword">public</strong> ModelAndView defineMachine(MultipartFile file) {
+<a class="jxr_linenumber" name="L828" href="#L828">828</a> 		<strong class="jxr_keyword">var</strong> machines = extractMachineDefinitions(file);
+<a class="jxr_linenumber" name="L829" href="#L829">829</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> m : machines) {
+<a class="jxr_linenumber" name="L830" href="#L830">830</a> 			machineDefiner.loadMachineDefinition(m);
+<a class="jxr_linenumber" name="L831" href="#L831">831</a> 			log.info(<span class="jxr_string">"defined machine {}"</span>, m.getName());
+<a class="jxr_linenumber" name="L832" href="#L832">832</a> 		}
+<a class="jxr_linenumber" name="L833" href="#L833">833</a> 		<strong class="jxr_keyword">var</strong> mav = machineManagement();
+<a class="jxr_linenumber" name="L834" href="#L834">834</a> 		<em class="jxr_comment">// Tailor with extra objects here</em>
+<a class="jxr_linenumber" name="L835" href="#L835">835</a> 		mav.addObject(DEFINED_MACHINES_OBJ, machines);
+<a class="jxr_linenumber" name="L836" href="#L836">836</a> 		<strong class="jxr_keyword">return</strong> mav;
+<a class="jxr_linenumber" name="L837" href="#L837">837</a> 	}
+<a class="jxr_linenumber" name="L838" href="#L838">838</a> 
+<a class="jxr_linenumber" name="L839" href="#L839">839</a> 	<strong class="jxr_keyword">private</strong> List&lt;Machine&gt; extractMachineDefinitions(MultipartFile file) {
+<a class="jxr_linenumber" name="L840" href="#L840">840</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> input = buffer(file.getInputStream())) {
+<a class="jxr_linenumber" name="L841" href="#L841">841</a> 			<strong class="jxr_keyword">return</strong> machineDefiner.readMachineDefinitions(input);
+<a class="jxr_linenumber" name="L842" href="#L842">842</a> 		} <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L843" href="#L843">843</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> AdminException(
+<a class="jxr_linenumber" name="L844" href="#L844">844</a> 					<span class="jxr_string">"problem with processing file: "</span> + e.getMessage());
+<a class="jxr_linenumber" name="L845" href="#L845">845</a> 		}
+<a class="jxr_linenumber" name="L846" href="#L846">846</a> 	}
+<a class="jxr_linenumber" name="L847" href="#L847">847</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>
