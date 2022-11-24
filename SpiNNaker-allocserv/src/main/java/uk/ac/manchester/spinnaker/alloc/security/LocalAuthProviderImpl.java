@@ -1143,6 +1143,15 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 */
 	private void synchExternalGroups(String username, int userId,
 			List<String> orgs, List<String> collabs, AuthQueries queries) {
+		if (orgs.isEmpty() && collabs.isEmpty()) {
+			log.warn(
+					"no organisations or collabratories for user {}; "
+							+ "not synching in case this is a glitch "
+							+ "(if this is the first time they've logged in, "
+							+ "creating a job will fail in this session)",
+					username);
+			return;
+		}
 		try (var synch = new GroupSynch(queries)) {
 			for (var org : orgs) {
 				synch.define(org, ORGANISATION);
