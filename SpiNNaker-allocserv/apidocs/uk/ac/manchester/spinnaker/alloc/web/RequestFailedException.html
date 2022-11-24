@@ -187,6 +187,12 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.Throwable)">RequestFailedException</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Throwable</a>&nbsp;cause)</code></th>
+<td class="colLast">
+<div class="block">Create an instance that indicates an internal server error.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(javax.ws.rs.core.Response.Status,java.lang.String)">RequestFailedException</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/core/Response.Status.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">Response.Status</a>&nbsp;code,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;message)</code></th>
 <td class="colLast">
@@ -237,6 +243,18 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>code</code> - The status code.</dd>
 <dd><code>message</code> - The response message contents.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="&lt;init&gt;(java.lang.Throwable)">RequestFailedException</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">RequestFailedException</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Throwable</a>&nbsp;cause)</span></div>
+<div class="block">Create an instance that indicates an internal server error.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>cause</code> - The cause of the server error. <em>This will be used as part
+            of the description of the failure.</em></dd>
 </dl>
 </section>
 </li>
