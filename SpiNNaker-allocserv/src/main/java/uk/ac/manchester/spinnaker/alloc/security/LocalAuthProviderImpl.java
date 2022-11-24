@@ -253,9 +253,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				var bearerAuth = (BearerTokenAuthentication) auth;
 				var token = bearerAuth.getToken();
 				return authorizeOpenId(
-						authProps.getOpenid().getUsernamePrefix()
-								+ bearerAuth.getTokenAttributes().get(PREFERRED_USERNAME),
-					    bearerAuth.getName(), new OriginatingCredential(token),
+						authProps.getOpenid().getUsernamePrefix() + bearerAuth
+								.getTokenAttributes().get(PREFERRED_USERNAME),
+						bearerAuth.getName(), new OriginatingCredential(token),
 						auth.getAuthorities());
 			} else {
 				return null;

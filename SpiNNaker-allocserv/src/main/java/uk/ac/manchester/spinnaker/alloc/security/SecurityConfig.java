@@ -19,18 +19,23 @@ package uk.ac.manchester.spinnaker.alloc.security;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLICATION;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.security.oauth2.core.OAuth2AccessToken.TokenType.BEARER;
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.ACCESS_TOKEN;
+import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 import static uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter.clearToken;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.installInjectableTrustStoreAsDefault;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.loadTrustStore;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.trustManager;
 
 import java.io.IOException;
-import java.net.URI;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.X509TrustManager;
@@ -42,10 +47,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -56,8 +59,6 @@ import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMap
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.oauth2.client.http.OAuth2ErrorResponseErrorHandler;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
-import org.springframework.security.oauth2.core.OAuth2AccessToken.TokenType;
-import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
@@ -71,9 +72,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
@@ -107,13 +106,14 @@ public class SecurityConfig {
 	public static final String MAY_SEE_JOB_DETAILS = "#permit.admin or "
 			+ " #permit.name == filterObject.owner.orElse(null)";
 
-    private final ParameterizedTypeReference<Map<String, Object>>
-    		PARAMETERIZED_RESPONSE_TYPE =
-    			new ParameterizedTypeReference<Map<String, Object>>() {};
+	private static final ParameterizedTypeReference<
+			Map<String, Object>> PARAMETERIZED_RESPONSE_TYPE =
+					new ParameterizedTypeReference<Map<String, Object>>() {
+					};
 
 	private static final MediaType DEFAULT_CONTENT_TYPE = MediaType
-			.valueOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE +
-					";charset=UTF-8");
+			.valueOf(APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
+
 	/**
 	 * How to assert that a user must be able to make jobs and read job details
 	 * in depth.
@@ -183,7 +183,8 @@ public class SecurityConfig {
 	@Autowired
 	private URLPathMaker urlMaker;
 
-	@Value("${spring.security.oauth2.resourceserver.opaquetoken.introspection-uri}")
+	@Value("${spring.security.oauth2.resourceserver.opaquetoken."
+			+ "introspection-uri}")
 	private String introspectionUri;
 
 	@Value("${spring.security.oauth2.resourceserver.opaquetoken.userinfo-uri}")
@@ -198,11 +199,6 @@ public class SecurityConfig {
 	/**
 	 * Configure things we plug into.
 	 *
-	    private final ParameterizedTypeReference<Map<String, Object>>
-	    		PARAMETERIZED_RESPONSE_TYPE =
-	    			new ParameterizedTypeReference<Map<String, Object>>() {};
-	    			private static final MediaType DEFAULT_CONTENT_TYPE = MediaType
-	    					.valueOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
 	 * @param auth
 	 *            The authentication manager builder to configure.
 	 */
@@ -260,7 +256,8 @@ public class SecurityConfig {
 		if (properties.getOpenid().isEnable()) {
 			http.oauth2ResourceServer()
 					.authenticationEntryPoint(authenticationEntryPoint)
-					.opaqueToken().introspector(new UserInfoOpaqueTokenIntrospector());
+					.opaqueToken()
+					.introspector(new UserInfoOpaqueTokenIntrospector());
 		}
 	}
 
@@ -302,11 +299,6 @@ public class SecurityConfig {
 	/**
 	 * Logging out is common code between the UI and the API, but pretty
 	 * pointless for Basic Auth as browsers will just log straight back in
-	    private final ParameterizedTypeReference<Map<String, Object>>
-	    		PARAMETERIZED_RESPONSE_TYPE =
-	    			new ParameterizedTypeReference<Map<String, Object>>() {};
-	    			private static final MediaType DEFAULT_CONTENT_TYPE = MediaType
-	    					.valueOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
 	 * again. Still, it is meaningful (it invalidates the session).
 	 *
 	 * @param http
@@ -344,49 +336,46 @@ public class SecurityConfig {
 		return http.build();
 	}
 
-
 	private final class UserInfoOpaqueTokenIntrospector
 			implements OpaqueTokenIntrospector {
-	    private final OpaqueTokenIntrospector delegate =
-	    		new SpringOpaqueTokenIntrospector(
-	    				introspectionUri, clientId, clientSecret);
+		private final OpaqueTokenIntrospector delegate =
+				new SpringOpaqueTokenIntrospector(introspectionUri, clientId,
+						clientSecret);
 
+		@Override
+		public OAuth2AuthenticatedPrincipal introspect(String token) {
+			var authorized = delegate.introspect(token);
+			Instant issuedAt = authorized.getAttribute("issued-at");
+			Instant expiresAt = authorized.getAttribute("expires-at");
+			var reqtoken =
+					new OAuth2AccessToken(BEARER, token, issuedAt, expiresAt);
 
-	    @Override
-	    public OAuth2AuthenticatedPrincipal introspect(String token) {
-	        OAuth2AuthenticatedPrincipal authorized = this.delegate.introspect(
-	        		token);
-	        Instant issuedAt = authorized.getAttribute("issued-at");
-	        Instant expiresAt = authorized.getAttribute("expires-at");
-	        OAuth2AccessToken reqtoken = new OAuth2AccessToken(TokenType.BEARER,
-	        		token, issuedAt, expiresAt);
-
-	        RestTemplate restTemplate = new RestTemplate();
-			restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
-	        HttpHeaders headers = new HttpHeaders();
-			headers.setAccept(Collections.singletonList(
-					MediaType.APPLICATION_JSON));
-			URI uri = UriComponentsBuilder.fromUriString(userInfoUri).build()
-					.toUri();
-			headers.setContentType(DEFAULT_CONTENT_TYPE);
-			MultiValueMap<String, String> formParameters =
-					new LinkedMultiValueMap<>();
-			formParameters.add(OAuth2ParameterNames.ACCESS_TOKEN,
-					reqtoken.getTokenValue());
-			RequestEntity<?> request = new RequestEntity<>(formParameters,
-					headers, HttpMethod.POST, uri);
-			ResponseEntity<Map<String, Object>> response =
-					restTemplate.exchange(request, PARAMETERIZED_RESPONSE_TYPE);
-
-			Map<String, Object> userAttributes = response.getBody();
-			Collection<GrantedAuthority> authorities = new LinkedHashSet<>();
-			OidcUserAuthority auth = new OidcUserAuthority(
-					 new OidcIdToken(token, issuedAt, expiresAt, userAttributes),
-					 new OidcUserInfo(userAttributes));
+			var userAttributes = userinfo(reqtoken);
+			var authorities = new LinkedHashSet<GrantedAuthority>();
+			var auth = new OidcUserAuthority(
+					new OidcIdToken(token, issuedAt, expiresAt, userAttributes),
+					new OidcUserInfo(userAttributes));
 			localAuthProvider.mapAuthorities(auth, authorities);
 			return new DefaultOAuth2User(authorities, userAttributes,
 					"preferred_username");
-	    }
+		}
+
+		private Map<String, Object> userinfo(OAuth2AccessToken reqtoken) {
+			var restTemplate = new RestTemplate();
+			restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
+			var headers = new HttpHeaders();
+			headers.setAccept(List.of(APPLICATION_JSON));
+			var uri = fromUriString(userInfoUri).build().toUri();
+			headers.setContentType(DEFAULT_CONTENT_TYPE);
+			var formParameters = new LinkedMultiValueMap<String, String>();
+			formParameters.add(ACCESS_TOKEN, reqtoken.getTokenValue());
+			var request =
+					new RequestEntity<>(formParameters, headers, POST, uri);
+			var response =
+					restTemplate.exchange(request, PARAMETERIZED_RESPONSE_TYPE);
+
+			return response.getBody();
+		}
 	}
 
 	/**
