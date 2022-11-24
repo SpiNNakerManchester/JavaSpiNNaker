@@ -155,6 +155,8 @@ spalloc:
       # Support OIDC
       enable: true
       domain: https://iam.ebrains.eu/auth/realms/hbp
+      introspection: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token/introspect
+      userinfo: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/userinfo
       scopes: [ openid, profile, roles, email, team, group ]
       # The credentials for HBP/EBRAINS go here
       id: spalloc
@@ -269,7 +271,7 @@ spring:
             user-name-attribute: preferred_username
       resourceserver:
         opaquetoken:
-          introspection-uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token/introspect
-          userinfo-uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/userinfo
+          introspection-uri: ${spalloc.auth.openid.introspection}
+          userinfo-uri: ${spalloc.auth.openid.userinfo}
           client-id: ${spalloc.auth.openid.id}
           client-secret: ${spalloc.auth.openid.secret}
