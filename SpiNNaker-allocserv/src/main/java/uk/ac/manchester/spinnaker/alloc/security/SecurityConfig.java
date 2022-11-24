@@ -183,17 +183,16 @@ public class SecurityConfig {
 	@Autowired
 	private URLPathMaker urlMaker;
 
-	@Value("${spring.security.oauth2.resourceserver.opaquetoken."
-			+ "introspection-uri}")
+	@Value("${spalloc.auth.openid.introspection}")
 	private String introspectionUri;
 
-	@Value("${spring.security.oauth2.resourceserver.opaquetoken.userinfo-uri}")
+	@Value("${spalloc.auth.openid.userinfo}")
 	private String userInfoUri;
 
-	@Value("${spring.security.oauth2.resourceserver.opaquetoken.client-id}")
+	@Value("${spalloc.auth.openid.id}")
 	private String clientId;
 
-	@Value("${spring.security.oauth2.resourceserver.opaquetoken.client-secret}")
+	@Value("${spalloc.auth.openid.secret}")
 	private String clientSecret;
 
 	/**

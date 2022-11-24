@@ -269,9 +269,3 @@ spring:
           hbp-ebrains:
             issuer-uri: ${spalloc.auth.openid.domain}
             user-name-attribute: preferred_username
-      resourceserver:
-        opaquetoken:
-          introspection-uri: ${spalloc.auth.openid.introspection}
-          userinfo-uri: ${spalloc.auth.openid.userinfo}
-          client-id: ${spalloc.auth.openid.id}
-          client-secret: ${spalloc.auth.openid.secret}
