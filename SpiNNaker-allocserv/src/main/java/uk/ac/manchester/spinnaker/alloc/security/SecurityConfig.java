@@ -198,11 +198,6 @@ public class SecurityConfig {
 	/**
 	 * Configure things we plug into.
 	 *
-	    private final ParameterizedTypeReference<Map<String, Object>>
-	    		PARAMETERIZED_RESPONSE_TYPE =
-	    			new ParameterizedTypeReference<Map<String, Object>>() {};
-	    			private static final MediaType DEFAULT_CONTENT_TYPE = MediaType
-	    					.valueOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
 	 * @param auth
 	 *            The authentication manager builder to configure.
 	 */
@@ -302,11 +297,6 @@ public class SecurityConfig {
 	/**
 	 * Logging out is common code between the UI and the API, but pretty
 	 * pointless for Basic Auth as browsers will just log straight back in
-	    private final ParameterizedTypeReference<Map<String, Object>>
-	    		PARAMETERIZED_RESPONSE_TYPE =
-	    			new ParameterizedTypeReference<Map<String, Object>>() {};
-	    			private static final MediaType DEFAULT_CONTENT_TYPE = MediaType
-	    					.valueOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
 	 * again. Still, it is meaningful (it invalidates the session).
 	 *
 	 * @param http

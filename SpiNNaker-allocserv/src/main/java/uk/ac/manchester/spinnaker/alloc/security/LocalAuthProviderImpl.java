@@ -245,7 +245,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 						user.getAttribute(SUB), new OriginatingCredential(user),
 						auth.getAuthorities());
 			} else if (auth instanceof BearerTokenAuthentication) {
-				/*OriginatingCredential
+				/*
 				 * Technically, at this point we're already authenticated as
 				 * we've checked that the token from Keycloak is valid. We still
 				 * have to take an authorization decision though.
@@ -255,7 +255,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				return authorizeOpenId(
 						authProps.getOpenid().getUsernamePrefix()
 								+ bearerAuth.getTokenAttributes().get(PREFERRED_USERNAME),
-					    bearerAuth.getName(), new OriginatingCredential(token),
+						bearerAuth.getName(), new OriginatingCredential(token),
 						auth.getAuthorities());
 			} else {
 				return null;
