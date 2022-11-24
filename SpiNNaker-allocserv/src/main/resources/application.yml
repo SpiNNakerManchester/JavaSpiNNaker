@@ -268,8 +268,8 @@ spring:
             issuer-uri: ${spalloc.auth.openid.domain}
             user-name-attribute: preferred_username
       resourceserver:
-        jwt:
-          issuer-uri: ${spalloc.auth.openid.domain}
         opaquetoken:
+          introspection-uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token/introspect
+          userinfo-uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/userinfo
           client-id: ${spalloc.auth.openid.id}
           client-secret: ${spalloc.auth.openid.secret}

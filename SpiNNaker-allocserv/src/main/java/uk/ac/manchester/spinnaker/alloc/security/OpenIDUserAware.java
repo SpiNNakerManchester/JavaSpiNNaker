@@ -26,7 +26,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.oauth2.jwt.Jwt;
 
 /**
  * An object that can say something about what user it was derived from. Note
@@ -42,13 +41,6 @@ public interface OpenIDUserAware {
 	Optional<OAuth2User> getOpenIdUser();
 
 	/**
-	 * Get the underlying OpenID user token.
-	 *
-	 * @return The user's bearer token. Pay attention to the claims.
-	 */
-	Optional<Jwt> getOpenIdToken();
-
-	/**
 	 * Get a claim/attribute that is a string.
 	 *
 	 * @param claimName
@@ -62,10 +54,8 @@ public interface OpenIDUserAware {
 	default String getStringClaim(String claimName) {
 		return getOpenIdUser()
 				.map(u -> Objects.toString(u.getAttribute(claimName)))
-				.orElseGet(() -> getOpenIdToken()
-						.map(t -> t.getClaimAsString(claimName))
 						.orElseThrow(() -> new IllegalStateException(
-								"no user or token to supply claim")));
+								"no user or token to supply claim"));
 	}
 
 	/**
@@ -107,7 +97,6 @@ public interface OpenIDUserAware {
 		if (email.isPresent()) {
 			return email;
 		}
-		return getOpenIdToken().filter(t -> t.getClaim(EMAIL_VERIFIED))
-				.map(t -> t.getClaimAsString(EMAIL));
+		return null;
 	}
 }
