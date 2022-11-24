@@ -24,13 +24,13 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.oauth2.core.OAuth2AccessToken.TokenType.BEARER;
 import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.ACCESS_TOKEN;
-import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 import static uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter.clearToken;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.installInjectableTrustStoreAsDefault;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.loadTrustStore;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.trustManager;
 
 import java.io.IOException;
+import java.net.URI;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.Collection;
@@ -42,7 +42,6 @@ import javax.net.ssl.X509TrustManager;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.ParameterizedTypeReference;
@@ -182,18 +181,6 @@ public class SecurityConfig {
 
 	@Autowired
 	private URLPathMaker urlMaker;
-
-	@Value("${spalloc.auth.openid.introspection}")
-	private String introspectionUri;
-
-	@Value("${spalloc.auth.openid.userinfo}")
-	private String userInfoUri;
-
-	@Value("${spalloc.auth.openid.id}")
-	private String clientId;
-
-	@Value("${spalloc.auth.openid.secret}")
-	private String clientSecret;
 
 	/**
 	 * Configure things we plug into.
@@ -337,19 +324,26 @@ public class SecurityConfig {
 
 	private final class UserInfoOpaqueTokenIntrospector
 			implements OpaqueTokenIntrospector {
-		private final OpaqueTokenIntrospector delegate =
-				new SpringOpaqueTokenIntrospector(introspectionUri, clientId,
-						clientSecret);
+		private final OpaqueTokenIntrospector delegate;
+
+		private final String userInfoUri;
+
+		private UserInfoOpaqueTokenIntrospector() {
+			var p = properties.getOpenid();
+
+			delegate = new SpringOpaqueTokenIntrospector(p.getIntrospection(),
+					p.getId(), p.getSecret());
+			userInfoUri = p.getUserinfo();
+		}
 
 		@Override
 		public OAuth2AuthenticatedPrincipal introspect(String token) {
 			var authorized = delegate.introspect(token);
 			Instant issuedAt = authorized.getAttribute("issued-at");
 			Instant expiresAt = authorized.getAttribute("expires-at");
-			var reqtoken =
-					new OAuth2AccessToken(BEARER, token, issuedAt, expiresAt);
 
-			var userAttributes = userinfo(reqtoken);
+			var userAttributes = userinfo(
+					new OAuth2AccessToken(BEARER, token, issuedAt, expiresAt));
 			var authorities = new LinkedHashSet<GrantedAuthority>();
 			var auth = new OidcUserAuthority(
 					new OidcIdToken(token, issuedAt, expiresAt, userAttributes),
@@ -360,16 +354,15 @@ public class SecurityConfig {
 		}
 
 		private Map<String, Object> userinfo(OAuth2AccessToken reqtoken) {
-			var restTemplate = new RestTemplate();
-			restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
 			var headers = new HttpHeaders();
 			headers.setAccept(List.of(APPLICATION_JSON));
-			var uri = fromUriString(userInfoUri).build().toUri();
 			headers.setContentType(DEFAULT_CONTENT_TYPE);
-			var formParameters = new LinkedMultiValueMap<String, String>();
-			formParameters.add(ACCESS_TOKEN, reqtoken.getTokenValue());
-			var request =
-					new RequestEntity<>(formParameters, headers, POST, uri);
+			var fp = Map.of(ACCESS_TOKEN, List.of(reqtoken.getTokenValue()));
+			var request = new RequestEntity<>(new LinkedMultiValueMap<>(fp),
+					headers, POST, URI.create(userInfoUri));
+
+			var restTemplate = new RestTemplate();
+			restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
 			var response =
 					restTemplate.exchange(request, PARAMETERIZED_RESPONSE_TYPE);
 
