@@ -47,9 +47,8 @@ public interface OpenIDUserAware {
 	 *            The name of the claim.
 	 * @return The string.
 	 * @throws IllegalStateException
-	 *             If neither {@link #getOpenIdUser()} nor
-	 *             {@link #getOpenIdToken()} provide anything we can get claims
-	 *             from.
+	 *             If {@link #getOpenIdUser()} doesn't provide anything we can
+	 *             get claims from.
 	 */
 	default String getStringClaim(String claimName) {
 		return getOpenIdUser()
