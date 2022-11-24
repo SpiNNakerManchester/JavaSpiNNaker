@@ -271,5 +271,6 @@ spring:
         jwt:
           issuer-uri: ${spalloc.auth.openid.domain}
         opaquetoken:
+          introspection-uri: ${spalloc.auth.openid.domain}/protocol/openid-connect/token/introspect
           client-id: ${spalloc.auth.openid.id}
           client-secret: ${spalloc.auth.openid.secret}

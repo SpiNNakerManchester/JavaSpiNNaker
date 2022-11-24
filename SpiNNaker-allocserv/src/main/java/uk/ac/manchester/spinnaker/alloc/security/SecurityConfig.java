@@ -26,12 +26,14 @@ import static uk.ac.manchester.spinnaker.alloc.security.Utils.trustManager;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.net.ssl.X509TrustManager;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.convert.converter.Converter;
@@ -41,12 +43,17 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
+import org.springframework.security.oauth2.core.DefaultOAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
+import org.springframework.security.oauth2.server.resource.introspection.SpringOpaqueTokenIntrospector;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -213,8 +220,8 @@ public class SecurityConfig {
 		}
 		if (properties.getOpenid().isEnable()) {
 			http.oauth2ResourceServer()
-					.authenticationEntryPoint(authenticationEntryPoint).jwt()
-					.jwtAuthenticationConverter(authConverter());
+					.authenticationEntryPoint(authenticationEntryPoint)
+					.opaqueToken().introspector(tokenIntrospector());
 		}
 	}
 
@@ -293,15 +300,59 @@ public class SecurityConfig {
 		return http.build();
 	}
 
+	// TODO fix up once Spring Security 5.8 is out
+	///**
+	// * @return A converter that handles the initial extraction of
+	// *         collabratories and organisations from the info we have
+	// *         available with a bearer token.
+	// * @see LocalAuthProviderImpl#mapAuthorities(Jwt, Collection)
+	// */
+	//@Bean("hbp.collab-and-org.bearer-opaque-converter.shim")
+	//@Role(ROLE_SUPPORT)
+	//OpaqueTokenAuthenticationConverter opaqueConverter() {
+	//	return null; // FIXME
+	//}
+
+	// Ick
+	@Value("${spring.security.oauth2.resourceserver.opaquetoken."
+			+ "introspection-uri}")
+	private String introspectionUri;
+
+	// Ick
+	@Value("${spring.security.oauth2.resourceserver.opaquetoken.client-id}")
+	private String clientId;
+
+	// Ick
+	@Value("${spring.security.oauth2.resourceserver.opaquetoken.client-secret}")
+	private String clientSecret;
+
+	@Bean
+	OpaqueTokenIntrospector tokenIntrospector() {
+		// TODO Replace with OpaqueTokenAuthenticationConverter when available
+		return new SpringOpaqueTokenIntrospector(introspectionUri, clientId,
+				clientSecret) {
+			@Override
+			public OAuth2AuthenticatedPrincipal introspect(String token) {
+				var p = super.introspect(token);
+				var mappedAuthorities =
+						new ArrayList<GrantedAuthority>(p.getAuthorities());
+				mappedAuthorities.addAll(localAuthProvider
+						.mapOpaqueTokenAttributes(p.getAttributes()));
+				return new DefaultOAuth2AuthenticatedPrincipal(
+						p.getAttributes(), mappedAuthorities);
+			}
+		};
+	}
+
 	/**
 	 * @return A converter that handles the initial extraction of collabratories
 	 *         and organisations from the info we have available with a bearer
 	 *         token.
 	 * @see LocalAuthProviderImpl#mapAuthorities(Jwt, Collection)
 	 */
-	@Bean("hbp.collab-and-org.bearer-converter.shim")
+	@Bean("hbp.collab-and-org.bearer-jwt-converter.shim")
 	@Role(ROLE_SUPPORT)
-	Converter<Jwt, ? extends AbstractAuthenticationToken> authConverter() {
+	Converter<Jwt, ? extends AbstractAuthenticationToken> jwtConverter() {
 		var baseConverter = new JwtGrantedAuthoritiesConverter();
 		return jwt -> {
 			var mappedAuthorities = baseConverter.convert(jwt);

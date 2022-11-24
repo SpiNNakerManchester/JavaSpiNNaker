@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.security;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -94,6 +95,17 @@ public interface LocalAuthenticationProvider<TestAPI>
 	 */
 	void mapAuthorities(Jwt token,
 			Collection<GrantedAuthority> resultCollection);
+
+	/**
+	 * Map the attributes taken from introspecting an opaque token to
+	 * authorities.
+	 *
+	 * @param attributes
+	 *            The attributes from the introspection. Read-only.
+	 * @return The authorities to add.
+	 */
+	Collection<GrantedAuthority> mapOpaqueTokenAttributes(
+			Map<String, Object> attributes);
 
 	/**
 	 * @return The test interface.

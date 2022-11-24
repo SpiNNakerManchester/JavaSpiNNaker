@@ -875,6 +875,60 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		mapAuthorities("token", token, ga);
 	}
 
+	@Override
+	public Collection<GrantedAuthority> mapOpaqueTokenAttributes(
+			Map<String, Object> attributes) {
+		var auths = new ArrayList<GrantedAuthority>();
+		if (!collabToAuthority(getTeamsFromAttributes(attributes), auths)) {
+			log.warn("no team in opaque token introspection");
+		}
+		if (!orgToAuthority(getUnitFromAttributes(attributes), auths)) {
+			log.warn("no unit in opaque token introspection");
+		}
+		// All OpenID users get read-write access
+		auths.add(new SimpleGrantedAuthority(GRANT_READER));
+		auths.add(new SimpleGrantedAuthority(GRANT_USER));
+		return auths;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static List<String> getTeamsFromAttributes(
+			Map<String, Object> attributes) {
+		var rolesObj = attributes.get("roles");
+		List<String> team = null;
+		if (rolesObj instanceof Map) {
+			var roles = (Map<String, Object>) rolesObj;
+			var teamObj = roles.get("team");
+			if (teamObj instanceof List) {
+				team = (List<String>) teamObj;
+				if (team.isEmpty()) {
+					team = null;
+				} else {
+					log.info("found roles/team claim; first member is {}",
+							team.get(0));
+				}
+			}
+		}
+		return team;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static List<String> getUnitFromAttributes(
+			Map<String, Object> attributes) {
+		var unitObj = attributes.get("unit");
+		List<String> unit = null;
+		if (unitObj instanceof List) {
+			unit = (List<String>) unitObj;
+			if (unit.isEmpty()) {
+				unit = null;
+			} else {
+				log.info("found unit claim; first member is {}",
+						unit.get(0));
+			}
+		}
+		return unit;
+	}
+
 	@Immutable
 	private static final class LocalAuthResult {
 		final int userId;
