@@ -68,10 +68,10 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.ClaimAccessor;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 import org.springframework.stereotype.Service;
 
 import com.google.errorprone.annotations.Immutable;
@@ -244,17 +244,19 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 								+ user.getAttribute(PREFERRED_USERNAME),
 						user.getAttribute(SUB), new OriginatingCredential(user),
 						auth.getAuthorities());
-			} else if (auth instanceof JwtAuthenticationToken) {
+			} else if (auth instanceof BearerTokenAuthentication) {
 				/*
 				 * Technically, at this point we're already authenticated as
 				 * we've checked that the token from Keycloak is valid. We still
 				 * have to take an authorization decision though.
 				 */
-				var token = ((JwtAuthenticationToken) auth).getToken();
+				var bearerAuth = (BearerTokenAuthentication) auth;
+				var token = bearerAuth.getToken();
 				return authorizeOpenId(
 						authProps.getOpenid().getUsernamePrefix()
-								+ token.getClaimAsString(PREFERRED_USERNAME),
-						token.getSubject(), new OriginatingCredential(token),
+								+ bearerAuth.getTokenAttributes().get(
+										PREFERRED_USERNAME),
+						bearerAuth.getName(), new OriginatingCredential(token),
 						auth.getAuthorities());
 			} else {
 				return null;
@@ -288,7 +290,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	/** The classes that we know what to do about. */
 	private static final Class<?>[] SUPPORTED_AUTH_TOKEN_CLASSES = {
 		UsernamePasswordAuthenticationToken.class,
-		OAuth2AuthenticationToken.class, JwtAuthenticationToken.class,
+		OAuth2AuthenticationToken.class, BearerTokenAuthentication.class,
 		AlreadyDoneMarker.class
 	};
 
@@ -422,14 +424,14 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private static final class OriginatingCredential {
 		private final OAuth2User user;
 
-		private final Jwt token;
+		private final OAuth2AccessToken token;
 
 		OriginatingCredential(OAuth2User user) {
 			this.user = requireNonNull(user);
 			this.token = null;
 		}
 
-		OriginatingCredential(Jwt token) {
+		OriginatingCredential(OAuth2AccessToken token) {
 			this.user = null;
 			this.token = requireNonNull(token);
 		}
@@ -480,16 +482,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		@Override
 		public Optional<OAuth2User> getOpenIdUser() {
 			return Optional.ofNullable(credential.user);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 *
-		 * @return The user's bearer token.
-		 */
-		@Override
-		public Optional<Jwt> getOpenIdToken() {
-			return Optional.ofNullable(credential.token);
 		}
 	}
 
@@ -870,11 +862,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		mapAuthorities("userinfo", user.getUserInfo(), ga);
 	}
 
-	@Override
-	public void mapAuthorities(Jwt token, Collection<GrantedAuthority> ga) {
-		mapAuthorities("token", token, ga);
-	}
-
 	@Immutable
 	private static final class LocalAuthResult {
 		final int userId;
@@ -1156,6 +1143,15 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 */
 	private void synchExternalGroups(String username, int userId,
 			List<String> orgs, List<String> collabs, AuthQueries queries) {
+		if (orgs.isEmpty() && collabs.isEmpty()) {
+			log.warn(
+					"no organisations or collabratories for user {}; "
+							+ "not synching in case this is a glitch "
+							+ "(if this is the first time they've logged in, "
+							+ "creating a job will fail in this session)",
+					username);
+			return;
+		}
 		try (var synch = new GroupSynch(queries)) {
 			for (var org : orgs) {
 				synch.define(org, ORGANISATION);
