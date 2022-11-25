@@ -20,11 +20,10 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 import java.net.URI;
 
-import javax.ws.rs.core.UriInfo;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.errorprone.annotations.Immutable;
 
+import jakarta.ws.rs.core.UriInfo;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 
 /**

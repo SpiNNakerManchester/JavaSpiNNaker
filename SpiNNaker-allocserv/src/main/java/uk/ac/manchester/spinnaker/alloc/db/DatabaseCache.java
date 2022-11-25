@@ -28,10 +28,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PreDestroy;
-
 import org.slf4j.Logger;
 import org.springframework.dao.DataAccessResourceFailureException;
+
+import jakarta.annotation.PreDestroy;
 
 /**
  * A thread-aware cache of database connections. This looks after ensuring that

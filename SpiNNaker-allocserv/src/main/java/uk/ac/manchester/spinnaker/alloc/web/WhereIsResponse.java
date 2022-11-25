@@ -23,10 +23,9 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH
 
 import java.net.URI;
 
-import javax.ws.rs.core.UriInfo;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import jakarta.ws.rs.core.UriInfo;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;

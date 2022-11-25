@@ -29,8 +29,6 @@ import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.uri;
 
 import java.security.Principal;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -50,6 +48,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.google.errorprone.annotations.Keep;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
 import uk.ac.manchester.spinnaker.alloc.admin.UserControl;

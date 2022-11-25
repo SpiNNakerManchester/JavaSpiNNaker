@@ -18,8 +18,8 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.function.Predicate.not;
-import static org.slf4j.LoggerFactory.getLogger;
 import static org.apache.commons.io.IOUtils.buffer;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,12 +27,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+
+import jakarta.annotation.PostConstruct;
 
 /**
  * Holds the mapping between physical board IDs and BMP IDs. Physical board IDs

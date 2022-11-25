@@ -23,12 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PreDestroy;
-
 import org.springframework.stereotype.Component;
 
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
+import jakarta.annotation.PreDestroy;
 import uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore;
 
 /**

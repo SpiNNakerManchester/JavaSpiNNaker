@@ -21,11 +21,11 @@ import static java.util.Objects.nonNull;
 
 import java.security.SecureRandom;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import jakarta.annotation.PostConstruct;
 
 /**
  * Misc services related to password handling.

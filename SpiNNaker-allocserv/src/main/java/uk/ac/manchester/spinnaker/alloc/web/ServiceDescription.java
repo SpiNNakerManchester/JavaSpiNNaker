@@ -23,13 +23,12 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH
 
 import java.net.URI;
 
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
-
 import org.springframework.security.web.csrf.CsrfToken;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import jakarta.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.UriInfo;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 
 /**

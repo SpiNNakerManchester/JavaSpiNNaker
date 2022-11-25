@@ -28,13 +28,12 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.Optional;
 
-import javax.ws.rs.core.UriInfo;
-
 import org.springframework.dao.DataAccessException;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
+import jakarta.ws.rs.core.UriInfo;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.proxy.SpinWSHandler;

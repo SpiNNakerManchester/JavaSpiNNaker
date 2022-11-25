@@ -20,12 +20,11 @@ import static java.util.Objects.isNull;
 
 import java.util.concurrent.Executor;
 
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.core.Response;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.core.Response;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;

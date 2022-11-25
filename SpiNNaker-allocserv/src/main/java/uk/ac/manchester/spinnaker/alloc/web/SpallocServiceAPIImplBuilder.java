@@ -16,18 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static jakarta.ws.rs.core.Response.accepted;
+import static jakarta.ws.rs.core.Response.noContent;
 import static java.util.Objects.isNull;
-import static javax.ws.rs.core.Response.accepted;
-import static javax.ws.rs.core.Response.noContent;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLICATION;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 
 import java.util.Optional;
-
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +34,9 @@ import org.springframework.context.annotation.Role;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;

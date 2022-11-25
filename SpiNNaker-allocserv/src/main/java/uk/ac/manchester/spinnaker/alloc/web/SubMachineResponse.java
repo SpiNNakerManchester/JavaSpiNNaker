@@ -25,10 +25,9 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 import java.net.URI;
 import java.util.List;
 
-import javax.ws.rs.core.UriInfo;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import jakarta.ws.rs.core.UriInfo;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
 import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;

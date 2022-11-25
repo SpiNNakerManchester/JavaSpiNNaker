@@ -38,7 +38,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
@@ -70,7 +70,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @EnableWebSecurity
 @Role(ROLE_APPLICATION)
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true)
 @UsedInJavadocOnly(PreAuthorize.class)
 public class SecurityConfig {
 	private static final Logger log = getLogger(SecurityConfig.class);
@@ -184,13 +184,13 @@ public class SecurityConfig {
 	 *             If anything goes wrong with setting up.
 	 */
 	private void defineAccessPolicy(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
+		http.authorizeHttpRequests()
 				// General metadata pages require ADMIN access
-				.antMatchers(urlMaker.serviceUrl("info*"),
+				.requestMatchers(urlMaker.serviceUrl("info*"),
 						urlMaker.serviceUrl("info/**"))
 				.hasRole("ADMIN")
 				// Login process and static resources are available to all
-				.antMatchers(urlMaker.systemUrl("login*"),
+				.requestMatchers(urlMaker.systemUrl("login*"),
 						urlMaker.systemUrl("perform_*"), oidcPath("**"),
 						urlMaker.systemUrl("error"),
 						urlMaker.systemUrl("resources/*"))
