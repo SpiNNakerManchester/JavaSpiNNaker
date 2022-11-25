@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":42,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":42,"i3":10,"i4":10,"i5":10,"i6":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"],32:["t6","Deprecated Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -217,26 +217,18 @@ implements <a href="LocalAuthenticationProvider.html" title="interface in uk.ac.
 </td>
 </tr>
 <tr class="altColor" id="i4">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#mapAuthorities(org.springframework.security.oauth2.jwt.Jwt,java.util.Collection)">mapAuthorities</a></span>&#8203;(<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/jwt/Jwt.html?is-external=true" title="class or interface in org.springframework.security.oauth2.jwt" class="externalLink">Jwt</a>&nbsp;token,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/GrantedAuthority.html?is-external=true" title="class or interface in org.springframework.security.core" class="externalLink">GrantedAuthority</a>&gt;&nbsp;ga)</code></th>
-<td class="colLast">
-<div class="block">Map the token to authorities, adding them to the result.</div>
-</td>
-</tr>
-<tr class="rowColor" id="i5">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#supports(java.lang.Class)">supports</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;?&gt;&nbsp;cls)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor" id="i6">
+<tr class="rowColor" id="i5">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#unlockLockedUsers()">unlockLockedUsers</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Unlock any locked users whose lock period has expired.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i7">
+<tr class="altColor" id="i6">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/Authentication.html?is-external=true" title="class or interface in org.springframework.security.core" class="externalLink">Authentication</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateAuthentication(org.springframework.security.core.context.SecurityContext)">updateAuthentication</a></span>&#8203;(<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/context/SecurityContext.html?is-external=true" title="class or interface in org.springframework.security.core.context" class="externalLink">SecurityContext</a>&nbsp;ctx)</code></th>
 <td class="colLast">
@@ -360,22 +352,6 @@ implements <a href="LocalAuthenticationProvider.html" title="interface in uk.ac.
 <dd><code><a href="LocalAuthenticationProvider.html#mapAuthorities(org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority,java.util.Collection)">mapAuthorities</a></code>&nbsp;in interface&nbsp;<code><a href="LocalAuthenticationProvider.html" title="interface in uk.ac.manchester.spinnaker.alloc.security">LocalAuthenticationProvider</a>&lt;uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl.TestAPI&gt;</code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>user</code> - The overall authority to map.</dd>
-<dd><code>ga</code> - Where to add the authorities.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="mapAuthorities(org.springframework.security.oauth2.jwt.Jwt,java.util.Collection)">mapAuthorities</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">mapAuthorities</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/jwt/Jwt.html?is-external=true" title="class or interface in org.springframework.security.oauth2.jwt" class="externalLink">Jwt</a>&nbsp;token,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/GrantedAuthority.html?is-external=true" title="class or interface in org.springframework.security.core" class="externalLink">GrantedAuthority</a>&gt;&nbsp;ga)</span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="LocalAuthenticationProvider.html#mapAuthorities(org.springframework.security.oauth2.jwt.Jwt,java.util.Collection)">LocalAuthenticationProvider</a></code></span></div>
-<div class="block">Map the token to authorities, adding them to the result.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="LocalAuthenticationProvider.html#mapAuthorities(org.springframework.security.oauth2.jwt.Jwt,java.util.Collection)">mapAuthorities</a></code>&nbsp;in interface&nbsp;<code><a href="LocalAuthenticationProvider.html" title="interface in uk.ac.manchester.spinnaker.alloc.security">LocalAuthenticationProvider</a>&lt;uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl.TestAPI&gt;</code></dd>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>token</code> - The token to map.</dd>
 <dd><code>ga</code> - Where to add the authorities.</dd>
 </dl>
 </section>

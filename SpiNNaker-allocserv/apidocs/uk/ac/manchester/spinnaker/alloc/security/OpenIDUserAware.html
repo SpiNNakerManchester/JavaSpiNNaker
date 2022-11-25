@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":18,"i1":18,"i2":18,"i3":6,"i4":6,"i5":18,"i6":18};
+<script type="text/javascript">var data = {"i0":18,"i1":18,"i2":18,"i3":6,"i4":18,"i5":18};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],16:["t5","Default Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -130,25 +130,18 @@ loadScripts(document, 'script');</script>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i3">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/jwt/Jwt.html?is-external=true" title="class or interface in org.springframework.security.oauth2.jwt" class="externalLink">Jwt</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getOpenIdToken()">getOpenIdToken</a></span>()</code></th>
-<td class="colLast">
-<div class="block">Get the underlying OpenID user token.</div>
-</td>
-</tr>
-<tr class="altColor" id="i4">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/core/user/OAuth2User.html?is-external=true" title="class or interface in org.springframework.security.oauth2.core.user" class="externalLink">OAuth2User</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getOpenIdUser()">getOpenIdUser</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get the underlying OpenID user information.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i5">
+<tr class="altColor" id="i4">
 <td class="colFirst"><code>default <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getOpenIdUserName()">getOpenIdUserName</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor" id="i6">
+<tr class="rowColor" id="i5">
 <td class="colFirst"><code>default <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getStringClaim(java.lang.String)">getStringClaim</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;claimName)</code></th>
 <td class="colLast">
@@ -185,17 +178,6 @@ loadScripts(document, 'script');</script>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="getOpenIdToken()">getOpenIdToken</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/jwt/Jwt.html?is-external=true" title="class or interface in org.springframework.security.oauth2.jwt" class="externalLink">Jwt</a>&gt;</span>&nbsp;<span class="memberName">getOpenIdToken</span>()</div>
-<div class="block">Get the underlying OpenID user token.</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The user's bearer token. Pay attention to the claims.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getStringClaim(java.lang.String)">getStringClaim</a></h3>
 <div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getStringClaim</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;claimName)</span></div>
 <div class="block">Get a claim/attribute that is a string.</div>
@@ -205,9 +187,8 @@ loadScripts(document, 'script');</script>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The string.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If neither <a href="#getOpenIdUser()"><code>getOpenIdUser()</code></a> nor
-             <a href="#getOpenIdToken()"><code>getOpenIdToken()</code></a> provide anything we can get claims
-             from.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If <a href="#getOpenIdUser()"><code>getOpenIdUser()</code></a> doesn't provide anything we can
+             get claims from.</dd>
 </dl>
 </section>
 </li>

@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":6,"i1":38,"i2":6,"i3":6,"i4":6,"i5":6};
+<script type="text/javascript">var data = {"i0":6,"i1":38,"i2":6,"i3":6,"i4":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],32:["t6","Deprecated Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -159,20 +159,12 @@ extends <a href="https://docs.spring.io/spring-security/site/docs/current/api/or
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#mapAuthorities(org.springframework.security.oauth2.jwt.Jwt,java.util.Collection)">mapAuthorities</a></span>&#8203;(<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/jwt/Jwt.html?is-external=true" title="class or interface in org.springframework.security.oauth2.jwt" class="externalLink">Jwt</a>&nbsp;token,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/GrantedAuthority.html?is-external=true" title="class or interface in org.springframework.security.core" class="externalLink">GrantedAuthority</a>&gt;&nbsp;resultCollection)</code></th>
-<td class="colLast">
-<div class="block">Map the token to authorities, adding them to the result.</div>
-</td>
-</tr>
-<tr class="altColor" id="i4">
-<td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#unlockLockedUsers()">unlockLockedUsers</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Unlock any locked users whose lock period has expired.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i5">
+<tr class="altColor" id="i4">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/Authentication.html?is-external=true" title="class or interface in org.springframework.security.core" class="externalLink">Authentication</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateAuthentication(org.springframework.security.core.context.SecurityContext)">updateAuthentication</a></span>&#8203;(<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/context/SecurityContext.html?is-external=true" title="class or interface in org.springframework.security.core.context" class="externalLink">SecurityContext</a>&nbsp;ctx)</code></th>
 <td class="colLast">
@@ -250,19 +242,6 @@ extends <a href="https://docs.spring.io/spring-security/site/docs/current/api/or
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>authority</code> - The overall authority to map.</dd>
-<dd><code>resultCollection</code> - Where to add the authorities.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="mapAuthorities(org.springframework.security.oauth2.jwt.Jwt,java.util.Collection)">mapAuthorities</a></h3>
-<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">mapAuthorities</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/jwt/Jwt.html?is-external=true" title="class or interface in org.springframework.security.oauth2.jwt" class="externalLink">Jwt</a>&nbsp;token,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/GrantedAuthority.html?is-external=true" title="class or interface in org.springframework.security.core" class="externalLink">GrantedAuthority</a>&gt;&nbsp;resultCollection)</span></div>
-<div class="block">Map the token to authorities, adding them to the result.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>token</code> - The token to map.</dd>
 <dd><code>resultCollection</code> - Where to add the authorities.</dd>
 </dl>
 </section>
