@@ -19,14 +19,24 @@ package uk.ac.manchester.spinnaker.alloc.security;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLICATION;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.security.oauth2.core.OAuth2AccessToken.TokenType.BEARER;
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.ACCESS_TOKEN;
 import static uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter.clearToken;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.installInjectableTrustStoreAsDefault;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.loadTrustStore;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.trustManager;
 
 import java.io.IOException;
+import java.net.URI;
 import java.security.GeneralSecurityException;
+import java.time.Instant;
 import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 
 import javax.net.ssl.X509TrustManager;
 
@@ -34,24 +44,34 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
-import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
+import org.springframework.security.oauth2.client.http.OAuth2ErrorResponseErrorHandler;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
+import org.springframework.security.oauth2.server.resource.introspection.SpringOpaqueTokenIntrospector;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
@@ -84,6 +104,14 @@ public class SecurityConfig {
 	/** How to filter out job details that a given user may see (or not). */
 	public static final String MAY_SEE_JOB_DETAILS = "#permit.admin or "
 			+ " #permit.name == filterObject.owner.orElse(null)";
+
+	private static final ParameterizedTypeReference<
+			Map<String, Object>> PARAMETERIZED_RESPONSE_TYPE =
+					new ParameterizedTypeReference<Map<String, Object>>() {
+					};
+
+	private static final MediaType DEFAULT_CONTENT_TYPE = MediaType
+			.valueOf(APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
 
 	/**
 	 * How to assert that a user must be able to make jobs and read job details
@@ -213,8 +241,9 @@ public class SecurityConfig {
 		}
 		if (properties.getOpenid().isEnable()) {
 			http.oauth2ResourceServer()
-					.authenticationEntryPoint(authenticationEntryPoint).jwt()
-					.jwtAuthenticationConverter(authConverter());
+					.authenticationEntryPoint(authenticationEntryPoint)
+					.opaqueToken()
+					.introspector(new UserInfoOpaqueTokenIntrospector());
 		}
 	}
 
@@ -293,22 +322,52 @@ public class SecurityConfig {
 		return http.build();
 	}
 
-	/**
-	 * @return A converter that handles the initial extraction of collabratories
-	 *         and organisations from the info we have available with a bearer
-	 *         token.
-	 * @see LocalAuthProviderImpl#mapAuthorities(Jwt, Collection)
-	 */
-	@Bean("hbp.collab-and-org.bearer-converter.shim")
-	@Role(ROLE_SUPPORT)
-	Converter<Jwt, ? extends AbstractAuthenticationToken> authConverter() {
-		var baseConverter = new JwtGrantedAuthoritiesConverter();
-		return jwt -> {
-			var mappedAuthorities = baseConverter.convert(jwt);
-			// ASSUME that this is a modifiable collection
-			localAuthProvider.mapAuthorities(jwt, mappedAuthorities);
-			return new JwtAuthenticationToken(jwt, mappedAuthorities);
-		};
+	private final class UserInfoOpaqueTokenIntrospector
+			implements OpaqueTokenIntrospector {
+		private final OpaqueTokenIntrospector delegate;
+
+		private final String userInfoUri;
+
+		private UserInfoOpaqueTokenIntrospector() {
+			var p = properties.getOpenid();
+
+			delegate = new SpringOpaqueTokenIntrospector(p.getIntrospection(),
+					p.getId(), p.getSecret());
+			userInfoUri = p.getUserinfo();
+		}
+
+		@Override
+		public OAuth2AuthenticatedPrincipal introspect(String token) {
+			var authorized = delegate.introspect(token);
+			Instant issuedAt = authorized.getAttribute("issued-at");
+			Instant expiresAt = authorized.getAttribute("expires-at");
+
+			var userAttributes = userinfo(
+					new OAuth2AccessToken(BEARER, token, issuedAt, expiresAt));
+			var authorities = new LinkedHashSet<GrantedAuthority>();
+			var auth = new OidcUserAuthority(
+					new OidcIdToken(token, issuedAt, expiresAt, userAttributes),
+					new OidcUserInfo(userAttributes));
+			localAuthProvider.mapAuthorities(auth, authorities);
+			return new DefaultOAuth2User(authorities, userAttributes,
+					"preferred_username");
+		}
+
+		private Map<String, Object> userinfo(OAuth2AccessToken reqtoken) {
+			var headers = new HttpHeaders();
+			headers.setAccept(List.of(APPLICATION_JSON));
+			headers.setContentType(DEFAULT_CONTENT_TYPE);
+			var fp = Map.of(ACCESS_TOKEN, List.of(reqtoken.getTokenValue()));
+			var request = new RequestEntity<>(new LinkedMultiValueMap<>(fp),
+					headers, POST, URI.create(userInfoUri));
+
+			var restTemplate = new RestTemplate();
+			restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
+			var response =
+					restTemplate.exchange(request, PARAMETERIZED_RESPONSE_TYPE);
+
+			return response.getBody();
+		}
 	}
 
 	/**
