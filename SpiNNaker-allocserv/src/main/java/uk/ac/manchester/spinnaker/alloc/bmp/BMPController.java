@@ -159,6 +159,9 @@ public class BMPController extends DatabaseAwareBean {
 	/** We have our own pool. */
 	private ExecutorService executor = newCachedThreadPool(this::makeThread);
 
+	@GuardedBy("this")
+	private Throwable bmpProcessingException;
+
 	/**
 	 * A {@link ThreadFactory}.
 	 *
@@ -695,6 +698,9 @@ public class BMPController extends DatabaseAwareBean {
 				cleanupTasks.add(this::done);
 			}, e -> {
 				cleanupTasks.add(this::failed);
+				synchronized (BMPController.this) {
+					bmpProcessingException = e;
+				}
 			}, ppe -> {
 				/*
 				 * It's OK (not great, but OK) for things to be unreachable when
@@ -1626,6 +1632,10 @@ public class BMPController extends DatabaseAwareBean {
 		 */
 		void processRequests(long millis)
 				throws IOException, SpinnmanException, InterruptedException;
+
+		Throwable getBmpException();
+
+		void clearBmpException();
 	}
 
 	/**
@@ -1649,6 +1659,20 @@ public class BMPController extends DatabaseAwareBean {
 				BMPController.this.processRequests();
 				Thread.sleep(millis);
 				BMPController.this.processRequests();
+			}
+
+			@Override
+			public Throwable getBmpException() {
+				synchronized (BMPController.this) {
+					return bmpProcessingException;
+				}
+			}
+
+			@Override
+			public void clearBmpException() {
+				synchronized (BMPController.this) {
+					bmpProcessingException = null;
+				}
 			}
 		};
 	}

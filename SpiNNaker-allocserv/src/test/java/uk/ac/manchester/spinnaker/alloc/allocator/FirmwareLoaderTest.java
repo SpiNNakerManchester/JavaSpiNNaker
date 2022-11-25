@@ -24,6 +24,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -78,6 +79,17 @@ class FirmwareLoaderTest extends TestSupport {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		setupDB1();
 		this.bmpCtrl = bmpCtrl.getTestAPI();
+		this.bmpCtrl.clearBmpException();
+	}
+
+	@AfterEach
+	void checkBMPDidNotThrow() {
+		var exn = bmpCtrl.getBmpException();
+		assertDoesNotThrow(() -> {
+			if (exn != null) {
+				throw exn;
+			}
+		}, "BMP controller must not have thrown, but did");
 	}
 
 	/**

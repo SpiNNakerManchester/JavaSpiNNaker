@@ -62,31 +62,11 @@ public class RequestFailedException extends RuntimeException {
 	 * @param cause
 	 *            The cause of the exception.
 	 */
-	RequestFailedException(Status code, String message, Throwable cause) {
+	private RequestFailedException(Status code, String message,
+			Throwable cause) {
 		super(message, cause);
 		this.code = code;
 		this.message = message;
-	}
-
-	/**
-	 * Create an instance that wraps a {@link WebApplicationException}.
-	 *
-	 * @param exn
-	 *            The wrapped exception.
-	 */
-	RequestFailedException(WebApplicationException exn) {
-		// code will not be used
-		this(NO_CONTENT, exn.getMessage(), exn);
-	}
-
-	/**
-	 * Create an instance that indicates an internal server error.
-	 *
-	 * @param message
-	 *            The response message contents.
-	 */
-	RequestFailedException(String message) {
-		this(INTERNAL_SERVER_ERROR, message, null);
 	}
 
 	/**
@@ -104,35 +84,12 @@ public class RequestFailedException extends RuntimeException {
 	/**
 	 * Create an instance that indicates an internal server error.
 	 *
-	 * @param message
-	 *            The response message contents.
 	 * @param cause
-	 *            The cause of the exception.
+	 *            The cause of the server error. <em>This will be used as part
+	 *            of the description of the failure.</em>
 	 */
-	RequestFailedException(String message, Throwable cause) {
-		this(INTERNAL_SERVER_ERROR, message, cause);
-	}
-
-	/**
-	 * Create an instance that indicates an internal server error.
-	 *
-	 * @param cause
-	 *            The cause of the exception.
-	 */
-	RequestFailedException(Throwable cause) {
-		this(INTERNAL_SERVER_ERROR, cause.getMessage(), cause);
-	}
-
-	/**
-	 * Create an instance.
-	 *
-	 * @param code
-	 *            The status code.
-	 * @param cause
-	 *            The cause of the exception.
-	 */
-	RequestFailedException(Status code, Throwable cause) {
-		this(code, cause.getMessage(), cause);
+	public RequestFailedException(Throwable cause) {
+		this(INTERNAL_SERVER_ERROR, "unexpected server problem", cause);
 	}
 
 	/**
@@ -141,10 +98,20 @@ public class RequestFailedException extends RuntimeException {
 	 * @return The response that this exception implies.
 	 */
 	Response toResponse() {
-		if (getCause() instanceof WebApplicationException) {
-			return ((WebApplicationException) getCause()).getResponse();
+		var cause = getCause();
+		if (cause instanceof WebApplicationException) {
+			return ((WebApplicationException) cause).getResponse();
+		} else if (cause != null) {
+			// Be careful about what bits are extracted from message
+			var cls = cause.getClass().getName().replaceFirst("^.*[.]", "")
+					.replaceAll("Exception", "");
+			var msg =
+					cause.getMessage() != null ? ": " + cause.getMessage() : "";
+			return status(code).type(TEXT_PLAIN)
+					.entity(message + ": " + cls + msg).build();
+		} else {
+			return status(code).type(TEXT_PLAIN).entity(message).build();
 		}
-		return status(code).type(TEXT_PLAIN).entity(message).build();
 	}
 
 	private void log(Logger log) {

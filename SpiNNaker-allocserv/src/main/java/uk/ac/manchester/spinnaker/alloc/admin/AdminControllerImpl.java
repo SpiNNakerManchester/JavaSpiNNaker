@@ -363,8 +363,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("getting the user-creation UI")
 	public ModelAndView getUserCreationForm() {
+		var userForm = new UserRecord();
+		userForm.setInternal(true);
 		return addStandardContext(
-				CREATE_USER_VIEW.view(USER_OBJ, new UserRecord()));
+				CREATE_USER_VIEW.view(USER_OBJ, userForm));
 	}
 
 	@Override
