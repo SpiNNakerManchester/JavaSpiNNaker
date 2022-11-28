@@ -187,12 +187,18 @@ public class TestIPTag {
 
 	@Test
 	public void testFromJson() throws IOException {
-		var json = " {\"x\": 0, \"y\": 0, "
-				+ "\"boardAddress\": \"192.168.240.253\", "
-				+ "\"targetAddress\": \"localhost\", \"stripSDP\": true, "
-				+ "\"tagID\": 1, \"trafficIdentifier\": \"DATA_SPEED_UP\"}";
 		var mapper = MapperFactory.createMapper();
-		var fromJson = mapper.readValue(json, IPTag.class);
+		var fromJson = mapper.readValue("""
+				{
+					"x": 0,
+					"y": 0,
+					"boardAddress": "192.168.240.253",
+					"targetAddress": "localhost",
+					"stripSDP": true,
+					"tagID": 1,
+					"trafficIdentifier": "DATA_SPEED_UP"
+				}
+				""", IPTag.class);
 		assertNotNull(fromJson);
 	}
 

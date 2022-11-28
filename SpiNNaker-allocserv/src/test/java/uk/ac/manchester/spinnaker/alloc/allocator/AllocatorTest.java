@@ -391,9 +391,12 @@ class AllocatorTest extends TestSupport {
 					getAllocTester().destroyJob(job, "test");
 					c.update("DELETE FROM job_request").call();
 					c.update("DELETE FROM pending_changes").call();
-					c.update("UPDATE boards SET allocated_job = NULL, "
-							+ "power_on_timestamp = 0, "
-							+ "power_off_timestamp = 0").call();
+					c.update("""
+							UPDATE boards
+							SET allocated_job = NULL,
+								power_on_timestamp = 0,
+								power_off_timestamp = 0
+							""").call();
 				});
 			}
 		}

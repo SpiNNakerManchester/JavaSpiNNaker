@@ -261,8 +261,11 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 	 */
 	protected static void allocateBoardToJob(Connection c, int boardId,
 			Integer jobId) {
-		try (var u = c.update("UPDATE boards SET allocated_job = :job "
-				+ "WHERE board_id = :board")) {
+		try (var u = c.update("""
+				UPDATE boards
+				SET allocated_job = :job
+				WHERE board_id = :board
+				""")) {
 			u.call(jobId, boardId);
 		}
 	}
@@ -279,16 +282,21 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 	 */
 	protected static void setAllocRoot(Connection c, int jobId,
 			Integer boardId) {
-		try (var u = c.update("UPDATE jobs SET root_id = :board, "
-				+ "width = 1, height = 1, depth = 1 "
-				+ "WHERE job_id = :job")) {
+		try (var u = c.update("""
+				UPDATE jobs
+				SET root_id = :board, width = 1, height = 1, depth = 1
+				WHERE job_id = :job
+				""")) {
 			u.call(boardId, jobId);
 		}
 	}
 
 	protected List<String> getReports() {
 		return db.execute(c -> {
-			try (var q = c.query("SELECT reported_issue FROM board_reports")) {
+			try (var q = c.query("""
+					SELECT reported_issue
+					FROM board_reports
+					""")) {
 				return q.call().map(string("reported_issue")).toList();
 			}
 		});
@@ -401,7 +409,10 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 
 	protected void nukeJob(int jobId) {
 		db.executeVoid(c -> {
-			try (var u = c.update("DELETE FROM jobs WHERE job_id = ?")) {
+			try (var u = c.update("""
+					DELETE FROM jobs
+					WHERE job_id = ?
+					""")) {
 				u.call(jobId);
 			}
 		});

@@ -33,11 +33,13 @@ public class TestIobufRequest {
 
 	@Test
 	public void testCorrect() throws IOException {
-		var input = "{\n"
-				+ "  \"/some/path/abc.aplx\": [ [0,0,1], [0,0,2], [0,0,3] ],\n"
-				+ "  \"/some/path/def.aplx\": [ [0,1,1], [0,1,2], [0,1,3] ],\n"
-				+ "  \"/some/path/ghi.aplx\": [ [1,0,1], [1,0,2], [0,0,4] ]\n"
-				+ "}";
+		var input = """
+				{
+					"/some/path/abc.aplx": [ [0,0,1], [0,0,2], [0,0,3] ],
+					"/some/path/def.aplx": [ [0,1,1], [0,1,2], [0,1,3] ],
+					"/some/path/ghi.aplx": [ [1,0,1], [1,0,2], [0,0,4] ]
+				}
+				""";
 
 		var req = createMapper().readValue(input, IobufRequest.class);
 		var details = req.getRequestDetails();
@@ -59,11 +61,13 @@ public class TestIobufRequest {
 	@Test
 	public void testIncorrect() {
 		// Overlap between the core subsets; THIS IS BAD and shouldn't happen
-		var input = "{\n"
-				+ "  \"/some/path/abc.aplx\": [ [0,0,1], [0,0,2], [0,0,3] ],\n"
-				+ "  \"/some/path/def.aplx\": [ [0,1,1], [0,1,2], [0,0,3] ],\n"
-				+ "  \"/some/path/ghi.aplx\": [ [0,0,1], [1,0,2], [0,0,4] ]\n"
-				+ "}";
+		var input = """
+				{
+					"/some/path/abc.aplx": [ [0,0,1], [0,0,2], [0,0,3] ],
+					"/some/path/def.aplx": [ [0,1,1], [0,1,2], [0,0,3] ],
+					"/some/path/ghi.aplx": [ [0,0,1], [1,0,2], [0,0,4] ]
+				}
+				""";
 
 		var e = assertThrows(ValueInstantiationException.class,
 				() -> createMapper().readValue(input, IobufRequest.class));

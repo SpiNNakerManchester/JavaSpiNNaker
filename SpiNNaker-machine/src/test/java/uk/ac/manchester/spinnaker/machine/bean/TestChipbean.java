@@ -28,9 +28,16 @@ public class TestChipbean {
 
 	@Test
 	public void testFromJson() throws IOException {
-		var json = "[1, 2, {\"cores\": 17, \"ethernet\": [2, 3]}, {"
-				+ "\"sdram\": 123469692, "
-				+ "\"routerEntries\": 1013, \"monitors\": 2}]";
+		var json = """
+				[1, 2, {
+					"cores": 17,
+					"ethernet": [2, 3]
+				}, {
+					"sdram": 123469692,
+					"routerEntries": 1013,
+					"monitors": 2
+				}]
+				""";
 		var mapper = MapperFactory.createMapper();
 		var fromJson = mapper.readValue(json, ChipBean.class);
 		assertNotNull(fromJson);

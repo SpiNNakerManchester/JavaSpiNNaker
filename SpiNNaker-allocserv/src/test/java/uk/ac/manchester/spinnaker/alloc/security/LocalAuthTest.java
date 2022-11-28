@@ -72,10 +72,12 @@ class LocalAuthTest extends TestSupport {
 		try (var c = db.getConnection()) {
 			c.transaction(() -> {
 				// 90k seconds is more than one day
-				try (var setLocked =
-						c.update("UPDATE user_info SET locked = :locked, "
-								+ "last_fail_timestamp = :time - 90000 "
-								+ "WHERE user_id = :user_id")) {
+				try (var setLocked = c.update("""
+						UPDATE user_info
+						SET locked = :locked,
+							last_fail_timestamp = :time - 90000
+						WHERE user_id = :user_id
+						""")) {
 					setLocked.call(true, now(), USER);
 				}
 			});
@@ -85,8 +87,11 @@ class LocalAuthTest extends TestSupport {
 
 		try (var c = db.getConnection()) {
 			assertEquals(false, c.transaction(() -> {
-				try (var q = c.query("SELECT locked FROM user_info "
-						+ "WHERE user_id = :user_id")) {
+				try (var q = c.query("""
+						SELECT locked
+						FROM user_info
+						WHERE user_id = :user_id
+						""")) {
 					return q.call1(USER).map(Row.bool("locked")).orElseThrow();
 				}
 			}));

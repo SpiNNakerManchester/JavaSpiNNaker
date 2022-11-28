@@ -78,13 +78,13 @@ public final class Version implements Comparable<Version> {
 	}
 
 	// This RE is in Extended mode syntax, which COMMENTS enables
-	private static final Pattern VERSION_RE = Pattern.compile(
-			"  ^(\"?)               # A optional quote\n"
-			+ "(?<major>\\d+)       # A major version number\n"
-			+ "(?:\\.(?<minor>\\d+) # An optional minor version number\n"
-			+ "(?:\\.(?<revision>\\d+))? # An optional revision number\n"
-			+ ")?\\1$               # Back reference to optional quote\n",
-			Pattern.COMMENTS);
+	private static final Pattern VERSION_RE = Pattern.compile("""
+			^("?)                     # A optional quote
+			(?<major>\\d+)            # A major version number
+			(?:\\.(?<minor>\\d+)      # An optional minor version number
+			(?:\\.(?<revision>\\d+))? # An optional revision number
+			)? \\1 $                  # Back reference to optional quote
+			""", Pattern.COMMENTS);
 
 	/**
 	 * Create a version number.

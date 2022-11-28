@@ -27,8 +27,14 @@ import org.junit.jupiter.api.Test;
 public class TestChipDetails {
 	@Test
 	public void testFromJson() throws IOException {
-		var json = "{\"cores\": 18, \"deadLinks\": [3, 4, 5], "
-				+ "\"ipAddress\": \"130.88.192.243\", \"ethernet\":[0, 0]}";
+		var json = """
+				{
+					"cores": 18,
+					"deadLinks": [3, 4, 5],
+					"ipAddress": "130.88.192.243",
+					"ethernet": [0, 0]
+				}
+				""";
 		/*
 		 * String json = "{\"cores\": 18, \"ipAddress\": \"130.88.192.243\",
 		 * \"ethernet\":[0, 0]}";

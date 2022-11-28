@@ -154,8 +154,11 @@ class FirmwareLoaderTest extends TestSupport {
 			c.update("DELETE FROM job_request").call();
 			c.update("DELETE FROM pending_changes").call();
 			// Board must be bootable now to not interfere with following tests
-			c.update("UPDATE boards SET allocated_job = NULL, "
-					+ "power_on_timestamp = 0, power_off_timestamp = 0").call();
+			c.update("""
+					UPDATE boards
+					SET allocated_job = NULL,
+						power_on_timestamp = 0, power_off_timestamp = 0
+					""").call();
 		});
 	}
 

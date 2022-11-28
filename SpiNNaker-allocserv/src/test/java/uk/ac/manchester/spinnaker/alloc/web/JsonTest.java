@@ -226,10 +226,15 @@ class JsonTest {
 		void testServiceDescription() throws IOException, JSONException {
 			var d = new ServiceDescription();
 			d.setVersion(new Version("1.2.3"));
-			JSONAssert.assertEquals(
-					"{ \"version\": { \"major-version\": 1,"
-							+ "\"minor-version\": 2, \"revision\": 3 } }",
-					serialize(d), false);
+			JSONAssert.assertEquals("""
+					{
+						"version": {
+							"major-version": 1,
+							"minor-version": 2,
+							"revision": 3
+						}
+					}
+					""", serialize(d), false);
 		}
 
 		@Test
@@ -239,23 +244,33 @@ class JsonTest {
 			r.setStartTime(Instant.ofEpochSecond(1633954394));
 			r.setKeepaliveHost("127.0.0.1");
 			r.setOwner("gorp");
-			JSONAssert.assertEquals(
-					"{ \"state\": \"READY\", "
-							+ "\"start-time\": \"2021-10-11T12:13:14Z\", "
-							+ "\"owner\": \"gorp\", "
-							+ "\"keepalive-host\": \"127.0.0.1\" }",
-					serialize(r), false);
+			JSONAssert.assertEquals("""
+					{
+						"state": "READY",
+						"start-time": "2021-10-11T12:13:14Z",
+						"owner": "gorp",
+						"keepalive-host": "127.0.0.1"
+					}
+					""", serialize(r), false);
 		}
 
 		@Test
 		void testSubMachineResponse() throws IOException, JSONException {
 			var r = new SubMachineResponse(new SM(), null);
-			JSONAssert.assertEquals(
-					"{ \"depth\": 1, \"width\": 1, \"height\": 1,"
-					+ "\"machine-name\": \"gorp\","
-					+ "\"boards\": [[0, 0, 0]],"
-					+ "\"connections\": [[[0, 0], \"2.3.4.5\"]] }",
-					serialize(r), true);
+			JSONAssert.assertEquals("""
+					{
+						"depth": 1,
+						"width": 1,
+						"height": 1,
+						"machine-name": "gorp",
+						"boards": [
+							[0, 0, 0]
+						],
+						"connections": [
+							[[0, 0], "2.3.4.5"]
+						]
+					}
+					""", serialize(r), true);
 		}
 
 		@Test
@@ -308,13 +323,17 @@ class JsonTest {
 				}
 			};
 			var r = new WhereIsResponse(loc, stubBuilder("http://localhost/"));
-			JSONAssert.assertEquals(
-					"{ \"machine\": \"gorp\", \"chip\": [1, 2], "
-							+ "\"job-id\": 12345, \"board-chip\": [3, 4],"
-							+ "\"job-chip\": [11, 12],"
-							+ "\"logical-board-coordinates\": [5, 6, 0],"
-							+ "\"physical-board-coordinates\": [7, 8, 9] }",
-					serialize(r), false);
+			JSONAssert.assertEquals("""
+					{
+						"machine": "gorp",
+						"chip": [1, 2],
+						"job-id": 12345,
+						"board-chip": [3, 4],
+						"job-chip": [11, 12],
+						"logical-board-coordinates": [5, 6, 0],
+						"physical-board-coordinates": [7, 8, 9]
+					}
+					""", serialize(r), false);
 		}
 	}
 
@@ -322,8 +341,12 @@ class JsonTest {
 	class Deserialization {
 		@Test
 		void testCreateJobRequestSimple() throws IOException {
-			var obj = "{\"owner\":\"bob\", \"keepalive-interval\":\"PT30S\"}";
-			var cjr = deserialize(obj, CreateJobRequest.class);
+			var cjr = deserialize("""
+					{
+						"owner": "bob",
+						"keepalive-interval": "PT30S"
+					}
+					""", CreateJobRequest.class);
 			assertNotNull(cjr);
 			assertEquals("bob", cjr.owner);
 			assertNotNull(cjr.keepaliveInterval);
@@ -333,12 +356,19 @@ class JsonTest {
 
 		@Test
 		void testCreateJobRequestComplex() throws IOException {
-			var obj = "{\"owner\": \"bob\", \"keepalive-interval\": \"PT30S\", "
-					+ "\"dimensions\": {\"width\": 1, \"height\": 2}, "
-					+ "\"tags\": [\"a\", \"b\"], "
-					+ "\"max-dead-boards\": 77, "
-					+ "\"machine-name\": \"gorp\"}";
-			var cjr = deserialize(obj, CreateJobRequest.class);
+			var cjr = deserialize("""
+					{
+						"owner": "bob",
+						"keepalive-interval": "PT30S",
+						"dimensions": {
+							"width": 1,
+							"height": 2
+						},
+						"tags": ["a", "b"],
+						"max-dead-boards": 77,
+						"machine-name": "gorp"
+					}
+					""", CreateJobRequest.class);
 			assertNotNull(cjr);
 			assertEquals("bob", cjr.owner);
 			assertNotNull(cjr.keepaliveInterval);
@@ -354,8 +384,11 @@ class JsonTest {
 
 		@Test
 		void testPowerRequest() throws IOException {
-			var obj = "{\"power\": \"ON\"}";
-			var mp = deserialize(obj, MachinePower.class);
+			var mp = deserialize("""
+					{
+						"power": "ON"
+					}
+					""", MachinePower.class);
 			assertEquals(ON, mp.getPower());
 		}
 	}

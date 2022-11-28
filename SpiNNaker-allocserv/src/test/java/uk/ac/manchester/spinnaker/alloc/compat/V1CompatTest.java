@@ -59,6 +59,8 @@ import uk.ac.manchester.spinnaker.alloc.TestSupport;
 	"spalloc.compat.service-group=" + TestSupport.GROUP_NAME
 })
 class V1CompatTest extends TestSupport {
+	// Take care in this class: JSON documents must be SINGLE LINE too
+
 	/** The name of the database file. */
 	static final String DB = "target/compat_test.sqlite3";
 
