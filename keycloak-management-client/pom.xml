@@ -32,10 +32,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		SpiNNaker-allocserv. You probably don't need to ever use this code!
 	</description>
 
-	<properties>
-		<maven.compiler.release>11</maven.compiler.release>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
