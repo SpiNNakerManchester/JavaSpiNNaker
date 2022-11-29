@@ -444,7 +444,7 @@ public class Chip implements HasChipLocation {
 		if (this == obj) {
 			return true;
 		}
-		return (obj instanceof Chip) && isNull(difference((Chip) obj));
+		return (obj instanceof Chip c) && isNull(difference(c));
 	}
 
 	/**

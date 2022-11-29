@@ -895,15 +895,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 		}
 
 		private void cantWarning(String op, DataAccessException e) {
-			if (e.getMostSpecificCause() instanceof SQLiteException) {
-				var ex = (SQLiteException) e.getMostSpecificCause();
-				if (ex.getMessage().contains(
-						"cannot " + op + " - no transaction is active")) {
-					log.warn(
-							"failed to {} transaction: "
-									+ "current transaction holders are {}",
-							op, currentTransactionHolders());
-				}
+			if (e.getMostSpecificCause() instanceof SQLiteException ex
+					&& ex.getMessage().contains(
+							"cannot " + op + " - no transaction is active")) {
+				log.warn(
+						"failed to {} transaction: "
+								+ "current transaction holders are {}",
+						op, currentTransactionHolders());
 			}
 		}
 
@@ -1190,16 +1188,16 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 			int idx = 0;
 			for (var arg : arguments) {
 				// The classes we augment the DB driver with
-				if (arg instanceof Optional) {
+				if (arg instanceof Optional<?> opt) {
 					// Unpack one layer of Optional only; absent = NULL
-					arg = ((Optional<?>) arg).orElse(null);
+					arg = opt.orElse(null);
 				}
-				if (arg instanceof Instant) {
-					arg = ((Instant) arg).getEpochSecond();
-				} else if (arg instanceof Duration) {
-					arg = ((Duration) arg).getSeconds();
-				} else if (arg instanceof Enum) {
-					arg = ((Enum<?>) arg).ordinal();
+				if (arg instanceof Instant inst) {
+					arg = inst.getEpochSecond();
+				} else if (arg instanceof Duration d) {
+					arg = d.getSeconds();
+				} else if (arg instanceof Enum<?> e) {
+					arg = e.ordinal();
 				} else if (arg != null && arg instanceof Serializable
 						&& !(arg instanceof String || arg instanceof Number
 								|| arg instanceof Boolean

@@ -113,10 +113,9 @@ public final class Link {
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
-		} else if (!(obj instanceof Link)) {
+		} else if (!(obj instanceof Link other)) {
 			return false;
 		}
-		var other = (Link) obj;
 		log.trace("Equals called {} {}", this, other);
 		if (sourceLinkDirection != other.sourceLinkDirection) {
 			return false;

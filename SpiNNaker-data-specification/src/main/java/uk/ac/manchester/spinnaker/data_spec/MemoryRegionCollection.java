@@ -109,8 +109,8 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 */
 	public boolean isUnfilled(int regionID) {
 		return isEmpty(regionID)
-				|| !(regions[regionID] instanceof MemoryRegionReal)
-				|| ((MemoryRegionReal) regions[regionID]).isUnfilled();
+				|| !(regions[regionID] instanceof MemoryRegionReal r)
+				|| r.isUnfilled();
 	}
 
 	/**
@@ -121,8 +121,8 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 * @return The size of the region. Empty regions have zero size.
 	 */
 	public int getSize(int regionID) {
-		return !(regions[regionID] instanceof MemoryRegionReal) ? 0
-				: ((MemoryRegionReal) regions[regionID]).getAllocatedSize();
+		return !(regions[regionID] instanceof MemoryRegionReal r) ? 0
+				: r.getAllocatedSize();
 	}
 
 	/**
@@ -131,7 +131,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 * @return How many regions have been set.
 	 */
 	public int countUsedRegions() {
-		return (int) stream().filter(r -> r != null).count();
+		return (int) stream().filter(Objects::nonNull).count();
 	}
 
 	/**
@@ -297,12 +297,12 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	@Override
 	public boolean equals(Object o) {
 		Object[] a;
-		if (o instanceof MemoryRegionCollection) {
-			a = ((MemoryRegionCollection) o).regions;
-		} else if (o instanceof Collection) {
-			a = ((Collection<?>) o).toArray();
-		} else if (o instanceof MemoryRegion[]) {
-			a = (MemoryRegion[]) o;
+		if (o instanceof MemoryRegionCollection mrc) {
+			a = mrc.regions;
+		} else if (o instanceof Collection<?> c) {
+			a = c.toArray();
+		} else if (o instanceof MemoryRegion[] ary) {
+			a = ary;
 		} else {
 			return false;
 		}

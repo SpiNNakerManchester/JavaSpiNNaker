@@ -422,10 +422,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 
 	private void sanityCheck(List<Gather> gatherers) {
 		var sel = txrx.getScampConnectionSelector();
-		MostDirectConnectionSelector<?> s = null;
-		if (sel instanceof MostDirectConnectionSelector) {
-			s = (MostDirectConnectionSelector<?>) sel;
-		}
+		var s = (sel instanceof MostDirectConnectionSelector<?> ss ? ss : null);
 
 		// Sanity check the inputs
 		for (var g : gatherers) {

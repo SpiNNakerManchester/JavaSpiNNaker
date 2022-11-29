@@ -116,12 +116,8 @@ public final class Version implements Comparable<Version> {
 
 	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof Version)) {
-			return false;
-		}
-		var v = (Version) other;
-		return majorVersion == v.majorVersion && minorVersion == v.minorVersion
-				&& revision == v.revision;
+		return (other instanceof Version v) && (majorVersion == v.majorVersion)
+				&& (minorVersion == v.minorVersion) && (revision == v.revision);
 	}
 
 	@Override

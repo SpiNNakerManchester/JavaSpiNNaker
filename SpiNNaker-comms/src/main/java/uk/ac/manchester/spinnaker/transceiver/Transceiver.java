@@ -554,8 +554,8 @@ public class Transceiver extends UDPTransceiver
 				null, null, false, generateScampConnections(machine), null,
 				null);
 		this.machine = machine;
-		if (scpSelector instanceof MachineAware) {
-			((MachineAware) scpSelector).setMachine(machine);
+		if (scpSelector instanceof MachineAware ma) {
+			ma.setMachine(machine);
 		}
 		log.info("known connections to this transceiver: {}",
 				udpScpConnections);
@@ -652,33 +652,31 @@ public class Transceiver extends UDPTransceiver
 	 */
 	private void identifyConnection(Connection conn) {
 		// locate the only boot send conn
-		if (conn instanceof BootConnection) {
+		if (conn instanceof BootConnection bc) {
 			if (bootConnection != null) {
 				throw new IllegalArgumentException(
 						"Only a single BootSender can be specified");
 			}
-			bootConnection = (BootConnection) conn;
+			bootConnection = bc;
 		}
 
 		// Locate any connections listening on a UDP port
-		if (conn instanceof UDPConnection) {
-			registerConnection((UDPConnection<?>) conn);
+		if (conn instanceof UDPConnection<?> udpc) {
+			registerConnection(udpc);
 		}
 
 		// Locate any connections that can send SDP
-		if (conn instanceof SDPConnection) {
-			sdpConnections.add((SDPConnection) conn);
+		if (conn instanceof SDPConnection sdpc) {
+			sdpConnections.add(sdpc);
 		}
 
 		// Locate any connections that can send and receive SCP
 		// If it is a BMP connection, add it here
-		if (conn instanceof BMPConnection) {
-			var bmpc = (BMPConnection) conn;
+		if (conn instanceof BMPConnection bmpc) {
 			bmpConnections.add(bmpc);
 			bmpSelectors.put(bmpc.getCoords(),
 					new SingletonConnectionSelector<>(bmpc));
-		} else if (conn instanceof SCPConnection) {
-			var scpc = (SCPConnection) conn;
+		} else if (conn instanceof SCPConnection scpc) {
 			scpConnections.add(scpc);
 			udpScpConnections.put(scpc.getRemoteIPAddress(), scpc);
 		}
@@ -911,8 +909,8 @@ public class Transceiver extends UDPTransceiver
 		machine = machine.rebuild();
 
 		// update the SCAMP selector with the machine
-		if (scpSelector instanceof MachineAware) {
-			((MachineAware) scpSelector).setMachine(machine);
+		if (scpSelector instanceof MachineAware ma) {
+			ma.setMachine(machine);
 		}
 
 		/*

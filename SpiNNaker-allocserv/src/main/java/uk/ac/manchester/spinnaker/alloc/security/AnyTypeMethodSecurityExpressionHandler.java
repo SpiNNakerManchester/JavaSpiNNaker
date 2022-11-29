@@ -55,8 +55,8 @@ class AnyTypeMethodSecurityExpressionHandler
 				|| target instanceof Map || target instanceof Stream) {
 			return super.filter(target, expr, ctx);
 		}
-		if (target instanceof Optional) {
-			return filterOptional((Optional<?>) target, expr, ctx);
+		if (target instanceof Optional<?> opt) {
+			return filterOptional(opt, expr, ctx);
 		} else {
 			return filterOptional(Optional.of(target), expr, ctx).orElse(null);
 		}

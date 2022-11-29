@@ -621,8 +621,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		if (isNull(description)) {
 			description = "<null>";
 		}
-		if (coreLocation instanceof HasCoreLocation) {
-			var loc = (HasCoreLocation) coreLocation;
+		if (coreLocation instanceof HasCoreLocation loc) {
 			description += format(" (at core %d of chip %s)", loc.getP(),
 					loc.asChipLocation());
 		} else if (nonNull(coreLocation)) {

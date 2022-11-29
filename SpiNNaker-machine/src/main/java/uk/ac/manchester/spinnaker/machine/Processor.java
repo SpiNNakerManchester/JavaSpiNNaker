@@ -123,11 +123,8 @@ public final class Processor implements Comparable<Processor> {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof Processor)) {
-			return false;
-		}
-		var other = (Processor) obj;
-		return (processorId == other.processorId)
+		return (obj instanceof Processor other)
+				&& (processorId == other.processorId)
 				&& (clockSpeed == other.clockSpeed)
 				&& (isMonitor == other.isMonitor)
 				&& (dtcmAvailable == other.dtcmAvailable);

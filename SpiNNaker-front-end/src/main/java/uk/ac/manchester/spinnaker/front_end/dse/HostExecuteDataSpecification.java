@@ -322,10 +322,9 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	}
 
 	private static MemoryRegionReal getRealRegionOrNull(MemoryRegion reg) {
-		if (!(reg instanceof MemoryRegionReal)) {
+		if (!(reg instanceof MemoryRegionReal r)) {
 			return null;
 		}
-		var r = (MemoryRegionReal) reg;
 		if (r.isUnfilled() || r.getMaxWritePointer() <= 0) {
 			return null;
 		}

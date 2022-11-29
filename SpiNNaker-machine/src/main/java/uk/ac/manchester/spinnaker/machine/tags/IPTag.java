@@ -238,14 +238,10 @@ public final class IPTag extends Tag {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof IPTag) {
-			var otherTag = (IPTag) o;
-			return partialEquals(otherTag)
-					&& ipAddress.equals(otherTag.ipAddress)
-					&& stripSDP == otherTag.stripSDP
-					&& destination.equals(otherTag.destination);
-		}
-		return false;
+		return (o instanceof IPTag otherTag) && partialEquals(otherTag)
+				&& ipAddress.equals(otherTag.ipAddress)
+				&& stripSDP == otherTag.stripSDP
+				&& destination.equals(otherTag.destination);
 	}
 
 	@Override

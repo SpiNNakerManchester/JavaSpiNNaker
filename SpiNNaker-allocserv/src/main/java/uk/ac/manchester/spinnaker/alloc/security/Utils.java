@@ -74,8 +74,8 @@ public abstract class Utils {
 		var tmf = TrustManagerFactory.getInstance(getDefaultAlgorithm());
 		tmf.init(truststore);
 		for (var tm : tmf.getTrustManagers()) {
-			if (tm instanceof X509TrustManager) {
-				return (X509TrustManager) tm;
+			if (tm instanceof X509TrustManager x509tm) {
+				return x509tm;
 			}
 		}
 		return null;

@@ -139,17 +139,14 @@ public final class WhereIs {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof WhereIs) {
-			var other = (WhereIs) o;
-			return Objects.equals(jobChip, other.jobChip)
-					&& Objects.equals(jobId, other.jobId)
-					&& Objects.equals(chip, other.chip)
-					&& Objects.equals(logical, other.logical)
-					&& Objects.equals(machine, other.machine)
-					&& Objects.equals(boardChip, other.boardChip)
-					&& Objects.equals(physical, other.physical);
-		}
-		return false;
+		return (o instanceof WhereIs other)
+				&& Objects.equals(jobChip, other.jobChip)
+				&& Objects.equals(jobId, other.jobId)
+				&& Objects.equals(chip, other.chip)
+				&& Objects.equals(logical, other.logical)
+				&& Objects.equals(machine, other.machine)
+				&& Objects.equals(boardChip, other.boardChip)
+				&& Objects.equals(physical, other.physical);
 	}
 
 	@Override

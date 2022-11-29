@@ -91,8 +91,7 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 	private static Authentication getSavedToken(HttpSession session) {
 		if (nonNull(session)) {
 			var o = session.getAttribute(TOKEN);
-			if (o instanceof Token) {
-				var t = (Token) o;
+			if (o instanceof Token t) {
 				if (t.isValid(session)) {
 					return t.getAuth();
 				}

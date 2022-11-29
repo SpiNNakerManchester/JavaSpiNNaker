@@ -83,13 +83,13 @@ public class SystemVariableBootValues implements SerializableMessage {
 		switch (systemVariable.type) {
 		case BYTE_ARRAY:
 			var defbytes = (byte[]) values.get(systemVariable);
-			if (!(value instanceof byte[])) {
+			if (!(value instanceof byte[] newbytes)) {
 				throw new IllegalArgumentException("need a byte array");
 			}
-			var newbytes = (byte[]) value;
 			if (newbytes.length != defbytes.length) {
 				throw new IllegalArgumentException(
-						"byte array length must be " + defbytes.length);
+						"byte array length must be " + defbytes.length
+								+ " long");
 			}
 			break;
 		case ADDRESS:

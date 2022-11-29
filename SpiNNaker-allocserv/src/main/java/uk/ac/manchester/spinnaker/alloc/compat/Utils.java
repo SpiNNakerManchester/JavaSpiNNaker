@@ -115,10 +115,10 @@ abstract class Utils {
 		int n;
 		if (isNull(value)) {
 			return null;
-		} else if (value instanceof Number) {
-			n = ((Number) value).intValue();
-		} else if (value instanceof String) {
-			n = parseInt((String) value);
+		} else if (value instanceof Number num) {
+			n = num.intValue();
+		} else if (value instanceof String s) {
+			n = parseInt(s);
 		} else {
 			throw new IllegalArgumentException(
 					"needed a number, got a " + value.getClass().getName());

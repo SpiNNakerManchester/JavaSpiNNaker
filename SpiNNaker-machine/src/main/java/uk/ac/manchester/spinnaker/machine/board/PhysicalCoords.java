@@ -113,11 +113,8 @@ public final class PhysicalCoords implements Comparable<PhysicalCoords> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof PhysicalCoords) {
-			var other = (PhysicalCoords) obj;
-			return c == other.c && f == other.f && b == other.b;
-		}
-		return false;
+		return (obj instanceof PhysicalCoords other) && (c == other.c)
+				&& (f == other.f) && (b == other.b);
 	}
 
 	@Override

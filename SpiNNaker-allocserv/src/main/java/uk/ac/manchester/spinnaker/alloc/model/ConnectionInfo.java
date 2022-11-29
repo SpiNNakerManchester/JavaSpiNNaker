@@ -82,12 +82,9 @@ public final class ConnectionInfo {
 
 	@Override
 	public boolean equals(Object other) {
-		if (other instanceof ConnectionInfo) {
-			var c = (ConnectionInfo) other;
-			return Objects.equals(chip, c.chip)
-					&& Objects.equals(hostname, c.hostname);
-		}
-		return false;
+		return (other instanceof ConnectionInfo c)
+				&& Objects.equals(chip, c.chip)
+				&& Objects.equals(hostname, c.hostname);
 	}
 
 	@Override

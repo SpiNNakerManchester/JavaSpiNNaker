@@ -131,12 +131,12 @@ public class TransceiverFactory
 			}
 		} catch (TransceiverFactoryException e) {
 			var t = e.getCause();
-			if (t instanceof IOException) {
-				throw (IOException) t;
-			} else if (t instanceof SpinnmanException) {
-				throw (SpinnmanException) t;
-			} else if (t instanceof InterruptedException) {
-				throw (InterruptedException) t;
+			if (t instanceof IOException ioe) {
+				throw ioe;
+			} else if (t instanceof SpinnmanException se) {
+				throw se;
+			} else if (t instanceof InterruptedException ie) {
+				throw ie;
 			}
 			throw e;
 		}

@@ -943,7 +943,7 @@ public class Machine implements MappableIterable<Chip> {
 		if (this == obj) {
 			return true;
 		}
-		return (obj instanceof Machine) && isNull(difference((Machine) obj));
+		return (obj instanceof Machine m) && isNull(difference(m));
 	}
 
 	/**

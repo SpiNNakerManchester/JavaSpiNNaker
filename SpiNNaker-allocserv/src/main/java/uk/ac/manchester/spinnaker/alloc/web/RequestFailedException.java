@@ -99,8 +99,8 @@ public class RequestFailedException extends RuntimeException {
 	 */
 	Response toResponse() {
 		var cause = getCause();
-		if (cause instanceof WebApplicationException) {
-			return ((WebApplicationException) cause).getResponse();
+		if (cause instanceof WebApplicationException waex) {
+			return waex.getResponse();
 		} else if (cause != null) {
 			// Be careful about what bits are extracted from message
 			var cls = cause.getClass().getName().replaceFirst("^.*[.]", "")

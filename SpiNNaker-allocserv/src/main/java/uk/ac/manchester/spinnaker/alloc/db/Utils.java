@@ -99,8 +99,8 @@ public abstract class Utils {
 	 */
 	public static boolean isBusy(DataAccessException exception) {
 		var root = exception.getMostSpecificCause();
-		return root instanceof SQLiteException
-				&& ((SQLiteException) root).getResultCode() == SQLITE_BUSY;
+		return (root instanceof SQLiteException exn)
+				&& exn.getResultCode() == SQLITE_BUSY;
 	}
 
 	/**
@@ -115,7 +115,7 @@ public abstract class Utils {
 	 */
 	public static DataAccessException mapException(SQLException exception,
 			String sql) {
-		if (!(exception instanceof SQLiteException)) {
+		if (!(exception instanceof SQLiteException exn)) {
 			if (exception.getMessage().contains("no such column: ")) {
 				return restack(new InvalidResultSetAccessException(
 						exception.getMessage(), trimSQLComments(sql),
@@ -124,7 +124,6 @@ public abstract class Utils {
 			return restack(new UncategorizedSQLException(
 					"general SQL exception", trimSQLComments(sql), exception));
 		}
-		var exn = (SQLiteException) exception;
 		var msg = exn.getMessage();
 		boolean replaced = false;
 		if (msg.contains("SQL error or missing database (")) {

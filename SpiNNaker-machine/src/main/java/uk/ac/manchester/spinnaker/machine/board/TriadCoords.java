@@ -146,11 +146,8 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof TriadCoords) {
-			var other = (TriadCoords) obj;
-			return x == other.x && y == other.y && z == other.z;
-		}
-		return false;
+		return (obj instanceof TriadCoords other) && (x == other.x)
+				&& (y == other.y) && (z == other.z);
 	}
 
 	@Override

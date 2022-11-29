@@ -229,28 +229,26 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 
 		try {
-			if (auth instanceof UsernamePasswordAuthenticationToken) {
-				return authenticateDirect(
-						(UsernamePasswordAuthenticationToken) auth);
-			} else if (auth instanceof OAuth2AuthenticationToken) {
+			if (auth instanceof UsernamePasswordAuthenticationToken userpass) {
+				return authenticateDirect(userpass);
+			} else if (auth instanceof OAuth2AuthenticationToken oauth) {
 				/*
 				 * Technically, at this point we're already authenticated as
 				 * we've checked that the token from Keycloak is valid. We still
 				 * have to take an authorization decision though.
 				 */
-				var user = ((OAuth2AuthenticationToken) auth).getPrincipal();
+				var user = oauth.getPrincipal();
 				return authorizeOpenId(
 						authProps.getOpenid().getUsernamePrefix()
 								+ user.getAttribute(PREFERRED_USERNAME),
 						user.getAttribute(SUB), new OriginatingCredential(user),
 						auth.getAuthorities());
-			} else if (auth instanceof BearerTokenAuthentication) {
+			} else if (auth instanceof BearerTokenAuthentication bearerAuth) {
 				/*
 				 * Technically, at this point we're already authenticated as
 				 * we've checked that the token from Keycloak is valid. We still
 				 * have to take an authorization decision though.
 				 */
-				var bearerAuth = (BearerTokenAuthentication) auth;
 				var token = bearerAuth.getToken();
 				return authorizeOpenId(
 						authProps.getOpenid().getUsernamePrefix()
@@ -1107,16 +1105,14 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	private void inflateGroup(GrantedAuthority ga, List<String> collabs,
 			List<String> orgs, AuthQueries queries) {
-		if (ga instanceof CollabratoryAuthority) {
-			var collab = (CollabratoryAuthority) ga;
+		if (ga instanceof CollabratoryAuthority collab) {
 			var collab1 = collab.getCollabratory();
 			if (queries.createGroup(collab1, COLLABRATORY,
 					quotaProps.getDefaultCollabQuota())) {
 				log.info("created collabratory '{}'", collab1);
 			}
 			collabs.add(collab.getCollabratory());
-		} else if (ga instanceof OrganisationAuthority) {
-			var org = (OrganisationAuthority) ga;
+		} else if (ga instanceof OrganisationAuthority org) {
 			var org1 = org.getOrganisation();
 			if (queries.createGroup(org1, ORGANISATION,
 					quotaProps.getDefaultOrgQuota())) {

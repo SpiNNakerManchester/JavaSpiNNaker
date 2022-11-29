@@ -65,15 +65,13 @@ class AccessDeniedExceptionMapper
 	public Response toResponse(AccessDeniedException exception) {
 		// Actually produce useful logging; the default is ghastly!
 		var p = req.getUserPrincipal();
-		if (p instanceof AbstractAuthenticationToken) {
-			var who = (AbstractAuthenticationToken) p;
+		if (p instanceof AbstractAuthenticationToken who) {
 			log.warn("access denied: {} : {} {}", ui.getAbsolutePath(),
 					who.getName(),
 					who.getAuthorities().stream()
 							.map(GrantedAuthority::getAuthority)
 							.collect(toSet()));
-		} else if (p instanceof OAuth2AuthenticatedPrincipal) {
-			var who = (OAuth2AuthenticatedPrincipal) p;
+		} else if (p instanceof OAuth2AuthenticatedPrincipal who) {
 			log.warn("access denied: {} : {} {}", ui.getAbsolutePath(),
 					who.getName(),
 					who.getAuthorities().stream()

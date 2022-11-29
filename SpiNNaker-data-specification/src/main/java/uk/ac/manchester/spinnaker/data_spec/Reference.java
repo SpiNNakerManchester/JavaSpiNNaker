@@ -45,6 +45,6 @@ public final class Reference {
 
 	@Override
 	public boolean equals(Object other) {
-		return (other instanceof Reference) && ((Reference) other).ref == ref;
+		return (other instanceof Reference r) && r.ref == ref;
 	}
 }

@@ -100,12 +100,8 @@ public final class RegionLocation
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof RegionLocation)) {
-			return false;
-		}
-		var that = (RegionLocation) obj;
-		return (x == that.x) && (y == that.y) && (p == that.p)
-				&& (region == that.region);
+		return (obj instanceof RegionLocation that) && (x == that.x)
+				&& (y == that.y) && (p == that.p) && (region == that.region);
 	}
 
 	@Override

@@ -54,10 +54,7 @@ public final class InetIdTuple {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof InetIdTuple) {
-			var other = (InetIdTuple) obj;
-			return (id == other.id) && Objects.equals(address, other.address);
-		}
-		return false;
+		return (obj instanceof InetIdTuple other) && (id == other.id)
+				&& Objects.equals(address, other.address);
 	}
 }

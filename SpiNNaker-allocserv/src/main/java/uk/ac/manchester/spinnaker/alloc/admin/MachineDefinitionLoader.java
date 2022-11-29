@@ -806,8 +806,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 					there, d2);
 			return sql.makeLink.key(b1, d1, b2, d2, !dead);
 		} catch (DataAccessException e) {
-			if (e.getMostSpecificCause() instanceof SQLiteException) {
-				var exn = (SQLiteException) e.getMostSpecificCause();
+			if (e.getMostSpecificCause() instanceof SQLiteException exn) {
 				/*
 				 * If the CHECK constraint says no, just ignore; we'll do the
 				 * link from the other direction. This does mean we're doing too

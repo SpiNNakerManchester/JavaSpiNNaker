@@ -222,12 +222,12 @@ class V1TaskImpl extends V1CompatTask {
 	 */
 	private static List<String> tags(Object src, boolean mayForceDefault) {
 		var vals = new ArrayList<String>();
-		if (src instanceof List) {
-			for (var o : (List<?>) src) {
+		if (src instanceof List<?> lst) {
+			for (var o : lst) {
 				vals.add(Objects.toString(o));
 			}
-		} else if (src instanceof String) {
-			vals.add((String) src);
+		} else if (src instanceof String s) {
+			vals.add(s);
 		}
 		if (vals.isEmpty() && mayForceDefault) {
 			return List.of("default");

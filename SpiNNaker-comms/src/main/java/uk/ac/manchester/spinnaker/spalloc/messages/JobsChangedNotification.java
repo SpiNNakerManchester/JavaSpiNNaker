@@ -56,11 +56,8 @@ public class JobsChangedNotification implements Notification {
 
 	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof JobsChangedNotification)) {
-			return false;
-		}
-		return jobsChanged
-				.equals(((JobsChangedNotification) other).jobsChanged);
+		return (other instanceof JobsChangedNotification jcn)
+				&& jobsChanged.equals(jcn.jobsChanged);
 	}
 
 	@Override

@@ -177,11 +177,8 @@ public class SDPHeader implements SerializableMessage {
 
 			@Override
 			public boolean equals(Object other) {
-				if (!(other instanceof HasCoreLocation)) {
-					return false;
-				}
-				var c = (HasCoreLocation) other;
-				return x == c.getX() && y == c.getY() && p == c.getP();
+				return (other instanceof HasCoreLocation c) && (x == c.getX())
+						&& (y == c.getY()) && (p == c.getP());
 			}
 		};
 	}

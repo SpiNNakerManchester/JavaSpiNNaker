@@ -765,10 +765,10 @@ final class OTResults extends OTWrapper implements ResultSet {
 		}
 		validateThread();
 		var st = r.getStatement();
-		if (st instanceof CallableStatement) {
-			return wrap((CallableStatement) st);
-		} else if (st instanceof PreparedStatement) {
-			return wrap((PreparedStatement) st);
+		if (st instanceof CallableStatement cs) {
+			return wrap(cs);
+		} else if (st instanceof PreparedStatement ps) {
+			return wrap(ps);
 		} else {
 			return wrap(st);
 		}

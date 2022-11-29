@@ -68,8 +68,8 @@ public @interface SaneParameter {
 class IsSaneValidator implements ConstraintValidator<SaneParameter, Object> {
 	@Override
 	public boolean isValid(Object value, ConstraintValidatorContext context) {
-		if (value instanceof String) {
-			return !((String) value).isBlank();
+		if (value instanceof String s) {
+			return !s.isBlank();
 		} else {
 			return (value instanceof Boolean) || (value instanceof Number);
 		}

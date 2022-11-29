@@ -168,12 +168,9 @@ public class BoardCoords {
 
 	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof BoardCoords)) {
-			return false;
-		}
-		var o = (BoardCoords) other;
-		return x == o.x && y == o.y && z == o.z && cabinet == o.cabinet
-				&& frame == o.frame && Objects.equals(board, o.board)
+		return (other instanceof BoardCoords o) && (x == o.x) && (y == o.y)
+				&& (z == o.z) && (cabinet == o.cabinet) && (frame == o.frame)
+				&& Objects.equals(board, o.board)
 				&& Objects.equals(address, o.address);
 	}
 

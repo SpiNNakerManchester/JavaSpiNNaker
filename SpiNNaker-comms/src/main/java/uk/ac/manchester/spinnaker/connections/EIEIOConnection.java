@@ -171,8 +171,8 @@ public class EIEIOConnection
 	protected EIEIOCommand receiveCommand()
 			throws IOException, InterruptedException {
 		var msg = receiveMessage();
-		if (msg instanceof EIEIOCommandMessage) {
-			return ((EIEIOCommandMessage) msg).getHeader().command;
+		if (msg instanceof EIEIOCommandMessage cmd) {
+			return cmd.getHeader().command;
 		}
 		throw new IOException("unexpected data message");
 	}

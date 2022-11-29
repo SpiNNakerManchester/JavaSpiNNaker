@@ -27,10 +27,10 @@ public interface EIEIOMessageHandler
 		extends MessageHandler<EIEIOMessage<? extends EIEIOHeader>> {
 	@Override
 	default void handle(EIEIOMessage<? extends EIEIOHeader> message) {
-		if (message instanceof EIEIOCommandMessage) {
-			handleCommand((EIEIOCommandMessage) message);
-		} else if (message instanceof EIEIODataMessage) {
-			handleData((EIEIODataMessage) message);
+		if (message instanceof EIEIOCommandMessage cmd) {
+			handleCommand(cmd);
+		} else if (message instanceof EIEIODataMessage data) {
+			handleData(data);
 		} else {
 			throw new IllegalArgumentException(
 					"unsupported message type: " + message.getClass());

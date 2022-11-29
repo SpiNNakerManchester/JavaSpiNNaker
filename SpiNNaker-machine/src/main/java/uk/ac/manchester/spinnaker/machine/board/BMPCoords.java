@@ -122,11 +122,8 @@ public final class BMPCoords implements Comparable<BMPCoords> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof BMPCoords) {
-			var other = (BMPCoords) obj;
-			return cabinet == other.cabinet && frame == other.frame;
-		}
-		return false;
+		return (obj instanceof BMPCoords other) && (cabinet == other.cabinet)
+				&& (frame == other.frame);
 	}
 
 	@Override

@@ -97,19 +97,19 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 	}
 
 	private static EthernetImpl sanitise(Ethernet ethernet) {
-		if (!(ethernet instanceof EthernetImpl)) {
-			throw new IllegalArgumentException("can only list cores"
-					+ " for ethernets described by this class");
+		if (ethernet instanceof EthernetImpl eth) {
+			return eth;
 		}
-		return (EthernetImpl) ethernet;
+		throw new IllegalArgumentException("can only list cores"
+				+ " for ethernets described by this class");
 	}
 
 	private static CoreToLoadImpl sanitise(CoreToLoad core, String desc) {
-		if (!(core instanceof CoreToLoadImpl)) {
-			throw new IllegalArgumentException(
-					"can only " + desc + " for cores described by this class");
+		if (core instanceof CoreToLoadImpl ctl) {
+			return ctl;
 		}
-		return (CoreToLoadImpl) core;
+		throw new IllegalArgumentException(
+				"can only " + desc + " for cores described by this class");
 	}
 
 	@Override
@@ -252,11 +252,7 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 
 		@Override
 		public boolean equals(Object other) {
-			if (!(other instanceof CoreToLoadImpl)) {
-				return false;
-			}
-			var c = (CoreToLoadImpl) other;
-			return id == c.id;
+			return (other instanceof CoreToLoadImpl c) && id == c.id;
 		}
 
 		@Override

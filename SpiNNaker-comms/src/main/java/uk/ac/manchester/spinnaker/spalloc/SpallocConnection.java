@@ -422,15 +422,13 @@ public abstract class SpallocConnection implements Closeable {
 				if (r == null) {
 					continue;
 				}
-				if (r instanceof ReturnResponse) {
-					// Success!
-					return ((ReturnResponse) r).getReturnValue();
-				} else if (r instanceof ExceptionResponse) {
-					// Server error!
-					throw new SpallocServerException((ExceptionResponse) r);
-				} else if (r instanceof Notification) {
+				if (r instanceof ReturnResponse success) {
+					return success.getReturnValue();
+				} else if (r instanceof ExceptionResponse serverError) {
+					throw new SpallocServerException(serverError);
+				} else if (r instanceof Notification notification) {
 					// Got a notification, keep trying...
-					notifications.add((Notification) r);
+					notifications.add(notification);
 				} else {
 					throw new SpallocProtocolException(
 							"bad response: " + r.getClass());

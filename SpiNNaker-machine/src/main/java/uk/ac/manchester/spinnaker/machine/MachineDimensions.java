@@ -44,11 +44,8 @@ public final class MachineDimensions {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof MachineDimensions) {
-			var dim = (MachineDimensions) o;
-			return (width == dim.width) && (height == dim.height);
-		}
-		return false;
+		return (o instanceof MachineDimensions dim) && (width == dim.width)
+				&& (height == dim.height);
 	}
 
 	@Override

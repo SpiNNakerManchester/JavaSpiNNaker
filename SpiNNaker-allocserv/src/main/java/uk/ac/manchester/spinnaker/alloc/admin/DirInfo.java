@@ -98,11 +98,7 @@ public final class DirInfo extends SQLQueries {
 
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof DirInfo)) {
-			return false;
-		}
-		var di = (DirInfo) o;
-		return z == di.z && dir == di.dir;
+		return (o instanceof DirInfo di) && (z == di.z) && (dir == di.dir);
 	}
 
 	@Override

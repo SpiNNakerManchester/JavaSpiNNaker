@@ -75,12 +75,8 @@ public final class Connection {
 
 	@Override
 	public boolean equals(Object other) {
-		if (other instanceof Connection) {
-			var c = (Connection) other;
-			return Objects.equals(chip, c.chip)
-					&& Objects.equals(hostname, c.hostname);
-		}
-		return false;
+		return (other instanceof Connection c) && Objects.equals(chip, c.chip)
+				&& Objects.equals(hostname, c.hostname);
 	}
 
 	@Override

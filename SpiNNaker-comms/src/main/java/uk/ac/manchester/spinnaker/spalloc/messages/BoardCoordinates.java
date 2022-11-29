@@ -98,11 +98,8 @@ public final class BoardCoordinates {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof BoardCoordinates) {
-			var other = (BoardCoordinates) o;
-			return x == other.x && y == other.y && z == other.z;
-		}
-		return false;
+		return (o instanceof BoardCoordinates other) && (x == other.x)
+				&& (y == other.y) && (z == other.z);
 	}
 
 	@Override

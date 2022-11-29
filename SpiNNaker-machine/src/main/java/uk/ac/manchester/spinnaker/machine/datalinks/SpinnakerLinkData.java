@@ -60,11 +60,8 @@ public final class SpinnakerLinkData extends AbstractDataLink {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof SpinnakerLinkData) {
-			var other = (SpinnakerLinkData) obj;
-			return sameAs(other) && (spinnakerLinkId == other.spinnakerLinkId);
-		}
-		return false;
+		return (obj instanceof SpinnakerLinkData other) && sameAs(other)
+				&& (spinnakerLinkId == other.spinnakerLinkId);
 	}
 
 	@Override

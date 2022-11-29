@@ -71,8 +71,8 @@ public class ProcessException extends SpinnmanException {
 	 */
 	static ProcessException makeInstance(HasCoreLocation core,
 			Throwable cause) throws InterruptedException {
-		if (requireNonNull(cause) instanceof UnexpectedResponseCodeException) {
-			var urc = (UnexpectedResponseCodeException) cause;
+		if (requireNonNull(
+				cause) instanceof UnexpectedResponseCodeException urc) {
 			if (urc.response == null) {
 				return new ProcessException(core, cause, null);
 			}

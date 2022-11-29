@@ -96,11 +96,7 @@ public final class MemoryLocation implements Comparable<MemoryLocation> {
 
 	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof MemoryLocation)) {
-			return false;
-		}
-		var o = (MemoryLocation) other;
-		return o.address == address;
+		return (other instanceof MemoryLocation o) && (o.address == address);
 	}
 
 	@Override

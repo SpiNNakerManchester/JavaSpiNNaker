@@ -84,11 +84,8 @@ public final class CoreLocation
 		if (this == obj) {
 			return true;
 		}
-		if (obj instanceof CoreLocation) {
-			var that = (CoreLocation) obj;
-			return (x == that.x) && (y == that.y) && (p == that.p);
-		}
-		return false;
+		return (obj instanceof CoreLocation that) && (x == that.x)
+				&& (y == that.y) && (p == that.p);
 	}
 
 	@Override

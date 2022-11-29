@@ -93,12 +93,9 @@ public final class ReverseIPTag extends Tag {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof ReverseIPTag) {
-			var otherTag = (ReverseIPTag) o;
-			return partialEquals(otherTag) && (sdpPort == otherTag.sdpPort)
-					&& destination.equals(otherTag.destination);
-		}
-		return false;
+		return (o instanceof ReverseIPTag otherTag) && partialEquals(otherTag)
+				&& (sdpPort == otherTag.sdpPort)
+				&& destination.equals(otherTag.destination);
 	}
 
 	@Override

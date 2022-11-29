@@ -292,11 +292,8 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof CoreSubsets) {
-			var other = (CoreSubsets) obj;
-			return Objects.equals(locations, other.locations);
-		}
-		return false;
+		return (obj instanceof CoreSubsets other)
+				&& Objects.equals(locations, other.locations);
 	}
 
 	@Override

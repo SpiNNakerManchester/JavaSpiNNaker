@@ -66,12 +66,8 @@ public final class FPGALinkData extends AbstractDataLink {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof FPGALinkData) {
-			var other = (FPGALinkData) obj;
-			return sameAs(other) && (fpgaLinkId == other.fpgaLinkId)
-					&& (fpgaId == other.fpgaId);
-		}
-		return false;
+		return (obj instanceof FPGALinkData other) && sameAs(other)
+				&& (fpgaLinkId == other.fpgaLinkId) && (fpgaId == other.fpgaId);
 	}
 
 	@Override

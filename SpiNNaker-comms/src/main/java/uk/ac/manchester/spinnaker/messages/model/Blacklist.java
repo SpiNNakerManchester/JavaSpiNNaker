@@ -496,12 +496,8 @@ public final class Blacklist implements Serializable {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof Blacklist) {
-			var other = (Blacklist) object;
-			return chips.equals(other.chips) && cores.equals(other.cores)
-					&& links.equals(other.links);
-		}
-		return false;
+		return (object instanceof Blacklist other) && chips.equals(other.chips)
+				&& cores.equals(other.cores) && links.equals(other.links);
 	}
 
 	@Override

@@ -1416,10 +1416,10 @@ public class BMPController extends DatabaseAwareBean {
 					 * this queue.
 					 */
 					var r = requests.poll();
-					if (r instanceof PowerRequest) {
-						processRequest((PowerRequest) r);
-					} else if (r instanceof BlacklistRequest) {
-						processRequest((BlacklistRequest) r);
+					if (r instanceof PowerRequest pr) {
+						processRequest(pr);
+					} else if (r instanceof BlacklistRequest br) {
+						processRequest(br);
 					}
 
 					/*
@@ -1561,8 +1561,8 @@ public class BMPController extends DatabaseAwareBean {
 	private Map<BMPCoords, SpiNNakerControl> getControllers(Request request)
 			throws IOException, SpinnmanException {
 		try {
-			if (request instanceof PowerRequest) {
-				return getControllersForPower((PowerRequest) request);
+			if (request instanceof PowerRequest pr) {
+				return getControllersForPower(pr);
 			} else {
 				return getControllersForBlacklisting(
 						(BlacklistRequest) request);
@@ -1570,10 +1570,10 @@ public class BMPController extends DatabaseAwareBean {
 		} catch (BeanInitializationException | BeanCreationException e) {
 			// Smuggle the exception out from the @PostConstruct method
 			var cause = e.getCause();
-			if (cause instanceof IOException) {
-				throw (IOException) cause;
-			} else if (cause instanceof SpinnmanException) {
-				throw (SpinnmanException) cause;
+			if (cause instanceof IOException ioe) {
+				throw ioe;
+			} else if (cause instanceof SpinnmanException se) {
+				throw se;
 			}
 			throw e;
 		}

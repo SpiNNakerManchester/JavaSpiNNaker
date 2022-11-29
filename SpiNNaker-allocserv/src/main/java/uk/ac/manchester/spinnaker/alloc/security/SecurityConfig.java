@@ -388,9 +388,8 @@ public class SecurityConfig {
 				 * returns each scope as a GrantedAuthority, which we don't care
 				 * about.
 				 */
-				if (authority instanceof OidcUserAuthority) {
-					localAuthProvider.mapAuthorities(
-							(OidcUserAuthority) authority, mappedAuthorities);
+				if (authority instanceof OidcUserAuthority a) {
+					localAuthProvider.mapAuthorities(a, mappedAuthorities);
 				}
 				mappedAuthorities.add(authority);
 			});

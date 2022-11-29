@@ -176,14 +176,11 @@ public final class BoardCoords {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof BoardCoords) {
-			var other = (BoardCoords) o;
-			return (x == other.x) && (y == other.y) && (z == other.z)
-					&& (cabinet == other.cabinet) && (frame == other.frame)
-					&& Objects.equals(board, other.board)
-					&& Objects.equals(address, other.address);
-		}
-		return false;
+		return (o instanceof BoardCoords other) && (x == other.x)
+				&& (y == other.y) && (z == other.z)
+				&& (cabinet == other.cabinet) && (frame == other.frame)
+				&& Objects.equals(board, other.board)
+				&& Objects.equals(address, other.address);
 	}
 
 	@Override

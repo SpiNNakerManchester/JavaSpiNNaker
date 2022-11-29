@@ -185,8 +185,7 @@ public class Executor implements Closeable {
 	public void setBaseAddress(MemoryLocation startAddress) {
 		int nextOffset = APP_PTR_TABLE_BYTE_SIZE;
 		for (var reg : memRegions) {
-			if (reg instanceof MemoryRegionReal) {
-				var r = (MemoryRegionReal) reg;
+			if (reg instanceof MemoryRegionReal r) {
 				r.setRegionBase(startAddress.add(nextOffset));
 				nextOffset += r.getAllocatedSize();
 			}
@@ -216,9 +215,8 @@ public class Executor implements Closeable {
 		for (var reg : memRegions) {
 			if (reg != null) {
 				buffer.putInt(reg.getRegionBase().address);
-				if (reg instanceof MemoryRegionReal) {
+				if (reg instanceof MemoryRegionReal regReal) {
 					// Work out the checksum
-					var regReal = (MemoryRegionReal) reg;
 					int nWords =
 							ceildiv(regReal.getMaxWritePointer(), INT_SIZE);
 					var buf = regReal.getRegionData().duplicate()

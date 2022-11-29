@@ -214,12 +214,12 @@ public final class Generator {
 		for (int i = 0; i < arguments.length; i += 2) {
 			var f = (Field) arguments[i];
 			var val = arguments[i + 1];
-			if (val instanceof Boolean) {
-				word |= (((Boolean) val) ? 1 : 0) << f.offset;
-			} else if (val instanceof Enum && !(val instanceof Field)) {
-				word |= ((Enum<?>) val).ordinal() << f.offset;
-			} else if (val instanceof Number) {
-				word |= ((Number) val).intValue() << f.offset;
+			if (val instanceof Boolean b) {
+				word |= (b ? 1 : 0) << f.offset;
+			} else if (val instanceof Enum<?> e && !(val instanceof Field)) {
+				word |= e.ordinal() << f.offset;
+			} else if (val instanceof Number n) {
+				word |= n.intValue() << f.offset;
 			} else {
 				throw new IllegalArgumentException("arg: " + i + " = " + val);
 			}

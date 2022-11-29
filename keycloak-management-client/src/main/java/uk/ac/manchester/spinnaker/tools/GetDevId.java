@@ -249,8 +249,7 @@ public class GetDevId extends CredentialDB {
 			log.debug("response:\n{}", mapper.writeValueAsString(cr));
 		} catch (ClientRegistrationException e) {
 			log.error("failed", e);
-			if (e.getCause() instanceof HttpErrorException) {
-				var ex = (HttpErrorException) e.getCause();
+			if (e.getCause() instanceof HttpErrorException ex) {
 				log.info("status: {}", ex.getStatusLine().getStatusCode());
 				log.info("response: {}", ex.getErrorResponse());
 			}

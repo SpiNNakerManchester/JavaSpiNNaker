@@ -101,12 +101,9 @@ public class BoardPhysicalCoordinates {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof BoardPhysicalCoordinates) {
-			var other = (BoardPhysicalCoordinates) o;
-			return cabinet == other.cabinet && frame == other.frame
-					&& Objects.equals(board, other.board);
-		}
-		return false;
+		return (o instanceof BoardPhysicalCoordinates other)
+				&& (cabinet == other.cabinet) && (frame == other.frame)
+				&& Objects.equals(board, other.board);
 	}
 
 	@Override
