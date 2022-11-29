@@ -322,8 +322,10 @@ public class ProxyCore implements AutoCloseable {
 		@SuppressWarnings("resource")
 		var conn = removeConnection(id);
 		if (!isValid(conn)) {
+			log.debug("Connection for channel {}:{} is invalid", session, id);
 			return 0;
 		}
+		log.debug("Trying to close connection for channel {}:{}", session, id);
 		conn.close();
 		// Thread will shut down now that the proxy is closed
 		log.debug("closed proxy channel {}:{}", session, id);
