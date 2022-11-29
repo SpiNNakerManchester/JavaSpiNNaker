@@ -36,7 +36,6 @@ import static uk.ac.manchester.spinnaker.messages.model.FPGA.FPGA_SW_W;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.LEDO;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.SCRM;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.SLEN;
-import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.slice;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.FileNotFoundException;
@@ -360,7 +359,7 @@ public class FirmwareLoader {
 
 	private static int crc(ByteBuffer buffer, int from, int len) {
 		var crc = new CRC32();
-		crc.update(slice(buffer, from, len));
+		crc.update(buffer.slice(from, len));
 		return (int) (crc.getValue() & CRC_MASK);
 	}
 
@@ -418,8 +417,8 @@ public class FirmwareLoader {
 			throws ProcessException, IOException, InterruptedException {
 		var data = readFlashDataHead();
 		for (int i = 0; i < NUM_DATA_SECTORS; i++) {
-			var chunk = slice(data, DATA_SECTOR_CHUNK_SIZE * i,
-					DATA_SECTOR_CHUNK_SIZE);
+			var chunk = data.slice(DATA_SECTOR_CHUNK_SIZE * i,
+					DATA_SECTOR_CHUNK_SIZE).order(LITTLE_ENDIAN);
 			byte type = chunk.get();
 			switch (DataSectorTypes.get(type)) {
 			case REGISTER:

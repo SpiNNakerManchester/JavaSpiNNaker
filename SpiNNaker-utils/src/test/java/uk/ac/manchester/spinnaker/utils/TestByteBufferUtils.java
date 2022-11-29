@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
  */
 public class TestByteBufferUtils {
 	@Test
+	@SuppressWarnings("removal")
 	public void testSlice() {
 		var bb = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN);
 		var s = ByteBufferUtils.slice(bb, 4, 4);

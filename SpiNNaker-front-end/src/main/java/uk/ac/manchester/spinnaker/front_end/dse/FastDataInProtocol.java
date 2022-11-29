@@ -28,7 +28,6 @@ import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.GATHERER_DATA_SPEED_UP;
-import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.slice;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.nio.ByteBuffer;
@@ -164,8 +163,9 @@ class FastDataInProtocol {
 	}
 
 	private int putBuffer(ByteBuffer data, int position, ByteBuffer payload) {
-		var slice = slice(data, position,
-				min(data.remaining() - position, payload.remaining()));
+		var slice = data
+				.slice(position,
+						min(data.remaining() - position, payload.remaining()));
 		payload.put(slice).flip();
 		return slice.position();
 	}

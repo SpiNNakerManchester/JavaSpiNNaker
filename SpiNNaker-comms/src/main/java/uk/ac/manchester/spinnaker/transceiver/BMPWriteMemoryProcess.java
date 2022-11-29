@@ -18,9 +18,9 @@ package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.read;
-import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.slice;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -82,7 +82,7 @@ class BMPWriteMemoryProcess extends BMPCommandProcess<BMPResponse> {
 
 			@Override
 			ByteBuffer prepareSendBuffer(int chunkSize) {
-				var buffer = slice(data, offset, chunkSize);
+				var buffer = data.slice(offset, chunkSize).order(LITTLE_ENDIAN);
 				offset += chunkSize;
 				return buffer;
 			}

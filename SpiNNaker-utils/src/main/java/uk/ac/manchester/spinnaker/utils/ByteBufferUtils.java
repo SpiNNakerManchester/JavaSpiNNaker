@@ -40,10 +40,12 @@ public abstract class ByteBufferUtils {
 	 *            The length of the slice.
 	 * @return The little-endian slice. This will be read-only if and only if
 	 *         the original buffer is read-only.
+	 * @deprecated Replace with
+	 *             {@code src.slice(from, len).order(LITTLE_ENDIAN)}
 	 */
+	@Deprecated(forRemoval = true)
 	public static ByteBuffer slice(ByteBuffer src, int from, int len) {
-		var s = src.duplicate().position(from).slice();
-		return s.limit(len).order(LITTLE_ENDIAN);
+		return src.slice(from, len).order(LITTLE_ENDIAN);
 	}
 
 	/**
