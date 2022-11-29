@@ -16,35 +16,17 @@
  */
 package uk.ac.manchester.spinnaker.alloc.compat;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
-
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A machine notification message.
  *
  * @author Donal Fellows
+ * @param machinesChanged
+ *            What machines have had allocations on them change.
  */
-@JsonAutoDetect(setterVisibility = NON_PRIVATE)
-final class MachineNotifyMessage {
-	private List<String> machinesChanged;
-
-	MachineNotifyMessage(List<String> changes) {
-		machinesChanged = changes;
-	}
-
-	/**
-	 * @return the machines changed
-	 */
-	@JsonProperty("machines_changed")
-	public List<String> getMachinesChanged() {
-		return machinesChanged;
-	}
-
-	void setMachinesChanged(List<String> machinesChanged) {
-		this.machinesChanged = machinesChanged;
-	}
+record MachineNotifyMessage(
+		@JsonProperty("machines_changed") List<String> machinesChanged) {
 }

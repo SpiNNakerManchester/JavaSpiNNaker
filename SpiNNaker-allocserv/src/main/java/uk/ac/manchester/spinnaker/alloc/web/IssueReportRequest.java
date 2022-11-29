@@ -40,50 +40,40 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  * A request to report an issue with some boards.
  *
  * @author Donal Fellows
+ * @param issue
+ *            What the problem is believed to be.
+ * @param boards
+ *            Describes the boards that have the issue.
  */
-@SuppressWarnings("checkstyle:visibilitymodifier")
-public class IssueReportRequest {
-	/** What the problem is believed to be. */
-	@NotBlank(message = "an issue description must be given")
-	public String issue;
-
-	/** Describes the boards that have the issue. */
-	public List<@Valid ReportedBoard> boards;
-
-	/** Describes a board that has an issue. */
-	public static class ReportedBoard {
-		/** The location of the chip within the reporting allocation. */
-		@Valid
-		public ChipLocation chip;
-
-		/** The X triad coordinate of the board. */
-		@ValidTriadX
-		public Integer x;
-
-		/** The Y triad coordinate of the board. */
-		@ValidTriadY
-		public Integer y;
-
-		/** The Z triad coordinate of the board. */
-		@ValidTriadZ
-		public Integer z;
-
-		/** The physical cabinet number of the board. */
-		@ValidCabinetNumber
-		public Integer cabinet;
-
-		/** The physical frame number of the board. */
-		@ValidFrameNumber
-		public Integer frame;
-
-		/** The physical board number of the board. */
-		@ValidBoardNumber
-		public Integer board;
-
-		/** The IP address of the board. */
-		@IPAddress(nullOK = true, message = "address must be an IP address")
-		public String address;
-
+public record IssueReportRequest(
+		@NotBlank(message = "an issue description must be given") String issue,
+		List<@Valid ReportedBoard> boards) {
+	/**
+	 * Describes a board that has an issue.
+	 *
+	 * @param chip
+	 *            The location of the chip within the reporting allocation.
+	 * @param x
+	 *            The X triad coordinate of the board.
+	 * @param y
+	 *            The Y triad coordinate of the board.
+	 * @param z
+	 *            The Z triad coordinate of the board.
+	 * @param cabinet
+	 *            The physical cabinet number of the board.
+	 * @param frame
+	 *            The physical frame number of the board.
+	 * @param board
+	 *            The physical board number of the board.
+	 * @param address
+	 *            The IP address of the board.
+	 */
+	public static record ReportedBoard(@Valid ChipLocation chip,
+			@ValidTriadX Integer x, @ValidTriadY Integer y,
+			@ValidTriadZ Integer z, @ValidCabinetNumber Integer cabinet,
+			@ValidFrameNumber Integer frame, @ValidBoardNumber Integer board,
+			@IPAddress(nullOK = true, message = "address must be "
+					+ "an IP address") String address) {
 		@JsonIgnore
 		private boolean isChipValid() {
 			return nonNull(chip);

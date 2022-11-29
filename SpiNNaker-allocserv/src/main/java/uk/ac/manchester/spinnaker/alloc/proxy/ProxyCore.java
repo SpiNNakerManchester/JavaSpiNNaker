@@ -104,11 +104,10 @@ public class ProxyCore implements AutoCloseable {
 		this.localHost = localHost;
 		for (var ci : connections) {
 			try {
-				hosts.put(ci.getChip(),
-						InetAddress.getByName(ci.getHostname()));
+				hosts.put(ci.chip(), InetAddress.getByName(ci.hostname()));
 			} catch (UnknownHostException e) {
 				log.warn("unexpectedly unknown board address: {}",
-						ci.getHostname(), e);
+						ci.hostname(), e);
 			}
 		}
 		recvFrom = Set.copyOf(hosts.values());

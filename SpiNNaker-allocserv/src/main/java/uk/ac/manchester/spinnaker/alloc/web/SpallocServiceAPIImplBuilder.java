@@ -230,7 +230,7 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 				}
 				bgAction(response, permit, () -> {
 					j.access(caller);
-					allocation().setPower(reqBody.getPower());
+					allocation().setPower(reqBody.power());
 					return accepted().build();
 				});
 			}

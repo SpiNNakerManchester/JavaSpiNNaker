@@ -28,33 +28,26 @@ import com.google.errorprone.annotations.Immutable;
  * Describes a link that is disabled.
  *
  * @author Donal Fellows
+ * @param end1
+ *            One end of the down link.
+ * @param end2
+ *            The other end of the down link.
  */
 @Immutable
 @JsonFormat(shape = ARRAY)
-public final class DownLink {
+public record DownLink(@Valid DownLink.End end1, @Valid DownLink.End end2) {
 	/**
 	 * Describes one end of a link that is disabled.
 	 *
 	 * @author Donal Fellows
+	 * @param board
+	 *            On what board is this end of the link.
+	 * @param direction
+	 *            In which direction does this end of the link go?
 	 */
 	@Immutable
-	public static final class End {
-		private End(BoardCoords board, Direction direction) {
-			this.board = board;
-			this.direction = direction;
-		}
-
-		/**
-		 * On what board is this end of the link.
-		 */
-		@Valid
-		public final BoardCoords board;
-
-		/**
-		 * In which direction does this end of the link go?
-		 */
-		@NotNull
-		public final Direction direction;
+	public static record End(@Valid BoardCoords board,
+			@NotNull Direction direction) {
 	}
 
 	/**
@@ -71,15 +64,6 @@ public final class DownLink {
 	 */
 	public DownLink(BoardCoords board1, Direction dir1, BoardCoords board2,
 			Direction dir2) {
-		end1 = new End(board1, dir1);
-		end2 = new End(board2, dir2);
+		this(new End(board1, dir1), new End(board2, dir2));
 	}
-
-	/** One end of the down link. */
-	@Valid
-	public final DownLink.End end1;
-
-	/** The other end of the down link. */
-	@Valid
-	public final DownLink.End end2;
 }

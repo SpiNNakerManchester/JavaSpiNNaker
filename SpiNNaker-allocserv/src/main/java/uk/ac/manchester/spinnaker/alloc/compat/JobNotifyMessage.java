@@ -16,35 +16,17 @@
  */
 package uk.ac.manchester.spinnaker.alloc.compat;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
-
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A job notification message.
  *
  * @author Donal Fellows
+ * @param jobsChanged
+ *            What jobs have had their state change
  */
-@JsonAutoDetect(setterVisibility = NON_PRIVATE)
-final class JobNotifyMessage {
-	private List<Integer> jobsChanged;
-
-	JobNotifyMessage(List<Integer> changes) {
-		jobsChanged = changes;
-	}
-
-	/**
-	 * @return the jobs changed
-	 */
-	@JsonProperty("jobs_changed")
-	public List<Integer> getJobsChanged() {
-		return jobsChanged;
-	}
-
-	void setJobsChanged(List<Integer> jobsChanged) {
-		this.jobsChanged = jobsChanged;
-	}
+record JobNotifyMessage(
+		@JsonProperty("jobs_changed") List<Integer> jobsChanged) {
 }

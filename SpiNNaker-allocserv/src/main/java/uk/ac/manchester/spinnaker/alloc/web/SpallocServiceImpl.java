@@ -210,12 +210,13 @@ public class SpallocServiceImpl extends BackgroundSupport
 	@Override
 	public void createJob(CreateJobRequest req, UriInfo ui,
 			SecurityContext security, AsyncResponse response) {
-		var crds = validateAndApplyDefaultsToJobRequest(req, security);
+		var r = validateCreateJobNonSizeAttrs(req, security);
+		var crds = validateAndApplyDefaultsToJobRequest(r, security);
 
 		// Async because it involves getting a write lock
 		bgAction(response, () -> ifElse(
-				core.createJob(trim(req.owner), trim(req.group), crds,
-						req.machineName, req.tags, req.keepaliveInterval,
+				core.createJob(trim(r.owner()), trim(r.group()), crds,
+						r.machineName(), r.tags(), r.keepaliveInterval(),
 						mapper.writeValueAsBytes(req)),
 				job -> created(ui.getRequestUriBuilder().path("{id}")
 						.build(job.getId()))
@@ -225,81 +226,90 @@ public class SpallocServiceImpl extends BackgroundSupport
 						.entity("out of quota").build()));
 	}
 
-	private CreateDescriptor validateAndApplyDefaultsToJobRequest(
-			CreateJobRequest req, SecurityContext security) throws BadArgs {
+	private CreateJobRequest validateCreateJobNonSizeAttrs(CreateJobRequest req,
+			SecurityContext security) {
 		if (isNull(req)) {
 			throw new BadArgs("request must be supplied");
 		}
 
-		if (!security.isUserInRole("ADMIN") || isNull(req.owner)
-				|| req.owner.isBlank()) {
-			req.owner = security.getUserPrincipal().getName();
+		var owner = req.owner();
+		if (!security.isUserInRole("ADMIN") || isNull(owner)
+				|| owner.isBlank()) {
+			owner = security.getUserPrincipal().getName();
 		}
-		if (isNull(req.owner) || req.owner.isBlank()) {
+		if (isNull(owner) || owner.isBlank()) {
 			throw new BadArgs(
 					"request must be connected to an identified owner");
 		}
-		req.owner = req.owner.strip();
+		owner = owner.strip();
 
 		var ka = properties.getKeepalive();
-		if (isNull(req.keepaliveInterval)
-				|| req.keepaliveInterval.compareTo(ka.getMin()) < 0) {
+		if (isNull(req.keepaliveInterval())
+				|| req.keepaliveInterval().compareTo(ka.getMin()) < 0) {
 			throw new BadArgs(
 					"keepalive interval must be at least " + ka.getMin());
 		}
-		if (req.keepaliveInterval.compareTo(ka.getMax()) > 0) {
+		if (req.keepaliveInterval().compareTo(ka.getMax()) > 0) {
 			throw new BadArgs(
 					"keepalive interval must be no more than " + ka.getMax());
 		}
 
-		if (isNull(req.tags)) {
-			req.tags = new ArrayList<>();
-			if (isNull(req.machineName)) {
-				req.tags.add("default");
+		var tags = req.tags();
+		if (isNull(tags)) {
+			tags = new ArrayList<>();
+			if (isNull(req.machineName())) {
+				tags.add("default");
 			}
 		}
-		if (nonNull(req.machineName) && !req.tags.isEmpty()) {
+		if (nonNull(req.machineName()) && !tags.isEmpty()) {
 			throw new BadArgs(
 					"must not specify machine name and tags together");
 		}
 
-		if (isNull(req.maxDeadBoards)) {
-			req.maxDeadBoards = 0;
-		} else if (req.maxDeadBoards < 0) {
+		return new CreateJobRequest(owner, req.group(), req.keepaliveInterval(),
+				req.numBoards(), req.dimensions(), req.board(),
+				req.machineName(), tags, req.maxDeadBoards());
+	}
+
+	private CreateDescriptor validateAndApplyDefaultsToJobRequest(
+			CreateJobRequest req, SecurityContext security) throws BadArgs {
+		var maxDead = req.maxDeadBoards();
+		if (isNull(maxDead)) {
+			maxDead = 0;
+		} else if (maxDead < 0) {
 			throw new BadArgs(
 					"the maximum number of dead boards must not be negative");
 		}
 
-		if (nonNull(req.numBoards)) {
-			return new CreateNumBoards(req.numBoards, req.maxDeadBoards);
-		} else if (nonNull(req.dimensions)) {
-			if (nonNull(req.board)) {
+		if (nonNull(req.numBoards())) {
+			return new CreateNumBoards(req.numBoards(), maxDead);
+		} else if (nonNull(req.dimensions())) {
+			var size = req.dimensions();
+			var specific = req.board();
+			if (nonNull(specific)) {
 				// Both dimensions AND board; rooted rectangle
-				if (nonNull(req.board.x)) {
-					return new CreateDimensionsAt(req.dimensions.width,
-							req.dimensions.height, req.board.x, req.board.y,
-							req.board.z);
-				} else if (nonNull(req.board.cabinet)) {
-					return CreateDimensionsAt.physical(req.dimensions.width,
-							req.dimensions.height, req.board.cabinet,
-							req.board.frame, req.board.board,
-							req.maxDeadBoards);
+				if (nonNull(specific.x())) {
+					return new CreateDimensionsAt(size.width(), size.height(),
+							specific.x(), specific.y(), specific.z(), maxDead);
+				} else if (nonNull(specific.cabinet())) {
+					return CreateDimensionsAt.physical(size.width(),
+							size.height(), specific.cabinet(), specific.frame(),
+							specific.board(), maxDead);
 				} else {
-					return new CreateDimensionsAt(req.dimensions.width,
-							req.dimensions.height, req.board.address,
-							req.maxDeadBoards);
+					return new CreateDimensionsAt(size.width(), size.height(),
+							specific.address(), maxDead);
 				}
 			}
-			return new CreateDimensions(req.dimensions.width,
-					req.dimensions.height, req.maxDeadBoards);
-		} else if (nonNull(req.board)) {
-			if (nonNull(req.board.x)) {
-				return triad(req.board.x, req.board.y, req.board.z);
-			} else if (nonNull(req.board.cabinet)) {
-				return physical(req.board.cabinet, req.board.frame,
-						req.board.board);
+			return new CreateDimensions(size.width(), size.height(), maxDead);
+		} else if (nonNull(req.board())) {
+			var specific = req.board();
+			if (nonNull(specific.x())) {
+				return triad(specific.x(), specific.y(), specific.z());
+			} else if (nonNull(specific.cabinet())) {
+				return physical(specific.cabinet(), specific.frame(),
+						specific.board());
 			} else {
-				return address(req.board.address);
+				return address(specific.address());
 			}
 		} else {
 			// It's a single board

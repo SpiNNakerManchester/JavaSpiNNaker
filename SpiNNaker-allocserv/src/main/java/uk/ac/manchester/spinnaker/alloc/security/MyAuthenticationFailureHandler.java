@@ -65,25 +65,9 @@ class MyAuthenticationFailureHandler implements AuthenticationFailureHandler {
 			message += ": " + e.getLocalizedMessage();
 		}
 		mapper.writeValue(response.getOutputStream(),
-				new AuthFailureObject(message));
+				new AuthFailureObject(message, now()));
 	}
 
-	static class AuthFailureObject {
-		private String message;
-
-		private Instant timestamp;
-
-		AuthFailureObject(String message) {
-			this.message = message;
-			this.timestamp = now();
-		}
-
-		public String getMessage() {
-			return message;
-		}
-
-		public Instant getTimestamp() {
-			return timestamp;
-		}
+	static record AuthFailureObject(String message, Instant timestamp) {
 	}
 }

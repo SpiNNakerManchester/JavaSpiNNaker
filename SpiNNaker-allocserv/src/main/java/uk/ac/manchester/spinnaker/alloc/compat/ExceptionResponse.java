@@ -16,31 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.alloc.compat;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
-import static java.util.Objects.isNull;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * A message indicating an operation failed.
  *
  * @author Donal Fellows
+ * @param exception
+ *            The exception message.
  */
-@JsonAutoDetect(setterVisibility = NON_PRIVATE)
-final class ExceptionResponse {
-	private String exception;
-
-	ExceptionResponse(String message) {
-		exception = message;
-	}
-
-	@JsonProperty("exception")
-	public String getException() {
-		return exception;
-	}
-
-	void setException(String exception) {
-		this.exception = isNull(exception) ? "" : exception.toString();
-	}
+record ExceptionResponse(String exception) {
 }

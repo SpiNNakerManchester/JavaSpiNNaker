@@ -21,6 +21,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRI
 import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
@@ -30,21 +31,24 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * A report of an issue with a board.
  *
  * @author Donal Fellows
+ * @param id
+ *            The report ID.
+ * @param boardId
+ *            The board ID.
+ * @param issue
+ *            What did they report?
+ * @param reporter
+ *            Who reported it?
+ * @param timestamp
+ *            When was it reported?
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
-public class BoardIssueReport {
-	private int id;
-
-	private int boardId;
-
-	private String issue;
-
-	private String reporter;
-
-	private Instant timestamp;
-
-	/** Create a record. */
-	public BoardIssueReport() {
+public record BoardIssueReport(int id, int boardId, String issue,
+		String reporter, Instant timestamp) {
+	@JsonCreator
+	BoardIssueReport(int id, int boardId, String issue, String reporter,
+			String timestamp) {
+		this(id, boardId, issue, reporter, Instant.parse(timestamp));
 	}
 
 	/**
@@ -56,55 +60,8 @@ public class BoardIssueReport {
 	 */
 	@UsedInJavadocOnly(SQLQueries.class)
 	public BoardIssueReport(Row row) {
-		id = row.getInt("report_id");
-		boardId = row.getInt("board_id");
-		issue = row.getString("reported_issue");
-		reporter = row.getString("reporter_name");
-		timestamp = row.getInstant("report_timestamp");
-	}
-
-	/** @return The report ID. */
-	public int getId() {
-		return id;
-	}
-
-	void setId(int id) {
-		this.id = id;
-	}
-
-	/** @return The board ID. */
-	public int getBoardId() {
-		return boardId;
-	}
-
-	void setBoardId(int id) {
-		this.boardId = id;
-	}
-
-	/** @return What did they report? */
-	public String getIssue() {
-		return issue;
-	}
-
-	void setIssue(String issue) {
-		this.issue = issue;
-	}
-
-	/** @return Who reported it? */
-	public String getReporter() {
-		return reporter;
-	}
-
-	void setReporter(String reporter) {
-		this.reporter = reporter;
-	}
-
-	/** @return When was it reported? */
-	public Instant getTimestamp() {
-		return timestamp;
-	}
-
-	void setTimestamp(Instant timestamp) {
-		this.timestamp = timestamp;
+		this(row.getInt("report_id"), row.getInt("board_id"),
+				row.getString("reported_issue"), row.getString("reporter_name"),
+				row.getInstant("report_timestamp"));
 	}
 }

@@ -18,8 +18,6 @@ package uk.ac.manchester.spinnaker.alloc.model;
 
 import static java.lang.String.format;
 
-import java.util.Objects;
-
 import com.google.errorprone.annotations.Immutable;
 
 import uk.ac.manchester.spinnaker.alloc.db.Row;
@@ -35,73 +33,30 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  * Basic coordinates of a board. The result of a DB query.
  *
  * @author Donal Fellows
+ * @param x
+ *            Logical triad X coordinate.
+ * @param y
+ *            Logical triad Y coordinate.
+ * @param z
+ *            Logical triad Z coordinate.
+ * @param cabinet
+ *            Physical cabinet number.
+ * @param frame
+ *            Physical frame number.
+ * @param board
+ *            Physical board number. May be {@code null} if the board is dead
+ *            (e.g., because it is outright absent from the machine).
+ * @param address
+ *            IP address of ethernet chip. May be {@code null} if the current
+ *            user doesn't have permission to see the board address at this
+ *            point, or the board is dead (e.g., because it is outright absent
+ *            from the machine).
  */
 @Immutable
-public final class BoardCoords {
-	/** Logical triad X coordinate. */
-	@ValidTriadX
-	private final int x;
-
-	/** Logical triad Y coordinate. */
-	@ValidTriadY
-	private final int y;
-
-	/** Logical triad Z coordinate. */
-	@ValidTriadZ
-	private final int z;
-
-	/** Physical cabinet number. */
-	@ValidCabinetNumber
-	private final int cabinet;
-
-	/** Physical frame number. */
-	@ValidFrameNumber
-	private final int frame;
-
-	/**
-	 * Physical board number. May be {@code null} if the board is dead (e.g.,
-	 * because it is outright absent from the machine).
-	 */
-	@ValidBoardNumber
-	private final Integer board;
-
-	/**
-	 * IP address of ethernet chip. May be {@code null} if the current user
-	 * doesn't have permission to see the board address at this point, or the
-	 * board is dead (e.g., because it is outright absent from the machine).
-	 */
-	@IPAddress(nullOK = true)
-	private final String address;
-
-	/**
-	 * Make an instance from raw results. Uncommon.
-	 *
-	 * @param x
-	 *            Logical triad X coordinate
-	 * @param y
-	 *            Logical triad Y coordinate
-	 * @param z
-	 *            Logical triad Z coordinate
-	 * @param cabinet
-	 *            Physical cabinet number
-	 * @param frame
-	 *            Physical frame number
-	 * @param board
-	 *            Physical board number, or {@code null}
-	 * @param address
-	 *            IP address of ethernet chip, or {@code null}
-	 */
-	public BoardCoords(int x, int y, int z, int cabinet, int frame,
-			Integer board, String address) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.cabinet = cabinet;
-		this.frame = frame;
-		this.board = board;
-		this.address = address;
-	}
-
+public record BoardCoords(@ValidTriadX int x, @ValidTriadY int y,
+		@ValidTriadZ int z, @ValidCabinetNumber int cabinet,
+		@ValidFrameNumber int frame, @ValidBoardNumber Integer board,
+		@IPAddress(nullOK = true) String address) {
 	/**
 	 * Construct a set of board coordinates from a database row that describes
 	 * them. The common constructor.
@@ -112,81 +67,10 @@ public final class BoardCoords {
 	 *            Whether the {@link #address} should be shrouded.
 	 */
 	public BoardCoords(Row row, boolean shroudAddress) {
-		x = row.getInt("x");
-		y = row.getInt("y");
-		z = row.getInt("z");
-		cabinet = row.getInt("cabinet");
-		frame = row.getInt("frame");
-		board = row.getInteger("board_num");
-		address = shroudAddress ? null : row.getString("address");
-	}
-
-	/**
-	 * @return Logical triad X coordinate.
-	 */
-	public int getX() {
-		return x;
-	}
-
-	/**
-	 * @return Logical triad Y coordinate.
-	 */
-	public int getY() {
-		return y;
-	}
-
-	/**
-	 * @return Logical triad Z coordinate.
-	 */
-	public int getZ() {
-		return z;
-	}
-
-	/**
-	 * @return Physical cabinet number.
-	 */
-	public int getCabinet() {
-		return cabinet;
-	}
-
-	/**
-	 * @return Physical frame number.
-	 */
-	public int getFrame() {
-		return frame;
-	}
-
-	/**
-	 * @return Physical board number. May be {@code null} if the board is dead
-	 *         (e.g., because it is outright absent from the machine).
-	 */
-	public Integer getBoard() {
-		return board;
-	}
-
-	/**
-	 * @return IP address of ethernet chip. May be {@code null} if the current
-	 *         user doesn't have permission to see the board address at this
-	 *         point, or the board is dead (e.g., because it is outright absent
-	 *         from the machine).
-	 */
-	public String getAddress() {
-		return address;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		return (o instanceof BoardCoords other) && (x == other.x)
-				&& (y == other.y) && (z == other.z)
-				&& (cabinet == other.cabinet) && (frame == other.frame)
-				&& Objects.equals(board, other.board)
-				&& Objects.equals(address, other.address);
-	}
-
-	@Override
-	public int hashCode() {
-		// Just uses the triad coordinates
-		return x << 16 | y << 8 | z;
+		this(row.getInt("x"), row.getInt("y"), row.getInt("z"),
+				row.getInt("cabinet"), row.getInt("frame"),
+				row.getInteger("board_num"),
+				shroudAddress ? null : row.getString("address"));
 	}
 
 	@Override

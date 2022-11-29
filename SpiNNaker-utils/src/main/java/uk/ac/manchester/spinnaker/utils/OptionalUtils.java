@@ -72,6 +72,7 @@ public abstract class OptionalUtils {
 	 */
 	public static <T, U> U ifElse(Optional<T> source, Function<T, U> ifPresent,
 			Supplier<U> ifAbsent) {
+		// Would use ifPresentOrElse, except that's void result
 		return source.map(ifPresent).orElseGet(ifAbsent);
 	}
 

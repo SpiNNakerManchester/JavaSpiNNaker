@@ -1028,24 +1028,24 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 		void chip(ReportedBoard board) {
 			b.format("\tBoard for job (%d) chip %s\n", //
-					id, board.chip);
+					id, board.chip());
 		}
 
 		void triad(ReportedBoard board) {
 			b.format("\tBoard for job (%d) board (X:%d,Y:%d,Z:%d)\n", //
-					id, board.x, board.y, board.z);
+					id, board.x(), board.y(), board.z());
 		}
 
 		void phys(ReportedBoard board) {
 			b.format(
 					"\tBoard for job (%d) board "
 							+ "[Cabinet:%d,Frame:%d,Board:%d]\n", //
-					id, board.cabinet, board.frame, board.board);
+					id, board.cabinet(), board.frame(), board.board());
 		}
 
 		void ip(ReportedBoard board) {
 			b.format("\tBoard for job (%d) board (IP: %s)\n", //
-					id, board.address);
+					id, board.address());
 		}
 
 		void issue(int issueId) {
@@ -1290,13 +1290,13 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		 */
 		private String reportIssue(IssueReportRequest report, Permit permit,
 				EmailBuilder email, BoardReportSQL q) throws ReportRollbackExn {
-			email.header(report.issue, report.boards.size(), permit.name);
+			email.header(report.issue(), report.boards().size(), permit.name);
 			int userId = getUser(q.getConnection(), permit.name)
 					.orElseThrow(() -> new ReportRollbackExn(
 							"no such user: %s", permit.name));
-			for (var board : report.boards) {
+			for (var board : report.boards()) {
 				addIssueReport(q, getJobBoardForReport(q, board, email),
-						report.issue, userId, email);
+						report.issue(), userId, email);
 			}
 			return takeBoardsOutOfService(q, email).map(acted -> {
 				email.footer(acted);
@@ -1320,47 +1320,48 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		private int getJobBoardForReport(BoardReportSQL q, ReportedBoard board,
 				EmailBuilder email) throws ReportRollbackExn {
 			Row r;
-			if (nonNull(board.chip)) {
+			if (nonNull(board.chip())) {
 				r = q.findBoardByChip
-						.call1(id, root, board.chip.getX(), board.chip.getY())
-						.orElseThrow(() -> new ReportRollbackExn(board.chip));
+						.call1(id, root, board.chip().getX(),
+								board.chip().getY())
+						.orElseThrow(() -> new ReportRollbackExn(board.chip()));
 				email.chip(board);
-			} else if (nonNull(board.x)) {
+			} else if (nonNull(board.x())) {
 				r = q.findBoardByTriad
-						.call1(machineId, board.x, board.y, board.z)
+						.call1(machineId, board.x(), board.y(), board.z())
 						.orElseThrow(() -> new ReportRollbackExn(
-								"triad (%s,%s,%s) not in machine", board.x,
-								board.y, board.z));
+								"triad (%s,%s,%s) not in machine", board.x(),
+								board.y(), board.z()));
 				var j = r.getInteger("job_id");
 				if (isNull(j) || id != j) {
 					throw new ReportRollbackExn(
-							"triad (%s,%s,%s) not allocated to job %d", board.x,
-							board.y, board.z, id);
+							"triad (%s,%s,%s) not allocated to job %d",
+							board.x(), board.y(), board.z(), id);
 				}
 				email.triad(board);
-			} else if (nonNull(board.cabinet)) {
+			} else if (nonNull(board.cabinet())) {
 				r = q.findBoardPhys
-						.call1(machineId, board.cabinet, board.frame,
-								board.board)
+						.call1(machineId, board.cabinet(), board.frame(),
+								board.board())
 						.orElseThrow(() -> new ReportRollbackExn(
 								"physical board [%s,%s,%s] not in machine",
-								board.cabinet, board.frame, board.board));
+								board.cabinet(), board.frame(), board.board()));
 				var j = r.getInteger("job_id");
 				if (isNull(j) || id != j) {
 					throw new ReportRollbackExn(
 							"physical board [%s,%s,%s] not allocated to job %d",
-							board.cabinet, board.frame, board.board, id);
+							board.cabinet(), board.frame(), board.board(), id);
 				}
 				email.phys(board);
-			} else if (nonNull(board.address)) {
-				r = q.findBoardNet.call1(machineId, board.address)
+			} else if (nonNull(board.address())) {
+				r = q.findBoardNet.call1(machineId, board.address())
 						.orElseThrow(() -> new ReportRollbackExn(
-								"board at %s not in machine", board.address));
+								"board at %s not in machine", board.address()));
 				var j = r.getInteger("job_id");
 				if (isNull(j) || id != j) {
 					throw new ReportRollbackExn(
 							"board at %s not allocated to job %d",
-							board.address, id);
+							board.address(), id);
 				}
 				email.ip(board);
 			} else {

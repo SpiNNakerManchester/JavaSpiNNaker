@@ -28,26 +28,10 @@ import uk.ac.manchester.spinnaker.alloc.model.PowerState;
  * of it allocated to a job), or a state that the user wants us to switch into.
  *
  * @author Donal Fellows
+ * @param power the machine power state
  */
 @Immutable
-public class MachinePower {
-	@NotNull(message = "power must be specified")
-	private final PowerState power;
-
-	/**
-	 * Make an instance.
-	 *
-	 * @param power
-	 *            the machine power state
-	 */
-	public MachinePower(
-			@JsonProperty(value = "power", defaultValue = "OFF")
-			PowerState power) {
-		this.power = power;
-	}
-
-	/** @return the machine power state */
-	public PowerState getPower() {
-		return power;
-	}
+public record MachinePower(
+		@JsonProperty(value = "power", defaultValue = "OFF")
+		@NotNull(message = "power must be specified") PowerState power) {
 }

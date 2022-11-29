@@ -16,13 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.ws.rs.core.UriInfo;
 
@@ -35,59 +34,48 @@ import uk.ac.manchester.spinnaker.alloc.model.DownLink;
  * {@link BriefMachineDescription}s.
  *
  * @author Donal Fellows
+ * @param machines
+ *            The list of machines known to the service.
  */
-public final class MachinesResponse {
+public final record MachinesResponse(List<BriefMachineDescription> machines) {
 	/**
 	 * A brief, summary description of a machine.
 	 *
 	 * @author Donal Fellows
+	 * @param name
+	 *            The name of the machine.
+	 * @param tags
+	 *            The tags of the machine.
+	 * @param uri
+	 *            The URI to the machine.
+	 * @param width
+	 *            The width of the machine, in triads.
+	 * @param height
+	 *            The height of the machine, in triads.
+	 * @param deadBoards
+	 *            The dead boards on the machine.
+	 * @param deadLinks
+	 *            The dead links on the machine.
 	 */
-	public static final class BriefMachineDescription {
-		/** The name of the machine. */
-		public final String name;
-
-		/** The tags of the machine. */
-		public final List<String> tags;
-
-		/** The URI to the machine. */
-		public final URI uri;
-
-		/** The width of the machine, in triads. */
-		public final int width;
-
-		/** The height of the machine, in triads. */
-		public final int height;
-
-		/** The dead boards on the machine. */
-		public final List<BoardCoords> deadBoards;
-
-		/** The dead links on the machine. */
-		public final List<DownLink> deadLinks;
-
-		private BriefMachineDescription(String name, URI uri, int width,
-				int height, Set<String> tags, List<BoardCoords> deadBoards,
-				List<DownLink> deadLinks) {
-			this.name = name;
-			this.uri = uri;
-			this.width = width;
-			this.height = height;
-			this.tags = List.copyOf(tags);
-			this.deadBoards = copy(deadBoards);
-			this.deadLinks = copy(deadLinks);
-		}
+	public static record BriefMachineDescription(String name, List<String> tags,
+			URI uri, int width, int height, List<BoardCoords> deadBoards,
+			List<DownLink> deadLinks) {
 	}
 
-	/** The list of machines known to the service. */
-	public final List<BriefMachineDescription> machines;
-
 	MachinesResponse(Map<String, Machine> machines, UriInfo ui) {
-		var mlist = new ArrayList<BriefMachineDescription>(machines.size());
+		this(makeBriefDescriptions(machines, ui));
+	}
+
+	private static List<BriefMachineDescription> makeBriefDescriptions(
+			Map<String, Machine> machines, UriInfo ui) {
 		var ub = ui.getAbsolutePathBuilder().path("{name}");
-		machines.forEach((name,
-				machine) -> mlist.add(new BriefMachineDescription(name,
-						ub.build(name), machine.getWidth(), machine.getHeight(),
-						machine.getTags(), machine.getDeadBoards(),
-						machine.getDownLinks())));
-		this.machines = copy(mlist);
+		return machines.entrySet().stream()
+				.map(e -> new BriefMachineDescription(e.getKey(),
+						List.copyOf(e.getValue().getTags()),
+						ub.build(e.getKey()), e.getValue().getWidth(),
+						e.getValue().getHeight(),
+						copy(e.getValue().getDeadBoards()),
+						copy(e.getValue().getDownLinks())))
+				.collect(toUnmodifiableList());
 	}
 }

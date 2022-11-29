@@ -29,6 +29,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.errorprone.annotations.Keep;
 
@@ -46,73 +47,65 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  * A request to create a job.
  *
  * @author Donal Fellows
+ * @param owner
+ *            Who owns the job. Ignored when the job is submitted by a
+ *            non-admin.
+ * @param group
+ *            What group will the job be accounted against; the owner
+ *            <em>must</em> be a member of the group. If {@code null}, the
+ *            single group that the owner is a member of will be used (with it
+ *            being an error for that to not exist or not be unique).
+ * @param keepaliveInterval
+ *            How long after a keepalive message will the job be auto-deleted?
+ *            <em>Required.</em> Must be between 30 and 300 seconds.
+ * @param numBoards
+ *            The number of boards to allocate. May be {@code null} to either
+ *            use the default (1) or to let one of the other selectors
+ *            ({@link #dimensions}, {@link #board}) make the choice.
+ * @param dimensions
+ *            The dimensions of rectangle of triads of boards to allocate. May
+ *            be {@code null} to let one of the other selectors
+ *            ({@link #numBoards}, {@link #board}) make the choice.
+ * @param board
+ *            The specific board to allocate. May be {@code null} to let one of
+ *            the other selectors ({@link #numBoards}, {@link #dimensions}) make
+ *            the choice.
+ * @param machineName
+ *            Which machine to allocate on. This and {@link #tags} are mutually
+ *            exclusive, but at least one must be given.
+ * @param tags
+ *            The tags to select which machine to allocate on. This and
+ *            {@link #machineName} are mutually exclusive, but at least one must
+ *            be given.
+ * @param maxDeadBoards
+ *            The maximum number of dead boards allowed in a rectangular
+ *            allocation. Note that the allocation engine might increase this if
+ *            it decides to overallocate. Defaults to {@code 0}.
  */
-@SuppressWarnings("checkstyle:visibilitymodifier")
-public class CreateJobRequest {
-	/**
-	 * Who owns the job. Ignored when the job is submitted by a non-admin.
-	 */
-	public String owner;
-
-	/**
-	 * What group will the job be accounted against; the owner <em>must</em> be
-	 * a member of the group. If {@code null}, the single group that the owner
-	 * is a member of will be used (with it being an error for that to not exist
-	 * or not be unique).
-	 */
-	public String group;
-
-	/**
-	 * How long after a keepalive message will the job be auto-deleted?
-	 * <em>Required.</em> Must be between 30 and 300 seconds.
-	 */
-	@NotNull(message = "keepalive-interval is required")
-	public Duration keepaliveInterval;
-
-	/**
-	 * The number of boards to allocate. May be {@code null} to either use the
-	 * default (1) or to let one of the other selectors ({@link #dimensions},
-	 * {@link #board}) make the choice.
-	 */
-	@Positive(message = "number of boards must be at least 1 if given")
-	public Integer numBoards;
-
-	/**
-	 * The dimensions of rectangle of triads of boards to allocate. May be
-	 * {@code null} to let one of the other selectors ({@link #numBoards},
-	 * {@link #board}) make the choice.
-	 */
-	@Valid
-	public Dimensions dimensions;
-
-	/**
-	 * The specific board to allocate. May be {@code null} to let one of the
-	 * other selectors ({@link #numBoards}, {@link #dimensions}) make the
-	 * choice.
-	 */
-	@Valid
-	public SpecificBoard board;
-
-	/**
-	 * Which machine to allocate on. This and {@link #tags} are mutually
-	 * exclusive, but at least one must be given.
-	 */
-	public String machineName;
-
-	/**
-	 * The tags to select which machine to allocate on. This and
-	 * {@link #machineName} are mutually exclusive, but at least one must be
-	 * given.
-	 */
-	public List<@NotBlank(message = "tags must not be blank") String> tags;
-
-	/**
-	 * The maximum number of dead boards allowed in a rectangular allocation.
-	 * Note that the allocation engine might increase this if it decides to
-	 * overallocate. Defaults to {@code 0}.
-	 */
-	@PositiveOrZero(message = "max-dead-boards may not be negative")
-	public Integer maxDeadBoards;
+public record CreateJobRequest(String owner, String group,
+		@NotNull(message = "keepalive-interval is "
+				+ "required") Duration keepaliveInterval,
+		@Positive(message = "number of boards must be "
+				+ "at least 1 if given") Integer numBoards,
+		@Valid Dimensions dimensions, @Valid SpecificBoard board,
+		String machineName,
+		List<@NotBlank(message = "tags must not be blank") String> tags,
+		@PositiveOrZero(message = "max-dead-boards may not be "
+				+ "negative") Integer maxDeadBoards) {
+	@JsonCreator
+	CreateJobRequest(String owner, String group,
+			@NotNull(message = "keepalive-interval is "
+					+ "required") String keepaliveInterval,
+			@Positive(message = "number of boards must be "
+					+ "at least 1 if given") Integer numBoards,
+			@Valid Dimensions dimensions, @Valid SpecificBoard board,
+			String machineName,
+			List<@NotBlank(message = "tags must not be blank") String> tags,
+			@PositiveOrZero(message = "max-dead-boards may not be "
+					+ "negative") Integer maxDeadBoards) {
+		this(owner, group, Duration.parse(keepaliveInterval), numBoards,
+				dimensions, board, machineName, tags, maxDeadBoards);
+	}
 
 	// Extended validation
 
@@ -164,47 +157,42 @@ public class CreateJobRequest {
 				&& keepaliveInterval.compareTo(MIN_KEEPALIVE) >= 0;
 	}
 
-	/** Describes a request for an allocation of given dimensions. */
-	public static class Dimensions {
-		/** The width of the rectangle of boards to allocate, in triads. */
-		@ValidTriadWidth
-		public int width;
-
-		/** The height of the rectangle of boards to allocate, in triads. */
-		@ValidTriadHeight
-		public int height;
+	/**
+	 * Describes a request for an allocation of given dimensions.
+	 *
+	 * @param width
+	 *            The width of the rectangle of boards to allocate, in triads.
+	 * @param height
+	 *            The height of the rectangle of boards to allocate, in triads.
+	 */
+	public static record Dimensions(@ValidTriadWidth int width,
+			@ValidTriadHeight int height) {
 	}
 
-	/** Describes a request for a specific board. */
-	public static class SpecificBoard {
-		/** The X triad coordinate of the board. */
-		@ValidTriadX
-		public Integer x;
-
-		/** The Y triad coordinate of the board. */
-		@ValidTriadY
-		public Integer y;
-
-		/** The Z triad coordinate of the board. */
-		@ValidTriadZ
-		public Integer z;
-
-		/** The physical cabinet number of the board. */
-		@ValidCabinetNumber
-		public Integer cabinet;
-
-		/** The physical frame number of the board. */
-		@ValidFrameNumber
-		public Integer frame;
-
-		/** The physical board number of the board. */
-		@ValidBoardNumber
-		public Integer board;
-
-		/** The IP address of the board. */
-		@IPAddress(nullOK = true, message = "address must be an IP address")
-		public String address;
-
+	/**
+	 * Describes a request for a specific board.
+	 *
+	 * @param x
+	 *            The X triad coordinate of the board.
+	 * @param y
+	 *            The Y triad coordinate of the board.
+	 * @param z
+	 *            The Z triad coordinate of the board.
+	 * @param cabinet
+	 *            The physical cabinet number of the board.
+	 * @param frame
+	 *            The physical frame number of the board.
+	 * @param board
+	 *            The physical board number of the board.
+	 * @param address
+	 *            The IP address of the board.
+	 */
+	public static record SpecificBoard(@ValidTriadX Integer x,
+			@ValidTriadY Integer y, @ValidTriadZ Integer z,
+			@ValidCabinetNumber Integer cabinet,
+			@ValidFrameNumber Integer frame, @ValidBoardNumber Integer board,
+			@IPAddress(nullOK = true, message = "address must be "
+					+ "an IP address") String address) {
 		@JsonIgnore
 		private boolean isTriadValid() {
 			return nonNull(x) && nonNull(y) && nonNull(z);

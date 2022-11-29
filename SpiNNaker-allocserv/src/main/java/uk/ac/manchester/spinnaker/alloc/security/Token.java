@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.security;
 
-import java.io.Serializable;
-
 import javax.servlet.http.HttpSession;
 
 import org.springframework.security.core.Authentication;
@@ -27,17 +25,14 @@ import org.springframework.security.core.Authentication;
  * for which it was created; if the session changes, it cannot be reused.
  *
  * @author Donal Fellows
+ * @param id
+ *            The session ID
+ * @param auth
+ *            The authentication token
  */
-final class Token implements Serializable {
-	private static final long serialVersionUID = -439034988839648948L;
-
-	private final String id;
-
-	private final Authentication auth;
-
+record Token(String id, Authentication auth) {
 	Token(HttpSession s, Authentication a) {
-		this.auth = a;
-		this.id = s.getId();
+		this(s.getId(), a);
 	}
 
 	boolean isValid(HttpSession s) {

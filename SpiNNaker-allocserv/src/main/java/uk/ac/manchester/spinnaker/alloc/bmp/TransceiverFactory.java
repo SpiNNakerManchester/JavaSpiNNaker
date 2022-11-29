@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
-import static java.util.Objects.hash;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
@@ -69,29 +68,7 @@ public class TransceiverFactory
 		implements TransceiverFactoryAPI<BMPTransceiverInterface> {
 	private static final Logger log = getLogger(TransceiverFactory.class);
 
-	private static final class Key {
-		final String machine;
-
-		final BMPCoords bmp;
-
-		Key(String machine, BMPCoords bmp) {
-			this.machine = machine;
-			this.bmp = bmp;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (o instanceof Key) {
-				var other = (Key) o;
-				return machine.equals(other.machine) && bmp.equals(other.bmp);
-			}
-			return false;
-		}
-
-		@Override
-		public int hashCode() {
-			return hash(machine, bmp);
-		}
+	private static record Key(String machine, BMPCoords bmp) {
 	}
 
 	@GuardedBy("itself")

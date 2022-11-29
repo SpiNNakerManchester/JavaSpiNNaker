@@ -247,8 +247,7 @@ abstract class Utils {
 	 * @return The converted coordinate.
 	 */
 	static BoardCoordinates board(BoardCoords coords) {
-		return new BoardCoordinates(coords.getX(), coords.getY(),
-				coords.getZ());
+		return new BoardCoordinates(coords.x(), coords.y(), coords.z());
 	}
 
 	/**
@@ -259,13 +258,13 @@ abstract class Utils {
 	 * @return A stream of ends of the link.
 	 */
 	static Stream<BoardLink> boardLinks(DownLink downLink) {
-		var bl1 = new BoardLink(downLink.end1.board.getX(),
-				downLink.end1.board.getY(), downLink.end1.board.getZ(),
-				downLink.end1.direction.ordinal());
+		var bl1 = new BoardLink(downLink.end1().board().x(),
+				downLink.end1().board().y(), downLink.end1().board().z(),
+				downLink.end1().direction().ordinal());
 
-		var bl2 = new BoardLink(downLink.end2.board.getX(),
-				downLink.end2.board.getY(), downLink.end2.board.getZ(),
-				downLink.end2.direction.ordinal());
+		var bl2 = new BoardLink(downLink.end2().board().x(),
+				downLink.end2().board().y(), downLink.end2().board().z(),
+				downLink.end2().direction().ordinal());
 
 		return List.of(bl1, bl2).stream();
 	}

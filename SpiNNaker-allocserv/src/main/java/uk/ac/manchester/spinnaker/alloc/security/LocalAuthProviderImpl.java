@@ -419,19 +419,14 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	/** Holds either a {@link OAuth2User} or a {@link Jwt}. */
-	private static final class OriginatingCredential {
-		private final OAuth2User user;
-
-		private final OAuth2AccessToken token;
-
+	private static record OriginatingCredential(OAuth2User user,
+			OAuth2AccessToken token) {
 		OriginatingCredential(OAuth2User user) {
-			this.user = requireNonNull(user);
-			this.token = null;
+			this(requireNonNull(user), null);
 		}
 
 		OriginatingCredential(OAuth2AccessToken token) {
-			this.user = null;
-			this.token = requireNonNull(token);
+			this(null, requireNonNull(token));
 		}
 
 		@Override

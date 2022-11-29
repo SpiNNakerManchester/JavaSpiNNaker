@@ -338,7 +338,7 @@ class SpallocCoreTest extends TestSupport {
 				assertEquals(Optional.of(USER_NAME), j.getOwner());
 				assertEquals(Optional.empty(), j.getUrl());
 				assertEquals(1, j.getBoards().size());
-				assertEquals(BOARD_ADDR, j.getBoards().get(0).getAddress());
+				assertEquals(BOARD_ADDR, j.getBoards().get(0).address());
 			});
 		}
 
@@ -598,12 +598,10 @@ class SpallocCoreTest extends TestSupport {
 					assertEquals(List.of(), getReports());
 
 					var j = spalloc.getJob(p, jobId).orElseThrow();
-					// Messy to build as usually only done by Jackson
-					var r = new IssueReportRequest();
-					var b = new ReportedBoard();
-					b.address = BOARD_ADDR;
-					r.issue = "test";
-					r.boards = List.of(b);
+					// A bit messy to build as usually only done by Jackson
+					var r = new IssueReportRequest("test",
+							List.of(new ReportedBoard(null, null, null, null,
+									null, null, null, BOARD_ADDR)));
 					j.reportIssue(r, p);
 
 					assertEquals(List.of("test"), getReports());

@@ -22,16 +22,10 @@ import com.google.errorprone.annotations.Immutable;
  * Describes whether an issue with a board was reported successfully.
  *
  * @author Donal Fellows
+ * @param action
+ *            What immediate action will be taken. Typically "{@code noted}" or
+ *            "{@code taken out of service}".
  */
 @Immutable
-public class IssueReportResponse {
-	/**
-	 * What immediate action will be taken. Typically "{@code noted}" or
-	 * "{@code taken out of service}".
-	 */
-	public final String action;
-
-	IssueReportResponse(String action) {
-		this.action = action;
-	}
+public record IssueReportResponse(String action) {
 }

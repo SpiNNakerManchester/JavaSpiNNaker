@@ -203,38 +203,15 @@ class ExecutionContext implements AutoCloseable {
 		}
 	}
 
-	// Migrate to record in new enough Java
 	@Immutable
-	private static class RegionToRef {
-		final CoreLocation core;
-
-		final MemoryLocation pointer;
-
-		RegionToRef(CoreLocation core, MemoryLocation pointer) {
-			this.core = core;
-			this.pointer = pointer;
-		}
-
-		@Override
-		public String toString() {
-			return "RegionToRef(" + core + ", " + pointer + ")";
-		}
+	private static record RegionToRef(CoreLocation core,
+			MemoryLocation pointer) {
 	}
 
-	// Migrate to record in new enough Java
-	private static class CoreToFill {
-		final Executor executor;
-
-		final MemoryLocation start;
-
-		final CoreLocation core;
-
-		final List<MemoryRegionReference> refs = new ArrayList<>();
-
+	private static record CoreToFill(Executor executor, MemoryLocation start,
+			CoreLocation core, List<MemoryRegionReference> refs) {
 		CoreToFill(Executor executor, MemoryLocation start, CoreLocation core) {
-			this.executor = executor;
-			this.start = start;
-			this.core = core;
+			this(executor, start, core, new ArrayList<>());
 		}
 
 		@Override

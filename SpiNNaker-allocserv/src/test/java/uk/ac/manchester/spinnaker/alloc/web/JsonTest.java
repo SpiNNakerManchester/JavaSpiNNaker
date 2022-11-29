@@ -348,10 +348,10 @@ class JsonTest {
 					}
 					""", CreateJobRequest.class);
 			assertNotNull(cjr);
-			assertEquals("bob", cjr.owner);
-			assertNotNull(cjr.keepaliveInterval);
-			assertEquals(30, cjr.keepaliveInterval.getSeconds());
-			assertNull(cjr.dimensions);
+			assertEquals("bob", cjr.owner());
+			assertNotNull(cjr.keepaliveInterval());
+			assertEquals(30, cjr.keepaliveInterval().getSeconds());
+			assertNull(cjr.dimensions());
 		}
 
 		@Test
@@ -370,16 +370,37 @@ class JsonTest {
 					}
 					""", CreateJobRequest.class);
 			assertNotNull(cjr);
-			assertEquals("bob", cjr.owner);
-			assertNotNull(cjr.keepaliveInterval);
-			assertEquals(30, cjr.keepaliveInterval.getSeconds());
-			assertNotNull(cjr.dimensions);
-			assertEquals(1, cjr.dimensions.width);
-			assertNotNull(cjr.tags);
-			assertEquals(2, cjr.tags.size());
-			assertEquals("a", cjr.tags.get(0));
-			assertEquals("gorp", cjr.machineName);
-			assertEquals(77, cjr.maxDeadBoards);
+			assertEquals("bob", cjr.owner());
+			assertNotNull(cjr.keepaliveInterval());
+			assertEquals(30, cjr.keepaliveInterval().getSeconds());
+			assertNotNull(cjr.dimensions());
+			assertEquals(1, cjr.dimensions().width());
+			assertEquals(List.of("a", "b"), cjr.tags());
+			assertEquals("gorp", cjr.machineName());
+			assertEquals(77, cjr.maxDeadBoards());
+		}
+
+		@Test
+		void testCreateJobRequestSpecific() throws IOException {
+			// The part that testCreateJobRequestComplex() doesn't look at
+			assertEquals(3, deserialize("""
+				{
+					"owner": "bob",
+					"keepalive-interval": "PT30S",
+					"dimensions": {
+						"width": 1,
+						"height": 2
+					},
+					"board": {
+						"cabinet": 3,
+						"frame": 4,
+						"board": 5
+					},
+					"tags": ["a", "b"],
+					"max-dead-boards": 77,
+					"machine-name": "gorp"
+				}
+				""", CreateJobRequest.class).board().cabinet());
 		}
 
 		@Test
@@ -389,7 +410,7 @@ class JsonTest {
 						"power": "ON"
 					}
 					""", MachinePower.class);
-			assertEquals(ON, mp.getPower());
+			assertEquals(ON, mp.power());
 		}
 	}
 }

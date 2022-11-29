@@ -298,14 +298,14 @@ public class FirmwareLoader {
 	 * just immediately, but also during BMP boot.
 	 *
 	 * @author Donal Fellows
+	 * @param fpga
+	 *            Which FPGA's register to set
+	 * @param address
+	 *            The location of the register to set in the FPGA address space
+	 * @param value
+	 *            What value to set
 	 */
-	public static class RegisterSet {
-		private final FPGA fpga;
-
-		private final MemoryLocation address;
-
-		private final int value;
-
+	public record RegisterSet(FPGA fpga, MemoryLocation address, int value) {
 		/**
 		 * @param fpga
 		 *            Which FPGA's registers to set
@@ -315,9 +315,7 @@ public class FirmwareLoader {
 		 *            The value to set
 		 */
 		public RegisterSet(FPGA fpga, FPGAMainRegisters register, int value) {
-			this.fpga = fpga;
-			this.address = register.getAddress();
-			this.value = value;
+			this(fpga, register.getAddress(), value);
 		}
 
 		/**
@@ -332,9 +330,7 @@ public class FirmwareLoader {
 		 */
 		public RegisterSet(FPGA fpga, FPGALinkRegisters register, int bank,
 				int value) {
-			this.fpga = fpga;
-			this.address = register.address(bank);
-			this.value = value;
+			this(fpga, register.address(bank), value);
 		}
 	}
 
@@ -508,8 +504,8 @@ public class FirmwareLoader {
 			throws ProcessException, IOException, InterruptedException {
 		var data = new ArrayList<Integer>();
 		for (var r : settings) {
-			data.add(r.address.address | r.fpga.value);
-			data.add(r.value);
+			data.add(r.address().address | r.fpga().value);
+			data.add(r.value());
 		}
 		var sector = FlashDataSector.registers(settings.length, data);
 

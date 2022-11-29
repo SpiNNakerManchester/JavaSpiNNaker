@@ -23,39 +23,14 @@ import uk.ac.manchester.spinnaker.alloc.model.Direction;
  * inter-board link to be off.
  *
  * @author Donal Fellows
+ * @param board
+ *            The database ID of the board that the FPGA is located on.
+ * @param link
+ *            Which link (and hence which FPGA).
  */
-public final class Link {
-	/** The database ID of the board that the FPGA is located on. */
-	private final int board;
-
-	/** Which link (and hence which FPGA). */
-	private final Direction link;
-
-	/**
-	 * Create a request.
-	 *
-	 * @param board
-	 *            The DB ID of the board that the FPGA is located on.
-	 * @param link
-	 *            Which link (and hence which FPGA).
-	 */
-	Link(int board, Direction link) {
-		this.board = board;
-		this.link = link;
-	}
-
+public record Link(int board, Direction link) {
 	@Override
 	public String toString() {
 		return "Link(" + board + "," + link + ":OFF)";
-	}
-
-	/** @return The database ID of the board that the FPGA is located on. */
-	public int getBoard() {
-		return board;
-	}
-
-	/** @return Which link (and hence which FPGA). */
-	public Direction getLink() {
-		return link;
 	}
 }

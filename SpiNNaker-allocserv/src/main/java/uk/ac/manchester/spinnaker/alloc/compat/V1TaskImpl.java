@@ -160,8 +160,7 @@ class V1TaskImpl extends V1CompatTask {
 		return new JobMachineInfo(job.getWidth().orElse(0),
 				job.getHeight().orElse(0),
 				machine.getConnections().stream()
-						.map(ci -> new Connection(ci.getChip(),
-								ci.getHostname()))
+						.map(ci -> new Connection(ci.chip(), ci.hostname()))
 						.collect(toList()),
 				machine.getMachine().getName(), machine.getBoards());
 	}
