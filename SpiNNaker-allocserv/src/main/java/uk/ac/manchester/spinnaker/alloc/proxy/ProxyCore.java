@@ -156,10 +156,8 @@ public class ProxyCore implements AutoCloseable {
 				session.sendMessage(new BinaryMessage(reply));
 			}
 		} catch (IOException e) {
-			log.error("IO Error on handling client message", e);
 			session.close(SERVER_ERROR);
 		} catch (IllegalArgumentException | BufferUnderflowException e) {
-			log.error("Unknown Error on handling client message", e);
 			session.close(BAD_DATA);
 		}
 	}
@@ -322,10 +320,8 @@ public class ProxyCore implements AutoCloseable {
 		@SuppressWarnings("resource")
 		var conn = removeConnection(id);
 		if (!isValid(conn)) {
-			log.debug("Connection for channel {}:{} is invalid", session, id);
 			return 0;
 		}
-		log.debug("Trying to close connection for channel {}:{}", session, id);
 		conn.close();
 		// Thread will shut down now that the proxy is closed
 		log.debug("closed proxy channel {}:{}", session, id);
