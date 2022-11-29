@@ -668,11 +668,14 @@ public abstract class UDPConnection<T> implements Connection {
 			return;
 		}
 		try {
+			log.debug("Trying to disconnect...");
 			socket.disconnect();
 		} catch (Exception e) {
 			log.debug("failed to disconnect prior to close", e);
 		}
+		log.debug("Trying to close");
 		socket.close();
+		log.debug("Closed!");
 	}
 
 	@Override
