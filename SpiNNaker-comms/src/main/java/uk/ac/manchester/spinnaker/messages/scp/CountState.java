@@ -52,7 +52,7 @@ public class CountState extends SCPRequest<CountState.Response> {
 	}
 
 	private static int argument2(AppID appId, CPUState state) {
-		int data = (APP_MASK << BYTE1) | (appId.appID << BYTE0);
+		int data = (APP_MASK << BYTE1) | (appId.appID() << BYTE0);
 		data |= COUNT_OPERATION << OP_SHIFT;
 		data |= COUNT_MODE << MODE_SHIFT;
 		data |= state.value << BYTE2;

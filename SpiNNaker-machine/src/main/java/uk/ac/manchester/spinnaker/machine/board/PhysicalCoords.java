@@ -49,40 +49,20 @@ import com.google.errorprone.annotations.Immutable;
  * <pre>[c:3,f:2,b:1]</pre>
  *
  * @author Donal Fellows
+ * @param c
+ *            Cabinet number.
+ * @param f
+ *            Frame number.
+ * @param b
+ *            Board number.
  */
 @Immutable
 @JsonDeserialize(using = PhysicalCoords.Deserializer.class)
-public final class PhysicalCoords implements Comparable<PhysicalCoords> {
-	/** Cabinet number. */
-	@ValidCabinetNumber
-	public final int c;
-
-	/** Frame number. */
-	@ValidFrameNumber
-	public final int f;
-
-	/** Board number. */
-	@ValidBoardNumber
-	public final int b;
-
-	/**
-	 * Create an instance.
-	 *
-	 * @param c
-	 *            Cabinet number.
-	 * @param f
-	 *            Frame number.
-	 * @param b
-	 *            Board number.
-	 */
-	@JsonCreator
-	public PhysicalCoords(@JsonProperty("c") int c, @JsonProperty("f") int f,
-			@JsonProperty("b") int b) {
-		this.c = c;
-		this.f = f;
-		this.b = b;
-	}
-
+public final record PhysicalCoords(//
+		@JsonProperty("c") @ValidCabinetNumber int c,
+		@JsonProperty("f") @ValidFrameNumber int f,
+		@JsonProperty("b") @ValidBoardNumber int b)
+		implements Comparable<PhysicalCoords> {
 	private static final Pattern PATTERN =
 			Pattern.compile("^\\[c:(\\d+),f:(\\d+),b:(\\d+)\\]$");
 
@@ -100,26 +80,16 @@ public final class PhysicalCoords implements Comparable<PhysicalCoords> {
 	 *             If the string is not in the right form.
 	 */
 	@JsonCreator
-	public PhysicalCoords(String serialForm) {
+	public static PhysicalCoords parse(String serialForm) {
 		var m = PATTERN.matcher(serialForm);
 		if (!m.matches()) {
 			throw new IllegalArgumentException("bad argument: " + serialForm);
 		}
 		int idx = 0;
-		c = parseInt(m.group(++idx));
-		f = parseInt(m.group(++idx));
-		b = parseInt(m.group(++idx));
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		return (obj instanceof PhysicalCoords other) && (c == other.c)
-				&& (f == other.f) && (b == other.b);
-	}
-
-	@Override
-	public int hashCode() {
-		return c * 25 + f * 5 + b;
+		int c = parseInt(m.group(++idx));
+		int f = parseInt(m.group(++idx));
+		int b = parseInt(m.group(++idx));
+		return new PhysicalCoords(c, f, b);
 	}
 
 	@Override
@@ -195,7 +165,7 @@ public final class PhysicalCoords implements Comparable<PhysicalCoords> {
 
 		@Override
 		PhysicalCoords deserializeString(String string) {
-			return new PhysicalCoords(string);
+			return PhysicalCoords.parse(string);
 		}
 
 		@Override

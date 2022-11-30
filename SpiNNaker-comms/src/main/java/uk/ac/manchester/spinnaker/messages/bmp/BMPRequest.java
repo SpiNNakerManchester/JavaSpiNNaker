@@ -44,12 +44,12 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	}
 
 	private static SDPHeader bmpHeader(BMPBoard board) {
-		return bmpHeader(board.board);
+		return bmpHeader(board.board());
 	}
 
 	private static SDPHeader bmpHeader(Collection<BMPBoard> boards) {
 		return bmpHeader(
-				boards.stream().mapToInt(b -> b.board).min().orElse(0));
+				boards.stream().mapToInt(b -> b.board()).min().orElse(0));
 	}
 
 	/**

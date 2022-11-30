@@ -20,8 +20,16 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.time.Instant;
 
-/** A firmware descriptor. */
-public class FirmwareDescriptor {
+/**
+ * A firmware descriptor.
+ *
+ * @param type
+ *            What type of firmware is this.
+ * @param descriptorData
+ *            The descriptor buffer. Should be read-only.
+ */
+public record FirmwareDescriptor(FirmwareDescriptors type,
+		IntBuffer descriptorData) {
 	private static final int MAX_OLD_STYLE = 65535;
 
 	private static final int OLD_SPLIT = 100;
@@ -29,10 +37,6 @@ public class FirmwareDescriptor {
 	private static final int BYTE_MASK = 255;
 
 	private static final int BYTE_SHIFT = 8;
-
-	private final FirmwareDescriptors type;
-
-	private final IntBuffer descriptorData;
 
 	/**
 	 * Create a description of some firmware on a SpiNNaker system.
@@ -43,12 +47,11 @@ public class FirmwareDescriptor {
 	 *            What was the descriptor buffer read from the system?
 	 */
 	public FirmwareDescriptor(FirmwareDescriptors type, ByteBuffer buffer) {
-		this.type = type;
-		descriptorData = buffer.asIntBuffer().asReadOnlyBuffer();
+		this(type, buffer.asIntBuffer().asReadOnlyBuffer());
 	}
 
 	/** @return The version of the firmware. */
-	public Version getVersion() {
+	public Version version() {
 		int n = descriptorData.get(type.versionIndex);
 
 		if (n <= MAX_OLD_STYLE) {
@@ -66,7 +69,7 @@ public class FirmwareDescriptor {
 	}
 
 	/** @return The timestamp in the firmware. */
-	public Instant getTimestamp() {
+	public Instant timestamp() {
 		return Instant.ofEpochSecond(descriptorData.get(type.timestampIndex));
 	}
 }

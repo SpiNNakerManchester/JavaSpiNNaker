@@ -558,15 +558,16 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				var findIP = conn.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
 			if (nonNull(b.triad)) {
 				return findTriad
-						.call1(machineName, b.triad.x, b.triad.y, b.triad.z)
+						.call1(machineName, b.triad.x(), b.triad.y(),
+								b.triad.z())
 						.filter(r -> !requireTriadRoot || r.getInt("z") == 0)
 						.map(integer("board_id"))
 						.orElseThrow(() -> new IllegalArgumentException(
 								NO_BOARD_MSG));
 			} else if (nonNull(b.physical)) {
 				return findPhysical
-						.call1(machineName, b.physical.c,
-								b.physical.f, b.physical.b)
+						.call1(machineName, b.physical.c(),
+								b.physical.f(), b.physical.b())
 						.filter(r -> !requireTriadRoot || r.getInt("z") == 0)
 						.map(integer("board_id"))
 						.orElseThrow(() -> new IllegalArgumentException(
@@ -769,7 +770,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (var conn = getConnection();
 					var findBoard = conn.query(findBoardByPhysicalCoords)) {
 				return conn.transaction(false,
-						() -> findBoard.call1(id, coords.c, coords.f, coords.b)
+						() -> findBoard
+								.call1(id, coords.c(), coords.f(), coords.b())
 								.map(row -> new BoardLocationImpl(row, this)));
 			}
 		}
@@ -780,7 +782,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (var conn = getConnection();
 					var findBoard = conn.query(findBoardByLogicalCoords)) {
 				return conn.transaction(false,
-						() -> findBoard.call1(id, coords.x, coords.y, coords.z)
+						() -> findBoard
+								.call1(id, coords.x(), coords.y(), coords.z())
 								.map(row -> new BoardLocationImpl(row, this)));
 			}
 		}
@@ -900,8 +903,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (var conn = getConnection();
 					var bmpAddr = conn.query(GET_BMP_ADDRESS)) {
 				return conn.transaction(false,
-						() -> bmpAddr
-								.call1(id, bmp.getCabinet(), bmp.getFrame())
+						() -> bmpAddr.call1(id, bmp.cabinet(), bmp.frame())
 								.map(string("address")).orElse(null));
 			}
 		}
@@ -911,8 +913,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (var conn = getConnection();
 					var boardNumbers = conn.query(GET_BMP_BOARD_NUMBERS)) {
 				return conn.transaction(false,
-						() -> boardNumbers
-								.call(id, bmp.getCabinet(), bmp.getFrame())
+						() -> boardNumbers.call(id, bmp.cabinet(), bmp.frame())
 								.map(integer("board_num")).toList());
 			}
 		}

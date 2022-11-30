@@ -220,7 +220,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 		if (log.isDebugEnabled()) {
 			log.debug("version result: {}", result);
 		}
-		return new Version(result);
+		return Version.parse(result);
 	}
 
 	@Override

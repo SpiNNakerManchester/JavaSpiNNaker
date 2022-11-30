@@ -19,8 +19,6 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 import static java.util.Objects.isNull;
 
-import java.util.Objects;
-
 import javax.validation.Valid;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -36,20 +34,18 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * Describes a connection by its chip and hostname.
+ *
+ * @param chip
+ *            The chip for the connection.
+ * @param hostname
+ *            Where to connect to to talk to the chip.
  */
-@JsonPropertyOrder({
-	"chip", "hostname"
-})
+@JsonPropertyOrder({ "chip", "hostname" })
 @JsonFormat(shape = ARRAY)
 @JsonDeserialize(builder = Connection.Builder.class)
 @Immutable
-public final class Connection {
-	@Valid
-	private final ChipLocation chip;
-
-	@IPAddress
-	private final String hostname;
-
+public final record Connection(@Valid ChipLocation chip,
+		@IPAddress String hostname) {
 	/**
 	 * Create.
 	 *
@@ -59,29 +55,7 @@ public final class Connection {
 	 *            the host
 	 */
 	public Connection(HasChipLocation chip, String hostname) {
-		this.chip = isNull(chip) ? null : chip.asChipLocation();
-		this.hostname = hostname;
-	}
-
-	/** @return The chip for the connection. */
-	public ChipLocation getChip() {
-		return chip;
-	}
-
-	/** @return Where to connect to to talk to the chip. */
-	public String getHostname() {
-		return hostname;
-	}
-
-	@Override
-	public boolean equals(Object other) {
-		return (other instanceof Connection c) && Objects.equals(chip, c.chip)
-				&& Objects.equals(hostname, c.hostname);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(hostname, chip);
+		this(isNull(chip) ? null : chip.asChipLocation(), hostname);
 	}
 
 	@Override
@@ -89,9 +63,7 @@ public final class Connection {
 		return "Connection(" + chip + "@" + hostname + ")";
 	}
 
-	@JsonPropertyOrder({
-		"chip", "hostname"
-	})
+	@JsonPropertyOrder({ "chip", "hostname" })
 	@JsonFormat(shape = ARRAY)
 	@JsonPOJOBuilder
 	static class Builder {

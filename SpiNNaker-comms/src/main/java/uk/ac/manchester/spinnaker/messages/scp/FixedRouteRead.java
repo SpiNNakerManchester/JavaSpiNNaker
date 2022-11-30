@@ -33,7 +33,7 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	private static final int MAGIC = 3;
 
 	private static int argument1(AppID appID) {
-		return (appID.appID << BYTE1) | (MAGIC << BYTE0);
+		return (appID.appID() << BYTE1) | (MAGIC << BYTE0);
 	}
 
 	private static int argument2() {

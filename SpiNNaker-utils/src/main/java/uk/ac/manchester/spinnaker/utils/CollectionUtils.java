@@ -25,8 +25,7 @@ import static java.util.Collections.unmodifiableSet;
 import static java.util.EnumSet.noneOf;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toCollection;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static java.util.stream.Collectors.toUnmodifiableMap;
 import static java.util.stream.IntStream.range;
 
@@ -122,12 +121,11 @@ public abstract class CollectionUtils {
 	 */
 	public static <T> Collection<Collection<T>> batch(int batchSize,
 			List<T> input) {
-		return unmodifiableCollection(range(0,
-				(input.size() + batchSize - 1) / batchSize)
+		return range(0, (input.size() + batchSize - 1) / batchSize)
 				.map(i -> i * batchSize)
 				.mapToObj(idx -> unmodifiableCollection(
 						input.subList(idx, min(input.size(), idx + batchSize))))
-				.collect(toList()));
+				.collect(toUnmodifiableList());
 	}
 
 	/**
@@ -141,27 +139,11 @@ public abstract class CollectionUtils {
 	 *            The input list.
 	 * @param fun
 	 *            How to map an element.
-	 * @return The output list.
+	 * @return The output list. Unmodifiable.
 	 */
 	@UsedInJavadocOnly(Stream.class)
 	public static <T, U> List<U> lmap(Collection<T> list, Function<T, U> fun) {
-		return list.stream().map(fun).collect(toList());
-	}
-
-	/**
-	 * Parse a comma-separated string into an <em>unordered</em> set of items.
-	 *
-	 * @param <T>
-	 *            The type of elements of the set.
-	 * @param str
-	 *            The string to parse.
-	 * @param mapper
-	 *            How to get an element from a piece of string.
-	 * @return The set of items. The set is unordered.
-	 */
-	public static <T> Set<T> parseCommaSeparatedSet(String str,
-			Function<String, T> mapper) {
-		return stream(str.split(",")).map(mapper).collect(toSet());
+		return list.stream().map(fun).collect(toUnmodifiableList());
 	}
 
 	/**

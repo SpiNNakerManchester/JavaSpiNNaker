@@ -118,7 +118,7 @@ public class TestMockClient {
 				boolean previous = client.isActual();
 				var whereis1 = client.whereIs(machineName, coords, timeout);
 				var whereis2 = client.whereIs(machineName, physical, timeout);
-				var chip = whereis1.getChip();
+				var chip = whereis1.chip();
 				var whereis3 = client.whereIs(machineName, chip, timeout);
 				// check only work if all real or all mock
 				if (previous == client.isActual()) {
@@ -170,7 +170,7 @@ public class TestMockClient {
 				assertEquals("Spin24b-223", machineName);
 			}
 			var connections = machineInfo.getConnections();
-			var hostName = connections.get(0).getHostname();
+			var hostName = connections.get(0).hostname();
 			if (client.isActual()) {
 				InetAddress.getAllByName(hostName);
 			} else {
@@ -199,13 +199,13 @@ public class TestMockClient {
 			assertTrue(state.getPower());
 			var chip = new ChipLocation(1, 1);
 			var whereis = client.whereIs(jobId, chip, timeout);
-			assertEquals(chip, whereis.getJobChip());
-			assertEquals(jobId, whereis.getJobId());
+			assertEquals(chip, whereis.jobChip());
+			assertEquals(jobId, whereis.jobId());
 			if (client.isActual()) {
-				assertNotNull(whereis.getBoardChip());
+				assertNotNull(whereis.boardChip());
 			} else {
-				assertEquals(MockConnectedClient.MOCK_ID, whereis.getJobId());
-				assertEquals(chip, whereis.getBoardChip());
+				assertEquals(MockConnectedClient.MOCK_ID, whereis.jobId());
+				assertEquals(chip, whereis.boardChip());
 			}
 			client.destroyJob(jobId, "Test finished", timeout);
 			state = client.getJobState(jobId, timeout);
@@ -221,7 +221,7 @@ public class TestMockClient {
 			var version = client.version(timeout);
 			if (client.isActual()) {
 				// TODO: Something here!
-				assertThat("version is meaningful", version.majorVersion,
+				assertThat("version is meaningful", version.majorVersion(),
 						greaterThan(0));
 			} else {
 				assertNotNull(version);

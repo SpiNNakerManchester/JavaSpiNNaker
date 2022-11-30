@@ -2504,10 +2504,10 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default ByteBuffer readMemory(@Valid HasCoreLocation core,
 			@NotNull HeapElement element)
 			throws IOException, ProcessException, InterruptedException {
-		if (element.isFree) {
+		if (element.isFree()) {
 			return null;
 		}
-		return readMemory(core, element.getDataAddress(), element.size);
+		return readMemory(core, element.dataAddress(), element.size());
 	}
 
 	/**
@@ -3971,8 +3971,8 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void setReinjectionEmergencyTimeout(
 			@Valid HasCoreLocation monitorCore, @NotNull RouterTimeout timeout)
 			throws IOException, ProcessException, InterruptedException {
-		setReinjectionEmergencyTimeout(monitorCore, timeout.mantissa,
-				timeout.exponent);
+		setReinjectionEmergencyTimeout(monitorCore, timeout.mantissa(),
+				timeout.exponent());
 	}
 
 	/**
@@ -4014,8 +4014,8 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void setReinjectionEmergencyTimeout(@Valid CoreSubsets monitorCores,
 			@NotNull RouterTimeout timeout)
 			throws IOException, ProcessException, InterruptedException {
-		setReinjectionEmergencyTimeout(monitorCores, timeout.mantissa,
-				timeout.exponent);
+		setReinjectionEmergencyTimeout(monitorCores, timeout.mantissa(),
+				timeout.exponent());
 	}
 
 	/**
@@ -4037,7 +4037,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 			@NotNull ReinjectionStatus status)
 			throws IOException, ProcessException, InterruptedException {
 		setReinjectionEmergencyTimeout(monitorCores,
-				status.getEmergencyTimeout());
+				status.emergencyTimeout());
 	}
 
 	/**
@@ -4079,7 +4079,8 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void setReinjectionTimeout(@Valid HasCoreLocation monitorCore,
 			@NotNull RouterTimeout timeout)
 			throws IOException, ProcessException, InterruptedException {
-		setReinjectionTimeout(monitorCore, timeout.mantissa, timeout.exponent);
+		setReinjectionTimeout(monitorCore, timeout.mantissa(),
+				timeout.exponent());
 	}
 
 	/**
@@ -4121,7 +4122,8 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void setReinjectionTimeout(@Valid CoreSubsets monitorCores,
 			@NotNull RouterTimeout timeout)
 			throws IOException, ProcessException, InterruptedException {
-		setReinjectionTimeout(monitorCores, timeout.mantissa, timeout.exponent);
+		setReinjectionTimeout(monitorCores, timeout.mantissa(),
+				timeout.exponent());
 	}
 
 	/**
@@ -4142,7 +4144,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void setReinjectionTimeout(@Valid CoreSubsets monitorCores,
 			@NotNull ReinjectionStatus status)
 			throws IOException, ProcessException, InterruptedException {
-		setReinjectionTimeout(monitorCores, status.getTimeout());
+		setReinjectionTimeout(monitorCores, status.timeout());
 	}
 
 	/**

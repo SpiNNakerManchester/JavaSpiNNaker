@@ -27,39 +27,28 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * A three-part semantic version description.
  *
  * @author Donal Fellows
+ * @param majorVersion
+ *            The major version number. Two versions are not compatible if they
+ *            have different major version numbers. Major version number
+ *            differences dominate. The major version is supposed to only be
+ *            updated when an incompatible API change occurs.
+ * @param minorVersion
+ *            The minor version number. A version is compatible with another
+ *            version if it has the same major version and a minor version that
+ *            is greater than or equal to the other minor version. The minor
+ *            version is supposed to be updated when a compatible API change
+ *            occurs.
+ * @param revision
+ *            The revision number. Less important than the minor version number.
+ *            Two versions are usually compatible if they have the same major
+ *            and minor version, with the revision being typically unimportant
+ *            for that decision. Revisions should be updated when a new release
+ *            happens, even if that only contains bug fixes and no API changes.
  */
-public final class Version implements Comparable<Version> {
+public record Version(@JsonProperty("major-version") int majorVersion,
+		@JsonProperty("minor-version") int minorVersion,
+		@JsonProperty("revision") int revision) implements Comparable<Version> {
 	// There is no standard Version class. WRYYYYYYYYYYYYYYYY!!!!
-	/**
-	 * The major version number. Two versions are not compatible if they have
-	 * different major version numbers. Major version number differences
-	 * dominate.
-	 */
-	public final int majorVersion;
-
-	/** The minor version number. */
-	public final int minorVersion;
-
-	/** The revision number. Less important than the minor version number. */
-	public final int revision;
-
-	/**
-	 * Create a version number.
-	 *
-	 * @param major
-	 *            the major number
-	 * @param minor
-	 *            the minor number
-	 * @param rev
-	 *            the revision number
-	 */
-	public Version(@JsonProperty("major-version") int major,
-			@JsonProperty("minor-version") int minor,
-			@JsonProperty("revision") int rev) {
-		majorVersion = major;
-		minorVersion = minor;
-		revision = rev;
-	}
 
 	/**
 	 * Create a version number.
@@ -72,9 +61,7 @@ public final class Version implements Comparable<Version> {
 	 *            the revision number
 	 */
 	public Version(String major, String minor, String rev) {
-		majorVersion = parseInt(major);
-		minorVersion = parseInt(minor);
-		revision = parseInt(rev);
+		this(parseInt(major), parseInt(minor), parseInt(rev));
 	}
 
 	// This RE is in Extended mode syntax, which COMMENTS enables
@@ -96,15 +83,15 @@ public final class Version implements Comparable<Version> {
 	 *             If the version string doesn't match one of the supported
 	 *             patterns.
 	 */
-	public Version(String threePartVersion) {
+	public static Version parse(String threePartVersion) {
 		var m = VERSION_RE.matcher(threePartVersion);
 		if (!m.matches()) {
 			throw new IllegalArgumentException(
 					"bad version string: " + threePartVersion);
 		}
-		majorVersion = parseInt(m.group("major"));
-		minorVersion = parsePossibleInt(m.group("minor"));
-		revision = parsePossibleInt(m.group("revision"));
+		return new Version(parseInt(m.group("major")),
+				parsePossibleInt(m.group("minor")),
+				parsePossibleInt(m.group("revision")));
 	}
 
 	private static int parsePossibleInt(String s) {
@@ -112,17 +99,6 @@ public final class Version implements Comparable<Version> {
 			return 0;
 		}
 		return parseInt(s);
-	}
-
-	@Override
-	public boolean equals(Object other) {
-		return (other instanceof Version v) && (majorVersion == v.majorVersion)
-				&& (minorVersion == v.minorVersion) && (revision == v.revision);
-	}
-
-	@Override
-	public int hashCode() {
-		return (majorVersion << 10) ^ (minorVersion << 5) ^ revision;
 	}
 
 	@Override
@@ -139,6 +115,21 @@ public final class Version implements Comparable<Version> {
 
 	@Override
 	public String toString() {
-		return "" + majorVersion + "." + minorVersion + "." + revision;
+		return majorVersion + "." + minorVersion + "." + revision;
+	}
+
+	/**
+	 * Determine whether this version is compatible with the given requirement.
+	 * For a version to match a requirement, it must have the same major version
+	 * and a minor version/revision that is at least what the requirement
+	 * states.
+	 *
+	 * @param requirement
+	 *            The version that we are testing for compatibility with.
+	 * @return True if they are compatible, false otherwise.
+	 */
+	public boolean compatibleWith(Version requirement) {
+		return (majorVersion == requirement.majorVersion)
+				&& compareTo(requirement) >= 0;
 	}
 }

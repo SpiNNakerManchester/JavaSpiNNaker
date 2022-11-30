@@ -225,30 +225,21 @@ public abstract class DataGatherer extends BoardLocalSupport
 	}
 
 	/**
-	 * Trivial POJO holding the pairing of monitor and list of lists of memory
+	 * Trivial record holding the pairing of monitor and list of lists of memory
 	 * blocks.
 	 *
 	 * @author Donal Fellows
+	 * @param monitor
+	 *            Monitor that is used to download the regions.
+	 * @param regions
+	 *            List of information about where to download. The inner
+	 *            sub-lists are ordered, and are either one or two items long to
+	 *            represent what pieces of memory should really be downloaded.
+	 *            The outer list could theoretically be done in any order... but
+	 *            needs to be processed single-threaded anyway.
 	 */
-	private static final class WorkItems {
-		/**
-		 * Monitor that is used to download the regions.
-		 */
-		private final Monitor monitor;
-
-		/**
-		 * List of information about where to download. The inner sub-lists are
-		 * ordered, and are either one or two items long to represent what
-		 * pieces of memory should really be downloaded. The outer list could
-		 * theoretically be done in any order... but needs to be processed
-		 * single-threaded anyway.
-		 */
-		private final List<List<Region>> regions;
-
-		WorkItems(Monitor m, List<List<Region>> region) {
-			this.monitor = m;
-			this.regions = region;
-		}
+	private static record WorkItems(Monitor monitor,
+			List<List<Region>> regions) {
 	}
 
 	/**
@@ -287,7 +278,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 
 				for (var p : m.getPlacements()) {
 					var regions = new ArrayList<List<Region>>();
-					for (int id : p.getVertex().getRecordedRegionIds()) {
+					for (int id : p.vertex().recordedRegionIds()) {
 						var r = getRegion(p, id);
 						if (!r.isEmpty()) {
 							regions.add(r);
@@ -401,14 +392,14 @@ public abstract class DataGatherer extends BoardLocalSupport
 			log.info("processing fast downloads for {}", conn.getChip());
 			var dl = new Downloader(conn);
 			for (var item : work) {
-				for (var regionsOnCore : item.regions) {
+				for (var regionsOnCore : item.regions()) {
 					/*
 					 * Once there's something too small, all subsequent
 					 * retrieves for that recording region have to be done the
 					 * same way to get the data in the DB in the right order.
 					 */
 					for (var region : regionsOnCore) {
-						var data = dl.doDownload(item.monitor, region);
+						var data = dl.doDownload(item.monitor(), region);
 						if (SPINNAKER_COMPARE_DOWNLOAD != null) {
 							compareDownloadWithSCP(region, data);
 						}

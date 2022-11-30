@@ -75,7 +75,7 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	}
 
 	private static int argument1(AppID appID) {
-		return (FLAG_TAG_RETRY << BYTE2) | (appID.appID << BYTE1)
+		return (FLAG_TAG_RETRY << BYTE2) | (appID.appID() << BYTE1)
 				| (ALLOC_SDRAM.value << BYTE0);
 	}
 

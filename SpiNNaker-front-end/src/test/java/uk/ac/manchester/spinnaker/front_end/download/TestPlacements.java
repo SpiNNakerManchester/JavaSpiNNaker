@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.front_end.download.request.Vertex;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /**
  *
@@ -35,7 +36,7 @@ public class TestPlacements {
 	public void testVertexJson() throws IOException {
 		var url = TestPlacements.class.getResource("/vertex.json");
 		var fromJson = createMapper().readValue(url, Vertex.class);
-		assertEquals(1612972372, fromJson.getBaseAddress());
+		assertEquals(new MemoryLocation(1612972372), fromJson.base());
 	}
 
 	@Test

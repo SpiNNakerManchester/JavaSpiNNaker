@@ -50,9 +50,19 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  * <pre>[x:3,y:2,z:1]</pre>
  *
  * @author Donal Fellows
+ * @param x
+ *            X coordinate of triad.
+ * @param y
+ *            Y coordinate of triad.
+ * @param z
+ *            Z coordinate of triad.
  */
 @JsonDeserialize(using = TriadCoords.Deserializer.class)
-public final class TriadCoords implements Comparable<TriadCoords> {
+public final record TriadCoords(//
+		@JsonProperty("x") @ValidTriadX int x,
+		@JsonProperty("y") @ValidTriadY int y,
+		@JsonProperty("z") @ValidTriadZ int z)
+		implements Comparable<TriadCoords> {
 	/** The width and height of a triad, in chips. */
 	private static final int TRIAD_CHIP_SIZE = 12;
 
@@ -63,36 +73,6 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 	/** Parses the string produced by {@link #toString()}. */
 	private static final Pattern PATTERN =
 			Pattern.compile("^\\[x:(\\d+),y:(\\d+),z:(\\d+)\\]$");
-
-	/** X coordinate of triad. */
-	@ValidTriadX
-	public final int x;
-
-	/** Y coordinate of triad. */
-	@ValidTriadY
-	public final int y;
-
-	/** Z coordinate of triad. */
-	@ValidTriadZ
-	public final int z;
-
-	/**
-	 * Create an instance.
-	 *
-	 * @param x
-	 *            X coordinate.
-	 * @param y
-	 *            Y coordinate.
-	 * @param z
-	 *            Z coordinate.
-	 */
-	@JsonCreator
-	public TriadCoords(@JsonProperty("x") int x, @JsonProperty("y") int y,
-			@JsonProperty("z") int z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
 
 	/**
 	 * Create an instance from its serial form. The serial form (where the
@@ -108,16 +88,17 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 	 *             If the string is not in the right form.
 	 */
 	@JsonCreator
-	public TriadCoords(String serialForm) {
+	public static TriadCoords parse(String serialForm) {
 		var m = PATTERN.matcher(serialForm);
 		if (!m.matches()) {
 			throw new IllegalArgumentException(
 					"bad argument: " + serialForm);
 		}
 		int idx = 0;
-		x = parseInt(m.group(++idx));
-		y = parseInt(m.group(++idx));
-		z = parseInt(m.group(++idx));
+		int x = parseInt(m.group(++idx));
+		int y = parseInt(m.group(++idx));
+		int z = parseInt(m.group(++idx));
+		return new TriadCoords(x, y, z);
 	}
 
 	/**
@@ -142,17 +123,6 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 			break;
 		}
 		return new ChipLocation(rootX, rootY);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		return (obj instanceof TriadCoords other) && (x == other.x)
-				&& (y == other.y) && (z == other.z);
-	}
-
-	@Override
-	public int hashCode() {
-		return x * 25 + y * 5 + z;
 	}
 
 	@Override
@@ -217,7 +187,7 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 
 		@Override
 		TriadCoords deserializeString(String string) {
-			return new TriadCoords(string);
+			return TriadCoords.parse(string);
 		}
 
 		@Override

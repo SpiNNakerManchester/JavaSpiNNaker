@@ -43,7 +43,7 @@ public class SendSignal extends SCPRequest<CheckOKResponse> {
 
 	private static int argument2(AppID appID, Signal signal) {
 		return (signal.value << BYTE2) | (APP_MASK << BYTE1)
-				| (appID.appID << BYTE0);
+				| (appID.appID() << BYTE0);
 	}
 
 	@Override

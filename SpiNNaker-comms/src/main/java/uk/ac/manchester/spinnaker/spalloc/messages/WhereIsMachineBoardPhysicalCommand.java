@@ -43,8 +43,8 @@ public class WhereIsMachineBoardPhysicalCommand extends Command<Integer> {
 			@Valid @NotNull PhysicalCoords coords) {
 		super("where_is");
 		addKwArg("machine", machine);
-		addKwArg("cabinet", coords.c);
-		addKwArg("frame", coords.f);
-		addKwArg("board", coords.b);
+		addKwArg("cabinet", coords.c());
+		addKwArg("frame", coords.f());
+		addKwArg("board", coords.b());
 	}
 }

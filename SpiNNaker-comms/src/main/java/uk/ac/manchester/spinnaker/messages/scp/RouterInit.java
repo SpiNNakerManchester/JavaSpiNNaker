@@ -67,7 +67,7 @@ public class RouterInit extends SCPRequest<CheckOKResponse> {
 			throw new IllegalArgumentException(
 					"numEntries must be no more than " + MAX_ENTRIES);
 		}
-		return (numEntries << HALF1) | (appID.appID << BYTE1) | (2 << BYTE0);
+		return (numEntries << HALF1) | (appID.appID() << BYTE1) | (2 << BYTE0);
 	}
 
 	@Override

@@ -99,7 +99,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 	private MockTransceiver(String machineName, BMPConnectionData data,
 			ValueHolder<Blacklist> setBlacklist) {
 		log.info("constructed dummy transceiver for {} ({} : {})", machineName,
-				data.ipAddress, data.boards);
+				data.ipAddress(), data.boards());
 		status = new HashMap<>();
 		this.setBlacklist = setBlacklist;
 		current = this;
@@ -140,7 +140,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 			Collection<BMPBoard> boards) {
 		log.info("power({},{},{})", powerCommand, bmp, boards);
 		for (var b : boards) {
-			status.put(b.board, powerCommand == POWER_ON);
+			status.put(b.board(), powerCommand == POWER_ON);
 		}
 	}
 

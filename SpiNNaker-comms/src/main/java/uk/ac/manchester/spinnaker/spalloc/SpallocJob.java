@@ -679,8 +679,8 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	public String getHostname()
 			throws IOException, SpallocServerException, InterruptedException {
 		for (Connection c : getConnections()) {
-			if (c.getChip().onSameChipAs(ZERO_ZERO)) {
-				return c.getHostname();
+			if (c.chip().onSameChipAs(ZERO_ZERO)) {
+				return c.hostname();
 			}
 		}
 		return null;
@@ -902,7 +902,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 			throw new IllegalStateException(
 					"received null instead of machine location");
 		}
-		return result.getPhysical();
+		return result.physical();
 	}
 
 	/**

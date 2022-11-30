@@ -31,69 +31,20 @@ import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
  * A combination of x, y, z and a Link.
  *
  * @author Christian
+ * @param x
+ *            The X coordinate
+ * @param y
+ *            The Y coordinate
+ * @param z
+ *            The Z coordinate
+ * @param link
+ *            The link number
  */
-@JsonPropertyOrder({
-	"x", "y", "z", "link"
-})
+@JsonPropertyOrder({ "x", "y", "z", "link" })
 @JsonFormat(shape = ARRAY)
 @Immutable
-public class BoardLink {
+public record BoardLink(@JsonProperty("x") @ValidTriadX int x,
+		@JsonProperty("y") @ValidTriadY int y,
+		@JsonProperty("z") @ValidTriadZ int z, @JsonProperty("link") int link) {
 	// TODO verify format and meaning.
-
-	@ValidTriadX
-	private final int x;
-
-	@ValidTriadY
-	private final int y;
-
-	@ValidTriadZ
-	private final int z;
-
-	private final int link;
-
-	/**
-	 * @param x
-	 *            The X coordinate
-	 * @param y
-	 *            The Y coordinate
-	 * @param z
-	 *            The Z coordinate
-	 * @param link
-	 *            The link number
-	 */
-	public BoardLink(@JsonProperty("x") int x, @JsonProperty("y") int y,
-			@JsonProperty("z") int z, @JsonProperty("link") int link) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.link = link;
-	}
-
-	/**
-	 * @return the X coordinate
-	 */
-	public int getX() {
-		return x;
-	}
-
-	/**
-	 * @return the Y coordinate
-	 */
-	public int getY() {
-		return y;
-	}
-
-	/**
-	 * @return the Z coordinate
-	 */
-	public int getZ() {
-		return z;
-	}
-
-	/**
-	 * @return the link number
-	 */
-	public int getLink() {
-		return link;
-	}
 }

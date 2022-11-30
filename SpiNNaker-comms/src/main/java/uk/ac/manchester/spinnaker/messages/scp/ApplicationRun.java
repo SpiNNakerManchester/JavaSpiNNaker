@@ -72,7 +72,7 @@ public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 				}
 			}
 		}
-		processorMask |= appId.appID << BYTE3;
+		processorMask |= appId.appID() << BYTE3;
 		if (wait) {
 			processorMask |= 1 << WAIT_BIT;
 		}

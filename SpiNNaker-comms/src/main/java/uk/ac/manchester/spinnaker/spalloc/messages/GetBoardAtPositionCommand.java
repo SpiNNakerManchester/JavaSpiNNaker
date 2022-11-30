@@ -43,8 +43,8 @@ public class GetBoardAtPositionCommand extends Command<Integer> {
 		super("get_board_at_position");
 		addKwArg("machine_name", machine);
 		// The current spalloc server expects the param names x, y, z
-		addKwArg("x", coords.c);
-		addKwArg("y", coords.f);
-		addKwArg("z", coords.b);
+		addKwArg("x", coords.c());
+		addKwArg("y", coords.f());
+		addKwArg("z", coords.b());
 	}
 }

@@ -743,14 +743,14 @@ public class SpallocClientFactory {
 		public WhereIs getBoard(TriadCoords coords) throws IOException {
 			return whereis(
 					bmd.uri.resolve(format("logical-board?x=%d&y=%d&z=%d",
-							coords.x, coords.y, coords.z)));
+							coords.x(), coords.y(), coords.z())));
 		}
 
 		@Override
 		public WhereIs getBoard(PhysicalCoords coords) throws IOException {
 			return whereis(bmd.uri.resolve(
 					format("physical-board?cabinet=%d&frame=%d&board=%d",
-							coords.c, coords.f, coords.b)));
+							coords.c(), coords.f(), coords.b())));
 		}
 
 		@Override

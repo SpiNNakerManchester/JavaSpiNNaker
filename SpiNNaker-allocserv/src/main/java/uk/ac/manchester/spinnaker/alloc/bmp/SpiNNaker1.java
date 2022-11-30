@@ -218,7 +218,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	private boolean canBoardManageFPGAs(BMPBoard board)
 			throws ProcessException, IOException, InterruptedException {
 		var vi = txrx.readBMPVersion(board);
-		return vi.versionNumber.majorVersion >= BMP_VERSION_MIN;
+		return vi.versionNumber.majorVersion() >= BMP_VERSION_MIN;
 	}
 
 	/**

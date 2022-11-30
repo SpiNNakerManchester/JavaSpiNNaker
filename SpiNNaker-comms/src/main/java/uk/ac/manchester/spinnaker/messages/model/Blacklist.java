@@ -28,6 +28,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 import static java.util.stream.IntStream.range;
 import static org.apache.commons.io.IOUtils.buffer;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -70,7 +71,6 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry;
 import uk.ac.manchester.spinnaker.machine.ValidP;
-import uk.ac.manchester.spinnaker.utils.CollectionUtils;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -305,13 +305,14 @@ public final class Blacklist implements Serializable {
 		return sb.toString();
 	}
 
-	private static Set<Integer> parseCommaSeparatedSet(String str) {
-		return CollectionUtils.parseCommaSeparatedSet(str, Integer::parseInt);
+	private static <T> Set<T> parseCommaSeparatedSet(String str,
+			Function<String, T> mapper) {
+		return stream(str.split(",")).map(mapper).collect(toUnmodifiableSet());
 	}
 
 	private static <T extends Enum<T>> Set<T> parseCommaSeparatedSet(
-			String str, Function<Integer, T> fun, Class<T> cls) {
-		return stream(str.split(",")).map(Integer::parseInt).map(fun)
+			String str, Function<Integer, T> mapper, Class<T> cls) {
+		return stream(str.split(",")).map(Integer::parseInt).map(mapper)
 				.collect(toEnumSet(cls));
 	}
 
@@ -346,7 +347,8 @@ public final class Blacklist implements Serializable {
 		while (true) {
 			m = CORE_PATTERN.matcher(rest);
 			if (m.find() && deadCores == null) {
-				deadCores = parseCommaSeparatedSet(m.group("cores"));
+				deadCores = parseCommaSeparatedSet(
+						m.group("cores"), Integer::parseInt);
 				deadCores.forEach(c -> {
 					if (c < 0 || c >= PROCESSORS_PER_CHIP) {
 						throw new IllegalArgumentException(

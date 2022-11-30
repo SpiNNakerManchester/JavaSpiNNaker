@@ -115,20 +115,9 @@ public class AllocatorTask extends DatabaseAwareBean
 	 *
 	 * @author Donal Fellows
 	 */
-	private static final class Rectangle {
-		final int width;
-
-		final int height;
-
-		/** Depth of rectangle. 1 or 3 */
-		final int depth;
-
-		private Rectangle(int width, int height, int depth) {
-			this.width = width;
-			this.height = height;
-			this.depth = depth;
-		}
-
+	private static final record Rectangle(int width, int height,
+			/** Depth of rectangle. 1 or 3 */
+			int depth) {
 		private Rectangle(Row row) {
 			this(row.getInt("max_width"), row.getInt("max_height"),
 					TRIAD_DEPTH);
@@ -756,7 +745,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	private int connectedSize(AllocSQL sql, int machineId, TriadCoords root,
 			int width, int height) {
 		return sql.countConnectedBoards
-				.call1(machineId, root.x, root.y, width, height)
+				.call1(machineId, root.x(), root.y(), width, height)
 				.map(integer("connected_size")).orElse(-1);
 	}
 
@@ -848,9 +837,10 @@ public class AllocatorTask extends DatabaseAwareBean
 	private boolean setAllocation(AllocSQL sql, int jobId, Rectangle rect,
 			int machineId, TriadCoords root) {
 		log.debug("performing allocation for {}: {}x{}x{} at {}:{}:{}", jobId,
-				rect.width, rect.height, rect.depth, root.x, root.y, root.z);
+				rect.width, rect.height, rect.depth, root.x(), root.y(),
+				root.z());
 		var boardsToAllocate = sql.getConnectedBoardIDs
-				.call(machineId, root.x, root.y, root.z, rect.width,
+				.call(machineId, root.x(), root.y(), root.z(), rect.width,
 						rect.height, rect.depth)
 				.map(integer("board_id")).toList();
 		if (boardsToAllocate.isEmpty()) {

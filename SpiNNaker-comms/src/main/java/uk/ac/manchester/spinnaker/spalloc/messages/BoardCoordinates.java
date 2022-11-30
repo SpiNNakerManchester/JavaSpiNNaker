@@ -33,42 +33,22 @@ import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 /**
  * The logical coordinates of a board. This would be {@link TriadCoords} except
  * it has a different serialization form for backward-compatibility.
+ *
+ * @param x
+ *            the X coordinate
+ * @param y
+ *            the Y coordinate
+ * @param z
+ *            the Z coordinate
  */
-@JsonPropertyOrder({
-	"x", "y", "z"
-})
+@JsonPropertyOrder({ "x", "y", "z" })
 @JsonFormat(shape = ARRAY)
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 @Immutable
-public final class BoardCoordinates {
-	@ValidTriadX
-	private final int x;
-
-	@ValidTriadY
-	private final int y;
-
-	@ValidTriadZ
-	private final int z;
-
-	/**
-	 * Create with given coordinates.
-	 *
-	 * @param x
-	 *            the X coordinate
-	 * @param y
-	 *            the Y coordinate
-	 * @param z
-	 *            the Z coordinate
-	 */
-	public BoardCoordinates(
-			@JsonProperty(value = "x", defaultValue = "0") int x,
-			@JsonProperty(value = "y", defaultValue = "0") int y,
-			@JsonProperty(value = "z", defaultValue = "0") int z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
-
+public final record BoardCoordinates(
+		@JsonProperty(value = "x", defaultValue = "0") @ValidTriadX int x,
+		@JsonProperty(value = "y", defaultValue = "0") @ValidTriadY int y,
+		@JsonProperty(value = "z", defaultValue = "0") @ValidTriadZ int z) {
 	/**
 	 * Create with given coordinates.
 	 *
@@ -76,35 +56,7 @@ public final class BoardCoordinates {
 	 *            the coordinates in standard form
 	 */
 	public BoardCoordinates(TriadCoords triad) {
-		this.x = triad.x;
-		this.y = triad.y;
-		this.z = triad.z;
-	}
-
-	/** @return the X coordinate */
-	public int getX() {
-		return x;
-	}
-
-	/** @return the Y coordinate */
-	public int getY() {
-		return y;
-	}
-
-	/** @return the Z coordinate */
-	public int getZ() {
-		return z;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		return (o instanceof BoardCoordinates other) && (x == other.x)
-				&& (y == other.y) && (z == other.z);
-	}
-
-	@Override
-	public int hashCode() {
-		return x * 1234567 + y * 56789 + z;
+		this(triad.x(), triad.y(), triad.z());
 	}
 
 	@Override

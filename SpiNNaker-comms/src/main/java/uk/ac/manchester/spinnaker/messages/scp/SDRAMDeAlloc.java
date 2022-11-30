@@ -62,7 +62,7 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 	}
 
 	private static int argument1(AppID appID) {
-		return (appID.appID << BYTE1) | (FREE_SDRAM_BY_APP_ID.value << BYTE0);
+		return (appID.appID() << BYTE1) | (FREE_SDRAM_BY_APP_ID.value << BYTE0);
 	}
 
 	@Override

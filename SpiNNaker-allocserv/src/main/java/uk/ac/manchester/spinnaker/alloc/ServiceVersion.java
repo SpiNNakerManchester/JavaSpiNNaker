@@ -46,7 +46,7 @@ public class ServiceVersion {
 	public ServiceVersion(@Value("${version}") String version,
 			@Value("${build-timestamp}") String buildTimestamp) {
 		fullVersion = version;
-		v = new Version(version.replaceAll("-.*", ""));
+		v = Version.parse(version.replaceAll("-.*", ""));
 		this.buildTimestamp = buildTimestamp;
 	}
 

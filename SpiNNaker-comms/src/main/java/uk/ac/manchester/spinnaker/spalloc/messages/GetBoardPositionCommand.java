@@ -43,8 +43,8 @@ public class GetBoardPositionCommand extends Command<Integer> {
 			@Valid TriadCoords coords) {
 		super("get_board_position");
 		addKwArg("machine_name", machine);
-		addKwArg("x", coords.x);
-		addKwArg("y", coords.y);
-		addKwArg("z", coords.z);
+		addKwArg("x", coords.x());
+		addKwArg("y", coords.y());
+		addKwArg("z", coords.z());
 	}
 }

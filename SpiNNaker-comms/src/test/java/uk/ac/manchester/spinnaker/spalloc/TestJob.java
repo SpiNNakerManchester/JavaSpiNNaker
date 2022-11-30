@@ -110,34 +110,63 @@ class TestJob {
 		});
 
 		// Check that the messages sent were the ones we expected
-		JSONAssert.assertEquals("{\"command\": \"create_job\", "
-				+ "\"args\": [1, 2, 3], \"kwargs\": {"
-				+ "\"keepalive\": 1, \"max_dead_boards\": 0, "
-				+ "\"min_ratio\": 0.333, \"owner\": \"dummy\", "
-				+ "\"require_torus\": false}}", received.take(), true);
-		JSONAssert.assertEquals(
-				"{\"command\": \"power_on_job_boards\", \"args\": [123], "
-						+ "\"kwargs\": {}}",
-				received.take(), true);
-		JSONAssert.assertEquals(
-				"{\"command\": \"get_job_state\", \"args\": [123], "
-						+ "\"kwargs\": {}}",
-				received.take(), true);
-		JSONAssert
-				.assertEquals("{\"command\": \"notify_job\", \"args\": [123], "
-						+ "\"kwargs\": {}}", received.take(), true);
-		JSONAssert.assertEquals(
-				"{\"command\": \"get_job_state\", \"args\": [123], "
-						+ "\"kwargs\": {}}",
-				received.take(), true);
-		JSONAssert.assertEquals(
-				"{\"command\": \"get_job_machine_info\", \"args\": [123], "
-						+ "\"kwargs\": {}}",
-				received.take(), true);
-		JSONAssert.assertEquals(
-				"{\"command\": \"destroy_job\", \"args\": [123], "
-						+ "\"kwargs\": {\"reason\": \"abc\"}}",
-				received.take(), true);
+		JSONAssert.assertEquals("""
+				{
+					"command": "create_job",
+					"args": [1, 2, 3],
+					"kwargs": {
+						"keepalive": 1,
+						"max_dead_boards": 0,
+						"min_ratio": 0.333,
+						"owner": "dummy",
+						"require_torus": false
+					}
+				}
+				""", received.take(), true);
+		JSONAssert.assertEquals("""
+				{
+					"command": "power_on_job_boards",
+					"args": [123],
+					"kwargs": {}
+				}
+				""", received.take(), true);
+		JSONAssert.assertEquals("""
+				{
+					"command": "get_job_state",
+					"args": [123],
+					"kwargs": {}
+				}
+				""", received.take(), true);
+		JSONAssert.assertEquals("""
+				{
+					"command": "notify_job",
+					"args": [123],
+					"kwargs": {}
+				}
+				""", received.take(), true);
+		JSONAssert.assertEquals("""
+				{
+					"command": "get_job_state",
+					"args": [123],
+					"kwargs": {}
+				}
+				""", received.take(), true);
+		JSONAssert.assertEquals("""
+				{
+					"command": "get_job_machine_info",
+					"args": [123],
+					"kwargs": {}
+				}
+				""", received.take(), true);
+		JSONAssert.assertEquals("""
+				{
+					"command": "destroy_job",
+					"args": [123],
+					"kwargs": {
+						"reason": "abc"
+					}
+				}
+				""", received.take(), true);
 		assertTrue(received.isEmpty(),
 				"must have checked all received messages");
 		assertTrue(send.isEmpty(), "must have sent all expected responses");
@@ -150,10 +179,13 @@ class TestJob {
 		// All should have the same message sent
 		var first = keepalives.take();
 		assertNotNull(first, "null in keepalive queue!");
-		JSONAssert.assertEquals(
-				"{\"command\": \"job_keepalive\", "
-						+ "\"args\": [123], \"kwargs\": {}}",
-				first, true);
+		JSONAssert.assertEquals("""
+				{
+					"command": "job_keepalive",
+					"args": [123],
+					"kwargs": {}
+				}
+				""", first, true);
 		while (!keepalives.isEmpty()) {
 			JSONAssert.assertEquals(first, keepalives.take(), true);
 		}

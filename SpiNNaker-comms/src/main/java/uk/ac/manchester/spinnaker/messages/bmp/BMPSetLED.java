@@ -48,7 +48,7 @@ public class BMPSetLED extends BMPRequest<BMPRequest.BMPResponse> {
 	}
 
 	private static int argument2(Collection<BMPBoard> boards) {
-		return boards.stream().mapToInt(board -> 1 << board.board).sum();
+		return boards.stream().mapToInt(board -> 1 << board.board()).sum();
 	}
 
 	@Override

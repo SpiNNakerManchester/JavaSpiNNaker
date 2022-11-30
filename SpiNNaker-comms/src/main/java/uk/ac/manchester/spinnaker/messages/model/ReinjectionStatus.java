@@ -21,8 +21,37 @@ import java.nio.ByteBuffer;
 /**
  * Represents a status information message obtained from the dropped packet
  * reinjection core (an "extra monitor" core).
+ *
+ * @param timeout
+ *            The WAIT1 timeout value of the router in cycles.
+ * @param emergencyTimeout
+ *            The WAIT2 timeout value of the router in cycles.
+ * @param droppedPackets
+ *            The number of packets dropped by the router and received by the
+ *            reinjection functionality (may not fit in the queue though).
+ * @param missedDroppedPackets
+ *            The number of times that when a dropped packet was read it was
+ *            found that another one or more packets had also been dropped, but
+ *            had been missed.
+ * @param droppedPacketOverflows
+ *            Of the {@link #droppedPackets} received, how many were lost due to
+ *            not having enough space in the queue of packets to reinject.
+ * @param reinjectedPackets
+ *            Of the {@link #droppedPackets} received, how many packets were
+ *            successfully reinjected.
+ * @param linkDumps
+ *            The number of times that when a dropped packet was caused due to a
+ *            link failing to take the packet.
+ * @param processorDumps
+ *            The number of times that when a dropped packet was caused due to a
+ *            processor failing to take the packet.
+ * @param flags
+ *            The flags that states which types of packets were being recorded.
  */
-public class ReinjectionStatus {
+public record ReinjectionStatus(RouterTimeout timeout,
+		RouterTimeout emergencyTimeout, int droppedPackets,
+		int missedDroppedPackets, int droppedPacketOverflows,
+		int reinjectedPackets, int linkDumps, int processorDumps, int flags) {
 	/** Used to pick low nybble of value. */
 	static final int MASK = 0xF;
 
@@ -43,124 +72,15 @@ public class ReinjectionStatus {
 		return (mantissa & MASK) | ((exponent & MASK) << SHIFT);
 	}
 
-	/** The WAIT1 timeout value of the router in cycles. */
-	private final RouterTimeout timeout;
-
-	/** The WAIT2 timeout value of the router in cycles. */
-	private final RouterTimeout emergencyTimeout;
-
-	/**
-	 * The number of packets dropped by the router and received by the
-	 * reinjection functionality (may not fit in the queue though).
-	 */
-	private final int droppedPackets;
-
-	/**
-	 * The number of times that when a dropped packet was read it was found that
-	 * another one or more packets had also been dropped, but had been missed.
-	 */
-	private final int missedDroppedPackets;
-
-	/**
-	 * Of the {@link #droppedPackets} received, how many were lost due to not
-	 * having enough space in the queue of packets to reinject.
-	 */
-	private final int droppedPacketOverflows;
-
-	/**
-	 * Of the {@link #droppedPackets} received, how many packets were
-	 * successfully reinjected.
-	 */
-	private final int reinjectedPackets;
-
-	/**
-	 * The number of times that when a dropped packet was caused due to a link
-	 * failing to take the packet.
-	 */
-	private final int linkDumps;
-
-	/**
-	 * The number of times that when a dropped packet was caused due to a
-	 * processor failing to take the packet.
-	 */
-	private final int processorDumps;
-
-	/** The flags that states which types of packets were being recorded. */
-	private final int flags;
-
 	/**
 	 * @param buffer
 	 *            The message containing the status to parse.
 	 */
 	public ReinjectionStatus(ByteBuffer buffer) {
-		this.timeout = new RouterTimeout(buffer.getInt());
-		this.emergencyTimeout = new RouterTimeout(buffer.getInt());
-		this.droppedPackets = buffer.getInt();
-		this.missedDroppedPackets = buffer.getInt();
-		this.droppedPacketOverflows = buffer.getInt();
-		this.reinjectedPackets = buffer.getInt();
-		this.linkDumps = buffer.getInt();
-		this.processorDumps = buffer.getInt();
-		this.flags = buffer.getInt();
-	}
-
-	/** @return The WAIT1 timeout value of the router in cycles. */
-	public RouterTimeout getTimeout() {
-		return timeout;
-	}
-
-	/** @return The WAIT2 timeout value of the router in cycles. */
-	public RouterTimeout getEmergencyTimeout() {
-		return emergencyTimeout;
-	}
-
-	/**
-	 * @return The number of packets dropped by the router and received by the
-	 *         reinjection functionality (may not fit in the queue though).
-	 */
-	public int getNumDroppedPackets() {
-		return droppedPackets;
-	}
-
-	/**
-	 * @return The number of times that when a dropped packet was read it was
-	 *         found that another one or more packets had also been dropped, but
-	 *         had been missed.
-	 */
-	public int getNumMissedDroppedPackets() {
-		return missedDroppedPackets;
-	}
-
-	/**
-	 * @return Of the n_dropped_packets received, how many were lost due to not
-	 *         having enough space in the queue of packets to reinject.
-	 */
-	public int getNumDroppedPacketOverflows() {
-		return droppedPacketOverflows;
-	}
-
-	/**
-	 * @return The number of times that when a dropped packet was caused due to
-	 *         a processor failing to take the packet.
-	 */
-	public int getNumProcessorDumps() {
-		return processorDumps;
-	}
-
-	/**
-	 * @return The number of times that when a dropped packet was caused due to
-	 *         a link failing to take the packet.
-	 */
-	public int getNumLinkDumps() {
-		return linkDumps;
-	}
-
-	/**
-	 * @return Of the number of dropped packets received, how many packets were
-	 *         successfully reinjected.
-	 */
-	public int getNumReinjectedPackets() {
-		return reinjectedPackets;
+		this(new RouterTimeout(buffer.getInt()),
+				new RouterTimeout(buffer.getInt()), buffer.getInt(),
+				buffer.getInt(), buffer.getInt(), buffer.getInt(),
+				buffer.getInt(), buffer.getInt(), buffer.getInt());
 	}
 
 	private boolean flag(DPRIFlags flag) {

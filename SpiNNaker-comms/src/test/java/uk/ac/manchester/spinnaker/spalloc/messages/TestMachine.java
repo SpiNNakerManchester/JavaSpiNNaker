@@ -68,8 +68,8 @@ public class TestMachine {
 		assertThat(fromJson.getDeadBoards(), contains(
 				new BoardCoordinates(1, 2, 3), new BoardCoordinates(4, 5, 6)));
 		assertEquals(2, fromJson.getDeadLinks().size());
-		assertEquals(7, fromJson.getDeadLinks().get(0).getX());
-		assertEquals(14, fromJson.getDeadLinks().get(1).getLink());
+		assertEquals(7, fromJson.getDeadLinks().get(0).x());
+		assertEquals(14, fromJson.getDeadLinks().get(1).link());
 		assertNotNull(fromJson.toString());
 	}
 

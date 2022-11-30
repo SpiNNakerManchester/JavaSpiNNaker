@@ -35,9 +35,9 @@ public class TestBoardPhysicalCoordinates {
 		var json = "[2, 4, 6]";
 		var mapper = SpallocClient.createMapper();
 		var fromJson = mapper.readValue(json, BoardPhysicalCoordinates.class);
-		assertEquals(2, fromJson.getCabinet());
-		assertEquals(4, fromJson.getFrame());
-		assertEquals(6, fromJson.getBoard());
+		assertEquals(2, fromJson.cabinet());
+		assertEquals(4, fromJson.frame());
+		assertEquals(6, fromJson.board());
 
 		var direct = new BoardPhysicalCoordinates(2, 4, 6);
 		assertEquals(direct, fromJson);

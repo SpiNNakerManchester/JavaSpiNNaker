@@ -45,7 +45,7 @@ public final class ApplicationStop extends SCPRequest<CheckOKResponse> {
 
 	private static int argument2(AppID appID) {
 		return (MAGIC2 << SHIFT) | (STOP.value << BYTE2) | (APP_MASK << BYTE1)
-				| (appID.appID << BYTE0);
+				| (appID.appID() << BYTE0);
 	}
 
 	private static int argument3() {

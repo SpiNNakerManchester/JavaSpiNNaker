@@ -18,9 +18,6 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
-import static java.util.Objects.isNull;
-
-import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -36,42 +33,25 @@ import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
 /**
  * The physical coordinates of a board. This would be {@link PhysicalCoords}
  * except it has a different serialization form for backward-compatibility.
+ *
+ * @param cabinet
+ *            the cabinet ID
+ * @param frame
+ *            the frame ID within the cabinet
+ * @param board
+ *            the board ID within the frame
  */
-@JsonPropertyOrder({
-	"cabinet", "frame", "board"
-})
+@JsonPropertyOrder({ "cabinet", "frame", "board" })
 @JsonFormat(shape = ARRAY)
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 @Immutable
-public class BoardPhysicalCoordinates {
-	@ValidCabinetNumber
-	private final int cabinet;
-
-	@ValidFrameNumber
-	private final int frame;
-
-	@ValidBoardNumber
-	private final Integer board;
-
-	/**
-	 * Create with given coordinates.
-	 *
-	 * @param cabinet
-	 *            the cabinet ID
-	 * @param frame
-	 *            the frame ID within the cabinet
-	 * @param board
-	 *            the board ID within the frame
-	 */
-	public BoardPhysicalCoordinates(
-			@JsonProperty(value = "cabinet", defaultValue = "0") int cabinet,
-			@JsonProperty(value = "frame", defaultValue = "0") int frame,
-			@JsonProperty(value = "board", defaultValue = "0") Integer board) {
-		this.cabinet = cabinet;
-		this.frame = frame;
-		this.board = board;
-	}
-
+public record BoardPhysicalCoordinates(
+		@JsonProperty(value = "cabinet", defaultValue = "0") //
+		@ValidCabinetNumber int cabinet,
+		@JsonProperty(value = "frame", defaultValue = "0") //
+		@ValidFrameNumber int frame,
+		@JsonProperty(value = "board", defaultValue = "0") //
+		@ValidBoardNumber Integer board) {
 	/**
 	 * Create with given coordinates.
 	 *
@@ -79,37 +59,7 @@ public class BoardPhysicalCoordinates {
 	 *            the coordinates in standard form.
 	 */
 	public BoardPhysicalCoordinates(PhysicalCoords coords) {
-		this.cabinet = coords.c;
-		this.frame = coords.f;
-		this.board = coords.b;
-	}
-
-	/** @return the cabinet ID */
-	public int getCabinet() {
-		return cabinet;
-	}
-
-	/** @return the frame ID within the cabinet */
-	public int getFrame() {
-		return frame;
-	}
-
-	/** @return the board ID within the frame */
-	public Integer getBoard() {
-		return board;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		return (o instanceof BoardPhysicalCoordinates other)
-				&& (cabinet == other.cabinet) && (frame == other.frame)
-				&& Objects.equals(board, other.board);
-	}
-
-	@Override
-	public int hashCode() {
-		return 9 * (cabinet * 1234567 + frame * 56789
-				+ (isNull(board) ? 0 : board));
+		this(coords.c(), coords.f(), coords.b());
 	}
 
 	@Override

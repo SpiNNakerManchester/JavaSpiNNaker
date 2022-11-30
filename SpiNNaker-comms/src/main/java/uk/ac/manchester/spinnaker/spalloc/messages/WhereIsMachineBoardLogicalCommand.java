@@ -42,8 +42,8 @@ public class WhereIsMachineBoardLogicalCommand extends Command<Integer> {
 			@Valid TriadCoords coords) {
 		super("where_is");
 		addKwArg("machine", machine);
-		addKwArg("x", coords.x);
-		addKwArg("y", coords.y);
-		addKwArg("z", coords.z);
+		addKwArg("x", coords.x());
+		addKwArg("y", coords.y());
+		addKwArg("z", coords.z());
 	}
 }

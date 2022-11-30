@@ -16,8 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download.request;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
 
@@ -31,40 +31,23 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
  * Vertex recording region information.
  *
  * @author Christian-B
+ * @param label
+ *            Label as received from Python.
+ * @param base
+ *            Address at which to find recording metadata. This was allocated
+ *            during data specification execution, and contains a description of
+ *            <i>all</i> the recording regions owned by a vertex (it may well
+ *            have several, e.g., spikes and voltages). This points to a
+ *            structure that includes the addresses of the per-region metadata,
+ *            and those point in turn to the actual buffers used to do the
+ *            recording (which are <i>circular</i> buffers).
+ * @param recordedRegionIds
+ *            The recording region IDs that have been actually recorded using
+ *            buffering.
  */
 @JsonFormat(shape = OBJECT)
-public class Vertex {
-
-	/** Label as received from Python. */
-	private final String label;
-
-	/**
-	 * Address at which to find recording metadata. This was allocated during
-	 * data specification execution, and contains a description of <i>all</i>
-	 * the recording regions owned by a vertex (it may well have several, e.g.,
-	 * spikes and voltages). This points to a structure that includes the
-	 * addresses of the per-region metadata, and those point in turn to the
-	 * actual buffers used to do the recording (which are <i>circular</i>
-	 * buffers).
-	 */
-	private final long recordingRegionBaseAddress;
-
-	/**
-	 * Address at which to find recording metadata. This was allocated during
-	 * data specification execution, and contains a description of <i>all</i>
-	 * the recording regions owned by a vertex (it may well have several, e.g.,
-	 * spikes and voltages). This points to a structure that includes the
-	 * addresses of the per-region metadata, and those point in turn to the
-	 * actual buffers used to do the recording (which are <i>circular</i>
-	 * buffers).
-	 */
-	@NotNull
-	private final MemoryLocation base;
-
-	/** The IDs of the regions recording. */
-	@NotNull
-	private final int[] recordedRegionIds;
-
+public final record Vertex(String label, @NotNull MemoryLocation base,
+		@NotNull int[] recordedRegionIds) {
 	/**
 	 * Create a minimal vertex, possibly using an unmarshaller.
 	 *
@@ -77,51 +60,14 @@ public class Vertex {
 	 * @param recordedRegionIds
 	 *            The IDs of the regions doing recording.
 	 */
-	public Vertex(@JsonProperty(value = "label", required = true) String label,
-			@JsonProperty(value = "recordingRegionBaseAddress", required = true)
-			long recordingRegionBaseAddress,
-			@JsonProperty(value = "recordedRegionIds", required = true)
+	@JsonCreator
+	public Vertex(//
+			@JsonProperty(value = "label", required = true) String label,
+			@JsonProperty(value = "recordingRegionBaseAddress", //
+					required = true) long recordingRegionBaseAddress,
+			@JsonProperty(value = "recordedRegionIds", required = true) //
 			int[] recordedRegionIds) {
-		this.label = label;
-		this.recordingRegionBaseAddress = recordingRegionBaseAddress;
-		this.recordedRegionIds = recordedRegionIds;
-		this.base = new MemoryLocation(recordingRegionBaseAddress);
-	}
-
-	/**
-	 * Get the recording region IDs that have been recorded using buffering.
-	 *
-	 * @return The region numbers that have active recording
-	 */
-	public int[] getRecordedRegionIds() {
-		return recordedRegionIds;
-	}
-
-	/**
-	 * Get the recording region base address.
-	 * <p>
-	 * Unlike the python this value is cached here.
-	 *
-	 * @return the base address of the recording region
-	 */
-	public long getBaseAddress() {
-		return recordingRegionBaseAddress;
-	}
-
-	/**
-	 * Get the recording region base address.
-	 *
-	 * @return the base address of the recording region
-	 */
-	@JsonIgnore
-	public MemoryLocation getBase() {
-		return base;
-	}
-
-	/**
-	 * @return The label, as received from Python.
-	 */
-	public String getLabel() {
-		return label;
+		this(label, new MemoryLocation(recordingRegionBaseAddress),
+				recordedRegionIds);
 	}
 }

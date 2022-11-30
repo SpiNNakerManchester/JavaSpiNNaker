@@ -62,6 +62,13 @@ abstract class SupportUtils {
 	interface IServer extends AutoCloseable {
 		void send(JSONObject obj);
 
+		/**
+		 * Arrange for a message to be sent.
+		 *
+		 * @param jsonString
+		 *            The JSON message to be sent. Will be parsed and
+		 *            reformatted for the protocol.
+		 */
 		default void send(String jsonString) {
 			send(new JSONObject(jsonString));
 		}

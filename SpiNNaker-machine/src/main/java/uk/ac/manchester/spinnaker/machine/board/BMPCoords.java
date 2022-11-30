@@ -48,37 +48,20 @@ import com.google.errorprone.annotations.Immutable;
  * <pre>[c:3,f:2]</pre>
  *
  * @author Donal Fellows
+ * @param cabinet
+ *            The ID of the cabinet that contains the frame that contains the
+ *            BMPs.
+ * @param frame
+ *            The ID of the frame that contains the master BMP. Frames are
+ *            contained within a cabinet.
  */
 @Immutable
 @JsonDeserialize(using = BMPCoords.Deserializer.class)
-public final class BMPCoords implements Comparable<BMPCoords> {
+public final record BMPCoords(@ValidCabinetNumber int cabinet,
+		@ValidFrameNumber int frame) implements Comparable<BMPCoords> {
 	/** Parses the result of {@link #toString()}. */
 	private static final Pattern PATTERN =
 			Pattern.compile("^\\[c:(\\d+),f:(\\d+)\\]$");
-
-	/** The ID of the cabinet that contains the frame that contains the BMPs. */
-	@ValidCabinetNumber
-	public final int cabinet;
-
-	/**
-	 * The ID of the frame that contains the master BMP. Frames are contained
-	 * within a cabinet.
-	 */
-	@ValidFrameNumber
-	public final int frame;
-
-	/**
-	 * Create an instance.
-	 *
-	 * @param cabinet
-	 *            Cabinet number.
-	 * @param frame
-	 *            Frame number.
-	 */
-	public BMPCoords(int cabinet, int frame) {
-		this.cabinet = cabinet;
-		this.frame = frame;
-	}
 
 	/**
 	 * Create an instance from its serial form. This is the form produced by
@@ -94,41 +77,15 @@ public final class BMPCoords implements Comparable<BMPCoords> {
 	 *             If the string is not in the right form.
 	 */
 	@JsonCreator
-	public BMPCoords(String serialForm) {
+	public static BMPCoords parse(String serialForm) {
 		var m = PATTERN.matcher(serialForm);
 		if (!m.matches()) {
 			throw new IllegalArgumentException("bad argument: " + serialForm);
 		}
 		int idx = 0;
-		cabinet = parseInt(m.group(++idx));
-		frame = parseInt(m.group(++idx));
-	}
-
-	/**
-	 * @return The ID of the cabinet that contains the frame that contains the
-	 *         BMPs.
-	 */
-	public int getCabinet() {
-		return cabinet;
-	}
-
-	/**
-	 * @return The ID of the frame that contains the master BMP. Frames are
-	 *         contained within a cabinet.
-	 */
-	public int getFrame() {
-		return frame;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		return (obj instanceof BMPCoords other) && (cabinet == other.cabinet)
-				&& (frame == other.frame);
-	}
-
-	@Override
-	public int hashCode() {
-		return cabinet * 5 + frame;
+		int cabinet = parseInt(m.group(++idx));
+		int frame = parseInt(m.group(++idx));
+		return new BMPCoords(cabinet, frame);
 	}
 
 	@Override
@@ -187,7 +144,7 @@ public final class BMPCoords implements Comparable<BMPCoords> {
 
 		@Override
 		BMPCoords deserializeString(String string) {
-			return new BMPCoords(string);
+			return BMPCoords.parse(string);
 		}
 
 		@Override

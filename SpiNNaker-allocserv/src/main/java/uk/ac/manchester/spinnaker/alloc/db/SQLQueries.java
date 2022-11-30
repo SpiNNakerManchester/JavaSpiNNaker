@@ -2108,7 +2108,7 @@ public abstract class SQLQueries {
 	@Parameter("x")
 	@Parameter("y")
 	protected static final String ADD_BLACKLISTED_CHIP = """
-			WITH args(board_id, x, y) AS (VALUES(:board_id, :x, :y)),"
+			WITH args(board_id, x, y) AS (VALUES(:board_id, :x, :y)),
 				m(model) AS (SELECT board_model FROM machines
 					JOIN boards USING (machine_id)
 					JOIN args USING (board_id))
@@ -2286,7 +2286,7 @@ public abstract class SQLQueries {
 	@Parameter("physical_serial_id")
 	@GeneratesID
 	protected static final String SET_BOARD_SERIAL_IDS = """
-			INSERT INTO board_serial("
+			INSERT INTO board_serial(
 				board_id, bmp_serial_id, physical_serial_id)
 			VALUES (:board_id, :bmp_serial_id, :physical_serial_id)
 			ON CONFLICT DO UPDATE
@@ -2383,7 +2383,7 @@ public abstract class SQLQueries {
 	@GeneratesID
 	protected static final String CREATE_BLACKLIST_READ = """
 			INSERT INTO blacklist_ops(
-				board_id, op, completed) "
+				board_id, op, completed)
 			VALUES (:board_id, 0, 0)
 			""";
 

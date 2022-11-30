@@ -27,7 +27,7 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
 /** Sets a fixed route entry. */
 public final class FixedRouteInitialise extends SCPRequest<CheckOKResponse> {
 	private static int argument1(AppID appID) {
-		return appID.appID << BYTE1;
+		return appID.appID() << BYTE1;
 	}
 
 	/**

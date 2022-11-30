@@ -23,8 +23,12 @@ import static uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus.SHIFT;
  * A router timeout, originally stored as an 8-bit unsigned float.
  *
  * @author Donal Fellows
+ * @param mantissa
+ *            The mantissa of the timeout.
+ * @param exponent
+ *            The exponent of the timeout.
  */
-public final class RouterTimeout {
+public record RouterTimeout(byte mantissa, byte exponent) {
 	private static final int MANTISSA_OFFSET = 16;
 
 	private static final int EXPONENT_OFFSET = 4;
@@ -34,15 +38,8 @@ public final class RouterTimeout {
 
 	private static final double CLOCK_INTERVAL = 1e9 / 133e6;
 
-	/** The mantissa of the timeout. */
-	public final int mantissa;
-
-	/** The exponent of the timeout. */
-	public final int exponent;
-
 	RouterTimeout(int encodedValue) {
-		mantissa = encodedValue & MASK;
-		exponent = (encodedValue >> SHIFT) & MASK;
+		this(encodedValue, encodedValue >> SHIFT);
 	}
 
 	/**
@@ -52,14 +49,13 @@ public final class RouterTimeout {
 	 *            The exponent of the value; only low 4 bits used.
 	 */
 	public RouterTimeout(int mantissa, int exponent) {
-		this.mantissa = mantissa & MASK;
-		this.exponent = exponent & MASK;
+		this((byte) (mantissa & MASK), (byte) (exponent & MASK));
 	}
 
 	/**
 	 * @return the timeout value of a router in ticks.
 	 */
-	public int getValue() {
+	public int value() {
 		int m = mantissa + MANTISSA_OFFSET;
 		if (exponent <= EXPONENT_OFFSET) {
 			return (m - (1 << (EXPONENT_OFFSET - exponent))) * (1 << exponent);
@@ -72,6 +68,6 @@ public final class RouterTimeout {
 		if (mantissa == INF.mantissa && exponent == INF.exponent) {
 			return "INF";
 		}
-		return "" + (getValue() * CLOCK_INTERVAL) + " ns";
+		return "" + (value() * CLOCK_INTERVAL) + " ns";
 	}
 }

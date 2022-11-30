@@ -748,8 +748,8 @@ public class Transceiver extends UDPTransceiver
 	private ConnectionSelector<BMPConnection> bmpConnection(BMPCoords bmp) {
 		if (!bmpSelectors.containsKey(bmp)) {
 			throw new IllegalArgumentException(
-					"Unknown combination of cabinet (" + bmp.getCabinet()
-							+ ") and frame (" + bmp.getFrame() + ")");
+					"Unknown combination of cabinet (" + bmp.cabinet()
+							+ ") and frame (" + bmp.frame() + ")");
 		}
 		return bmpSelectors.get(bmp);
 	}
@@ -801,7 +801,7 @@ public class Transceiver extends UDPTransceiver
 			try {
 				var versionInfo = readBMPVersion(conn.getCoords(), conn.boards);
 				if (!BMP_NAME.equals(versionInfo.name) || !BMP_MAJOR_VERSIONS
-						.contains(versionInfo.versionNumber.majorVersion)) {
+						.contains(versionInfo.versionNumber.majorVersion())) {
 					throw new IOException(format(
 							"The BMP at %s is running %s %s which is "
 									+ "incompatible with this transceiver, "
@@ -1114,24 +1114,7 @@ public class Transceiver extends UDPTransceiver
 	 * @return true exactly when they are compatible
 	 */
 	public static boolean isScampVersionCompatible(Version version) {
-		// The major version must match exactly
-		if (version.majorVersion != SCAMP_VERSION.majorVersion) {
-			return false;
-		}
-
-		/*
-		 * If the minor version matches, the patch version must be >= the
-		 * required version
-		 */
-		if (version.minorVersion == SCAMP_VERSION.minorVersion) {
-			return version.revision >= SCAMP_VERSION.revision;
-		}
-
-		/*
-		 * If the minor version is > than the required version, the patch
-		 * version is irrelevant
-		 */
-		return version.minorVersion > SCAMP_VERSION.minorVersion;
+		return version.compatibleWith(SCAMP_VERSION);
 	}
 
 	/**
@@ -2598,17 +2581,16 @@ public class Transceiver extends UDPTransceiver
 
 	/**
 	 * A simple description of a connnection to create.
+	 *
+	 * @param hostname
+	 *            What host to talk to.
+	 * @param portNumber
+	 *            What port to talk to, or {@code null} for default.
+	 * @param chip
+	 *            What chip to talk to.
 	 */
-	public static final class ConnectionDescriptor {
-		/** What host to talk to. */
-		private InetAddress hostname;
-
-		/** What port to talk to, or {@code null} for default. */
-		private Integer portNumber;
-
-		/** What chip to talk to. */
-		private ChipLocation chip;
-
+	public static final record ConnectionDescriptor(InetAddress hostname,
+			Integer portNumber, ChipLocation chip) {
 		/**
 		 * Create a connection descriptor.
 		 *
@@ -2619,9 +2601,7 @@ public class Transceiver extends UDPTransceiver
 		 */
 		public ConnectionDescriptor(InetAddress hostname,
 				HasChipLocation chip) {
-			this.hostname = requireNonNull(hostname);
-			this.chip = chip.asChipLocation();
-			this.portNumber = null;
+			this(requireNonNull(hostname), null, chip.asChipLocation());
 		}
 
 		/**
@@ -2636,9 +2616,7 @@ public class Transceiver extends UDPTransceiver
 		 */
 		public ConnectionDescriptor(InetAddress host, int port,
 				HasChipLocation chip) {
-			this.hostname = requireNonNull(host);
-			this.chip = chip.asChipLocation();
-			this.portNumber = port;
+			this(requireNonNull(host), (Integer) port, chip.asChipLocation());
 		}
 	}
 

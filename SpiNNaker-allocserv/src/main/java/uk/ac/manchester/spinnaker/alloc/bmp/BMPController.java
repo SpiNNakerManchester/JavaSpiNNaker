@@ -765,7 +765,7 @@ public class BMPController extends DatabaseAwareBean {
 		private Optional<Integer> getBoardId(HasCoreLocation addr) {
 			return idToBoard.get(new BMPCoords(addr.getX(), addr.getY()))
 					.entrySet().stream()
-					.filter(ib2 -> ib2.getValue().board == addr.getP())
+					.filter(ib2 -> ib2.getValue().board() == addr.getP())
 					.map(Entry::getKey).findFirst();
 		}
 	}

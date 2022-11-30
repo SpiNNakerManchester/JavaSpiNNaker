@@ -246,8 +246,9 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		@JsonIgnore
 		@AssertTrue(message = "all boards must have sane logical coordinates")
 		private boolean isCoordinateSane() {
-			return boardLocations.keySet().stream().allMatch(loc -> (loc.x >= 0)
-					&& (loc.x < width) && (loc.y >= 0) && (loc.y < height));
+			return boardLocations.keySet().stream()
+					.allMatch(loc -> (loc.x() >= 0) && (loc.x() < width)
+							&& (loc.y() >= 0) && (loc.y() < height));
 		}
 
 		@Keep
@@ -317,9 +318,9 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		 * @return The new location
 		 */
 		private TriadCoords move(TriadCoords here, Direction direction) {
-			var di = DirInfo.get(here.z, direction);
-			return new TriadCoords(limit(here.x + di.dx, width),
-					limit(here.y + di.dy, height), here.z + di.dz);
+			var di = DirInfo.get(here.z(), direction);
+			return new TriadCoords(limit(here.x() + di.dx, width),
+					limit(here.y() + di.dy, height), here.z() + di.dz);
 		}
 
 		@JsonPOJOBuilder
@@ -723,7 +724,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			int machineId) {
 		var bmpIds = new HashMap<BMPCoords, Integer>();
 		machine.bmpIPs.forEach((bmp, ip) -> sql.makeBMP
-				.key(machineId, ip, bmp.cabinet, bmp.frame)
+				.key(machineId, ip, bmp.cabinet(), bmp.frame())
 				.ifPresent(id -> bmpIds.put(bmp, id)));
 		return bmpIds;
 	}
@@ -741,12 +742,12 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 					machine.deadBoards.contains(triad) ? "dead" : "live",
 					triad);
 			sql.makeBoard
-					.key(machineId, addr, bmpID, phys.b, triad.x, triad.y,
-							triad.z, root.getX(), root.getY(),
+					.key(machineId, addr, bmpID, phys.b(), triad.x(), triad.y(),
+							triad.z(), root.getX(), root.getY(),
 							!machine.deadBoards.contains(triad))
 					.ifPresent(id -> boardIds.put(triad, id));
-			maxX = max(maxX, triad.x * TRIAD_CHIP_SIZE);
-			maxY = max(maxY, triad.y * TRIAD_CHIP_SIZE);
+			maxX = max(maxX, triad.x() * TRIAD_CHIP_SIZE);
+			maxY = max(maxY, triad.y() * TRIAD_CHIP_SIZE);
 		}
 		/*
 		 * Note that even in single-board setups, the max coordinates are as if
@@ -763,8 +764,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			var root = triad.asChipLocation();
 			log.debug("making {} board {}", "dead", triad);
 			sql.makeBoard
-					.key(machineId, null, bmpID, null, triad.x, triad.y,
-							triad.z, root.getX(), root.getY(), false)
+					.key(machineId, null, bmpID, null, triad.x(), triad.y(),
+							triad.z(), root.getX(), root.getY(), false)
 					.ifPresent(id -> boardIds.put(triad, id));
 		}
 		return boardIds;

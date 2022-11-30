@@ -47,7 +47,7 @@ public class RouterAlloc extends SCPRequest<RouterAlloc.Response> {
 	}
 
 	private static int argument1(AppID appID) {
-		return (appID.appID << BYTE1) | (ALLOC_ROUTING.value << BYTE0);
+		return (appID.appID() << BYTE1) | (ALLOC_ROUTING.value << BYTE0);
 	}
 
 	@Override

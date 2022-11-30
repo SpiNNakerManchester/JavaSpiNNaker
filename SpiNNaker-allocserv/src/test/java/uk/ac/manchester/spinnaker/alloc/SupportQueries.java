@@ -47,7 +47,7 @@ public interface SupportQueries {
 	String TEST_INSERT_REQ_DIMS = """
 			INSERT INTO job_request(
 				job_id, width, height, max_dead_boards)
-			VALUES (?, ?, ?, ?)"
+			VALUES (?, ?, ?, ?)
 			""";
 
 	/** Insert a request-for-a-board. */

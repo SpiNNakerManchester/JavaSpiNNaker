@@ -20,34 +20,17 @@ package uk.ac.manchester.spinnaker.machine.board;
  * Wrapper for a board number so that it can't get mixed up with other integers.
  *
  * @author Donal Fellows
+ * @param board
+ *            The board number.
  */
-public final class BMPBoard {
+public final record BMPBoard(@ValidBoardNumber int board) {
 	/**
 	 * The maximum board number. There can be only up to 24 boards per frame.
 	 */
 	public static final int MAX_BOARD_NUMBER = 23;
 
-	/** The board number. */
-	@ValidBoardNumber
-	public final int board;
-
-	/** @param board The board number. */
-	public BMPBoard(int board) {
-		this.board = board;
-	}
-
 	@Override
 	public String toString() {
 		return "board=" + board;
-	}
-
-	@Override
-	public int hashCode() {
-		return board;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		return (o instanceof BMPBoard b) && (board == b.board);
 	}
 }

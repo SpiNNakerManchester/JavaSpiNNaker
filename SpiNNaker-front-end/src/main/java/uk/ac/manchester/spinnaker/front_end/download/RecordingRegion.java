@@ -117,7 +117,7 @@ public final class RecordingRegion {
 	public static List<RecordingRegion> getRecordingRegionDescriptors(
 			TransceiverInterface txrx, Placement placement)
 			throws IOException, ProcessException, InterruptedException {
-		var recordingDataAddress = placement.getVertex().getBase();
+		var recordingDataAddress = placement.vertex().base();
 		// Get the size of the list of recordings
 		int nRegions = txrx.readMemory(placement.getScampCore(),
 				recordingDataAddress, WORD_SIZE).getInt();

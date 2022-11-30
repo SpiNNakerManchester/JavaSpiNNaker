@@ -307,7 +307,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 			@Valid @NonNull TriadCoords coords) {
 		return executeRead(conn -> {
 			try (var q = conn.query(FIND_BOARD_BY_NAME_AND_XYZ)) {
-				return q.call1(machine, coords.x, coords.y, coords.z)
+				return q.call1(machine, coords.x(), coords.y(), coords.z())
 						.map(BoardState::new);
 			}
 		});
@@ -326,7 +326,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 			@Valid @NotNull PhysicalCoords coords) {
 		return executeRead(conn -> {
 			try (var q = conn.query(FIND_BOARD_BY_NAME_AND_CFB)) {
-				return q.call1(machine, coords.c, coords.f, coords.b)
+				return q.call1(machine, coords.c(), coords.f(), coords.b())
 						.map(BoardState::new);
 			}
 		});

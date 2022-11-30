@@ -37,8 +37,8 @@ public class TestConnection {
 		var json = "[[2,4],\"6.8.10.12\"]";
 		var mapper = SpallocClient.createMapper();
 		var fromJson = mapper.readValue(json, Connection.class);
-		assertEquals(new ChipLocation(2, 4), fromJson.getChip());
-		assertEquals("6.8.10.12", fromJson.getHostname());
+		assertEquals(new ChipLocation(2, 4), fromJson.chip());
+		assertEquals("6.8.10.12", fromJson.hostname());
 
 		var direct = new Connection(new ChipLocation(2, 4), "6.8.10.12");
 		assertEquals(direct, fromJson);
@@ -51,8 +51,8 @@ public class TestConnection {
 		var json = "[null,null]";
 		var mapper = SpallocClient.createMapper();
 		var fromJson = mapper.readValue(json, Connection.class);
-		assertNull(fromJson.getChip());
-		assertNull(fromJson.getHostname());
+		assertNull(fromJson.chip());
+		assertNull(fromJson.hostname());
 
 		var direct = new Connection(null, null);
 		assertEquals(direct, fromJson);

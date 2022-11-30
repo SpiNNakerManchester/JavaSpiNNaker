@@ -126,7 +126,7 @@ public class AppIdTracker {
 	 *             if the ID is out of range
 	 */
 	public void freeID(AppID id) {
-		if (id.appID < minID || id.appID > maxID) {
+		if (id.appID() < minID || id.appID() > maxID) {
 			throw new IllegalArgumentException(
 					"ID " + id + " out of allowed range of " + minID
 							+ " to " + maxID);

@@ -225,7 +225,7 @@ class JsonTest {
 		@Test
 		void testServiceDescription() throws IOException, JSONException {
 			var d = new ServiceDescription();
-			d.setVersion(new Version("1.2.3"));
+			d.setVersion(Version.parse("1.2.3"));
 			JSONAssert.assertEquals("""
 					{
 						"version": {

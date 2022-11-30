@@ -27,33 +27,33 @@ public class TestVersion {
 
 	@Test
 	public void testThreeUnquoted() {
-		var version = new Version("1.2.3");
-		assertEquals(1, version.majorVersion);
-		assertEquals(2, version.minorVersion);
-		assertEquals(3, version.revision);
+		var version = Version.parse("1.2.3");
+		assertEquals(1, version.majorVersion());
+		assertEquals(2, version.minorVersion());
+		assertEquals(3, version.revision());
 	}
 
 	@Test
 	public void testThreeQuoted() {
-		var version = new Version("\"1.2.3\"");
-		assertEquals(1, version.majorVersion);
-		assertEquals(2, version.minorVersion);
-		assertEquals(3, version.revision);
+		var version = Version.parse("\"1.2.3\"");
+		assertEquals(1, version.majorVersion());
+		assertEquals(2, version.minorVersion());
+		assertEquals(3, version.revision());
 	}
 
 	@Test
 	public void testTwoUnquoted() {
-		var version = new Version("1.2");
-		assertEquals(1, version.majorVersion);
-		assertEquals(2, version.minorVersion);
-		assertEquals(0, version.revision);
+		var version = Version.parse("1.2");
+		assertEquals(1, version.majorVersion());
+		assertEquals(2, version.minorVersion());
+		assertEquals(0, version.revision());
 	}
 
 	@Test
 	public void testOneQuoted() {
-		var version = new Version("\"1\"");
-		assertEquals(1, version.majorVersion);
-		assertEquals(0, version.minorVersion);
-		assertEquals(0, version.revision);
+		var version = Version.parse("\"1\"");
+		assertEquals(1, version.majorVersion());
+		assertEquals(0, version.minorVersion());
+		assertEquals(0, version.revision());
 	}
 }

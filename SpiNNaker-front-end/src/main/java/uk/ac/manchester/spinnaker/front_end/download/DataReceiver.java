@@ -145,8 +145,8 @@ public class DataReceiver extends BoardLocalSupport {
 		// get data
 		try (var c = new BoardLocal(placements.get(0))) {
 			for (var placement : placements) {
-				for (int recordingRegionId : placement.getVertex()
-						.getRecordedRegionIds()) {
+				for (int recordingRegionId : placement.vertex()
+						.recordedRegionIds()) {
 					getDataForPlacement(placement, recordingRegionId);
 				}
 			}
