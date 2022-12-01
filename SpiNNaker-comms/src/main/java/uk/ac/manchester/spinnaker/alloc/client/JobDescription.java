@@ -105,7 +105,7 @@ public final class JobDescription {
 	}
 
 	/** @return The most recent keepalive timestamp. */
-	@JsonProperty("keepalive-time")
+	@JsonProperty("keep-alive-time")
 	public Instant getKeepaliveTime() {
 		return keepaliveTime;
 	}
