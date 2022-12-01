@@ -250,13 +250,13 @@ public final class SpiNNakerTriadGeometry {
 		var results = new LinkedHashSet<ChipLocation>();
 		int maxWidth;
 		int maxHeight;
-		if (dimensions.width % triadWidth == 0
-				&& dimensions.height % triadHeight == 0) {
-			maxWidth = dimensions.width;
-			maxHeight = dimensions.height;
+		if (dimensions.width() % triadWidth == 0
+				&& dimensions.height() % triadHeight == 0) {
+			maxWidth = dimensions.width();
+			maxHeight = dimensions.height();
 		} else {
-			maxWidth = dimensions.width - SIZE_X_OF_ONE_BOARD + 1;
-			maxHeight = dimensions.height - SIZE_Y_OF_ONE_BOARD + 1;
+			maxWidth = dimensions.width() - SIZE_X_OF_ONE_BOARD + 1;
+			maxHeight = dimensions.height() - SIZE_Y_OF_ONE_BOARD + 1;
 			if (maxWidth < 0 || maxHeight < 0) {
 				results.add(ZERO_ZERO);
 				return results;

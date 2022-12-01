@@ -122,7 +122,7 @@ public class SQLiteBufferStorage
 			// core_id, local_region_index, address
 			s.setInt(FIRST, coreID);
 			s.setInt(SECOND, region.regionIndex);
-			s.setInt(THIRD, region.startAddress.address);
+			s.setInt(THIRD, region.startAddress.address());
 			s.executeUpdate();
 			try (var keys = s.getGeneratedKeys()) {
 				while (keys.next()) {

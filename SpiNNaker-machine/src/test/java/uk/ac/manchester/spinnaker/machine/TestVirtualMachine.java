@@ -60,7 +60,7 @@ public class TestVirtualMachine {
 				var bad = MachineDefaults.FOUR_CHIP_DOWN_LINKS
 						.get(chip.asChipLocation());
 				for (var link : chip.router) {
-					assertThat(bad, not(hasItems(link.sourceLinkDirection)));
+					assertThat(bad, not(hasItems(link.sourceLinkDirection())));
 				}
 			}
 		}

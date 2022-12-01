@@ -52,7 +52,7 @@ public class RouterInit extends SCPRequest<CheckOKResponse> {
 			MemoryLocation tableAddress, int baseIndex,
 			AppID appID) {
 		super(chip.getScampCore(), CMD_RTR, argument1(numEntries, appID),
-				tableAddress.address, baseIndex);
+				tableAddress.address(), baseIndex);
 		if (baseIndex < 0) {
 			throw new IllegalArgumentException(
 					"baseIndex must not be negative");

@@ -37,7 +37,7 @@ public final class FillRequest extends SCPRequest<CheckOKResponse> {
 	 */
 	public FillRequest(HasChipLocation chip, MemoryLocation baseAddress,
 			int data, int size) {
-		super(chip.getScampCore(), CMD_FILL, baseAddress.address, data, size);
+		super(chip.getScampCore(), CMD_FILL, baseAddress.address(), data, size);
 	}
 
 	@Override

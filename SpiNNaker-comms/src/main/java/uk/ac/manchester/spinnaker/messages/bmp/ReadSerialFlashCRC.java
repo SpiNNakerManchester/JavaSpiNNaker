@@ -39,7 +39,7 @@ public class ReadSerialFlashCRC
 	 */
 	public ReadSerialFlashCRC(BMPBoard board, MemoryLocation baseAddress,
 			int size) {
-		super(board, CMD_BMP_SF, baseAddress.address, size, CRC.value);
+		super(board, CMD_BMP_SF, baseAddress.address(), size, CRC.value);
 	}
 
 	@Override

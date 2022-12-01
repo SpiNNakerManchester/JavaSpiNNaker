@@ -39,7 +39,7 @@ public final class UpdateFlash extends BMPRequest<BMPRequest.BMPResponse> {
 	 *            The number of bytes to copy
 	 */
 	public UpdateFlash(BMPBoard board, MemoryLocation baseAddress, int size) {
-		super(board, CMD_FLASH_COPY, REAL_FLASH_ADDRESS, baseAddress.address,
+		super(board, CMD_FLASH_COPY, REAL_FLASH_ADDRESS, baseAddress.address(),
 				size);
 	}
 

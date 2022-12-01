@@ -52,7 +52,7 @@ public class WriteFPGARegister extends BMPRequest<BMPRequest.BMPResponse> {
 	 */
 	public WriteFPGARegister(FPGA fpga, MemoryLocation register, int value,
 			BMPBoard board) {
-		super(board, CMD_LINK_WRITE, register.address, WORD_SIZE, fpga.value,
+		super(board, CMD_LINK_WRITE, register.address(), WORD_SIZE, fpga.value,
 				data(value));
 		if (!register.isAligned()) {
 			throw new IllegalArgumentException(

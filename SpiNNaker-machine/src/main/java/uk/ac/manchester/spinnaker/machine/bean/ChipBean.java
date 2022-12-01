@@ -117,9 +117,9 @@ public class ChipBean {
 	public void addDefaults(MachineBean bean) {
 		ChipResources defaults;
 		if (details.getIpAddress() == null) {
-			defaults = bean.getStandardResources();
+			defaults = bean.standardResources();
 		} else {
-			defaults = bean.getEthernetResources();
+			defaults = bean.ethernetResources();
 		}
 		if (resources == null) {
 			resources = defaults;

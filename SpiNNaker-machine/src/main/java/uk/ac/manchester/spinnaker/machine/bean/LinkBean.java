@@ -33,17 +33,14 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * of the JSON model, the chip coordinates of the source are implicit.
  *
  * @author Christian-B
+ * @param destination
+ *            Where the link is going.
+ * @param sourceDirection
+ *            What direction the link is going in.
  */
-@UsedInJavadocOnly({Chip.class, Link.class})
-public class LinkBean {
-	/** Where the link is going. */
-	@Valid
-	public final ChipLocation destination;
-
-	/** What direction the link is going in. */
-	@NotNull
-	public final Direction sourceDirection;
-
+@UsedInJavadocOnly({ Chip.class, Link.class })
+public record LinkBean(@Valid ChipLocation destination,
+		@NotNull Direction sourceDirection) {
 	/**
 	 * Create a link description.
 	 *
@@ -62,7 +59,7 @@ public class LinkBean {
 			int destinationX,
 			@JsonProperty(value = "destinationY", required = true)
 			int destinationY) {
-		destination = new ChipLocation(destinationX, destinationY);
-		sourceDirection = Direction.byId(sourceLinkId);
+		this(new ChipLocation(destinationX, destinationY),
+				Direction.byId(sourceLinkId));
 	}
 }

@@ -136,10 +136,10 @@ class GetMachineProcess extends TxrxProcess {
 			throws IOException, ProcessException, InterruptedException {
 		// Get the P2P table; 8 entries are packed into each 32-bit word
 		var p2pColumnData = new ArrayList<ByteBuffer>();
-		for (int column = 0; column < size.width; column++) {
+		for (int column = 0; column < size.width(); column++) {
 			p2pColumnData.add(synchronousCall(new ReadMemory(bootChip,
 					ROUTER_P2P.add(getColumnOffset(column)),
-					getNumColumnBytes(size.height))).data);
+					getNumColumnBytes(size.height()))).data);
 			// TODO work out why multiple calls at once is a problem
 		}
 		var p2pTable = new P2PTable(size, p2pColumnData);
@@ -249,8 +249,8 @@ class GetMachineProcess extends TxrxProcess {
 	private static ChipLocation getChipOverLink(HasChipLocation chip,
 			MachineDimensions size, Direction link) {
 		/// TODO CHECK negative wraparound!
-		int x = (chip.getX() + link.xChange + size.width) % size.width;
-		int y = (chip.getY() + link.yChange + size.height) % size.height;
+		int x = (chip.getX() + link.xChange + size.width()) % size.width();
+		int y = (chip.getY() + link.yChange + size.height()) % size.height();
 		return new ChipLocation(x, y);
 	}
 

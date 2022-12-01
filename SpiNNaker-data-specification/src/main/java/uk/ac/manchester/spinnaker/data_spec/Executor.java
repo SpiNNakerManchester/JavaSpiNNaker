@@ -214,7 +214,7 @@ public class Executor implements Closeable {
 		assert buffer.order() == LITTLE_ENDIAN;
 		for (var reg : memRegions) {
 			if (reg != null) {
-				buffer.putInt(reg.getRegionBase().address);
+				buffer.putInt(reg.getRegionBase().address());
 				if (reg instanceof MemoryRegionReal regReal) {
 					// Work out the checksum
 					int nWords =

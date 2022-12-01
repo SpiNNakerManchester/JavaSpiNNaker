@@ -42,13 +42,13 @@ public final class EraseFlash extends BMPRequest<EraseFlash.Response> {
 	 *             If the baseAddress or size make no sense
 	 */
 	public EraseFlash(BMPBoard board, MemoryLocation baseAddress, int size) {
-		super(board, CMD_FLASH_ERASE, baseAddress.address,
-				baseAddress.address + size);
+		super(board, CMD_FLASH_ERASE, baseAddress.address(),
+				baseAddress.address() + size);
 		// Check that we've been actually asked to do something sane!
 		if (size <= 0) {
 			throw new IllegalArgumentException("no data");
 		}
-		int addr = baseAddress.address;
+		int addr = baseAddress.address();
 		if (addr < 0 || addr + size > MEMORY_LIMIT || addr + size < 0) {
 			throw new IllegalArgumentException("address not in flash");
 		}

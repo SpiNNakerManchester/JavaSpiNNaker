@@ -123,15 +123,15 @@ class TestTransceiver {
 		try (var txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
 			if (boardConfig.boardVersion.isFourChip) {
-				assertEquals(2, txrx.getMachineDimensions().width);
-				assertEquals(2, txrx.getMachineDimensions().height);
+				assertEquals(2, txrx.getMachineDimensions().width());
+				assertEquals(2, txrx.getMachineDimensions().height());
 			} else if (boardConfig.boardVersion.isFourtyeightChip) {
-				assertEquals(8, txrx.getMachineDimensions().width);
-				assertEquals(8, txrx.getMachineDimensions().height);
+				assertEquals(8, txrx.getMachineDimensions().width());
+				assertEquals(8, txrx.getMachineDimensions().height());
 			} else {
 				var size = txrx.getMachineDimensions();
-				fail(format("Unknown board with size %dx%d", size.width,
-						size.height));
+				fail(format("Unknown board with size %dx%d", size.width(),
+						size.height()));
 			}
 			assertTrue(txrx.isConnected());
 			assertNotNull(txrx.getScampVersion());

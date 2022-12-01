@@ -83,7 +83,7 @@ final class GetHeapProcess extends TxrxProcess {
 			var block = getBlockHeader(chip, nextBlock);
 			if (!block.next.isNull()) {
 				blocks.add(new HeapElement(nextBlock, block.next,
-						block.free.address));
+						block.free.address()));
 			}
 			nextBlock = block.next;
 		}
@@ -120,7 +120,7 @@ final class GetHeapProcess extends TxrxProcess {
 			var block = getBlockHeader(chip, nextBlock);
 			if (!block.next.isNull()) {
 				blocks.add(new HeapElement(nextBlock, block.next,
-						block.free.address));
+						block.free.address()));
 			}
 			nextBlock = block.free;
 		}

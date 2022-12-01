@@ -43,7 +43,7 @@ public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 	 */
 	public ReadFPGARegister(FPGA fpga, MemoryLocation register,
 			BMPBoard board) {
-		super(board, CMD_LINK_READ, register.address, WORD_SIZE, fpga.value);
+		super(board, CMD_LINK_READ, register.address(), WORD_SIZE, fpga.value);
 		if (!register.isAligned()) {
 			throw new IllegalArgumentException(
 					"FPGA register addresses must be aligned");

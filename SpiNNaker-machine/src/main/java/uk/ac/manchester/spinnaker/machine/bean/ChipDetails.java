@@ -163,8 +163,8 @@ public class ChipDetails {
 			HasChipLocation source, Machine machine) {
 		if (links != null) {
 			for (var bean : links) {
-				if (bean.sourceDirection == direction) {
-					return bean.destination;
+				if (bean.sourceDirection() == direction) {
+					return bean.destination();
 				}
 			}
 		}

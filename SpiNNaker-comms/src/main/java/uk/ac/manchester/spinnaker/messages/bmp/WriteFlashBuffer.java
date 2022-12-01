@@ -41,7 +41,7 @@ public class WriteFlashBuffer extends BMPRequest<BMPRequest.BMPResponse> {
 	 */
 	public WriteFlashBuffer(BMPBoard board, MemoryLocation baseAddress,
 			boolean erase) {
-		super(board, CMD_FLASH_WRITE, baseAddress.address, FLASH_CHUNK_SIZE,
+		super(board, CMD_FLASH_WRITE, baseAddress.address(), FLASH_CHUNK_SIZE,
 				erase ? 1 : 0);
 	}
 

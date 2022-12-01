@@ -45,7 +45,7 @@ public class ReadSerialFlash extends BMPRequest<ReadSerialFlash.Response> {
 	 *            The number of bytes to read, between 1 and 256
 	 */
 	public ReadSerialFlash(BMPBoard board, MemoryLocation address, int size) {
-		super(board, CMD_BMP_SF, address.address, validate(size), 0);
+		super(board, CMD_BMP_SF, address.address(), validate(size), 0);
 	}
 
 	@Override

@@ -147,8 +147,8 @@ public class Machine implements MappableIterable<Chip> {
 	 *            Bean holding the Values to set.
 	 */
 	public Machine(MachineBean bean) {
-		this(bean.getMachineDimensions(), bean.getRoot());
-		for (var chipBean : bean.getChips()) {
+		this(bean.dimensions(), bean.root());
+		for (var chipBean : bean.chips()) {
 			chipBean.addDefaults(bean);
 			addChip(new Chip(chipBean, this));
 		}
@@ -226,9 +226,9 @@ public class Machine implements MappableIterable<Chip> {
 				var downDirections = ignoreLinks.get(location);
 				var links = new ArrayList<Link>();
 				for (var link : chip.router) {
-					if (downDirections.contains(link.sourceLinkDirection)) {
+					if (downDirections.contains(link.sourceLinkDirection())) {
 						log.info("Rebuilt machine without Link {} {}",
-								location, link.sourceLinkDirection);
+								location, link.sourceLinkDirection());
 					} else {
 						links.add(link);
 					}
@@ -257,15 +257,15 @@ public class Machine implements MappableIterable<Chip> {
 					"There is already a Chip at location: " + location);
 		}
 
-		if (chip.getX() >= machineDimensions.width) {
+		if (chip.getX() >= machineDimensions.width()) {
 			throw new IllegalArgumentException("Chip x: " + chip.getX()
 					+ " is too high for a machine with width "
-					+ machineDimensions.width);
+					+ machineDimensions.width());
 		}
-		if (chip.getY() >= machineDimensions.height) {
+		if (chip.getY() >= machineDimensions.height()) {
 			throw new IllegalArgumentException("Chip y: " + chip.getY()
 					+ " is too high for a machine with height "
-					+ machineDimensions.height + " " + chip);
+					+ machineDimensions.height() + " " + chip);
 		}
 
 		chips.put(location, chip);
@@ -505,7 +505,7 @@ public class Machine implements MappableIterable<Chip> {
 	 * @return The maximum possible x-coordinate.
 	 */
 	public final int maxChipX() {
-		return machineDimensions.width - 1;
+		return machineDimensions.width() - 1;
 	}
 
 	/**
@@ -517,7 +517,7 @@ public class Machine implements MappableIterable<Chip> {
 	 * @return The maximum possible y-coordinate.
 	 */
 	public final int maxChipY() {
-		return machineDimensions.height - 1;
+		return machineDimensions.height() - 1;
 	}
 
 	/**
@@ -628,13 +628,13 @@ public class Machine implements MappableIterable<Chip> {
 	 */
 	public final ChipLocation normalizedLocation(int x, int y) {
 		if (version.horizontalWrap) {
-			x = (x + machineDimensions.width) % machineDimensions.width;
-		} else if (x < 0 || x >= machineDimensions.width) {
+			x = (x + machineDimensions.width()) % machineDimensions.width();
+		} else if (x < 0 || x >= machineDimensions.width()) {
 			return null;
 		}
 		if (version.verticalWrap) {
-			y = (y + machineDimensions.height) % machineDimensions.height;
-		} else if (y < 0 || y >= machineDimensions.height) {
+			y = (y + machineDimensions.height()) % machineDimensions.height();
+		} else if (y < 0 || y >= machineDimensions.height()) {
 			return null;
 		}
 		if (x < 0 || y < 0) {
@@ -903,14 +903,14 @@ public class Machine implements MappableIterable<Chip> {
 				 * rules, it's considered to be normal. Everything else is
 				 * abnormal.
 				 */
-				if (hasChipAt(link.destination)
-						&& getChipAt(link.destination).router
-								.hasLink(link.sourceLinkDirection.inverse())) {
+				if (hasChipAt(link.destination())
+						&& getChipAt(link.destination()).router.hasLink(
+								link.sourceLinkDirection().inverse())) {
 					continue;
 				}
 				abnormalLinks
-						.computeIfAbsent(link.source, __ -> new HashSet<>())
-						.add(link.sourceLinkDirection);
+						.computeIfAbsent(link.source(), __ -> new HashSet<>())
+						.add(link.sourceLinkDirection());
 			}
 		}
 		return unmodifiableMap(abnormalLinks);

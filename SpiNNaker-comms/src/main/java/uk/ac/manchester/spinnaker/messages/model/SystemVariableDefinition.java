@@ -338,7 +338,7 @@ public enum SystemVariableDefinition {
 			buffer.put((byte[]) value);
 			return;
 		case ADDRESS:
-			buffer.putInt(((MemoryLocation) value).address);
+			buffer.putInt(((MemoryLocation) value).address());
 			return;
 		default:
 			// CHECKSTYLE:OFF

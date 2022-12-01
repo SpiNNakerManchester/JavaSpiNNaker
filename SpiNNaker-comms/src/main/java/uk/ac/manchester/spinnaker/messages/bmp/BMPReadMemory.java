@@ -46,7 +46,7 @@ public class BMPReadMemory extends BMPRequest<BMPReadMemory.Response> {
 	 *            The number of bytes to read, between 1 and 256
 	 */
 	public BMPReadMemory(BMPBoard board, MemoryLocation address, int size) {
-		super(board, CMD_READ, address.address, validate(size),
+		super(board, CMD_READ, address.address(), validate(size),
 				efficientTransferUnit(address, size).value);
 	}
 

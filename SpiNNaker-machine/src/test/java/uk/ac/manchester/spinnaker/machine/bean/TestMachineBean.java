@@ -57,8 +57,8 @@ public class TestMachineBean {
 		var fromJson = mapper.readValue(url, MachineBean.class);
 
 		var machine = new Machine(fromJson);
-		assertEquals(24, machine.machineDimensions.height);
-		assertEquals(12, machine.machineDimensions.width);
+		assertEquals(24, machine.machineDimensions.height());
+		assertEquals(12, machine.machineDimensions.width());
 		assertNotNull(machine);
 	}
 

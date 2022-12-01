@@ -40,7 +40,7 @@ public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	 */
 	public WriteMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			ByteBuffer data) {
-		super(core, CMD_WRITE, baseAddress.address, data.remaining(),
+		super(core, CMD_WRITE, baseAddress.address(), data.remaining(),
 				efficientTransferUnit(baseAddress, data.remaining()).value,
 				data);
 	}
@@ -58,7 +58,7 @@ public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	 */
 	public WriteMemory(HasChipLocation chip, MemoryLocation baseAddress,
 			ByteBuffer data) {
-		super(chip.getScampCore(), CMD_WRITE, baseAddress.address,
+		super(chip.getScampCore(), CMD_WRITE, baseAddress.address(),
 				data.remaining(),
 				efficientTransferUnit(baseAddress, data.remaining()).value,
 				data);

@@ -26,26 +26,24 @@ import com.google.errorprone.annotations.Immutable;
  * is in.
  *
  * @author Donal Fellows
+ * @param address
+ *            The actual location.
  */
 @Immutable
-public final class MemoryLocation implements Comparable<MemoryLocation> {
+public record MemoryLocation(int address)
+		implements Comparable<MemoryLocation> {
 	/** Number of bytes in a SpiNNaker (ARM) word. */
 	private static final int WORD_SIZE = 4;
 
 	/** The zero memory location. Often means "no actual address". */
 	public static final MemoryLocation NULL = new MemoryLocation(0);
 
-	/** The actual location. */
-	public final int address;
-
-	/** @param address The actual location. */
-	public MemoryLocation(int address) {
-		this.address = address;
-	}
-
-	/** @param address The actual location. */
+	/**
+	 * @param address
+	 *            The actual location.
+	 */
 	public MemoryLocation(long address) {
-		this.address = convert(address);
+		this(convert(address));
 	}
 
 	/**

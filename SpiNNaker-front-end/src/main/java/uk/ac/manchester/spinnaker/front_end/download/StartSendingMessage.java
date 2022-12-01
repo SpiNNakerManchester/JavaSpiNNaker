@@ -52,7 +52,7 @@ public final class StartSendingMessage extends GatherProtocolMessage {
 		var payload = allocate(NUM_WORDS * WORD_SIZE).order(LITTLE_ENDIAN);
 		payload.putInt(START_SENDING_DATA.value);
 		payload.putInt(transactionId);
-		payload.putInt(address.address);
+		payload.putInt(address.address());
 		payload.putInt(length);
 		payload.flip();
 		return new StartSendingMessage(destination, payload);

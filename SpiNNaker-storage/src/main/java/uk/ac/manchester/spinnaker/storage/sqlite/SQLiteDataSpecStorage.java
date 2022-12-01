@@ -208,7 +208,7 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 			CoreToLoadImpl core, MemoryLocation start, int memoryUsed,
 			int memoryWritten) throws SQLException {
 		try (var s = conn.prepareStatement(ADD_LOADING_METADATA)) {
-			s.setInt(FIRST, start.address);
+			s.setInt(FIRST, start.address());
 			s.setInt(SECOND, memoryUsed);
 			s.setInt(THIRD, memoryWritten);
 			s.setInt(FOURTH, core.id);

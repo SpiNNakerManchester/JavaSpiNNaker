@@ -50,7 +50,7 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	 */
 	public ReadLink(HasCoreLocation core, Direction link,
 			MemoryLocation baseAddress, int size) {
-		super(core, CMD_LINK_READ, baseAddress.address, validate(size),
+		super(core, CMD_LINK_READ, baseAddress.address(), validate(size),
 				link.id);
 	}
 
@@ -66,7 +66,7 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	 */
 	public ReadLink(HasChipLocation chip, Direction link,
 			MemoryLocation baseAddress, int size) {
-		super(chip.getScampCore(), CMD_LINK_READ, baseAddress.address,
+		super(chip.getScampCore(), CMD_LINK_READ, baseAddress.address(),
 				validate(size), link.id);
 	}
 

@@ -1539,11 +1539,11 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 		}
 
 		// Prepare the serial flash update; must read part of the data first
-		var sfData = new byte[SF_BL_ADDR.address + SF_BL_LEN];
-		readSerialFlash(bmp, board, NULL, SF_BL_ADDR.address).get(sfData, 0,
-				SF_BL_ADDR.address);
+		var sfData = new byte[SF_BL_ADDR.address() + SF_BL_LEN];
+		readSerialFlash(bmp, board, NULL, SF_BL_ADDR.address()).get(sfData, 0,
+				SF_BL_ADDR.address());
 		data.position(BMP_BOOT_BLACKLIST_OFFSET);
-		data.get(sfData, SF_BL_ADDR.address, SF_BL_LEN);
+		data.get(sfData, SF_BL_ADDR.address(), SF_BL_LEN);
 
 		data.position(0); // Prep for write
 

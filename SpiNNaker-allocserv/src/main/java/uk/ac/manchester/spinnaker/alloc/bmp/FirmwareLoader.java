@@ -274,7 +274,7 @@ public class FirmwareLoader {
 			buf.putShort((short) (BITFILE_ENABLED_FLAG + chip.bits));
 			buf.putInt(timestamp);
 			buf.putInt(crc);
-			buf.putInt(baseAddress.address);
+			buf.putInt(baseAddress.address());
 			buf.putInt(length);
 			buf.putInt(mtime);
 
@@ -504,7 +504,7 @@ public class FirmwareLoader {
 			throws ProcessException, IOException, InterruptedException {
 		var data = new ArrayList<Integer>();
 		for (var r : settings) {
-			data.add(r.address().address | r.fpga().value);
+			data.add(r.address().address() | r.fpga().value);
 			data.add(r.value());
 		}
 		var sector = FlashDataSector.registers(settings.length, data);

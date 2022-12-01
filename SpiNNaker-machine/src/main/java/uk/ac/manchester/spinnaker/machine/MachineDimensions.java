@@ -18,41 +18,18 @@ package uk.ac.manchester.spinnaker.machine;
 
 import com.google.errorprone.annotations.Immutable;
 
-/** Represents the size of a machine in chips. */
+/**
+ * Represents the size of a machine in chips.
+ *
+ * @param width
+ *            The width of the machine, in chips.
+ * @param height
+ *            The height of the machine, in chips.
+ */
 @Immutable
-public final class MachineDimensions {
-	/** The width of the machine in chips. */
-	@ValidMachineWidth
-	public final int width;
-
-	/** The height of the machine in chips. */
-	@ValidMachineHeight
-	public final int height;
-
-	/**
-	 * Create a new instance.
-	 *
-	 * @param width
-	 *            The width of the machine, in chips.
-	 * @param height
-	 *            The height of the machine, in chips.
-	 */
-	public MachineDimensions(int width, int height) {
-		this.width = width;
-		this.height = height;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		return (o instanceof MachineDimensions dim) && (width == dim.width)
-				&& (height == dim.height);
-	}
-
-	@Override
-	public int hashCode() {
-		return width << 16 | height;
-	}
-
+public record MachineDimensions(//
+		@ValidMachineWidth int width, //
+		@ValidMachineHeight int height) {
 	@Override
 	public String toString() {
 		return "Width:" + width + " Height:" + height;

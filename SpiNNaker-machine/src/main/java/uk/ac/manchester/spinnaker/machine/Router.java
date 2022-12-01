@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.machine;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toUnmodifiableList;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.ROUTER_AVAILABLE_ENTRIES;
 
 import java.util.Collection;
@@ -185,10 +184,10 @@ public final class Router implements MappableIterable<Link> {
 	 *             has already been added.
 	 */
 	public void addLink(Link link) throws IllegalArgumentException {
-		if (links.containsKey(link.sourceLinkDirection)) {
+		if (links.containsKey(link.sourceLinkDirection())) {
 			throw new IllegalArgumentException("Link already exists: " + link);
 		}
-		links.put(link.sourceLinkDirection, link);
+		links.put(link.sourceLinkDirection(), link);
 	}
 
 	/**
@@ -248,7 +247,7 @@ public final class Router implements MappableIterable<Link> {
 	 * @return A Stream over the destination locations.
 	 */
 	public Stream<ChipLocation> streamNeighbouringChipsCoords() {
-		return links.values().stream().map(link -> link.destination);
+		return links.values().stream().map(Link::destination);
 	}
 
 	/**
@@ -271,14 +270,13 @@ public final class Router implements MappableIterable<Link> {
 	 * @return The destination locations
 	 */
 	public List<ChipLocation> neighbouringChipsCoords() {
-		return links.values().stream().map(link -> link.destination)
-				.collect(toUnmodifiableList());
+		return links.values().stream().map(Link::destination).toList();
 	}
 
 	@Override
 	public String toString() {
 		return links.entrySet().stream().map(
-				entry -> entry.getKey() + ":" + entry.getValue().destination)
+				entry -> entry.getKey() + ":" + entry.getValue().destination())
 				.collect(joining(" ", "Router[", "]"));
 	}
 

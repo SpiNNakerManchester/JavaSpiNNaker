@@ -280,17 +280,17 @@ public enum MachineVersion {
 				return possible;
 			}
 		}
-		if ((dimensions.width % TRIAD_HEIGHT == 0)
-				&& (dimensions.height % TRIAD_WIDTH == 0)) {
+		if ((dimensions.width() % TRIAD_HEIGHT == 0)
+				&& (dimensions.height() % TRIAD_WIDTH == 0)) {
 			return TRIAD_WITH_WRAPAROUND;
 		}
-		if (((dimensions.width - HALF_SIZE) % TRIAD_HEIGHT == 0)
-				&& ((dimensions.height - HALF_SIZE) % TRIAD_WIDTH == 0)) {
+		if (((dimensions.width() - HALF_SIZE) % TRIAD_HEIGHT == 0)
+				&& ((dimensions.height() - HALF_SIZE) % TRIAD_WIDTH == 0)) {
 			return TRIAD_NO_WRAPAROUND;
 		}
 		// Handle 4 chip board extended with virtual_chips
-		if (dimensions.width < SIZE_X_OF_ONE_BOARD) {
-			if (dimensions.height < SIZE_Y_OF_ONE_BOARD) {
+		if (dimensions.width() < SIZE_X_OF_ONE_BOARD) {
+			if (dimensions.height() < SIZE_Y_OF_ONE_BOARD) {
 				return EXTENDED_SMALL;
 			}
 		}
@@ -299,22 +299,22 @@ public enum MachineVersion {
 		 * three board toroid we need at least two board on top of each other or
 		 * next to each other
 		 */
-		if (dimensions.width < SIZE_X_OF_ONE_BOARD * 2) {
-			if (dimensions.height < SIZE_Y_OF_ONE_BOARD * 2) {
+		if (dimensions.width() < SIZE_X_OF_ONE_BOARD * 2) {
+			if (dimensions.height() < SIZE_Y_OF_ONE_BOARD * 2) {
 				throw new IllegalArgumentException(
 						"Dimensions " + dimensions + "too small!");
 			}
 		}
-		if ((dimensions.width % TRIAD_HEIGHT == 0)
-				&& ((dimensions.height - HALF_SIZE) % TRIAD_WIDTH == 0)) {
+		if ((dimensions.width() % TRIAD_HEIGHT == 0)
+				&& ((dimensions.height() - HALF_SIZE) % TRIAD_WIDTH == 0)) {
 			return TRIAD_WITH_HORIZONTAL_WRAP;
 		}
-		if (((dimensions.width - HALF_SIZE) % TRIAD_HEIGHT == 0)
-				&& (dimensions.height % TRIAD_WIDTH == 0)) {
+		if (((dimensions.width() - HALF_SIZE) % TRIAD_HEIGHT == 0)
+				&& (dimensions.height() % TRIAD_WIDTH == 0)) {
 			return TRIAD_WITH_VERTICAL_WRAP;
 		}
-		if (dimensions.width % HALF_SIZE == 0
-				&& dimensions.height % HALF_SIZE == 0) {
+		if (dimensions.width() % HALF_SIZE == 0
+				&& dimensions.height() % HALF_SIZE == 0) {
 			return NONE_TRIAD_LARGE;
 		}
 		throw new IllegalArgumentException("Dimensions " + dimensions

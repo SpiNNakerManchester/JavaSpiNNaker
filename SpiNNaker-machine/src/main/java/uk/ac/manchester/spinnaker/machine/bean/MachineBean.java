@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.machine.bean;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
@@ -31,26 +31,25 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * Used to build a {@link Machine} from JSON.
  *
  * @author Christian-B
+ * @param dimensions
+ *            The dimensions of the machine.
+ * @param root
+ *            The root chip of the machine.
+ * @param ethernetResources
+ *            The default resources of ethernet-enabled chips.
+ * @param standardResources
+ *            The default resources of chips that are not ethernet-enabled.
+ * @param chips
+ *            The chips.
  */
 @UsedInJavadocOnly(Machine.class)
-public class MachineBean {
-	@Valid
-	private final MachineDimensions dimensions;
-
-	@Valid
-	private final ChipLocation root;
-
-	@Valid
-	private final ChipResources ethernetResources;
-
-	@Valid
-	private final ChipResources standardResources;
-
-	private final List<@Valid ChipBean> chips;
-
+public record MachineBean(//
+		@Valid MachineDimensions dimensions, //
+		@Valid ChipLocation root, //
+		@Valid ChipResources ethernetResources, //
+		@Valid ChipResources standardResources, //
+		List<@Valid ChipBean> chips) {
 	/**
-	 * Main Constructor that sets all values.
-	 *
 	 * @param height
 	 *            The height of the Machine in Chips
 	 * @param width
@@ -66,6 +65,7 @@ public class MachineBean {
 	 * @param chips
 	 *            Beans for each Chips on the machine.
 	 */
+	@JsonCreator
 	public MachineBean(
 			@JsonProperty(value = "height", required = true) int height,
 			@JsonProperty(value = "width", required = true) int width,
@@ -76,37 +76,8 @@ public class MachineBean {
 			ChipResources standardResources,
 			@JsonProperty(value = "chips", required = true)
 			List<ChipBean> chips) {
-		dimensions = new MachineDimensions(width, height);
-		this.root = root;
-		this.chips = chips;
-		this.ethernetResources = ethernetResources;
-		this.standardResources = standardResources;
-	}
-
-	/** @return The dimensions of the machine. */
-	@JsonIgnore
-	public MachineDimensions getMachineDimensions() {
-		return dimensions;
-	}
-
-	/** @return The root chip of the machine. */
-	public ChipLocation getRoot() {
-		return root;
-	}
-
-	/** @return the default resources of ethernet-enabled chips */
-	public ChipResources getEthernetResources() {
-		return ethernetResources;
-	}
-
-	/** @return the default resources of chips that are not ethernet-enabled */
-	public ChipResources getStandardResources() {
-		return standardResources;
-	}
-
-	/** @return the chips */
-	public List<ChipBean> getChips() {
-		return chips;
+		this(new MachineDimensions(width, height), root, ethernetResources,
+				standardResources, chips);
 	}
 
 	@Override

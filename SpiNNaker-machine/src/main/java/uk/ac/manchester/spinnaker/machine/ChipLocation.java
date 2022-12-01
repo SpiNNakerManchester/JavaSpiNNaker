@@ -16,47 +16,35 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 import static java.lang.Integer.compare;
-import static uk.ac.manchester.spinnaker.machine.MachineDefaults.COORD_SHIFT;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.validateChipLocation;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.errorprone.annotations.Immutable;
 
 /**
  * The location of a Chip as an X and Y tuple.
- * <p>
- * This class is final as it is used a key in maps.
  *
  * @author alan
  * @author dkf
+ * @param x
+ *            The X coordinate.
+ * @param y
+ *            The Y coordinate.
  */
 @Immutable
 @JsonFormat(shape = ARRAY)
-/*
- * This is needed in Java 8, but not by Java 10 (which can find the @JsonIgnore
- * annotation on the default property all by itself.
- */
-@JsonIgnoreProperties({"scamp-core", "scamp_core", "scampCore"})
-public final class ChipLocation
+@JsonIgnoreProperties({ "scamp-core", "scamp_core", "scampCore" })
+public record ChipLocation(
+		@JsonProperty(value = "x", required = true) @ValidX int x,
+		@JsonProperty(value = "y", required = true) @ValidY int y)
 		implements HasChipLocation, Comparable<ChipLocation>, Serializable {
-	private static final long serialVersionUID = -2343484354316378507L;
-
-	/** The X coordinate. */
-	@ValidX
-	private final int x;
-
-	/** The Y coordinate. */
-	@ValidY
-	private final int y;
-
 	/**
 	 * The location (0,0), which is in the bottom/left corner and typically the
 	 * ethernet chip for the lead board of an allocation.
@@ -82,25 +70,8 @@ public final class ChipLocation
 	 *             Thrown is either x or y is negative or too big.
 	 */
 	@JsonCreator
-	public ChipLocation(@JsonProperty(value = "x", required = true) int x,
-			@JsonProperty(value = "y", required = true) int y) {
+	public ChipLocation {
 		validateChipLocation(x, y);
-		this.x = x;
-		this.y = y;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		return (obj instanceof ChipLocation that) && (x == that.x)
-				&& (y == that.y);
-	}
-
-	@Override
-	public int hashCode() {
-		return (x << COORD_SHIFT) ^ y;
 	}
 
 	@Override

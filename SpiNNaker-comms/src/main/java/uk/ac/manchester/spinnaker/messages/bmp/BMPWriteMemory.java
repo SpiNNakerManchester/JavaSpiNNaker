@@ -39,7 +39,7 @@ public class BMPWriteMemory extends BMPRequest<BMPRequest.BMPResponse> {
 	 */
 	public BMPWriteMemory(BMPBoard board, MemoryLocation baseAddress,
 			ByteBuffer data) {
-		super(board, CMD_WRITE, baseAddress.address, data.remaining(),
+		super(board, CMD_WRITE, baseAddress.address(), data.remaining(),
 				efficientTransferUnit(baseAddress, data.remaining()).value,
 				data);
 	}

@@ -57,7 +57,7 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 	 */
 	public SDRAMDeAlloc(HasChipLocation chip, MemoryLocation baseAddress) {
 		super(chip.getScampCore(), CMD_ALLOC, FREE_SDRAM_BY_POINTER.value,
-				baseAddress.address);
+				baseAddress.address());
 		readNumFreedBlocks = false;
 	}
 

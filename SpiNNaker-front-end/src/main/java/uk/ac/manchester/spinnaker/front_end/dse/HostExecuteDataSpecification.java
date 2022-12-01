@@ -279,7 +279,7 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 				}
 			}
 
-			txrx.writeUser0(ctl.core, start.address);
+			txrx.writeUser0(ctl.core, start.address());
 			bar.update();
 			storage.saveLoadingMetadata(ctl, start, size, written);
 		}

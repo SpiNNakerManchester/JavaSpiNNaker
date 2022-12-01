@@ -16,14 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import static java.util.Objects.hash;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.Objects;
-
 import javax.validation.Valid;
-
-import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.Immutable;
 
@@ -34,50 +27,15 @@ import com.google.errorprone.annotations.Immutable;
  *      "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/link.py">
  *      Python Version</a>
  * @author Christian-B
+ * @param source The coordinates of the source chip of the link.
+ * @param sourceLinkDirection The direction of the link in the source chip.
+ * @param destination The coordinate of the destination chip of the link.
  */
 @Immutable
-public final class Link {
-	private static final Logger log = getLogger(Link.class);
-
-	/** The coordinates of the source chip of the link. */
-	@Valid
-	public final ChipLocation source;
-
-	/** The ID/Direction of the link in the source chip. */
-	public final Direction sourceLinkDirection;
-
-	/** The coordinate of the destination chip of the link. */
-	@Valid
-	public final ChipLocation destination;
-
+public final record Link(@Valid ChipLocation source,
+		Direction sourceLinkDirection, @Valid ChipLocation destination) {
 	// Note: multicast_default_from and multicast_default_to not implemented
-
 	/**
-	 * Main Constructor which sets all parameters.
-	 * <p>
-	 * Specifically there is <em>no</em> check that the destination is the
-	 * typical one for this source and direction pair.
-	 *
-	 * @param source
-	 *            The coordinates of the source chip of the link.
-	 * @param destination
-	 *            The coordinate of the destination chip of the link.
-	 * @param sourceLinkDirection
-	 *            The Direction of the link in the source chip.
-	 */
-	public Link(ChipLocation source, Direction sourceLinkDirection,
-			ChipLocation destination) {
-		this.source = source;
-		this.sourceLinkDirection = sourceLinkDirection;
-		this.destination = destination;
-	}
-
-	/**
-	 * Main Constructor which sets all parameters.
-	 * <p>
-	 * Specifically there is <em>no</em> check that the destination is the
-	 * typical one for this source and direction pair.
-	 *
 	 * @param source
 	 *            The coordinates of the source chip of the link.
 	 * @param destination
@@ -91,11 +49,6 @@ public final class Link {
 				destination.asChipLocation());
 	}
 
-	@Override
-	public int hashCode() {
-		return hash(source, sourceLinkDirection, destination);
-	}
-
 	/**
 	 * @param source
 	 *            The coordinates of the source chip of the link.
@@ -107,21 +60,6 @@ public final class Link {
 	public Link(HasChipLocation source, int sourceLinkId,
 			HasChipLocation destination) {
 		this(source, Direction.byId(sourceLinkId), destination);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		} else if (!(obj instanceof Link other)) {
-			return false;
-		}
-		log.trace("Equals called {} {}", this, other);
-		if (sourceLinkDirection != other.sourceLinkDirection) {
-			return false;
-		}
-		return Objects.equals(source, other.source)
-				&& Objects.equals(destination, other.destination);
 	}
 
 	@Override

@@ -125,7 +125,7 @@ class FastDataInProtocol {
 		var payload = allocate(BYTES_FOR_LOCATION_PACKET).order(LITTLE_ENDIAN);
 		payload.putInt(SEND_DATA_TO_LOCATION.value);
 		payload.putInt(transactionId);
-		payload.putInt(baseAddress.address);
+		payload.putInt(baseAddress.address());
 		payload.putShort((short) boardLocalDestination.getY());
 		payload.putShort((short) boardLocalDestination.getX());
 		payload.putInt(numPackets - 1);

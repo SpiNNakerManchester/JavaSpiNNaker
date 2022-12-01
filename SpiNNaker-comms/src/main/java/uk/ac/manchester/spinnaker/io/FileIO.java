@@ -107,7 +107,7 @@ public class FileIO extends BaseIO {
 	byte[] doRead(int numBytes) throws IOException {
 		var data = new byte[numBytes];
 		synchronized (file) {
-			file.seek(current.address);
+			file.seek(current.address());
 			file.readFully(data, 0, numBytes);
 		}
 		return data;
@@ -116,7 +116,7 @@ public class FileIO extends BaseIO {
 	@Override
 	void doWrite(byte[] data, int from, int len) throws IOException {
 		synchronized (file) {
-			file.seek(current.address);
+			file.seek(current.address());
 			file.write(data, from, len);
 		}
 	}

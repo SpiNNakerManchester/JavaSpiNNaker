@@ -68,8 +68,8 @@ public class P2PTable {
 	public P2PTable(MachineDimensions dimensions,
 			Collection<ByteBuffer> columnData) {
 		this.routes = new HashMap<>();
-		this.width = dimensions.width;
-		this.height = dimensions.height;
+		this.width = dimensions.width();
+		this.height = dimensions.height();
 		parseColumnData(columnData);
 	}
 

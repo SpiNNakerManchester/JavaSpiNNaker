@@ -44,7 +44,7 @@ public class WriteSerialFlash extends BMPRequest<BMPRequest.BMPResponse> {
 	 */
 	public WriteSerialFlash(BMPBoard board, MemoryLocation baseAddress,
 			ByteBuffer data) {
-		super(board, CMD_BMP_SF, baseAddress.address, FLASH_CHUNK_SIZE,
+		super(board, CMD_BMP_SF, baseAddress.address(), FLASH_CHUNK_SIZE,
 				WRITE.value, limitSlice(data, FLASH_CHUNK_SIZE));
 	}
 

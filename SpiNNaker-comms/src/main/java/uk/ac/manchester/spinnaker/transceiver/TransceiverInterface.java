@@ -1858,7 +1858,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 			@NotNull MemoryLocation pointer)
 			throws ProcessException, IOException, InterruptedException {
 		writeMemory(core.getScampCore(), getUser0RegisterAddress(core),
-				pointer.address);
+				pointer.address());
 	}
 
 	/**
@@ -1899,7 +1899,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 			@NotNull MemoryLocation pointer)
 			throws ProcessException, IOException, InterruptedException {
 		writeMemory(core.getScampCore(), getUser1RegisterAddress(core),
-				pointer.address);
+				pointer.address());
 	}
 
 	/**
@@ -1940,7 +1940,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 			@NotNull MemoryLocation pointer)
 			throws ProcessException, IOException, InterruptedException {
 		writeMemory(core.getScampCore(), getUser2RegisterAddress(core),
-				pointer.address);
+				pointer.address());
 	}
 
 	/**

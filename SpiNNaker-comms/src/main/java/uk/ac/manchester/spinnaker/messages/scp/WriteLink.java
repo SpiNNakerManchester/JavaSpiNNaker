@@ -41,7 +41,7 @@ public class WriteLink extends SCPRequest<CheckOKResponse> {
 	 */
 	public WriteLink(HasCoreLocation core, Direction link,
 			MemoryLocation baseAddress, ByteBuffer data) {
-		super(core, CMD_LINK_WRITE, baseAddress.address, data.remaining(),
+		super(core, CMD_LINK_WRITE, baseAddress.address(), data.remaining(),
 				link.id, data);
 	}
 

@@ -228,7 +228,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 			var addresses = new HashMap<CoreToLoad, MemoryLocation>();
 			for (var ctl : cores) {
 				var start = malloc(ctl, ctl.sizeToWrite);
-				txrx.writeUser0(ctl.core, start.address);
+				txrx.writeUser0(ctl.core, start.address());
 				addresses.put(ctl, start);
 			}
 

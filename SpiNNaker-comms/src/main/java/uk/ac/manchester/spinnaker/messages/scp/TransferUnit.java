@@ -63,7 +63,7 @@ public enum TransferUnit {
 			int size) {
 		if (address.isAligned() && size % WORD_SIZE == 0) {
 			return WORD;
-		} else if (odd(address.address) || odd(size)) {
+		} else if (odd(address.address()) || odd(size)) {
 			return BYTE;
 		} else {
 			return HALF_WORD;
