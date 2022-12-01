@@ -28,6 +28,7 @@ import static uk.ac.manchester.spinnaker.machine.bean.MapperFactory.createMapper
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Properties;
@@ -37,6 +38,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
+import uk.ac.manchester.spinnaker.alloc.client.SpallocClientFactory;
 import uk.ac.manchester.spinnaker.connections.LocateConnectedMachineIPAddress;
 import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.front_end.download.DataReceiver;
@@ -52,9 +55,11 @@ import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
+import uk.ac.manchester.spinnaker.storage.ProxyInformation;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * The main command line interface.
@@ -315,14 +320,21 @@ public final class CommandLineInterface {
 	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If interrupted (not expected).
+	 * @throws URISyntaxException
+	 *             If the proxy URI is invalid
+	 * @throws StorageException
+	 *             If there is an error reading the database
 	 */
 	public static void iobufRun(String machineJsonFile, String iobufMapFile,
 			String runFolder)
-			throws IOException, SpinnmanException, InterruptedException {
+			throws IOException, SpinnmanException, InterruptedException,
+			StorageException, URISyntaxException {
 		var machine = getMachine(machineJsonFile);
 		var request = getIobufRequest(iobufMapFile);
+		var db = getDatabase(runFolder);
+		var job = getJob(db);
 
-		try (var txrx = new Transceiver(machine);
+		try (var txrx = getTransceiver(machine, job);
 				var r = new IobufRetriever(txrx, machine, PARALLEL_SIZE)) {
 			var result = r.retrieveIobufContents(request, runFolder);
 			MAPPER.writeValue(out, result);
@@ -347,15 +359,19 @@ public final class CommandLineInterface {
 	 *             If the database is in an illegal state
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws URISyntaxException
+	 *             If the proxy URI is invalid
 	 */
 	public static void downloadRun(String placementsJsonFile,
 			String machineJsonFile, String runFolder) throws IOException,
-			SpinnmanException, StorageException, InterruptedException {
+			SpinnmanException, StorageException, InterruptedException,
+			URISyntaxException {
 		var placements = getPlacements(placementsJsonFile);
 		var machine = getMachine(machineJsonFile);
 		var db = getDatabase(runFolder);
+		var job = getJob(db);
 
-		try (var trans = new Transceiver(machine)) {
+		try (var trans = getTransceiver(machine, job)) {
 			var r = new DataReceiver(trans, machine, db);
 			r.getDataForPlacementsParallel(placements, PARALLEL_SIZE);
 		}
@@ -380,15 +396,21 @@ public final class CommandLineInterface {
 	 * @throws InterruptedException
 	 *             If things are interrupted while waiting for all the downloads
 	 *             to be done
+	 * @throws URISyntaxException
+	 *             If the URI of the proxy is invalid
 	 */
 	public static void gatherRun(String gatherersJsonFile,
 			String machineJsonFile, String runFolder) throws IOException,
-			SpinnmanException, StorageException, InterruptedException {
+			SpinnmanException, StorageException, InterruptedException,
+			URISyntaxException {
 		var gathers = getGatherers(gatherersJsonFile);
 		var machine = getMachine(machineJsonFile);
 		var db = getDatabase(runFolder);
-		try (var trans = new Transceiver(machine);
-				var r = new RecordingRegionDataGatherer(trans, machine, db)) {
+		var job = getJob(db);
+
+		try (var trans = getTransceiver(machine, job);
+				var r = new RecordingRegionDataGatherer(
+						trans, machine, db, job)) {
 			int misses = r.gather(gathers);
 			getLogger(CommandLineInterface.class).info("total misses: {}",
 					misses);
@@ -427,6 +449,26 @@ public final class CommandLineInterface {
 	private static BufferManagerStorage getDatabase(String runFolder) {
 		return new BufferManagerDatabaseEngine(
 				new File(runFolder, BUFFER_DB_FILE)).getStorageInterface();
+	}
+
+	private static SpallocClient.Job getJob(BufferManagerStorage storage)
+			throws StorageException, IOException, URISyntaxException {
+		ProxyInformation proxy = storage.getProxyInformation();
+		if (proxy == null) {
+			return null;
+		}
+		return new SpallocClientFactory(new URI(proxy.spallocUrl))
+	    		.getJob(proxy.jobUrl, proxy.bearerToken);
+	}
+
+	private static TransceiverInterface getTransceiver(
+			Machine machine, SpallocClient.Job job)
+					throws StorageException, IOException, SpinnmanException,
+					InterruptedException, URISyntaxException {
+		if (job == null) {
+			return new Transceiver(machine);
+		}
+	    return job.getTransceiver();
 	}
 }
 

@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.front_end.download;
 import static java.lang.System.nanoTime;
 import static java.nio.ByteBuffer.allocate;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
 
 import java.io.IOException;
@@ -29,19 +28,21 @@ import java.nio.ByteBuffer;
 
 import org.slf4j.Logger;
 
-import uk.ac.manchester.spinnaker.connections.SDPConnection;
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * A connection for handling the Data Speed Up protocol.
  *
  * @author Donal Fellows
  */
-final class GatherDownloadConnection extends SDPConnection {
+final class GatherDownloadConnection {
 	private long lastSend = 0L;
 
 	private static final Logger log = getLogger(GatherDownloadConnection.class);
@@ -54,6 +55,8 @@ final class GatherDownloadConnection extends SDPConnection {
 	/** An empty buffer. Used so we don't try to read zero bytes. */
 	private static final ByteBuffer EMPTY_DATA = allocate(0);
 
+	private final SCPConnection connection;
+
 	/**
 	 * Create an instance.
 	 *
@@ -64,9 +67,9 @@ final class GatherDownloadConnection extends SDPConnection {
 	 * @throws IOException
 	 *             If anything goes wrong with socket setup.
 	 */
-	GatherDownloadConnection(ChipLocation location, IPTag iptag)
+	GatherDownloadConnection(SCPConnection connection)
 			throws IOException {
-		super(location, iptag.getBoardAddress(), SCP_SCAMP_PORT);
+		this.connection = connection;
 	}
 
 	private void sendMsg(SDPMessage msg) throws IOException {
@@ -74,7 +77,7 @@ final class GatherDownloadConnection extends SDPConnection {
 			throw new InterruptedIOException(
 					"interrupted while waiting to send");
 		}
-		send(msg);
+		connection.send(msg);
 		lastSend = nanoTime();
 	}
 
@@ -102,7 +105,7 @@ final class GatherDownloadConnection extends SDPConnection {
 	/**
 	 * Sends a message telling the extra monitor to stop sending fixed route
 	 * packets.
-	 *
+	 *super(location, iptag.getBoardAddress(), SCP_SCAMP_PORT);
 	 * @param extraMonitorCore
 	 *            The location of the monitor.
 	 * @param transactionId
@@ -144,7 +147,7 @@ final class GatherDownloadConnection extends SDPConnection {
 	ByteBuffer getNextPacket(int timeout)
 			throws IOException, InterruptedException {
 		try {
-			var b = receive(timeout);
+			var b = connection.receive(timeout);
 			if (b == null) {
 				return EMPTY_DATA;
 			}
@@ -154,4 +157,37 @@ final class GatherDownloadConnection extends SDPConnection {
 			return EMPTY_DATA;
 		}
 	}
+
+	/**
+	 * Get the chip this gatherer is downloading from.
+	 *
+	 * @return The chip of the gatherer.
+	 */
+    ChipLocation getChip() {
+    	return connection.getChip();
+    }
+
+    /**
+     * Close the connection.
+     *
+     * @throws IOException If there is an error closing the connection.
+     */
+    void close() throws IOException {
+    	connection.close();
+    }
+
+    /**
+     * Set the IP tag for this connection.
+     *
+     * @param txrx The transceiver to use to set the tag.
+     * @param iptag The tag to set
+     *
+     * @throws ProcessException If something goes wrong in the protocol.
+     * @throws IOException If something goes wrong in the comms.
+     * @throws InterruptedException If the comms are interrupted.
+     */
+    void setIPTag(TransceiverInterface txrx, IPTag iptag)
+    		throws ProcessException, IOException, InterruptedException {
+    	txrx.setIPTag(iptag, connection);
+    }
 }

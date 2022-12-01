@@ -50,7 +50,9 @@ import difflib.ChangeDelta;
 import difflib.Chunk;
 import difflib.DeleteDelta;
 import difflib.InsertDelta;
+import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
 import uk.ac.manchester.spinnaker.connections.MostDirectConnectionSelector;
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor.SimpleCallable;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
@@ -129,6 +131,8 @@ public abstract class DataGatherer extends BoardLocalSupport
 
 	private final TransceiverInterface txrx;
 
+	private final SpallocClient.Job job;
+
 	private final BasicExecutor pool;
 
 	private int missCount;
@@ -152,11 +156,13 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
-	public DataGatherer(TransceiverInterface transceiver, Machine machine)
+	public DataGatherer(TransceiverInterface transceiver, Machine machine,
+			SpallocClient.Job job)
 			throws IOException, ProcessException {
 		super(machine);
 		this.txrx = transceiver;
 		this.machine = machine;
+		this.job = job;
 		this.pool = new BasicExecutor(PARALLEL_SIZE);
 		this.missCount = 0;
 	}
@@ -339,9 +345,15 @@ public abstract class DataGatherer extends BoardLocalSupport
 			if (!work.containsKey(gathererChip)) {
 				continue;
 			}
-
-			var conn = new GatherDownloadConnection(gathererChip, g.getIptag());
-			reconfigureIPtag(g.getIptag(), conn);
+			SCPConnection scp = null;
+			if (job != null) {
+				scp = job.getConnection(gathererChip);
+			} else {
+				scp = txrx.locateSpinnakerConnection(
+						g.getIptag().getBoardAddress());
+			}
+			var conn = new GatherDownloadConnection(scp);
+			conn.setIPTag(txrx, g.getIptag());
 			connections.put(gathererChip, conn);
 		}
 		return connections;
@@ -489,29 +501,6 @@ public abstract class DataGatherer extends BoardLocalSupport
 	private static List<String> describeChunk(Chunk<Byte> chunk) {
 		return chunk.getLines().stream().map(MathUtils::hexbyte)
 				.collect(toList());
-	}
-
-	/**
-	 * Configure an IPTag for use in the Data Speed Up protocol.
-	 *
-	 * @param iptag
-	 *            The tag to configure
-	 * @param conn
-	 *            How to talk to the gatherer.
-	 * @throws IOException
-	 *             If message sending or reception fails.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 */
-	private void reconfigureIPtag(IPTag iptag, GatherDownloadConnection conn)
-			throws IOException, ProcessException, InterruptedException {
-		txrx.setIPTag(iptag, conn);
-		if (log.isDebugEnabled()) {
-			log.debug("all tags for board: {}", txrx.getTags(
-					txrx.locateSpinnakerConnection(conn.getRemoteIPAddress())));
-		}
 	}
 
 	/**
@@ -703,8 +692,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 				timeoutcount = 0;
 				return processData(p, transactionId);
 			}
-			log.debug("failed to receive on socket {}:{}.", conn.getLocalPort(),
-					conn.getLocalIPAddress());
+			log.debug("failed to receive on connection {}.", conn);
 			return processTimeout(transactionId);
 		}
 
