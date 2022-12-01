@@ -43,7 +43,6 @@ import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
-import uk.ac.manchester.spinnaker.connections.UDPPacket;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
@@ -104,6 +103,7 @@ class ThrottledConnection implements Closeable {
 	 *             If communications are interrupted.
 	 */
 	@MustBeClosed
+	@SuppressWarnings("MustBeClosed")
 	ThrottledConnection(TransceiverInterface transceiver, Ethernet board,
 			IPTag iptag, SpallocClient.Job job)
 			throws IOException, ProcessException, InterruptedException {

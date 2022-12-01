@@ -334,6 +334,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
 	 */
+	@SuppressWarnings("MustBeClosed")
 	private Map<ChipLocation, GatherDownloadConnection> createConnections(
 			List<Gather> gatherers, Map<ChipLocation, ?> work)
 			throws IOException, ProcessException, InterruptedException {

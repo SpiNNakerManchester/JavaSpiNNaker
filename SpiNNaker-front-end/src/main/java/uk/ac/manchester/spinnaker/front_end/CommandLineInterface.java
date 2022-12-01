@@ -461,6 +461,7 @@ public final class CommandLineInterface {
 	    		.getJob(proxy.jobUrl, proxy.bearerToken);
 	}
 
+	@SuppressWarnings("MustBeClosed")
 	private static TransceiverInterface getTransceiver(
 			Machine machine, SpallocClient.Job job)
 					throws StorageException, IOException, SpinnmanException,

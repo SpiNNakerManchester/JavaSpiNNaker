@@ -399,6 +399,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		private ExecutionContext execContext;
 
 		@MustBeClosed
+		@SuppressWarnings("MustBeClosed")
 		BoardWorker(Ethernet board, DSEStorage storage, Progress bar)
 				throws IOException, ProcessException, InterruptedException {
 			this.board = board;
