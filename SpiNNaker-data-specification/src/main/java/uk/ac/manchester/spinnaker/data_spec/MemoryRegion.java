@@ -26,7 +26,8 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
  * address in memory where they start (which is only chosen late in the region
  * creation process) and an index in the process's table of regions.
  */
-public abstract class MemoryRegion {
+public abstract sealed class MemoryRegion
+		permits MemoryRegionReal, MemoryRegionReference {
 	/** The base address of the region. Set after the fact. */
 	private MemoryLocation baseAddress = NULL;
 

@@ -17,9 +17,6 @@
 package uk.ac.manchester.spinnaker.machine;
 
 import static java.util.Comparator.comparing;
-import static uk.ac.manchester.spinnaker.machine.MachineDefaults.COORD_SHIFT;
-import static uk.ac.manchester.spinnaker.machine.MachineDefaults.CORE_SHIFT;
-import static uk.ac.manchester.spinnaker.machine.MachineDefaults.REGION_SHIFT;
 
 import java.util.Comparator;
 
@@ -29,28 +26,19 @@ import com.google.errorprone.annotations.Immutable;
  * Holding case for a CoreLocation (X, Y and P) and the recording region ID.
  *
  * @author Christian
+ * @param x
+ *            The Chip / Core's X value.
+ * @param y
+ *            The Chip / Core's Y value.
+ * @param p
+ *            The Core's P value.
+ * @param region
+ *            The recording Region.
  */
 @Immutable
-public final class RegionLocation
+public record RegionLocation(//
+		@ValidX int x, @ValidY int y, @ValidP int p, int region)
 		implements HasCoreLocation, Comparable<RegionLocation> {
-	/** The Chip / Core's X value. */
-	@ValidX
-	public final int x;
-
-	/** The Chip / Core's Y value. */
-	@ValidY
-	public final int y;
-
-	/** The Core's P value. */
-	@ValidP
-	public final int p;
-
-	/** The recording Region. */
-	public final int region;
-
-	/** Precalculated hashcode. */
-	private final int hashcode;
-
 	/**
 	 * Creates the Region based on a Core and a region.
 	 *
@@ -60,12 +48,7 @@ public final class RegionLocation
 	 *            The Region to use.
 	 */
 	public RegionLocation(HasCoreLocation core, int region) {
-		x = core.getX();
-		y = core.getY();
-		p = core.getP();
-		this.region = region;
-		hashcode = ((((x << COORD_SHIFT) ^ y) << CORE_SHIFT)
-				^ p) << REGION_SHIFT ^ region;
+		this(core.getX(), core.getY(), core.getP(), region);
 	}
 
 	@Override
@@ -96,21 +79,7 @@ public final class RegionLocation
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		return (obj instanceof RegionLocation that) && (x == that.x)
-				&& (y == that.y) && (p == that.p) && (region == that.region);
-	}
-
-	@Override
 	public String toString() {
 		return "X:" + x + " Y:" + y + " P:" + p + "R: " + region;
-	}
-
-	@Override
-	public int hashCode() {
-		return hashcode;
 	}
 }

@@ -125,7 +125,8 @@ public class Epochs {
 	 *
 	 * @author Donal Fellows
 	 */
-	public interface Epoch {
+	public sealed interface Epoch
+			permits BlacklistEpoch, JobsEpoch, MachinesEpoch {
 		/**
 		 * Wait, for up to {@code timeout}, for a change.
 		 *

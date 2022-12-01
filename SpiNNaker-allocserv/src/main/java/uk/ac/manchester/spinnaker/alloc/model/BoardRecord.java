@@ -41,6 +41,7 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  * @author Donal Fellows
  */
 public class BoardRecord {
+	// This class is visible to JSTL expressions; it MUST be a bean
 	// TODO convert to structured form
 	private Integer id;
 

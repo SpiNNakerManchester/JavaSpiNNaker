@@ -234,7 +234,8 @@ public interface SpallocAPI {
 	 * @see CreateDimensionsAt
 	 * @see CreateBoard
 	 */
-	abstract class CreateDescriptor {
+	abstract sealed class CreateDescriptor
+			permits CreateDimensions, CreateNumBoards, HasBoardCoords {
 		/**
 		 * The maximum number of dead boards tolerated in the allocation.
 		 * Ignored when asking for a single board.
@@ -355,7 +356,8 @@ public interface SpallocAPI {
 	}
 
 	/** Some requests have the locations of boards. */
-	abstract class HasBoardCoords extends CreateDescriptor {
+	abstract sealed class HasBoardCoords
+			extends CreateDescriptor permits CreateDimensionsAt, CreateBoard {
 		/** The logical coordinates, or {@code null}. */
 		@Valid
 		public final TriadCoords triad;

@@ -88,7 +88,8 @@ public class UserControl extends DatabaseAwareBean {
 	}
 
 	@UsedInJavadocOnly(SQLQueries.class)
-	private class UserCheckSQL extends AbstractSQL {
+	private sealed class UserCheckSQL extends AbstractSQL
+			permits CreateSQL, DeleteUserSQL, UpdateAllSQL, UpdatePassSQL {
 		private final Query userCheck = conn.query(GET_USER_ID);
 
 		/** See {@link SQLQueries#GET_USER_DETAILS}. */

@@ -33,7 +33,8 @@ import java.sql.Wrapper;
  *
  * @author Donal Fellows
  */
-abstract class OTWrapper implements Wrapper {
+abstract sealed class OTWrapper implements
+		Wrapper permits OTConnection, OTMeta, OTResults, OTRSMeta, OTStatement {
 	private final OneThread ot;
 
 	private final Wrapper w;

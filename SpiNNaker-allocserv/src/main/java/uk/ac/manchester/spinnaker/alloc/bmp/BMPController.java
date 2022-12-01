@@ -321,7 +321,8 @@ public class BMPController extends DatabaseAwareBean {
 		void act() throws ProcessException, IOException, InterruptedException;
 	}
 
-	private abstract class Request {
+	private abstract sealed class Request
+			permits BlacklistRequest, PowerRequest {
 		final Machine machine;
 
 		private int numTries = 0;
@@ -1415,6 +1416,12 @@ public class BMPController extends DatabaseAwareBean {
 					 * No lock needed; this is the only thread that removes from
 					 * this queue.
 					 */
+
+					// TODO Change once pattern matching enabled by default
+					//switch (requests.poll()) {
+					//case PowerRequest pr -> processRequest(pr);
+					//case BlacklistRequest br -> processRequest(br);
+					//}
 					var r = requests.poll();
 					if (r instanceof PowerRequest pr) {
 						processRequest(pr);

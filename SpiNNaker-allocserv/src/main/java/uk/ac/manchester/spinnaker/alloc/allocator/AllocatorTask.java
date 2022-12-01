@@ -158,7 +158,8 @@ public class AllocatorTask extends DatabaseAwareBean
 	}
 
 	/** Encapsulates the queries and updates used in power control. */
-	private class PowerSQL extends AbstractSQL {
+	private sealed class PowerSQL extends AbstractSQL
+			permits AllocSQL, DestroySQL {
 		/** Get basic information about a specific job. */
 		private final Query getJobState;
 
@@ -432,17 +433,13 @@ public class AllocatorTask extends DatabaseAwareBean
 
 	/**
 	 * Describes what the first stage of the tombstoner has copied.
+	 *
+	 * @param jobIds
+	 *            The IDs of jobs that were copied.
+	 * @param allocIds
+	 *            The IDs of allocations that were copied.
 	 */
-	static final class Copied {
-		private final List<Integer> jobIds;
-
-		private final List<Integer> allocIds;
-
-		private Copied(List<Integer> jobIds, List<Integer> allocIds) {
-			this.jobIds = jobIds;
-			this.allocIds = allocIds;
-		}
-
+	static record Copied(List<Integer> jobIds, List<Integer> allocIds) {
 		private Stream<Integer> allocs() {
 			return allocIds.stream().filter(Objects::nonNull);
 		}

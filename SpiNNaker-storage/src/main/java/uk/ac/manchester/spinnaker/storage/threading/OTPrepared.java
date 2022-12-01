@@ -42,7 +42,8 @@ import java.util.Calendar;
  *
  * @author Donal Fellows
  */
-class OTPrepared extends OTStatement implements PreparedStatement {
+sealed class OTPrepared extends OTStatement
+		implements PreparedStatement permits OTCallable {
 	private final PreparedStatement s;
 
 	OTPrepared(OneThread ot, PreparedStatement s) {

@@ -65,7 +65,7 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 	}
 
-	private class CreateCheckSQL extends AbstractSQL {
+	private final class CreateCheckSQL extends AbstractSQL {
 		// TODO These should be combined (but one is an aggregate so...)
 		private final Query getQuota = conn.query(GET_GROUP_QUOTA);
 
@@ -119,7 +119,7 @@ public class QuotaManager extends DatabaseAwareBean {
 		return !mayLetJobContinue(jobId);
 	}
 
-	private class ContinueCheckSQL extends AbstractSQL {
+	private final class ContinueCheckSQL extends AbstractSQL {
 		private final Query getUsageAndQuota =
 				conn.query(GET_JOB_USAGE_AND_QUOTA);
 
@@ -160,29 +160,18 @@ public class QuotaManager extends DatabaseAwareBean {
 	 * operation.
 	 *
 	 * @author Donal Fellows
+	 * @param name
+	 *            The name of the group.
+	 * @param quota
+	 *            The new quota of the group.
 	 */
-	public static final class AdjustedQuota {
-		private final String name;
-
-		private final Long quota;
-
+	public static record AdjustedQuota(String name, Long quota) {
 		private AdjustedQuota(Row row) {
-			this.name = row.getString("group_name");
-			this.quota = row.getLong("quota");
-		}
-
-		/** @return The name of the group. */
-		public String getName() {
-			return name;
-		}
-
-		/** @return The new quota of the group. */
-		public Long getQuota() {
-			return quota;
+			this(row.getString("group_name"), row.getLong("quota"));
 		}
 	}
 
-	private class AdjustQuotaSQL extends AbstractSQL {
+	private final class AdjustQuotaSQL extends AbstractSQL {
 		private final Query adjustQuota = conn.query(ADJUST_QUOTA);
 
 		@Override
@@ -223,7 +212,7 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 	}
 
-	private class ConsolidateSQL extends AbstractSQL {
+	private final class ConsolidateSQL extends AbstractSQL {
 		private final Query getConsoldationTargets =
 				conn.query(GET_CONSOLIDATION_TARGETS);
 

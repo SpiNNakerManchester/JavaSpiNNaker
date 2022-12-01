@@ -107,7 +107,7 @@ abstract class DatabaseCache<Conn extends Connection> {
 	 *
 	 * @author Donal Fellows
 	 */
-	private class CloserThread extends Thread {
+	private final class CloserThread extends Thread {
 		private final Thread owner;
 
 		private final Conn resource;

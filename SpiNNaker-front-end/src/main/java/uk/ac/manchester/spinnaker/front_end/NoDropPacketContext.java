@@ -46,7 +46,7 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  * @author Donal Fellows
  * @author Alan Stokes
  */
-public class NoDropPacketContext implements AutoCloseable {
+public final class NoDropPacketContext implements AutoCloseable {
 	private static final Logger log = getLogger(NoDropPacketContext.class);
 
 	private ReinjectionStatus lastStatus;

@@ -33,7 +33,7 @@ import com.google.errorprone.annotations.Immutable;
 /** A basic SpiNNaker routing entry. */
 @Immutable
 @SuppressWarnings("Immutable") // Error Prone can't figure out this is true
-public class RoutingEntry {
+public sealed class RoutingEntry permits MulticastRoutingEntry {
 	private final Set<@ValidP @NotNull Integer> processorIDs;
 
 	private final Set<Direction> linkIDs;

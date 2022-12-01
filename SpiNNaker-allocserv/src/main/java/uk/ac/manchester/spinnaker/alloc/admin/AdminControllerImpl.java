@@ -595,8 +595,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	public ModelAndView adjustGroupQuota(int id, int delta,
 			RedirectAttributes attrs) {
 		quotaManager.addQuota(id, delta * BOARD_HOUR).ifPresent(aq -> {
-			log.info("adjusted quota for group {} to {}", aq.getName(),
-					aq.getQuota());
+			log.info("adjusted quota for group {} to {}", aq.name(),
+					aq.quota());
 			// addNotice(attrs, "quota updated");
 		});
 		return redirectTo(showGroupInfoUrl(id), attrs);

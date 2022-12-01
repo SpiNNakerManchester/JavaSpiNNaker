@@ -20,11 +20,15 @@ import org.springframework.security.core.GrantedAuthority;
 
 import com.google.errorprone.annotations.Immutable;
 
+import uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl.CollabratoryAuthority;
+import uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl.OrganisationAuthority;
+
 /**
  * Contains a single basic role grant.
  */
 @Immutable
-class SimpleGrantedAuthority implements GrantedAuthority {
+sealed class SimpleGrantedAuthority implements GrantedAuthority
+		permits CollabratoryAuthority, OrganisationAuthority {
 	private static final long serialVersionUID = 7765648523730760900L;
 
 	private final String role;

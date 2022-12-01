@@ -221,8 +221,7 @@ public class FirmwareLoader {
 		final ByteBuffer buf;
 
 		FlashDataSector() {
-			buf = ByteBuffer.allocate(DATA_SECTOR_LENGTH);
-			buf.order(LITTLE_ENDIAN);
+			buf = ByteBuffer.allocate(DATA_SECTOR_LENGTH).order(LITTLE_ENDIAN);
 		}
 
 		static FlashDataSector registers(int numItems, List<Integer> data) {

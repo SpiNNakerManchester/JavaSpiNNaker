@@ -150,14 +150,9 @@ class Replacer {
 		}
 	}
 
-	private static final class Replacement {
-		private final String match;
-
-		private final int index;
-
+	private static record Replacement(String match, int index) {
 		private Replacement(MatchResult m, int index) {
-			match = m.group();
-			this.index = index;
+			this(m.group(), index);
 		}
 
 		void replace(StringBuilder buffer, String[] parts) {

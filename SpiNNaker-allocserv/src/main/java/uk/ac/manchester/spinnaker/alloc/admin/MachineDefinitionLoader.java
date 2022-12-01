@@ -419,88 +419,31 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	}
 
 	/**
-	 * A configuration description. JSON-deserializable (the only supported
-	 * mechanism for generating an instance). Largely ignored as it represents
-	 * configuration settings that we handle elsewhere. However, the
+	 * A configuration description. JSON-deserializable (the only actually
+	 * supported mechanism for generating an instance). Largely ignored as it
+	 * represents configuration settings that we handle elsewhere. However, the
 	 * {@code machines} property <em>is</em> interesting.
 	 *
 	 * @author Donal Fellows
+	 * @param machines
+	 *            The machines to manage.
+	 * @param port
+	 *            The port for the service to listen on. (Ignored)
+	 * @param ip
+	 *            The host address for the service to listen on. Empty = all
+	 *            interfaces. (Ignored)
+	 * @param timeoutCheckInterval
+	 *            How often (in seconds) to check for timeouts. (Ignored)
+	 * @param maxRetiredJobs
+	 *            How many retired jobs to retain. (Ignored)
+	 * @param secondsBeforeFree
+	 *            Time to wait before freeing. (Ignored)
 	 */
-	public static final class Configuration {
-		private @NotNull List<@Valid Machine> machines;
-
-		@TCPPort
-		private int port;
-
-		@IPAddress(nullOK = true, emptyOK = true)
-		private String ip;
-
-		@Positive
-		private double timeoutCheckInterval;
-
-		@Positive
-		private int maxRetiredJobs;
-
-		@Positive
-		private int secondsBeforeFree;
-
-		/** @return The machines to manage. */
-		public List<Machine> getMachines() {
-			return machines;
-		}
-
-		void setMachines(List<Machine> machines) {
-			this.machines = copy(machines);
-		}
-
-		/** @return The port for the service to listen on. (Ignored) */
-		public int getPort() {
-			return port;
-		}
-
-		void setPort(int port) {
-			this.port = port;
-		}
-
-		/**
-		 * @return The host address for the service to listen on. Empty = all
-		 *         interfaces. (Ignored)
-		 */
-		public String getIp() {
-			return ip;
-		}
-
-		void setIp(String ip) {
-			this.ip = ip;
-		}
-
-		/** @return How often (in seconds) to check for timeouts. (Ignored) */
-		public double getTimeoutCheckInterval() {
-			return timeoutCheckInterval;
-		}
-
-		void setTimeoutCheckInterval(double timeoutCheckInterval) {
-			this.timeoutCheckInterval = timeoutCheckInterval;
-		}
-
-		/** @return How many retired jobs to retain. (Ignored) */
-		public int getMaxRetiredJobs() {
-			return maxRetiredJobs;
-		}
-
-		void setMaxRetiredJobs(int maxRetiredJobs) {
-			this.maxRetiredJobs = maxRetiredJobs;
-		}
-
-		/** @return Time to wait before freeing. (Ignored) */
-		public int getSecondsBeforeFree() {
-			return secondsBeforeFree;
-		}
-
-		void setSecondsBeforeFree(int secondsBeforeFree) {
-			this.secondsBeforeFree = secondsBeforeFree;
-		}
-
+	public static record Configuration(//
+			@NotNull List<@Valid Machine> machines, @TCPPort int port,
+			@IPAddress(nullOK = true, emptyOK = true) String ip,
+			@Positive double timeoutCheckInterval, @Positive int maxRetiredJobs,
+			@Positive int secondsBeforeFree) {
 		@Override
 		public String toString() {
 			return new StringBuilder("Configuration(").append("machines=")
@@ -546,7 +489,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			throws IOException, JsonParseException, JsonMappingException {
 		var cfg = mapper.readValue(file, Configuration.class);
 		validate(cfg);
-		return cfg.getMachines();
+		return cfg.machines();
 	}
 
 	/**
@@ -568,7 +511,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			throws IOException, JsonParseException, JsonMappingException {
 		var cfg = mapper.readValue(stream, Configuration.class);
 		validate(cfg);
-		return cfg.getMachines();
+		return cfg.machines();
 	}
 
 	/**
@@ -659,7 +602,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 */
 	public void loadMachineDefinitions(Configuration configuration) {
 		try (var sql = new Updates()) {
-			for (var machine : configuration.getMachines()) {
+			for (var machine : configuration.machines()) {
 				sql.transaction(() -> loadMachineDefinition(sql, machine));
 			}
 		}

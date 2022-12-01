@@ -122,11 +122,11 @@ class BufferedReceivingData {
 			throw new IllegalArgumentException(
 					"no regions known for " + coreLocation);
 		}
-		if (value.size() < location.region || location.region < 0) {
+		if (value.size() < location.region() || location.region() < 0) {
 			throw new IllegalArgumentException(
 					"no region known for " + location);
 		}
-		return value.get(location.region);
+		return value.get(location.region());
 	}
 
 	/**
@@ -144,11 +144,11 @@ class BufferedReceivingData {
 			ByteBuffer data) throws StorageException {
 		if (log.isInfoEnabled()) {
 			log.info("retrieved {} bytes from region {} of {}",
-					data.remaining(), location.region,
+					data.remaining(), location.region(),
 					location.asCoreLocation());
 		}
 		storage.appendRecordingContents(
-				new Region(location, location.region, NULL, 0), data);
+				new Region(location, location.region(), NULL, 0), data);
 	}
 
 	/**

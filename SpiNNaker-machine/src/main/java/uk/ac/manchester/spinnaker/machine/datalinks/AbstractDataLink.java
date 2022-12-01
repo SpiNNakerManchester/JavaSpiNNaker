@@ -33,6 +33,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  * @author Christian-B
  */
 @Immutable
+// Should be sealed, but tests interfere
 public abstract class AbstractDataLink implements HasChipLocation {
 	/** IP address of the Datalink on the board. */
 	public final InetAddress boardAddress;

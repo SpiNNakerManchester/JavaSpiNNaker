@@ -32,7 +32,7 @@ public class TestRegionLocation {
 		assertEquals(2, r1.getX());
 		assertEquals(4, r1.getY());
 		assertEquals(6, r1.getP());
-		assertEquals(8, r1.region);
+		assertEquals(8, r1.region());
 		assertEquals(r1, r1);
 		assertNotEquals(r1, "r1");
 

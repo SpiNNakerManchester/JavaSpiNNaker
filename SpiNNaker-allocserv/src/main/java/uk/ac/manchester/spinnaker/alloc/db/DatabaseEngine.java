@@ -1135,7 +1135,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 		}
 	}
 
-	private abstract static class StatementWrapper implements StatementCommon {
+	private abstract static sealed class StatementWrapper
+			implements StatementCommon permits QueryImpl, UpdateImpl {
 		/** The statement being managed. */
 		final PreparedStatement s;
 

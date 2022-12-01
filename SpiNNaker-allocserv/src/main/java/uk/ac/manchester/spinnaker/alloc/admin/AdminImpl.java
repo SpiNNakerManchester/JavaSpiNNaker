@@ -75,7 +75,7 @@ public class AdminImpl implements AdminAPI {
 	@Override
 	public void importMachinesByContent(
 			MachineDefinitionLoader.Configuration definitions) {
-		log.warn("CALLED importMachinesByContent({})", definitions.getMachines()
+		log.warn("CALLED importMachinesByContent({})", definitions.machines()
 				.stream().map(Machine::getName).collect(toList()));
 		loader.loadMachineDefinitions(definitions);
 	}

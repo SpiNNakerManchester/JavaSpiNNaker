@@ -855,29 +855,19 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		mapAuthorities("userinfo", user.getUserInfo(), ga);
 	}
 
+	/**
+	 * Auth succeeded.
+	 *
+	 * @param userId
+	 *            The user ID
+	 * @param trustLevel
+	 *            The trust level.
+	 * @param passInfo
+	 *            The <em>encoded</em> password.
+	 */
 	@Immutable
-	private static final class LocalAuthResult {
-		final int userId;
-
-		final TrustLevel trustLevel;
-
-		final String passInfo;
-
-		/**
-		 * Auth succeeded.
-		 *
-		 * @param u
-		 *            The user ID
-		 * @param t
-		 *            The trust level.
-		 * @param ep
-		 *            The <em>encoded</em> password.
-		 */
-		LocalAuthResult(int u, TrustLevel t, String ep) {
-			userId = u;
-			trustLevel = requireNonNull(t);
-			passInfo = requireNonNull(ep);
-		}
+	private static record LocalAuthResult(int userId, TrustLevel trustLevel,
+			String passInfo) {
 	}
 
 	/**
@@ -910,12 +900,12 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 					checkPassword(username, password, details, queries);
 					// Succeeded; finalize into external form
 					return queries.transaction(() -> {
-						queries.noteLoginSuccessForUser(details.userId);
+						queries.noteLoginSuccessForUser(details.userId());
 						// Convert tiered trust level to grant form
-						details.trustLevel.getGrants()
+						details.trustLevel().getGrants()
 								.forEach(authorities::add);
 						log.info("login success for {} at level {}", username,
-								details.trustLevel);
+								details.trustLevel());
 						return true;
 					});
 				}, () -> false);
@@ -975,16 +965,16 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 *            The username (now validated as existing).
 	 * @param password
 	 *            The user-provided password that we're checking.
-	 * @param queries
-	 *            How to access the DB.
 	 * @param details
 	 *            The results of looking up the user
+	 * @param queries
+	 *            How to access the DB.
 	 */
 	private void checkPassword(String username, String password,
 			LocalAuthResult details, AuthQueries queries) {
-		if (!passServices.matchPassword(password, details.passInfo)) {
+		if (!passServices.matchPassword(password, details.passInfo())) {
 			queries.transaction(() -> {
-				queries.noteLoginFailureForUser(details.userId, username);
+				queries.noteLoginFailureForUser(details.userId(), username);
 				log.info("login failure for {}: bad password", username);
 				throw new BadCredentialsException("bad password");
 			});
