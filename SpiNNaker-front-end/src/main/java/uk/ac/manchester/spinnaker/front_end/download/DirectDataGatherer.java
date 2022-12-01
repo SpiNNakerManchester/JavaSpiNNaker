@@ -29,6 +29,7 @@ import java.util.Map;
 import com.google.errorprone.annotations.MustBeClosed;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
+import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.front_end.download.request.Vertex;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
@@ -85,9 +86,9 @@ public class DirectDataGatherer extends DataGatherer {
 	 */
 	@MustBeClosed
 	public DirectDataGatherer(TransceiverInterface transceiver, Machine machine,
-			BufferManagerStorage database)
+			BufferManagerStorage database, SpallocClient.Job job)
 			throws IOException, ProcessException {
-		super(transceiver, machine, null);
+		super(transceiver, machine, job);
 		this.txrx = transceiver;
 		this.database = database;
 		coreTableCache = new HashMap<>();
