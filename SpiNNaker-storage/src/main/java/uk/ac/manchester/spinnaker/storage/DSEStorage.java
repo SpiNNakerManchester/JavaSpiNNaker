@@ -97,6 +97,14 @@ public interface DSEStorage extends DatabaseAPI {
 			int memoryUsed, int memoryWritten) throws StorageException;
 
 	/**
+	 * Get information used to connect to a proxy, or null if not used.
+	 *
+	 * @return The information used to connect to a proxy, or null if not used.
+	 * @throws StorageException If the database access fails.
+	 */
+	ProxyInformation getProxyInformation() throws StorageException;
+
+	/**
 	 * A ethernet which allows data specifications to be loaded.
 	 *
 	 * @author Donal Fellows

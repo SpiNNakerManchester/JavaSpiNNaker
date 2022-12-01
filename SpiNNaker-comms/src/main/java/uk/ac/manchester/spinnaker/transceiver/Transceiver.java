@@ -2177,9 +2177,16 @@ public class Transceiver extends UDPTransceiver
 					"The given board address is not recognised");
 		}
 
-		simpleProcess(connection)
-				.synchronousCall(new IPTagSet(connection.getChip(), null, 0,
-						tag.getTag(), tag.isStripSDP(), true));
+		// Avoid delegation of the process if not needed
+		TxrxProcess process = null;
+		if (connection instanceof SCPConnection) {
+			process = simpleProcess((SCPConnection) connection);
+		} else {
+			process = simpleProcess(connection);
+		}
+
+		process.synchronousCall(new IPTagSet(connection.getChip(), null, 0,
+					tag.getTag(), tag.isStripSDP(), true));
 	}
 
 	@Override

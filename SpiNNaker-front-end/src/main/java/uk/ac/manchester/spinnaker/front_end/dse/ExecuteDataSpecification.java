@@ -16,24 +16,33 @@
  */
 package uk.ac.manchester.spinnaker.front_end.dse;
 
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.function.Function;
 
+import org.slf4j.Logger;
+
 import com.google.errorprone.annotations.MustBeClosed;
 
+import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
+import uk.ac.manchester.spinnaker.alloc.client.SpallocClientFactory;
 import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor.SimpleCallable;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.storage.StorageException;
+import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * Common base for executing data specifications.
@@ -42,14 +51,24 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
  */
 public abstract class ExecuteDataSpecification extends BoardLocalSupport
 		implements AutoCloseable {
+	private static final Logger log =
+			getLogger(ExecuteDataSpecification.class);
+
 	/** The description of the SpiNNaker machine. */
 	protected final Machine machine;
 
 	/** The transceiver for talking to the SpiNNaker machine. */
-	protected final Transceiver txrx;
+	protected final TransceiverInterface txrx;
+
+	/** The database. */
+	protected final DSEDatabaseEngine db;
+
+	/** A spalloc job, or null if not used. */
+	protected final SpallocClient.Job job;
 
 	/** How to run tasks in parallel. */
 	private final BasicExecutor executor;
+
 
 	/**
 	 * @param machine
@@ -63,16 +82,33 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 	 * @throws IllegalStateException
 	 *             If something really strange occurs with talking to the BMP;
 	 *             this constructor should not be doing that!
+	 * @throws StorageException
+	 *             If the database cannot be read.
+	 * @throws URISyntaxException
+	 *             If the proxy URI is specified but not valid.
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
-	protected ExecuteDataSpecification(Machine machine)
-			throws IOException, ProcessException, InterruptedException {
+	protected ExecuteDataSpecification(Machine machine, DSEDatabaseEngine db)
+			throws IOException, ProcessException, InterruptedException,
+			StorageException, URISyntaxException {
 		super(machine);
 		this.machine = machine;
+		this.db = db;
 		executor = new BasicExecutor(PARALLEL_SIZE);
 		try {
-			txrx = new Transceiver(machine);
+			var proxy = db.getStorageInterface().getProxyInformation();
+			if (proxy == null) {
+				log.debug("Using real machine for transceiver");
+				job = null;
+			    txrx = new Transceiver(machine);
+			} else {
+				log.debug("Getting transceiver via proxy on {}",
+						proxy.spallocUrl);
+			    job = new SpallocClientFactory(new URI(proxy.spallocUrl))
+			    		.getJob(proxy.jobUrl, proxy.bearerToken);
+			    txrx = job.getTransceiver();
+			}
 		} catch (ProcessException e) {
 			throw e;
 		} catch (SpinnmanException e) {

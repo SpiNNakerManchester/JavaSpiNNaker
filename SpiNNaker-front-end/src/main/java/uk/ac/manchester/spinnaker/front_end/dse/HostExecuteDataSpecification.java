@@ -22,6 +22,7 @@ import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BAS
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 
 import org.slf4j.Logger;
@@ -37,7 +38,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
-import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
+import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
@@ -67,14 +68,19 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws URISyntaxException
+	 *             If the URI is not valid.
+	 * @throws StorageException
+	 *             If the database cannot be read.
 	 * @throws IllegalStateException
 	 *             If something really strange occurs with talking to the BMP;
 	 *             this constructor should not be doing that!
 	 */
 	@MustBeClosed
-	public HostExecuteDataSpecification(Machine machine)
-			throws IOException, ProcessException, InterruptedException {
-		super(machine);
+	public HostExecuteDataSpecification(Machine machine, DSEDatabaseEngine db)
+			throws IOException, ProcessException, InterruptedException,
+			StorageException, URISyntaxException {
+		super(machine, db);
 	}
 
 	/**
@@ -82,8 +88,6 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 * storing back in the database the information collected about those
 	 * executions.
 	 *
-	 * @param connection
-	 *            The handle to the database.
 	 * @throws StorageException
 	 *             If the database can't be talked to.
 	 * @throws IOException
@@ -98,10 +102,10 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             If an unexpected exception occurs in any of the parallel
 	 *             tasks.
 	 */
-	public void loadAllCores(ConnectionProvider<DSEStorage> connection)
+	public void loadAllCores()
 			throws StorageException, IOException, ProcessException,
 			DataSpecificationException, InterruptedException {
-		var storage = connection.getStorageInterface();
+		var storage = db.getStorageInterface();
 		var ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
 		try (var bar = new Progress(opsToRun, LOADING_MSG);
@@ -116,9 +120,7 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 * Execute all application data specifications that a particular connection
 	 * knows about, storing back in the database the information collected about
 	 * those executions.
-	 *
-	 * @param connection
-	 *            The handle to the database.
+
 	 * @throws StorageException
 	 *             If the database can't be talked to.
 	 * @throws IOException
@@ -133,10 +135,10 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             If an unexpected exception occurs in any of the parallel
 	 *             tasks.
 	 */
-	public void loadApplicationCores(ConnectionProvider<DSEStorage> connection)
+	public void loadApplicationCores()
 			throws StorageException, IOException, ProcessException,
 			DataSpecificationException, InterruptedException {
-		var storage = connection.getStorageInterface();
+		var storage = db.getStorageInterface();
 		var ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
 		try (var bar = new Progress(opsToRun, LOADING_MSG);
@@ -151,9 +153,7 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 * Execute all system data specifications that a particular connection knows
 	 * about, storing back in the database the information collected about those
 	 * executions.
-	 *
-	 * @param connection
-	 *            The handle to the database.
+
 	 * @throws StorageException
 	 *             If the database can't be talked to.
 	 * @throws IOException
@@ -168,10 +168,10 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             If an unexpected exception occurs in any of the parallel
 	 *             tasks.
 	 */
-	public void loadSystemCores(ConnectionProvider<DSEStorage> connection)
+	public void loadSystemCores()
 			throws StorageException, IOException, ProcessException,
 			DataSpecificationException, InterruptedException {
-		var storage = connection.getStorageInterface();
+		var storage = db.getStorageInterface();
 		var ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
 		try (var bar = new Progress(opsToRun, LOADING_MSG);

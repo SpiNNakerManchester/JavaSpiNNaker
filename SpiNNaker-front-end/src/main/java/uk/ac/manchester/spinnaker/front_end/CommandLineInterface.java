@@ -28,6 +28,7 @@ import static uk.ac.manchester.spinnaker.machine.bean.MapperFactory.createMapper
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -232,21 +233,23 @@ public final class CommandLineInterface {
 	 *             If the wait for everything to complete is interrupted.
 	 * @throws DataSpecificationException
 	 *             If an invalid data specification file is executed.
+	 * @throws URISyntaxException
+	 *             If the proxy URI is provided but not valid.
 	 */
 	public static void dseRun(String machineJsonFile, String runFolder,
 			Boolean filterSystemCores) throws IOException, SpinnmanException,
 			StorageException, ExecutionException, InterruptedException,
-			DataSpecificationException {
+			DataSpecificationException, URISyntaxException {
 		var machine = getMachine(machineJsonFile);
 		var db = new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
 
-		try (var dseExec = new HostExecuteDataSpecification(machine)) {
+		try (var dseExec = new HostExecuteDataSpecification(machine, db)) {
 			if (filterSystemCores == null) {
-				dseExec.loadAllCores(db);
+				dseExec.loadAllCores();
 			} else if (filterSystemCores) {
-				dseExec.loadApplicationCores(db);
+				dseExec.loadApplicationCores();
 			} else {
-				dseExec.loadSystemCores(db);
+				dseExec.loadSystemCores();
 			}
 		}
 	}
@@ -276,20 +279,22 @@ public final class CommandLineInterface {
 	 *             If the wait for everything to complete is interrupted.
 	 * @throws DataSpecificationException
 	 *             If an invalid data specification file is executed.
+	 * @throws URISyntaxException
+	 *             If a proxy URI is provided but invalid.
 	 */
 	public static void dseAppMonRun(String gatherersJsonFile,
 			String machineJsonFile, String runFolder, String reportFolder)
 			throws IOException, SpinnmanException, StorageException,
 			ExecutionException, InterruptedException,
-			DataSpecificationException {
+			DataSpecificationException, URISyntaxException {
 		var gathers = getGatherers(gatherersJsonFile);
 		var machine = getMachine(machineJsonFile);
 		var db = new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
 		var reportDir = reportFolder == null ? null : new File(reportFolder);
 
 		try (var dseExec = new FastExecuteDataSpecification(
-				machine, gathers, reportDir)) {
-			dseExec.loadCores(db);
+				machine, gathers, reportDir, db)) {
+			dseExec.loadCores();
 		}
 	}
 

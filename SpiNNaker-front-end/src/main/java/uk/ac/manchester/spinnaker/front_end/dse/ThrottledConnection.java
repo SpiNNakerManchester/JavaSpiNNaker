@@ -34,13 +34,14 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
-import java.nio.IntBuffer;
+import java.nio.ByteBuffer;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.MustBeClosed;
 
+import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.UDPPacket;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -93,6 +94,8 @@ class ThrottledConnection implements Closeable {
 	 *            The SpiNNaker board to talk to.
 	 * @param iptag
 	 *            The tag to reprogram to talk to this connection.
+	 * @param job
+	 *            A spalloc job to use to open the connection, or null if none.
 	 * @throws IOException
 	 *             If IO fails.
 	 * @throws ProcessException
@@ -102,11 +105,15 @@ class ThrottledConnection implements Closeable {
 	 */
 	@MustBeClosed
 	ThrottledConnection(TransceiverInterface transceiver, Ethernet board,
-			IPTag iptag)
+			IPTag iptag, SpallocClient.Job job)
 			throws IOException, ProcessException, InterruptedException {
 		location = board.location;
 		addr = getByName(board.ethernetAddress);
-		connection = new SCPConnection(location, addr, SCP_SCAMP_PORT);
+		if (job == null) {
+		    connection = new SCPConnection(location, addr, SCP_SCAMP_PORT);
+		} else {
+			connection = job.getConnection(location);
+		}
 		log.info(
 				"created throttled connection to {} ({}) from {}:{}; "
 						+ "reprogramming tag #{} to point to this connection",
@@ -126,10 +133,9 @@ class ThrottledConnection implements Closeable {
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
 	 */
-	public IntBuffer receive()
+	public ByteBuffer receive()
 			throws SocketTimeoutException, IOException, InterruptedException {
-		return connection.receive(TIMEOUT_MS).slice().order(LITTLE_ENDIAN)
-				.asIntBuffer();
+		return connection.receive(TIMEOUT_MS).slice().order(LITTLE_ENDIAN);
 	}
 
 	/**
@@ -179,7 +185,7 @@ class ThrottledConnection implements Closeable {
 		}, 1, SECONDS);
 	}
 
-	public UDPPacket receiveWithAddress() throws IOException {
-		return connection.receiveWithAddress(TIMEOUT_MS);
+	public ChipLocation getLocation() {
+		return location;
 	}
 }

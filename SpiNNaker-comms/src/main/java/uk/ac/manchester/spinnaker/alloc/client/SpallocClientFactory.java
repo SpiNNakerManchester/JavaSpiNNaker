@@ -43,6 +43,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -53,6 +54,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.errorprone.annotations.MustBeClosed;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
@@ -106,9 +108,16 @@ public class SpallocClientFactory {
 	/** Used to convert to/from JSON. */
 	static final JsonMapper JSON_MAPPER = JsonMapper.builder()
 			.findAndAddModules().disable(WRITE_DATES_AS_TIMESTAMPS)
+			.addModule(new JavaTimeModule())
 			.propertyNamingStrategy(KEBAB_CASE).build();
 
 	private final URI baseUrl;
+
+	/**
+	 * Cache of machines, which don't expire.
+	 */
+	private static final Map<String, Machine> machineMap =
+			synchronizedMap(new HashMap<>());
 
 	/**
 	 * Create a factory that can talk to a given service.
@@ -266,16 +275,27 @@ public class SpallocClientFactory {
 		return new ClientImpl(s, s.discoverRoot());
 	}
 
+	/**
+	 * Get access to a Job
+	 * @param uri The URI of the job
+	 * @param bearerToken The bearer token to authenticate with
+	 * @return
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 */
+	public Job getJob(String uri, String bearerToken)
+			throws IOException, URISyntaxException {
+		var u = new URI(uri);
+		var s = new ClientSession(baseUrl, bearerToken);
+		var c = new ClientImpl(s, s.discoverRoot());
+		log.info("Connecting to job on {}", u);
+		return c.job(u);
+	}
+
 	private abstract static class Common {
 		private final SpallocClient client;
 
 		final Session s;
-
-		/**
-		 * Cache of machines, which don't expire.
-		 */
-		final Map<String, Machine> machineMap =
-				synchronizedMap(new HashMap<>());
 
 		Common(SpallocClient client, Session s) {
 			this.client = client != null ? client : (SpallocClient) this;
@@ -283,13 +303,14 @@ public class SpallocClientFactory {
 		}
 
 		final Machine getMachine(String name) throws IOException {
-			Machine m;
-			do {
+			Machine m = machineMap.get(name);
+			if (m == null) {
+				client.listMachines();
 				m = machineMap.get(name);
-				if (m == null) {
-					client.listMachines();
-				}
-			} while (m == null);
+			}
+			if (m == null) {
+				throw new IOException("Machine " + name + " not found");
+			}
 			return m;
 		}
 
@@ -316,7 +337,8 @@ public class SpallocClientFactory {
 		}
 	}
 
-	private final class ClientImpl extends Common implements SpallocClient {
+	private final static class ClientImpl extends Common
+	        implements SpallocClient {
 		private Version v;
 
 		private URI jobs;
@@ -434,12 +456,10 @@ public class SpallocClientFactory {
 					var ms = readJson(is, Machines.class);
 					// Assume we can cache this
 					for (var bmd : ms.machines) {
-						machineMap.computeIfAbsent(bmd.name,
-								__ -> new MachineImpl(this, s, bmd));
+						log.debug("Machine {} found", bmd.name);
+						machineMap.put(bmd.name, new MachineImpl(this, s, bmd));
 					}
-					return ms.machines.stream()
-							.map(bmd -> machineMap.get(bmd.name))
-							.collect(toList());
+					return new ArrayList<Machine>(machineMap.values());
 				} finally {
 					s.trackCookie(conn);
 				}

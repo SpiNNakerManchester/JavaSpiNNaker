@@ -117,6 +117,10 @@ public final class JobDescription {
 	}
 
 	@JsonPOJOBuilder
+	@JsonIgnoreProperties({
+		"keepalive-ref", "machine-ref", "power-ref", "chip-ref",
+		"original-request"
+	})
 	static class Builder {
 		private State state;
 
@@ -161,7 +165,7 @@ public final class JobDescription {
 			this.keepaliveHost = keepaliveHost;
 		}
 
-		@JsonProperty("keepalive-time")
+		@JsonProperty("keep-alive-time")
 		void withKeepaliveTime(Instant keepaliveTime) {
 			this.keepaliveTime = keepaliveTime;
 		}

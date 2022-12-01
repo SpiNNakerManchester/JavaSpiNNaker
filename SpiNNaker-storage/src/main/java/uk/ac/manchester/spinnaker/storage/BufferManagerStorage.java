@@ -288,4 +288,12 @@ public interface BufferManagerStorage extends DatabaseAPI {
 		contents.slice().get(ary);
 		appendRecordingContents(region, ary);
 	}
+
+	/**
+	 * Get the proxy information from the database, or null if none defined.
+	 *
+	 * @return The proxy information, or null if none defined.
+	 * @throws StorageException If anything goes wrong.
+	 */
+	ProxyInformation getProxyInformation() throws StorageException;
 }
