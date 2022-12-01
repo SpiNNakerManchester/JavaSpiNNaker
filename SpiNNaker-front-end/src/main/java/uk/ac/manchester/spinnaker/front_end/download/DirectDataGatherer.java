@@ -87,7 +87,7 @@ public class DirectDataGatherer extends DataGatherer {
 	public DirectDataGatherer(TransceiverInterface transceiver, Machine machine,
 			BufferManagerStorage database)
 			throws IOException, ProcessException {
-		super(transceiver, machine);
+		super(transceiver, machine, null);
 		this.txrx = transceiver;
 		this.database = database;
 		coreTableCache = new HashMap<>();
