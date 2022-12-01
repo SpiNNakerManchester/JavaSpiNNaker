@@ -132,6 +132,8 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 * @param reportDir
 	 *            Where to write reports, or {@code null} if no reports are to
 	 *            be written.
+	 * @param db
+	 *            The DSE Database.
 	 * @throws IOException
 	 *             If IO goes wrong.
 	 * @throws ProcessException
@@ -192,8 +194,6 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 * knows about, storing back in the database the information collected about
 	 * those executions. Data is transferred using the Fast Data In protocol.
 	 *
-	 * @param connection
-	 *            The handle to the database.
 	 * @throws StorageException
 	 *             If the database can't be talked to.
 	 * @throws IOException

@@ -73,6 +73,8 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 	/**
 	 * @param machine
 	 *            The description of the SpiNNaker machine.
+	 * @param db
+	 *            The DSE database.
 	 * @throws IOException
 	 *             If the transceiver can't talk to its sockets.
 	 * @throws ProcessException
@@ -101,13 +103,13 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 			if (proxy == null) {
 				log.debug("Using real machine for transceiver");
 				job = null;
-			    txrx = new Transceiver(machine);
+				txrx = new Transceiver(machine);
 			} else {
 				log.debug("Getting transceiver via proxy on {}",
 						proxy.spallocUrl);
-			    job = new SpallocClientFactory(new URI(proxy.spallocUrl))
-			    		.getJob(proxy.jobUrl, proxy.bearerToken);
-			    txrx = job.getTransceiver();
+				job = new SpallocClientFactory(new URI(proxy.spallocUrl))
+						.getJob(proxy.jobUrl, proxy.bearerToken);
+				txrx = job.getTransceiver();
 			}
 		} catch (ProcessException e) {
 			throw e;

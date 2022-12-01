@@ -44,7 +44,8 @@ public class ProxyInformation {
 	/**
 	 * Create a new ProxyInformation object.
 	 *
-	 * @param url The URL of the proxy to connect to.
+	 * @param spallocUrl The URL of the Spalloc server.
+	 * @param jobUrl The URL of the job.
 	 * @param bearerToken The bearer token to use as authentication.
 	 */
 	public ProxyInformation(final String spallocUrl, final String jobUrl,

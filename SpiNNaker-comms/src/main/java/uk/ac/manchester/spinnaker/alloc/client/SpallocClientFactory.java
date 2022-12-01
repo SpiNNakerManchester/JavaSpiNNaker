@@ -116,7 +116,7 @@ public class SpallocClientFactory {
 	/**
 	 * Cache of machines, which don't expire.
 	 */
-	private static final Map<String, Machine> machineMap =
+	private static final Map<String, Machine> MACHINE_MAP =
 			synchronizedMap(new HashMap<>());
 
 	/**
@@ -276,12 +276,13 @@ public class SpallocClientFactory {
 	}
 
 	/**
-	 * Get access to a Job
+	 * Get direct access to a Job.
+	 *
 	 * @param uri The URI of the job
 	 * @param bearerToken The bearer token to authenticate with
-	 * @return
-	 * @throws IOException
-	 * @throws URISyntaxException
+	 * @return A job.
+	 * @throws IOException If there is an error communicating with the server.
+	 * @throws URISyntaxException If the URI is invalid.
 	 */
 	public Job getJob(String uri, String bearerToken)
 			throws IOException, URISyntaxException {
@@ -303,10 +304,10 @@ public class SpallocClientFactory {
 		}
 
 		final Machine getMachine(String name) throws IOException {
-			Machine m = machineMap.get(name);
+			Machine m = MACHINE_MAP.get(name);
 			if (m == null) {
 				client.listMachines();
-				m = machineMap.get(name);
+				m = MACHINE_MAP.get(name);
 			}
 			if (m == null) {
 				throw new IOException("Machine " + name + " not found");
@@ -337,8 +338,8 @@ public class SpallocClientFactory {
 		}
 	}
 
-	private final static class ClientImpl extends Common
-	        implements SpallocClient {
+	private static final class ClientImpl extends Common
+			implements SpallocClient {
 		private Version v;
 
 		private URI jobs;
@@ -457,9 +458,10 @@ public class SpallocClientFactory {
 					// Assume we can cache this
 					for (var bmd : ms.machines) {
 						log.debug("Machine {} found", bmd.name);
-						machineMap.put(bmd.name, new MachineImpl(this, s, bmd));
+						MACHINE_MAP.put(bmd.name,
+								new MachineImpl(this, s, bmd));
 					}
-					return new ArrayList<Machine>(machineMap.values());
+					return new ArrayList<Machine>(MACHINE_MAP.values());
 				} finally {
 					s.trackCookie(conn);
 				}

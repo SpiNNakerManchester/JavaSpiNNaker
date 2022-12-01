@@ -84,6 +84,8 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	 *            The description of the machine talked to.
 	 * @param database
 	 *            Where to put the retrieved data.
+	 * @param job
+	 *            The spalloc job to connect to, or null if none.
 	 * @throws ProcessException
 	 *             If we can't discover the machine details due to SpiNNaker
 	 *             rejecting messages

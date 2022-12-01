@@ -147,6 +147,8 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *            is located.
 	 * @param machine
 	 *            The description of the SpiNNaker machine being talked to.
+	 * @param job
+	 *            The spalloc job to connect to on null if none.
 	 * @throws ProcessException
 	 *             If we can't discover the machine details due to SpiNNaker
 	 *             rejecting messages

@@ -110,7 +110,7 @@ class ThrottledConnection implements Closeable {
 		location = board.location;
 		addr = getByName(board.ethernetAddress);
 		if (job == null) {
-		    connection = new SCPConnection(location, addr, SCP_SCAMP_PORT);
+			connection = new SCPConnection(location, addr, SCP_SCAMP_PORT);
 		} else {
 			connection = job.getConnection(location);
 		}

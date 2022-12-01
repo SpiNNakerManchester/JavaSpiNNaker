@@ -60,7 +60,7 @@ public final class SQLiteProxyInformation {
 						if (!bearerToken.startsWith("Bearer ")) {
 							throw new SQLException(
 									"Unexpected proxy authentication: "
-							        + bearerToken);
+											+ bearerToken);
 						}
 						bearerToken = bearerToken.substring(SEVENTH);
 					}

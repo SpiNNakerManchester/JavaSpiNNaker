@@ -78,6 +78,8 @@ public class DirectDataGatherer extends DataGatherer {
 	 *            Where to put the retrieved data.
 	 * @param machine
 	 *            The description of the machine being talked to.
+	 * @param job
+	 *            The spalloc job to connect to, or null if none.
 	 * @throws ProcessException
 	 *             If we can't discover the machine details due to SpiNNaker
 	 *             rejecting messages

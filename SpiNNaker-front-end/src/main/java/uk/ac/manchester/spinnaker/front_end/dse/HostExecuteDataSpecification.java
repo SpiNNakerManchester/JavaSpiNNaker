@@ -62,6 +62,8 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 *
 	 * @param machine
 	 *            The description of the SpiNNaker machine.
+	 * @param db
+	 *            The DSE database.
 	 * @throws IOException
 	 *             If the transceiver can't talk to its sockets.
 	 * @throws ProcessException

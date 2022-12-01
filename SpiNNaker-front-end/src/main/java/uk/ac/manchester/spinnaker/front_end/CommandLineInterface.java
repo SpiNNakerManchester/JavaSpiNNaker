@@ -458,7 +458,7 @@ public final class CommandLineInterface {
 			return null;
 		}
 		return new SpallocClientFactory(new URI(proxy.spallocUrl))
-	    		.getJob(proxy.jobUrl, proxy.bearerToken);
+				.getJob(proxy.jobUrl, proxy.bearerToken);
 	}
 
 	@SuppressWarnings("MustBeClosed")
@@ -469,7 +469,7 @@ public final class CommandLineInterface {
 		if (job == null) {
 			return new Transceiver(machine);
 		}
-	    return job.getTransceiver();
+		return job.getTransceiver();
 	}
 }
 
