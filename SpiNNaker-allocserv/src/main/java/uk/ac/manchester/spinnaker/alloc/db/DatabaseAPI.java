@@ -206,6 +206,15 @@ public interface DatabaseAPI {
 		boolean isReadOnly();
 
 		/**
+		 * Whether the historical data DB is available. If it isn't, you can't
+		 * move any data to longer-term storage, but ordinary operations should
+		 * be fine.
+		 *
+		 * @return Whether the historical data DB is available.
+		 */
+		boolean isHistoricalDBAvailable();
+
+		/**
 		 * A nestable transaction runner. If the {@code operation} completes
 		 * normally (and this isn't a nested use), the transaction commits. If
 		 * an exception is thrown, the transaction is rolled back.

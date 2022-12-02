@@ -402,6 +402,8 @@ class AllocatorTest extends TestSupport {
 	@Test
 	public void tombstone() throws Exception {
 		doTransactionalTest(() -> {
+			assumeTrue(conn.isHistoricalDBAvailable());
+
 			int job = makeQueuedJob(1);
 			conn.update(TEST_SET_JOB_STATE).call(DESTROYED, job);
 			conn.update(TEST_SET_JOB_DEATH_TIME).call(0, job);

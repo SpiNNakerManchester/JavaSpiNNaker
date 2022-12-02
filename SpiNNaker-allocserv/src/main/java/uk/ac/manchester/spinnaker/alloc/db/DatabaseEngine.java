@@ -499,15 +499,19 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 		synchronized (this) {
 			wrapper.transaction(true, () -> {
 				wrapper.exec(sqlDDLFile);
-				log.info("initalising historical DB from schema {}",
-						tombstoneDDLFile);
-				wrapper.exec(tombstoneDDLFile);
+				if (wrapper.isHistoricalDBAvailable()) {
+					log.info("initalising historical DB from schema {}",
+							tombstoneDDLFile);
+					wrapper.exec(tombstoneDDLFile);
+				}
 				log.info("initalising DB static data from {}", sqlInitDataFile);
 				wrapper.exec(sqlInitDataFile);
 				log.info("verifying main DB integrity");
 				wrapper.exec("SELECT COUNT(*) FROM jobs");
-				log.info("verifying historical DB integrity");
-				wrapper.exec("SELECT COUNT(*) FROM tombstone.jobs");
+				if (wrapper.isHistoricalDBAvailable()) {
+					log.info("verifying historical DB integrity");
+					wrapper.exec("SELECT COUNT(*) FROM tombstone.jobs");
+				}
 				execSchemaUpdates(wrapper);
 			});
 		}
@@ -548,10 +552,27 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 			log.debug("installing function from bean '{}'", func.getKey());
 			installFunction(conn, func.getKey(), func.getValue());
 		}
-		log.debug("attaching historical job DB ({})", tombstoneFile);
-		try (var s = conn.prepareStatement("ATTACH DATABASE ? AS tombstone")) {
-			s.setString(1, tombstoneFile);
-			s.execute();
+		try {
+			log.debug("attaching historical job DB ({})", tombstoneFile);
+			try (var s =
+					conn.prepareStatement("ATTACH DATABASE ? AS tombstone")) {
+				s.setString(1, tombstoneFile);
+				s.execute();
+			}
+		} catch (SQLiteException e) {
+			switch (e.getResultCode()) {
+			case SQLITE_BUSY:
+			case SQLITE_BUSY_RECOVERY:
+			case SQLITE_BUSY_SNAPSHOT:
+			case SQLITE_BUSY_TIMEOUT:
+				log.warn(
+						"failed to attach historical job DB ({}); "
+								+ "most normal operations unaffected",
+						tombstoneFile, e);
+				break;
+			default:
+				throw e;
+			}
 		}
 		conn.setAutoCommit(false);
 		// We don't want to have a transaction active by default!
@@ -683,9 +704,40 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 
 		private boolean isLockedForWrites;
 
+		private final boolean canTombstone;
+
 		private ConnectionImpl(java.sql.Connection c) {
 			super(c);
 			inTransaction = false;
+			canTombstone = isTombstoneAttached();
+		}
+
+		/**
+		 * Determine whether the tombstone DB has been attached. It uses a
+		 * little DB magic for this.
+		 *
+		 * @param conn
+		 *            The connection to inspect.
+		 * @return True if we know the DB is there.
+		 */
+		private boolean isTombstoneAttached() {
+			// NB: No official transaction used; system in slightly odd state
+			try (var s = prepareStatement("PRAGMA database_list");
+					var r = s.executeQuery()) {
+				while (r.next()) {
+					if ("tombstone".equals(r.getString("name"))) {
+						return true;
+					}
+				}
+			} catch (SQLException ex) {
+				log.error("problem when checking attached DB list", ex);
+			}
+			return false;
+		}
+
+		@Override
+		public boolean isHistoricalDBAvailable() {
+			return canTombstone;
 		}
 
 		private class Locker implements AutoCloseable {
