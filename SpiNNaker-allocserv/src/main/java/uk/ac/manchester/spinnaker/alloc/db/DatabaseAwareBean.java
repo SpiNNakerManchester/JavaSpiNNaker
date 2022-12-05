@@ -24,6 +24,7 @@ import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.ConnectedWithResult;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Transacted;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult;
 
 /**
@@ -165,6 +166,44 @@ public abstract class DatabaseAwareBean extends SQLQueries {
 		public final <T> T transaction(boolean lockForWriting,
 				TransactedWithResult<T> action) {
 			return conn.transaction(lockForWriting, action);
+		}
+
+		/**
+		 * A nestable transaction runner. If the {@code action} completes
+		 * normally (and this isn't a nested use), the transaction commits. If a
+		 * runtime exception is thrown, the transaction is rolled back (and the
+		 * exception flows through). A write lock is used.
+		 *
+		 * @param <T>
+		 *            The type of the result of {@code action}
+		 * @param action
+		 *            The code to run inside the transaction.
+		 * @return Whatever the {@code action} returns.
+		 */
+		public final void transaction(Transacted action) {
+			conn.transaction(action);
+		}
+
+		/**
+		 * A nestable transaction runner. If the {@code action} completes
+		 * normally (and this isn't a nested use), the transaction commits. If a
+		 * runtime exception is thrown, the transaction is rolled back (and the
+		 * exception flows through).
+		 *
+		 * @param <T>
+		 *            The type of the result of {@code action}
+		 * @param lockForWriting
+		 *            Whether to lock for writing. Multiple read locks can be
+		 *            held at once, but only one write lock. Locks
+		 *            <em>cannot</em> be upgraded (because that causes
+		 *            deadlocks).
+		 * @param action
+		 *            The code to run inside the transaction.
+		 * @return Whatever the {@code action} returns.
+		 */
+		public final void transaction(boolean lockForWriting,
+				Transacted action) {
+			conn.transaction(lockForWriting, action);
 		}
 
 		/** @return The encapsulated connection. */
