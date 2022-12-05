@@ -370,6 +370,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			if (!authLocalAgainstDB(name, password, authorities, queries)) {
 				return null;
 			}
+			log.info("login success for {} at level {}", username,
+					details.trustLevel);
 		}
 		return new PerformedUsernamePasswordAuthenticationToken(name, password,
 				authorities);
@@ -921,8 +923,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 						// Convert tiered trust level to grant form
 						details.trustLevel.getGrants()
 								.forEach(authorities::add);
-						log.info("login success for {} at level {}", username,
-								details.trustLevel);
 						return true;
 					});
 				}, () -> false);
