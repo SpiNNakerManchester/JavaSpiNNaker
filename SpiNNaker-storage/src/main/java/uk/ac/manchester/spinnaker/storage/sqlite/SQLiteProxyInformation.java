@@ -46,24 +46,23 @@ public final class SQLiteProxyInformation {
 		String spallocUri = null;
 		String jobUri = null;
 		String bearerToken = null;
-		try (var s = conn.prepareStatement(GET_PROXY_INFORMATION)) {
-			try (var rs = s.executeQuery()) {
-				while (rs.next()) {
-					String name = rs.getString(FIRST);
-					String value = rs.getString(SECOND);
-					if (name.equals(SPALLOC_URI)) {
-						spallocUri = value;
-					} else if (name.equals(PROXY_URI)) {
-						jobUri = value;
-					} else if (name.equals(PROXY_AUTH)) {
-						bearerToken = value;
-						if (!bearerToken.startsWith("Bearer ")) {
-							throw new SQLException(
-									"Unexpected proxy authentication: "
-											+ bearerToken);
-						}
-						bearerToken = bearerToken.substring(SEVENTH);
+		try (var s = conn.prepareStatement(GET_PROXY_INFORMATION);
+				var rs = s.executeQuery()) {
+			while (rs.next()) {
+				String name = rs.getString(FIRST);
+				String value = rs.getString(SECOND);
+				if (name.equals(SPALLOC_URI)) {
+					spallocUri = value;
+				} else if (name.equals(PROXY_URI)) {
+					jobUri = value;
+				} else if (name.equals(PROXY_AUTH)) {
+					bearerToken = value;
+					if (!bearerToken.startsWith("Bearer ")) {
+						throw new SQLException(
+								"Unexpected proxy authentication: "
+										+ bearerToken);
 					}
+					bearerToken = bearerToken.substring(SEVENTH);
 				}
 			}
 		}
