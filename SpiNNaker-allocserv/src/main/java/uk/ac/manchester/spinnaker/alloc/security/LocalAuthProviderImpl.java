@@ -370,8 +370,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			if (!authLocalAgainstDB(name, password, authorities, queries)) {
 				return null;
 			}
-			log.info("login success for {} at level {}", username,
-					details.trustLevel);
 		}
 		return new PerformedUsernamePasswordAuthenticationToken(name, password,
 				authorities);
