@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.storage;
 
-import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 
 /**
  * Information about the proxy to allow connection.
@@ -26,19 +26,19 @@ public class ProxyInformation {
 	/**
 	 * The URL of the spalloc server to connect to.
 	 */
-	@Valid
+	@NotEmpty
 	public final String spallocUrl;
 
 	/**
 	 * The URL of the job to connect to.
 	 */
-	@Valid
+	@NotEmpty
 	public final String jobUrl;
 
 	/**
 	 * The token to use to authenticate access.
 	 */
-	@Valid
+	@NotEmpty
 	public final String bearerToken;
 
 	/**
