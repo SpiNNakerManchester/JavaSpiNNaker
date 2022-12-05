@@ -130,7 +130,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	@Override
 	public Map<String, Machine> getMachines(boolean allowOutOfService) {
-		return execute(c -> getMachines(c, allowOutOfService));
+		return executeRead(c -> getMachines(c, allowOutOfService));
 	}
 
 	private Map<String, Machine> getMachines(Connection conn,
