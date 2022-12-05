@@ -912,7 +912,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private boolean authLocalAgainstDB(String username, String password,
 			List<GrantedAuthority> authorities, AuthQueries queries) {
 		return ifElse(
-				lookUpUserDetails(username, queries),
+				queries.transaction(() -> lookUpUserDetails(username, queries)),
 				details -> {
 					checkPassword(username, password, details, queries);
 					// Succeeded; finalize into external form
@@ -942,48 +942,34 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 */
 	private static Optional<LocalAuthResult> lookUpUserDetails(String username,
 			AuthQueries queries) {
-		return ifElse(
-				queries.transaction(false, () -> queries.getUser(username)),
-
-				// Found the user...
-				userInfo -> {
-					int userId = userInfo.getInt("user_id");
-					if (userInfo.getBoolean("disabled")) {
-						log.info("login failure for {}: account is disabled",
-								username);
-						throw new DisabledException("account is disabled");
-					}
-					try {
-						if (userInfo.getBoolean("locked")) {
-							// Note that this extends the lock!
-							throw new LockedException("account is locked");
-						}
-						var authInfo = queries.transaction(
-								() -> queries.getUserAuthorities(userId));
-						var encPass = authInfo.getString("encrypted_password");
-						if (isNull(encPass)) {
-							/*
-							 * We know this user, but they can't use this
-							 * authentication method. They'll probably have to
-							 * use OpenID.
-							 */
-							return Optional.empty();
-						}
-						var trust = authInfo.getEnum("trust_level",
-								TrustLevel.class);
-						return Optional.of(
-								new LocalAuthResult(userId, trust, encPass));
-					} catch (AuthenticationException e) {
-						queries.transaction(
-								() -> queries.noteLoginFailureForUser(userId,
-										username));
-						log.info("login failure for {}", username, e);
-						throw e;
-					}
-				},
-
-				// No such user
-				Optional::empty);
+		return ifElse(queries.getUser(username), userInfo -> {
+			int userId = userInfo.getInt("user_id");
+			if (userInfo.getBoolean("disabled")) {
+				log.info("login failure for {}: account is disabled", username);
+				throw new DisabledException("account is disabled");
+			}
+			try {
+				if (userInfo.getBoolean("locked")) {
+					// Note that this extends the lock!
+					throw new LockedException("account is locked");
+				}
+				var authInfo = queries.getUserAuthorities(userId);
+				var encPass = authInfo.getString("encrypted_password");
+				if (isNull(encPass)) {
+					/*
+					 * We know this user, but they can't use this authentication
+					 * method. They'll probably have to use OpenID.
+					 */
+					return Optional.empty();
+				}
+				var trust = authInfo.getEnum("trust_level", TrustLevel.class);
+				return Optional.of(new LocalAuthResult(userId, trust, encPass));
+			} catch (AuthenticationException e) {
+				queries.noteLoginFailureForUser(userId, username);
+				log.info("login failure for {}", username, e);
+				throw e;
+			}
+		}, Optional::empty);
 	}
 
 	/**
@@ -1002,9 +988,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private void checkPassword(String username, String password,
 			LocalAuthResult details, AuthQueries queries) {
 		if (!passServices.matchPassword(password, details.passInfo)) {
-			log.info("login failure for {}: bad password", username);
 			queries.transaction(() -> {
 				queries.noteLoginFailureForUser(details.userId, username);
+				log.info("login failure for {}: bad password", username);
 				throw new BadCredentialsException("bad password");
 			});
 		}
