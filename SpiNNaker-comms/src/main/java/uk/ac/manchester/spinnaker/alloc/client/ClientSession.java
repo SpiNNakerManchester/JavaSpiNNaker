@@ -583,13 +583,16 @@ final class ClientSession implements Session {
 	public synchronized boolean trackCookie(HttpURLConnection conn) {
 		// Careful: spec allows for multiple Set-Cookie fields
 		boolean found = false;
-		var setCookie = conn.getHeaderField(SET_COOKIE);
-		log.debug("Cookie header: {}", setCookie);
-		if (setCookie != null) {
-			var m = SESSION_ID_RE.matcher(setCookie);
-			if (m.find()) {
-				session = m.group(1);
-				found = true;
+		var headerFields = conn.getHeaderFields();
+		var cookiesHeader = headerFields.get(SET_COOKIE);
+		if (cookiesHeader != null) {
+			for (String setCookie : cookiesHeader) {
+				log.debug("Cookie header: {}", setCookie);
+				var m = SESSION_ID_RE.matcher(setCookie);
+				if (m.find()) {
+					session = m.group(1);
+					found = true;
+				}
 			}
 		}
 		return found;
