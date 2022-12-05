@@ -135,6 +135,13 @@ public class Epochs {
 		 *             If the wait is interrupted.
 		 */
 		void waitForChange(Duration timeout) throws InterruptedException;
+
+		/**
+		 * Check if this epoch is the current one.
+		 *
+		 * @return Whether this is a valid epoch.
+		 */
+		boolean isValid();
 	}
 
 	/**
@@ -161,6 +168,13 @@ public class Epochs {
 				}
 			}
 		}
+
+		@Override
+		public boolean isValid() {
+			synchronized (Epochs.this) {
+				return jobsEpoch <= epoch;
+			}
+		}
 	}
 
 	/**
@@ -185,6 +199,13 @@ public class Epochs {
 				while (machineEpoch <= epoch && waiting(expiry)) {
 					waitUntil(expiry);
 				}
+			}
+		}
+
+		@Override
+		public boolean isValid() {
+			synchronized (Epochs.this) {
+				return machineEpoch <= epoch;
 			}
 		}
 	}
@@ -214,6 +235,13 @@ public class Epochs {
 					waitUntil(expiry);
 				}
 				epoch = ble;
+			}
+		}
+
+		@Override
+		public boolean isValid() {
+			synchronized (Epochs.this) {
+				return blacklistEpoch <= epoch;
 			}
 		}
 	}
