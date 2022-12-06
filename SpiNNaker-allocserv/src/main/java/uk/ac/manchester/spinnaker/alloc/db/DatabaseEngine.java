@@ -68,13 +68,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Future;
@@ -256,8 +259,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	private void statementLength(Statement s, long pre, long post) {
 		if (props.isPerformanceLog()) {
 			long delta = post - pre;
+			/*
+			 * Hack to remove parameters added by JDBC4PreparedStatement. We
+			 * don't want to log each statement preparation separately, but
+			 * rather to aggregate across all calls.
+			 */
+			var sql = s.toString().replaceFirst(" \n parameters=.*", "");
 			synchronized (statementLengths) {
-				var stats = statementLengths.get(s.toString());
+				var stats = statementLengths.get(sql);
 				stats.addValue(delta / NSEC_PER_USEC);
 			}
 		}
@@ -275,14 +284,27 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 				statementLengths.entrySet().stream()
 						.filter(e -> e.getValue().getMax() >= props
 								.getPerformanceThreshold())
-						.forEach(e -> {
-							var stats = e.getValue();
-							log.info("statement execution time "
-									+ "{}us (max: {}us, SD: {}us) for: {}",
-									stats.getMean(), stats.getMax(),
-									stats.getStandardDeviation(),
-									trimSQL(e.getKey(), TRIM_PERF_LOG_LENGTH));
-						});
+						.forEach(e -> logStatementPerformance(e.getKey(),
+								e.getValue()));
+			}
+		}
+	}
+
+	// NB: Doesn't use explainQueryPlan() for messy reasons
+	private void logStatementPerformance(String sql, SummaryStatistics stats) {
+		log.info("statement execution time {}us (max: {}us, SD: {}us) for: {}",
+				stats.getMean(), stats.getMax(), stats.getStandardDeviation(),
+				trimSQL(sql, TRIM_PERF_LOG_LENGTH));
+		if (props.isAutoExplain()) {
+			try (var conn = getConnection();
+					var s = ((ConnectionImpl) conn).createStatement();
+					var r = s.executeQuery("EXPLAIN QUERY PLAN " + sql)) {
+				while (r.next()) {
+					log.info("EXPLAIN: {}",
+							Objects.toString(r.getString("detail")));
+				}
+			} catch (SQLException | RuntimeException e) {
+				log.warn("failed to dump statement explanation", e);
 			}
 		}
 	}
@@ -1215,10 +1237,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 		/** The database connection. */
 		final ConnectionImpl conn;
 
+		/** The text of the query. */
+		private final String sql;
+
 		StatementWrapper(ConnectionImpl conn, String sql) {
 			this.conn = conn;
 			s = conn.prepareStatement(sql);
 			rs = null;
+			this.sql = sql;
 		}
 
 		final void closeResults() {
@@ -1313,6 +1339,21 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 		@Override
 		public String toString() {
 			return getClass().getSimpleName() + " : " + trimSQL(s.toString());
+		}
+
+		// NB: logStatementPerformance() doesn't use this for messy reasons
+		@Override
+		public List<String> explainQueryPlan() {
+			var result = new ArrayList<String>();
+			try (var s = conn.createStatement();
+					var r = s.executeQuery("EXPLAIN QUERY PLAN " + sql)) {
+				while (r.next()) {
+					result.add(Objects.toString(r.getString("detail")));
+				}
+			} catch (SQLException e) {
+				throw mapException(e, s.toString());
+			}
+			return result;
 		}
 	}
 
