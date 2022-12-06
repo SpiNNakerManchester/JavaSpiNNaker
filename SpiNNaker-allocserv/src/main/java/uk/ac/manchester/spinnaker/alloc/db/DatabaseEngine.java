@@ -48,6 +48,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.trimSQL;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.threadBound;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseableThreadBound;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.collectToArray;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_MSEC;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_USEC;
 
@@ -67,6 +68,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -693,6 +695,20 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 		}
 	}
 
+	private static final class StackTraceCaptureException extends Exception {
+		// Never actually serialised in a way we care about
+		private static final long serialVersionUID = 1L;
+
+		private StackTraceCaptureException() {
+			super("captured stack trace");
+			// Drop the various framework frames that we don't care about
+			fillInStackTrace();
+			setStackTrace(Arrays.stream(getStackTrace()).filter(
+					e -> e.getClassName().startsWith("uk.ac.manchester"))
+					.collect(collectToArray(StackTraceElement[]::new)));
+		}
+	}
+
 	/**
 	 * Connections made by the database engine bean. Its methods do not throw
 	 * checked exceptions. The connection is thread-bound, and will be cleaned
@@ -786,12 +802,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 				lockWarningTimeout.cancel(false);
 				long dt = unlockTimestamp - lockTimestamp;
 				if (dt > noteThreshold) {
-					try {
-						throw new Exception();
-					} catch (Exception e) {
-						log.info("transaction lock was held for {}ms",
-								dt / NSEC_PER_MSEC, e);
-					}
+					log.info("transaction lock was held for {}ms",
+							dt / NSEC_PER_MSEC,
+							new StackTraceCaptureException());
 				}
 			}
 
