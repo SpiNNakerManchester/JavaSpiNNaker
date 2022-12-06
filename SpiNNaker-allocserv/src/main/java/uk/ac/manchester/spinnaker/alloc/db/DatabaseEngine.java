@@ -85,7 +85,6 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.annotation.PostConstruct;
@@ -220,8 +219,22 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	 * known to be overly pessimistic, but it's extremely hard to do better
 	 * without getting a deadlock when several threads try to upgrade their
 	 * locks to write locks at the same time.
+	 * <p>
+	 * TODO: Can we get rid of this lock now?
 	 */
-	private final ReadWriteLock lock = new ReentrantReadWriteLock();
+	private final ReadWriteLock txnLock = new ReentrantReadWriteLock();
+
+	/**
+	 * Lock protecting whole-database level operations, especially startup and
+	 * shutdown.
+	 * <p>
+	 * Normal transactions hold this as a shared read lock (even if they are
+	 * transactions that write to the DB). Whole DB actions (initialise
+	 * connection, backup, restore, optimise and shutdown connection) hold it as
+	 * an exclusive write lock. Think of it as a lock protecting the database
+	 * metadata/schema, even though that's strictly inaccurate.
+	 */
+	private final ReadWriteLock wholeDBLock = new ReentrantReadWriteLock();
 
 	/**
 	 * Schedule a task (expected to be
@@ -630,15 +643,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	}
 
 	/**
-	 * Used to ensure that only one database connection is actually writing
-	 * serialisation stuff at a time. We can wait for each other.
-	 * <p>
-	 * This is necessary because there is otherwise extremely high contention on
-	 * the database during application shutdown.
-	 */
-	private Lock optimiseSerialisationLock = new ReentrantLock();
-
-	/**
 	 * Optimises the database. Called when the database connection is about to
 	 * be closed due to the thread (in the thread pool) that owns it going away.
 	 * <em>Called from the thread that owns the database connection in
@@ -648,7 +652,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	 *      Documentation</a>
 	 */
 	private void optimiseDB() {
-		optimiseSerialisationLock.lock();
+		var lock = wholeDBLock.writeLock();
+		lock.lock();
 		try {
 			long start = currentTimeMillis();
 			// NB: Not a standard query! Safe, because we know we have an int
@@ -673,7 +678,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 		} catch (SQLException e) {
 			log.warn("failed to optimise DB pre-close", e);
 		} finally {
-			optimiseSerialisationLock.unlock();
+			lock.unlock();
 		}
 	}
 
@@ -811,9 +816,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 
 			private Lock getLock(boolean lockForWriting) {
 				if (lockForWriting) {
-					return lock.writeLock();
+					return txnLock.writeLock();
 				} else {
-					return lock.readLock();
+					return txnLock.readLock();
 				}
 			}
 
@@ -906,44 +911,52 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 		@Override
 		public <T> T transaction(boolean lockForWriting,
 				TransactedWithResult<T> operation) {
-			var context = getDebugContext();
-			if (inTransaction) {
-				if (lockForWriting && !isLockedForWrites) {
-					log.warn("attempt to upgrade lock: {}", context);
+			var iLock = wholeDBLock.readLock();
+			try {
+				iLock.lock();
+				var context = getDebugContext();
+				if (inTransaction) {
+					if (lockForWriting && !isLockedForWrites) {
+						log.warn("attempt to upgrade lock: {}", context);
+					}
+					// Already in a transaction; just run the operation
+					return operation.act();
 				}
-				// Already in a transaction; just run the operation
-				return operation.act();
-			}
-			int tries = 0;
-			while (true) {
-				tries++;
-				if (log.isDebugEnabled()) {
-					log.debug("start transaction: {}", context);
-				}
-				// Stack of contexts is precise so cleanup is correct
-				try (var locker = new Locker(lockForWriting)) {
-					realBegin(lockForWriting ? IMMEDIATE : DEFERRED);
-					try (var rollback = new RollbackHandler(context)) {
-						try (var hold = new Hold()) {
-							var result = operation.act();
-							log.debug("commence commit: {}", context);
-							realCommit();
-							rollback.unnecessary = true;
-							return result;
-						} catch (DataAccessException e) {
-							if (tries < props.getLockTries() && isBusy(e)) {
-								log.warn("retrying transaction due to lock "
-										+ "failure: {}", context);
-								log.info("current transaction holders are {}",
-										currentTransactionHolders());
-								sleepUntilTimeToRetry();
-								continue;
+				int tries = 0;
+				while (true) {
+					tries++;
+					if (log.isDebugEnabled()) {
+						log.debug("start transaction: {}", context);
+					}
+					// Stack of contexts is precise so cleanup is correct
+					try (var locker = new Locker(lockForWriting)) {
+						realBegin(lockForWriting ? IMMEDIATE : DEFERRED);
+						try (var rollback = new RollbackHandler(context)) {
+							try (var hold = new Hold()) {
+								var result = operation.act();
+								log.debug("commence commit: {}", context);
+								realCommit();
+								rollback.unnecessary = true;
+								return result;
+							} catch (DataAccessException e) {
+								if (tries < props.getLockTries() && isBusy(e)) {
+									log.warn("retrying transaction due to lock "
+											+ "failure: {}", context);
+									log.info(
+											"current transaction holders "
+													+ "are {}",
+											currentTransactionHolders());
+									sleepUntilTimeToRetry();
+									continue;
+								}
+								cantWarning("commit", e);
+								throw e;
 							}
-							cantWarning("commit", e);
-							throw e;
 						}
 					}
 				}
+			} finally {
+				iLock.unlock();
 			}
 		}
 
@@ -1100,19 +1113,31 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	private void maybeInit(SQLiteConnection conn) {
 		boolean doInit = !initialised || !exists(dbPath);
 		if (doInit) {
-			initDBConn(conn);
+			var lock = wholeDBLock.writeLock();
+			try {
+				lock.lock();
+				initDBConn(conn);
+			} finally {
+				lock.unlock();
+			}
 			initialised = true;
 		}
 	}
 
 	@Override
 	public void createBackup(File backupFilename) {
+		var lock = wholeDBLock.writeLock();
 		try (var conn = getCachedDatabaseConnection()) {
-			conn.getDatabase().backup(MAIN_DB_NAME,
-					backupFilename.getAbsolutePath(),
-					(remaining, pageCount) -> log.info(
-							"BACKUP TO {} (remaining:{}, page count:{})",
-							backupFilename, remaining, pageCount));
+			lock.lock();
+			try {
+				conn.getDatabase().backup(MAIN_DB_NAME,
+						backupFilename.getAbsolutePath(),
+						(remaining, pageCount) -> log.info(
+								"BACKUP TO {} (remaining:{}, page count:{})",
+								backupFilename, remaining, pageCount));
+			} finally {
+				lock.unlock();
+			}
 		} catch (SQLException e) {
 			throw mapException(e, null);
 		}
@@ -1126,12 +1151,18 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 							+ "\" doesn't exist or isn't a readable file",
 					new FileNotFoundException(backupFilename.toString()));
 		}
+		var lock = wholeDBLock.writeLock();
 		try (var conn = getCachedDatabaseConnection()) {
-			conn.getDatabase().restore(MAIN_DB_NAME,
-					backupFilename.getAbsolutePath(),
-					(remaining, pageCount) -> log.info(
-							"RESTORE FROM {} (remaining:{}, page count:{})",
-							backupFilename, remaining, pageCount));
+			lock.lock();
+			try {
+				conn.getDatabase().restore(MAIN_DB_NAME,
+						backupFilename.getAbsolutePath(),
+						(remaining, pageCount) -> log.info(
+								"RESTORE FROM {} (remaining:{}, page count:{})",
+								backupFilename, remaining, pageCount));
+			} finally {
+				lock.unlock();
+			}
 		} catch (SQLException e) {
 			throw mapException(e, null);
 		}
