@@ -789,8 +789,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 					try {
 						throw new Exception();
 					} catch (Exception e) {
-					    log.info("transaction lock was held for {}ms",
-							    dt / NSEC_PER_MSEC, e);
+						log.info("transaction lock was held for {}ms",
+								dt / NSEC_PER_MSEC, e);
 					}
 				}
 			}
