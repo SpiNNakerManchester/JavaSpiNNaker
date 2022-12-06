@@ -353,7 +353,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	@Override
 	@PostFilter(MAY_SEE_JOB_DETAILS)
 	public Optional<JobDescription> getJobInfo(Permit permit, int id) {
-		return execute(conn -> {
+		return executeRead(conn -> {
 			try (var s = conn.query(GET_JOB);
 					var chipDimensions = conn.query(GET_JOB_CHIP_DIMENSIONS);
 					var countPoweredBoards = conn.query(COUNT_POWERED_BOARDS);
