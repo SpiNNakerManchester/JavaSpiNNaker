@@ -100,6 +100,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.dao.PermissionDeniedDataAccessException;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
 import org.springframework.stereotype.Service;
 import org.sqlite.Function;
@@ -930,7 +931,21 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 					}
 					// Stack of contexts is precise so cleanup is correct
 					try (var locker = new Locker(lockForWriting)) {
-						realBegin(lockForWriting ? IMMEDIATE : DEFERRED);
+						try {
+							realBegin(lockForWriting ? IMMEDIATE : DEFERRED);
+						} catch (PessimisticLockingFailureException e) {
+							var c = e.getRootCause();
+							if (c instanceof SQLiteException) {
+								var ex = (SQLiteException) c;
+								switch (ex.getResultCode()) {
+								case SQLITE_BUSY_SNAPSHOT:
+									continue;
+								default:
+									throw e;
+								}
+							}
+							throw e;
+						}
 						try (var rollback = new RollbackHandler(context)) {
 							try (var hold = new Hold()) {
 								var result = operation.act();
