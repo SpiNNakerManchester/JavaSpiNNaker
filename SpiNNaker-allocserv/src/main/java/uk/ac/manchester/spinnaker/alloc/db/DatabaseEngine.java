@@ -786,8 +786,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 				lockWarningTimeout.cancel(false);
 				long dt = unlockTimestamp - lockTimestamp;
 				if (dt > noteThreshold) {
-					log.info("transaction lock was held for {}ms",
-							dt / NSEC_PER_MSEC);
+					try {
+						throw new Exception();
+					} catch (Exception e) {
+					    log.info("transaction lock was held for {}ms",
+							    dt / NSEC_PER_MSEC, e);
+					}
 				}
 			}
 
