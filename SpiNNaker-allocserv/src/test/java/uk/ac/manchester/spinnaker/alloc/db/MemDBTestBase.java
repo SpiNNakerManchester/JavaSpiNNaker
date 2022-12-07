@@ -37,7 +37,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @UsedInJavadocOnly(SpringBootTest.class)
 public abstract class MemDBTestBase extends SQLQueries {
-	private DatabaseEngine memdb;
+	private DatabaseAPI memdb;
 
 	/**
 	 * The DB connection. Only valid in a test. <em>Must not</em> be modified by
@@ -47,7 +47,7 @@ public abstract class MemDBTestBase extends SQLQueries {
 	protected Connection c;
 
 	@BeforeAll
-	void getMemoryDatabase(@Autowired DatabaseEngine mainDBEngine) {
+	void getMemoryDatabase(@Autowired DatabaseAPI mainDBEngine) {
 		assumeTrue(mainDBEngine != null, "spring-configured DB engine absent");
 		memdb = mainDBEngine.getInMemoryDB();
 	}

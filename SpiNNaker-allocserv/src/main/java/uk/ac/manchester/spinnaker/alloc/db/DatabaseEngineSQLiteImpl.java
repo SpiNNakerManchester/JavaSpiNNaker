@@ -124,9 +124,9 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * @author Donal Fellows
  */
 @Service
-public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
+public final class DatabaseEngineSQLiteImpl extends DatabaseCache<SQLiteConnection>
 		implements DatabaseAPI {
-	private static final Logger log = getLogger(DatabaseEngine.class);
+	private static final Logger log = getLogger(DatabaseEngineSQLiteImpl.class);
 
 	/**
 	 * The name of the mounted database. Always {@code main} by SQLite
@@ -335,7 +335,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	 *             immediately.
 	 */
 	@Autowired
-	public DatabaseEngine(SpallocProperties properties) {
+	public DatabaseEngineSQLiteImpl(SpallocProperties properties) {
 		dbPath = requireNonNull(properties.getDatabasePath(),
 				"a database file must be given").getAbsoluteFile().toPath();
 		tombstoneFile = requireNonNull(properties.getHistoricalData().getPath(),
@@ -358,7 +358,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	 *            Used to initialise fields normally set by injection. Must not
 	 *            be {@code null}.
 	 */
-	private DatabaseEngine(DatabaseEngine prototype) {
+	private DatabaseEngineSQLiteImpl(DatabaseEngineSQLiteImpl prototype) {
 		dbPath = null;
 		tombstoneFile = ":memory:";
 		dbConnectionUrl = "jdbc:sqlite::memory:";
@@ -375,8 +375,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	}
 
 	@Override
-	public DatabaseEngine getInMemoryDB() {
-		return new DatabaseEngine(this);
+	public DatabaseAPI getInMemoryDB() {
+		return new DatabaseEngineSQLiteImpl(this);
 	}
 
 	/**

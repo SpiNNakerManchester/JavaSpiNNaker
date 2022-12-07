@@ -48,8 +48,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connected;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Transacted;
@@ -106,7 +106,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 
 	/** The DB. */
 	@Autowired
-	protected DatabaseEngine db;
+	protected DatabaseAPI db;
 
 	/** The context connection to the DB. */
 	protected Connection conn;

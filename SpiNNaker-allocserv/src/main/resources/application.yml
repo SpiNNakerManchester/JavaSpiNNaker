@@ -269,3 +269,7 @@ spring:
           hbp-ebrains:
             issuer-uri: ${spalloc.auth.openid.domain}
             user-name-attribute: preferred_username
+  datasource:
+    url: jdbc:mysql://localhost:3306/spalloc
+    username: spalloc
+    password: spa11oc

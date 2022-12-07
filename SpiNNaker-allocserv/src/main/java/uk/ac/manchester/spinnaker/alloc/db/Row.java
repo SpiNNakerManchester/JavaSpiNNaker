@@ -17,7 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.db;
 
 import static uk.ac.manchester.spinnaker.alloc.IOUtils.deserialize;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.columnNames;
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngineSQLiteImpl.columnNames;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
 
 import java.io.IOException;

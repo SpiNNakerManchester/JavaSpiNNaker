@@ -30,7 +30,7 @@ import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.InvalidResultSetAccessException;
 import org.springframework.test.context.ActiveProfiles;
 
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectionImpl;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
 
 /**
  * Test that the database engine interface works and that the queries are
@@ -149,7 +149,7 @@ class DbBasicTest extends MemDBTestBase {
 		assumeWritable(c);
 		c.transaction(() -> {
 			int rows;
-			((ConnectionImpl) c).exec("CREATE TEMPORARY TABLE foo(x)");
+			((Connection) c).update("CREATE TEMPORARY TABLE foo(x)");
 			try (var u = c.update("INSERT INTO foo(x) VALUES(?)");
 					var q = c.query("SELECT x FROM foo WHERE ? = ?");
 					var q2 = c.query("SELECT x FROM foo")) {

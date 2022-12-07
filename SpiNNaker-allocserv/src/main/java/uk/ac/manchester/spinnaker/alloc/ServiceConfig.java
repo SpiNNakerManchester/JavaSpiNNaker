@@ -38,6 +38,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletRequest;
+import javax.sql.DataSource;
 import javax.validation.ValidationException;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
@@ -60,13 +61,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Role;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
@@ -126,7 +130,7 @@ public class ServiceConfig extends Application {
 	 * @return The set up thread pool bean.
 	 */
 	@Bean(destroyMethod = "shutdown")
-	@DependsOn("databaseEngine")
+	@DependsOn("databaseEngineJDBCImpl")
 	@Role(ROLE_INFRASTRUCTURE)
 	ScheduledExecutorService scheduledThreadPoolExecutor(
 			@Value("${spring.task.scheduling.pool.size}") int numThreads,
@@ -334,6 +338,17 @@ public class ServiceConfig extends Application {
 			return prefix + suffix;
 		}
 	}
+
+	/*@Bean(name = "dataSource")
+    @ConfigurationProperties(prefix = "spring.datasource")
+    public DataSource dataSource() {
+        return DataSourceBuilder.create().build();
+    }
+
+    @Bean(name = "jdbcTemplate")
+    public JdbcTemplate applicationDataConnection(){
+        return new JdbcTemplate(dataSource());
+    } */
 
 	@Autowired
 	private ApplicationContext ctx;
