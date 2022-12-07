@@ -50,7 +50,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
@@ -161,6 +163,13 @@ public class BMPController extends DatabaseAwareBean {
 
 	@GuardedBy("this")
 	private Throwable bmpProcessingException;
+
+	/**
+	 * What jobs are currently being processed? Matters because they might be
+	 * busy because of BMPs that are busy with reloading FPGAs, which is a very
+	 * slow business because bandwidth isn't great on the management channel.
+	 */
+	private final Set<Integer> busyJobs = new ConcurrentSkipListSet<>();
 
 	/**
 	 * A {@link ThreadFactory}.
@@ -612,6 +621,7 @@ public class BMPController extends DatabaseAwareBean {
 				 */
 				deallocated = sql.deallocateBoards(jobId);
 			}
+			busyJobs.remove(jobId);
 			int killed = changeIds.stream().mapToInt(sql::deleteChange).sum();
 			log.debug(
 					"BMP ACTION SUCCEEDED ({}:{}->{}): on:{} off:{} "
@@ -636,6 +646,7 @@ public class BMPController extends DatabaseAwareBean {
 					.mapToInt(changeId -> sql.setInProgress(false, changeId))
 					.sum();
 			int jobChange = sql.setJobState(from, 0, jobId);
+			busyJobs.remove(jobId);
 			log.debug(
 					"BMP ACTION FAILED ({}:{}->{}): on:{} off:{} "
 							+ "jobChangesApplied:{} boardsDeallocated:{} "
@@ -1091,6 +1102,7 @@ public class BMPController extends DatabaseAwareBean {
 				for (var machine : machines) {
 					sql.getJobIdsWithChanges.call(machine.getId())
 							.map(integer("job_id"))
+							.filter(jobId -> !busyJobs.contains(jobId))
 							.forEach(jobId -> takeRequestsForJob(machine, jobId,
 									sql, requestCollector));
 					requestCollector.addAll(sql.getBlacklistReads(machine));
@@ -1112,6 +1124,7 @@ public class BMPController extends DatabaseAwareBean {
 		JobState from = UNKNOWN, to = UNKNOWN;
 		var idToBoard =
 				new DefaultMap<BMPCoords, Map<Integer, BMPBoard>>(HashMap::new);
+		busyJobs.add(jobId);
 
 		for (var row : sql.getPowerChangesToDo.call(jobId)) {
 			changeIds.add(row.getInteger("change_id"));
