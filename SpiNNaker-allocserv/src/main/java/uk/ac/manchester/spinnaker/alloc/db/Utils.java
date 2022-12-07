@@ -99,7 +99,22 @@ public abstract class Utils {
 	public static boolean isBusy(DataAccessException exception) {
 		var root = exception.getMostSpecificCause();
 		if (root instanceof SQLiteException) {
-			switch (((SQLiteException) root).getResultCode()) {
+			return isBusy((SQLiteException) root);
+		}
+		return false;
+	}
+
+	/**
+	 * Utility for testing whether an exception was thrown because the database
+	 * was busy.
+	 *
+	 * @param exception
+	 *            The exception to test.
+	 * @return Whether it was caused by the database being busy.
+	 */
+	public static boolean isBusy(SQLException exception) {
+		if (exception instanceof SQLiteException) {
+			switch (((SQLiteException) exception).getResultCode()) {
 			case SQLITE_BUSY:
 			case SQLITE_BUSY_SNAPSHOT:
 			case SQLITE_BUSY_TIMEOUT:
