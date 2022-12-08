@@ -569,7 +569,8 @@ public interface DatabaseAPI {
 		void close();
 
 		/**
-		 * Get the query plan explanation.
+		 * Get the query plan explanation. Note that DML and DDL <em>may</em>
+		 * have empty query plans; that's up to the DB.
 		 *
 		 * @return A list of lines that describe the query plan.
 		 * @see <a href="https://www.sqlite.org/eqp.html">SQLite

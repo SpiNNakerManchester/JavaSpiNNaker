@@ -78,7 +78,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -361,11 +360,21 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 				stats.getMean(), stats.getMax(), stats.getStandardDeviation(),
 				trimSQL(sql, TRIM_PERF_LOG_LENGTH));
 		if (props.isAutoExplain()) {
+			/*
+			 * This is the intent level of the children of a node in the query
+			 * plan. The (non-existing) node zero has indent zero. Since we just
+			 * use spaces for indentation, we don't need any sort of lookahead
+			 * to compute the output.
+			 */
+			var levels = new HashMap<Integer, Integer>();
 			try (var conn = getConnection();
 					var s = ((ConnectionImpl) conn).createStatement();
 					var r = s.executeQuery("EXPLAIN QUERY PLAN " + sql)) {
 				while (r.next()) {
-					log.info("EXPLAIN: {}", r.getString("detail"));
+					int indent = levels.getOrDefault(r.getInt("parent"), 0);
+					levels.put(r.getInt("id"), indent + 1);
+					log.info("EXPLAIN: {}{}", " ".repeat(indent * 2),
+							r.getString("detail"));
 				}
 			} catch (SQLException | RuntimeException e) {
 				log.warn("failed to dump statement explanation", e);
@@ -1437,13 +1446,20 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 		}
 
 		// NB: logStatementPerformance() doesn't use this for messy reasons
+		/**
+		 * {@inheritDoc} This is a list of rows (as strings) that form a tree;
+		 * the indentation is pre-computed.
+		 */
 		@Override
 		public List<String> explainQueryPlan() {
 			var result = new ArrayList<String>();
+			var levels = new HashMap<Integer, Integer>();
 			try (var s = conn.createStatement();
 					var r = s.executeQuery("EXPLAIN QUERY PLAN " + sql)) {
 				while (r.next()) {
-					result.add(Objects.toString(r.getString("detail")));
+					int indent = levels.getOrDefault(r.getInt("parent"), 0);
+					levels.put(r.getInt("id"), indent + 1);
+					result.add("  ".repeat(indent) + r.getString("detail"));
 				}
 			} catch (SQLException e) {
 				throw mapException(e, s.toString());
