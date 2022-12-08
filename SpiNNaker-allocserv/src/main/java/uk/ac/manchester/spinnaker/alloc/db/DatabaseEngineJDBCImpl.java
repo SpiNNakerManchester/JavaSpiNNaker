@@ -43,7 +43,7 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
 public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 	private static final Logger log = getLogger(DatabaseEngineJDBCImpl.class);
 
-	@Value("classpath:/spalloc.sql")
+	@Value("classpath:/spalloc-mysql.sql")
 	private Resource sqlDDLFile;
 
 	/** The list of files containing schema updates. */
