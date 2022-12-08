@@ -70,6 +70,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -84,7 +85,6 @@ import java.util.WeakHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Supplier;
@@ -220,16 +220,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	private final Set<Thread> transactionHolders = new HashSet<>();
 
 	/**
-	 * We maintain our own lock rather than delegating to the database. This is
-	 * known to be overly pessimistic, but it's extremely hard to do better
-	 * without getting a deadlock when several threads try to upgrade their
-	 * locks to write locks at the same time.
-	 * <p>
-	 * TODO: Can we get rid of this lock now?
-	 */
-	private final ReadWriteLock txnLock = new ReentrantReadWriteLock();
-
-	/**
 	 * Stores our per-connection state. This is kept in a weak hash map so that
 	 * it lives as long as the actual connections do (as determined by the
 	 * {@link DatabaseCache}), but no longer. Connection state has to be managed
@@ -339,6 +329,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 		}
 	}
 
+	private static final Comparator<
+			Map.Entry<?, SummaryStatistics>> STATS_COMP =
+					Comparator.comparingDouble(e -> e.getValue().getMax());
+
 	/**
 	 * Writes the recorded statement execution times to the log if that is
 	 * enabled.
@@ -347,13 +341,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	private void logStatementExecutionTimes() {
 		warnOnLongTransactions = false;
 		if (props.isPerformanceLog() && log.isInfoEnabled()) {
+			Map<String, SummaryStatistics> stats;
 			synchronized (statementLengths) {
-				statementLengths.entrySet().stream()
-						.filter(e -> e.getValue().getMax() >= props
-								.getPerformanceThreshold())
-						.forEach(e -> logStatementPerformance(e.getKey(),
-								e.getValue()));
+				stats = Map.copyOf(statementLengths);
 			}
+			// Anything new at this point we can ignore!
+			stats.entrySet().stream()
+					.filter(e -> e.getValue().getMax() >= props
+							.getPerformanceThreshold())
+					.sorted(STATS_COMP)
+					.forEach(e -> logStatementPerformance(e.getKey(),
+							e.getValue()));
 		}
 	}
 
@@ -367,8 +365,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 					var s = ((ConnectionImpl) conn).createStatement();
 					var r = s.executeQuery("EXPLAIN QUERY PLAN " + sql)) {
 				while (r.next()) {
-					log.info("EXPLAIN: {}",
-							Objects.toString(r.getString("detail")));
+					log.info("EXPLAIN: {}", r.getString("detail"));
 				}
 			} catch (SQLException | RuntimeException e) {
 				log.warn("failed to dump statement explanation", e);
@@ -868,8 +865,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 		}
 
 		private class Locker implements AutoCloseable {
-			private final Lock currentLock;
-
 			private final long lockTimestamp;
 
 			private final Object lockingContext;
@@ -877,6 +872,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 			private final Future<?> lockWarningTimeout;
 
 			private final long noteThreshold;
+
+			private final boolean exclusive;
+
+			private boolean unnecessary = false;
 
 			/**
 			 * @param lockForWriting
@@ -888,28 +887,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 			@MustBeClosed
 			Locker(boolean lockForWriting) {
 				noteThreshold = props.getLockNoteThreshold().toNanos();
-				var l = getLock(lockForWriting);
-				currentLock = l;
+				exclusive = lockForWriting;
 				state.isLockedForWrites = lockForWriting;
 				lockingContext = getDebugContext();
-				l.lock();
 				lockWarningTimeout =
 						schedule(this::warnLock, props.getLockWarnThreshold());
 				lockTimestamp = nanoTime();
 			}
 
-			private Lock getLock(boolean lockForWriting) {
-				if (lockForWriting) {
-					return txnLock.writeLock();
-				} else {
-					return txnLock.readLock();
-				}
-			}
-
 			@Override
 			public void close() {
 				long unlockTimestamp = nanoTime();
-				currentLock.unlock();
 				lockWarningTimeout.cancel(false);
 				long dt = unlockTimestamp - lockTimestamp;
 				if (dt > noteThreshold) {
@@ -931,31 +919,77 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 						lockingContext, dt / NSEC_PER_MSEC,
 						currentTransactionHolders());
 			}
-		}
 
-		private class Hold implements AutoCloseable {
-			private final boolean it;
-
-			private final Thread holder;
-
-			@MustBeClosed
-			Hold() {
-				it = state.inTransaction;
-				holder = currentThread();
-				if (!it) {
-					state.inTransaction = true;
-					synchronized (transactionHolders) {
-						transactionHolders.add(holder);
+			/**
+			 * Start the transaction. Note that this result is why we do not
+			 * begin the transaction as part of the creation of this object.
+			 *
+			 * @return True, if we <em>could not start the transaction because
+			 *         the database was busy.</em> False otherwise (on success).
+			 * @throws DataAccessException
+			 *             If something else goes wrong.
+			 */
+			boolean begin() {
+				try {
+					realBegin(exclusive ? IMMEDIATE : DEFERRED);
+					return false;
+				} catch (PessimisticLockingFailureException e) {
+					if (isBusy(e)) {
+						return true;
 					}
+					throw e;
 				}
 			}
 
-			@Override
-			public void close() {
-				if (!it) {
-					state.inTransaction = false;
-					synchronized (transactionHolders) {
-						transactionHolders.remove(holder);
+			private void commit() {
+				realCommit();
+				unnecessary = true;
+			}
+
+			RollbackHandler rollbackHandler(Object context) {
+				return new RollbackHandler(context);
+			}
+
+			/**
+			 * Rolls back the transaction <em>unless</em> it has been told not
+			 * to by setting {@code unnecessary} to {@code true}.
+			 */
+			private class RollbackHandler implements AutoCloseable {
+				private final Object context;
+
+				private final boolean it;
+
+				private final Thread holder;
+
+				@MustBeClosed
+				RollbackHandler(Object context) {
+					this.context = context;
+					it = state.inTransaction;
+					holder = currentThread();
+					if (!it) {
+						state.inTransaction = true;
+						synchronized (transactionHolders) {
+							transactionHolders.add(holder);
+						}
+					}
+				}
+
+				@Override
+				public void close() {
+					if (!it) {
+						state.inTransaction = false;
+						synchronized (transactionHolders) {
+							transactionHolders.remove(holder);
+						}
+					}
+					try {
+						if (!unnecessary) {
+							log.debug("commence rollback: {}", context);
+							realRollback();
+						}
+					} catch (DataAccessException e) {
+						cantWarning("rollback", e);
+						throw e;
 					}
 				}
 			}
@@ -1010,44 +1044,26 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 					if (log.isDebugEnabled()) {
 						log.debug("start transaction: {}", context);
 					}
-					// Stack of contexts is precise so cleanup is correct
 					try (var locker = new Locker(lockForWriting)) {
-						try {
-							realBegin(lockForWriting ? IMMEDIATE : DEFERRED);
-						} catch (PessimisticLockingFailureException e) {
-							var c = e.getRootCause();
-							if (c instanceof SQLiteException) {
-								var ex = (SQLiteException) c;
-								switch (ex.getResultCode()) {
-								case SQLITE_BUSY_SNAPSHOT:
-									continue;
-								default:
-									throw e;
-								}
-							}
-							throw e;
+						if (locker.begin()) {
+							continue;
 						}
-						try (var rollback = new RollbackHandler(context)) {
-							try (var hold = new Hold()) {
-								var result = operation.act();
-								log.debug("commence commit: {}", context);
-								realCommit();
-								rollback.unnecessary = true;
-								return result;
-							} catch (DataAccessException e) {
-								if (tries < props.getLockTries() && isBusy(e)) {
-									log.warn("retrying transaction due to lock "
-											+ "failure: {}", context);
-									log.info(
-											"current transaction holders "
-													+ "are {}",
-											currentTransactionHolders());
-									sleepUntilTimeToRetry();
-									continue;
-								}
-								cantWarning("commit", e);
-								throw e;
+						try (var rollback = locker.rollbackHandler(context)) {
+							var result = operation.act();
+							log.debug("commence commit: {}", context);
+							locker.commit();
+							return result;
+						} catch (DataAccessException e) {
+							if (tries < props.getLockTries() && isBusy(e)) {
+								log.warn("retrying transaction due to lock "
+										+ "failure: {}", context);
+								log.info("current transaction holders are {}",
+										currentTransactionHolders());
+								sleepUntilTimeToRetry();
+								continue;
 							}
+							cantWarning("commit", e);
+							throw e;
 						}
 					}
 				}
@@ -1060,34 +1076,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 			} catch (InterruptedException e) {
 				log.trace("interrupted while waiting until time to "
 						+ "retry transaction", e);
-			}
-		}
-
-		/**
-		 * Rolls back the transaction <em>unless</em> it has been told not to by
-		 * setting {@code unnecessary} to {@code true}.
-		 */
-		private class RollbackHandler implements AutoCloseable {
-			boolean unnecessary = false;
-
-			private final Object context;
-
-			@MustBeClosed
-			RollbackHandler(Object context) {
-				this.context = context;
-			}
-
-			@Override
-			public void close() {
-				try {
-					if (!unnecessary) {
-						log.debug("commence rollback: {}", context);
-						realRollback();
-					}
-				} catch (DataAccessException e) {
-					cantWarning("rollback", e);
-					throw e;
-				}
 			}
 		}
 

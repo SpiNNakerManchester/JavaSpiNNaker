@@ -1443,7 +1443,7 @@ public class BMPController extends DatabaseAwareBean {
 			} catch (InterruptedException e) {
 				// Thread is being shut down
 				markAllForStop();
-				log.info("worker thread '{}' was interrupted", t.getName());
+				log.debug("worker thread '{}' was interrupted", t.getName());
 			} catch (Exception e) {
 				/*
 				 * If the thread crashes something has gone wrong with this
