@@ -535,7 +535,7 @@ public class SpallocClientFactory {
 					// If interrupted, we're simply done
 				}
 			});
-			t.setName("keepalive for " + this);
+			t.setName("keepalive for " + uri);
 			t.setUncaughtExceptionHandler((th, e) -> {
 				log.warn("unexpected exception in {}", th, e);
 			});

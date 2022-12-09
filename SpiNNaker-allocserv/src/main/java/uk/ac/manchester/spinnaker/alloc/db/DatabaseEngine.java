@@ -251,8 +251,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 			return;
 		}
 		var lock = wholeDBLock.writeLock();
-		lock.lock();
 		alreadyLockedByMe.set(true);
+		lock.lock();
 		try {
 			action.run();
 		} finally {
@@ -955,6 +955,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 				unnecessary = true;
 			}
 
+			@MustBeClosed
 			RollbackHandler rollbackHandler(Object context) {
 				return new RollbackHandler(context);
 			}

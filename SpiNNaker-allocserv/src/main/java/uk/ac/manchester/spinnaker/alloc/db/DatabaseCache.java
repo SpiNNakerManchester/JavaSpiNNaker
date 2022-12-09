@@ -158,8 +158,6 @@ abstract class DatabaseCache<Conn extends Connection> {
 		}
 	}
 
-	private static final long GRACE_PERIOD = 500;
-
 	/**
 	 * Wait for all made threads to terminate.
 	 */
@@ -170,7 +168,6 @@ abstract class DatabaseCache<Conn extends Connection> {
 		long before = currentTimeMillis();
 		for (var t : List.copyOf(closerThreads)) {
 			try {
-				//t.join(GRACE_PERIOD);
 				if (!t.stopped) {
 					t.interrupt();
 					t.join();
