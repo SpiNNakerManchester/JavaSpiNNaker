@@ -53,7 +53,7 @@ public class TestByteBufferUtils {
 		assertEquals(0x01020304, r.getInt());
 
 		// Check range sanity enforced
-		assertThrows(IllegalArgumentException.class,
+		assertThrows(IndexOutOfBoundsException.class,
 				() -> ByteBufferUtils.slice(r, 0, 16));
 	}
 }
