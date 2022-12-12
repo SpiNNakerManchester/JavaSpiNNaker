@@ -98,6 +98,7 @@ import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
  * @see AuthProperties Configuration properties
  * @author Donal Fellows
  */
+@SuppressWarnings("deprecation")
 @Service
 public class LocalAuthProviderImpl extends DatabaseAwareBean
 		implements LocalAuthenticationProvider<LocalAuthProviderImpl.TestAPI> {
@@ -295,6 +296,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	/** The classes that we <em>know</em> we don't ever want to handle. */
 	private static final Class<?>[] UNSUPPORTED_AUTH_TOKEN_CLASSES = {
 		AnonymousAuthenticationToken.class, RememberMeAuthenticationToken.class,
+		// TODO do we replace RunAsUserToken.class?
 		RunAsUserToken.class, TestingAuthenticationToken.class
 	};
 
@@ -419,7 +421,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	/** Holds either a {@link OAuth2User} or a {@link Jwt}. */
-	private static record OriginatingCredential(OAuth2User user,
+	private record OriginatingCredential(OAuth2User user,
 			OAuth2AccessToken token) {
 		OriginatingCredential(OAuth2User user) {
 			this(requireNonNull(user), null);
@@ -866,7 +868,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 *            The <em>encoded</em> password.
 	 */
 	@Immutable
-	private static record LocalAuthResult(int userId, TrustLevel trustLevel,
+	private record LocalAuthResult(int userId, TrustLevel trustLevel,
 			String passInfo) {
 	}
 

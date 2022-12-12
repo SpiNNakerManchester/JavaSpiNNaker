@@ -605,7 +605,7 @@ public class UserControl extends DatabaseAwareBean {
 	 * @see UserControl#updateUser(Principal, PasswordChangeRecord,
 	 *      UpdatePassSQL)
 	 */
-	private static record GetUserResult(PasswordChangeRecord baseUser,
+	private record GetUserResult(PasswordChangeRecord baseUser,
 			String oldEncPass) {
 		private GetUserResult(Row row) {
 			this(passChange(row), row.getString("encrypted_password"));

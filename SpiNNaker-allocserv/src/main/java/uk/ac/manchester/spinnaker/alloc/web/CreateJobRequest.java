@@ -165,7 +165,7 @@ public record CreateJobRequest(String owner, String group,
 	 * @param height
 	 *            The height of the rectangle of boards to allocate, in triads.
 	 */
-	public static record Dimensions(@ValidTriadWidth int width,
+	public record Dimensions(@ValidTriadWidth int width,
 			@ValidTriadHeight int height) {
 	}
 
@@ -187,9 +187,8 @@ public record CreateJobRequest(String owner, String group,
 	 * @param address
 	 *            The IP address of the board.
 	 */
-	public static record SpecificBoard(@ValidTriadX Integer x,
-			@ValidTriadY Integer y, @ValidTriadZ Integer z,
-			@ValidCabinetNumber Integer cabinet,
+	public record SpecificBoard(@ValidTriadX Integer x, @ValidTriadY Integer y,
+			@ValidTriadZ Integer z, @ValidCabinetNumber Integer cabinet,
 			@ValidFrameNumber Integer frame, @ValidBoardNumber Integer board,
 			@IPAddress(nullOK = true, message = "address must be "
 					+ "an IP address") String address) {

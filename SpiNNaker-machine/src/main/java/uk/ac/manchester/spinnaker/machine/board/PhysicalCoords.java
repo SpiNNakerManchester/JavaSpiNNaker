@@ -58,7 +58,7 @@ import com.google.errorprone.annotations.Immutable;
  */
 @Immutable
 @JsonDeserialize(using = PhysicalCoords.Deserializer.class)
-public final record PhysicalCoords(//
+public record PhysicalCoords(//
 		@JsonProperty("c") @ValidCabinetNumber int c,
 		@JsonProperty("f") @ValidFrameNumber int f,
 		@JsonProperty("b") @ValidBoardNumber int b)

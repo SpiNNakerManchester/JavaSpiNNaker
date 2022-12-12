@@ -68,6 +68,6 @@ class MyAuthenticationFailureHandler implements AuthenticationFailureHandler {
 				new AuthFailureObject(message, now()));
 	}
 
-	static record AuthFailureObject(String message, Instant timestamp) {
+	record AuthFailureObject(String message, Instant timestamp) {
 	}
 }

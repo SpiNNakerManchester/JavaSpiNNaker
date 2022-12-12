@@ -439,7 +439,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 * @param secondsBeforeFree
 	 *            Time to wait before freeing. (Ignored)
 	 */
-	public static record Configuration(//
+	public record Configuration(//
 			@NotNull List<@Valid Machine> machines, @TCPPort int port,
 			@IPAddress(nullOK = true, emptyOK = true) String ip,
 			@Positive double timeoutCheckInterval, @Positive int maxRetiredJobs,

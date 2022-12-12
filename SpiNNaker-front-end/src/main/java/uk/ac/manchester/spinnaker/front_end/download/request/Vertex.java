@@ -46,7 +46,7 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
  *            buffering.
  */
 @JsonFormat(shape = OBJECT)
-public final record Vertex(String label, @NotNull MemoryLocation base,
+public record Vertex(String label, @NotNull MemoryLocation base,
 		@NotNull int[] recordedRegionIds) {
 	/**
 	 * Create a minimal vertex, possibly using an unmarshaller.

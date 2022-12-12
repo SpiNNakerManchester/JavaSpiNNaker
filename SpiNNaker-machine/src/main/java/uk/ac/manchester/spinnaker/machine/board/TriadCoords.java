@@ -58,7 +58,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  *            Z coordinate of triad.
  */
 @JsonDeserialize(using = TriadCoords.Deserializer.class)
-public final record TriadCoords(//
+public record TriadCoords(//
 		@JsonProperty("x") @ValidTriadX int x,
 		@JsonProperty("y") @ValidTriadY int y,
 		@JsonProperty("z") @ValidTriadZ int z)

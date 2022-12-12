@@ -150,7 +150,7 @@ class Replacer {
 		}
 	}
 
-	private static record Replacement(String match, int index) {
+	private record Replacement(String match, int index) {
 		private Replacement(MatchResult m, int index) {
 			this(m.group(), index);
 		}

@@ -37,7 +37,7 @@ import uk.ac.manchester.spinnaker.alloc.model.DownLink;
  * @param machines
  *            The list of machines known to the service.
  */
-public final record MachinesResponse(List<BriefMachineDescription> machines) {
+public record MachinesResponse(List<BriefMachineDescription> machines) {
 	/**
 	 * A brief, summary description of a machine.
 	 *
@@ -57,7 +57,7 @@ public final record MachinesResponse(List<BriefMachineDescription> machines) {
 	 * @param deadLinks
 	 *            The dead links on the machine.
 	 */
-	public static record BriefMachineDescription(String name, List<String> tags,
+	public record BriefMachineDescription(String name, List<String> tags,
 			URI uri, int width, int height, List<BoardCoords> deadBoards,
 			List<DownLink> deadLinks) {
 	}

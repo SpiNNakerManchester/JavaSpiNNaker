@@ -68,7 +68,7 @@ public class TransceiverFactory
 		implements TransceiverFactoryAPI<BMPTransceiverInterface> {
 	private static final Logger log = getLogger(TransceiverFactory.class);
 
-	private static record Key(String machine, BMPCoords bmp) {
+	private record Key(String machine, BMPCoords bmp) {
 	}
 
 	@GuardedBy("itself")

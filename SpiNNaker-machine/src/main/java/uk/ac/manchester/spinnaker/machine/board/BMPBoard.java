@@ -23,7 +23,7 @@ package uk.ac.manchester.spinnaker.machine.board;
  * @param board
  *            The board number.
  */
-public final record BMPBoard(@ValidBoardNumber int board) {
+public record BMPBoard(@ValidBoardNumber int board) {
 	/**
 	 * The maximum board number. There can be only up to 24 boards per frame.
 	 */

@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.machine;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import com.google.errorprone.annotations.Immutable;
 
@@ -27,13 +28,17 @@ import com.google.errorprone.annotations.Immutable;
  *      "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/link.py">
  *      Python Version</a>
  * @author Christian-B
- * @param source The coordinates of the source chip of the link.
- * @param sourceLinkDirection The direction of the link in the source chip.
- * @param destination The coordinate of the destination chip of the link.
+ * @param source
+ *            The coordinates of the source chip of the link.
+ * @param sourceLinkDirection
+ *            The direction of the link in the source chip.
+ * @param destination
+ *            The coordinate of the destination chip of the link.
  */
 @Immutable
-public final record Link(@Valid ChipLocation source,
-		Direction sourceLinkDirection, @Valid ChipLocation destination) {
+public record Link(@Valid ChipLocation source,
+		@NotNull Direction sourceLinkDirection,
+		@Valid ChipLocation destination) {
 	// Note: multicast_default_from and multicast_default_to not implemented
 	/**
 	 * @param source

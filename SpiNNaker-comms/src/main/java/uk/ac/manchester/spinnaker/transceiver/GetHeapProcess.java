@@ -221,7 +221,7 @@ final class GetHeapProcess extends TxrxProcess {
 	}
 
 	@SARKStruct("heap_t")
-	private static record HeapHeader(//
+	private record HeapHeader(//
 			@SARKField("free") MemoryLocation free,
 			@SARKField("first") MemoryLocation first,
 			@SARKField("last") MemoryLocation last,
@@ -237,7 +237,7 @@ final class GetHeapProcess extends TxrxProcess {
 	}
 
 	@SARKStruct("block_t")
-	private static record BlockHeader(//
+	private record BlockHeader(//
 			@SARKField("next") MemoryLocation next,
 			@SARKField("free") MemoryLocation free) {
 		BlockHeader(IntBuffer data) {

@@ -204,11 +204,10 @@ class ExecutionContext implements AutoCloseable {
 	}
 
 	@Immutable
-	private static record RegionToRef(CoreLocation core,
-			MemoryLocation pointer) {
+	private record RegionToRef(CoreLocation core, MemoryLocation pointer) {
 	}
 
-	private static record CoreToFill(Executor executor, MemoryLocation start,
+	private record CoreToFill(Executor executor, MemoryLocation start,
 			CoreLocation core, List<MemoryRegionReference> refs) {
 		CoreToFill(Executor executor, MemoryLocation start, CoreLocation core) {
 			this(executor, start, core, new ArrayList<>());

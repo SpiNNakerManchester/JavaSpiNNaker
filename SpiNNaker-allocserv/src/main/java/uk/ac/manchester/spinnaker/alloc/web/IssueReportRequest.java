@@ -68,7 +68,7 @@ public record IssueReportRequest(
 	 * @param address
 	 *            The IP address of the board.
 	 */
-	public static record ReportedBoard(@Valid ChipLocation chip,
+	public record ReportedBoard(@Valid ChipLocation chip,
 			@ValidTriadX Integer x, @ValidTriadY Integer y,
 			@ValidTriadZ Integer z, @ValidCabinetNumber Integer cabinet,
 			@ValidFrameNumber Integer frame, @ValidBoardNumber Integer board,

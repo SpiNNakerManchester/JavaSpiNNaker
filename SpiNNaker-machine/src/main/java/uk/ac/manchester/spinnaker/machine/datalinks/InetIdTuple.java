@@ -30,5 +30,5 @@ import com.google.errorprone.annotations.Immutable;
  *            The ID of this tuple.
  */
 @Immutable
-public final record InetIdTuple(InetAddress address, int id) {
+public record InetIdTuple(InetAddress address, int id) {
 }

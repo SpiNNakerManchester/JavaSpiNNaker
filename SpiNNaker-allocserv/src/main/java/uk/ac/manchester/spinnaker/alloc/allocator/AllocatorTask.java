@@ -114,10 +114,14 @@ public class AllocatorTask extends DatabaseAwareBean
 	 * Helper class representing a rectangle of triads.
 	 *
 	 * @author Donal Fellows
+	 * @param width
+	 *            Width of rectangle, in triads.
+	 * @param height
+	 *            Height of rectangle, in triads.
+	 * @param depth
+	 *            Depth of rectangle. 1 or 3
 	 */
-	private static final record Rectangle(int width, int height,
-			/** Depth of rectangle. 1 or 3 */
-			int depth) {
+	private record Rectangle(int width, int height, int depth) {
 		private Rectangle(Row row) {
 			this(row.getInt("max_width"), row.getInt("max_height"),
 					TRIAD_DEPTH);
@@ -439,7 +443,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	 * @param allocIds
 	 *            The IDs of allocations that were copied.
 	 */
-	static record Copied(List<Integer> jobIds, List<Integer> allocIds) {
+	record Copied(List<Integer> jobIds, List<Integer> allocIds) {
 		private Stream<Integer> allocs() {
 			return allocIds.stream().filter(Objects::nonNull);
 		}

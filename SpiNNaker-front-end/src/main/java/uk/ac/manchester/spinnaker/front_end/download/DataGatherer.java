@@ -238,8 +238,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *            The outer list could theoretically be done in any order... but
 	 *            needs to be processed single-threaded anyway.
 	 */
-	private static record WorkItems(Monitor monitor,
-			List<List<Region>> regions) {
+	private record WorkItems(Monitor monitor, List<List<Region>> regions) {
 	}
 
 	/**

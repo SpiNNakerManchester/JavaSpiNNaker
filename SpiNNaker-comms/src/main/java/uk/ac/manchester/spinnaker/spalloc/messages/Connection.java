@@ -44,7 +44,7 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 @JsonFormat(shape = ARRAY)
 @JsonDeserialize(builder = Connection.Builder.class)
 @Immutable
-public final record Connection(@Valid ChipLocation chip,
+public record Connection(@Valid ChipLocation chip,
 		@IPAddress String hostname) {
 	/**
 	 * Create.

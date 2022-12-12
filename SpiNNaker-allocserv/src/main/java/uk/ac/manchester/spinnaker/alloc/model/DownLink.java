@@ -46,8 +46,7 @@ public record DownLink(@Valid DownLink.End end1, @Valid DownLink.End end2) {
 	 *            In which direction does this end of the link go?
 	 */
 	@Immutable
-	public static record End(@Valid BoardCoords board,
-			@NotNull Direction direction) {
+	public record End(@Valid BoardCoords board, @NotNull Direction direction) {
 	}
 
 	/**

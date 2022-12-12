@@ -57,7 +57,7 @@ import com.google.errorprone.annotations.Immutable;
  */
 @Immutable
 @JsonDeserialize(using = BMPCoords.Deserializer.class)
-public final record BMPCoords(@ValidCabinetNumber int cabinet,
+public record BMPCoords(@ValidCabinetNumber int cabinet,
 		@ValidFrameNumber int frame) implements Comparable<BMPCoords> {
 	/** Parses the result of {@link #toString()}. */
 	private static final Pattern PATTERN =

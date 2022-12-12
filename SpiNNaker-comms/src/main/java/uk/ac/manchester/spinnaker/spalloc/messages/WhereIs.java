@@ -42,9 +42,9 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  */
 @Immutable
 @JsonDeserialize(builder = WhereIs.Builder.class)
-public final record WhereIs(ChipLocation jobChip, Integer jobId,
-		ChipLocation chip, BoardCoordinates logical, String machine,
-		ChipLocation boardChip, BoardPhysicalCoordinates physical) {
+public record WhereIs(ChipLocation jobChip, Integer jobId, ChipLocation chip,
+		BoardCoordinates logical, String machine, ChipLocation boardChip,
+		BoardPhysicalCoordinates physical) {
 	@Override
 	public String toString() {
 		return "jobChip: " + jobChip + " jobId: " + jobId + " chip: " + chip

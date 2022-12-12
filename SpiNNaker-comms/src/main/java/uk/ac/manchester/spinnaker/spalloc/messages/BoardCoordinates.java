@@ -45,7 +45,7 @@ import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 @JsonFormat(shape = ARRAY)
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 @Immutable
-public final record BoardCoordinates(
+public record BoardCoordinates(
 		@JsonProperty(value = "x", defaultValue = "0") @ValidTriadX int x,
 		@JsonProperty(value = "y", defaultValue = "0") @ValidTriadY int y,
 		@JsonProperty(value = "z", defaultValue = "0") @ValidTriadZ int z) {

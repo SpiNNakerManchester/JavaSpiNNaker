@@ -2589,8 +2589,8 @@ public class Transceiver extends UDPTransceiver
 	 * @param chip
 	 *            What chip to talk to.
 	 */
-	public static final record ConnectionDescriptor(InetAddress hostname,
-			Integer portNumber, ChipLocation chip) {
+	public record ConnectionDescriptor(InetAddress hostname, Integer portNumber,
+			ChipLocation chip) {
 		/**
 		 * Create a connection descriptor.
 		 *

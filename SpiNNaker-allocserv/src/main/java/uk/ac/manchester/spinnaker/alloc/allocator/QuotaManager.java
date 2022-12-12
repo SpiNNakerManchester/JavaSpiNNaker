@@ -165,7 +165,7 @@ public class QuotaManager extends DatabaseAwareBean {
 	 * @param quota
 	 *            The new quota of the group.
 	 */
-	public static record AdjustedQuota(String name, Long quota) {
+	public record AdjustedQuota(String name, Long quota) {
 		private AdjustedQuota(Row row) {
 			this(row.getString("group_name"), row.getLong("quota"));
 		}
