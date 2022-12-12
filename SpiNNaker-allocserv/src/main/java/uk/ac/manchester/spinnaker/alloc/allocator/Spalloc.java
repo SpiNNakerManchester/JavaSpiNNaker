@@ -987,7 +987,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 		final Update insertReport = conn.update(INSERT_BOARD_REPORT);
 
-		final Query getReported = conn.query(getReportedBoards);
+		final Query getReported = conn.query(GET_REPORTED_BOARDS);
 
 		final Update setFunctioning = conn.update(SET_FUNCTIONING_FIELD);
 

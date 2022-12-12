@@ -427,7 +427,7 @@ class DQLTest extends MemDBTestBase {
 
 	@Test
 	void getAllocationTasks() {
-		try (var q = c.query(getAllocationTasks)) {
+		try (var q = c.query(GET_ALLOCATION_TASKS)) {
 			assertEquals(1, q.getNumArguments());
 			assertEquals(Set.of("req_id", "job_id", "num_boards", "width",
 					"height", "board_id", "machine_id", "max_dead_boards",
@@ -534,7 +534,7 @@ class DQLTest extends MemDBTestBase {
 
 	@Test
 	void findLocation() {
-		try (var q = c.query(findLocation)) {
+		try (var q = c.query(FIND_LOCATION)) {
 			assertEquals(2, q.getNumArguments());
 			assertEquals(Set.of("x", "y", "z"), q.getRowColumnNames());
 			c.transaction(() -> {
@@ -1050,7 +1050,7 @@ class DQLTest extends MemDBTestBase {
 
 	@Test
 	void getReportedBoards() {
-		try (var q = c.query(getReportedBoards)) {
+		try (var q = c.query(GET_REPORTED_BOARDS)) {
 			assertEquals(1, q.getNumArguments());
 			assertEquals(
 					Set.of("board_id", "num_reports", "x", "y", "z", "address"),

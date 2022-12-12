@@ -252,7 +252,7 @@ class DMLTest extends MemDBTestBase {
 	@Test
 	void issueChangeForJob() {
 		assumeWritable(c);
-		try (var u = c.update(issueChangeForJob)) {
+		try (var u = c.update(ISSUE_CHANGE_FOR_JOB)) {
 			assertEquals(11, u.getNumArguments());
 			c.transaction(() -> {
 				// No such job

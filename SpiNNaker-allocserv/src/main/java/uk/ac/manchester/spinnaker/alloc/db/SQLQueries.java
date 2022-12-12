@@ -2414,6 +2414,114 @@ public abstract class SQLQueries {
 			VALUES (:board_id, 2, 0)
 			""";
 
+	/**
+	 * Find an allocatable board with a specific board ID. (This will have been
+	 * previously converted from some other form of board coordinates.)
+	 *
+	 * @see AllocatorTask
+	 */
+	@Parameter("machine_id")
+	@Parameter("board_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@SingleRowResult
+	protected static final String FIND_LOCATION = """
+			SELECT
+				x, y, z
+			FROM boards
+			WHERE boards.machine_id = :machine_id
+				AND boards.board_id = :board_id
+				AND boards.may_be_allocated
+			LIMIT 1
+			""";
+
+	/** Get the list of allocation tasks. */
+	@Parameter("job_state")
+	@ResultColumn("req_id")
+	@ResultColumn("job_id")
+	@ResultColumn("num_boards")
+	@ResultColumn("width")
+	@ResultColumn("height")
+	@ResultColumn("board_id")
+	@ResultColumn("machine_id")
+	@ResultColumn("max_dead_boards")
+	@ResultColumn("max_width")
+	@ResultColumn("max_height")
+	@ResultColumn("job_state")
+	@ResultColumn("importance")
+	protected static final String GET_ALLOCATION_TASKS = """
+			SELECT
+				job_request.req_id,
+				job_request.job_id,
+				job_request.num_boards,
+				job_request.width,
+				job_request.height,
+				job_request.board_id,
+				jobs.machine_id AS machine_id,
+				job_request.max_dead_boards,
+				machines.width AS max_width,
+				machines.height AS max_height,
+				jobs.job_state AS job_state,
+				job_request.importance
+			FROM
+				job_request
+				JOIN jobs USING (job_id)
+				JOIN machines USING (machine_id)
+			WHERE job_state = :job_state
+			ORDER BY importance DESC, req_id ASC
+			""";
+
+	/**
+	 * Get enabled boards with at least as many reported problems as a given
+	 * threshold.
+	 */
+	@Parameter("threshold")
+	@ResultColumn("board_id")
+	@ResultColumn("num_reports")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("address")
+	protected static final String GET_REPORTED_BOARDS = """
+			SELECT
+				board_reports.board_id,
+				COUNT(*) AS num_reports,
+				boards.x,
+				boards.y,
+				boards.z,
+				boards.address
+			FROM
+				board_reports
+				JOIN boards USING (board_id)
+				JOIN jobs USING (job_id)
+			WHERE functioning IS NOT 0
+			GROUP BY board_reports.board_id
+			HAVING num_reports >= :threshold
+			""";
+
+	/** Create a request to change the power status of a board. */
+	@Parameter("job_id")
+	@Parameter("board_id")
+	@Parameter("from_state")
+	@Parameter("to_state")
+	@Parameter("power")
+	@Parameter("fpga_n")
+	@Parameter("fpga_s")
+	@Parameter("fpga_e")
+	@Parameter("fpga_w")
+	@Parameter("fpga_nw")
+	@Parameter("fpga_se")
+	@GeneratesID
+	protected static final String ISSUE_CHANGE_FOR_JOB = """
+			INSERT INTO pending_changes(
+				job_id, board_id, from_state, to_state,
+				"power", fpga_n, fpga_e, fpga_se, fpga_s, fpga_w, fpga_nw)
+			VALUES (
+				:job_id, :board_id, :from_state, :to_state,
+				:power, :fpga_n, :fpga_e, :fpga_se, :fpga_s, :fpga_w, :fpga_nw)
+			""";
+
 	// SQL loaded from files because it is too complicated otherwise!
 
 	/**
@@ -2455,37 +2563,6 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	@Value("classpath:queries/find_rectangle_at.sql")
 	protected Resource findRectangleAt;
-
-	/**
-	 * Find an allocatable board with a specific board ID. (This will have been
-	 * previously converted from some other form of board coordinates.)
-	 *
-	 * @see AllocatorTask
-	 */
-	@Parameter("machine_id")
-	@Parameter("board_id")
-	@ResultColumn("x")
-	@ResultColumn("y")
-	@ResultColumn("z")
-	@SingleRowResult
-	@Value("classpath:queries/find_location.sql")
-	protected Resource findLocation;
-
-	/** Create a request to change the power status of a board. */
-	@Parameter("job_id")
-	@Parameter("board_id")
-	@Parameter("from_state")
-	@Parameter("to_state")
-	@Parameter("power")
-	@Parameter("fpga_n")
-	@Parameter("fpga_s")
-	@Parameter("fpga_e")
-	@Parameter("fpga_w")
-	@Parameter("fpga_nw")
-	@Parameter("fpga_se")
-	@GeneratesID
-	@Value("classpath:queries/issue_change_for_job.sql")
-	protected Resource issueChangeForJob;
 
 	/**
 	 * Count the number of <em>connected</em> boards (i.e., have at least one
@@ -2712,37 +2789,6 @@ public abstract class SQLQueries {
 	@ResultColumn("dir_2")
 	@Value("classpath:queries/get_dead_links.sql")
 	protected Resource getDeadLinks;
-
-	/** Get the list of allocation tasks. */
-	@Parameter("job_state")
-	@ResultColumn("req_id")
-	@ResultColumn("job_id")
-	@ResultColumn("num_boards")
-	@ResultColumn("width")
-	@ResultColumn("height")
-	@ResultColumn("board_id")
-	@ResultColumn("machine_id")
-	@ResultColumn("max_dead_boards")
-	@ResultColumn("max_width")
-	@ResultColumn("max_height")
-	@ResultColumn("job_state")
-	@ResultColumn("importance")
-	@Value("classpath:queries/get_allocation_tasks.sql")
-	protected Resource getAllocationTasks;
-
-	/**
-	 * Get enabled boards with at least as many reported problems as a given
-	 * threshold.
-	 */
-	@Parameter("threshold")
-	@ResultColumn("board_id")
-	@ResultColumn("num_reports")
-	@ResultColumn("x")
-	@ResultColumn("y")
-	@ResultColumn("z")
-	@ResultColumn("address")
-	@Value("classpath:queries/get_reported_boards.sql")
-	protected Resource getReportedBoards;
 
 	/**
 	 * Copy jobs to the historical data DB, and return the IDs of the jobs that

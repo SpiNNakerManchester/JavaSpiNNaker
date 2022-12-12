@@ -189,7 +189,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			getJobState = conn.query(GET_JOB);
 			getJobBoards = conn.query(GET_JOB_BOARDS);
 			getPerimeter = conn.query(getPerimeterLinks);
-			issuePowerChange = conn.update(issueChangeForJob);
+			issuePowerChange = conn.update(ISSUE_CHANGE_FOR_JOB);
 			setStatePending = conn.update(SET_STATE_PENDING);
 		}
 
@@ -263,13 +263,13 @@ public class AllocatorTask extends DatabaseAwareBean
 		AllocSQL(Connection conn) {
 			super(conn);
 			bumpImportance = conn.update(BUMP_IMPORTANCE);
-			getTasks = conn.query(getAllocationTasks);
+			getTasks = conn.query(GET_ALLOCATION_TASKS);
 			delete = conn.update(DELETE_TASK);
 			findFreeBoard = conn.query(FIND_FREE_BOARD);
 			getRectangles = conn.query(findRectangle);
 			getRectangleAt = conn.query(findRectangleAt);
 			countConnectedBoards = conn.query(countConnected);
-			findSpecificBoard = conn.query(findLocation);
+			findSpecificBoard = conn.query(FIND_LOCATION);
 			getConnectedBoardIDs = conn.query(getConnectedBoards);
 			allocBoard = conn.update(ALLOCATE_BOARDS_BOARD);
 			allocJob = conn.update(ALLOCATE_BOARDS_JOB);
