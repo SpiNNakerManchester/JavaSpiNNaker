@@ -2522,6 +2522,113 @@ public abstract class SQLQueries {
 				:power, :fpga_n, :fpga_e, :fpga_se, :fpga_s, :fpga_w, :fpga_nw)
 			""";
 
+	/**
+	 * Get the links of a machine that have been disabled; each link is
+	 * described by the boards it links and the directions the link goes in at
+	 * each end.
+	 */
+	@Parameter("machine_id")
+	@ResultColumn("board_1_x")
+	@ResultColumn("board_1_y")
+	@ResultColumn("board_1_z")
+	@ResultColumn("board_1_c")
+	@ResultColumn("board_1_f")
+	@ResultColumn("board_1_b")
+	@ResultColumn("board_1_addr")
+	@ResultColumn("dir_1")
+	@ResultColumn("board_2_x")
+	@ResultColumn("board_2_y")
+	@ResultColumn("board_2_z")
+	@ResultColumn("board_2_c")
+	@ResultColumn("board_2_f")
+	@ResultColumn("board_2_b")
+	@ResultColumn("board_2_addr")
+	@ResultColumn("dir_2")
+	protected static final String GET_DEAD_LINKS = """
+			SELECT
+				-- Link end 1: board coords + direction
+				b1.x AS board_1_x, b1.y AS board_1_y, b1.z AS board_1_z,
+				bmp1.cabinet AS board_1_c, bmp1.frame AS board_1_f,
+				b1.board_num AS board_1_b, b1.address AS board_1_addr,
+				dir_1,
+				-- Link end 2: board coords + direction
+				b2.x AS board_2_x, b2.y AS board_2_y, b2.z AS board_2_z,
+				bmp2.cabinet AS board_2_c, bmp2.frame AS board_2_f,
+				b2.board_num AS board_2_b, b2.address AS board_2_addr,
+				dir_2
+			FROM links
+				JOIN boards AS b1 ON board_1 = b1.board_id
+				JOIN boards AS b2 ON board_2 = b2.board_id
+				JOIN bmp AS bmp1 ON bmp1.bmp_id = b1.bmp_id
+				JOIN bmp AS bmp2 ON bmp2.bmp_id = b2.bmp_id
+			WHERE
+				b1.machine_id = :machine_id AND NOT live
+			ORDER BY board_1 ASC, board_2 ASC;
+			""";
+
+	/**
+	 * Copy jobs to the historical data DB, and return the IDs of the jobs that
+	 * were copied (which will now be safe to delete). Only jobs that are
+	 * already completed will ever get copied.
+	 *
+	 * @see AllocatorTask#tombstone()
+	 */
+	@Parameter("grace_period")
+	@ResultColumn("job_id")
+	protected static final String COPY_JOBS_TO_HISTORICAL_DATA = """
+			WITH
+				t(now) AS (VALUES (CAST(strftime('%s','now') AS INTEGER)))
+			INSERT OR IGNORE INTO tombstone.jobs(
+				job_id, machine_id, owner, create_timestamp,
+				width, height, "depth", root_id,
+				keepalive_interval, keepalive_host,
+				death_reason, death_timestamp,
+				original_request,
+				allocation_timestamp, allocation_size,
+				machine_name, owner_name, "group", group_name)
+			SELECT
+				jobs.job_id, jobs.machine_id, jobs.owner, jobs.create_timestamp,
+				jobs.width, jobs.height, jobs."depth", jobs.allocated_root,
+				jobs.keepalive_interval, jobs.keepalive_host,
+				jobs.death_reason, jobs.death_timestamp,
+				original_request,
+				allocation_timestamp, allocation_size,
+				machines.machine_name, user_info.user_name,
+				groups.group_id, groups.group_name
+			FROM
+				jobs
+				JOIN groups USING (group_id)
+				JOIN machines USING (machine_id)
+				JOIN user_info ON jobs.owner = user_info.user_id
+				JOIN t
+			WHERE death_timestamp + :grace_period < t.now
+			RETURNING job_id
+			""";
+
+	/**
+	 * Copy board allocation data to the historical data DB, and return the IDs
+	 * of the allocation records that were copied (which will now be safe to
+	 * delete). Only jobs that are already completed will ever get copied.
+	 *
+	 * @see AllocatorTask#tombstone()
+	 */
+	@Parameter("grace_period")
+	@ResultColumn("alloc_id")
+	protected static final String COPY_ALLOCS_TO_HISTORICAL_DATA = """
+			WITH
+				t(now) AS (VALUES (CAST(strftime('%s','now') AS INTEGER)))
+			INSERT OR IGNORE INTO tombstone.board_allocations(
+				alloc_id, job_id, board_id, allocation_timestamp)
+			SELECT
+				src.alloc_id, src.job_id, src.board_id, src.alloc_timestamp
+			FROM
+				old_board_allocations AS src
+				JOIN jobs USING (job_id)
+				JOIN t
+			WHERE jobs.death_timestamp + :grace_period < t.now
+			RETURNING alloc_id
+			""";
+
 	// SQL loaded from files because it is too complicated otherwise!
 
 	/**
@@ -2743,8 +2850,10 @@ public abstract class SQLQueries {
 	protected Resource findBoardByIPAddress;
 
 	/**
-	 * Get jobs on a machine that have changes that can be processed. (A policy
-	 * of how long after switching a board on or off is applied.)
+	 * Get jobs on a machine that have changes that can be processed. This
+	 * respects a machine-level policy on how long a board must be switched off
+	 * before it can be switched on again, and how long a board must be switched
+	 * on before it can be switched off.
 	 */
 	@Parameter("machine_id")
 	@ResultColumn("job_id")
@@ -2753,8 +2862,8 @@ public abstract class SQLQueries {
 
 	/**
 	 * Get the set of boards at some coordinates within a triad rectangle that
-	 * are connected (i.e., have at least one path over enableable links) to the
-	 * root board.
+	 * are connected (i.e., have at least one path over enableable links within
+	 * the allocation) to the root board.
 	 *
 	 * @see AllocatorTask
 	 */
@@ -2768,49 +2877,4 @@ public abstract class SQLQueries {
 	@ResultColumn("board_id")
 	@Value("classpath:queries/connected_boards_at_coords.sql")
 	protected Resource getConnectedBoards;
-
-	/** Get the links of a machine that have been disabled. */
-	@Parameter("machine_id")
-	@ResultColumn("board_1_x")
-	@ResultColumn("board_1_y")
-	@ResultColumn("board_1_z")
-	@ResultColumn("board_1_c")
-	@ResultColumn("board_1_f")
-	@ResultColumn("board_1_b")
-	@ResultColumn("board_1_addr")
-	@ResultColumn("dir_1")
-	@ResultColumn("board_2_x")
-	@ResultColumn("board_2_y")
-	@ResultColumn("board_2_z")
-	@ResultColumn("board_2_c")
-	@ResultColumn("board_2_f")
-	@ResultColumn("board_2_b")
-	@ResultColumn("board_2_addr")
-	@ResultColumn("dir_2")
-	@Value("classpath:queries/get_dead_links.sql")
-	protected Resource getDeadLinks;
-
-	/**
-	 * Copy jobs to the historical data DB, and return the IDs of the jobs that
-	 * were copied (which will now be safe to delete). Only jobs that are
-	 * already completed will ever get copied.
-	 *
-	 * @see AllocatorTask#tombstone()
-	 */
-	@Parameter("grace_period")
-	@ResultColumn("job_id")
-	@Value("classpath:queries/copy-jobs-to-historical-data.sql")
-	protected Resource copyJobsToHistoricalData;
-
-	/**
-	 * Copy board allocation data to the historical data DB, and return the IDs
-	 * of the allocation records that were copied (which will now be safe to
-	 * delete). Only jobs that are already completed will ever get copied.
-	 *
-	 * @see AllocatorTask#tombstone()
-	 */
-	@Parameter("grace_period")
-	@ResultColumn("alloc_id")
-	@Value("classpath:queries/copy-allocs-to-historical-data.sql")
-	protected Resource copyAllocsToHistoricalData;
 }

@@ -681,7 +681,7 @@ class DMLTest extends MemDBTestBase {
 	@Test
 	void copyAllocsToHistoricalData() {
 		assumeWritable(c);
-		try (var q = c.query(copyAllocsToHistoricalData)) {
+		try (var q = c.query(COPY_ALLOCS_TO_HISTORICAL_DATA)) {
 			assertEquals(1, q.getNumArguments());
 			assertEquals(Set.of("alloc_id"), q.getRowColumnNames());
 			c.transaction(() -> {
@@ -693,7 +693,7 @@ class DMLTest extends MemDBTestBase {
 	@Test
 	void copyJobsToHistoricalData() {
 		assumeWritable(c);
-		try (var q = c.query(copyJobsToHistoricalData)) {
+		try (var q = c.query(COPY_JOBS_TO_HISTORICAL_DATA)) {
 			assertEquals(1, q.getNumArguments());
 			assertEquals(Set.of("job_id"), q.getRowColumnNames());
 			c.transaction(() -> {

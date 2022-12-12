@@ -848,7 +848,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				}
 			}
 			try (var conn = getConnection();
-					var boardNumbers = conn.query(getDeadLinks)) {
+					var boardNumbers = conn.query(GET_DEAD_LINKS)) {
 				var downLinks = conn.transaction(false, () -> boardNumbers
 						.call(id).map(Spalloc::makeDownLinkFromRow).toList());
 				synchronized (Spalloc.this) {

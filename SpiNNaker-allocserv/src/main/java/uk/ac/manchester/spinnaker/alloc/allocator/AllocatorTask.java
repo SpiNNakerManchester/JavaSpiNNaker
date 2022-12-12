@@ -480,8 +480,8 @@ public class AllocatorTask extends DatabaseAwareBean
 	 * @return Description of the tombstoned IDs
 	 */
 	private Copied tombstone(Connection conn) {
-		try (var copyJobs = conn.query(copyJobsToHistoricalData);
-				var copyAllocs = conn.query(copyAllocsToHistoricalData);
+		try (var copyJobs = conn.query(COPY_JOBS_TO_HISTORICAL_DATA);
+				var copyAllocs = conn.query(COPY_ALLOCS_TO_HISTORICAL_DATA);
 				var deleteJobs = conn.update(DELETE_JOB_RECORD);
 				var deleteAllocs = conn.update(DELETE_ALLOC_RECORD)) {
 			var grace = historyProps.getGracePeriod();

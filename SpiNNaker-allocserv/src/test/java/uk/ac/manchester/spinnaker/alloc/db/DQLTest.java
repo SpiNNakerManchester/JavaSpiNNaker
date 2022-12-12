@@ -352,7 +352,7 @@ class DQLTest extends MemDBTestBase {
 
 	@Test
 	void getDeadLinks() {
-		try (var q = c.query(getDeadLinks)) {
+		try (var q = c.query(GET_DEAD_LINKS)) {
 			assertEquals(1, q.getNumArguments());
 			assertEquals(
 					Set.of("board_1_x", "board_1_y", "board_1_z", "board_1_c",

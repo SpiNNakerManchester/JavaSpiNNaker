@@ -13,6 +13,11 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+-- --------------------------------------------------------------------------
+-- Get the set of boards at some coordinates within a triad rectangle that
+-- are connected (i.e., have at least one path over enableable links within
+-- the allocation) to the root board.
+
 WITH RECURSIVE
 	args(machine_id, x, y, z, width, height, "depth") AS (
 		VALUES (:machine_id, :x, :y, :z, :width, :height, :depth)),

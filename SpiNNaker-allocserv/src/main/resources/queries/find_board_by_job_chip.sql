@@ -13,6 +13,10 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+-- --------------------------------------------------------------------------
+-- Locate a board (using a full set of coordinates) based on allocation-local
+-- chip coordinates.
+
 WITH
 	args(job, root, x, y) AS (VALUES (:job_id, :board_id, :x, :y)),
 	-- Boards that are allocated to the job

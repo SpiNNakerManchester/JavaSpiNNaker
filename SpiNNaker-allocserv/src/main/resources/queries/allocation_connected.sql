@@ -13,6 +13,11 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+-- --------------------------------------------------------------------------
+-- Count the number of connected boards (i.e., have at least one path over
+-- enabled links to the root board of the allocation) within a rectangle of
+-- triads. The triads are taken as being full depth.
+
 WITH RECURSIVE
 	args(machine_id, x, y, width, height) AS (
 		VALUES (:machine_id, :x, :y, :width, :height)),

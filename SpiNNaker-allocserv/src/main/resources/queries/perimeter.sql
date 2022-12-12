@@ -13,13 +13,22 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-WITH
+-- --------------------------------------------------------------------------
+-- Get the links on the perimeter of the allocation to a job. The perimeter
+-- is defined as being the live links between a board that is part of the
+-- allocation and a board that is not.
+
+WITH bs AS (
 	-- Boards that are allocated to the job
-	bs AS (SELECT boards.* FROM boards WHERE boards.allocated_job = :job_id)
+	SELECT boards.board_id FROM boards WHERE boards.allocated_job = :job_id)
 SELECT links.board_1 AS board_id, links.dir_1 AS direction
-	FROM links JOIN bs ON links.board_1 IN (SELECT board_id FROM bs)
-	WHERE links.live AND NOT links.board_2 IN (SELECT board_id FROM bs)
+	FROM links
+	JOIN bs ON links.board_1 IN (SELECT board_id FROM bs)
+	WHERE links.live
+		AND NOT links.board_2 IN (SELECT board_id FROM bs)
 UNION
 SELECT links.board_2 AS board_id, links.dir_2 AS direction
-	FROM links JOIN bs ON links.board_2 IN (SELECT board_id FROM bs)
-	WHERE links.live AND NOT links.board_1 IN (SELECT board_id FROM bs);
+	FROM links
+	JOIN bs ON links.board_2 IN (SELECT board_id FROM bs)
+	WHERE links.live
+		AND NOT links.board_1 IN (SELECT board_id FROM bs);
