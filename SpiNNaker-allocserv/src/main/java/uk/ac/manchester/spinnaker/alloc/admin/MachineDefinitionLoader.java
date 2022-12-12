@@ -440,10 +440,15 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 *            Time to wait before freeing. (Ignored)
 	 */
 	public record Configuration(//
-			@NotNull List<@Valid Machine> machines, @TCPPort int port,
-			@IPAddress(nullOK = true, emptyOK = true) String ip,
-			@Positive double timeoutCheckInterval, @Positive int maxRetiredJobs,
-			@Positive int secondsBeforeFree) {
+			@JsonProperty("machines") @NotNull @Valid List<Machine> machines,
+			@JsonProperty("port") @TCPPort int port,
+			@JsonProperty("ip") @IPAddress(nullOK = true, emptyOK = true) //
+			String ip, //
+			@JsonProperty("timeout-check-interval") @Positive //
+			double timeoutCheckInterval,
+			@JsonProperty("max-retired-jobs") @Positive int maxRetiredJobs,
+			@JsonProperty("seconds-before-free") @Positive //
+			double secondsBeforeFree) {
 		@Override
 		public String toString() {
 			return new StringBuilder("Configuration(").append("machines=")

@@ -71,6 +71,9 @@ class MDefLoaderTest extends MemDBTestBase {
 	@Value("classpath:bad-board-example.json")
 	private Resource badBoard;
 
+	@Value("classpath:bad-board-example2.json")
+	private Resource badBoard2;
+
 	@Test
 	void readSingleBoardExample() throws IOException {
 		var machines = loader.readMachineDefinitions(singleBoard.getFile());
@@ -89,12 +92,22 @@ class MDefLoaderTest extends MemDBTestBase {
 	}
 
 	@Test
-	void readBadBoardExample() throws IOException {
+	void readBadBoardExample() {
 		var e = assertThrows(IOException.class,
 				() -> loader.readMachineDefinitions(badBoard.getFile()));
 		assertEquals(
 				"failed to validate configuration: "
 						+ "'1.2.3.4.5.not-an-ip' is a bad IPv4 address",
+				e.getMessage());
+	}
+
+	@Test
+	void readBadBoardExample2() {
+		var e = assertThrows(IOException.class,
+				() -> loader.readMachineDefinitions(badBoard2.getFile()));
+		assertEquals(
+				"failed to validate configuration: "
+						+ "'1.2.3.4.5.6.not-an-ip' is a bad IPv4 address",
 				e.getMessage());
 	}
 
