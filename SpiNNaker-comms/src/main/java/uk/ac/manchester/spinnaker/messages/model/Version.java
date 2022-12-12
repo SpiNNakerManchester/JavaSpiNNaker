@@ -21,6 +21,7 @@ import static java.lang.Integer.parseInt;
 
 import java.util.regex.Pattern;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -83,6 +84,7 @@ public record Version(@JsonProperty("major-version") int majorVersion,
 	 *             If the version string doesn't match one of the supported
 	 *             patterns.
 	 */
+	@JsonCreator
 	public static Version parse(String threePartVersion) {
 		var m = VERSION_RE.matcher(threePartVersion);
 		if (!m.matches()) {

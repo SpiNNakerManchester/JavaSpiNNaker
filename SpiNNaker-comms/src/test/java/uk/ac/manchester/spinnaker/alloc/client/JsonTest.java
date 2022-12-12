@@ -68,8 +68,16 @@ class JsonTest {
 	@Test
 	void jobs() throws Exception {
 		// Deserialize only
-		var jobs = "{\"jobs\":[\"http:foo1\",\"http:foo2\"],"
-				+ "\"prev\":\"http:foo3\",\"next\":\"http:foo4\"}";
+		var jobs = """
+				{
+					"jobs": [
+						"http:foo1",
+						"http:foo2"
+					],
+					"prev": "http:foo3",
+					"next": "http:foo4"
+				}
+				""";
 		assertEquals(2, deserialize(jobs, Jobs.class).jobs.size());
 	}
 
@@ -77,23 +85,56 @@ class JsonTest {
 	void machines() throws Exception {
 		// Deserialize only
 		// also BriefMachineDescription, DeadLink and Direction
-		var ms = "{\"machines\":[{\"name\":\"foo\",\"dead-links\":[["
-				+ "{\"board\":{\"x\":0,\"y\":0,\"z\":0},\"direction\":0},"
-				+ "{\"board\":{\"x\":0,\"y\":0,\"z\":0},\"direction\":1}]]}]}";
+		var ms = """
+				{
+					"machines": [
+						{
+							"name": "foo",
+							"dead-links": [
+								[ {
+									"board": {
+										"x": 0,
+										"y": 0,
+										"z": 0
+									},
+									"direction": 0
+								}, {
+									"board": {
+										"x": 0,
+										"y": 0,
+										"z": 0
+									},
+									"direction": 1
+								} ]
+							]
+						}
+					]
+				}
+				""";
 		assertEquals(1, deserialize(ms, Machines.class).machines.size());
 	}
 
 	@Test
 	void power() throws Exception {
-		var power = "{\"power\":\"OFF\"}";
+		var power = """
+				{
+					"power": "OFF"
+				}
+				""";
 		assertNotNull(deserialize(power, Power.class));
 	}
 
 	@Test
 	void rootInfo() throws Exception {
-		var rootInfo = "{\"csrf-header\":\"a\",\"csrf-token\":\"b\","
-				+ "\"jobs-uri\":\"http:c\",\"machines-uri\":\"http:d\","
-				+ "\"version\":\"1.2.3\"}";
+		var rootInfo = """
+				{
+					"csrf-header": "a",
+					"csrf-token": "b",
+					"jobs-uri": "http:c",
+					"machines-uri": "http:d",
+					"version": "1.2.3"
+				}
+				""";
 		var ri = deserialize(rootInfo, RootInfo.class);
 		assertNotNull(ri);
 		assertEquals("a", ri.csrfHeader);
@@ -105,11 +146,19 @@ class JsonTest {
 
 	@Test
 	void whereis() throws Exception {
-		var whereIs = "{\"job-id\":123,\"job-ref\":\"http:/0\","
-				+ "\"job-chip\":[0,0],\"chip\":[1,1],"
-				+ "\"machine-name\":\"gorp\",\"machine-ref\":\"http:/1\","
-				+ "\"board-chip\":[2,2],\"logical-board-coordinates\":[0,1,2],"
-				+ "\"physical-board-coordinates\":[3,4,5]}";
+		var whereIs = """
+				{
+					"job-id": 123,
+					"job-ref": "http:/0",
+					"job-chip": [0, 0],
+					"chip": [1, 1],
+					"machine-name": "gorp",
+					"machine-ref": "http:/1",
+					"board-chip": [2, 2],
+					"logical-board-coordinates": [0, 1, 2],
+					"physical-board-coordinates": [3, 4, 5]
+				}
+				""";
 		var wi = deserialize(whereIs, WhereIs.class);
 
 		assertNotNull(wi);

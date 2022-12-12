@@ -39,9 +39,17 @@ public class TestWhereIs {
 		var logical = new BoardCoordinates(5, 6, 7);
 		var physical = new BoardPhysicalCoordinates(10, 11, 12);
 
-		var json = "{\"job_chip\":[1,2],\"job_id\":666,\"chip\":[3,4],"
-				+ "\"logical\":[5,6,7],\"machine\":\"Spin24b-001\","
-				+ "\"board_chip\":[8,9],\"physical\":[10,11,12]}";
+		var json = """
+				{
+					"job_chip": [1,2],
+					"job_id": 666,
+					"chip": [3,4],
+					"logical": [5,6,7],
+					"machine": "Spin24b-001",
+					"board_chip": [8,9],
+					"physical": [10,11,12]
+				}
+				""";
 		var mapper = SpallocClient.createMapper();
 		var fromJson = mapper.readValue(json, WhereIs.class);
 		assertEquals(jobChip, fromJson.jobChip());
@@ -67,9 +75,17 @@ public class TestWhereIs {
 		var logical = new BoardCoordinates(0, 0, 1);
 		var physical = new BoardPhysicalCoordinates(0, 0, 8);
 
-		var json = "{\"job_chip\":null,\"job_id\":null,\"chip\":[8,4],"
-				+ "\"logical\":[0,0,1],\"machine\":\"Spin24b-001\","
-				+ "\"board_chip\":[0,0],\"physical\":[0,0,8]}";
+		var json = """
+				{
+					"job_chip": null,
+					"job_id": null,
+					"chip": [8,4],
+					"logical": [0,0,1],
+					"machine": "Spin24b-001",
+					"board_chip": [0,0],
+					"physical": [0,0,8]
+				}
+				""";
 		var mapper = SpallocClient.createMapper();
 		var fromJson = mapper.readValue(json, WhereIs.class);
 		assertNull(fromJson.jobChip());
@@ -89,10 +105,17 @@ public class TestWhereIs {
 
 	@Test
 	void testNulls() throws IOException {
-
-		var json = "{\"job_chip\":null,\"job_id\":null,\"chip\":null,"
-				+ "\"logical\":null,\"machine\":null,\"board_chip\":null,"
-				+ "\"physical\":null}";
+		var json = """
+				{
+					"job_chip": null,
+					"job_id": null,
+					"chip": null,
+					"logical": null,
+					"machine": null,
+					"board_chip": null,
+					"physical": null
+				}
+				""";
 		var mapper = SpallocClient.createMapper();
 		var fromJson = mapper.readValue(json, WhereIs.class);
 		assertNull(fromJson.jobChip());

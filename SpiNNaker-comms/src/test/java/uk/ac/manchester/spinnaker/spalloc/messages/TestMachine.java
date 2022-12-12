@@ -34,10 +34,22 @@ public class TestMachine {
 
 	@Test
 	void testFromJson() throws IOException {
-		var json = "{\"name\":\"power-monitor\","
-				+ "\"tags\":[\"power-monitor\",\"machine-room\"],"
-				+ "\"width\":1,\"height\":1,"
-				+ "\"dead_boards\":[[0,0,1],[0,0,2]],\"dead_links\":[]}";
+		var json = """
+				{
+					"name": "power-monitor",
+					"tags": [
+						"power-monitor",
+						"machine-room"
+					],
+					"width": 1,
+					"height":1,
+					"dead_boards":[
+						[0,0,1],
+						[0,0,2]
+					],
+					"dead_links": []
+				}"
+				""";
 		var mapper = SpallocClient.createMapper();
 		var fromJson = mapper.readValue(json, Machine.class);
 		assertEquals("power-monitor", fromJson.getName());
@@ -53,11 +65,25 @@ public class TestMachine {
 
 	@Test
 	void testAssumedDeadLinks() throws IOException {
-		var json = "{\"name\":\"power-monitor\","
-				+ "\"tags\":[\"power-monitor\",\"machine-room\"],"
-				+ "\"width\":1,\"height\":1,"
-				+ "\"dead_boards\":[[1,2,3],[4,5,6]],"
-				+ "\"dead_links\":[[7,8,9,10],[11,12,13,14]]}";
+		var json = """
+				{
+					"name": "power-monitor",
+					"tags": [
+						"power-monitor",
+						"machine-room"
+					],
+					"width": 1,
+					"height": 1,
+					"dead_boards": [
+						[1,2,3],
+						[4,5,6]
+					],
+					"dead_links": [
+						[7,8,9,10],
+						[11,12,13,14]
+					]
+				}
+				""";
 		var mapper = SpallocClient.createMapper();
 		var fromJson = mapper.readValue(json, Machine.class);
 		assertEquals("power-monitor", fromJson.getName());
@@ -75,7 +101,11 @@ public class TestMachine {
 
 	@Test
 	void testNullJson() throws IOException {
-		var json = "{\"name\":null}";
+		var json = """
+				{
+					"name": null
+				}
+				""";
 		var mapper = SpallocClient.createMapper();
 		var fromJson = mapper.readValue(json, Machine.class);
 		assertNull(fromJson.getName());

@@ -32,12 +32,16 @@ public class TestState {
 
 	@Test
 	void testFromJson() throws IOException {
-		var json = "{\"state\":2,"
-				+ "\"power\":true,"
-				+ "\"keepalive\":60.0,"
-				+ "\"reason\":null,"
-				+ "\"start_time\":1.125,"
-				+ "\"keepalivehost\":\"86.82.216.229\"}";
+		var json = """
+				{
+					"state": 2,
+					"power": true,
+					"keepalive": 60.0,
+					"reason": null,
+					"start_time": 1.125,
+					"keepalivehost": "86.82.216.229"
+				}
+				""";
 		var mapper = SpallocClient.createMapper();
 		var fromJson = mapper.readValue(json, JobState.class);
 		assertEquals(State.POWER, fromJson.getState());
@@ -51,7 +55,11 @@ public class TestState {
 
 	@Test
 	void testNullJson() throws IOException {
-		var json = "{\"reason\":null}";
+		var json = """
+				{
+					"reason": null
+				}
+				""";
 		var mapper = SpallocClient.createMapper();
 		var fromJson = mapper.readValue(json, JobState.class);
 		assertNull(fromJson.getState());
