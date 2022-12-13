@@ -31,6 +31,7 @@ import javax.validation.constraints.PositiveOrZero;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.errorprone.annotations.Keep;
 
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
@@ -93,16 +94,19 @@ public record CreateJobRequest(String owner, String group,
 		@PositiveOrZero(message = "max-dead-boards may not be "
 				+ "negative") Integer maxDeadBoards) {
 	@JsonCreator
-	CreateJobRequest(String owner, String group,
-			@NotNull(message = "keepalive-interval is "
+	CreateJobRequest(@JsonProperty String owner, @JsonProperty String group,
+			@JsonProperty @NotNull(message = "keepalive-interval is "
 					+ "required") String keepaliveInterval,
-			@Positive(message = "number of boards must be "
+			@JsonProperty @Positive(message = "number of boards must be "
 					+ "at least 1 if given") Integer numBoards,
-			@Valid Dimensions dimensions, @Valid SpecificBoard board,
-			String machineName,
-			List<@NotBlank(message = "tags must not be blank") String> tags,
-			@PositiveOrZero(message = "max-dead-boards may not be "
-					+ "negative") Integer maxDeadBoards) {
+			@JsonProperty @Valid Dimensions dimensions,
+			@JsonProperty @Valid SpecificBoard board,
+			@JsonProperty String machineName,
+			@JsonProperty List<
+					@NotBlank(message = "tags must not be blank") String> tags,
+			@JsonProperty @PositiveOrZero(//
+					message = "max-dead-boards may not be negative") //
+			Integer maxDeadBoards) {
 		this(owner, group, Duration.parse(keepaliveInterval), numBoards,
 				dimensions, board, machineName, tags, maxDeadBoards);
 	}

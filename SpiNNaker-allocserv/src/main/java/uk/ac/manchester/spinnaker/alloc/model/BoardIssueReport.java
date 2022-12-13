@@ -16,12 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.alloc.model;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
-
 import java.time.Instant;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
@@ -42,12 +40,12 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * @param timestamp
  *            When was it reported?
  */
-@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public record BoardIssueReport(int id, int boardId, String issue,
 		String reporter, Instant timestamp) {
 	@JsonCreator
-	BoardIssueReport(int id, int boardId, String issue, String reporter,
-			String timestamp) {
+	BoardIssueReport(@JsonProperty int id, @JsonProperty int boardId,
+			@JsonProperty String issue, @JsonProperty String reporter,
+			@JsonProperty String timestamp) {
 		this(id, boardId, issue, reporter, Instant.parse(timestamp));
 	}
 
