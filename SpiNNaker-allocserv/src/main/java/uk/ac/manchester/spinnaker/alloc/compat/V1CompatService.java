@@ -47,6 +47,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.errorprone.annotations.RestrictedApi;
 
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
@@ -96,7 +98,8 @@ public class V1CompatService {
 
 	V1CompatService() {
 		mapper = JsonMapper.builder().propertyNamingStrategy(SNAKE_CASE)
-				.build();
+				.addModule(new Jdk8Module())
+				.addModule(new JavaTimeModule()).build();
 		var group = new ThreadGroup("spalloc-legacy-service");
 		var counter = new ValueHolder<>(1);
 		threadFactory = r -> {

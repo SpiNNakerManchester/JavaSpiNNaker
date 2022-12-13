@@ -29,7 +29,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.errorprone.annotations.Keep;
@@ -83,34 +82,20 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  *            allocation. Note that the allocation engine might increase this if
  *            it decides to overallocate. Defaults to {@code 0}.
  */
-public record CreateJobRequest(String owner, String group,
+public record CreateJobRequest(@JsonProperty String owner,
+		@JsonProperty String group,
+		@JsonProperty("keepalive-interval")
 		@NotNull(message = "keepalive-interval is "
 				+ "required") Duration keepaliveInterval,
-		@Positive(message = "number of boards must be "
-				+ "at least 1 if given") Integer numBoards,
-		@Valid Dimensions dimensions, @Valid SpecificBoard board,
-		String machineName,
-		List<@NotBlank(message = "tags must not be blank") String> tags,
-		@PositiveOrZero(message = "max-dead-boards may not be "
-				+ "negative") Integer maxDeadBoards) {
-	@JsonCreator
-	CreateJobRequest(@JsonProperty String owner, @JsonProperty String group,
-			@JsonProperty @NotNull(message = "keepalive-interval is "
-					+ "required") String keepaliveInterval,
-			@JsonProperty @Positive(message = "number of boards must be "
-					+ "at least 1 if given") Integer numBoards,
-			@JsonProperty @Valid Dimensions dimensions,
-			@JsonProperty @Valid SpecificBoard board,
-			@JsonProperty String machineName,
-			@JsonProperty List<
-					@NotBlank(message = "tags must not be blank") String> tags,
-			@JsonProperty @PositiveOrZero(//
-					message = "max-dead-boards may not be negative") //
-			Integer maxDeadBoards) {
-		this(owner, group, Duration.parse(keepaliveInterval), numBoards,
-				dimensions, board, machineName, tags, maxDeadBoards);
-	}
-
+		@JsonProperty("num-boards") @Positive(message = "number of boards "
+				+ "must be at least 1 if given") Integer numBoards,
+		@JsonProperty @Valid Dimensions dimensions,
+		@JsonProperty @Valid SpecificBoard board,
+		@JsonProperty("machine-name") String machineName,
+		@JsonProperty List<@NotBlank(//
+				message = "tags must not be blank") String> tags,
+		@JsonProperty("max-dead-boards") @PositiveOrZero(message = //
+				"max-dead-boards may not be negative") Integer maxDeadBoards) {
 	// Extended validation
 
 	@Keep

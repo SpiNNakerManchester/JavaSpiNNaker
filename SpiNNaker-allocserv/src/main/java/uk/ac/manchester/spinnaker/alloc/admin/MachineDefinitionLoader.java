@@ -440,7 +440,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 *            Time to wait before freeing. (Ignored)
 	 */
 	public record Configuration(//
-			@JsonProperty("machines") @NotNull List<@Valid Machine> machines,
+			@JsonProperty("machines") @NotNull @Valid List<Machine> machines,
 			@JsonProperty("port") @TCPPort int port,
 			@JsonProperty("ip") @IPAddress(nullOK = true, emptyOK = true) //
 			String ip, //

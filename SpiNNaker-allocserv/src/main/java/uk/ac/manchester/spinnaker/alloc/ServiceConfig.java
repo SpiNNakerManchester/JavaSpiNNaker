@@ -76,6 +76,8 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
@@ -145,6 +147,8 @@ public class ServiceConfig extends Application {
 	@Role(ROLE_INFRASTRUCTURE)
 	JsonMapper mapper() {
 		return JsonMapper.builder().findAndAddModules()
+				.addModule(new JavaTimeModule())
+				.addModule(new Jdk8Module())
 				.disable(WRITE_DATES_AS_TIMESTAMPS)
 				.propertyNamingStrategy(KEBAB_CASE).build();
 	}

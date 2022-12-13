@@ -31,6 +31,8 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
@@ -49,6 +51,8 @@ class JsonTest {
 	JsonTest() {
 		// Set up the mapper in the same way that ServiceConfig does
 		mapper = JsonMapper.builder().findAndAddModules()
+				.addModule(new JavaTimeModule())
+				.addModule(new Jdk8Module())
 				.disable(WRITE_DATES_AS_TIMESTAMPS)
 				.propertyNamingStrategy(SNAKE_CASE).build();
 	}
