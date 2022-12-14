@@ -18,11 +18,12 @@ package uk.ac.manchester.spinnaker.alloc.client;
 
 import static java.lang.String.format;
 
-import java.util.Objects;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.errorprone.annotations.Immutable;
 
+import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
@@ -31,151 +32,65 @@ import uk.ac.manchester.spinnaker.machine.board.ValidTriadY;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
-/** Generalised coordinates of a board. */
+/**
+ * Generalised coordinates of a board.
+ *
+ * @param x
+ *            Logical triad X coordinate. Range: 0&ndash;255.
+ * @param y
+ *            Logical triad Y coordinate. Range: 0&ndash;255.
+ * @param z
+ *            Logical triad Z coordinate. Range: 0&ndash;2.
+ * @param cabinet
+ *            Number of the cabinet containing the frame containing the board.
+ *            Range: 0&ndash;31.
+ * @param frame
+ *            Number of the frame (within the cabinet) containing the board.
+ *            Range: 0&ndash;31.
+ * @param board
+ *            Number of the board within its frame. Range: 0&ndash;23. May be
+ *            {@code null} under some circumstances.
+ * @param address
+ *            IP address of ethernet chip on board. May be {@code null} if the
+ *            current user doesn't have permission to see the board address at
+ *            this point (because it isn't allocated or booted).
+ */
 @Immutable
-public class BoardCoords {
-	/** Logical triad X coordinate. */
-	@ValidTriadX
-	private final int x;
-
-	/** Logical triad Y coordinate. */
-	@ValidTriadY
-	private final int y;
-
-	/** Logical triad Z coordinate. */
-	@ValidTriadZ
-	private final int z;
-
-	/** Physical cabinet number. */
-	@ValidCabinetNumber
-	private final int cabinet;
-
-	/** Physical frame number. */
-	@ValidFrameNumber
-	private final int frame;
-
-	/** Physical board number. */
-	@ValidBoardNumber
-	private final Integer board;
-
+public record BoardCoords(//
+		@JsonProperty("x") @ValidTriadX int x,
+		@JsonProperty("y") @ValidTriadY int y,
+		@JsonProperty("z") @ValidTriadZ int z,
+		@JsonProperty("cabinet") @ValidCabinetNumber int cabinet,
+		@JsonProperty("frame") @ValidFrameNumber int frame,
+		@JsonProperty("board") @ValidBoardNumber Integer board,
+		@JsonProperty("address") @IPAddress(nullOK = true) String address) {
 	/**
-	 * IP address of ethernet chip. May be {@code null} if the current user
-	 * doesn't have permission to see the board address at this point.
+	 * The triad coordinate triple of the board.
+	 *
+	 * @return Logical triad coordinates.
 	 */
-	@IPAddress(nullOK = true)
-	private final String address;
-
-	/**
-	 * @param x
-	 *            Logical triad X coordinate
-	 * @param y
-	 *            Logical triad Y coordinate
-	 * @param z
-	 *            Logical triad Z coordinate
-	 * @param cabinet
-	 *            Physical cabinet number
-	 * @param frame
-	 *            Physical frame number
-	 * @param board
-	 *            Physical board number
-	 * @param address
-	 *            IP address of ethernet chip
-	 */
-	BoardCoords(@JsonProperty("x") int x, @JsonProperty("y") int y,
-			@JsonProperty("z") int z, @JsonProperty("cabinet") int cabinet,
-			@JsonProperty("frame") int frame,
-			@JsonProperty("board") Integer board,
-			@JsonProperty("address") String address) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.cabinet = cabinet;
-		this.frame = frame;
-		this.board = board;
-		this.address = address;
+	@JsonIgnore
+	public TriadCoords triad() {
+		return new TriadCoords(x, y, z);
 	}
 
 	/**
-	 * Get the triad X coordinate. Range: 0-255.
+	 * The physical coordinate triple of the board.
 	 *
-	 * @return Logical triad X coordinate.
+	 * @return Physical board coordinates, or {@code null} if the {@link #board}
+	 *         is null.
 	 */
-	public int getX() {
-		return x;
-	}
-
-	/**
-	 * Get the triad Y coordinate. Range: 0-255.
-	 *
-	 * @return Logical triad Y coordinate.
-	 */
-	public int getY() {
-		return y;
-	}
-
-	/**
-	 * Get the triad Z coordinate. Range: 0-2.
-	 *
-	 * @return Logical triad Z coordinate.
-	 */
-	public int getZ() {
-		return z;
-	}
-
-	/**
-	 * Get the number of the cabinet containing the frame containing the board.
-	 *
-	 * @return Physical cabinet number.
-	 */
-	public int getCabinet() {
-		return cabinet;
-	}
-
-	/**
-	 * Get the number of the frame (within the cabinet) containing the board.
-	 *
-	 * @return Physical frame number.
-	 */
-	public int getFrame() {
-		return frame;
-	}
-
-	/**
-	 * Get the number of the board within its frame.
-	 *
-	 * @return Physical board number.
-	 */
-	public int getBoard() {
-		return board;
-	}
-
-	/**
-	 * Get the IP address of the Ethernet chip of the board, if available.
-	 *
-	 * @return IP address of ethernet chip. May be {@code null} if the
-	 *         current user doesn't have permission to see the board address
-	 *         at this point.
-	 */
-	public String getAddress() {
-		return address;
+	@JsonIgnore
+	public PhysicalCoords physicalCoords() {
+		if (board == null) {
+			return null;
+		}
+		return new PhysicalCoords(cabinet, frame, board);
 	}
 
 	@Override
 	public String toString() {
-		return format("Board(%d,%d,%d|%d:%d:%d|%s)", x, y, z,
-				cabinet, frame, board, address);
-	}
-
-	@Override
-	public boolean equals(Object other) {
-		return (other instanceof BoardCoords o) && (x == o.x) && (y == o.y)
-				&& (z == o.z) && (cabinet == o.cabinet) && (frame == o.frame)
-				&& Objects.equals(board, o.board)
-				&& Objects.equals(address, o.address);
-	}
-
-	@Override
-	public int hashCode() {
-		return (x << 16) | (y << 8) | z;
+		return format("Board(%d,%d,%d|%d:%d:%d|%s)", x, y, z, cabinet, frame,
+				board, address);
 	}
 }

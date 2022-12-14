@@ -330,16 +330,7 @@ public class TxrxProcess {
 	 * States that a particular request failed with a particular exception. The
 	 * request should not be retried once this has been generated.
 	 */
-	// TODO make into a record once on a new enough language profile
-	private static class Failure {
-		private final SCPRequest<?> req;
-
-		private final Exception exn;
-
-		Failure(SCPRequest<?> req, Exception exn) {
-			this.req = req;
-			this.exn = exn;
-		}
+	private record Failure(SCPRequest<?> req, Exception exn) {
 	}
 
 	/**

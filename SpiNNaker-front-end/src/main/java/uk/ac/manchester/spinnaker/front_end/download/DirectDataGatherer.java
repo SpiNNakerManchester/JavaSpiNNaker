@@ -50,7 +50,7 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  * @see RecordingRegionDataGatherer
  */
 @Deprecated
-public class DirectDataGatherer extends DataGatherer {
+public final class DirectDataGatherer extends DataGatherer {
 	/** The number of memory regions in the DSE model. */
 	private static final int MAX_MEM_REGIONS = 16;
 

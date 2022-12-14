@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
  *      >Spalloc Server documentation</a>
  * @see BoardCoordinates The basic result type associated with the request
  */
-public class GetBoardAtPositionCommand extends Command<Integer> {
+public final class GetBoardAtPositionCommand extends Command<Integer> {
 	/**
 	 * Create a request.
 	 *

@@ -156,7 +156,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	}
 
 	/** Notes that a board probably needs its FPGA definitions reloading. */
-	private static class FPGAReloadRequired extends Exception {
+	private static final class FPGAReloadRequired extends Exception {
 		private static final long serialVersionUID = 1L;
 
 		final BMPBoard board;

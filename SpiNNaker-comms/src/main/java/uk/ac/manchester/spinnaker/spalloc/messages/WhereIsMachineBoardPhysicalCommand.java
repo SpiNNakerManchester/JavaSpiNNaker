@@ -30,7 +30,7 @@ import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
  *      >Spalloc Server documentation</a>
  * @see WhereIs The basic result type associated with the request
  */
-public class WhereIsMachineBoardPhysicalCommand extends Command<Integer> {
+public final class WhereIsMachineBoardPhysicalCommand extends Command<Integer> {
 	/**
 	 * Create a request to locate a board on a machine.
 	 *

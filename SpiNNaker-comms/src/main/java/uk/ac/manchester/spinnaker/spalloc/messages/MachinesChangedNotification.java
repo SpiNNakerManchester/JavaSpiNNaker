@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
  * A response that describes what machines have changed state.
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
-public class MachinesChangedNotification implements Notification {
+public final class MachinesChangedNotification implements Notification {
 	private List<String> machinesChanged = List.of();
 
 	/** @return What machines have changed. */

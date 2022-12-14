@@ -23,7 +23,7 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
  *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.power_off_job_boards"
  *      >Spalloc Server documentation</a>
  */
-public class PowerOffJobBoardsCommand extends Command<Integer> {
+public final class PowerOffJobBoardsCommand extends Command<Integer> {
 	/**
 	 * Create a request to turn off a job's allocated boards.
 	 *

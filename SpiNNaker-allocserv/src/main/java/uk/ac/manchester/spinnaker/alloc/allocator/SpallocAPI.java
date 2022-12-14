@@ -671,7 +671,9 @@ public interface SpallocAPI {
 		 *            The descriptor.
 		 * @return The result of the visiting.
 		 */
-		T numBoards(@NotNull CreateNumBoards createNumBoards);
+		default T numBoards(@NotNull CreateNumBoards createNumBoards) {
+			return null;
+		}
 
 		/**
 		 * Visit a descriptor.
@@ -680,7 +682,9 @@ public interface SpallocAPI {
 		 *            The descriptor.
 		 * @return The result of the visiting.
 		 */
-		T dimensionsAt(@NotNull CreateDimensionsAt createDimensionsAt);
+		default T dimensionsAt(@NotNull CreateDimensionsAt createDimensionsAt) {
+			return null;
+		}
 
 		/**
 		 * Visit a descriptor.
@@ -689,7 +693,9 @@ public interface SpallocAPI {
 		 *            The descriptor.
 		 * @return The result of the visiting.
 		 */
-		T dimensions(@NotNull CreateDimensions createDimensions);
+		default T dimensions(@NotNull CreateDimensions createDimensions) {
+			return null;
+		}
 
 		/**
 		 * Visit a descriptor.
@@ -698,7 +704,9 @@ public interface SpallocAPI {
 		 *            The descriptor.
 		 * @return The result of the visiting.
 		 */
-		T board(@NotNull CreateBoard createBoard);
+		default T board(@NotNull CreateBoard createBoard) {
+			return null;
+		}
 	}
 
 	/**

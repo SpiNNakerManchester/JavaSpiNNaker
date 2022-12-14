@@ -27,7 +27,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  *      >Spalloc Server documentation</a>
  * @see WhereIs The basic result type associated with the request
  */
-public class WhereIsJobChipCommand extends Command<Integer> {
+public final class WhereIsJobChipCommand extends Command<Integer> {
 	/**
 	 * Create a request to locate a chip within a job's allocation.
 	 *

@@ -23,7 +23,7 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
  *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.version"
  *      >Spalloc Server documentation</a>
  */
-public class VersionCommand extends Command<Integer> {
+public final class VersionCommand extends Command<Integer> {
 	/**
 	 * Create a request to get the version of the spalloc server.
 	 */

@@ -52,7 +52,7 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  *
  * @author Donal Fellows
  */
-public class RecordingRegionDataGatherer extends DataGatherer {
+public final class RecordingRegionDataGatherer extends DataGatherer {
 	/**
 	 * How long a termination delay has to be to be worth reporting, in
 	 * milliseconds.

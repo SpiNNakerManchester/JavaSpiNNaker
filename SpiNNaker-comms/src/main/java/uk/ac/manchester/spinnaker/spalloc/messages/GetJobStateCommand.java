@@ -24,7 +24,7 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
  *      >Spalloc Server documentation</a>
  * @see JobState The basic result type associated with the request
  */
-public class GetJobStateCommand extends Command<Integer> {
+public final class GetJobStateCommand extends Command<Integer> {
 	/**
 	 * Create a request to get the state of a job.
 	 *

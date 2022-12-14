@@ -39,7 +39,7 @@ import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolTimeoutExcep
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
-import uk.ac.manchester.spinnaker.spalloc.messages.Command;
+import uk.ac.manchester.spinnaker.spalloc.messages.CustomIntCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.ExceptionResponse;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobsChangedNotification;
 import uk.ac.manchester.spinnaker.spalloc.messages.MachinesChangedNotification;
@@ -48,11 +48,10 @@ import uk.ac.manchester.spinnaker.spalloc.messages.VersionCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 
 class TestClient {
-	static class MockCommand extends Command<Integer> {
-		MockCommand(String name, int arg, String key, Object val) {
-			super(name);
-			addArg(arg);
-			addKwArg(key, val);
+	static class MockCommand extends CustomIntCommand {
+		MockCommand(int arg, Object val) {
+			super("foo", arg);
+			addKwArg("bar", val);
 		}
 	}
 
@@ -237,8 +236,7 @@ class TestClient {
 						"return": "Woo"
 					}
 					""");
-			assertEquals("\"Woo\"",
-					c.call(new MockCommand("foo", 1, "bar", 2), null));
+			assertEquals("\"Woo\"", c.call(new MockCommand(1, 2), null));
 			JSONAssert.assertEquals(MOCK_RECEIVED_MESSAGE, s.recv(), true);
 
 			/*
@@ -260,8 +258,7 @@ class TestClient {
 						"return": "Woo"
 					}
 					""");
-			assertEquals("\"Woo\"",
-					c.call(new MockCommand("foo", 1, "bar", 2), null));
+			assertEquals("\"Woo\"", c.call(new MockCommand(1, 2), null));
 			JSONAssert.assertEquals(MOCK_RECEIVED_MESSAGE, s.recv(), true);
 			assertEquals(new JobsChangedNotification(1),
 					c.waitForNotification(-1));
@@ -273,7 +270,7 @@ class TestClient {
 			// Should be able to timeout immediately
 			long before = System.currentTimeMillis();
 			assertThrows(SpallocProtocolTimeoutException.class,
-					() -> c.call(new MockCommand("foo", 1, "bar", 2), TIMEOUT));
+					() -> c.call(new MockCommand(1, 2), TIMEOUT));
 			long after = System.currentTimeMillis();
 			JSONAssert.assertEquals(MOCK_RECEIVED_MESSAGE, s.recv(), true);
 			assertTimeout(before, after);
@@ -286,7 +283,7 @@ class TestClient {
 					""");
 			before = System.currentTimeMillis();
 			assertThrows(SpallocProtocolTimeoutException.class,
-					() -> c.call(new MockCommand("foo", 1, "bar", 2), TIMEOUT));
+					() -> c.call(new MockCommand(1, 2), TIMEOUT));
 			after = System.currentTimeMillis();
 			JSONAssert.assertEquals(MOCK_RECEIVED_MESSAGE, s.recv(), true);
 			assertTimeout(before, after);
@@ -297,7 +294,7 @@ class TestClient {
 			// Exceptions should transfer
 			s.send("{\"exception\": \"something informative\"}");
 			var t = assertThrows(SpallocServerException.class,
-					() -> c.call(new MockCommand("foo", 1, "bar", 2), TIMEOUT));
+					() -> c.call(new MockCommand(1, 2), TIMEOUT));
 			assertEquals("something informative", t.getMessage());
 		});
 	}
@@ -331,7 +328,7 @@ class TestClient {
 					""");
 			s.send("{\"return\": \"Woo\"}");
 			assertEquals("\"Woo\"",
-					c.call(new MockCommand("foo", 1, "bar", 2), null));
+					c.call(new MockCommand(1, 2), null));
 			JSONAssert.assertEquals(MOCK_RECEIVED_MESSAGE, s.recv(), true);
 			assertEquals(new JobsChangedNotification(1),
 					c.waitForNotification());

@@ -23,7 +23,7 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
  *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.job_keepalive"
  *      >Spalloc Server documentation</a>
  */
-public class JobKeepAliveCommand extends Command<Integer> {
+public final class JobKeepAliveCommand extends Command<Integer> {
 	/**
 	 * Create a request to keep a job alive.
 	 *

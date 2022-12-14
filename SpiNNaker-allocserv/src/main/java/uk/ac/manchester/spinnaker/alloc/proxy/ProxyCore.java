@@ -45,7 +45,6 @@ import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
  * The main proxy class for a particular web socket session. It's bound to a
@@ -119,21 +118,13 @@ public class ProxyCore implements AutoCloseable {
 	}
 
 	private Impl decode(int opcode) {
-		switch (ProxyOp.values()[opcode]) {
-		case OPEN:
-			return this::openConnectedChannel;
-		case CLOSE:
-			return this::closeChannel;
-		case MESSAGE:
-			return this::sendMessage;
-		case OPEN_UNCONNECTED:
-			return this::openUnconnectedChannel;
-		case MESSAGE_TO:
-			return this::sendMessageTo;
-		default:
-			log.warn("unexpected proxy opcode: {}", opcode);
-			throw new IllegalArgumentException("bad opcode");
-		}
+		return switch (ProxyOp.values()[opcode]) {
+		case OPEN -> this::openConnectedChannel;
+		case CLOSE -> this::closeChannel;
+		case MESSAGE -> this::sendMessage;
+		case OPEN_UNCONNECTED -> this::openUnconnectedChannel;
+		case MESSAGE_TO -> this::sendMessageTo;
+		};
 	}
 
 	/**
@@ -258,19 +249,19 @@ public class ProxyCore implements AutoCloseable {
 		// This method handles message parsing/assembly and validation
 		int corId = message.getInt();
 
-		var localAddress = new ValueHolder<InetAddress>();
-		var localPort = new ValueHolder<Integer>();
-		int id = openUnconnected(localAddress, localPort);
+		var result = openUnconnected();
 
 		var msg = response(OPEN_UNCONNECTED, corId);
-		msg.putInt(id);
-		msg.put(localAddress.getValue().getAddress());
-		msg.putInt(localPort.getValue());
+		msg.putInt(result.id);
+		msg.put(result.localAddr.getAddress());
+		msg.putInt(result.localPort);
 		return msg;
 	}
 
-	private int openUnconnected(ValueHolder<InetAddress> localAddress,
-			ValueHolder<Integer> localPort) throws IOException {
+	private record Unconnected(int id, InetAddress localAddr, int localPort) {
+	}
+
+	private Unconnected openUnconnected() throws IOException {
 		if (localHost == null) {
 			throw new IOException(
 					"cannot receive if localHost is not definite");
@@ -287,10 +278,7 @@ public class ProxyCore implements AutoCloseable {
 
 		log.info("opened proxy unconnected channel {}:{} from {}:{}", session,
 				id, who, port);
-		// Arrange for values to be sent out
-		localAddress.setValue(who);
-		localPort.setValue(port);
-		return id;
+		return new Unconnected(id, who, port);
 	}
 
 	/**

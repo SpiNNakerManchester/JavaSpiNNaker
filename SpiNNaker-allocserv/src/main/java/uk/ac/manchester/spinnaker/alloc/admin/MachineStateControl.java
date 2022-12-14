@@ -534,7 +534,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	private void scheduleSerialNumberReads(String machineName) {
 		batchReqs(machineName, "retrieving serial numbers",
 				props.getSerialReadBatchSize(),
-				id -> new Op(CREATE_SERIAL_READ_REQ, id), Op::completed);
+				id -> new BmpOp(CREATE_SERIAL_READ_REQ, id), BmpOp::completed);
 	}
 
 	private interface InterruptableConsumer<T> {
@@ -568,8 +568,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *            How to process the results of an individual operation.
 	 */
 	private void batchReqs(String machineName, String action, int batchSize,
-			Function<Integer, Op> opGenerator,
-			InterruptableConsumer<Op> opResultsHandler) {
+			Function<Integer, BmpOp> opGenerator,
+			InterruptableConsumer<BmpOp> opResultsHandler) {
 		var boards = executeRead(c -> listAllBoards(c, machineName));
 		for (var batch : batch(batchSize, boards)) {
 			/*
@@ -592,7 +592,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 					}
 				}
 			} finally {
-				ops.forEach(Op::close);
+				ops.forEach(BmpOp::close);
 			}
 			if (stop) {
 				// Mark as interrupted
@@ -612,7 +612,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	public void updateAllBlacklists(@NotBlank String machineName) {
 		batchReqs(requireNonNull(machineName), "retrieving blacklists",
 				props.getBlacklistReadBatchSize(),
-				id -> new Op(CREATE_BLACKLIST_READ, id),
+				id -> new BmpOp(CREATE_BLACKLIST_READ, id),
 				op -> op.getResult(serial("data", Blacklist.class))
 						.ifPresent(bl -> {
 							blacklistStore.writeBlacklist(op.boardId, bl);
@@ -684,7 +684,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public Optional<Blacklist> readBlacklistFromMachine(BoardState board)
 			throws InterruptedException {
-		try (var op = new Op(CREATE_BLACKLIST_READ, board.id)) {
+		try (var op = new BmpOp(CREATE_BLACKLIST_READ, board.id)) {
 			return op.getResult(serial("data", Blacklist.class));
 		}
 	}
@@ -706,7 +706,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public void writeBlacklistToMachine(BoardState board,
 			@Valid Blacklist blacklist) throws InterruptedException {
-		try (var op = new Op(CREATE_BLACKLIST_WRITE, board.id, blacklist)) {
+		try (var op = new BmpOp(CREATE_BLACKLIST_WRITE, board.id, blacklist)) {
 			op.completed();
 		}
 	}
@@ -726,7 +726,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public String getSerialNumber(BoardState board)
 			throws InterruptedException {
-		try (var op = new Op(CREATE_SERIAL_READ_REQ, board.id)) {
+		try (var op = new BmpOp(CREATE_SERIAL_READ_REQ, board.id)) {
 			op.completed();
 		}
 		// Can now read out of the DB normally
@@ -756,7 +756,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *
 	 * @author Donal Fellows
 	 */
-	private final class Op implements AutoCloseable {
+	private final class BmpOp implements AutoCloseable {
 		private final int op;
 
 		private final Epoch epoch;
@@ -772,7 +772,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		 */
 		@MustBeClosed
 		@SuppressWarnings("CompileTimeConstant")
-		Op(@CompileTimeConstant final String operation, Object... args) {
+		BmpOp(@CompileTimeConstant final String operation, Object... args) {
 			boardId = ((Integer) args[0]).intValue(); // TODO yuck!
 			epoch = epochs.getBlacklistEpoch();
 			op = execute(conn -> {

@@ -23,7 +23,7 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
  *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.destroy_job"
  *      >Spalloc Server documentation</a>
  */
-public class DestroyJobCommand extends Command<Integer> {
+public final class DestroyJobCommand extends Command<Integer> {
 	/**
 	 * Make a request to destroy a job.
 	 *

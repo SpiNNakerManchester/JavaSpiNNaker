@@ -34,6 +34,8 @@ public class TestReplacer {
 				replacer.replace("1\u001e2\u001e3\u001e4"));
 		assertEquals("abc,d,1,e,3,f,4",
 				replacer.replace("2\u001e1\u001e3\u001e4"));
+		assertEquals("abc,d,12345,e,34567,f,45678",
+				replacer.replace("2\u001e12345\u001e34567\u001e45678"));
 		assertEquals("1,2,3,4", replacer.replace("1,2,3,4"));
 	}
 }

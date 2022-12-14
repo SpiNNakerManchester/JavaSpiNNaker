@@ -17,29 +17,22 @@
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
 /**
- * Request to not receive notifications about a machine.
- *
- * @see <a href=
- *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.no_notify_machine"
- *      >Spalloc Server documentation</a>
+ * A custom command not part of the standard protocol. <em>These are not
+ * guaranteed to be accepted by any spalloc service.</em>
  */
-public final class NoNotifyMachineCommand extends Command<String> {
-	//
+public abstract non-sealed class CustomStringCommand extends Command<String> {
 	/**
-	 * Create a request to not be notified of changes in machine state.
+	 * Create a command.
 	 *
-	 * @param machineName
-	 *            The machine to request about.
+	 * @param name
+	 *            The name of the command.
+	 * @param args
+	 *            The string positional arguments.
 	 */
-	public NoNotifyMachineCommand(String machineName) {
-		super("no_notify_machine");
-		addArg(machineName);
-	}
-
-	/**
-	 * Create a request to not be notified of changes in all machines' state.
-	 */
-	public NoNotifyMachineCommand() {
-		super("no_notify_machine");
+	public CustomStringCommand(String name, String... args) {
+		super(name);
+		for (var arg : args) {
+			addArg(arg);
+		}
 	}
 }

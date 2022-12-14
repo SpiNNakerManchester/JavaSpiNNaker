@@ -23,7 +23,7 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
  *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.notify_job"
  *      >Spalloc Server documentation</a>
  */
-public class NotifyJobCommand extends Command<Integer> {
+public final class NotifyJobCommand extends Command<Integer> {
 	/**
 	 * Create a request to be notified of changes in job state.
 	 *

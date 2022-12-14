@@ -24,7 +24,7 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
  *      >Spalloc Server documentation</a>
  * @see JobDescription The basic result type associated with the request
  */
-public class ListJobsCommand extends Command<Integer> {
+public final class ListJobsCommand extends Command<Integer> {
 	/**
 	 * Create a request to list the jobs.
 	 */

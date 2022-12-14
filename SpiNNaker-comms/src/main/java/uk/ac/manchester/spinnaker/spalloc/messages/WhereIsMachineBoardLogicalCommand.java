@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
  *      >Spalloc Server documentation</a>
  * @see WhereIs The basic result type associated with the request
  */
-public class WhereIsMachineBoardLogicalCommand extends Command<Integer> {
+public final class WhereIsMachineBoardLogicalCommand extends Command<Integer> {
 	/**
 	 * Create a request to locate a board on a machine.
 	 *

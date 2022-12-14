@@ -207,7 +207,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 	}
 
-	private class DescribeMachineSQL extends AbstractSQL {
+	private final class DescribeMachineSQL extends AbstractSQL {
 		final Query namedMachine = conn.query(GET_NAMED_MACHINE);
 
 		final Query countMachineThings = conn.query(COUNT_MACHINE_THINGS);
@@ -710,7 +710,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				board2, row.getEnum("dir_2", Direction.class));
 	}
 
-	private class MachineImpl implements Machine {
+	private final class MachineImpl implements Machine {
 		private final int id;
 
 		private final boolean inService;
@@ -924,7 +924,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 	}
 
-	private class JobCollection implements Jobs {
+	private final class JobCollection implements Jobs {
 		@JsonIgnore
 		private Epoch epoch;
 

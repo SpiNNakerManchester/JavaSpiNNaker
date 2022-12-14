@@ -23,7 +23,7 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
  *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.notify_machine"
  *      >Spalloc Server documentation</a>
  */
-public class NotifyMachineCommand extends Command<String> {
+public final class NotifyMachineCommand extends Command<String> {
 	/**
 	 * Create a request to be notified of changes in machine state.
 	 *

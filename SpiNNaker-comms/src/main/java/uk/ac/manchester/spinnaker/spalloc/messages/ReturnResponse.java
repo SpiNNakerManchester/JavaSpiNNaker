@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * A response that is the successful result of a request.
  */
-public class ReturnResponse implements Response {
+public final class ReturnResponse implements Response {
 	private String returnValue;
 
 	/** @return The returned value, as a string. */

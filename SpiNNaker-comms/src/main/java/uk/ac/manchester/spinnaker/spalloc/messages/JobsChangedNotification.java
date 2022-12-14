@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
  * A response that describes what jobs have changed state.
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
-public class JobsChangedNotification implements Notification {
+public final class JobsChangedNotification implements Notification {
 	private List<Integer> jobsChanged = List.of();
 
 	/** Create a notification response. */

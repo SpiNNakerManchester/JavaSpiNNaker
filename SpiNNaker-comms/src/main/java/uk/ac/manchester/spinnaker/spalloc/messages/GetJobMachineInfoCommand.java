@@ -24,7 +24,7 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
  *      >Spalloc Server documentation</a>
  * @see JobMachineInfo The basic result type associated with the request
  */
-public class GetJobMachineInfoCommand extends Command<Integer> {
+public final class GetJobMachineInfoCommand extends Command<Integer> {
 	/**
 	 * Create a request to get information about a job's allocated machine.
 	 *

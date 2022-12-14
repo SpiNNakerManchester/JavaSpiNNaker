@@ -23,7 +23,7 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
  *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.no_notify_job"
  *      >Spalloc Server documentation</a>
  */
-public class NoNotifyJobCommand extends Command<Integer> {
+public final class NoNotifyJobCommand extends Command<Integer> {
 	/**
 	 * Create a request to not be notified of changes in job state.
 	 *

@@ -24,7 +24,7 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
  *      >Spalloc Server documentation</a>
  * @see Machine The basic result type associated with the request
  */
-public class ListMachinesCommand extends Command<String> {
+public final class ListMachinesCommand extends Command<String> {
 	/** Create a request to list the known SpiNNaker machines. */
 	public ListMachinesCommand() {
 		super("list_machines");

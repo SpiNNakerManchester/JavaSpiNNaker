@@ -30,7 +30,7 @@ import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
  * @see BoardPhysicalCoordinates The basic result type associated with the
  *      request
  */
-public class GetBoardPositionCommand extends Command<Integer> {
+public final class GetBoardPositionCommand extends Command<Integer> {
 	/**
 	 * Create a request.
 	 *

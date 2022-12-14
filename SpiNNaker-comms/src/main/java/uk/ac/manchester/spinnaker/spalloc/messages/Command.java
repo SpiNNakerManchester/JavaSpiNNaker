@@ -28,7 +28,15 @@ import java.util.Map;
  * @param <A>
  *            The type of arguments.
  */
-public abstract class Command<A> {
+public abstract sealed class Command<A> //
+		permits CreateJobCommand, DestroyJobCommand, GetBoardAtPositionCommand,
+		GetBoardPositionCommand, GetJobMachineInfoCommand, GetJobStateCommand,
+		JobKeepAliveCommand, ListJobsCommand, ListMachinesCommand,
+		NoNotifyJobCommand, NoNotifyMachineCommand, NotifyJobCommand,
+		NotifyMachineCommand, PowerOffJobBoardsCommand, PowerOnJobBoardsCommand,
+		VersionCommand, WhereIsJobChipCommand,
+		WhereIsMachineBoardLogicalCommand, WhereIsMachineBoardPhysicalCommand,
+		WhereIsMachineChipCommand, CustomIntCommand, CustomStringCommand {
 	private final String command;
 
 	private final List<A> args = new ArrayList<>();

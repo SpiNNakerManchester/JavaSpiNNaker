@@ -78,8 +78,9 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * @author Donal Fellows
  * @author Alan Stokes
  */
-public abstract class DataGatherer extends BoardLocalSupport
-		implements AutoCloseable {
+@SuppressWarnings("deprecation")
+public abstract sealed class DataGatherer extends BoardLocalSupport implements
+		AutoCloseable permits DirectDataGatherer, RecordingRegionDataGatherer {
 	/**
 	 * Logger for the gatherer.
 	 */
