@@ -23,7 +23,7 @@ import java.nio.ByteBuffer;
 /**
  * Packet which indicates that the toolchain has started or resumed.
  */
-public class StartResume extends AbstractNotificationMessage {
+public final class StartResume extends NotificationMessage {
 	/** Create an instance. */
 	public StartResume() {
 		super(START_RESUME_NOTIFICATION);

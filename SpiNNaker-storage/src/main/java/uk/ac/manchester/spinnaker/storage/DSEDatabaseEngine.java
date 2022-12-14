@@ -27,7 +27,7 @@ import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteDataSpecStorage;
  *
  * @author Donal Fellows
  */
-public class DSEDatabaseEngine extends DatabaseEngine<DSEStorage> {
+public final class DSEDatabaseEngine extends DatabaseEngine<DSEStorage> {
 	private static String sqlDDL = loadResource("dse.sql");
 
 	/**

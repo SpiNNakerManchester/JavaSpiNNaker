@@ -33,7 +33,7 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
  *
  * @author Donal Fellows
  */
-public interface BufferManagerStorage extends DatabaseAPI {
+public non-sealed interface BufferManagerStorage extends DatabaseAPI {
 	/**
 	 * Retrieves some bytes from the database. The bytes represent the contents
 	 * of a DSE region of a particular SpiNNaker core.

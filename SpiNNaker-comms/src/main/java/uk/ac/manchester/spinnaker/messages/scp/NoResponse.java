@@ -24,7 +24,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * An SCP response that should never be received because its request is
  * guaranteed to be a one-way request.
  */
-public class NoResponse extends SCPResponse {
+public final class NoResponse extends SCPResponse {
 	/**
 	 * Create an instance.
 	 *

@@ -38,8 +38,9 @@ import com.google.errorprone.annotations.MustBeClosed;
  *            The type of the higher-level access interface that can be used to
  *            work with the database this class makes connections to.
  */
-public abstract class DatabaseEngine<APIType extends DatabaseAPI>
-		implements ConnectionProvider<APIType> {
+public abstract sealed class DatabaseEngine<APIType extends DatabaseAPI>
+		implements ConnectionProvider<APIType>
+		permits BufferManagerDatabaseEngine, DSEDatabaseEngine {
 	private static final Logger log = getLogger(DatabaseEngine.class);
 
 	/** Busy timeout for SQLite, in milliseconds. */

@@ -21,5 +21,5 @@ package uk.ac.manchester.spinnaker.storage;
  *
  * @author Donal Fellows
  */
-public interface DatabaseAPI {
+public sealed interface DatabaseAPI permits BufferManagerStorage, DSEStorage {
 }

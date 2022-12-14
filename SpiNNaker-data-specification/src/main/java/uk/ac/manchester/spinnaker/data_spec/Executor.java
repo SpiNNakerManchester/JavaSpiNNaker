@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.Collection;
 
 import org.slf4j.Logger;
@@ -204,6 +205,14 @@ public class Executor implements Closeable {
 		buffer.putInt(DSE_VERSION);
 	}
 
+	private static int checksum(int nWords, IntBuffer buf) {
+		long sum = 0L;
+		for (int i = 0; i < nWords; i++) {
+			sum = (sum + (buf.get() & UNSIGNED_INT)) & UNSIGNED_INT;
+		}
+		return (int) (sum & UNSIGNED_INT);
+	}
+
 	/**
 	 * Get the pointer table stored in a buffer.
 	 *
@@ -219,14 +228,12 @@ public class Executor implements Closeable {
 					// Work out the checksum
 					int nWords =
 							ceildiv(regReal.getMaxWritePointer(), INT_SIZE);
-					var buf = regReal.getRegionData().duplicate()
-							.order(LITTLE_ENDIAN).rewind().asIntBuffer();
-					long sum = 0;
-					for (int i = 0; i < nWords; i++) {
-						sum = (sum + (buf.get() & UNSIGNED_INT)) & UNSIGNED_INT;
-					}
+					var ck = checksum(nWords,
+							regReal.getRegionData().duplicate()
+									.order(LITTLE_ENDIAN).rewind()
+									.asIntBuffer());
 					// Write the checksum and number of words
-					buffer.putInt((int) (sum & UNSIGNED_INT));
+					buffer.putInt(ck);
 					buffer.putInt(nWords);
 				} else {
 					// Don't checksum references

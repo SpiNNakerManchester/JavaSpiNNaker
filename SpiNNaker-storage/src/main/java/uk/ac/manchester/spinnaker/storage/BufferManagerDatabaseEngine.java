@@ -27,7 +27,7 @@ import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteBufferStorage;
  *
  * @author Donal Fellows
  */
-public class BufferManagerDatabaseEngine
+public final class BufferManagerDatabaseEngine
 		extends DatabaseEngine<BufferManagerStorage> {
 	private static String sqlDDL = loadResource("buffer_manager.sql");
 

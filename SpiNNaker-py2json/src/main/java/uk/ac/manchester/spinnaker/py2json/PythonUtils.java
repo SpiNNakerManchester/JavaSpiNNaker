@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -92,26 +93,6 @@ final class PythonUtils {
 	}
 
 	/**
-	 * An operation used to convert a Python object into something more
-	 * Java-like.
-	 *
-	 * @param <T>
-	 *            The type of value to produce.
-	 * @author Donal Fellows
-	 */
-	@FunctionalInterface
-	public interface Depythonizer<T> {
-		/**
-		 * Convert an object into a Java value.
-		 *
-		 * @param object
-		 *            The value to convert.
-		 * @return The value to produce.
-		 */
-		T act(PyObject object);
-	}
-
-	/**
 	 * Convert an iterable object into a stream.
 	 *
 	 * @param iterable
@@ -143,10 +124,10 @@ final class PythonUtils {
 	 * @return The map of collections.
 	 */
 	public static <S extends Collection<U>, T, U> Map<T, S> toCollectingMap(
-			PyObject mapObject, Depythonizer<T> makeKey,
-			Supplier<S> makeCollector, Depythonizer<U> makeValue) {
-		return stream(mapObject).collect(groupingBy(makeKey::act,
-				mapping(makeValue::act, toCollection(makeCollector))));
+			PyObject mapObject, Function<PyObject, T> makeKey,
+			Supplier<S> makeCollector, Function<PyObject, U> makeValue) {
+		return stream(mapObject).collect(groupingBy(makeKey,
+				mapping(makeValue, toCollection(makeCollector))));
 	}
 
 	/**
@@ -165,9 +146,9 @@ final class PythonUtils {
 	 * @return The map.
 	 */
 	public static <T, U> Map<T, U> toMap(PyObject dictObject,
-			Depythonizer<T> makeKey, Depythonizer<U> makeValue) {
-		return stream(dictObject).collect(Collectors.toMap(makeKey::act,
-				key -> makeValue.act(item(dictObject, key))));
+			Function<PyObject, T> makeKey, Function<PyObject, U> makeValue) {
+		return stream(dictObject).collect(Collectors.toMap(makeKey,
+				key -> makeValue.apply(item(dictObject, key))));
 	}
 
 	/**
@@ -182,9 +163,8 @@ final class PythonUtils {
 	 * @return The list.
 	 */
 	public static <T> List<T> toList(PyObject listObject,
-			Depythonizer<T> makeValue) {
-		return stream(listObject).map(makeValue::act)
-				.collect(Collectors.toList());
+			Function<PyObject, T> makeValue) {
+		return stream(listObject).map(makeValue).collect(Collectors.toList());
 	}
 
 	/**
@@ -199,8 +179,7 @@ final class PythonUtils {
 	 * @return The set.
 	 */
 	public static <T> Set<T> toSet(PyObject listObject,
-			Depythonizer<T> makeValue) {
-		return stream(listObject).map(makeValue::act)
-				.collect(Collectors.toSet());
+			Function<PyObject, T> makeValue) {
+		return stream(listObject).map(makeValue).collect(Collectors.toSet());
 	}
 }

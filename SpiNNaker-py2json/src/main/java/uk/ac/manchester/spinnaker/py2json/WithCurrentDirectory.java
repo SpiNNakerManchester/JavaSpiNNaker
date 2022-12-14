@@ -16,41 +16,44 @@
  */
 package uk.ac.manchester.spinnaker.py2json;
 
-import static java.lang.String.format;
 import static java.lang.System.getProperty;
 
+import java.nio.file.Paths;
+
+import org.python.core.PySystemState;
 import org.python.util.PythonInterpreter;
 
 import com.google.errorprone.annotations.MustBeClosed;
 
 /**
- * Hack for Java 11 and later, where just changing {@code user.dir} is no longer
- * enough. We force the change inside Jython as that's the environment that
- * cares. Outside... we shouldn't need to care.
+ * Sets the Jython notion of what the working directory is for the duration of
+ * the the context. This isn't properly the current working directory (Java code
+ * really doesn't care!) but it is what the Python side expects.
+ * <p>
+ * @see PySystemState#setCurrentWorkingDir(String)
  */
 final class WithCurrentDirectory implements AutoCloseable {
-	private final PythonInterpreter python;
+	private final PySystemState sys;
+
+	private final String oldCwd;
 
 	@MustBeClosed
 	WithCurrentDirectory(PythonInterpreter python, boolean doCd) {
-		var cwd = getProperty("user.dir");
 		if (doCd) {
-			this.python = python;
+			sys = python.getSystemState();
+			oldCwd = sys.getCurrentWorkingDir();
+			sys.setCurrentWorkingDir(Paths.get(getProperty("user.dir"))
+					.toAbsolutePath().toString());
 		} else {
-			this.python = null;
+			sys = null;
+			oldCwd = null;
 		}
-		run(format("import os; __saved=os.getcwd(); os.chdir(r'''%s''')", cwd));
-	}
-
-	private void run(String script) {
-		if (python == null) {
-			return;
-		}
-		python.exec(script);
 	}
 
 	@Override
 	public void close() {
-		run("os.chdir(__saved)");
+		if (sys != null) {
+			sys.setCurrentWorkingDir(oldCwd);
+		}
 	}
 }

@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.messages.notification.AbstractNotificationMessage;
 import uk.ac.manchester.spinnaker.messages.notification.NotificationMessage;
 
 /**
@@ -123,6 +122,6 @@ public class NotificationConnection
 	public NotificationMessage receiveMessage(int timeout)
 			throws IOException, InterruptedException {
 		var b = receive(timeout);
-		return AbstractNotificationMessage.build(b);
+		return NotificationMessage.build(b);
 	}
 }

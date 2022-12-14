@@ -27,7 +27,7 @@ import java.nio.charset.Charset;
  * Packet which contains the path to the database created by the toolchain which
  * is to be used by any software which interfaces with SpiNNaker.
  */
-public class DatabaseConfirmation extends AbstractNotificationMessage {
+public final class DatabaseConfirmation extends NotificationMessage {
 	/**
 	 * The path to the database. Note that there is a length limit; the overall
 	 * message must fit in a SpiNNaker UDP message.

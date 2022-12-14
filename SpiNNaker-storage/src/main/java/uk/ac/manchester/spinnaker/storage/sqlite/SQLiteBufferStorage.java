@@ -59,7 +59,7 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  *
  * @author Donal Fellows
  */
-public class SQLiteBufferStorage
+public final class SQLiteBufferStorage
 		extends SQLiteConnectionManager<BufferManagerStorage>
 		implements BufferManagerStorage {
 	private static final Logger log = getLogger(SQLiteBufferStorage.class);
