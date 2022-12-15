@@ -816,6 +816,16 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 		}
 	}
 
+	/**
+	 * State associated with a connection. It is important that this object hold
+	 * no other state than the connection and this state object, because the
+	 * state object is scoped to the correct object <em>and not to an ephemeral
+	 * wrapper!</em>
+	 * <p>
+	 * In particular, <em>this</em> class holds state for
+	 * {@link ConnectionImpl}. {@link #stateMap} is responsible for issuing the
+	 * correct one for a connection.
+	 */
 	private static class ConnectionState {
 		private boolean inTransaction;
 
@@ -844,8 +854,15 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 
 	/**
 	 * Connections made by the database engine bean. Its methods do not throw
-	 * checked exceptions. The connection is thread-bound, and will be cleaned
-	 * up correctly when the thread exits (ideal for thread pools).
+	 * checked exceptions.
+	 * <p>
+	 * The underlying connection is thread-bound, and will be cleaned up
+	 * correctly when the thread exits (ideal for thread pools) but instances of
+	 * this class are technically ephemeral. Any state that you wish to hold
+	 * must be either the connection passed in or an instance of
+	 * {@link ConnectionState} that is manufactured to be keyed by the correct
+	 * object (via {@link #stateMap}). <em>Getting the state handling wrong will
+	 * cause <strong>extremely</strong>-difficult-to-diagnose deadlocks!</em>
 	 */
 	final class ConnectionImpl extends UncheckedConnection
 			implements Connection {
@@ -860,7 +877,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 		private ConnectionImpl(java.sql.Connection c) {
 			super(c);
 			try {
-				// Erk! This is horrible!
+				// This is horrible! And very very necessary!
 				this.state = stateMap.computeIfAbsent(
 						c.unwrap(SQLiteConnection.class),
 						ConnectionState::new);
