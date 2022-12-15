@@ -80,6 +80,18 @@ loadScripts(document, 'script');</script>
 <div class="block">Java client for the SpiNNaker allocation service.</div>
 </td>
 </tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.download">uk.ac.manchester.spinnaker.front_end.download</a></th>
+<td class="colLast">
+<div class="block">The buffer manager and support classes.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.dse">uk.ac.manchester.spinnaker.front_end.dse</a></th>
+<td class="colLast">
+<div class="block">Data specification execution interface.</div>
+</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -106,6 +118,22 @@ loadScripts(document, 'script');</script>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.</span><code><span class="memberNameLink"><a href="../SpallocClient.html#createJob(uk.ac.manchester.spinnaker.alloc.client.CreateJob)">createJob</a></span>&#8203;(<a href="../CreateJob.html" title="class in uk.ac.manchester.spinnaker.alloc.client">CreateJob</a>&nbsp;createInstructions)</code></th>
 <td class="colLast">
 <div class="block">Create a job.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../SpallocClient.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient.Job</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClientFactory.</span><code><span class="memberNameLink"><a href="../SpallocClientFactory.html#getJob(java.lang.String,java.lang.String)">getJob</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;uri,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;bearerToken)</code></th>
+<td class="colLast">
+<div class="block">Get direct access to a Job.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static <a href="../SpallocClient.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient.Job</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClientFactory.</span><code><span class="memberNameLink"><a href="../SpallocClientFactory.html#getJobFromProxyInfo(uk.ac.manchester.spinnaker.storage.ProxyInformation)">getJobFromProxyInfo</a></span>&#8203;(<a href="../../../storage/ProxyInformation.html" title="class in uk.ac.manchester.spinnaker.storage">ProxyInformation</a>&nbsp;proxy)</code></th>
+<td class="colLast">
+<div class="block">Get a handle to a job given its proxy access information (derived from a
+ database query).</div>
 </td>
 </tr>
 </tbody>
@@ -148,6 +176,81 @@ loadScripts(document, 'script');</script>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.</span><code><span class="memberNameLink"><a href="../SpallocClient.html#listJobsWithDeleted(boolean)">listJobsWithDeleted</a></span>&#8203;(boolean&nbsp;waitForChange)</code></th>
 <td class="colLast">
 <div class="block">List the jobs, including the deleted ones.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.front_end.download">
+<!--   -->
+</a>
+<h2>Uses of <a href="../SpallocClient.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient.Job</a> in <a href="../../../front_end/download/package-summary.html">uk.ac.manchester.spinnaker.front_end.download</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Constructors in <a href="../../../front_end/download/package-summary.html">uk.ac.manchester.spinnaker.front_end.download</a> with parameters of type <a href="../SpallocClient.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient.Job</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Constructor</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../front_end/download/DataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.alloc.client.SpallocClient.Job)">DataGatherer</a></span>&#8203;(<a href="../../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;transceiver,
+<a href="../../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+<a href="../SpallocClient.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient.Job</a>&nbsp;job)</code></th>
+<td class="colLast">
+<div class="block">Create an instance of the protocol implementation.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../front_end/download/DirectDataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage,uk.ac.manchester.spinnaker.alloc.client.SpallocClient.Job)">DirectDataGatherer</a></span>&#8203;(<a href="../../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;transceiver,
+<a href="../../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+<a href="../../../storage/BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a>&nbsp;database,
+<a href="../SpallocClient.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient.Job</a>&nbsp;job)</code></th>
+<td class="colLast">
+<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
+<div class="block">Create a data gatherer.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../front_end/download/RecordingRegionDataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage,uk.ac.manchester.spinnaker.alloc.client.SpallocClient.Job)">RecordingRegionDataGatherer</a></span>&#8203;(<a href="../../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;transceiver,
+<a href="../../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+<a href="../../../storage/BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a>&nbsp;database,
+<a href="../SpallocClient.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient.Job</a>&nbsp;job)</code></th>
+<td class="colLast">
+<div class="block">Create a data gatherer.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.front_end.dse">
+<!--   -->
+</a>
+<h2>Uses of <a href="../SpallocClient.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient.Job</a> in <a href="../../../front_end/dse/package-summary.html">uk.ac.manchester.spinnaker.front_end.dse</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Fields in <a href="../../../front_end/dse/package-summary.html">uk.ac.manchester.spinnaker.front_end.dse</a> declared as <a href="../SpallocClient.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient.Job</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Field</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>protected <a href="../SpallocClient.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient.Job</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">ExecuteDataSpecification.</span><code><span class="memberNameLink"><a href="../../../front_end/dse/ExecuteDataSpecification.html#job">job</a></span></code></th>
+<td class="colLast">
+<div class="block">A spalloc job, or null if not used.</div>
 </td>
 </tr>
 </tbody>

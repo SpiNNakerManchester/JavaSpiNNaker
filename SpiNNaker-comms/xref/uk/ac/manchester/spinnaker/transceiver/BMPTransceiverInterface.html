@@ -1856,30 +1856,33 @@
 <a class="jxr_linenumber" name="L1848" href="#L1848">1848</a> 			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data,
 <a class="jxr_linenumber" name="L1849" href="#L1849">1849</a> 			<strong class="jxr_keyword">boolean</strong> update)
 <a class="jxr_linenumber" name="L1850" href="#L1850">1850</a> 			<strong class="jxr_keyword">throws</strong> ProcessException, IOException, InterruptedException;
-<a class="jxr_linenumber" name="L1851" href="#L1851">1851</a> }
-<a class="jxr_linenumber" name="L1852" href="#L1852">1852</a> 
-<a class="jxr_linenumber" name="L1853" href="#L1853">1853</a> <strong class="jxr_keyword">interface</strong> <a name="BMPConstants" href="../../../../../uk/ac/manchester/spinnaker/transceiver/BMPTransceiverInterface.html#BMPConstants">BMPConstants</a> {
-<a class="jxr_linenumber" name="L1854" href="#L1854">1854</a> 	<em class="jxr_javadoccomment">/** Location in serial flash of blacklist. */</em>
-<a class="jxr_linenumber" name="L1855" href="#L1855">1855</a> 	MemoryLocation SF_BL_ADDR = <strong class="jxr_keyword">new</strong> MemoryLocation(0x100);
-<a class="jxr_linenumber" name="L1856" href="#L1856">1856</a> 
-<a class="jxr_linenumber" name="L1857" href="#L1857">1857</a> 	<em class="jxr_javadoccomment">/** Size of blacklist, in bytes. */</em>
-<a class="jxr_linenumber" name="L1858" href="#L1858">1858</a> 	<strong class="jxr_keyword">int</strong> SF_BL_LEN = 256;
+<a class="jxr_linenumber" name="L1851" href="#L1851">1851</a> 
+<a class="jxr_linenumber" name="L1852" href="#L1852">1852</a> 	@Override
+<a class="jxr_linenumber" name="L1853" href="#L1853">1853</a> 	<strong class="jxr_keyword">void</strong> close() <strong class="jxr_keyword">throws</strong> IOException;
+<a class="jxr_linenumber" name="L1854" href="#L1854">1854</a> }
+<a class="jxr_linenumber" name="L1855" href="#L1855">1855</a> 
+<a class="jxr_linenumber" name="L1856" href="#L1856">1856</a> <strong class="jxr_keyword">interface</strong> <a name="BMPConstants" href="../../../../../uk/ac/manchester/spinnaker/transceiver/BMPTransceiverInterface.html#BMPConstants">BMPConstants</a> {
+<a class="jxr_linenumber" name="L1857" href="#L1857">1857</a> 	<em class="jxr_javadoccomment">/** Location in serial flash of blacklist. */</em>
+<a class="jxr_linenumber" name="L1858" href="#L1858">1858</a> 	MemoryLocation SF_BL_ADDR = <strong class="jxr_keyword">new</strong> MemoryLocation(0x100);
 <a class="jxr_linenumber" name="L1859" href="#L1859">1859</a> 
-<a class="jxr_linenumber" name="L1860" href="#L1860">1860</a> 	<em class="jxr_javadoccomment">/** Offset of blacklist in boot sector of flash. */</em>
-<a class="jxr_linenumber" name="L1861" href="#L1861">1861</a> 	<strong class="jxr_keyword">int</strong> BMP_BOOT_BLACKLIST_OFFSET = 0xe00;
+<a class="jxr_linenumber" name="L1860" href="#L1860">1860</a> 	<em class="jxr_javadoccomment">/** Size of blacklist, in bytes. */</em>
+<a class="jxr_linenumber" name="L1861" href="#L1861">1861</a> 	<strong class="jxr_keyword">int</strong> SF_BL_LEN = 256;
 <a class="jxr_linenumber" name="L1862" href="#L1862">1862</a> 
-<a class="jxr_linenumber" name="L1863" href="#L1863">1863</a> 	<em class="jxr_javadoccomment">/** Location of boot sector of flash. */</em>
-<a class="jxr_linenumber" name="L1864" href="#L1864">1864</a> 	MemoryLocation BMP_BOOT_SECTOR_ADDR = <strong class="jxr_keyword">new</strong> MemoryLocation(0x1000);
+<a class="jxr_linenumber" name="L1863" href="#L1863">1863</a> 	<em class="jxr_javadoccomment">/** Offset of blacklist in boot sector of flash. */</em>
+<a class="jxr_linenumber" name="L1864" href="#L1864">1864</a> 	<strong class="jxr_keyword">int</strong> BMP_BOOT_BLACKLIST_OFFSET = 0xe00;
 <a class="jxr_linenumber" name="L1865" href="#L1865">1865</a> 
-<a class="jxr_linenumber" name="L1866" href="#L1866">1866</a> 	<em class="jxr_javadoccomment">/** Size of boot sector of flash. */</em>
-<a class="jxr_linenumber" name="L1867" href="#L1867">1867</a> 	<strong class="jxr_keyword">int</strong> BMP_BOOT_SECTOR_SIZE = 0x1000;
+<a class="jxr_linenumber" name="L1866" href="#L1866">1866</a> 	<em class="jxr_javadoccomment">/** Location of boot sector of flash. */</em>
+<a class="jxr_linenumber" name="L1867" href="#L1867">1867</a> 	MemoryLocation BMP_BOOT_SECTOR_ADDR = <strong class="jxr_keyword">new</strong> MemoryLocation(0x1000);
 <a class="jxr_linenumber" name="L1868" href="#L1868">1868</a> 
-<a class="jxr_linenumber" name="L1869" href="#L1869">1869</a> 	<em class="jxr_javadoccomment">/** Offset of CRC in boot sector of flash. */</em>
-<a class="jxr_linenumber" name="L1870" href="#L1870">1870</a> 	<strong class="jxr_keyword">int</strong> BMP_BOOT_CRC_OFFSET = BMP_BOOT_SECTOR_SIZE - WORD_SIZE;
+<a class="jxr_linenumber" name="L1869" href="#L1869">1869</a> 	<em class="jxr_javadoccomment">/** Size of boot sector of flash. */</em>
+<a class="jxr_linenumber" name="L1870" href="#L1870">1870</a> 	<strong class="jxr_keyword">int</strong> BMP_BOOT_SECTOR_SIZE = 0x1000;
 <a class="jxr_linenumber" name="L1871" href="#L1871">1871</a> 
-<a class="jxr_linenumber" name="L1872" href="#L1872">1872</a> 	<em class="jxr_javadoccomment">/** Byte used to blank out the space used for blacklists. */</em>
-<a class="jxr_linenumber" name="L1873" href="#L1873">1873</a> 	byte BLACKLIST_BLANK = (byte) 255;
-<a class="jxr_linenumber" name="L1874" href="#L1874">1874</a> }
+<a class="jxr_linenumber" name="L1872" href="#L1872">1872</a> 	<em class="jxr_javadoccomment">/** Offset of CRC in boot sector of flash. */</em>
+<a class="jxr_linenumber" name="L1873" href="#L1873">1873</a> 	<strong class="jxr_keyword">int</strong> BMP_BOOT_CRC_OFFSET = BMP_BOOT_SECTOR_SIZE - WORD_SIZE;
+<a class="jxr_linenumber" name="L1874" href="#L1874">1874</a> 
+<a class="jxr_linenumber" name="L1875" href="#L1875">1875</a> 	<em class="jxr_javadoccomment">/** Byte used to blank out the space used for blacklists. */</em>
+<a class="jxr_linenumber" name="L1876" href="#L1876">1876</a> 	byte BLACKLIST_BLANK = (byte) 255;
+<a class="jxr_linenumber" name="L1877" href="#L1877">1877</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

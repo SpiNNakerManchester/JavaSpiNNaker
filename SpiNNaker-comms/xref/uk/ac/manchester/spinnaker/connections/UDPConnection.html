@@ -675,49 +675,44 @@
 <a class="jxr_linenumber" name="L667" href="#L667">667</a> 		<strong class="jxr_keyword">if</strong> (socket == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L668" href="#L668">668</a> 			<strong class="jxr_keyword">return</strong>;
 <a class="jxr_linenumber" name="L669" href="#L669">669</a> 		}
-<a class="jxr_linenumber" name="L670" href="#L670">670</a> 		<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L671" href="#L671">671</a> 			socket.disconnect();
-<a class="jxr_linenumber" name="L672" href="#L672">672</a> 		} <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L673" href="#L673">673</a> 			log.debug(<span class="jxr_string">"failed to disconnect prior to close"</span>, e);
-<a class="jxr_linenumber" name="L674" href="#L674">674</a> 		}
-<a class="jxr_linenumber" name="L675" href="#L675">675</a> 		socket.close();
+<a class="jxr_linenumber" name="L670" href="#L670">670</a> 		socket.close();
+<a class="jxr_linenumber" name="L671" href="#L671">671</a> 	}
+<a class="jxr_linenumber" name="L672" href="#L672">672</a> 
+<a class="jxr_linenumber" name="L673" href="#L673">673</a> 	@Override
+<a class="jxr_linenumber" name="L674" href="#L674">674</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isClosed() {
+<a class="jxr_linenumber" name="L675" href="#L675">675</a> 		<strong class="jxr_keyword">return</strong> socket.isClosed();
 <a class="jxr_linenumber" name="L676" href="#L676">676</a> 	}
 <a class="jxr_linenumber" name="L677" href="#L677">677</a> 
-<a class="jxr_linenumber" name="L678" href="#L678">678</a> 	@Override
-<a class="jxr_linenumber" name="L679" href="#L679">679</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isClosed() {
-<a class="jxr_linenumber" name="L680" href="#L680">680</a> 		<strong class="jxr_keyword">return</strong> socket.isClosed();
-<a class="jxr_linenumber" name="L681" href="#L681">681</a> 	}
-<a class="jxr_linenumber" name="L682" href="#L682">682</a> 
-<a class="jxr_linenumber" name="L683" href="#L683">683</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L684" href="#L684">684</a> <em class="jxr_javadoccomment">	 * Sends a port trigger message using a connection to (hopefully) open a</em>
-<a class="jxr_linenumber" name="L685" href="#L685">685</a> <em class="jxr_javadoccomment">	 * port in a NAT and/or firewall to allow incoming packets to be received.</em>
-<a class="jxr_linenumber" name="L686" href="#L686">686</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L687" href="#L687">687</a> <em class="jxr_javadoccomment">	 * @param host</em>
-<a class="jxr_linenumber" name="L688" href="#L688">688</a> <em class="jxr_javadoccomment">	 *            The address of the SpiNNaker board to which the message should</em>
-<a class="jxr_linenumber" name="L689" href="#L689">689</a> <em class="jxr_javadoccomment">	 *            be sent</em>
-<a class="jxr_linenumber" name="L690" href="#L690">690</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
-<a class="jxr_linenumber" name="L691" href="#L691">691</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong</em>
-<a class="jxr_linenumber" name="L692" href="#L692">692</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L693" href="#L693">693</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">void</strong> sendPortTriggerMessage(InetAddress host)
-<a class="jxr_linenumber" name="L694" href="#L694">694</a> 			<strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L695" href="#L695">695</a> 		<em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="L696" href="#L696">696</a> <em class="jxr_comment">		 * Set up the message so that no reply is expected and it is sent to an</em>
-<a class="jxr_linenumber" name="L697" href="#L697">697</a> <em class="jxr_comment">		 * invalid port for SCAMP. The current version of SCAMP will reject this</em>
-<a class="jxr_linenumber" name="L698" href="#L698">698</a> <em class="jxr_comment">		 * message, but then fail to send a response since the</em>
-<a class="jxr_linenumber" name="L699" href="#L699">699</a> <em class="jxr_comment">		 * REPLY_NOT_EXPECTED flag is set (see scamp-3.c line 728 and 625-644)</em>
-<a class="jxr_linenumber" name="L700" href="#L700">700</a> <em class="jxr_comment">		 */</em>
-<a class="jxr_linenumber" name="L701" href="#L701">701</a> 		<strong class="jxr_keyword">var</strong> triggerMessage = <strong class="jxr_keyword">new</strong> <a name="SDPMessage" href="../../../../../uk/ac/manchester/spinnaker/messages/sdp/SDPMessage.html#SDPMessage">SDPMessage</a>(<strong class="jxr_keyword">new</strong> <a name="SDPHeader" href="../../../../../uk/ac/manchester/spinnaker/messages/sdp/SDPHeader.html#SDPHeader">SDPHeader</a>(REPLY_NOT_EXPECTED,
-<a class="jxr_linenumber" name="L702" href="#L702">702</a> 				<strong class="jxr_keyword">new</strong> CoreLocation(0, 0, 0), RUNNING_COMMAND_SDP_PORT));
-<a class="jxr_linenumber" name="L703" href="#L703">703</a> 		sendTo(triggerMessage.getMessageData(<strong class="jxr_keyword">null</strong>), host, SCP_SCAMP_PORT);
-<a class="jxr_linenumber" name="L704" href="#L704">704</a> 	}
-<a class="jxr_linenumber" name="L705" href="#L705">705</a> 
-<a class="jxr_linenumber" name="L706" href="#L706">706</a> 	@Override
-<a class="jxr_linenumber" name="L707" href="#L707">707</a> 	<strong class="jxr_keyword">public</strong> String toString() {
-<a class="jxr_linenumber" name="L708" href="#L708">708</a> 		<strong class="jxr_keyword">return</strong> format(<span class="jxr_string">"%s(%s &lt;-%s-&gt; %s)"</span>,
-<a class="jxr_linenumber" name="L709" href="#L709">709</a> 				getClass().getSimpleName().replaceAll(<span class="jxr_string">"^.*&#92;&#92;."</span>, <span class="jxr_string">""</span>),
-<a class="jxr_linenumber" name="L710" href="#L710">710</a> 				localAddr(), isClosed() ? <span class="jxr_string">"|"</span> : <span class="jxr_string">""</span>, remoteAddr());
-<a class="jxr_linenumber" name="L711" href="#L711">711</a> 	}
-<a class="jxr_linenumber" name="L712" href="#L712">712</a> }
+<a class="jxr_linenumber" name="L678" href="#L678">678</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L679" href="#L679">679</a> <em class="jxr_javadoccomment">	 * Sends a port trigger message using a connection to (hopefully) open a</em>
+<a class="jxr_linenumber" name="L680" href="#L680">680</a> <em class="jxr_javadoccomment">	 * port in a NAT and/or firewall to allow incoming packets to be received.</em>
+<a class="jxr_linenumber" name="L681" href="#L681">681</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L682" href="#L682">682</a> <em class="jxr_javadoccomment">	 * @param host</em>
+<a class="jxr_linenumber" name="L683" href="#L683">683</a> <em class="jxr_javadoccomment">	 *            The address of the SpiNNaker board to which the message should</em>
+<a class="jxr_linenumber" name="L684" href="#L684">684</a> <em class="jxr_javadoccomment">	 *            be sent</em>
+<a class="jxr_linenumber" name="L685" href="#L685">685</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
+<a class="jxr_linenumber" name="L686" href="#L686">686</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong</em>
+<a class="jxr_linenumber" name="L687" href="#L687">687</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L688" href="#L688">688</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">void</strong> sendPortTriggerMessage(InetAddress host)
+<a class="jxr_linenumber" name="L689" href="#L689">689</a> 			<strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L690" href="#L690">690</a> 		<em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L691" href="#L691">691</a> <em class="jxr_comment">		 * Set up the message so that no reply is expected and it is sent to an</em>
+<a class="jxr_linenumber" name="L692" href="#L692">692</a> <em class="jxr_comment">		 * invalid port for SCAMP. The current version of SCAMP will reject this</em>
+<a class="jxr_linenumber" name="L693" href="#L693">693</a> <em class="jxr_comment">		 * message, but then fail to send a response since the</em>
+<a class="jxr_linenumber" name="L694" href="#L694">694</a> <em class="jxr_comment">		 * REPLY_NOT_EXPECTED flag is set (see scamp-3.c line 728 and 625-644)</em>
+<a class="jxr_linenumber" name="L695" href="#L695">695</a> <em class="jxr_comment">		 */</em>
+<a class="jxr_linenumber" name="L696" href="#L696">696</a> 		<strong class="jxr_keyword">var</strong> triggerMessage = <strong class="jxr_keyword">new</strong> <a name="SDPMessage" href="../../../../../uk/ac/manchester/spinnaker/messages/sdp/SDPMessage.html#SDPMessage">SDPMessage</a>(<strong class="jxr_keyword">new</strong> <a name="SDPHeader" href="../../../../../uk/ac/manchester/spinnaker/messages/sdp/SDPHeader.html#SDPHeader">SDPHeader</a>(REPLY_NOT_EXPECTED,
+<a class="jxr_linenumber" name="L697" href="#L697">697</a> 				<strong class="jxr_keyword">new</strong> CoreLocation(0, 0, 0), RUNNING_COMMAND_SDP_PORT));
+<a class="jxr_linenumber" name="L698" href="#L698">698</a> 		sendTo(triggerMessage.getMessageData(<strong class="jxr_keyword">null</strong>), host, SCP_SCAMP_PORT);
+<a class="jxr_linenumber" name="L699" href="#L699">699</a> 	}
+<a class="jxr_linenumber" name="L700" href="#L700">700</a> 
+<a class="jxr_linenumber" name="L701" href="#L701">701</a> 	@Override
+<a class="jxr_linenumber" name="L702" href="#L702">702</a> 	<strong class="jxr_keyword">public</strong> String toString() {
+<a class="jxr_linenumber" name="L703" href="#L703">703</a> 		<strong class="jxr_keyword">return</strong> format(<span class="jxr_string">"%s(%s &lt;-%s-&gt; %s)"</span>,
+<a class="jxr_linenumber" name="L704" href="#L704">704</a> 				getClass().getSimpleName().replaceAll(<span class="jxr_string">"^.*&#92;&#92;."</span>, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L705" href="#L705">705</a> 				localAddr(), isClosed() ? <span class="jxr_string">"|"</span> : <span class="jxr_string">""</span>, remoteAddr());
+<a class="jxr_linenumber" name="L706" href="#L706">706</a> 	}
+<a class="jxr_linenumber" name="L707" href="#L707">707</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

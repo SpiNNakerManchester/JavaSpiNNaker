@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -93,7 +93,7 @@ loadScripts(document, 'script');</script>
 <section class="description">
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="../DatabaseAPI.html" title="interface in uk.ac.manchester.spinnaker.storage">DatabaseAPI</a></code>, <code><a href="../DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a></code></dd>
+<dd><code><a href="../DatabaseAPI.html" title="interface in uk.ac.manchester.spinnaker.storage">DatabaseAPI</a></code>, <code><a href="../DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a></code>, <code><a href="../ProxyAwareStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">ProxyAwareStorage</a></code></dd>
 </dl>
 <hr>
 <pre>public class <span class="typeNameLabel">SQLiteDataSpecStorage</span>
@@ -173,6 +173,13 @@ implements <a href="../DSEStorage.html" title="interface in uk.ac.manchester.spi
 </td>
 </tr>
 <tr class="rowColor" id="i1">
+<td class="colFirst"><code><a href="../ProxyInformation.html" title="class in uk.ac.manchester.spinnaker.storage">ProxyInformation</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getProxyInformation()">getProxyInformation</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Get the proxy information from the database.</div>
+</td>
+</tr>
+<tr class="altColor" id="i2">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listCoresToLoad(uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet)">listCoresToLoad</a></span>&#8203;(<a href="../DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a>&nbsp;ethernet)</code></th>
 <td class="colLast">
@@ -180,7 +187,7 @@ implements <a href="../DSEStorage.html" title="interface in uk.ac.manchester.spi
  particular ethernet.</div>
 </td>
 </tr>
-<tr class="altColor" id="i2">
+<tr class="rowColor" id="i3">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listCoresToLoad(uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet,boolean)">listCoresToLoad</a></span>&#8203;(<a href="../DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a>&nbsp;ethernet,
 boolean&nbsp;loadSystemCores)</code></th>
@@ -189,14 +196,14 @@ boolean&nbsp;loadSystemCores)</code></th>
  particular ethernet.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="altColor" id="i4">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listEthernetsToLoad()">listEthernetsToLoad</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get a list of all ethernets that need to have DSE loading done on them.</div>
 </td>
 </tr>
-<tr class="altColor" id="i4">
+<tr class="rowColor" id="i5">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#saveLoadingMetadata(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,int)">saveLoadingMetadata</a></span>&#8203;(<a href="../DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a>&nbsp;core,
 <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;start,
@@ -215,6 +222,11 @@ int&nbsp;memoryWritten)</code></th>
 <a id="methods.inherited.from.class.java.lang.Object">
 <!--   -->
 </a><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang" class="externalLink">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang" class="externalLink">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang" class="externalLink">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang" class="externalLink">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang" class="externalLink">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang" class="externalLink">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait(long,int)" title="class or interface in java.lang" class="externalLink">wait</a></code></div>
+<div class="inheritedList">
+<h3>Methods inherited from interface&nbsp;uk.ac.manchester.spinnaker.storage.<a href="../ProxyAwareStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">ProxyAwareStorage</a></h3>
+<a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.storage.ProxyAwareStorage">
+<!--   -->
+</a><code><a href="../ProxyAwareStorage.html#getProxyInformation()">getProxyInformation</a></code></div>
 </section>
 </li>
 </ul>
@@ -347,6 +359,25 @@ int&nbsp;memoryWritten)</span>
 <dd><code>memoryWritten</code> - How much memory was written by loading.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If the database access fails.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getProxyInformation()">getProxyInformation</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="../ProxyInformation.html" title="class in uk.ac.manchester.spinnaker.storage">ProxyInformation</a></span>&nbsp;<span class="memberName">getProxyInformation</span>()
+                                     throws <span class="exceptions"><a href="../StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../ProxyAwareStorage.html#getProxyInformation()">ProxyAwareStorage</a></code></span></div>
+<div class="block">Get the proxy information from the database.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="../ProxyAwareStorage.html#getProxyInformation()">getProxyInformation</a></code>&nbsp;in interface&nbsp;<code><a href="../ProxyAwareStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">ProxyAwareStorage</a></code></dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The proxy information, or <code>null</code> if none defined. When
+         there is no proxy, only direct connections to SpiNNaker are
+         possible.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="../StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If anything goes wrong.</dd>
 </dl>
 </section>
 </li>

@@ -144,6 +144,20 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 </thead>
 <tbody>
 <tr class="altColor">
+<td class="colFirst"><code>protected <a href="../../storage/DSEDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DSEDatabaseEngine</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#db">db</a></span></code></th>
+<td class="colLast">
+<div class="block">The database.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected <a href="../../alloc/client/SpallocClient.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient.Job</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#job">job</a></span></code></th>
+<td class="colLast">
+<div class="block">A spalloc job, or null if not used.</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>protected <a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#machine">machine</a></span></code></th>
 <td class="colLast">
@@ -151,7 +165,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>protected <a href="../../transceiver/Transceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver">Transceiver</a></code></td>
+<td class="colFirst"><code>protected <a href="../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#txrx">txrx</a></span></code></th>
 <td class="colLast">
 <div class="block">The transceiver for talking to the SpiNNaker machine.</div>
@@ -181,7 +195,8 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>protected </code></td>
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine)">ExecuteDataSpecification</a></span>&#8203;(<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">ExecuteDataSpecification</a></span>&#8203;(<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+<a href="../../storage/DSEDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DSEDatabaseEngine</a>&nbsp;db)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
@@ -252,8 +267,22 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <li class="blockList">
 <section class="detail">
 <h3><a id="txrx">txrx</a></h3>
-<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType"><a href="../../transceiver/Transceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver">Transceiver</a></span>&nbsp;<span class="memberName">txrx</span></div>
+<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType"><a href="../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></span>&nbsp;<span class="memberName">txrx</span></div>
 <div class="block">The transceiver for talking to the SpiNNaker machine.</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="db">db</a></h3>
+<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType"><a href="../../storage/DSEDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DSEDatabaseEngine</a></span>&nbsp;<span class="memberName">db</span></div>
+<div class="block">The database.</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="job">job</a></h3>
+<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType"><a href="../../alloc/client/SpallocClient.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient.Job</a></span>&nbsp;<span class="memberName">job</span></div>
+<div class="block">A spalloc job, or null if not used.</div>
 </section>
 </li>
 </ul>
@@ -268,21 +297,27 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.Machine)">ExecuteDataSpecification</a></h3>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">ExecuteDataSpecification</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/MustBeClosed.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@MustBeClosed</a>
-</span><span class="modifiers">protected</span>&nbsp;<span class="memberName">ExecuteDataSpecification</span>&#8203;(<span class="arguments"><a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine)</span>
+</span><span class="modifiers">protected</span>&nbsp;<span class="memberName">ExecuteDataSpecification</span>&#8203;(<span class="arguments"><a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+<a href="../../storage/DSEDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DSEDatabaseEngine</a>&nbsp;db)</span>
                             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a>,
+<a href="../../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URISyntaxException.html?is-external=true" title="class or interface in java.net" class="externalLink">URISyntaxException</a></span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>machine</code> - The description of the SpiNNaker machine.</dd>
+<dd><code>db</code> - The DSE database.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the transceiver can't talk to its sockets.</dd>
 <dd><code><a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If SpiNNaker rejects a message.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If communications are interrupted.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If something really strange occurs with talking to the BMP;
              this constructor should not be doing that!</dd>
+<dd><code><a href="../../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If the database cannot be read.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URISyntaxException.html?is-external=true" title="class or interface in java.net" class="externalLink">URISyntaxException</a></code> - If the proxy URI is specified but not valid.</dd>
 </dl>
 </section>
 </li>

@@ -843,6 +843,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Given a list of elements, split it into batches of elements of a given
  size.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html#bearerToken">bearerToken</a></span> - Variable in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html" title="class in uk.ac.manchester.spinnaker.storage">ProxyInformation</a></dt>
+<dd>
+<div class="block">The token to use to authenticate access.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/proxy/SpinWSHandler.html#beforeHandshake(org.springframework.http.server.ServerHttpRequest,org.springframework.http.server.ServerHttpResponse,org.springframework.web.socket.WebSocketHandler,java.util.Map)">beforeHandshake(ServerHttpRequest, ServerHttpResponse, WebSocketHandler, Map&lt;String, Object&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.proxy.<a href="uk/ac/manchester/spinnaker/alloc/proxy/SpinWSHandler.html" title="class in uk.ac.manchester.spinnaker.alloc.proxy">SpinWSHandler</a></dt>
 <dd>
 <div class="block">Look up the job that websocket is being created for and attach it to the
@@ -1949,6 +1953,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Disconnect from the server.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/spalloc/SpallocJob.html#close()">close()</a></span> - Method in class uk.ac.manchester.spinnaker.spalloc.<a href="uk/ac/manchester/spinnaker/spalloc/SpallocJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">SpallocJob</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/BMPTransceiverInterface.html#close()">close()</a></span> - Method in interface uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/BMPTransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/Transceiver.html#close()">close()</a></span> - Method in class uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/Transceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver">Transceiver</a></dt>
 <dd>
@@ -3132,7 +3138,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Implementation of the SpiNNaker Fast Data Download Protocol.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine)">DataGatherer(TransceiverInterface, Machine)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DataGatherer</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.alloc.client.SpallocClient.Job)">DataGatherer(TransceiverInterface, Machine, SpallocClient.Job)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DataGatherer</a></dt>
 <dd>
 <div class="block">Create an instance of the protocol implementation.</div>
 </dd>
@@ -3160,7 +3166,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Enum for data types of system variables.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.DBProperties.html#%3Cinit%3E(java.time.Duration,boolean,int,boolean,double,int,java.time.Duration,java.time.Duration,java.time.Duration,boolean)">DBProperties(Duration, boolean, int, boolean, double, int, Duration, Duration, Duration, boolean)</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.DBProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.DBProperties</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/ExecuteDataSpecification.html#db">db</a></span> - Variable in class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/ExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">ExecuteDataSpecification</a></dt>
+<dd>
+<div class="block">The database.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.DBProperties.html#%3Cinit%3E(java.time.Duration,boolean,int,boolean,boolean,double,int,java.time.Duration,java.time.Duration,java.time.Duration,boolean)">DBProperties(Duration, boolean, int, boolean, boolean, double, int, Duration, Duration, Duration, boolean)</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.DBProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.DBProperties</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#DEAD">DEAD</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
 <dd>
@@ -3592,7 +3602,7 @@ loadScripts(document, 'script');</script>
              regions.</div>
 </div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">DirectDataGatherer(TransceiverInterface, Machine, BufferManagerStorage)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DirectDataGatherer</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage,uk.ac.manchester.spinnaker.alloc.client.SpallocClient.Job)">DirectDataGatherer(TransceiverInterface, Machine, BufferManagerStorage, SpallocClient.Job)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DirectDataGatherer</a></dt>
 <dd>
 <div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span></div>
 <div class="block">Create a data gatherer.</div>
@@ -4334,7 +4344,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Common base for executing data specifications.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/ExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine)">ExecuteDataSpecification(Machine)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/ExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">ExecuteDataSpecification</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/ExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">ExecuteDataSpecification(Machine, DSEDatabaseEngine)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/ExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">ExecuteDataSpecification</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html#executeFlood(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.io.File,uk.ac.manchester.spinnaker.messages.model.AppID)">executeFlood(CoreSubsets, File, AppID)</a></span> - Method in interface uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></dt>
 <dd>
@@ -4405,6 +4415,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/AllocatorTask.html#expireJobs()">expireJobs()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/AllocatorTask.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">AllocatorTask</a></dt>
 <dd>
 <div class="block">Destroy jobs that have missed their keepalive.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAPI.StatementCommon.html#explainQueryPlan()">explainQueryPlan()</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAPI.StatementCommon.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.StatementCommon</a></dt>
+<dd>
+<div class="block">Get the query plan explanation.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/RouterTimeout.html#exponent">exponent</a></span> - Variable in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/RouterTimeout.html" title="class in uk.ac.manchester.spinnaker.messages.model">RouterTimeout</a></dt>
 <dd>
@@ -4482,7 +4496,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Implementation of the Data Specification Executor that uses the Fast Data In
  protocol to upload the results to a SpiNNaker machine.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/FastExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,java.util.List,java.io.File)">FastExecuteDataSpecification(Machine, List&lt;Gather&gt;, File)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/FastExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">FastExecuteDataSpecification</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/FastExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,java.util.List,java.io.File,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">FastExecuteDataSpecification(Machine, List&lt;Gather&gt;, File, DSEDatabaseEngine)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/FastExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">FastExecuteDataSpecification</a></dt>
 <dd>
 <div class="block">Create an instance of this class.</div>
 </dd>
@@ -6502,6 +6516,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/SpallocServiceImpl.html#getJob(int,javax.ws.rs.core.UriInfo,javax.servlet.http.HttpServletRequest,javax.ws.rs.core.SecurityContext)">getJob(int, UriInfo, HttpServletRequest, SecurityContext)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/SpallocServiceImpl.html" title="class in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceImpl</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/client/SpallocClientFactory.html#getJob(java.lang.String,java.lang.String)">getJob(String, String)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.client.<a href="uk/ac/manchester/spinnaker/alloc/client/SpallocClientFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.client">SpallocClientFactory</a></dt>
+<dd>
+<div class="block">Get direct access to a Job.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Spalloc.html#getJob(uk.ac.manchester.spinnaker.alloc.security.Permit,int)">getJob(Permit, int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Spalloc.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Spalloc</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/SpallocAPI.html#getJob(uk.ac.manchester.spinnaker.alloc.security.Permit,int)">getJob(Permit, int)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/SpallocAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI</a></dt>
@@ -6518,6 +6536,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get the location description of a board given the job-local
  coordinates of a chip on that board.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/client/SpallocClientFactory.html#getJobFromProxyInfo(uk.ac.manchester.spinnaker.storage.ProxyInformation)">getJobFromProxyInfo(ProxyInformation)</a></span> - Static method in class uk.ac.manchester.spinnaker.alloc.client.<a href="uk/ac/manchester/spinnaker/alloc/client/SpallocClientFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.client">SpallocClientFactory</a></dt>
+<dd>
+<div class="block">Get a handle to a job given its proxy access information (derived from a
+ database query).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/client/WhereIs.html#getJobId()">getJobId()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.client.<a href="uk/ac/manchester/spinnaker/alloc/client/WhereIs.html" title="class in uk.ac.manchester.spinnaker.alloc.client">WhereIs</a></dt>
 <dd>&nbsp;</dd>
@@ -7246,6 +7269,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/client/JobDescription.html#getProxyAddress()">getProxyAddress()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.client.<a href="uk/ac/manchester/spinnaker/alloc/client/JobDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.client">JobDescription</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/ProxyAwareStorage.html#getProxyInformation()">getProxyInformation()</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/ProxyAwareStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">ProxyAwareStorage</a></dt>
+<dd>
+<div class="block">Get the proxy information from the database.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.CreateGroupModel.html#getQuota()">getQuota()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.CreateGroupModel.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.CreateGroupModel</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/QuotaManager.AdjustedQuota.html#getQuota()">getQuota()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/QuotaManager.AdjustedQuota.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">QuotaManager.AdjustedQuota</a></dt>
@@ -8803,7 +8830,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Executes the host based data specification.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/HostExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine)">HostExecuteDataSpecification(Machine)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/HostExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">HostExecuteDataSpecification</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/HostExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">HostExecuteDataSpecification(Machine, DSEDatabaseEngine)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/HostExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">HostExecuteDataSpecification</a></dt>
 <dd>
 <div class="block">Create a high-level DSE interface.</div>
 </dd>
@@ -9095,7 +9122,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Retrieves and processes IOBUFs.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/iobuf/IobufRetriever.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.Transceiver,uk.ac.manchester.spinnaker.machine.Machine,int)">IobufRetriever(Transceiver, Machine, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.iobuf.<a href="uk/ac/manchester/spinnaker/front_end/iobuf/IobufRetriever.html" title="class in uk.ac.manchester.spinnaker.front_end.iobuf">IobufRetriever</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/iobuf/IobufRetriever.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,int)">IobufRetriever(TransceiverInterface, Machine, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.iobuf.<a href="uk/ac/manchester/spinnaker/front_end/iobuf/IobufRetriever.html" title="class in uk.ac.manchester.spinnaker.front_end.iobuf">IobufRetriever</a></dt>
 <dd>
 <div class="block">Create a IOBUF retriever.</div>
 </dd>
@@ -9290,6 +9317,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/IPTagGet.Response.html#isARP()">isARP()</a></span> - Method in class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/IPTagGet.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet.Response</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.DBProperties.html#isAutoExplain()">isAutoExplain()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.DBProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.DBProperties</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.AuthProperties.html#isBasic()">isBasic()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.AuthProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.AuthProperties</a></dt>
 <dd>
 <div class="block">Whether to enable HTTP BASIC authentication.</div>
@@ -9298,6 +9327,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Test whether a board's blacklist is believed to be synchronised to the
  hardware.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/Utils.html#isBusy(java.sql.SQLException)">isBusy(SQLException)</a></span> - Static method in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/Utils.html" title="class in uk.ac.manchester.spinnaker.alloc.db">Utils</a></dt>
+<dd>
+<div class="block">Utility for testing whether an exception was thrown because the database
+ was busy.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/Utils.html#isBusy(org.springframework.dao.DataAccessException)">isBusy(DataAccessException)</a></span> - Static method in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/Utils.html" title="class in uk.ac.manchester.spinnaker.alloc.db">Utils</a></dt>
 <dd>
@@ -9414,6 +9448,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/HeapElement.html#isFree">isFree</a></span> - Variable in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/HeapElement.html" title="class in uk.ac.manchester.spinnaker.messages.model">HeapElement</a></dt>
 <dd>
 <div class="block">True if the block is free.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAPI.Connection.html#isHistoricalDBAvailable()">isHistoricalDBAvailable()</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAPI.Connection.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connection</a></dt>
+<dd>
+<div class="block">Whether the historical data DB is available.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html#isIdPresent()">isIdPresent()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardRecord</a></dt>
 <dd>&nbsp;</dd>
@@ -9563,6 +9601,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/ServiceMasterControl.html#isUseDummyBMP()">isUseDummyBMP()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/ServiceMasterControl.html" title="class in uk.ac.manchester.spinnaker.alloc">ServiceMasterControl</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.Epoch.html#isValid()">isValid()</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.Epoch.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></dt>
+<dd>
+<div class="block">Check if this epoch is the current one.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/UncheckedConnection.html#isValid(int)">isValid(int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/UncheckedConnection.html" title="class in uk.ac.manchester.spinnaker.alloc.db">UncheckedConnection</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/UncheckedConnection.html#isWrapperFor(java.lang.Class)">isWrapperFor(Class&lt;?&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/UncheckedConnection.html" title="class in uk.ac.manchester.spinnaker.alloc.db">UncheckedConnection</a></dt>
@@ -9606,6 +9648,10 @@ loadScripts(document, 'script');</script>
 </a>
 <h2 class="title">J</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/ExecuteDataSpecification.html#job">job</a></span> - Variable in class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/ExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">ExecuteDataSpecification</a></dt>
+<dd>
+<div class="block">A spalloc job, or null if not used.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/WebServiceComponentNames.html#JOB">JOB</a></span> - Static variable in interface uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/WebServiceComponentNames.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">WebServiceComponentNames</a></dt>
 <dd>
 <div class="block">The job resource name component.</div>
@@ -9753,6 +9799,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/JobStateResponse.html#%3Cinit%3E()">JobStateResponse()</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/JobStateResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">JobStateResponse</a></dt>
 <dd>
 <div class="block">Make an instance without any references to other resources.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html#jobUrl">jobUrl</a></span> - Variable in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html" title="class in uk.ac.manchester.spinnaker.storage">ProxyInformation</a></dt>
+<dd>
+<div class="block">The URL of the job to connect to.</div>
 </dd>
 </dl>
 <a id="I:K">
@@ -10190,13 +10240,13 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get descriptions of how to move from a board to its neighbours.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/HostExecuteDataSpecification.html#loadAllCores(uk.ac.manchester.spinnaker.storage.ConnectionProvider)">loadAllCores(ConnectionProvider&lt;DSEStorage&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/HostExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">HostExecuteDataSpecification</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/HostExecuteDataSpecification.html#loadAllCores()">loadAllCores()</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/HostExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">HostExecuteDataSpecification</a></dt>
 <dd>
 <div class="block">Execute all data specifications that a particular connection knows about,
  storing back in the database the information collected about those
  executions.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/HostExecuteDataSpecification.html#loadApplicationCores(uk.ac.manchester.spinnaker.storage.ConnectionProvider)">loadApplicationCores(ConnectionProvider&lt;DSEStorage&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/HostExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">HostExecuteDataSpecification</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/HostExecuteDataSpecification.html#loadApplicationCores()">loadApplicationCores()</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/HostExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">HostExecuteDataSpecification</a></dt>
 <dd>
 <div class="block">Execute all application data specifications that a particular connection
  knows about, storing back in the database the information collected about
@@ -10212,7 +10262,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get the configuration from a Python file.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/FastExecuteDataSpecification.html#loadCores(uk.ac.manchester.spinnaker.storage.ConnectionProvider)">loadCores(ConnectionProvider&lt;DSEStorage&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/FastExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">FastExecuteDataSpecification</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/FastExecuteDataSpecification.html#loadCores()">loadCores()</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/FastExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">FastExecuteDataSpecification</a></dt>
 <dd>
 <div class="block">Execute all application data specifications that a particular connection
  knows about, storing back in the database the information collected about
@@ -10259,7 +10309,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Load a text resource from the given name using this class's class loader.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/HostExecuteDataSpecification.html#loadSystemCores(uk.ac.manchester.spinnaker.storage.ConnectionProvider)">loadSystemCores(ConnectionProvider&lt;DSEStorage&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/HostExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">HostExecuteDataSpecification</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/HostExecuteDataSpecification.html#loadSystemCores()">loadSystemCores()</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/HostExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">HostExecuteDataSpecification</a></dt>
 <dd>
 <div class="block">Execute all system data specifications that a particular connection knows
  about, storing back in the database the information collected about those
@@ -12655,9 +12705,22 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/config/ConfigurableBeanFactory.html?is-external=true#SCOPE_PROTOTYPE" title="class or interface in org.springframework.beans.factory.config" class="externalLink"><code>prototype</code></a>, with a new
  instance being made every time a bean is required.</div>
 </dd>
+<dt><a href="uk/ac/manchester/spinnaker/storage/ProxyAwareStorage.html" title="interface in uk.ac.manchester.spinnaker.storage"><span class="typeNameLink">ProxyAwareStorage</span></a> - Interface in <a href="uk/ac/manchester/spinnaker/storage/package-summary.html">uk.ac.manchester.spinnaker.storage</a></dt>
+<dd>
+<div class="block">Storage interface that knows how to get information about the proxy system
+ from the DB.</div>
+</dd>
 <dt><a href="uk/ac/manchester/spinnaker/alloc/proxy/ProxyCore.html" title="class in uk.ac.manchester.spinnaker.alloc.proxy"><span class="typeNameLink">ProxyCore</span></a> - Class in <a href="uk/ac/manchester/spinnaker/alloc/proxy/package-summary.html">uk.ac.manchester.spinnaker.alloc.proxy</a></dt>
 <dd>
 <div class="block">The main proxy class for a particular web socket session.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html" title="class in uk.ac.manchester.spinnaker.storage"><span class="typeNameLink">ProxyInformation</span></a> - Class in <a href="uk/ac/manchester/spinnaker/storage/package-summary.html">uk.ac.manchester.spinnaker.storage</a></dt>
+<dd>
+<div class="block">Information about the proxy to allow connection.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html#%3Cinit%3E(java.lang.String,java.lang.String,java.lang.String)">ProxyInformation(String, String, String)</a></span> - Constructor for class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html" title="class in uk.ac.manchester.spinnaker.storage">ProxyInformation</a></dt>
+<dd>
+<div class="block">Create a new instance.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/Prototype.html#proxyMode()">proxyMode()</a></span> - Method in annotation type uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/Prototype.html" title="annotation in uk.ac.manchester.spinnaker.alloc.model">Prototype</a></dt>
 <dd>
@@ -13378,7 +13441,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">A data gatherer that pulls the data from a recording region.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">RecordingRegionDataGatherer(TransceiverInterface, Machine, BufferManagerStorage)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">RecordingRegionDataGatherer</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage,uk.ac.manchester.spinnaker.alloc.client.SpallocClient.Job)">RecordingRegionDataGatherer(TransceiverInterface, Machine, BufferManagerStorage, SpallocClient.Job)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">RecordingRegionDataGatherer</a></dt>
 <dd>
 <div class="block">Create a data gatherer.</div>
 </dd>
@@ -15923,6 +15986,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Create an instance.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html#spallocUrl">spallocUrl</a></span> - Variable in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html" title="class in uk.ac.manchester.spinnaker.storage">ProxyInformation</a></dt>
+<dd>
+<div class="block">The URL of the spalloc server to connect to.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/client/CreateJob.SpecificBoard.html#%3Cinit%3E()">SpecificBoard()</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.client.<a href="uk/ac/manchester/spinnaker/alloc/client/CreateJob.SpecificBoard.html" title="class in uk.ac.manchester.spinnaker.alloc.client">CreateJob.SpecificBoard</a></dt>
 <dd>
 <div class="block">Make an untargeted instance.</div>
@@ -16823,10 +16890,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">A nestable transaction runner.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAwareBean.AbstractSQL.html#transaction(boolean,uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)">transaction(boolean, DatabaseAPI.TransactedWithResult&lt;T&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAwareBean.AbstractSQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseAwareBean.AbstractSQL</a></dt>
-<dd>
-<div class="block">A nestable transaction runner.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAPI.Connection.html#transaction(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Transacted)">transaction(DatabaseAPI.Transacted)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAPI.Connection.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connection</a></dt>
 <dd>
 <div class="block">A nestable transaction runner.</div>
@@ -16836,6 +16899,10 @@ loadScripts(document, 'script');</script>
 <div class="block">A nestable transaction runner.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAwareBean.AbstractSQL.html#transaction(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)">transaction(DatabaseAPI.TransactedWithResult&lt;T&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAwareBean.AbstractSQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseAwareBean.AbstractSQL</a></dt>
+<dd>
+<div class="block">A nestable transaction runner.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAwareBean.AbstractSQL.html#transactionRead(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)">transactionRead(DatabaseAPI.TransactedWithResult&lt;T&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAwareBean.AbstractSQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseAwareBean.AbstractSQL</a></dt>
 <dd>
 <div class="block">A nestable transaction runner.</div>
 </dd>

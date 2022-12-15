@@ -143,9 +143,10 @@ extends <a href="DataGatherer.html" title="class in uk.ac.manchester.spinnaker.f
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">RecordingRegionDataGatherer</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">TransceiverInterface</a>&nbsp;transceiver,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage,uk.ac.manchester.spinnaker.alloc.client.SpallocClient.Job)">RecordingRegionDataGatherer</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">TransceiverInterface</a>&nbsp;transceiver,
 uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
-<a href="http://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">BufferManagerStorage</a>&nbsp;database)</code></th>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">BufferManagerStorage</a>&nbsp;database,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/alloc/client/SpallocClient.Job.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.alloc.client" class="externalLink">SpallocClient.Job</a>&nbsp;job)</code></th>
 <td class="colLast">
 <div class="block">Create a data gatherer.</div>
 </td>
@@ -223,11 +224,12 @@ int&nbsp;index)</code></th>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">RecordingRegionDataGatherer</a></h3>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage,uk.ac.manchester.spinnaker.alloc.client.SpallocClient.Job)">RecordingRegionDataGatherer</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/MustBeClosed.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@MustBeClosed</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="memberName">RecordingRegionDataGatherer</span>&#8203;(<span class="arguments"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">TransceiverInterface</a>&nbsp;transceiver,
 uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
-<a href="http://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">BufferManagerStorage</a>&nbsp;database)</span>
+<a href="http://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">BufferManagerStorage</a>&nbsp;database,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/alloc/client/SpallocClient.Job.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.alloc.client" class="externalLink">SpallocClient.Job</a>&nbsp;job)</span>
                             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/ProcessException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">ProcessException</a></span></div>
 <div class="block">Create a data gatherer.</div>
@@ -236,6 +238,7 @@ uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
 <dd><code>transceiver</code> - How to talk to the machine.</dd>
 <dd><code>machine</code> - The description of the machine talked to.</dd>
 <dd><code>database</code> - Where to put the retrieved data.</dd>
+<dd><code>job</code> - The spalloc job to connect to, or null if none.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/ProcessException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">ProcessException</a></code> - If we can't discover the machine details due to SpiNNaker
              rejecting messages</dd>

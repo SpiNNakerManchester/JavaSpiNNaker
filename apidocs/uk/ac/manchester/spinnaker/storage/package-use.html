@@ -75,43 +75,49 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.client">uk.ac.manchester.spinnaker.alloc.client</a></th>
+<td class="colLast">
+<div class="block">Java client for the SpiNNaker allocation service.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.db">uk.ac.manchester.spinnaker.alloc.db</a></th>
 <td class="colLast">
 <div class="block">SQLite database support.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end">uk.ac.manchester.spinnaker.front_end</a></th>
 <td class="colLast">
 <div class="block">The front-end interface to the Java implementation of the SpiNNaker host
  libraries.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.download">uk.ac.manchester.spinnaker.front_end.download</a></th>
 <td class="colLast">
 <div class="block">The buffer manager and support classes.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.dse">uk.ac.manchester.spinnaker.front_end.dse</a></th>
 <td class="colLast">
 <div class="block">Data specification execution interface.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.storage">uk.ac.manchester.spinnaker.storage</a></th>
 <td class="colLast">
 <div class="block">Storage management.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.storage.sqlite">uk.ac.manchester.spinnaker.storage.sqlite</a></th>
 <td class="colLast">
 <div class="block">Storage management implementation that uses SQLite.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver</a></th>
 <td class="colLast">
 <div class="block">How to actually talk to a SpiNNaker machine.</div>
@@ -122,6 +128,31 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="packageUses">
 <ul class="blockList">
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.client">
+<!--   -->
+</a>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="package-summary.html">uk.ac.manchester.spinnaker.storage</a> used by <a href="../alloc/client/package-summary.html">uk.ac.manchester.spinnaker.alloc.client</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/ProxyInformation.html#uk.ac.manchester.spinnaker.alloc.client">ProxyInformation</a></th>
+<td class="colLast">
+<div class="block">Information about the proxy to allow connection.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
 <li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.db">
 <!--   -->
@@ -254,25 +285,18 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colFirst" scope="row"><a href="class-use/ConnectionProvider.html#uk.ac.manchester.spinnaker.front_end.dse">ConnectionProvider</a></th>
+<th class="colFirst" scope="row"><a href="class-use/DSEDatabaseEngine.html#uk.ac.manchester.spinnaker.front_end.dse">DSEDatabaseEngine</a></th>
 <td class="colLast">
-<div class="block">Indicates a class that can provide database connections to
- suitably-configured databases.</div>
+<div class="block">A database interface for talking to the DSE database.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colFirst" scope="row"><a href="class-use/DSEStorage.html#uk.ac.manchester.spinnaker.front_end.dse">DSEStorage</a></th>
-<td class="colLast">
-<div class="block">The interface supported by the DSE part of the storage system.</div>
-</td>
-</tr>
-<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/DSEStorage.Ethernet.html#uk.ac.manchester.spinnaker.front_end.dse">DSEStorage.Ethernet</a></th>
 <td class="colLast">
 <div class="block">A ethernet which allows data specifications to be loaded.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/StorageException.html#uk.ac.manchester.spinnaker.front_end.dse">StorageException</a></th>
 <td class="colLast">
 <div class="block">Exceptions caused by the storage system.</div>
@@ -350,6 +374,19 @@ loadScripts(document, 'script');</script>
 <th class="colFirst" scope="row"><a href="class-use/Parameter.html#uk.ac.manchester.spinnaker.storage">Parameter</a></th>
 <td class="colLast">
 <div class="block">Used to document a parameter that is present in the DQL/DML.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/ProxyAwareStorage.html#uk.ac.manchester.spinnaker.storage">ProxyAwareStorage</a></th>
+<td class="colLast">
+<div class="block">Storage interface that knows how to get information about the proxy system
+ from the DB.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/ProxyInformation.html#uk.ac.manchester.spinnaker.storage">ProxyInformation</a></th>
+<td class="colLast">
+<div class="block">Information about the proxy to allow connection.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -432,6 +469,13 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/ProxyAwareStorage.html#uk.ac.manchester.spinnaker.storage.sqlite">ProxyAwareStorage</a></th>
+<td class="colLast">
+<div class="block">Storage interface that knows how to get information about the proxy system
+ from the DB.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/StorageException.html#uk.ac.manchester.spinnaker.storage.sqlite">StorageException</a></th>
 <td class="colLast">
 <div class="block">Exceptions caused by the storage system.</div>

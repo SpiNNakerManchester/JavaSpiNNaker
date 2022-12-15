@@ -63,7 +63,7 @@ loadScripts(document, 'script');</script>
 <div class="header">
 <h1>Index</h1>
 </div>
-<div class="contentContainer"><a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:V">V</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes</a><span class="verticalSeparator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a><a id="I:A">
+<div class="contentContainer"><a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:J">J</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:V">V</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes</a><span class="verticalSeparator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a><a id="I:A">
 <!--   -->
 </a>
 <h2 class="title">A</h2>
@@ -88,6 +88,10 @@ loadScripts(document, 'script');</script>
 </a>
 <h2 class="title">B</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html#bearerToken">bearerToken</a></span> - Variable in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html" title="class in uk.ac.manchester.spinnaker.storage">ProxyInformation</a></dt>
+<dd>
+<div class="block">The token to use to authenticate access.</div>
+</dd>
 <dt><a href="uk/ac/manchester/spinnaker/storage/BufferManagerDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage"><span class="typeNameLink">BufferManagerDatabaseEngine</span></a> - Class in <a href="uk/ac/manchester/spinnaker/storage/package-summary.html">uk.ac.manchester.spinnaker.storage</a></dt>
 <dd>
 <div class="block">A database interface for talking to the buffer manager database.</div>
@@ -245,6 +249,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEDatabaseEngine.html#getDDL()">getDDL()</a></span> - Method in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DSEDatabaseEngine</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/ProxyAwareStorage.html#getProxyInformation()">getProxyInformation()</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/ProxyAwareStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">ProxyAwareStorage</a></dt>
+<dd>
+<div class="block">Get the proxy information from the database.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html#getRecordingRegionContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region)">getRecordingRegionContents(BufferManagerStorage.Region)</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a></dt>
 <dd>
 <div class="block">Retrieves some bytes from the database.</div>
@@ -285,6 +293,16 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html#isNonEmpty()">isNonEmpty()</a></span> - Method in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a></dt>
 <dd>&nbsp;</dd>
+</dl>
+<a id="I:J">
+<!--   -->
+</a>
+<h2 class="title">J</h2>
+<dl>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html#jobUrl">jobUrl</a></span> - Variable in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html" title="class in uk.ac.manchester.spinnaker.storage">ProxyInformation</a></dt>
+<dd>
+<div class="block">The URL of the job to connect to.</div>
+</dd>
 </dl>
 <a id="I:L">
 <!--   -->
@@ -344,6 +362,19 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Used to document what parameters are present in the DQL/DML.</div>
 </dd>
+<dt><a href="uk/ac/manchester/spinnaker/storage/ProxyAwareStorage.html" title="interface in uk.ac.manchester.spinnaker.storage"><span class="typeNameLink">ProxyAwareStorage</span></a> - Interface in <a href="uk/ac/manchester/spinnaker/storage/package-summary.html">uk.ac.manchester.spinnaker.storage</a></dt>
+<dd>
+<div class="block">Storage interface that knows how to get information about the proxy system
+ from the DB.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html" title="class in uk.ac.manchester.spinnaker.storage"><span class="typeNameLink">ProxyInformation</span></a> - Class in <a href="uk/ac/manchester/spinnaker/storage/package-summary.html">uk.ac.manchester.spinnaker.storage</a></dt>
+<dd>
+<div class="block">Information about the proxy to allow connection.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html#%3Cinit%3E(java.lang.String,java.lang.String,java.lang.String)">ProxyInformation(String, String, String)</a></span> - Constructor for class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html" title="class in uk.ac.manchester.spinnaker.storage">ProxyInformation</a></dt>
+<dd>
+<div class="block">Create a new instance.</div>
+</dd>
 </dl>
 <a id="I:R">
 <!--   -->
@@ -399,6 +430,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.CoreToLoad.html#sizeToWrite">sizeToWrite</a></span> - Variable in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a></dt>
 <dd>
 <div class="block">The size of region to allocate and write into.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html#spallocUrl">spallocUrl</a></span> - Variable in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html" title="class in uk.ac.manchester.spinnaker.storage">ProxyInformation</a></dt>
+<dd>
+<div class="block">The URL of the spalloc server to connect to.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteBufferStorage.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite"><span class="typeNameLink">SQLiteBufferStorage</span></a> - Class in <a href="uk/ac/manchester/spinnaker/storage/sqlite/package-summary.html">uk.ac.manchester.spinnaker.storage.sqlite</a></dt>
 <dd>
@@ -500,7 +535,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Describes what columns are expected in the result.</div>
 </dd>
 </dl>
-<a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:V">V</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes</a><span class="verticalSeparator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a></div>
+<a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:J">J</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:V">V</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes</a><span class="verticalSeparator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a></div>
 </main>
 <footer role="contentinfo">
 <nav role="navigation">

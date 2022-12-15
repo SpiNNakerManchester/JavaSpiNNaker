@@ -208,15 +208,14 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 </tr>
 <tr class="altColor" id="i2">
 <td class="colFirst"><code>&lt;T&gt;&nbsp;T</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#transaction(boolean,uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)">transaction</a></span>&#8203;(boolean&nbsp;lockForWriting,
-<a href="DatabaseAPI.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.TransactedWithResult</a>&lt;T&gt;&nbsp;action)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#transaction(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)">transaction</a></span>&#8203;(<a href="DatabaseAPI.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.TransactedWithResult</a>&lt;T&gt;&nbsp;action)</code></th>
 <td class="colLast">
 <div class="block">A nestable transaction runner.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code>&lt;T&gt;&nbsp;T</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#transaction(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)">transaction</a></span>&#8203;(<a href="DatabaseAPI.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.TransactedWithResult</a>&lt;T&gt;&nbsp;action)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#transactionRead(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)">transactionRead</a></span>&#8203;(<a href="DatabaseAPI.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.TransactedWithResult</a>&lt;T&gt;&nbsp;action)</code></th>
 <td class="colLast">
 <div class="block">A nestable transaction runner.</div>
 </td>
@@ -308,21 +307,18 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="transaction(boolean,uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)">transaction</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="typeParameters">&lt;T&gt;</span>&nbsp;<span class="returnType">T</span>&nbsp;<span class="memberName">transaction</span>&#8203;(<span class="arguments">boolean&nbsp;lockForWriting,
-<a href="DatabaseAPI.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.TransactedWithResult</a>&lt;T&gt;&nbsp;action)</span></div>
+<h3><a id="transactionRead(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)">transactionRead</a></h3>
+<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="typeParameters">&lt;T&gt;</span>&nbsp;<span class="returnType">T</span>&nbsp;<span class="memberName">transactionRead</span>&#8203;(<span class="arguments"><a href="DatabaseAPI.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.TransactedWithResult</a>&lt;T&gt;&nbsp;action)</span></div>
 <div class="block">A nestable transaction runner. If the <code>action</code> completes
  normally (and this isn't a nested use), the transaction commits. If a
  runtime exception is thrown, the transaction is rolled back (and the
- exception flows through).</div>
+ exception flows through). A read lock is used; multiple read locks
+ may be held at once, but no <code>UPDATE</code>s may be performed as locks
+ <em>cannot</em> be safely upgraded.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>T</code> - The type of the result of <code>action</code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>lockForWriting</code> - Whether to lock for writing. Multiple read locks can be
-            held at once, but only one write lock. Locks
-            <em>cannot</em> be upgraded (because that causes
-            deadlocks).</dd>
 <dd><code>action</code> - The code to run inside the transaction.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Whatever the <code>action</code> returns.</dd>

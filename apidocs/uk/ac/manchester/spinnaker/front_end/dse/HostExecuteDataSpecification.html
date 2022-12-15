@@ -133,7 +133,7 @@ extends <a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester
 <h3>Fields inherited from class&nbsp;uk.ac.manchester.spinnaker.front_end.dse.<a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">ExecuteDataSpecification</a></h3>
 <a id="fields.inherited.from.class.uk.ac.manchester.spinnaker.front_end.dse.ExecuteDataSpecification">
 <!--   -->
-</a><code><a href="ExecuteDataSpecification.html#machine">machine</a>, <a href="ExecuteDataSpecification.html#txrx">txrx</a></code></div>
+</a><code><a href="ExecuteDataSpecification.html#db">db</a>, <a href="ExecuteDataSpecification.html#job">job</a>, <a href="ExecuteDataSpecification.html#machine">machine</a>, <a href="ExecuteDataSpecification.html#txrx">txrx</a></code></div>
 </section>
 </li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
@@ -153,7 +153,8 @@ extends <a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine)">HostExecuteDataSpecification</a></span>&#8203;(<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">HostExecuteDataSpecification</a></span>&#8203;(<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+<a href="../../storage/DSEDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DSEDatabaseEngine</a>&nbsp;db)</code></th>
 <td class="colLast">
 <div class="block">Create a high-level DSE interface.</div>
 </td>
@@ -183,7 +184,7 @@ extends <a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#loadAllCores(uk.ac.manchester.spinnaker.storage.ConnectionProvider)">loadAllCores</a></span>&#8203;(<a href="../../storage/ConnectionProvider.html" title="interface in uk.ac.manchester.spinnaker.storage">ConnectionProvider</a>&lt;<a href="../../storage/DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a>&gt;&nbsp;connection)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#loadAllCores()">loadAllCores</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Execute all data specifications that a particular connection knows about,
  storing back in the database the information collected about those
@@ -192,7 +193,7 @@ extends <a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#loadApplicationCores(uk.ac.manchester.spinnaker.storage.ConnectionProvider)">loadApplicationCores</a></span>&#8203;(<a href="../../storage/ConnectionProvider.html" title="interface in uk.ac.manchester.spinnaker.storage">ConnectionProvider</a>&lt;<a href="../../storage/DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a>&gt;&nbsp;connection)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#loadApplicationCores()">loadApplicationCores</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Execute all application data specifications that a particular connection
  knows about, storing back in the database the information collected about
@@ -201,7 +202,7 @@ extends <a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester
 </tr>
 <tr class="altColor" id="i2">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#loadSystemCores(uk.ac.manchester.spinnaker.storage.ConnectionProvider)">loadSystemCores</a></span>&#8203;(<a href="../../storage/ConnectionProvider.html" title="interface in uk.ac.manchester.spinnaker.storage">ConnectionProvider</a>&lt;<a href="../../storage/DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a>&gt;&nbsp;connection)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#loadSystemCores()">loadSystemCores</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Execute all system data specifications that a particular connection knows
  about, storing back in the database the information collected about those
@@ -237,20 +238,26 @@ extends <a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.Machine)">HostExecuteDataSpecification</a></h3>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">HostExecuteDataSpecification</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/MustBeClosed.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@MustBeClosed</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="memberName">HostExecuteDataSpecification</span>&#8203;(<span class="arguments"><a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine)</span>
+</span><span class="modifiers">public</span>&nbsp;<span class="memberName">HostExecuteDataSpecification</span>&#8203;(<span class="arguments"><a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+<a href="../../storage/DSEDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DSEDatabaseEngine</a>&nbsp;db)</span>
                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a>,
+<a href="../../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URISyntaxException.html?is-external=true" title="class or interface in java.net" class="externalLink">URISyntaxException</a></span></div>
 <div class="block">Create a high-level DSE interface.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>machine</code> - The description of the SpiNNaker machine.</dd>
+<dd><code>db</code> - The DSE database.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the transceiver can't talk to its sockets.</dd>
 <dd><code><a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If SpiNNaker rejects a message.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If communications are interrupted.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URISyntaxException.html?is-external=true" title="class or interface in java.net" class="externalLink">URISyntaxException</a></code> - If the URI is not valid.</dd>
+<dd><code><a href="../../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If the database cannot be read.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If something really strange occurs with talking to the BMP;
              this constructor should not be doing that!</dd>
 </dl>
@@ -268,8 +275,8 @@ extends <a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="loadAllCores(uk.ac.manchester.spinnaker.storage.ConnectionProvider)">loadAllCores</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">loadAllCores</span>&#8203;(<span class="arguments"><a href="../../storage/ConnectionProvider.html" title="interface in uk.ac.manchester.spinnaker.storage">ConnectionProvider</a>&lt;<a href="../../storage/DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a>&gt;&nbsp;connection)</span>
+<h3><a id="loadAllCores()">loadAllCores</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">loadAllCores</span>()
                   throws <span class="exceptions"><a href="../../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
@@ -279,8 +286,6 @@ extends <a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester
  storing back in the database the information collected about those
  executions.</div>
 <dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>connection</code> - The handle to the database.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If the database can't be talked to.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the transceiver can't talk to its sockets.</dd>
@@ -294,8 +299,8 @@ extends <a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="loadApplicationCores(uk.ac.manchester.spinnaker.storage.ConnectionProvider)">loadApplicationCores</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">loadApplicationCores</span>&#8203;(<span class="arguments"><a href="../../storage/ConnectionProvider.html" title="interface in uk.ac.manchester.spinnaker.storage">ConnectionProvider</a>&lt;<a href="../../storage/DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a>&gt;&nbsp;connection)</span>
+<h3><a id="loadApplicationCores()">loadApplicationCores</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">loadApplicationCores</span>()
                           throws <span class="exceptions"><a href="../../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
@@ -305,8 +310,6 @@ extends <a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester
  knows about, storing back in the database the information collected about
  those executions.</div>
 <dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>connection</code> - The handle to the database.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If the database can't be talked to.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the transceiver can't talk to its sockets.</dd>
@@ -320,8 +323,8 @@ extends <a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="loadSystemCores(uk.ac.manchester.spinnaker.storage.ConnectionProvider)">loadSystemCores</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">loadSystemCores</span>&#8203;(<span class="arguments"><a href="../../storage/ConnectionProvider.html" title="interface in uk.ac.manchester.spinnaker.storage">ConnectionProvider</a>&lt;<a href="../../storage/DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a>&gt;&nbsp;connection)</span>
+<h3><a id="loadSystemCores()">loadSystemCores</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">loadSystemCores</span>()
                      throws <span class="exceptions"><a href="../../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
@@ -331,8 +334,6 @@ extends <a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester
  about, storing back in the database the information collected about those
  executions.</div>
 <dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>connection</code> - The handle to the database.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If the database can't be talked to.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the transceiver can't talk to its sockets.</dd>

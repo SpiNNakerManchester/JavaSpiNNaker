@@ -69,7 +69,7 @@
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> mayCreateJob(<strong class="jxr_keyword">int</strong> groupId) {
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> sql = <strong class="jxr_keyword">new</strong> CreateCheckSQL()) {
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  			<strong class="jxr_keyword">return</strong> sql.transaction(false, () -&gt; sql.mayCreateJob(groupId));
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  			<strong class="jxr_keyword">return</strong> sql.transactionRead(() -&gt; sql.mayCreateJob(groupId));
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  		}
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>  	}
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>  
@@ -111,7 +111,7 @@
 <a class="jxr_linenumber" name="L103" href="#L103">103</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L104" href="#L104">104</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> mayLetJobContinue(<strong class="jxr_keyword">int</strong> jobId) {
 <a class="jxr_linenumber" name="L105" href="#L105">105</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> sql = <strong class="jxr_keyword">new</strong> ContinueCheckSQL()) {
-<a class="jxr_linenumber" name="L106" href="#L106">106</a> 			<strong class="jxr_keyword">return</strong> sql.transaction(false, () -&gt; sql.mayLetJobContinue(jobId));
+<a class="jxr_linenumber" name="L106" href="#L106">106</a> 			<strong class="jxr_keyword">return</strong> sql.transactionRead(() -&gt; sql.mayLetJobContinue(jobId));
 <a class="jxr_linenumber" name="L107" href="#L107">107</a> 		}
 <a class="jxr_linenumber" name="L108" href="#L108">108</a> 	}
 <a class="jxr_linenumber" name="L109" href="#L109">109</a> 

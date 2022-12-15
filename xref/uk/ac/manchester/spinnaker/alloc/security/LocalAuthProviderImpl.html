@@ -929,305 +929,303 @@
 <a class="jxr_linenumber" name="L921" href="#L921">921</a> 						<em class="jxr_comment">// Convert tiered trust level to grant form</em>
 <a class="jxr_linenumber" name="L922" href="#L922">922</a> 						details.trustLevel.getGrants()
 <a class="jxr_linenumber" name="L923" href="#L923">923</a> 								.forEach(authorities::add);
-<a class="jxr_linenumber" name="L924" href="#L924">924</a> 						log.info(<span class="jxr_string">"login success for {} at level {}"</span>, username,
-<a class="jxr_linenumber" name="L925" href="#L925">925</a> 								details.trustLevel);
-<a class="jxr_linenumber" name="L926" href="#L926">926</a> 						<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L927" href="#L927">927</a> 					});
-<a class="jxr_linenumber" name="L928" href="#L928">928</a> 				}, () -&gt; false);
-<a class="jxr_linenumber" name="L929" href="#L929">929</a> 	}
-<a class="jxr_linenumber" name="L930" href="#L930">930</a> 
-<a class="jxr_linenumber" name="L931" href="#L931">931</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L932" href="#L932">932</a> <em class="jxr_javadoccomment">	 * Look up a local user. Does all checks &lt;em&gt;except&lt;/em&gt; the password check;</em>
-<a class="jxr_linenumber" name="L933" href="#L933">933</a> <em class="jxr_javadoccomment">	 * that's slow (because bcrypt) so we do it outside the transaction. This</em>
-<a class="jxr_linenumber" name="L934" href="#L934">934</a> <em class="jxr_javadoccomment">	 * needs to be done in a writable (exclusive) transaction.</em>
-<a class="jxr_linenumber" name="L935" href="#L935">935</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L936" href="#L936">936</a> <em class="jxr_javadoccomment">	 * @param username</em>
-<a class="jxr_linenumber" name="L937" href="#L937">937</a> <em class="jxr_javadoccomment">	 *            The user name we're looking up.</em>
-<a class="jxr_linenumber" name="L938" href="#L938">938</a> <em class="jxr_javadoccomment">	 * @param queries</em>
-<a class="jxr_linenumber" name="L939" href="#L939">939</a> <em class="jxr_javadoccomment">	 *            How to access the database.</em>
-<a class="jxr_linenumber" name="L940" href="#L940">940</a> <em class="jxr_javadoccomment">	 * @return Whether we know the user, and if so, what do we know about them.</em>
-<a class="jxr_linenumber" name="L941" href="#L941">941</a> <em class="jxr_javadoccomment">	 * @throws AuthenticationException</em>
-<a class="jxr_linenumber" name="L942" href="#L942">942</a> <em class="jxr_javadoccomment">	 *             If the user is known and definitely can't log in for some</em>
-<a class="jxr_linenumber" name="L943" href="#L943">943</a> <em class="jxr_javadoccomment">	 *             reason.</em>
-<a class="jxr_linenumber" name="L944" href="#L944">944</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L945" href="#L945">945</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> Optional&lt;LocalAuthResult&gt; lookUpUserDetails(String username,
-<a class="jxr_linenumber" name="L946" href="#L946">946</a> 			AuthQueries queries) {
-<a class="jxr_linenumber" name="L947" href="#L947">947</a> 		<strong class="jxr_keyword">return</strong> ifElse(queries.getUser(username), userInfo -&gt; {
-<a class="jxr_linenumber" name="L948" href="#L948">948</a> 			<strong class="jxr_keyword">int</strong> userId = userInfo.getInt(<span class="jxr_string">"user_id"</span>);
-<a class="jxr_linenumber" name="L949" href="#L949">949</a> 			<strong class="jxr_keyword">if</strong> (userInfo.getBoolean(<span class="jxr_string">"disabled"</span>)) {
-<a class="jxr_linenumber" name="L950" href="#L950">950</a> 				log.info(<span class="jxr_string">"login failure for {}: account is disabled"</span>, username);
-<a class="jxr_linenumber" name="L951" href="#L951">951</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> DisabledException(<span class="jxr_string">"account is disabled"</span>);
-<a class="jxr_linenumber" name="L952" href="#L952">952</a> 			}
-<a class="jxr_linenumber" name="L953" href="#L953">953</a> 			<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L954" href="#L954">954</a> 				<strong class="jxr_keyword">if</strong> (userInfo.getBoolean(<span class="jxr_string">"locked"</span>)) {
-<a class="jxr_linenumber" name="L955" href="#L955">955</a> 					<em class="jxr_comment">// Note that this extends the lock!</em>
-<a class="jxr_linenumber" name="L956" href="#L956">956</a> 					<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> LockedException(<span class="jxr_string">"account is locked"</span>);
-<a class="jxr_linenumber" name="L957" href="#L957">957</a> 				}
-<a class="jxr_linenumber" name="L958" href="#L958">958</a> 				<strong class="jxr_keyword">var</strong> authInfo = queries.getUserAuthorities(userId);
-<a class="jxr_linenumber" name="L959" href="#L959">959</a> 				<strong class="jxr_keyword">var</strong> encPass = authInfo.getString(<span class="jxr_string">"encrypted_password"</span>);
-<a class="jxr_linenumber" name="L960" href="#L960">960</a> 				<strong class="jxr_keyword">if</strong> (isNull(encPass)) {
-<a class="jxr_linenumber" name="L961" href="#L961">961</a> 					<em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="L962" href="#L962">962</a> <em class="jxr_comment">					 * We know this user, but they can't use this authentication</em>
-<a class="jxr_linenumber" name="L963" href="#L963">963</a> <em class="jxr_comment">					 * method. They'll probably have to use OpenID.</em>
-<a class="jxr_linenumber" name="L964" href="#L964">964</a> <em class="jxr_comment">					 */</em>
-<a class="jxr_linenumber" name="L965" href="#L965">965</a> 					<strong class="jxr_keyword">return</strong> Optional.empty();
-<a class="jxr_linenumber" name="L966" href="#L966">966</a> 				}
-<a class="jxr_linenumber" name="L967" href="#L967">967</a> 				<strong class="jxr_keyword">var</strong> trust = authInfo.getEnum(<span class="jxr_string">"trust_level"</span>, TrustLevel.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L968" href="#L968">968</a> 				<strong class="jxr_keyword">return</strong> Optional.of(<strong class="jxr_keyword">new</strong> LocalAuthResult(userId, trust, encPass));
-<a class="jxr_linenumber" name="L969" href="#L969">969</a> 			} <strong class="jxr_keyword">catch</strong> (AuthenticationException e) {
-<a class="jxr_linenumber" name="L970" href="#L970">970</a> 				queries.noteLoginFailureForUser(userId, username);
-<a class="jxr_linenumber" name="L971" href="#L971">971</a> 				log.info(<span class="jxr_string">"login failure for {}"</span>, username, e);
-<a class="jxr_linenumber" name="L972" href="#L972">972</a> 				<strong class="jxr_keyword">throw</strong> e;
-<a class="jxr_linenumber" name="L973" href="#L973">973</a> 			}
-<a class="jxr_linenumber" name="L974" href="#L974">974</a> 		}, Optional::empty);
-<a class="jxr_linenumber" name="L975" href="#L975">975</a> 	}
-<a class="jxr_linenumber" name="L976" href="#L976">976</a> 
-<a class="jxr_linenumber" name="L977" href="#L977">977</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L978" href="#L978">978</a> <em class="jxr_javadoccomment">	 * This is slow (100ms!) so we make sure we aren't holding a transaction</em>
-<a class="jxr_linenumber" name="L979" href="#L979">979</a> <em class="jxr_javadoccomment">	 * open while this step is ongoing.</em>
-<a class="jxr_linenumber" name="L980" href="#L980">980</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L981" href="#L981">981</a> <em class="jxr_javadoccomment">	 * @param username</em>
-<a class="jxr_linenumber" name="L982" href="#L982">982</a> <em class="jxr_javadoccomment">	 *            The username (now validated as existing).</em>
-<a class="jxr_linenumber" name="L983" href="#L983">983</a> <em class="jxr_javadoccomment">	 * @param password</em>
-<a class="jxr_linenumber" name="L984" href="#L984">984</a> <em class="jxr_javadoccomment">	 *            The user-provided password that we're checking.</em>
-<a class="jxr_linenumber" name="L985" href="#L985">985</a> <em class="jxr_javadoccomment">	 * @param queries</em>
-<a class="jxr_linenumber" name="L986" href="#L986">986</a> <em class="jxr_javadoccomment">	 *            How to access the DB.</em>
-<a class="jxr_linenumber" name="L987" href="#L987">987</a> <em class="jxr_javadoccomment">	 * @param details</em>
-<a class="jxr_linenumber" name="L988" href="#L988">988</a> <em class="jxr_javadoccomment">	 *            The results of looking up the user</em>
-<a class="jxr_linenumber" name="L989" href="#L989">989</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L990" href="#L990">990</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkPassword(String username, String password,
-<a class="jxr_linenumber" name="L991" href="#L991">991</a> 			LocalAuthResult details, AuthQueries queries) {
-<a class="jxr_linenumber" name="L992" href="#L992">992</a> 		<strong class="jxr_keyword">if</strong> (!passServices.matchPassword(password, details.passInfo)) {
-<a class="jxr_linenumber" name="L993" href="#L993">993</a> 			queries.transaction(() -&gt; {
-<a class="jxr_linenumber" name="L994" href="#L994">994</a> 				queries.noteLoginFailureForUser(details.userId, username);
-<a class="jxr_linenumber" name="L995" href="#L995">995</a> 				log.info(<span class="jxr_string">"login failure for {}: bad password"</span>, username);
-<a class="jxr_linenumber" name="L996" href="#L996">996</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> BadCredentialsException(<span class="jxr_string">"bad password"</span>);
-<a class="jxr_linenumber" name="L997" href="#L997">997</a> 			});
-<a class="jxr_linenumber" name="L998" href="#L998">998</a> 		}
-<a class="jxr_linenumber" name="L999" href="#L999">999</a> 	}
-<a class="jxr_linenumber" name="L1000" href="#L1000">1000</a> 
-<a class="jxr_linenumber" name="L1001" href="#L1001">1001</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1002" href="#L1002">1002</a> <em class="jxr_javadoccomment">	 * Check if an OpenID user can use the service. A transaction &lt;em&gt;must&lt;/em&gt;</em>
-<a class="jxr_linenumber" name="L1003" href="#L1003">1003</a> <em class="jxr_javadoccomment">	 * be held open when calling this.</em>
-<a class="jxr_linenumber" name="L1004" href="#L1004">1004</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L1005" href="#L1005">1005</a> <em class="jxr_javadoccomment">	 * @param username</em>
-<a class="jxr_linenumber" name="L1006" href="#L1006">1006</a> <em class="jxr_javadoccomment">	 *            The username, already obtained and verified.</em>
-<a class="jxr_linenumber" name="L1007" href="#L1007">1007</a> <em class="jxr_javadoccomment">	 * @param subject</em>
-<a class="jxr_linenumber" name="L1008" href="#L1008">1008</a> <em class="jxr_javadoccomment">	 *            The real OpenID {@code sub} claim, if available/known.</em>
-<a class="jxr_linenumber" name="L1009" href="#L1009">1009</a> <em class="jxr_javadoccomment">	 * @param authorities</em>
-<a class="jxr_linenumber" name="L1010" href="#L1010">1010</a> <em class="jxr_javadoccomment">	 *            The claimed authorities derived from the HBP OpenID service.</em>
-<a class="jxr_linenumber" name="L1011" href="#L1011">1011</a> <em class="jxr_javadoccomment">	 *            Interesting because they include claims about organisation and</em>
-<a class="jxr_linenumber" name="L1012" href="#L1012">1012</a> <em class="jxr_javadoccomment">	 *            collabratory membership.</em>
-<a class="jxr_linenumber" name="L1013" href="#L1013">1013</a> <em class="jxr_javadoccomment">	 * @param queries</em>
-<a class="jxr_linenumber" name="L1014" href="#L1014">1014</a> <em class="jxr_javadoccomment">	 *            How to access the database.</em>
-<a class="jxr_linenumber" name="L1015" href="#L1015">1015</a> <em class="jxr_javadoccomment">	 * @return Whether the user is allowed to use the service. If {@code false},</em>
-<a class="jxr_linenumber" name="L1016" href="#L1016">1016</a> <em class="jxr_javadoccomment">	 *         the database cannot authorize the user and some other auth method</em>
-<a class="jxr_linenumber" name="L1017" href="#L1017">1017</a> <em class="jxr_javadoccomment">	 *         should be tried.</em>
-<a class="jxr_linenumber" name="L1018" href="#L1018">1018</a> <em class="jxr_javadoccomment">	 * @throws DisabledException</em>
-<a class="jxr_linenumber" name="L1019" href="#L1019">1019</a> <em class="jxr_javadoccomment">	 *             If the account is administratively disabled.</em>
-<a class="jxr_linenumber" name="L1020" href="#L1020">1020</a> <em class="jxr_javadoccomment">	 * @throws LockedException</em>
-<a class="jxr_linenumber" name="L1021" href="#L1021">1021</a> <em class="jxr_javadoccomment">	 *             If the account is temporarily locked.</em>
-<a class="jxr_linenumber" name="L1022" href="#L1022">1022</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L1023" href="#L1023">1023</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> authOpenIDAgainstDB(String username, String subject,
-<a class="jxr_linenumber" name="L1024" href="#L1024">1024</a> 			Collection&lt;? <strong class="jxr_keyword">extends</strong> GrantedAuthority&gt; authorities,
-<a class="jxr_linenumber" name="L1025" href="#L1025">1025</a> 			AuthQueries queries) {
-<a class="jxr_linenumber" name="L1026" href="#L1026">1026</a> 		<strong class="jxr_keyword">var</strong> collabs = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;();
-<a class="jxr_linenumber" name="L1027" href="#L1027">1027</a> 		<strong class="jxr_keyword">var</strong> orgs = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;();
-<a class="jxr_linenumber" name="L1028" href="#L1028">1028</a> 		authorities.forEach(ga -&gt; inflateGroup(ga, collabs, orgs, queries));
-<a class="jxr_linenumber" name="L1029" href="#L1029">1029</a> 		<strong class="jxr_keyword">return</strong> ifElse(queries.getUser(username), userInfo -&gt; {
-<a class="jxr_linenumber" name="L1030" href="#L1030">1030</a> 			<strong class="jxr_keyword">int</strong> userId = userInfo.getInt(<span class="jxr_string">"user_id"</span>);
-<a class="jxr_linenumber" name="L1031" href="#L1031">1031</a> 			synchExternalGroups(username, userId, orgs, collabs, queries);
-<a class="jxr_linenumber" name="L1032" href="#L1032">1032</a> 			<strong class="jxr_keyword">if</strong> (userInfo.getBoolean(<span class="jxr_string">"disabled"</span>)) {
-<a class="jxr_linenumber" name="L1033" href="#L1033">1033</a> 				log.info(<span class="jxr_string">"user {} has a disabled account"</span>, username);
-<a class="jxr_linenumber" name="L1034" href="#L1034">1034</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> DisabledException(<span class="jxr_string">"account is disabled"</span>);
-<a class="jxr_linenumber" name="L1035" href="#L1035">1035</a> 			}
-<a class="jxr_linenumber" name="L1036" href="#L1036">1036</a> 			<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L1037" href="#L1037">1037</a> 				<strong class="jxr_keyword">if</strong> (userInfo.getBoolean(<span class="jxr_string">"locked"</span>)) {
-<a class="jxr_linenumber" name="L1038" href="#L1038">1038</a> 					<em class="jxr_comment">// Note that this extends the lock!</em>
-<a class="jxr_linenumber" name="L1039" href="#L1039">1039</a> 					<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> LockedException(<span class="jxr_string">"account is locked"</span>);
-<a class="jxr_linenumber" name="L1040" href="#L1040">1040</a> 				}
-<a class="jxr_linenumber" name="L1041" href="#L1041">1041</a> 				<strong class="jxr_keyword">var</strong> authInfo = queries.getUserAuthorities(userId);
-<a class="jxr_linenumber" name="L1042" href="#L1042">1042</a> 				<strong class="jxr_keyword">if</strong> (nonNull(authInfo.getString(<span class="jxr_string">"encrypted_password"</span>))) {
-<a class="jxr_linenumber" name="L1043" href="#L1043">1043</a> 					<em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="L1044" href="#L1044">1044</a> <em class="jxr_comment">					 * We know this user, but they can't use this authentication</em>
-<a class="jxr_linenumber" name="L1045" href="#L1045">1045</a> <em class="jxr_comment">					 * method. They'll probably have to use username+password.</em>
-<a class="jxr_linenumber" name="L1046" href="#L1046">1046</a> <em class="jxr_comment">					 */</em>
-<a class="jxr_linenumber" name="L1047" href="#L1047">1047</a> 					<strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L1048" href="#L1048">1048</a> 				}
-<a class="jxr_linenumber" name="L1049" href="#L1049">1049</a> 				checkSubject(username, subject,
-<a class="jxr_linenumber" name="L1050" href="#L1050">1050</a> 						authInfo.getString(<span class="jxr_string">"openid_subject"</span>));
-<a class="jxr_linenumber" name="L1051" href="#L1051">1051</a> 				queries.noteLoginSuccessForUser(userId, subject);
-<a class="jxr_linenumber" name="L1052" href="#L1052">1052</a> 				log.info(<span class="jxr_string">"login success for {}"</span>, username);
-<a class="jxr_linenumber" name="L1053" href="#L1053">1053</a> 				<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L1054" href="#L1054">1054</a> 			} <strong class="jxr_keyword">catch</strong> (AuthenticationException e) {
-<a class="jxr_linenumber" name="L1055" href="#L1055">1055</a> 				queries.noteLoginFailureForUser(userId, username);
-<a class="jxr_linenumber" name="L1056" href="#L1056">1056</a> 				log.info(<span class="jxr_string">"login failure for {}"</span>, username, e);
-<a class="jxr_linenumber" name="L1057" href="#L1057">1057</a> 				<strong class="jxr_keyword">throw</strong> e;
-<a class="jxr_linenumber" name="L1058" href="#L1058">1058</a> 			}
-<a class="jxr_linenumber" name="L1059" href="#L1059">1059</a> 		}, () -&gt; {
-<a class="jxr_linenumber" name="L1060" href="#L1060">1060</a> 			<em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="L1061" href="#L1061">1061</a> <em class="jxr_comment">			 * No such user; need to inflate one now. If we successfully make</em>
-<a class="jxr_linenumber" name="L1062" href="#L1062">1062</a> <em class="jxr_comment">			 * the user, they're also immediately authorised as they're</em>
-<a class="jxr_linenumber" name="L1063" href="#L1063">1063</a> <em class="jxr_comment">			 * definitely not disabled or locked.</em>
-<a class="jxr_linenumber" name="L1064" href="#L1064">1064</a> <em class="jxr_comment">			 */</em>
-<a class="jxr_linenumber" name="L1065" href="#L1065">1065</a> 			<strong class="jxr_keyword">return</strong> ifElse(queries.createUser(username, <strong class="jxr_keyword">null</strong>, USER, subject),
-<a class="jxr_linenumber" name="L1066" href="#L1066">1066</a> 					id -&gt; {
-<a class="jxr_linenumber" name="L1067" href="#L1067">1067</a> 						synchExternalGroups(username, id, orgs, collabs,
-<a class="jxr_linenumber" name="L1068" href="#L1068">1068</a> 								queries);
-<a class="jxr_linenumber" name="L1069" href="#L1069">1069</a> 						<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L1070" href="#L1070">1070</a> 					}, () -&gt; {
-<a class="jxr_linenumber" name="L1071" href="#L1071">1071</a> 						<em class="jxr_comment">// Can't note a failure; no record to note it in!</em>
-<a class="jxr_linenumber" name="L1072" href="#L1072">1072</a> 						log.warn(<span class="jxr_string">"failed to make user {}"</span>, username);
-<a class="jxr_linenumber" name="L1073" href="#L1073">1073</a> 						<strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L1074" href="#L1074">1074</a> 					});
-<a class="jxr_linenumber" name="L1075" href="#L1075">1075</a> 		});
-<a class="jxr_linenumber" name="L1076" href="#L1076">1076</a> 	}
-<a class="jxr_linenumber" name="L1077" href="#L1077">1077</a> 
-<a class="jxr_linenumber" name="L1078" href="#L1078">1078</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1079" href="#L1079">1079</a> <em class="jxr_javadoccomment">	 * Check if the subject matches and issue a warning if there's a potential</em>
-<a class="jxr_linenumber" name="L1080" href="#L1080">1080</a> <em class="jxr_javadoccomment">	 * problem.</em>
-<a class="jxr_linenumber" name="L1081" href="#L1081">1081</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L1082" href="#L1082">1082</a> <em class="jxr_javadoccomment">	 * @param username</em>
-<a class="jxr_linenumber" name="L1083" href="#L1083">1083</a> <em class="jxr_javadoccomment">	 *            The username (for logging).</em>
-<a class="jxr_linenumber" name="L1084" href="#L1084">1084</a> <em class="jxr_javadoccomment">	 * @param subject</em>
-<a class="jxr_linenumber" name="L1085" href="#L1085">1085</a> <em class="jxr_javadoccomment">	 *            The new user subject ID.</em>
-<a class="jxr_linenumber" name="L1086" href="#L1086">1086</a> <em class="jxr_javadoccomment">	 * @param oldSubject</em>
-<a class="jxr_linenumber" name="L1087" href="#L1087">1087</a> <em class="jxr_javadoccomment">	 *            The old user subject ID.</em>
-<a class="jxr_linenumber" name="L1088" href="#L1088">1088</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L1089" href="#L1089">1089</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkSubject(String username, String subject,
-<a class="jxr_linenumber" name="L1090" href="#L1090">1090</a> 			String oldSubject) {
-<a class="jxr_linenumber" name="L1091" href="#L1091">1091</a> 		<strong class="jxr_keyword">if</strong> (isNull(subject)) {
-<a class="jxr_linenumber" name="L1092" href="#L1092">1092</a> 			log.warn(<span class="jxr_string">"null subject for {}"</span>, username);
-<a class="jxr_linenumber" name="L1093" href="#L1093">1093</a> 		} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (subject.isBlank()) {
-<a class="jxr_linenumber" name="L1094" href="#L1094">1094</a> 			log.warn(<span class="jxr_string">"empty subject for {}"</span>, username);
-<a class="jxr_linenumber" name="L1095" href="#L1095">1095</a> 		}
-<a class="jxr_linenumber" name="L1096" href="#L1096">1096</a> 		<strong class="jxr_keyword">if</strong> (nonNull(oldSubject)) {
-<a class="jxr_linenumber" name="L1097" href="#L1097">1097</a> 			<em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="L1098" href="#L1098">1098</a> <em class="jxr_comment">			 * We know this user from before; double check that they're the same</em>
-<a class="jxr_linenumber" name="L1099" href="#L1099">1099</a> <em class="jxr_comment">			 * person as before. The {@code sub} claim is a true identifier.</em>
-<a class="jxr_linenumber" name="L1100" href="#L1100">1100</a> <em class="jxr_comment">			 */</em>
-<a class="jxr_linenumber" name="L1101" href="#L1101">1101</a> 			<strong class="jxr_keyword">if</strong> (!requireNonNull(subject).equals(oldSubject)) {
-<a class="jxr_linenumber" name="L1102" href="#L1102">1102</a> 				log.warn(<span class="jxr_string">"user {} subject changed from {} to {}"</span>, username,
-<a class="jxr_linenumber" name="L1103" href="#L1103">1103</a> 						oldSubject, subject);
-<a class="jxr_linenumber" name="L1104" href="#L1104">1104</a> 			}
-<a class="jxr_linenumber" name="L1105" href="#L1105">1105</a> 		}
-<a class="jxr_linenumber" name="L1106" href="#L1106">1106</a> 	}
-<a class="jxr_linenumber" name="L1107" href="#L1107">1107</a> 
-<a class="jxr_linenumber" name="L1108" href="#L1108">1108</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> inflateGroup(GrantedAuthority ga, List&lt;String&gt; collabs,
-<a class="jxr_linenumber" name="L1109" href="#L1109">1109</a> 			List&lt;String&gt; orgs, AuthQueries queries) {
-<a class="jxr_linenumber" name="L1110" href="#L1110">1110</a> 		<strong class="jxr_keyword">if</strong> (ga instanceof CollabratoryAuthority) {
-<a class="jxr_linenumber" name="L1111" href="#L1111">1111</a> 			<strong class="jxr_keyword">var</strong> collab = (CollabratoryAuthority) ga;
-<a class="jxr_linenumber" name="L1112" href="#L1112">1112</a> 			<strong class="jxr_keyword">var</strong> collab1 = collab.getCollabratory();
-<a class="jxr_linenumber" name="L1113" href="#L1113">1113</a> 			<strong class="jxr_keyword">if</strong> (queries.createGroup(collab1, COLLABRATORY,
-<a class="jxr_linenumber" name="L1114" href="#L1114">1114</a> 					quotaProps.getDefaultCollabQuota())) {
-<a class="jxr_linenumber" name="L1115" href="#L1115">1115</a> 				log.info(<span class="jxr_string">"created collabratory '{}'"</span>, collab1);
-<a class="jxr_linenumber" name="L1116" href="#L1116">1116</a> 			}
-<a class="jxr_linenumber" name="L1117" href="#L1117">1117</a> 			collabs.add(collab.getCollabratory());
-<a class="jxr_linenumber" name="L1118" href="#L1118">1118</a> 		} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (ga instanceof OrganisationAuthority) {
-<a class="jxr_linenumber" name="L1119" href="#L1119">1119</a> 			<strong class="jxr_keyword">var</strong> org = (OrganisationAuthority) ga;
-<a class="jxr_linenumber" name="L1120" href="#L1120">1120</a> 			<strong class="jxr_keyword">var</strong> org1 = org.getOrganisation();
-<a class="jxr_linenumber" name="L1121" href="#L1121">1121</a> 			<strong class="jxr_keyword">if</strong> (queries.createGroup(org1, ORGANISATION,
-<a class="jxr_linenumber" name="L1122" href="#L1122">1122</a> 					quotaProps.getDefaultOrgQuota())) {
-<a class="jxr_linenumber" name="L1123" href="#L1123">1123</a> 				log.info(<span class="jxr_string">"created organisation '{}'"</span>, org1);
-<a class="jxr_linenumber" name="L1124" href="#L1124">1124</a> 			}
-<a class="jxr_linenumber" name="L1125" href="#L1125">1125</a> 			orgs.add(org.getOrganisation());
-<a class="jxr_linenumber" name="L1126" href="#L1126">1126</a> 		}
-<a class="jxr_linenumber" name="L1127" href="#L1127">1127</a> 	}
-<a class="jxr_linenumber" name="L1128" href="#L1128">1128</a> 
-<a class="jxr_linenumber" name="L1129" href="#L1129">1129</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1130" href="#L1130">1130</a> <em class="jxr_javadoccomment">	 * Synchronise the lists of different types of groups for a user. Messy</em>
-<a class="jxr_linenumber" name="L1131" href="#L1131">1131</a> <em class="jxr_javadoccomment">	 * because we want to do minimal inserts and deletes.</em>
-<a class="jxr_linenumber" name="L1132" href="#L1132">1132</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L1133" href="#L1133">1133</a> <em class="jxr_javadoccomment">	 * @param username</em>
-<a class="jxr_linenumber" name="L1134" href="#L1134">1134</a> <em class="jxr_javadoccomment">	 *            Which user (for logging only)</em>
-<a class="jxr_linenumber" name="L1135" href="#L1135">1135</a> <em class="jxr_javadoccomment">	 * @param userId</em>
-<a class="jxr_linenumber" name="L1136" href="#L1136">1136</a> <em class="jxr_javadoccomment">	 *            Which user (for DB access only)</em>
-<a class="jxr_linenumber" name="L1137" href="#L1137">1137</a> <em class="jxr_javadoccomment">	 * @param orgs</em>
-<a class="jxr_linenumber" name="L1138" href="#L1138">1138</a> <em class="jxr_javadoccomment">	 *            The list of organisation names</em>
-<a class="jxr_linenumber" name="L1139" href="#L1139">1139</a> <em class="jxr_javadoccomment">	 * @param collabs</em>
-<a class="jxr_linenumber" name="L1140" href="#L1140">1140</a> <em class="jxr_javadoccomment">	 *            The list of collab names</em>
-<a class="jxr_linenumber" name="L1141" href="#L1141">1141</a> <em class="jxr_javadoccomment">	 * @param queries</em>
-<a class="jxr_linenumber" name="L1142" href="#L1142">1142</a> <em class="jxr_javadoccomment">	 *            How to touch the DB</em>
-<a class="jxr_linenumber" name="L1143" href="#L1143">1143</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L1144" href="#L1144">1144</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> synchExternalGroups(String username, <strong class="jxr_keyword">int</strong> userId,
-<a class="jxr_linenumber" name="L1145" href="#L1145">1145</a> 			List&lt;String&gt; orgs, List&lt;String&gt; collabs, AuthQueries queries) {
-<a class="jxr_linenumber" name="L1146" href="#L1146">1146</a> 		<strong class="jxr_keyword">if</strong> (orgs.isEmpty() &amp;&amp; collabs.isEmpty()) {
-<a class="jxr_linenumber" name="L1147" href="#L1147">1147</a> 			log.warn(
-<a class="jxr_linenumber" name="L1148" href="#L1148">1148</a> 					<span class="jxr_string">"no organisations or collabratories for user {}; "</span>
-<a class="jxr_linenumber" name="L1149" href="#L1149">1149</a> 							+ <span class="jxr_string">"not synching in case this is a glitch "</span>
-<a class="jxr_linenumber" name="L1150" href="#L1150">1150</a> 							+ <span class="jxr_string">"(if this is the first time they've logged in, "</span>
-<a class="jxr_linenumber" name="L1151" href="#L1151">1151</a> 							+ <span class="jxr_string">"creating a job will fail in this session)"</span>,
-<a class="jxr_linenumber" name="L1152" href="#L1152">1152</a> 					username);
-<a class="jxr_linenumber" name="L1153" href="#L1153">1153</a> 			<strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L1154" href="#L1154">1154</a> 		}
-<a class="jxr_linenumber" name="L1155" href="#L1155">1155</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> synch = <strong class="jxr_keyword">new</strong> GroupSynch(queries)) {
-<a class="jxr_linenumber" name="L1156" href="#L1156">1156</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> org : orgs) {
-<a class="jxr_linenumber" name="L1157" href="#L1157">1157</a> 				synch.define(org, ORGANISATION);
-<a class="jxr_linenumber" name="L1158" href="#L1158">1158</a> 			}
-<a class="jxr_linenumber" name="L1159" href="#L1159">1159</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> collab : collabs) {
-<a class="jxr_linenumber" name="L1160" href="#L1160">1160</a> 				synch.define(collab, COLLABRATORY);
-<a class="jxr_linenumber" name="L1161" href="#L1161">1161</a> 			}
-<a class="jxr_linenumber" name="L1162" href="#L1162">1162</a> 			synch.apply(userId);
-<a class="jxr_linenumber" name="L1163" href="#L1163">1163</a> 		} <strong class="jxr_keyword">catch</strong> (RuntimeException e) {
-<a class="jxr_linenumber" name="L1164" href="#L1164">1164</a> 			log.warn(<span class="jxr_string">"problem when synchronizing group memberships for {}"</span>,
-<a class="jxr_linenumber" name="L1165" href="#L1165">1165</a> 					username, e);
-<a class="jxr_linenumber" name="L1166" href="#L1166">1166</a> 			<strong class="jxr_keyword">throw</strong> e;
-<a class="jxr_linenumber" name="L1167" href="#L1167">1167</a> 		}
-<a class="jxr_linenumber" name="L1168" href="#L1168">1168</a> 	}
-<a class="jxr_linenumber" name="L1169" href="#L1169">1169</a> 
-<a class="jxr_linenumber" name="L1170" href="#L1170">1170</a> 	@Override
-<a class="jxr_linenumber" name="L1171" href="#L1171">1171</a> 	@Scheduled(fixedDelayString = <span class="jxr_string">"#{authProperties.unlockPeriod}"</span>)
-<a class="jxr_linenumber" name="L1172" href="#L1172">1172</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> unlockLockedUsers() {
-<a class="jxr_linenumber" name="L1173" href="#L1173">1173</a> 		<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L1174" href="#L1174">1174</a> 			<strong class="jxr_keyword">if</strong> (!control.isPaused()) {
-<a class="jxr_linenumber" name="L1175" href="#L1175">1175</a> 				log.debug(<span class="jxr_string">"running user unlock task"</span>);
-<a class="jxr_linenumber" name="L1176" href="#L1176">1176</a> 				unlock();
-<a class="jxr_linenumber" name="L1177" href="#L1177">1177</a> 			}
-<a class="jxr_linenumber" name="L1178" href="#L1178">1178</a> 		} <strong class="jxr_keyword">catch</strong> (DataAccessException e) {
-<a class="jxr_linenumber" name="L1179" href="#L1179">1179</a> 			<strong class="jxr_keyword">if</strong> (isBusy(e)) {
-<a class="jxr_linenumber" name="L1180" href="#L1180">1180</a> 				log.info(<span class="jxr_string">"database is busy; "</span>
-<a class="jxr_linenumber" name="L1181" href="#L1181">1181</a> 						+ <span class="jxr_string">"will try user unlock processing later"</span>);
-<a class="jxr_linenumber" name="L1182" href="#L1182">1182</a> 				<strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L1183" href="#L1183">1183</a> 			}
-<a class="jxr_linenumber" name="L1184" href="#L1184">1184</a> 			<strong class="jxr_keyword">throw</strong> e;
-<a class="jxr_linenumber" name="L1185" href="#L1185">1185</a> 		}
-<a class="jxr_linenumber" name="L1186" href="#L1186">1186</a> 	}
-<a class="jxr_linenumber" name="L1187" href="#L1187">1187</a> 
-<a class="jxr_linenumber" name="L1188" href="#L1188">1188</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> unlock() {
-<a class="jxr_linenumber" name="L1189" href="#L1189">1189</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> sql = <strong class="jxr_keyword">new</strong> AuthQueries()) {
-<a class="jxr_linenumber" name="L1190" href="#L1190">1190</a> 			sql.transaction(() -&gt; {
-<a class="jxr_linenumber" name="L1191" href="#L1191">1191</a> 				sql.unlock();
-<a class="jxr_linenumber" name="L1192" href="#L1192">1192</a> 				<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L1193" href="#L1193">1193</a> 			});
-<a class="jxr_linenumber" name="L1194" href="#L1194">1194</a> 		}
-<a class="jxr_linenumber" name="L1195" href="#L1195">1195</a> 	}
-<a class="jxr_linenumber" name="L1196" href="#L1196">1196</a> 
-<a class="jxr_linenumber" name="L1197" href="#L1197">1197</a> 	<strong class="jxr_keyword">interface</strong> TestAPI {
-<a class="jxr_linenumber" name="L1198" href="#L1198">1198</a> 		<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1199" href="#L1199">1199</a> <em class="jxr_javadoccomment">		 * Run the core of the user unlocker.</em>
-<a class="jxr_linenumber" name="L1200" href="#L1200">1200</a> <em class="jxr_javadoccomment">		 */</em>
-<a class="jxr_linenumber" name="L1201" href="#L1201">1201</a> 		<strong class="jxr_keyword">void</strong> unlock();
-<a class="jxr_linenumber" name="L1202" href="#L1202">1202</a> 	}
-<a class="jxr_linenumber" name="L1203" href="#L1203">1203</a> 
-<a class="jxr_linenumber" name="L1204" href="#L1204">1204</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1205" href="#L1205">1205</a> <em class="jxr_javadoccomment">	 * @return The test interface.</em>
-<a class="jxr_linenumber" name="L1206" href="#L1206">1206</a> <em class="jxr_javadoccomment">	 * @deprecated This interface is just for testing.</em>
-<a class="jxr_linenumber" name="L1207" href="#L1207">1207</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L1208" href="#L1208">1208</a> 	@Override
-<a class="jxr_linenumber" name="L1209" href="#L1209">1209</a> 	@ForTestingOnly
-<a class="jxr_linenumber" name="L1210" href="#L1210">1210</a> 	@RestrictedApi(explanation = <span class="jxr_string">"just for testing"</span>, link = <span class="jxr_string">"index.html"</span>,
-<a class="jxr_linenumber" name="L1211" href="#L1211">1211</a> 			allowedOnPath = <span class="jxr_string">".*/src/test/java/.*"</span>)
-<a class="jxr_linenumber" name="L1212" href="#L1212">1212</a> 	@Deprecated
-<a class="jxr_linenumber" name="L1213" href="#L1213">1213</a> 	<strong class="jxr_keyword">public</strong> TestAPI getTestAPI() {
-<a class="jxr_linenumber" name="L1214" href="#L1214">1214</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
-<a class="jxr_linenumber" name="L1215" href="#L1215">1215</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TestAPI() {
-<a class="jxr_linenumber" name="L1216" href="#L1216">1216</a> 			@Override
-<a class="jxr_linenumber" name="L1217" href="#L1217">1217</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> unlock() {
-<a class="jxr_linenumber" name="L1218" href="#L1218">1218</a> 				LocalAuthProviderImpl.<strong class="jxr_keyword">this</strong>.unlock();
-<a class="jxr_linenumber" name="L1219" href="#L1219">1219</a> 			}
-<a class="jxr_linenumber" name="L1220" href="#L1220">1220</a> 		};
-<a class="jxr_linenumber" name="L1221" href="#L1221">1221</a> 	}
-<a class="jxr_linenumber" name="L1222" href="#L1222">1222</a> }
+<a class="jxr_linenumber" name="L924" href="#L924">924</a> 						<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L925" href="#L925">925</a> 					});
+<a class="jxr_linenumber" name="L926" href="#L926">926</a> 				}, () -&gt; false);
+<a class="jxr_linenumber" name="L927" href="#L927">927</a> 	}
+<a class="jxr_linenumber" name="L928" href="#L928">928</a> 
+<a class="jxr_linenumber" name="L929" href="#L929">929</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L930" href="#L930">930</a> <em class="jxr_javadoccomment">	 * Look up a local user. Does all checks &lt;em&gt;except&lt;/em&gt; the password check;</em>
+<a class="jxr_linenumber" name="L931" href="#L931">931</a> <em class="jxr_javadoccomment">	 * that's slow (because bcrypt) so we do it outside the transaction. This</em>
+<a class="jxr_linenumber" name="L932" href="#L932">932</a> <em class="jxr_javadoccomment">	 * needs to be done in a writable (exclusive) transaction.</em>
+<a class="jxr_linenumber" name="L933" href="#L933">933</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L934" href="#L934">934</a> <em class="jxr_javadoccomment">	 * @param username</em>
+<a class="jxr_linenumber" name="L935" href="#L935">935</a> <em class="jxr_javadoccomment">	 *            The user name we're looking up.</em>
+<a class="jxr_linenumber" name="L936" href="#L936">936</a> <em class="jxr_javadoccomment">	 * @param queries</em>
+<a class="jxr_linenumber" name="L937" href="#L937">937</a> <em class="jxr_javadoccomment">	 *            How to access the database.</em>
+<a class="jxr_linenumber" name="L938" href="#L938">938</a> <em class="jxr_javadoccomment">	 * @return Whether we know the user, and if so, what do we know about them.</em>
+<a class="jxr_linenumber" name="L939" href="#L939">939</a> <em class="jxr_javadoccomment">	 * @throws AuthenticationException</em>
+<a class="jxr_linenumber" name="L940" href="#L940">940</a> <em class="jxr_javadoccomment">	 *             If the user is known and definitely can't log in for some</em>
+<a class="jxr_linenumber" name="L941" href="#L941">941</a> <em class="jxr_javadoccomment">	 *             reason.</em>
+<a class="jxr_linenumber" name="L942" href="#L942">942</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L943" href="#L943">943</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> Optional&lt;LocalAuthResult&gt; lookUpUserDetails(String username,
+<a class="jxr_linenumber" name="L944" href="#L944">944</a> 			AuthQueries queries) {
+<a class="jxr_linenumber" name="L945" href="#L945">945</a> 		<strong class="jxr_keyword">return</strong> ifElse(queries.getUser(username), userInfo -&gt; {
+<a class="jxr_linenumber" name="L946" href="#L946">946</a> 			<strong class="jxr_keyword">int</strong> userId = userInfo.getInt(<span class="jxr_string">"user_id"</span>);
+<a class="jxr_linenumber" name="L947" href="#L947">947</a> 			<strong class="jxr_keyword">if</strong> (userInfo.getBoolean(<span class="jxr_string">"disabled"</span>)) {
+<a class="jxr_linenumber" name="L948" href="#L948">948</a> 				log.info(<span class="jxr_string">"login failure for {}: account is disabled"</span>, username);
+<a class="jxr_linenumber" name="L949" href="#L949">949</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> DisabledException(<span class="jxr_string">"account is disabled"</span>);
+<a class="jxr_linenumber" name="L950" href="#L950">950</a> 			}
+<a class="jxr_linenumber" name="L951" href="#L951">951</a> 			<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L952" href="#L952">952</a> 				<strong class="jxr_keyword">if</strong> (userInfo.getBoolean(<span class="jxr_string">"locked"</span>)) {
+<a class="jxr_linenumber" name="L953" href="#L953">953</a> 					<em class="jxr_comment">// Note that this extends the lock!</em>
+<a class="jxr_linenumber" name="L954" href="#L954">954</a> 					<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> LockedException(<span class="jxr_string">"account is locked"</span>);
+<a class="jxr_linenumber" name="L955" href="#L955">955</a> 				}
+<a class="jxr_linenumber" name="L956" href="#L956">956</a> 				<strong class="jxr_keyword">var</strong> authInfo = queries.getUserAuthorities(userId);
+<a class="jxr_linenumber" name="L957" href="#L957">957</a> 				<strong class="jxr_keyword">var</strong> encPass = authInfo.getString(<span class="jxr_string">"encrypted_password"</span>);
+<a class="jxr_linenumber" name="L958" href="#L958">958</a> 				<strong class="jxr_keyword">if</strong> (isNull(encPass)) {
+<a class="jxr_linenumber" name="L959" href="#L959">959</a> 					<em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L960" href="#L960">960</a> <em class="jxr_comment">					 * We know this user, but they can't use this authentication</em>
+<a class="jxr_linenumber" name="L961" href="#L961">961</a> <em class="jxr_comment">					 * method. They'll probably have to use OpenID.</em>
+<a class="jxr_linenumber" name="L962" href="#L962">962</a> <em class="jxr_comment">					 */</em>
+<a class="jxr_linenumber" name="L963" href="#L963">963</a> 					<strong class="jxr_keyword">return</strong> Optional.empty();
+<a class="jxr_linenumber" name="L964" href="#L964">964</a> 				}
+<a class="jxr_linenumber" name="L965" href="#L965">965</a> 				<strong class="jxr_keyword">var</strong> trust = authInfo.getEnum(<span class="jxr_string">"trust_level"</span>, TrustLevel.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L966" href="#L966">966</a> 				<strong class="jxr_keyword">return</strong> Optional.of(<strong class="jxr_keyword">new</strong> LocalAuthResult(userId, trust, encPass));
+<a class="jxr_linenumber" name="L967" href="#L967">967</a> 			} <strong class="jxr_keyword">catch</strong> (AuthenticationException e) {
+<a class="jxr_linenumber" name="L968" href="#L968">968</a> 				queries.noteLoginFailureForUser(userId, username);
+<a class="jxr_linenumber" name="L969" href="#L969">969</a> 				log.info(<span class="jxr_string">"login failure for {}"</span>, username, e);
+<a class="jxr_linenumber" name="L970" href="#L970">970</a> 				<strong class="jxr_keyword">throw</strong> e;
+<a class="jxr_linenumber" name="L971" href="#L971">971</a> 			}
+<a class="jxr_linenumber" name="L972" href="#L972">972</a> 		}, Optional::empty);
+<a class="jxr_linenumber" name="L973" href="#L973">973</a> 	}
+<a class="jxr_linenumber" name="L974" href="#L974">974</a> 
+<a class="jxr_linenumber" name="L975" href="#L975">975</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L976" href="#L976">976</a> <em class="jxr_javadoccomment">	 * This is slow (100ms!) so we make sure we aren't holding a transaction</em>
+<a class="jxr_linenumber" name="L977" href="#L977">977</a> <em class="jxr_javadoccomment">	 * open while this step is ongoing.</em>
+<a class="jxr_linenumber" name="L978" href="#L978">978</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L979" href="#L979">979</a> <em class="jxr_javadoccomment">	 * @param username</em>
+<a class="jxr_linenumber" name="L980" href="#L980">980</a> <em class="jxr_javadoccomment">	 *            The username (now validated as existing).</em>
+<a class="jxr_linenumber" name="L981" href="#L981">981</a> <em class="jxr_javadoccomment">	 * @param password</em>
+<a class="jxr_linenumber" name="L982" href="#L982">982</a> <em class="jxr_javadoccomment">	 *            The user-provided password that we're checking.</em>
+<a class="jxr_linenumber" name="L983" href="#L983">983</a> <em class="jxr_javadoccomment">	 * @param queries</em>
+<a class="jxr_linenumber" name="L984" href="#L984">984</a> <em class="jxr_javadoccomment">	 *            How to access the DB.</em>
+<a class="jxr_linenumber" name="L985" href="#L985">985</a> <em class="jxr_javadoccomment">	 * @param details</em>
+<a class="jxr_linenumber" name="L986" href="#L986">986</a> <em class="jxr_javadoccomment">	 *            The results of looking up the user</em>
+<a class="jxr_linenumber" name="L987" href="#L987">987</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L988" href="#L988">988</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkPassword(String username, String password,
+<a class="jxr_linenumber" name="L989" href="#L989">989</a> 			LocalAuthResult details, AuthQueries queries) {
+<a class="jxr_linenumber" name="L990" href="#L990">990</a> 		<strong class="jxr_keyword">if</strong> (!passServices.matchPassword(password, details.passInfo)) {
+<a class="jxr_linenumber" name="L991" href="#L991">991</a> 			queries.transaction(() -&gt; {
+<a class="jxr_linenumber" name="L992" href="#L992">992</a> 				queries.noteLoginFailureForUser(details.userId, username);
+<a class="jxr_linenumber" name="L993" href="#L993">993</a> 				log.info(<span class="jxr_string">"login failure for {}: bad password"</span>, username);
+<a class="jxr_linenumber" name="L994" href="#L994">994</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> BadCredentialsException(<span class="jxr_string">"bad password"</span>);
+<a class="jxr_linenumber" name="L995" href="#L995">995</a> 			});
+<a class="jxr_linenumber" name="L996" href="#L996">996</a> 		}
+<a class="jxr_linenumber" name="L997" href="#L997">997</a> 	}
+<a class="jxr_linenumber" name="L998" href="#L998">998</a> 
+<a class="jxr_linenumber" name="L999" href="#L999">999</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1000" href="#L1000">1000</a> <em class="jxr_javadoccomment">	 * Check if an OpenID user can use the service. A transaction &lt;em&gt;must&lt;/em&gt;</em>
+<a class="jxr_linenumber" name="L1001" href="#L1001">1001</a> <em class="jxr_javadoccomment">	 * be held open when calling this.</em>
+<a class="jxr_linenumber" name="L1002" href="#L1002">1002</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L1003" href="#L1003">1003</a> <em class="jxr_javadoccomment">	 * @param username</em>
+<a class="jxr_linenumber" name="L1004" href="#L1004">1004</a> <em class="jxr_javadoccomment">	 *            The username, already obtained and verified.</em>
+<a class="jxr_linenumber" name="L1005" href="#L1005">1005</a> <em class="jxr_javadoccomment">	 * @param subject</em>
+<a class="jxr_linenumber" name="L1006" href="#L1006">1006</a> <em class="jxr_javadoccomment">	 *            The real OpenID {@code sub} claim, if available/known.</em>
+<a class="jxr_linenumber" name="L1007" href="#L1007">1007</a> <em class="jxr_javadoccomment">	 * @param authorities</em>
+<a class="jxr_linenumber" name="L1008" href="#L1008">1008</a> <em class="jxr_javadoccomment">	 *            The claimed authorities derived from the HBP OpenID service.</em>
+<a class="jxr_linenumber" name="L1009" href="#L1009">1009</a> <em class="jxr_javadoccomment">	 *            Interesting because they include claims about organisation and</em>
+<a class="jxr_linenumber" name="L1010" href="#L1010">1010</a> <em class="jxr_javadoccomment">	 *            collabratory membership.</em>
+<a class="jxr_linenumber" name="L1011" href="#L1011">1011</a> <em class="jxr_javadoccomment">	 * @param queries</em>
+<a class="jxr_linenumber" name="L1012" href="#L1012">1012</a> <em class="jxr_javadoccomment">	 *            How to access the database.</em>
+<a class="jxr_linenumber" name="L1013" href="#L1013">1013</a> <em class="jxr_javadoccomment">	 * @return Whether the user is allowed to use the service. If {@code false},</em>
+<a class="jxr_linenumber" name="L1014" href="#L1014">1014</a> <em class="jxr_javadoccomment">	 *         the database cannot authorize the user and some other auth method</em>
+<a class="jxr_linenumber" name="L1015" href="#L1015">1015</a> <em class="jxr_javadoccomment">	 *         should be tried.</em>
+<a class="jxr_linenumber" name="L1016" href="#L1016">1016</a> <em class="jxr_javadoccomment">	 * @throws DisabledException</em>
+<a class="jxr_linenumber" name="L1017" href="#L1017">1017</a> <em class="jxr_javadoccomment">	 *             If the account is administratively disabled.</em>
+<a class="jxr_linenumber" name="L1018" href="#L1018">1018</a> <em class="jxr_javadoccomment">	 * @throws LockedException</em>
+<a class="jxr_linenumber" name="L1019" href="#L1019">1019</a> <em class="jxr_javadoccomment">	 *             If the account is temporarily locked.</em>
+<a class="jxr_linenumber" name="L1020" href="#L1020">1020</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L1021" href="#L1021">1021</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> authOpenIDAgainstDB(String username, String subject,
+<a class="jxr_linenumber" name="L1022" href="#L1022">1022</a> 			Collection&lt;? <strong class="jxr_keyword">extends</strong> GrantedAuthority&gt; authorities,
+<a class="jxr_linenumber" name="L1023" href="#L1023">1023</a> 			AuthQueries queries) {
+<a class="jxr_linenumber" name="L1024" href="#L1024">1024</a> 		<strong class="jxr_keyword">var</strong> collabs = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;();
+<a class="jxr_linenumber" name="L1025" href="#L1025">1025</a> 		<strong class="jxr_keyword">var</strong> orgs = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;();
+<a class="jxr_linenumber" name="L1026" href="#L1026">1026</a> 		authorities.forEach(ga -&gt; inflateGroup(ga, collabs, orgs, queries));
+<a class="jxr_linenumber" name="L1027" href="#L1027">1027</a> 		<strong class="jxr_keyword">return</strong> ifElse(queries.getUser(username), userInfo -&gt; {
+<a class="jxr_linenumber" name="L1028" href="#L1028">1028</a> 			<strong class="jxr_keyword">int</strong> userId = userInfo.getInt(<span class="jxr_string">"user_id"</span>);
+<a class="jxr_linenumber" name="L1029" href="#L1029">1029</a> 			synchExternalGroups(username, userId, orgs, collabs, queries);
+<a class="jxr_linenumber" name="L1030" href="#L1030">1030</a> 			<strong class="jxr_keyword">if</strong> (userInfo.getBoolean(<span class="jxr_string">"disabled"</span>)) {
+<a class="jxr_linenumber" name="L1031" href="#L1031">1031</a> 				log.info(<span class="jxr_string">"user {} has a disabled account"</span>, username);
+<a class="jxr_linenumber" name="L1032" href="#L1032">1032</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> DisabledException(<span class="jxr_string">"account is disabled"</span>);
+<a class="jxr_linenumber" name="L1033" href="#L1033">1033</a> 			}
+<a class="jxr_linenumber" name="L1034" href="#L1034">1034</a> 			<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L1035" href="#L1035">1035</a> 				<strong class="jxr_keyword">if</strong> (userInfo.getBoolean(<span class="jxr_string">"locked"</span>)) {
+<a class="jxr_linenumber" name="L1036" href="#L1036">1036</a> 					<em class="jxr_comment">// Note that this extends the lock!</em>
+<a class="jxr_linenumber" name="L1037" href="#L1037">1037</a> 					<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> LockedException(<span class="jxr_string">"account is locked"</span>);
+<a class="jxr_linenumber" name="L1038" href="#L1038">1038</a> 				}
+<a class="jxr_linenumber" name="L1039" href="#L1039">1039</a> 				<strong class="jxr_keyword">var</strong> authInfo = queries.getUserAuthorities(userId);
+<a class="jxr_linenumber" name="L1040" href="#L1040">1040</a> 				<strong class="jxr_keyword">if</strong> (nonNull(authInfo.getString(<span class="jxr_string">"encrypted_password"</span>))) {
+<a class="jxr_linenumber" name="L1041" href="#L1041">1041</a> 					<em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L1042" href="#L1042">1042</a> <em class="jxr_comment">					 * We know this user, but they can't use this authentication</em>
+<a class="jxr_linenumber" name="L1043" href="#L1043">1043</a> <em class="jxr_comment">					 * method. They'll probably have to use username+password.</em>
+<a class="jxr_linenumber" name="L1044" href="#L1044">1044</a> <em class="jxr_comment">					 */</em>
+<a class="jxr_linenumber" name="L1045" href="#L1045">1045</a> 					<strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L1046" href="#L1046">1046</a> 				}
+<a class="jxr_linenumber" name="L1047" href="#L1047">1047</a> 				checkSubject(username, subject,
+<a class="jxr_linenumber" name="L1048" href="#L1048">1048</a> 						authInfo.getString(<span class="jxr_string">"openid_subject"</span>));
+<a class="jxr_linenumber" name="L1049" href="#L1049">1049</a> 				queries.noteLoginSuccessForUser(userId, subject);
+<a class="jxr_linenumber" name="L1050" href="#L1050">1050</a> 				log.info(<span class="jxr_string">"login success for {}"</span>, username);
+<a class="jxr_linenumber" name="L1051" href="#L1051">1051</a> 				<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L1052" href="#L1052">1052</a> 			} <strong class="jxr_keyword">catch</strong> (AuthenticationException e) {
+<a class="jxr_linenumber" name="L1053" href="#L1053">1053</a> 				queries.noteLoginFailureForUser(userId, username);
+<a class="jxr_linenumber" name="L1054" href="#L1054">1054</a> 				log.info(<span class="jxr_string">"login failure for {}"</span>, username, e);
+<a class="jxr_linenumber" name="L1055" href="#L1055">1055</a> 				<strong class="jxr_keyword">throw</strong> e;
+<a class="jxr_linenumber" name="L1056" href="#L1056">1056</a> 			}
+<a class="jxr_linenumber" name="L1057" href="#L1057">1057</a> 		}, () -&gt; {
+<a class="jxr_linenumber" name="L1058" href="#L1058">1058</a> 			<em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L1059" href="#L1059">1059</a> <em class="jxr_comment">			 * No such user; need to inflate one now. If we successfully make</em>
+<a class="jxr_linenumber" name="L1060" href="#L1060">1060</a> <em class="jxr_comment">			 * the user, they're also immediately authorised as they're</em>
+<a class="jxr_linenumber" name="L1061" href="#L1061">1061</a> <em class="jxr_comment">			 * definitely not disabled or locked.</em>
+<a class="jxr_linenumber" name="L1062" href="#L1062">1062</a> <em class="jxr_comment">			 */</em>
+<a class="jxr_linenumber" name="L1063" href="#L1063">1063</a> 			<strong class="jxr_keyword">return</strong> ifElse(queries.createUser(username, <strong class="jxr_keyword">null</strong>, USER, subject),
+<a class="jxr_linenumber" name="L1064" href="#L1064">1064</a> 					id -&gt; {
+<a class="jxr_linenumber" name="L1065" href="#L1065">1065</a> 						synchExternalGroups(username, id, orgs, collabs,
+<a class="jxr_linenumber" name="L1066" href="#L1066">1066</a> 								queries);
+<a class="jxr_linenumber" name="L1067" href="#L1067">1067</a> 						<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L1068" href="#L1068">1068</a> 					}, () -&gt; {
+<a class="jxr_linenumber" name="L1069" href="#L1069">1069</a> 						<em class="jxr_comment">// Can't note a failure; no record to note it in!</em>
+<a class="jxr_linenumber" name="L1070" href="#L1070">1070</a> 						log.warn(<span class="jxr_string">"failed to make user {}"</span>, username);
+<a class="jxr_linenumber" name="L1071" href="#L1071">1071</a> 						<strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L1072" href="#L1072">1072</a> 					});
+<a class="jxr_linenumber" name="L1073" href="#L1073">1073</a> 		});
+<a class="jxr_linenumber" name="L1074" href="#L1074">1074</a> 	}
+<a class="jxr_linenumber" name="L1075" href="#L1075">1075</a> 
+<a class="jxr_linenumber" name="L1076" href="#L1076">1076</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1077" href="#L1077">1077</a> <em class="jxr_javadoccomment">	 * Check if the subject matches and issue a warning if there's a potential</em>
+<a class="jxr_linenumber" name="L1078" href="#L1078">1078</a> <em class="jxr_javadoccomment">	 * problem.</em>
+<a class="jxr_linenumber" name="L1079" href="#L1079">1079</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L1080" href="#L1080">1080</a> <em class="jxr_javadoccomment">	 * @param username</em>
+<a class="jxr_linenumber" name="L1081" href="#L1081">1081</a> <em class="jxr_javadoccomment">	 *            The username (for logging).</em>
+<a class="jxr_linenumber" name="L1082" href="#L1082">1082</a> <em class="jxr_javadoccomment">	 * @param subject</em>
+<a class="jxr_linenumber" name="L1083" href="#L1083">1083</a> <em class="jxr_javadoccomment">	 *            The new user subject ID.</em>
+<a class="jxr_linenumber" name="L1084" href="#L1084">1084</a> <em class="jxr_javadoccomment">	 * @param oldSubject</em>
+<a class="jxr_linenumber" name="L1085" href="#L1085">1085</a> <em class="jxr_javadoccomment">	 *            The old user subject ID.</em>
+<a class="jxr_linenumber" name="L1086" href="#L1086">1086</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L1087" href="#L1087">1087</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkSubject(String username, String subject,
+<a class="jxr_linenumber" name="L1088" href="#L1088">1088</a> 			String oldSubject) {
+<a class="jxr_linenumber" name="L1089" href="#L1089">1089</a> 		<strong class="jxr_keyword">if</strong> (isNull(subject)) {
+<a class="jxr_linenumber" name="L1090" href="#L1090">1090</a> 			log.warn(<span class="jxr_string">"null subject for {}"</span>, username);
+<a class="jxr_linenumber" name="L1091" href="#L1091">1091</a> 		} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (subject.isBlank()) {
+<a class="jxr_linenumber" name="L1092" href="#L1092">1092</a> 			log.warn(<span class="jxr_string">"empty subject for {}"</span>, username);
+<a class="jxr_linenumber" name="L1093" href="#L1093">1093</a> 		}
+<a class="jxr_linenumber" name="L1094" href="#L1094">1094</a> 		<strong class="jxr_keyword">if</strong> (nonNull(oldSubject)) {
+<a class="jxr_linenumber" name="L1095" href="#L1095">1095</a> 			<em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L1096" href="#L1096">1096</a> <em class="jxr_comment">			 * We know this user from before; double check that they're the same</em>
+<a class="jxr_linenumber" name="L1097" href="#L1097">1097</a> <em class="jxr_comment">			 * person as before. The {@code sub} claim is a true identifier.</em>
+<a class="jxr_linenumber" name="L1098" href="#L1098">1098</a> <em class="jxr_comment">			 */</em>
+<a class="jxr_linenumber" name="L1099" href="#L1099">1099</a> 			<strong class="jxr_keyword">if</strong> (!requireNonNull(subject).equals(oldSubject)) {
+<a class="jxr_linenumber" name="L1100" href="#L1100">1100</a> 				log.warn(<span class="jxr_string">"user {} subject changed from {} to {}"</span>, username,
+<a class="jxr_linenumber" name="L1101" href="#L1101">1101</a> 						oldSubject, subject);
+<a class="jxr_linenumber" name="L1102" href="#L1102">1102</a> 			}
+<a class="jxr_linenumber" name="L1103" href="#L1103">1103</a> 		}
+<a class="jxr_linenumber" name="L1104" href="#L1104">1104</a> 	}
+<a class="jxr_linenumber" name="L1105" href="#L1105">1105</a> 
+<a class="jxr_linenumber" name="L1106" href="#L1106">1106</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> inflateGroup(GrantedAuthority ga, List&lt;String&gt; collabs,
+<a class="jxr_linenumber" name="L1107" href="#L1107">1107</a> 			List&lt;String&gt; orgs, AuthQueries queries) {
+<a class="jxr_linenumber" name="L1108" href="#L1108">1108</a> 		<strong class="jxr_keyword">if</strong> (ga instanceof CollabratoryAuthority) {
+<a class="jxr_linenumber" name="L1109" href="#L1109">1109</a> 			<strong class="jxr_keyword">var</strong> collab = (CollabratoryAuthority) ga;
+<a class="jxr_linenumber" name="L1110" href="#L1110">1110</a> 			<strong class="jxr_keyword">var</strong> collab1 = collab.getCollabratory();
+<a class="jxr_linenumber" name="L1111" href="#L1111">1111</a> 			<strong class="jxr_keyword">if</strong> (queries.createGroup(collab1, COLLABRATORY,
+<a class="jxr_linenumber" name="L1112" href="#L1112">1112</a> 					quotaProps.getDefaultCollabQuota())) {
+<a class="jxr_linenumber" name="L1113" href="#L1113">1113</a> 				log.info(<span class="jxr_string">"created collabratory '{}'"</span>, collab1);
+<a class="jxr_linenumber" name="L1114" href="#L1114">1114</a> 			}
+<a class="jxr_linenumber" name="L1115" href="#L1115">1115</a> 			collabs.add(collab.getCollabratory());
+<a class="jxr_linenumber" name="L1116" href="#L1116">1116</a> 		} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (ga instanceof OrganisationAuthority) {
+<a class="jxr_linenumber" name="L1117" href="#L1117">1117</a> 			<strong class="jxr_keyword">var</strong> org = (OrganisationAuthority) ga;
+<a class="jxr_linenumber" name="L1118" href="#L1118">1118</a> 			<strong class="jxr_keyword">var</strong> org1 = org.getOrganisation();
+<a class="jxr_linenumber" name="L1119" href="#L1119">1119</a> 			<strong class="jxr_keyword">if</strong> (queries.createGroup(org1, ORGANISATION,
+<a class="jxr_linenumber" name="L1120" href="#L1120">1120</a> 					quotaProps.getDefaultOrgQuota())) {
+<a class="jxr_linenumber" name="L1121" href="#L1121">1121</a> 				log.info(<span class="jxr_string">"created organisation '{}'"</span>, org1);
+<a class="jxr_linenumber" name="L1122" href="#L1122">1122</a> 			}
+<a class="jxr_linenumber" name="L1123" href="#L1123">1123</a> 			orgs.add(org.getOrganisation());
+<a class="jxr_linenumber" name="L1124" href="#L1124">1124</a> 		}
+<a class="jxr_linenumber" name="L1125" href="#L1125">1125</a> 	}
+<a class="jxr_linenumber" name="L1126" href="#L1126">1126</a> 
+<a class="jxr_linenumber" name="L1127" href="#L1127">1127</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1128" href="#L1128">1128</a> <em class="jxr_javadoccomment">	 * Synchronise the lists of different types of groups for a user. Messy</em>
+<a class="jxr_linenumber" name="L1129" href="#L1129">1129</a> <em class="jxr_javadoccomment">	 * because we want to do minimal inserts and deletes.</em>
+<a class="jxr_linenumber" name="L1130" href="#L1130">1130</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L1131" href="#L1131">1131</a> <em class="jxr_javadoccomment">	 * @param username</em>
+<a class="jxr_linenumber" name="L1132" href="#L1132">1132</a> <em class="jxr_javadoccomment">	 *            Which user (for logging only)</em>
+<a class="jxr_linenumber" name="L1133" href="#L1133">1133</a> <em class="jxr_javadoccomment">	 * @param userId</em>
+<a class="jxr_linenumber" name="L1134" href="#L1134">1134</a> <em class="jxr_javadoccomment">	 *            Which user (for DB access only)</em>
+<a class="jxr_linenumber" name="L1135" href="#L1135">1135</a> <em class="jxr_javadoccomment">	 * @param orgs</em>
+<a class="jxr_linenumber" name="L1136" href="#L1136">1136</a> <em class="jxr_javadoccomment">	 *            The list of organisation names</em>
+<a class="jxr_linenumber" name="L1137" href="#L1137">1137</a> <em class="jxr_javadoccomment">	 * @param collabs</em>
+<a class="jxr_linenumber" name="L1138" href="#L1138">1138</a> <em class="jxr_javadoccomment">	 *            The list of collab names</em>
+<a class="jxr_linenumber" name="L1139" href="#L1139">1139</a> <em class="jxr_javadoccomment">	 * @param queries</em>
+<a class="jxr_linenumber" name="L1140" href="#L1140">1140</a> <em class="jxr_javadoccomment">	 *            How to touch the DB</em>
+<a class="jxr_linenumber" name="L1141" href="#L1141">1141</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L1142" href="#L1142">1142</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> synchExternalGroups(String username, <strong class="jxr_keyword">int</strong> userId,
+<a class="jxr_linenumber" name="L1143" href="#L1143">1143</a> 			List&lt;String&gt; orgs, List&lt;String&gt; collabs, AuthQueries queries) {
+<a class="jxr_linenumber" name="L1144" href="#L1144">1144</a> 		<strong class="jxr_keyword">if</strong> (orgs.isEmpty() &amp;&amp; collabs.isEmpty()) {
+<a class="jxr_linenumber" name="L1145" href="#L1145">1145</a> 			log.warn(
+<a class="jxr_linenumber" name="L1146" href="#L1146">1146</a> 					<span class="jxr_string">"no organisations or collabratories for user {}; "</span>
+<a class="jxr_linenumber" name="L1147" href="#L1147">1147</a> 							+ <span class="jxr_string">"not synching in case this is a glitch "</span>
+<a class="jxr_linenumber" name="L1148" href="#L1148">1148</a> 							+ <span class="jxr_string">"(if this is the first time they've logged in, "</span>
+<a class="jxr_linenumber" name="L1149" href="#L1149">1149</a> 							+ <span class="jxr_string">"creating a job will fail in this session)"</span>,
+<a class="jxr_linenumber" name="L1150" href="#L1150">1150</a> 					username);
+<a class="jxr_linenumber" name="L1151" href="#L1151">1151</a> 			<strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L1152" href="#L1152">1152</a> 		}
+<a class="jxr_linenumber" name="L1153" href="#L1153">1153</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> synch = <strong class="jxr_keyword">new</strong> GroupSynch(queries)) {
+<a class="jxr_linenumber" name="L1154" href="#L1154">1154</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> org : orgs) {
+<a class="jxr_linenumber" name="L1155" href="#L1155">1155</a> 				synch.define(org, ORGANISATION);
+<a class="jxr_linenumber" name="L1156" href="#L1156">1156</a> 			}
+<a class="jxr_linenumber" name="L1157" href="#L1157">1157</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> collab : collabs) {
+<a class="jxr_linenumber" name="L1158" href="#L1158">1158</a> 				synch.define(collab, COLLABRATORY);
+<a class="jxr_linenumber" name="L1159" href="#L1159">1159</a> 			}
+<a class="jxr_linenumber" name="L1160" href="#L1160">1160</a> 			synch.apply(userId);
+<a class="jxr_linenumber" name="L1161" href="#L1161">1161</a> 		} <strong class="jxr_keyword">catch</strong> (RuntimeException e) {
+<a class="jxr_linenumber" name="L1162" href="#L1162">1162</a> 			log.warn(<span class="jxr_string">"problem when synchronizing group memberships for {}"</span>,
+<a class="jxr_linenumber" name="L1163" href="#L1163">1163</a> 					username, e);
+<a class="jxr_linenumber" name="L1164" href="#L1164">1164</a> 			<strong class="jxr_keyword">throw</strong> e;
+<a class="jxr_linenumber" name="L1165" href="#L1165">1165</a> 		}
+<a class="jxr_linenumber" name="L1166" href="#L1166">1166</a> 	}
+<a class="jxr_linenumber" name="L1167" href="#L1167">1167</a> 
+<a class="jxr_linenumber" name="L1168" href="#L1168">1168</a> 	@Override
+<a class="jxr_linenumber" name="L1169" href="#L1169">1169</a> 	@Scheduled(fixedDelayString = <span class="jxr_string">"#{authProperties.unlockPeriod}"</span>)
+<a class="jxr_linenumber" name="L1170" href="#L1170">1170</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> unlockLockedUsers() {
+<a class="jxr_linenumber" name="L1171" href="#L1171">1171</a> 		<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L1172" href="#L1172">1172</a> 			<strong class="jxr_keyword">if</strong> (!control.isPaused()) {
+<a class="jxr_linenumber" name="L1173" href="#L1173">1173</a> 				log.debug(<span class="jxr_string">"running user unlock task"</span>);
+<a class="jxr_linenumber" name="L1174" href="#L1174">1174</a> 				unlock();
+<a class="jxr_linenumber" name="L1175" href="#L1175">1175</a> 			}
+<a class="jxr_linenumber" name="L1176" href="#L1176">1176</a> 		} <strong class="jxr_keyword">catch</strong> (DataAccessException e) {
+<a class="jxr_linenumber" name="L1177" href="#L1177">1177</a> 			<strong class="jxr_keyword">if</strong> (isBusy(e)) {
+<a class="jxr_linenumber" name="L1178" href="#L1178">1178</a> 				log.info(<span class="jxr_string">"database is busy; "</span>
+<a class="jxr_linenumber" name="L1179" href="#L1179">1179</a> 						+ <span class="jxr_string">"will try user unlock processing later"</span>);
+<a class="jxr_linenumber" name="L1180" href="#L1180">1180</a> 				<strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L1181" href="#L1181">1181</a> 			}
+<a class="jxr_linenumber" name="L1182" href="#L1182">1182</a> 			<strong class="jxr_keyword">throw</strong> e;
+<a class="jxr_linenumber" name="L1183" href="#L1183">1183</a> 		}
+<a class="jxr_linenumber" name="L1184" href="#L1184">1184</a> 	}
+<a class="jxr_linenumber" name="L1185" href="#L1185">1185</a> 
+<a class="jxr_linenumber" name="L1186" href="#L1186">1186</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> unlock() {
+<a class="jxr_linenumber" name="L1187" href="#L1187">1187</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> sql = <strong class="jxr_keyword">new</strong> AuthQueries()) {
+<a class="jxr_linenumber" name="L1188" href="#L1188">1188</a> 			sql.transaction(() -&gt; {
+<a class="jxr_linenumber" name="L1189" href="#L1189">1189</a> 				sql.unlock();
+<a class="jxr_linenumber" name="L1190" href="#L1190">1190</a> 				<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L1191" href="#L1191">1191</a> 			});
+<a class="jxr_linenumber" name="L1192" href="#L1192">1192</a> 		}
+<a class="jxr_linenumber" name="L1193" href="#L1193">1193</a> 	}
+<a class="jxr_linenumber" name="L1194" href="#L1194">1194</a> 
+<a class="jxr_linenumber" name="L1195" href="#L1195">1195</a> 	<strong class="jxr_keyword">interface</strong> TestAPI {
+<a class="jxr_linenumber" name="L1196" href="#L1196">1196</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1197" href="#L1197">1197</a> <em class="jxr_javadoccomment">		 * Run the core of the user unlocker.</em>
+<a class="jxr_linenumber" name="L1198" href="#L1198">1198</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L1199" href="#L1199">1199</a> 		<strong class="jxr_keyword">void</strong> unlock();
+<a class="jxr_linenumber" name="L1200" href="#L1200">1200</a> 	}
+<a class="jxr_linenumber" name="L1201" href="#L1201">1201</a> 
+<a class="jxr_linenumber" name="L1202" href="#L1202">1202</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1203" href="#L1203">1203</a> <em class="jxr_javadoccomment">	 * @return The test interface.</em>
+<a class="jxr_linenumber" name="L1204" href="#L1204">1204</a> <em class="jxr_javadoccomment">	 * @deprecated This interface is just for testing.</em>
+<a class="jxr_linenumber" name="L1205" href="#L1205">1205</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L1206" href="#L1206">1206</a> 	@Override
+<a class="jxr_linenumber" name="L1207" href="#L1207">1207</a> 	@ForTestingOnly
+<a class="jxr_linenumber" name="L1208" href="#L1208">1208</a> 	@RestrictedApi(explanation = <span class="jxr_string">"just for testing"</span>, link = <span class="jxr_string">"index.html"</span>,
+<a class="jxr_linenumber" name="L1209" href="#L1209">1209</a> 			allowedOnPath = <span class="jxr_string">".*/src/test/java/.*"</span>)
+<a class="jxr_linenumber" name="L1210" href="#L1210">1210</a> 	@Deprecated
+<a class="jxr_linenumber" name="L1211" href="#L1211">1211</a> 	<strong class="jxr_keyword">public</strong> TestAPI getTestAPI() {
+<a class="jxr_linenumber" name="L1212" href="#L1212">1212</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
+<a class="jxr_linenumber" name="L1213" href="#L1213">1213</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TestAPI() {
+<a class="jxr_linenumber" name="L1214" href="#L1214">1214</a> 			@Override
+<a class="jxr_linenumber" name="L1215" href="#L1215">1215</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> unlock() {
+<a class="jxr_linenumber" name="L1216" href="#L1216">1216</a> 				LocalAuthProviderImpl.<strong class="jxr_keyword">this</strong>.unlock();
+<a class="jxr_linenumber" name="L1217" href="#L1217">1217</a> 			}
+<a class="jxr_linenumber" name="L1218" href="#L1218">1218</a> 		};
+<a class="jxr_linenumber" name="L1219" href="#L1219">1219</a> 	}
+<a class="jxr_linenumber" name="L1220" href="#L1220">1220</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

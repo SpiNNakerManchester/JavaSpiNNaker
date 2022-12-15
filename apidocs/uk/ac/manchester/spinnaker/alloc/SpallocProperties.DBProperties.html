@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -119,10 +119,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.time.Duration,boolean,int,boolean,double,int,java.time.Duration,java.time.Duration,java.time.Duration,boolean)">DBProperties</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;timeout,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.time.Duration,boolean,int,boolean,boolean,double,int,java.time.Duration,java.time.Duration,java.time.Duration,boolean)">DBProperties</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;timeout,
 boolean&nbsp;debugFailures,
 int&nbsp;analysisLimit,
 boolean&nbsp;performanceLog,
+boolean&nbsp;autoExplain,
 double&nbsp;performanceThreshold,
 int&nbsp;lockTries,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;lockFailedDelay,
@@ -193,15 +194,20 @@ boolean&nbsp;enableExpensiveTransactionDebugging)</code></th>
 </tr>
 <tr class="rowColor" id="i7">
 <td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isDebugFailures()">isDebugFailures</a></span>()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isAutoExplain()">isAutoExplain</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i8">
 <td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isEnableExpensiveTransactionDebugging()">isEnableExpensiveTransactionDebugging</a></span>()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isDebugFailures()">isDebugFailures</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i9">
+<td class="colFirst"><code>boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isEnableExpensiveTransactionDebugging()">isEnableExpensiveTransactionDebugging</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor" id="i10">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isPerformanceLog()">isPerformanceLog</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
@@ -230,7 +236,7 @@ boolean&nbsp;enableExpensiveTransactionDebugging)</code></th>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(java.time.Duration,boolean,int,boolean,double,int,java.time.Duration,java.time.Duration,java.time.Duration,boolean)">DBProperties</a></h3>
+<h3><a id="&lt;init&gt;(java.time.Duration,boolean,int,boolean,boolean,double,int,java.time.Duration,java.time.Duration,java.time.Duration,boolean)">DBProperties</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">DBProperties</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("1s")
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;timeout,
 <a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("false")
@@ -239,6 +245,8 @@ boolean&nbsp;debugFailures,
 int&nbsp;analysisLimit,
 <a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("false")
 boolean&nbsp;performanceLog,
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("true")
+boolean&nbsp;autoExplain,
 <a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("1e6")
 double&nbsp;performanceThreshold,
 <a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("3")
@@ -262,8 +270,11 @@ boolean&nbsp;enableExpensiveTransactionDebugging)</span></div>
             that touches the database.</dd>
 <dd><code>performanceLog</code> - Whether to collect and write query performance metrics to
             the log on termination.</dd>
+<dd><code>autoExplain</code> - If the performance log is enabled, also write the EXPLAIN
+            of the code to the log on termination (for slow queries
+            only).</dd>
 <dd><code>performanceThreshold</code> - Performance stats not reported for queries with a max less
-            than this (in nanoseconds).</dd>
+            than this (in &mu;s).</dd>
 <dd><code>lockTries</code> - Number of times to try to take the lock in a transaction.</dd>
 <dd><code>lockFailedDelay</code> - Delay after transaction failure before retrying.</dd>
 <dd><code>lockNoteThreshold</code> - Time delay before we issue a warning on transaction end.</dd>
@@ -338,13 +349,25 @@ boolean&nbsp;enableExpensiveTransactionDebugging)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
+<h3><a id="isAutoExplain()">isAutoExplain</a></h3>
+<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">isAutoExplain</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>Whether, if the performance log is enabled, to also write the
+         EXPLAIN of the code to the log on termination (for slow
+         queries only).</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
 <h3><a id="getPerformanceThreshold()">getPerformanceThreshold</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>
 </span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive double</span>&nbsp;<span class="memberName">getPerformanceThreshold</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>Number of nanoseconds where performance stats are not
-         reported for queries with a max less than this.</dd>
+<dd>Performance stats are not reported for queries with a max
+         less than this, in microseconds.</dd>
 </dl>
 </section>
 </li>
