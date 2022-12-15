@@ -29,7 +29,6 @@ import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_CORE_DATA_SPEC;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_CORES_TO_LOAD;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_CORES_TO_LOAD_FILTERED;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_ETHERNETS;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQLiteProxyInformation.getSQLProxyInformation;
 
 import java.nio.ByteBuffer;
 import java.sql.Connection;
@@ -40,7 +39,6 @@ import java.util.List;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
-import uk.ac.manchester.spinnaker.storage.ProxyInformation;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 
 /**
@@ -48,7 +46,7 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  *
  * @author Donal Fellows
  */
-public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
+public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 		implements DSEStorage {
 	/**
 	 * Create an instance.
@@ -216,11 +214,6 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 			s.setInt(FOURTH, core.id);
 			s.executeUpdate();
 		}
-	}
-
-	@Override
-	public ProxyInformation getProxyInformation() throws StorageException {
-		return callR(conn -> getSQLProxyInformation(conn), "get proxy");
 	}
 
 	private static final class EthernetImpl extends Ethernet {

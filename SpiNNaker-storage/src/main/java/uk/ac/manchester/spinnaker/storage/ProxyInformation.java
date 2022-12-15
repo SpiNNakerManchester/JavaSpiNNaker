@@ -22,7 +22,6 @@ import javax.validation.constraints.NotEmpty;
  * Information about the proxy to allow connection.
  */
 public class ProxyInformation {
-
 	/**
 	 * The URL of the spalloc server to connect to.
 	 */
@@ -42,14 +41,17 @@ public class ProxyInformation {
 	public final String bearerToken;
 
 	/**
-	 * Create a new ProxyInformation object.
+	 * Create a new instance.
 	 *
-	 * @param spallocUrl The URL of the Spalloc server.
-	 * @param jobUrl The URL of the job.
-	 * @param bearerToken The bearer token to use as authentication.
+	 * @param spallocUrl
+	 *            The URL of the Spalloc server.
+	 * @param jobUrl
+	 *            The URL of the job.
+	 * @param bearerToken
+	 *            The bearer token to use as authentication.
 	 */
-	public ProxyInformation(final String spallocUrl, final String jobUrl,
-			final String bearerToken) {
+	public ProxyInformation(String spallocUrl, String jobUrl,
+			String bearerToken) {
 		this.spallocUrl = spallocUrl;
 		this.jobUrl = jobUrl;
 		this.bearerToken = bearerToken;

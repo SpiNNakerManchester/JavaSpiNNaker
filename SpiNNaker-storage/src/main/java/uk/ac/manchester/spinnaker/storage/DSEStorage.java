@@ -32,7 +32,7 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  *
  * @author Donal Fellows
  */
-public interface DSEStorage extends DatabaseAPI {
+public interface DSEStorage extends ProxyAwareStorage {
 	/**
 	 * See how many DSE loading actions have to be done.
 	 *
@@ -95,14 +95,6 @@ public interface DSEStorage extends DatabaseAPI {
 	 */
 	void saveLoadingMetadata(CoreToLoad coreToLoad, MemoryLocation startAddress,
 			int memoryUsed, int memoryWritten) throws StorageException;
-
-	/**
-	 * Get information used to connect to a proxy, or null if not used.
-	 *
-	 * @return The information used to connect to a proxy, or null if not used.
-	 * @throws StorageException If the database access fails.
-	 */
-	ProxyInformation getProxyInformation() throws StorageException;
 
 	/**
 	 * A ethernet which allows data specifications to be loaded.

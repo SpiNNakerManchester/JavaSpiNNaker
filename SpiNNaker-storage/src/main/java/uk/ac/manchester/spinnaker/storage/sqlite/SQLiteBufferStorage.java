@@ -37,7 +37,6 @@ import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGIONS_WITH_STO
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.INSERT_LOCATION;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.INSERT_REGION;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.PREP_EXTRA_CONTENT;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQLiteProxyInformation.getSQLProxyInformation;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -53,7 +52,6 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
-import uk.ac.manchester.spinnaker.storage.ProxyInformation;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 
 /**
@@ -62,7 +60,7 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  * @author Donal Fellows
  */
 public class SQLiteBufferStorage
-		extends SQLiteConnectionManager<BufferManagerStorage>
+		extends SQLiteProxyStorage<BufferManagerStorage>
 		implements BufferManagerStorage {
 	private static final Logger log = getLogger(SQLiteBufferStorage.class);
 
@@ -314,10 +312,5 @@ public class SQLiteBufferStorage
 				}
 			}
 		}, "listing regions for a core");
-	}
-
-	@Override
-	public ProxyInformation getProxyInformation() throws StorageException {
-		return callR(conn -> getSQLProxyInformation(conn), "get proxy");
 	}
 }

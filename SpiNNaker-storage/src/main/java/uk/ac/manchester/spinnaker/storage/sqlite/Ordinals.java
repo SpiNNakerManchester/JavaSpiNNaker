@@ -35,7 +35,4 @@ interface Ordinals {
 
 	/** Sixth. */
 	int SIXTH = 6;
-
-	/** Seventh. */
-	int SEVENTH = 7;
 }

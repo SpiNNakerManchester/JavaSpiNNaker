@@ -21,6 +21,7 @@ import static java.lang.System.exit;
 import static java.lang.System.out;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.client.SpallocClientFactory.getJobFromProxyInfo;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.LogControl.setLoggerDir;
 import static uk.ac.manchester.spinnaker.machine.bean.MapperFactory.createMapper;
@@ -28,7 +29,6 @@ import static uk.ac.manchester.spinnaker.machine.bean.MapperFactory.createMapper
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Properties;
@@ -37,9 +37,9 @@ import java.util.concurrent.ExecutionException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
-import uk.ac.manchester.spinnaker.alloc.client.SpallocClientFactory;
 import uk.ac.manchester.spinnaker.connections.LocateConnectedMachineIPAddress;
 import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.front_end.download.DataReceiver;
@@ -55,7 +55,7 @@ import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
-import uk.ac.manchester.spinnaker.storage.ProxyInformation;
+import uk.ac.manchester.spinnaker.storage.ProxyAwareStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
@@ -451,21 +451,15 @@ public final class CommandLineInterface {
 				new File(runFolder, BUFFER_DB_FILE)).getStorageInterface();
 	}
 
-	private static SpallocClient.Job getJob(BufferManagerStorage storage)
-			throws StorageException, IOException, URISyntaxException {
-		ProxyInformation proxy = storage.getProxyInformation();
-		if (proxy == null) {
-			return null;
-		}
-		return new SpallocClientFactory(new URI(proxy.spallocUrl))
-				.getJob(proxy.jobUrl, proxy.bearerToken);
+	private static SpallocClient.Job getJob(ProxyAwareStorage storage)
+			throws StorageException, IOException {
+		return getJobFromProxyInfo(storage.getProxyInformation());
 	}
 
-	@SuppressWarnings("MustBeClosed")
-	private static TransceiverInterface getTransceiver(
-			Machine machine, SpallocClient.Job job)
-					throws StorageException, IOException, SpinnmanException,
-					InterruptedException, URISyntaxException {
+	@MustBeClosed
+	private static TransceiverInterface getTransceiver(Machine machine,
+			SpallocClient.Job job)
+			throws IOException, SpinnmanException, InterruptedException {
 		if (job == null) {
 			return new Transceiver(machine);
 		}

@@ -43,7 +43,6 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -69,6 +68,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.messages.model.Version;
+import uk.ac.manchester.spinnaker.storage.ProxyInformation;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import uk.ac.manchester.spinnaker.utils.Daemon;
@@ -127,6 +127,25 @@ public class SpallocClientFactory {
 	 */
 	public SpallocClientFactory(URI baseUrl) {
 		this.baseUrl = asDir(baseUrl);
+	}
+
+	/**
+	 * Get a handle to a job given its proxy access information (derived from a
+	 * database query).
+	 *
+	 * @param proxy
+	 *            The proxy information from the database. Handles {@code null}.
+	 * @return The job handle, or {@code null} if {@code proxy==null}.
+	 * @throws IOException
+	 *             If connecting to the job fails.
+	 */
+	public static Job getJobFromProxyInfo(ProxyInformation proxy)
+			throws IOException {
+		if (proxy == null) {
+			return null;
+		}
+		return new SpallocClientFactory(URI.create(proxy.spallocUrl))
+				.getJob(proxy.jobUrl, proxy.bearerToken);
 	}
 
 	/**
@@ -278,15 +297,17 @@ public class SpallocClientFactory {
 	/**
 	 * Get direct access to a Job.
 	 *
-	 * @param uri The URI of the job
-	 * @param bearerToken The bearer token to authenticate with
+	 * @param uri
+	 *            The URI of the job
+	 * @param bearerToken
+	 *            The bearer token to authenticate with
 	 * @return A job.
-	 * @throws IOException If there is an error communicating with the server.
-	 * @throws URISyntaxException If the URI is invalid.
+	 * @throws IOException
+	 *             If there is an error communicating with the server.
 	 */
 	public Job getJob(String uri, String bearerToken)
-			throws IOException, URISyntaxException {
-		var u = new URI(uri);
+			throws IOException {
+		var u = URI.create(uri);
 		var s = new ClientSession(baseUrl, bearerToken);
 		var c = new ClientImpl(s, s.discoverRoot());
 		log.info("Connecting to job on {}", u);

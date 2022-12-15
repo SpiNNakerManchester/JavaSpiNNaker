@@ -20,7 +20,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.function.Function;
@@ -101,14 +100,13 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 		try {
 			var proxy = db.getStorageInterface().getProxyInformation();
 			if (proxy == null) {
-				log.debug("Using real machine for transceiver");
+				log.debug("Using direct machine access for transceiver");
 				job = null;
 				txrx = new Transceiver(machine);
 			} else {
 				log.debug("Getting transceiver via proxy on {}",
 						proxy.spallocUrl);
-				job = new SpallocClientFactory(new URI(proxy.spallocUrl))
-						.getJob(proxy.jobUrl, proxy.bearerToken);
+				job = SpallocClientFactory.getJobFromProxyInfo(proxy);
 				txrx = job.getTransceiver();
 			}
 		} catch (ProcessException e) {
