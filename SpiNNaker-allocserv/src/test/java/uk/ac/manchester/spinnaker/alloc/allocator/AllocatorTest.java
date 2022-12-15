@@ -49,7 +49,10 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 @ActiveProfiles("unittest")
 @TestPropertySource(properties = {
 	"spalloc.database-path=" + AllocatorTest.DB,
-	"spalloc.historical-data.path=" + AllocatorTest.HIST_DB
+	"spalloc.historical-data.path=" + AllocatorTest.HIST_DB,
+	// These tests sometimes hold transactions for a long time; this is OK
+	"spalloc.sqlite.lock-note-threshold=2200ms",
+	"spalloc.sqlite.lock-warn-threshold=3s"
 })
 class AllocatorTest extends TestSupport {
 	/** The name of the database file. */

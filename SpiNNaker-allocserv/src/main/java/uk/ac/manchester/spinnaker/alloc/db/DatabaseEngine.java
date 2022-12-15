@@ -356,9 +356,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 
 	// NB: Doesn't use explainQueryPlan() for messy reasons
 	private void logStatementPerformance(String sql, SummaryStatistics stats) {
-		log.info("statement execution time {}us (max: {}us, SD: {}us) for: {}",
-				stats.getMean(), stats.getMax(), stats.getStandardDeviation(),
-				trimSQL(sql, TRIM_PERF_LOG_LENGTH));
+		StringBuilder sb = new StringBuilder();
 		if (props.isAutoExplain()) {
 			/*
 			 * This is the intent level of the children of a node in the query
@@ -373,13 +371,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 				while (r.next()) {
 					int indent = levels.getOrDefault(r.getInt("parent"), 0);
 					levels.put(r.getInt("id"), indent + 1);
-					log.info("EXPLAIN: {}{}", " ".repeat(indent * 2),
-							r.getString("detail"));
+					sb.append("\nEXPLAIN: ").append(" ".repeat(indent * 2))
+							.append(r.getString("detail"));
 				}
 			} catch (SQLException | RuntimeException e) {
 				log.warn("failed to dump statement explanation", e);
 			}
 		}
+		log.info(
+				"statement execution time {}us (max: {}us, SD: {}us) for: {}{}",
+				stats.getMean(), stats.getMax(), stats.getStandardDeviation(),
+				trimSQL(sql, TRIM_PERF_LOG_LENGTH), sb);
 	}
 
 	static Set<String> columnNames(ResultSetMetaData md) throws SQLException {
