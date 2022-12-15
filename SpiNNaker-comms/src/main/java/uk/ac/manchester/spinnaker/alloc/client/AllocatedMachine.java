@@ -158,6 +158,9 @@ public final class AllocatedMachine {
 		}
 	}
 
+	@JsonIgnoreProperties({
+		"power", "machine", "machine-ref"
+	})
 	@JsonPOJOBuilder
 	static class Builder {
 		private int width;

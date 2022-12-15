@@ -158,20 +158,27 @@ abstract class SQLiteConnectionManager<APIType extends DatabaseAPI> {
 	private static final int TRIES = 50;
 
 	private void startTransaction(Connection conn) throws SQLException {
+		var code = SQLITE_BUSY;
 		for (int i = 0; i < TRIES; i++) {
 			try {
 				conn.setAutoCommit(false);
 				return;
 			} catch (SQLiteException e) {
-				if (e.getResultCode() == SQLITE_BUSY) {
+				switch (e.getResultCode()) {
+				case SQLITE_BUSY:
+				case SQLITE_BUSY_RECOVERY:
+				case SQLITE_BUSY_SNAPSHOT:
+				case SQLITE_BUSY_TIMEOUT:
 					if (log.isDebugEnabled()) {
 						log.debug("database busy; trying to relock");
 					}
+					code = e.getResultCode();
 					continue;
+				default:
+					throw e;
 				}
-				throw e;
 			}
 		}
-		throw new SQLiteException("database very busy", SQLITE_BUSY);
+		throw new SQLiteException("database very busy", code);
 	}
 }

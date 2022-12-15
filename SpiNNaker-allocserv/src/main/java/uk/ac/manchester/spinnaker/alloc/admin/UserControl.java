@@ -293,7 +293,7 @@ public class UserControl extends DatabaseAwareBean {
 	 */
 	public List<UserRecord> listUsers() {
 		try (var sql = new AllUsersSQL()) {
-			return sql.transaction(false,
+			return sql.transactionRead(
 					() -> sql.allUsers().map(UserControl::sketchUser).toList());
 		}
 	}
@@ -309,7 +309,7 @@ public class UserControl extends DatabaseAwareBean {
 	 */
 	public List<UserRecord> listUsers(boolean internal) {
 		try (var sql = new AllUsersSQL()) {
-			return sql.transaction(false, () -> sql.allUsers(internal)
+			return sql.transactionRead(() -> sql.allUsers(internal)
 					.map(UserControl::sketchUser).toList());
 		}
 	}
@@ -323,7 +323,7 @@ public class UserControl extends DatabaseAwareBean {
 	 */
 	public Map<String, URI> listUsers(Function<UserRecord, URI> uriMapper) {
 		try (var sql = new AllUsersSQL()) {
-			return sql.transaction(false,
+			return sql.transactionRead(
 					() -> sql.allUsers().map(UserControl::sketchUser).toMap(
 							TreeMap::new, UserRecord::getUserName, uriMapper));
 		}
@@ -342,10 +342,9 @@ public class UserControl extends DatabaseAwareBean {
 	public Map<String, URI> listUsers(boolean internal,
 			Function<UserRecord, URI> uriMapper) {
 		try (var sql = new AllUsersSQL()) {
-			return sql.transaction(false,
-					() -> sql.allUsers(internal).map(UserControl::sketchUser)
-							.toMap(TreeMap::new, UserRecord::getUserName,
-									uriMapper));
+			return sql.transactionRead(() -> sql.allUsers(internal)
+					.map(UserControl::sketchUser)
+					.toMap(TreeMap::new, UserRecord::getUserName, uriMapper));
 		}
 	}
 
@@ -664,7 +663,7 @@ public class UserControl extends DatabaseAwareBean {
 	 */
 	public List<GroupRecord> listGroups() {
 		try (var sql = new GroupsSQL()) {
-			return sql.transaction(false,
+			return sql.transactionRead(
 					() -> sql.listGroups().map(GroupRecord::new).toList());
 		}
 	}
@@ -679,7 +678,7 @@ public class UserControl extends DatabaseAwareBean {
 	 */
 	public List<GroupRecord> listGroups(GroupType type) {
 		try (var sql = new GroupsSQL()) {
-			return sql.transaction(false,
+			return sql.transactionRead(
 					() -> sql.listGroups(type).map(GroupRecord::new).toList());
 		}
 	}
@@ -693,10 +692,9 @@ public class UserControl extends DatabaseAwareBean {
 	 */
 	public Map<String, URI> listGroups(Function<GroupRecord, URI> uriMapper) {
 		try (var sql = new GroupsSQL()) {
-			return sql.transaction(false,
-					() -> sql.listGroups().map(GroupRecord::new).toMap(
-							TreeMap::new, GroupRecord::getGroupName,
-							uriMapper));
+			return sql.transactionRead(() -> sql.listGroups()
+					.map(GroupRecord::new)
+					.toMap(TreeMap::new, GroupRecord::getGroupName, uriMapper));
 		}
 	}
 
@@ -712,10 +710,9 @@ public class UserControl extends DatabaseAwareBean {
 	public Map<String, URI> listGroups(GroupType type,
 			Function<GroupRecord, URI> uriMapper) {
 		try (var sql = new GroupsSQL()) {
-			return sql.transaction(false,
-					() -> sql.listGroups(type).map(GroupRecord::new).toMap(
-							TreeMap::new, GroupRecord::getGroupName,
-							uriMapper));
+			return sql.transactionRead(() -> sql.listGroups(type)
+					.map(GroupRecord::new)
+					.toMap(TreeMap::new, GroupRecord::getGroupName, uriMapper));
 		}
 	}
 
@@ -733,7 +730,7 @@ public class UserControl extends DatabaseAwareBean {
 	public Optional<GroupRecord> getGroup(int id,
 			Function<MemberRecord, URI> urlGen) {
 		try (var sql = new GroupsSQL()) {
-			return sql.transaction(false,
+			return sql.transactionRead(
 					() -> sql.getGroupId(id).map(GroupRecord::new)
 							.map(sql.populateMemberships(urlGen)));
 		}
@@ -753,7 +750,7 @@ public class UserControl extends DatabaseAwareBean {
 	public Optional<GroupRecord> getGroup(String name,
 			Function<MemberRecord, URI> urlGen) {
 		try (var sql = new GroupsSQL()) {
-			return sql.transaction(false,
+			return sql.transactionRead(
 					() -> sql.getGroupName(name).map(GroupRecord::new)
 							.map(sql.populateMemberships(urlGen)));
 		}
@@ -797,12 +794,10 @@ public class UserControl extends DatabaseAwareBean {
 	public Optional<GroupRecord> updateGroup(int id, GroupRecord group,
 			Function<MemberRecord, URI> urlGen) {
 		try (var sql = new GroupsSQL()) {
-			return sql.transaction(false,
-					() -> sql
-							.updateGroup(id, group.getGroupName(),
-									group.getQuota())
-							.map(GroupRecord::new)
-							.map(sql.populateMemberships(urlGen)));
+			return sql.transaction(() -> sql
+					.updateGroup(id, group.getGroupName(), group.getQuota())
+					.map(GroupRecord::new)
+					.map(sql.populateMemberships(urlGen)));
 		}
 	}
 

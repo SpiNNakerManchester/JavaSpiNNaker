@@ -209,6 +209,6 @@ public abstract class UnimplementedBMPTransceiver
 	}
 
 	@Override
-	public void close() throws Exception {
+	public void close() throws IOException {
 	}
 }
