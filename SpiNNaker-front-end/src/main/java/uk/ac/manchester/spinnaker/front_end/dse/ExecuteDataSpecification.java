@@ -105,7 +105,7 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 				txrx = new Transceiver(machine);
 			} else {
 				log.debug("Getting transceiver via proxy on {}",
-						proxy.spallocUrl);
+						proxy.spallocUrl());
 				job = SpallocClientFactory.getJobFromProxyInfo(proxy);
 				txrx = job.getTransceiver();
 			}
