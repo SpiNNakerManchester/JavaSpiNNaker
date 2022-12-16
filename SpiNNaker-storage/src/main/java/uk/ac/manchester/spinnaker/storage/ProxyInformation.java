@@ -20,40 +20,14 @@ import javax.validation.constraints.NotEmpty;
 
 /**
  * Information about the proxy to allow connection.
+ *
+ * @param spallocUrl
+ *            The URL of the spalloc server to connect to.
+ * @param jobUrl
+ *            The URL of the job to connect to.
+ * @param bearerToken
+ *            The bearer token to use as authentication.
  */
-public class ProxyInformation {
-	/**
-	 * The URL of the spalloc server to connect to.
-	 */
-	@NotEmpty
-	public final String spallocUrl;
-
-	/**
-	 * The URL of the job to connect to.
-	 */
-	@NotEmpty
-	public final String jobUrl;
-
-	/**
-	 * The token to use to authenticate access.
-	 */
-	@NotEmpty
-	public final String bearerToken;
-
-	/**
-	 * Create a new instance.
-	 *
-	 * @param spallocUrl
-	 *            The URL of the Spalloc server.
-	 * @param jobUrl
-	 *            The URL of the job.
-	 * @param bearerToken
-	 *            The bearer token to use as authentication.
-	 */
-	public ProxyInformation(String spallocUrl, String jobUrl,
-			String bearerToken) {
-		this.spallocUrl = spallocUrl;
-		this.jobUrl = jobUrl;
-		this.bearerToken = bearerToken;
-	}
+public record ProxyInformation(@NotEmpty String spallocUrl,
+		@NotEmpty String jobUrl, @NotEmpty String bearerToken) {
 }

@@ -144,8 +144,8 @@ public class SpallocClientFactory {
 		if (proxy == null) {
 			return null;
 		}
-		return new SpallocClientFactory(URI.create(proxy.spallocUrl))
-				.getJob(proxy.jobUrl, proxy.bearerToken);
+		return new SpallocClientFactory(URI.create(proxy.spallocUrl()))
+				.getJob(proxy.jobUrl(), proxy.bearerToken());
 	}
 
 	/**
