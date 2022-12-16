@@ -21,40 +21,48 @@
 WITH RECURSIVE
 	args(machine_id, x, y, z, width, height, "depth") AS (
 		VALUES (:machine_id, :x, :y, :z, :width, :height, :depth)),
-	m AS (SELECT machines.* FROM machines
-		JOIN args USING (machine_id)),
 	-- The logical rectangle of interest
-	rect(x, y, z, local_x, local_y, local_z) AS (
-		SELECT x, y, z, 0, 0, 0 FROM args
-		UNION
-		SELECT (rect.x + 1) % m.width, rect.y, rect.z, local_x + 1, local_y, local_z
-			FROM rect, m, args
-			WHERE local_x + 1 < args.width
-		UNION
-		SELECT rect.x, (rect.y + 1) % m.height, rect.z, local_x, local_y + 1, local_z
-			FROM rect, m, args
-			WHERE local_y + 1 < args.height
-		UNION
-		SELECT rect.x, rect.y, (rect.z + 1) % m."depth", local_x, local_y, local_z + 1
-			FROM rect, m, args
-			WHERE local_z + 1 < args."depth"),
+	rect(x, y, z) AS MATERIALIZED (
+		WITH
+			m(w, h, d) AS (
+				SELECT machines.width, machines.height, machines."depth"
+				FROM machines JOIN args USING (machine_id)
+				LIMIT 1),
+			xrange(n) AS (
+				SELECT 0 UNION ALL SELECT n+1 FROM xrange
+				LIMIT (SELECT width FROM args)),
+			yrange(n) AS (
+				SELECT 0 UNION ALL SELECT n+1 FROM yrange
+				LIMIT (SELECT height FROM args)),
+			zrange(n) AS (
+				SELECT 0 UNION ALL SELECT n+1 FROM zrange
+				LIMIT (SELECT "depth" FROM args))
+		SELECT (args.x + xrange.n) % m.w, (args.y + yrange.n) % m.h,
+			(args.z + zrange.n) % m.d
+		FROM args, xrange, yrange, zrange, m
+		ORDER BY x, y, z),
 	-- Boards on the machine in the rectangle of interest
-	bs AS (SELECT boards.* FROM boards
-		JOIN m USING (machine_id)
+	bs(board_id, x, y, z) AS (
+		SELECT boards.board_id, boards.x, boards.y, boards.z FROM boards
+		JOIN args USING (machine_id)
 		JOIN rect USING (x, y, z)
-		WHERE may_be_allocated),
+		WHERE may_be_allocated
+		ORDER BY 2, 3, 4),
 	-- Links between boards of interest
-	ls AS (SELECT links.* FROM links
-		WHERE links.board_1 IN (SELECT board_id FROM bs)
-			AND links.board_2 IN (SELECT board_id FROM bs)
-			AND links.live),
+	ls(b1, b2) AS (SELECT board_1, board_2 FROM links
+		WHERE board_1 IN (SELECT board_id FROM bs)
+			AND board_2 IN (SELECT board_id FROM bs)
+			AND live
+		ORDER BY 1, 2),
 	-- Follow the connectivity graph; SQLite magic!
 	connected(b) AS (
-		SELECT board_id FROM bs JOIN args USING (x, y, z)
+		SELECT board_id FROM boards JOIN args USING (machine_id, x, y, z)
+			WHERE may_be_allocated
 		UNION
-		SELECT ls.board_2 FROM connected JOIN ls ON board_1 == b
+		SELECT ls.b2 FROM connected JOIN ls ON b1 == b
 		UNION
-		SELECT ls.board_1 FROM connected JOIN ls ON board_2 == b)
+		SELECT ls.b1 FROM connected JOIN ls ON b2 == b
+		ORDER BY 1)
 SELECT
 	bs.board_id
 FROM bs JOIN connected ON bs.board_id = connected.b

@@ -906,8 +906,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 						// Convert tiered trust level to grant form
 						details.trustLevel().getGrants()
 								.forEach(authorities::add);
-						log.info("login success for {} at level {}", username,
-								details.trustLevel());
 						return true;
 					});
 				}, () -> false);

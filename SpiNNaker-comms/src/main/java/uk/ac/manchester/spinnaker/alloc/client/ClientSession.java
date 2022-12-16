@@ -558,6 +558,9 @@ final class ClientSession implements Session {
 		if (session != null) {
 			log.debug("Attaching to session {}", session);
 			c.setRequestProperty(COOKIE, SESSION_NAME + "=" + session);
+		} else if (bearerToken != null) {
+			log.debug("Using bearer auth {}", bearerToken);
+			c.addRequestProperty("Authorization", "Bearer " + bearerToken);
 		}
 
 		if (csrfHeader != null && csrf != null && forStateChange) {
@@ -580,16 +583,11 @@ final class ClientSession implements Session {
 	public synchronized boolean trackCookie(HttpURLConnection conn) {
 		// Careful: spec allows for multiple Set-Cookie fields
 		boolean found = false;
-		for (int i = 0; true; i++) {
-			var key = conn.getHeaderFieldKey(i);
-			if (key == null) {
-				break;
-			}
-			if (!key.equalsIgnoreCase(SET_COOKIE)) {
-				continue;
-			}
-			var setCookie = conn.getHeaderField(i);
-			if (setCookie != null) {
+		var headerFields = conn.getHeaderFields();
+		var cookiesHeader = headerFields.get(SET_COOKIE);
+		if (cookiesHeader != null) {
+			for (String setCookie : cookiesHeader) {
+				log.debug("Cookie header: {}", setCookie);
 				var m = SESSION_ID_RE.matcher(setCookie);
 				if (m.find()) {
 					session = m.group(1);
@@ -642,16 +640,9 @@ final class ClientSession implements Session {
 	private void logSessionIn(String tempCsrf) throws IOException {
 		var c = connection(LOGIN_HANDLER, true);
 		c.setRequestMethod("POST");
-		if (nonNull(username)) {
-			writeForm(c, ofEntries(entry("_csrf", tempCsrf),
-					entry("submit", "submit"), entry("username", username),
-					entry("password", password)));
-		} else {
-			// TODO does this work?
-			c.addRequestProperty("Authorization", "Bearer " + bearerToken);
-			writeForm(c, ofEntries(entry("_csrf", tempCsrf),
-					entry("submit", "submit")));
-		}
+		writeForm(c, ofEntries(entry("_csrf", tempCsrf),
+				entry("submit", "submit"), entry("username", username),
+				entry("password", password)));
 		try (var ignored = checkForError(c, "login failed")) {
 			/*
 			 * The result should be a redirect; the body is irrelevant but the
@@ -673,11 +664,14 @@ final class ClientSession implements Session {
 	 *             If things go wrong.
 	 */
 	private synchronized void renew(boolean postRenew) throws IOException {
+
 		// Create a temporary session so we can log in
 		var tempCsrf = makeTemporarySession();
 
-		// This makes the real session
-		logSessionIn(tempCsrf);
+		// If we didn't use a bearer token, we need to log in properly
+		if (bearerToken == null) {
+			logSessionIn(tempCsrf);
+		}
 
 		if (postRenew) {
 			discoverRoot();

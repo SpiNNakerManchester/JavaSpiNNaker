@@ -20,6 +20,8 @@ import static java.lang.System.currentTimeMillis;
 
 import java.time.Duration;
 
+import javax.annotation.PreDestroy;
+
 import org.springframework.stereotype.Service;
 
 import com.google.errorprone.annotations.concurrent.GuardedBy;
@@ -39,6 +41,13 @@ public class Epochs {
 
 	@GuardedBy("this")
 	private long blacklistEpoch = 0L;
+
+	private volatile boolean shutdown;
+
+	@PreDestroy
+	private void inShutdown() {
+		shutdown = true;
+	}
 
 	/**
 	 * Get the current jobs epoch.
@@ -110,14 +119,15 @@ public class Epochs {
 		return currentTimeMillis() + timeout.toMillis();
 	}
 
-	private static boolean waiting(long expiry) {
-		return currentTimeMillis() < expiry;
+	private boolean waiting(long expiry) {
+		return currentTimeMillis() < expiry && !shutdown;
 	}
 
 	// The loops are in the callers
 	@SuppressWarnings("WaitNotInLoop")
 	private void waitUntil(long expiry) throws InterruptedException {
-		wait(expiry - currentTimeMillis());
+		long t = expiry - currentTimeMillis();
+		wait(t);
 	}
 
 	/**
@@ -136,6 +146,13 @@ public class Epochs {
 		 *             If the wait is interrupted.
 		 */
 		void waitForChange(Duration timeout) throws InterruptedException;
+
+		/**
+		 * Check if this epoch is the current one.
+		 *
+		 * @return Whether this is a valid epoch.
+		 */
+		boolean isValid();
 	}
 
 	/**
@@ -162,6 +179,13 @@ public class Epochs {
 				}
 			}
 		}
+
+		@Override
+		public boolean isValid() {
+			synchronized (Epochs.this) {
+				return jobsEpoch <= epoch;
+			}
+		}
 	}
 
 	/**
@@ -186,6 +210,13 @@ public class Epochs {
 				while (machineEpoch <= epoch && waiting(expiry)) {
 					waitUntil(expiry);
 				}
+			}
+		}
+
+		@Override
+		public boolean isValid() {
+			synchronized (Epochs.this) {
+				return machineEpoch <= epoch;
 			}
 		}
 	}
@@ -215,6 +246,13 @@ public class Epochs {
 					waitUntil(expiry);
 				}
 				epoch = ble;
+			}
+		}
+
+		@Override
+		public boolean isValid() {
+			synchronized (Epochs.this) {
+				return blacklistEpoch <= epoch;
 			}
 		}
 	}

@@ -24,9 +24,13 @@ WITH
 		SELECT boards.* FROM boards, args
 		WHERE boards.allocated_job = args.job),
 	-- The root board of the job
-	root AS (SELECT bs.* FROM bs, args WHERE bs.board_id = args.root),
+	root AS (
+		SELECT bs.* FROM bs, args WHERE bs.board_id = args.root
+		LIMIT 1),
 	-- The machine of the job
-	m AS (SELECT machines.* FROM machines JOIN root USING (machine_id)),
+	m AS (
+		SELECT machines.* FROM machines JOIN root USING (machine_id)
+		LIMIT 1),
 	wrapped(x, y) AS (
 		SELECT
 			CASE WHEN args.x + root.root_x <= m.max_chip_x

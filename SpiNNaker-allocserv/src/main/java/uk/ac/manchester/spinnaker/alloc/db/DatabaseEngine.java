@@ -48,6 +48,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.trimSQL;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.threadBound;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseableThreadBound;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.collectToArray;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_MSEC;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_USEC;
 
@@ -67,21 +68,25 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -96,6 +101,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.dao.PermissionDeniedDataAccessException;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
 import org.springframework.stereotype.Service;
 import org.sqlite.Function;
@@ -164,7 +170,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 
 	private final SQLiteConfig config = new SQLiteConfig();
 
-	private boolean initialised;
+	private volatile boolean initialised;
+
+	private volatile boolean initMsg;
 
 	private DBProperties props;
 
@@ -211,12 +219,65 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	private final Set<Thread> transactionHolders = new HashSet<>();
 
 	/**
-	 * We maintain our own lock rather than delegating to the database. This is
-	 * known to be overly pessimistic, but it's extremely hard to do better
-	 * without getting a deadlock when several threads try to upgrade their
-	 * locks to write locks at the same time.
+	 * Stores our per-connection state. This is kept in a weak hash map so that
+	 * it lives as long as the actual connections do (as determined by the
+	 * {@link DatabaseCache}), but no longer. Connection state has to be managed
+	 * carefully because there are quite a few ephemeral wrappers involved as
+	 * well.
 	 */
-	private final ReadWriteLock lock = new ReentrantReadWriteLock();
+	private final Map<SQLiteConnection, ConnectionState> stateMap =
+			new WeakHashMap<>();
+
+	/**
+	 * Lock protecting whole-database level operations, especially startup and
+	 * shutdown.
+	 * <p>
+	 * Normal transactions hold this as a shared read lock (even if they are
+	 * transactions that write to the DB). Whole DB actions (initialise
+	 * connection, backup, restore, optimise and shutdown connection) hold it as
+	 * an exclusive write lock. Think of it as a lock protecting the database
+	 * metadata/schema, even though that's strictly inaccurate.
+	 */
+	private final ReadWriteLock wholeDBLock = new ReentrantReadWriteLock();
+
+	private final ThreadLocal<Boolean> alreadyLockedByMe =
+			ThreadLocal.withInitial(() -> false);
+
+	private void withDBWriteLock(Runnable action) {
+		if (alreadyLockedByMe.get()) {
+			log.info("double write lock by {}", Thread.currentThread(),
+					new StackTraceCaptureException());
+			action.run();
+			return;
+		}
+		var lock = wholeDBLock.writeLock();
+		alreadyLockedByMe.set(true);
+		lock.lock();
+		try {
+			action.run();
+		} finally {
+			lock.unlock();
+			alreadyLockedByMe.set(false);
+		}
+	}
+
+	private <T> T withDBReadLock(Supplier<T> action) {
+		if (alreadyLockedByMe.get()) {
+			if (log.isDebugEnabled()) {
+				log.debug("read inside write lock by {}",
+						Thread.currentThread(),
+						new StackTraceCaptureException());
+			}
+			return action.get();
+		}
+		var lock = wholeDBLock.readLock();
+		lock.lock();
+		try {
+			return action.get();
+		} finally {
+			lock.unlock();
+		}
+	}
 
 	/**
 	 * Schedule a task (expected to be
@@ -254,12 +315,22 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	private void statementLength(Statement s, long pre, long post) {
 		if (props.isPerformanceLog()) {
 			long delta = post - pre;
+			/*
+			 * Hack to remove parameters added by JDBC4PreparedStatement. We
+			 * don't want to log each statement preparation separately, but
+			 * rather to aggregate across all calls.
+			 */
+			var sql = s.toString().replaceFirst(" \n parameters=.*", "");
 			synchronized (statementLengths) {
-				var stats = statementLengths.get(s.toString());
+				var stats = statementLengths.get(sql);
 				stats.addValue(delta / NSEC_PER_USEC);
 			}
 		}
 	}
+
+	private static final Comparator<
+			Map.Entry<?, SummaryStatistics>> STATS_COMP =
+					Comparator.comparingDouble(e -> e.getValue().getMax());
 
 	/**
 	 * Writes the recorded statement execution times to the log if that is
@@ -269,20 +340,48 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	private void logStatementExecutionTimes() {
 		warnOnLongTransactions = false;
 		if (props.isPerformanceLog() && log.isInfoEnabled()) {
+			Map<String, SummaryStatistics> stats;
 			synchronized (statementLengths) {
-				statementLengths.entrySet().stream()
-						.filter(e -> e.getValue().getMax() >= props
-								.getPerformanceThreshold())
-						.forEach(e -> {
-							var stats = e.getValue();
-							log.info("statement execution time "
-									+ "{}us (max: {}us, SD: {}us) for: {}",
-									stats.getMean(), stats.getMax(),
-									stats.getStandardDeviation(),
-									trimSQL(e.getKey(), TRIM_PERF_LOG_LENGTH));
-						});
+				stats = Map.copyOf(statementLengths);
+			}
+			// Anything new at this point we can ignore!
+			stats.entrySet().stream()
+					.filter(e -> e.getValue().getMax() >= props
+							.getPerformanceThreshold())
+					.sorted(STATS_COMP)
+					.forEach(e -> logStatementPerformance(e.getKey(),
+							e.getValue()));
+		}
+	}
+
+	// NB: Doesn't use explainQueryPlan() for messy reasons
+	private void logStatementPerformance(String sql, SummaryStatistics stats) {
+		StringBuilder sb = new StringBuilder();
+		if (props.isAutoExplain()) {
+			/*
+			 * This is the intent level of the children of a node in the query
+			 * plan. The (non-existing) node zero has indent zero. Since we just
+			 * use spaces for indentation, we don't need any sort of lookahead
+			 * to compute the output.
+			 */
+			var levels = new HashMap<Integer, Integer>();
+			try (var conn = getConnection();
+					var s = ((ConnectionImpl) conn).createStatement();
+					var r = s.executeQuery("EXPLAIN QUERY PLAN " + sql)) {
+				while (r.next()) {
+					int indent = levels.getOrDefault(r.getInt("parent"), 0);
+					levels.put(r.getInt("id"), indent + 1);
+					sb.append("\nEXPLAIN: ").append(" ".repeat(indent * 2))
+							.append(r.getString("detail"));
+				}
+			} catch (SQLException | RuntimeException e) {
+				log.warn("failed to dump statement explanation", e);
 			}
 		}
+		log.info(
+				"statement execution time {}us (max: {}us, SD: {}us) for: {}{}",
+				stats.getMean(), stats.getMax(), stats.getStandardDeviation(),
+				trimSQL(sql, TRIM_PERF_LOG_LENGTH), sb);
 	}
 
 	static Set<String> columnNames(ResultSetMetaData md) throws SQLException {
@@ -488,29 +587,48 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	 *            The connection to the database.
 	 */
 	private void initDBConn(SQLiteConnection conn) {
+		var doInitMsg = !initMsg;
+		if (doInitMsg) {
+			initMsg = true;
+		}
 		try {
-			log.info("initalising main DB ({}) schema from {}",
-					conn.libversion(), sqlDDLFile);
+			if (doInitMsg) {
+				log.info("initalising main DB ({}) schema from {}",
+						conn.libversion(), sqlDDLFile);
+			}
 		} catch (SQLException e) {
 			throw mapException(e, null);
 		}
 		// Note that we don't close the wrapper; this is deliberate!
 		var wrapper = new ConnectionImpl(conn);
-		synchronized (this) {
-			wrapper.transaction(true, () -> {
-				wrapper.exec(sqlDDLFile);
-				log.info("initalising historical DB from schema {}",
-						tombstoneDDLFile);
+		wrapper.transaction(true, () -> {
+			wrapper.exec(sqlDDLFile);
+			if (wrapper.isHistoricalDBAvailable()) {
+				if (doInitMsg) {
+					log.info("initalising historical DB from schema {}",
+							tombstoneDDLFile);
+				}
 				wrapper.exec(tombstoneDDLFile);
+			}
+			if (doInitMsg) {
 				log.info("initalising DB static data from {}", sqlInitDataFile);
-				wrapper.exec(sqlInitDataFile);
-				log.info("verifying main DB integrity");
+			}
+			wrapper.exec(sqlInitDataFile);
+			execSchemaUpdates(wrapper, doInitMsg);
+			// Don't verify in-memory data!
+			if (dbPath != null) {
+				if (doInitMsg) {
+					log.info("verifying main DB integrity");
+				}
 				wrapper.exec("SELECT COUNT(*) FROM jobs");
-				log.info("verifying historical DB integrity");
-				wrapper.exec("SELECT COUNT(*) FROM tombstone.jobs");
-				execSchemaUpdates(wrapper);
-			});
-		}
+				if (wrapper.isHistoricalDBAvailable()) {
+					if (doInitMsg) {
+						log.info("verifying historical DB integrity");
+					}
+					wrapper.exec("SELECT COUNT(*) FROM tombstone.jobs");
+				}
+			}
+		});
 	}
 
 	/**
@@ -518,13 +636,18 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	 *
 	 * @param wrapper
 	 *            Where to apply the updates.
+	 * @param doInitMsg
+	 *            Whether to write info-level log messages. Usually only do that
+	 *            for the first time a database is connected to.
 	 * @see #schemaUpdates
 	 */
-	private void execSchemaUpdates(ConnectionImpl wrapper) {
+	private void execSchemaUpdates(ConnectionImpl wrapper, boolean doInitMsg) {
 		for (var r : schemaUpdates) {
 			try {
 				wrapper.exec(r);
-				log.info("applied schema update from {}", r);
+				if (doInitMsg) {
+					log.info("applied schema update from {}", r);
+				}
 			} catch (DataAccessException e) {
 				if (!e.getMessage().contains("duplicate column name")) {
 					log.warn("failed to apply schema update from {}", r, e);
@@ -548,10 +671,22 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 			log.debug("installing function from bean '{}'", func.getKey());
 			installFunction(conn, func.getKey(), func.getValue());
 		}
-		log.debug("attaching historical job DB ({})", tombstoneFile);
-		try (var s = conn.prepareStatement("ATTACH DATABASE ? AS tombstone")) {
-			s.setString(1, tombstoneFile);
-			s.execute();
+		try {
+			log.debug("attaching historical job DB ({})", tombstoneFile);
+			try (var s =
+					conn.prepareStatement("ATTACH DATABASE ? AS tombstone")) {
+				s.setString(1, tombstoneFile);
+				s.execute();
+			}
+		} catch (SQLiteException e) {
+			if (isBusy(e)) {
+				log.warn(
+						"failed to attach historical job DB ({}); "
+								+ "most normal operations unaffected",
+						tombstoneFile, e);
+			} else {
+				throw e;
+			}
 		}
 		conn.setAutoCommit(false);
 		// We don't want to have a transaction active by default!
@@ -585,15 +720,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	}
 
 	/**
-	 * Used to ensure that only one database connection is actually writing
-	 * serialisation stuff at a time. We can wait for each other.
-	 * <p>
-	 * This is necessary because there is otherwise extremely high contention on
-	 * the database during application shutdown.
-	 */
-	private Lock optimiseSerialisationLock = new ReentrantLock();
-
-	/**
 	 * Optimises the database. Called when the database connection is about to
 	 * be closed due to the thread (in the thread pool) that owns it going away.
 	 * <em>Called from the thread that owns the database connection in
@@ -603,33 +729,37 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	 *      Documentation</a>
 	 */
 	private void optimiseDB() {
-		optimiseSerialisationLock.lock();
-		try {
-			long start = currentTimeMillis();
-			// NB: Not a standard query! Safe, because we know we have an int
-			try (var conn = getConnection(); var c = (ConnectionImpl) conn) {
-				c.unwrap(SQLiteConnection.class).setBusyTimeout(0);
-				c.transaction(true, () -> {
-					c.exec(format("PRAGMA analysis_limit=%d; PRAGMA optimize;",
-							props.getAnalysisLimit()));
-				});
-			} catch (DataAccessException e) {
+		withDBWriteLock(() -> {
+			try {
+				long start = currentTimeMillis();
 				/*
-				 * If we're busy, just don't bother; it's optional to optimise
-				 * the DB at this point. If we miss one, eventually another
-				 * thread will pick it up.
+				 * NB: Not a standard query! Safe, because we know we have an
+				 * int
 				 */
-				if (!isBusy(e)) {
-					throw e;
+				try (var conn = getConnection();
+						var c = (ConnectionImpl) conn) {
+					c.unwrap(SQLiteConnection.class).setBusyTimeout(0);
+					c.transaction(true, () -> {
+						c.exec(format(
+								"PRAGMA analysis_limit=%d; PRAGMA optimize;",
+								props.getAnalysisLimit()));
+					});
+				} catch (DataAccessException e) {
+					/*
+					 * If we're busy, just don't bother; it's optional to
+					 * optimise the DB at this point. If we miss one, eventually
+					 * another thread will pick it up.
+					 */
+					if (!isBusy(e)) {
+						throw e;
+					}
 				}
+				long end = currentTimeMillis();
+				log.debug("optimised the database in {}ms", end - start);
+			} catch (SQLException e) {
+				log.warn("failed to optimise DB pre-close", e);
 			}
-			long end = currentTimeMillis();
-			log.debug("optimised the database in {}ms", end - start);
-		} catch (SQLException e) {
-			log.warn("failed to optimise DB pre-close", e);
-		} finally {
-			optimiseSerialisationLock.unlock();
-		}
+		});
 	}
 
 	private Object currentTransactionHolders() {
@@ -672,25 +802,97 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 		}
 	}
 
+	private static final class StackTraceCaptureException extends Exception {
+		// Never actually serialised in a way we care about
+		private static final long serialVersionUID = 1L;
+
+		private StackTraceCaptureException() {
+			super("captured stack trace");
+			// Drop the various framework frames that we don't care about
+			fillInStackTrace();
+			setStackTrace(Arrays.stream(getStackTrace()).filter(
+					e -> e.getClassName().startsWith("uk.ac.manchester"))
+					.collect(collectToArray(StackTraceElement[]::new)));
+		}
+	}
+
 	/**
-	 * Connections made by the database engine bean. Its methods do not throw
-	 * checked exceptions. The connection is thread-bound, and will be cleaned
-	 * up correctly when the thread exits (ideal for thread pools).
+	 * State associated with a connection. It is important that this object hold
+	 * no other state than the connection and this state object, because the
+	 * state object is scoped to the correct object <em>and not to an ephemeral
+	 * wrapper!</em>
+	 * <p>
+	 * In particular, <em>this</em> class holds state for
+	 * {@link ConnectionImpl}. {@link #stateMap} is responsible for issuing the
+	 * correct one for a connection.
 	 */
-	final class ConnectionImpl extends UncheckedConnection
-			implements Connection {
+	private static class ConnectionState {
 		private boolean inTransaction;
 
 		private boolean isLockedForWrites;
 
+		private final boolean canTombstone;
+
+		ConnectionState(SQLiteConnection c) {
+			inTransaction = false;
+			isLockedForWrites = false;
+			boolean tombstoneAvailable = false;
+			try (var s = c.prepareStatement("PRAGMA database_list");
+					var r = s.executeQuery()) {
+				while (r.next()) {
+					if ("tombstone".equals(r.getString("name"))) {
+						tombstoneAvailable = true;
+						break;
+					}
+				}
+			} catch (SQLException ex) {
+				log.error("problem when checking attached DB list", ex);
+			}
+			canTombstone = tombstoneAvailable;
+		}
+	}
+
+	/**
+	 * Connections made by the database engine bean. Its methods do not throw
+	 * checked exceptions.
+	 * <p>
+	 * The underlying connection is thread-bound, and will be cleaned up
+	 * correctly when the thread exits (ideal for thread pools) but instances of
+	 * this class are technically ephemeral. Any state that you wish to hold
+	 * must be either the connection passed in or an instance of
+	 * {@link ConnectionState} that is manufactured to be keyed by the correct
+	 * object (via {@link #stateMap}). <em>Getting the state handling wrong will
+	 * cause <strong>extremely</strong>-difficult-to-diagnose deadlocks!</em>
+	 */
+	final class ConnectionImpl extends UncheckedConnection
+			implements Connection {
+		/**
+		 * State associated with the connection. It is important that this
+		 * object hold no other state than the connection and this state object,
+		 * because the state object is scoped to the correct object <em>and not
+		 * to an ephemeral wrapper!</em>
+		 */
+		private final ConnectionState state;
+
 		private ConnectionImpl(java.sql.Connection c) {
 			super(c);
-			inTransaction = false;
+			try {
+				// This is horrible! And very very necessary!
+				this.state = stateMap.computeIfAbsent(
+						c.unwrap(SQLiteConnection.class),
+						ConnectionState::new);
+			} catch (SQLException ex) {
+				log.error("problem when unwrapping SQLiteConnection", ex);
+				throw new RuntimeException("unexpected error", ex);
+			}
+		}
+
+		@Override
+		public boolean isHistoricalDBAvailable() {
+			return state.canTombstone;
 		}
 
 		private class Locker implements AutoCloseable {
-			private final Lock currentLock;
-
 			private final long lockTimestamp;
 
 			private final Object lockingContext;
@@ -698,6 +900,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 			private final Future<?> lockWarningTimeout;
 
 			private final long noteThreshold;
+
+			private final boolean exclusive;
+
+			private boolean unnecessary = false;
 
 			/**
 			 * @param lockForWriting
@@ -709,34 +915,23 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 			@MustBeClosed
 			Locker(boolean lockForWriting) {
 				noteThreshold = props.getLockNoteThreshold().toNanos();
-				var l = getLock(lockForWriting);
-				currentLock = l;
-				isLockedForWrites = lockForWriting;
+				exclusive = lockForWriting;
+				state.isLockedForWrites = lockForWriting;
 				lockingContext = getDebugContext();
-				l.lock();
 				lockWarningTimeout =
 						schedule(this::warnLock, props.getLockWarnThreshold());
 				lockTimestamp = nanoTime();
 			}
 
-			private Lock getLock(boolean lockForWriting) {
-				lockForWriting |= true; // TODO fix this HACK
-				if (lockForWriting) {
-					return lock.writeLock();
-				} else {
-					return lock.readLock();
-				}
-			}
-
 			@Override
 			public void close() {
 				long unlockTimestamp = nanoTime();
-				currentLock.unlock();
 				lockWarningTimeout.cancel(false);
 				long dt = unlockTimestamp - lockTimestamp;
 				if (dt > noteThreshold) {
 					log.info("transaction lock was held for {}ms",
-							dt / NSEC_PER_MSEC);
+							dt / NSEC_PER_MSEC,
+							new StackTraceCaptureException());
 				}
 			}
 
@@ -752,42 +947,89 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 						lockingContext, dt / NSEC_PER_MSEC,
 						currentTransactionHolders());
 			}
-		}
 
-		private class Hold implements AutoCloseable {
-			private final boolean it;
-
-			private final Thread holder;
-
-			@MustBeClosed
-			Hold() {
-				it = inTransaction;
-				holder = currentThread();
-				if (!it) {
-					inTransaction = true;
-					synchronized (transactionHolders) {
-						transactionHolders.add(holder);
+			/**
+			 * Start the transaction. Note that this result is why we do not
+			 * begin the transaction as part of the creation of this object.
+			 *
+			 * @return True, if we <em>could not start the transaction because
+			 *         the database was busy.</em> False otherwise (on success).
+			 * @throws DataAccessException
+			 *             If something else goes wrong.
+			 */
+			boolean begin() {
+				try {
+					realBegin(exclusive ? IMMEDIATE : DEFERRED);
+					return false;
+				} catch (PessimisticLockingFailureException e) {
+					if (isBusy(e)) {
+						return true;
 					}
+					throw e;
 				}
 			}
 
-			@Override
-			public void close() {
-				if (!it) {
-					inTransaction = false;
-					synchronized (transactionHolders) {
-						transactionHolders.remove(holder);
+			private void commit() {
+				realCommit();
+				unnecessary = true;
+			}
+
+			@MustBeClosed
+			RollbackHandler rollbackHandler(Object context) {
+				return new RollbackHandler(context);
+			}
+
+			/**
+			 * Rolls back the transaction <em>unless</em> it has been told not
+			 * to by setting {@code unnecessary} to {@code true}.
+			 */
+			private class RollbackHandler implements AutoCloseable {
+				private final Object context;
+
+				private final boolean it;
+
+				private final Thread holder;
+
+				@MustBeClosed
+				RollbackHandler(Object context) {
+					this.context = context;
+					it = state.inTransaction;
+					holder = currentThread();
+					if (!it) {
+						state.inTransaction = true;
+						synchronized (transactionHolders) {
+							transactionHolders.add(holder);
+						}
+					}
+				}
+
+				@Override
+				public void close() {
+					if (!it) {
+						state.inTransaction = false;
+						synchronized (transactionHolders) {
+							transactionHolders.remove(holder);
+						}
+					}
+					try {
+						if (!unnecessary) {
+							log.debug("commence rollback: {}", context);
+							realRollback();
+						}
+					} catch (DataAccessException e) {
+						cantWarning("rollback", e);
+						throw e;
 					}
 				}
 			}
 		}
 
 		void checkInTransaction(boolean expectedLockType) {
-			if (!inTransaction) {
+			if (!state.inTransaction) {
 				log.warn("executing not inside transaction: {}",
 						getDebugContext(),
 						MishandledTransactionException.generateException());
-			} else if (expectedLockType && !isLockedForWrites) {
+			} else if (expectedLockType && !state.isLockedForWrites) {
 				log.warn("performing write inside read transaction: {}",
 						getDebugContext(),
 						MishandledTransactionException.generateException());
@@ -816,29 +1058,29 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 		@Override
 		public <T> T transaction(boolean lockForWriting,
 				TransactedWithResult<T> operation) {
-			var context = getDebugContext();
-			if (inTransaction) {
-				if (lockForWriting && !isLockedForWrites) {
-					log.warn("attempt to upgrade lock: {}", context);
+			return withDBReadLock(() -> {
+				var context = getDebugContext();
+				if (state.inTransaction) {
+					if (lockForWriting && !state.isLockedForWrites) {
+						log.warn("attempt to upgrade lock: {}", context);
+					}
+					// Already in a transaction; just run the operation
+					return operation.act();
 				}
-				// Already in a transaction; just run the operation
-				return operation.act();
-			}
-			int tries = 0;
-			while (true) {
-				tries++;
-				if (log.isDebugEnabled()) {
-					log.debug("start transaction: {}", context);
-				}
-				// Stack of contexts is precise so cleanup is correct
-				try (var locker = new Locker(lockForWriting)) {
-					realBegin(lockForWriting ? IMMEDIATE : DEFERRED);
-					try (var rollback = new RollbackHandler(context)) {
-						try (var hold = new Hold()) {
+				int tries = 0;
+				while (true) {
+					tries++;
+					if (log.isDebugEnabled()) {
+						log.debug("start transaction: {}", context);
+					}
+					try (var locker = new Locker(lockForWriting)) {
+						if (locker.begin()) {
+							continue;
+						}
+						try (var rollback = locker.rollbackHandler(context)) {
 							var result = operation.act();
 							log.debug("commence commit: {}", context);
-							realCommit();
-							rollback.unnecessary = true;
+							locker.commit();
 							return result;
 						} catch (DataAccessException e) {
 							if (tries < props.getLockTries() && isBusy(e)) {
@@ -854,7 +1096,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 						}
 					}
 				}
-			}
+			});
 		}
 
 		private void sleepUntilTimeToRetry() {
@@ -863,34 +1105,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 			} catch (InterruptedException e) {
 				log.trace("interrupted while waiting until time to "
 						+ "retry transaction", e);
-			}
-		}
-
-		/**
-		 * Rolls back the transaction <em>unless</em> it has been told not to by
-		 * setting {@code unnecessary} to {@code true}.
-		 */
-		private class RollbackHandler implements AutoCloseable {
-			boolean unnecessary = false;
-
-			private final Object context;
-
-			@MustBeClosed
-			RollbackHandler(Object context) {
-				this.context = context;
-			}
-
-			@Override
-			public void close() {
-				try {
-					if (!unnecessary) {
-						log.debug("commence rollback: {}", context);
-						realRollback();
-					}
-				} catch (DataAccessException e) {
-					cantWarning("rollback", e);
-					throw e;
-				}
 			}
 		}
 
@@ -981,8 +1195,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 		}
 	}
 
-	private boolean threadCacheConnections = false;
-
 	@Override
 	@MustBeClosed
 	public Connection getConnection() {
@@ -992,38 +1204,38 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 			initDBConn(conn);
 			return new ConnectionImpl(threadBound(conn));
 		}
-		synchronized (this) {
-			if (threadCacheConnections && !isLongTermThread()) {
-				var conn = getCachedDatabaseConnection();
-				maybeInit(conn);
-				return new ConnectionImpl(uncloseableThreadBound(conn));
-			} else {
-				var conn = openDatabaseConnection();
-				maybeInit(conn);
-				return new ConnectionImpl(threadBound(conn));
-			}
+		if (!isLongTermThread()) {
+			var conn = getCachedDatabaseConnection();
+			maybeInit(conn);
+			return new ConnectionImpl(uncloseableThreadBound(conn));
+		} else {
+			var conn = openDatabaseConnection();
+			maybeInit(conn);
+			return new ConnectionImpl(threadBound(conn));
 		}
 	}
 
 	private void maybeInit(SQLiteConnection conn) {
 		boolean doInit = !initialised || !exists(dbPath);
 		if (doInit) {
-			initDBConn(conn);
+			withDBWriteLock(() -> initDBConn(conn));
 			initialised = true;
 		}
 	}
 
 	@Override
 	public void createBackup(File backupFilename) {
-		try (var conn = getCachedDatabaseConnection()) {
-			conn.getDatabase().backup(MAIN_DB_NAME,
-					backupFilename.getAbsolutePath(),
-					(remaining, pageCount) -> log.info(
-							"BACKUP TO {} (remaining:{}, page count:{})",
-							backupFilename, remaining, pageCount));
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		withDBWriteLock(() -> {
+			try (var conn = getCachedDatabaseConnection()) {
+				conn.getDatabase().backup(MAIN_DB_NAME,
+						backupFilename.getAbsolutePath(),
+						(remaining, pageCount) -> log.info(
+								"BACKUP TO {} (remaining:{}, page count:{})",
+								backupFilename, remaining, pageCount));
+			} catch (SQLException e) {
+				throw mapException(e, null);
+			}
+		});
 	}
 
 	@Override
@@ -1034,15 +1246,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 							+ "\" doesn't exist or isn't a readable file",
 					new FileNotFoundException(backupFilename.toString()));
 		}
-		try (var conn = getCachedDatabaseConnection()) {
-			conn.getDatabase().restore(MAIN_DB_NAME,
-					backupFilename.getAbsolutePath(),
-					(remaining, pageCount) -> log.info(
-							"RESTORE FROM {} (remaining:{}, page count:{})",
-							backupFilename, remaining, pageCount));
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		withDBWriteLock(() -> {
+			try (var conn = getCachedDatabaseConnection()) {
+				conn.getDatabase().restore(MAIN_DB_NAME,
+						backupFilename.getAbsolutePath(),
+						(remaining, pageCount) -> log.info(
+								"RESTORE FROM {} (remaining:{}, page count:{})",
+								backupFilename, remaining, pageCount));
+			} catch (SQLException e) {
+				throw mapException(e, null);
+			}
+		});
 	}
 
 	/**
@@ -1146,10 +1360,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 		/** The database connection. */
 		final ConnectionImpl conn;
 
+		/** The text of the query. */
+		private final String sql;
+
 		StatementWrapper(ConnectionImpl conn, String sql) {
 			this.conn = conn;
 			s = conn.prepareStatement(sql);
 			rs = null;
+			this.sql = sql;
 		}
 
 		final void closeResults() {
@@ -1244,6 +1462,28 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 		@Override
 		public String toString() {
 			return getClass().getSimpleName() + " : " + trimSQL(s.toString());
+		}
+
+		// NB: logStatementPerformance() doesn't use this for messy reasons
+		/**
+		 * {@inheritDoc} This is a list of rows (as strings) that form a tree;
+		 * the indentation is pre-computed.
+		 */
+		@Override
+		public List<String> explainQueryPlan() {
+			var result = new ArrayList<String>();
+			var levels = new HashMap<Integer, Integer>();
+			try (var s = conn.createStatement();
+					var r = s.executeQuery("EXPLAIN QUERY PLAN " + sql)) {
+				while (r.next()) {
+					int indent = levels.getOrDefault(r.getInt("parent"), 0);
+					levels.put(r.getInt("id"), indent + 1);
+					result.add("  ".repeat(indent) + r.getString("detail"));
+				}
+			} catch (SQLException e) {
+				throw mapException(e, s.toString());
+			}
+			return result;
 		}
 	}
 

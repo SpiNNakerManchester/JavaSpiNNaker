@@ -29,6 +29,7 @@ import java.util.Map;
 import com.google.errorprone.annotations.MustBeClosed;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
+import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.front_end.download.request.Vertex;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
@@ -77,6 +78,8 @@ public final class DirectDataGatherer extends DataGatherer {
 	 *            Where to put the retrieved data.
 	 * @param machine
 	 *            The description of the machine being talked to.
+	 * @param job
+	 *            The spalloc job to connect to, or null if none.
 	 * @throws ProcessException
 	 *             If we can't discover the machine details due to SpiNNaker
 	 *             rejecting messages
@@ -85,9 +88,9 @@ public final class DirectDataGatherer extends DataGatherer {
 	 */
 	@MustBeClosed
 	public DirectDataGatherer(TransceiverInterface transceiver, Machine machine,
-			BufferManagerStorage database)
+			BufferManagerStorage database, SpallocClient.Job job)
 			throws IOException, ProcessException {
-		super(transceiver, machine);
+		super(transceiver, machine, job);
 		this.txrx = transceiver;
 		this.database = database;
 		coreTableCache = new HashMap<>();

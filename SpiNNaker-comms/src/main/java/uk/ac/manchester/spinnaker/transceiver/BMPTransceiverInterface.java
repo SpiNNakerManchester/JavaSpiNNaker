@@ -1848,6 +1848,9 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data,
 			boolean update)
 			throws ProcessException, IOException, InterruptedException;
+
+	@Override
+	void close() throws IOException;
 }
 
 interface BMPConstants {

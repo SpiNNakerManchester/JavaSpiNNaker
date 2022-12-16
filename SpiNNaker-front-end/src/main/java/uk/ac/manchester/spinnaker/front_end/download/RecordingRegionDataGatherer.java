@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import com.google.errorprone.annotations.MustBeClosed;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
+import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
@@ -83,6 +84,8 @@ public final class RecordingRegionDataGatherer extends DataGatherer {
 	 *            The description of the machine talked to.
 	 * @param database
 	 *            Where to put the retrieved data.
+	 * @param job
+	 *            The spalloc job to connect to, or null if none.
 	 * @throws ProcessException
 	 *             If we can't discover the machine details due to SpiNNaker
 	 *             rejecting messages
@@ -91,9 +94,10 @@ public final class RecordingRegionDataGatherer extends DataGatherer {
 	 */
 	@MustBeClosed
 	public RecordingRegionDataGatherer(TransceiverInterface transceiver,
-			Machine machine, BufferManagerStorage database)
+			Machine machine, BufferManagerStorage database,
+			SpallocClient.Job job)
 			throws IOException, ProcessException {
-		super(transceiver, machine);
+		super(transceiver, machine, job);
 		this.txrx = transceiver;
 		this.database = database;
 	}

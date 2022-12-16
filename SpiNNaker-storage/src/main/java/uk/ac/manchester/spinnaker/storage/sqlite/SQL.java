@@ -267,4 +267,37 @@ abstract class SQL {
 			SET start_address = ?, memory_used = ?, memory_written = ?
 			WHERE core_id = ?
 			""";
+
+	/**
+	 * The name of the result containing the spalloc URI.
+	 * <p>
+	 * Must match {@link #GET_PROXY_INFORMATION}.
+	 */
+	static final String SPALLOC_URI = "service uri";
+
+	/**
+	 * The name of the result containing the proxy URI.
+	 * <p>
+	 * Must match {@link #GET_PROXY_INFORMATION}.
+	 */
+	static final String PROXY_URI = "job uri";
+
+	/**
+	 * The name of the result containing the proxy Authorization.
+	 * <p>
+	 * Must match {@link #GET_PROXY_INFORMATION}.
+	 */
+	static final String PROXY_AUTH = "Authorization";
+
+	/**
+	 * Get information about the proxy.
+	 */
+	@ResultColumn("name")
+	@ResultColumn("value")
+	static final String GET_PROXY_INFORMATION = """
+			SELECT name, value FROM proxy_configuration
+			WHERE (kind = 'SPALLOC' AND name = 'job uri')
+				OR (kind = 'HEADER' AND name = 'Authorization')
+				OR (kind = 'SPALLOC' AND name = 'service uri')
+			""";
 }

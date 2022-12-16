@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +17,20 @@
 package uk.ac.manchester.spinnaker.storage;
 
 /**
- * Interface that real database interfaces are subclasses of.
+ * Storage interface that knows how to get information about the proxy system
+ * from the DB.
  *
  * @author Donal Fellows
  */
-public sealed interface DatabaseAPI permits ProxyAwareStorage {
+public non-sealed interface ProxyAwareStorage extends DatabaseAPI {
+	/**
+	 * Get the proxy information from the database.
+	 *
+	 * @return The proxy information, or {@code null} if none defined. When
+	 *         there is no proxy, only direct connections to SpiNNaker are
+	 *         possible.
+	 * @throws StorageException
+	 *             If anything goes wrong.
+	 */
+	ProxyInformation getProxyInformation() throws StorageException;
 }

@@ -130,7 +130,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	@Override
 	public Map<String, Machine> getMachines(boolean allowOutOfService) {
-		return execute(c -> getMachines(c, allowOutOfService));
+		return executeRead(c -> getMachines(c, allowOutOfService));
 	}
 
 	private Map<String, Machine> getMachines(Connection conn,
@@ -176,7 +176,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	public List<MachineListEntryRecord>
 			listMachines(boolean allowOutOfService) {
 		try (var sql = new ListMachinesSQL()) {
-			return sql.transaction(false,
+			return sql.transactionRead(
 					() -> sql.listMachines.call(allowOutOfService)
 							.map(sql::makeMachineListEntryRecord).toList());
 		}
@@ -242,7 +242,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	public Optional<MachineDescription> getMachineInfo(String machine,
 			boolean allowOutOfService, Permit permit) {
 		try (var sql = new DescribeMachineSQL()) {
-			return sql.transaction(false, () -> apply(
+			return sql.transactionRead(() -> apply(
 					sql.namedMachine.call1(machine, allowOutOfService)
 							.map(Spalloc::getBasicMachineInfo),
 					md -> sql.countMachineThings.call1(md.getId())
@@ -353,7 +353,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	@Override
 	@PostFilter(MAY_SEE_JOB_DETAILS)
 	public Optional<JobDescription> getJobInfo(Permit permit, int id) {
-		return execute(conn -> {
+		return executeRead(conn -> {
 			try (var s = conn.query(GET_JOB);
 					var chipDimensions = conn.query(GET_JOB_CHIP_DIMENSIONS);
 					var countPoweredBoards = conn.query(COUNT_POWERED_BOARDS);
@@ -1151,6 +1151,24 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			partial = false;
 		}
 
+		private MachineImpl cachedMachine;
+
+		/**
+		 * Get the machine that this job is running on. May used a cached value.
+		 * A transaction is required, but may be a read-only transaction.
+		 *
+		 * @param conn
+		 *            The connection to the DB
+		 * @return The overall machine handle.
+		 */
+		private synchronized MachineImpl getJobMachine(Connection conn) {
+			if (cachedMachine == null || !cachedMachine.epoch.isValid()) {
+				cachedMachine = Spalloc.this.getMachine(machineId, true, conn)
+						.orElseThrow();
+			}
+			return cachedMachine;
+		}
+
 		@Override
 		public void access(String keepaliveAddress) {
 			if (partial) {
@@ -1247,8 +1265,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				return conn.transaction(false, () -> findBoard
 						.call1(id, root, x, y)
 						.map(row -> new BoardLocationImpl(row,
-								Spalloc.this.getMachine(machineId, true, conn)
-										.orElseThrow())));
+								getJobMachine(conn))));
 			}
 		}
 
@@ -1453,8 +1470,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			private List<Integer> boardIds;
 
 			private SubMachineImpl(Connection conn) {
-				machine = Spalloc.this.getMachine(machineId, true, conn)
-						.orElseThrow();
+				machine = getJobMachine(conn);
 				try (var getRootXY = conn.query(GET_ROOT_COORDS);
 						var getBoardInfo = conn.query(GET_BOARD_CONNECT_INFO)) {
 					getRootXY.call1(root).ifPresent(row -> {
