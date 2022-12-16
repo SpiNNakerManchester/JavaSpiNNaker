@@ -41,37 +41,29 @@ public abstract class EIEIOMessageFactory {
 	 */
 	public static EIEIOCommandMessage readCommandMessage(ByteBuffer data) {
 		var command = peekCommand(data);
-		if (!(command instanceof EIEIOCommandID)) {
+		if (!(command instanceof EIEIOCommandID cmd)) {
 			return new EIEIOCommandMessage(data);
 		}
-		switch ((EIEIOCommandID) command) {
-		case EVENT_PADDING:
-			// Fill in buffer area with padding
-			return new PaddingRequest();
-		case EVENT_STOP:
-			// End of all buffers, stop execution
-			return new EventStopRequest();
-		case STOP_SENDING_REQUESTS:
-			// Stop complaining that there is SDRAM free space for buffers
-			return new StopRequests();
-		case START_SENDING_REQUESTS:
-			// Start complaining that there is SDRAM free space for buffers
-			return new StartRequests();
-		case SPINNAKER_REQUEST_BUFFERS:
-			// SpiNNaker requesting new buffers for spike source population
-			return new SpinnakerRequestBuffers(data);
-		case HOST_SEND_SEQUENCED_DATA:
-			// Buffers being sent from host to SpiNNaker
-			return new HostSendSequencedData(data);
-		case SPINNAKER_REQUEST_READ_DATA:
-			// Buffers available to be read from a buffered out vertex
-			return new SpinnakerRequestReadData(data);
-		case HOST_DATA_READ:
-			// Host confirming data being read form SpiNNaker memory
-			return new HostDataRead(data);
-		default:
-			return new EIEIOCommandMessage(data);
-		}
+		return switch (cmd) {
+		// Fill in buffer area with padding
+		case EVENT_PADDING -> new PaddingRequest();
+		// End of all buffers, stop execution
+		case EVENT_STOP -> new EventStopRequest();
+		// Stop complaining that there is SDRAM free space for buffers
+		case STOP_SENDING_REQUESTS -> new StopRequests();
+		// Start complaining that there is SDRAM free space for buffers
+		case START_SENDING_REQUESTS -> new StartRequests();
+		// SpiNNaker requesting new buffers for spike source population
+		case SPINNAKER_REQUEST_BUFFERS -> new SpinnakerRequestBuffers(data);
+		// Buffers being sent from host to SpiNNaker
+		case HOST_SEND_SEQUENCED_DATA -> new HostSendSequencedData(data);
+		// Buffers available to be read from a buffered out vertex
+		case SPINNAKER_REQUEST_READ_DATA -> new SpinnakerRequestReadData(data);
+		// Host confirming data being read form SpiNNaker memory
+		case HOST_DATA_READ -> new HostDataRead(data);
+		// Some non-standard message
+		default -> new EIEIOCommandMessage(data);
+		};
 	}
 
 	/**

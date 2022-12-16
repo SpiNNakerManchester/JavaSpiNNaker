@@ -111,8 +111,8 @@ public class ProcessException extends SpinnmanException {
 				// Fall through
 			}
 		}
-		if (cause instanceof InterruptedException) {
-			throw (InterruptedException) cause;
+		if (cause instanceof InterruptedException interrupt) {
+			throw interrupt;
 		}
 		return new ProcessException(core, cause, null);
 	}

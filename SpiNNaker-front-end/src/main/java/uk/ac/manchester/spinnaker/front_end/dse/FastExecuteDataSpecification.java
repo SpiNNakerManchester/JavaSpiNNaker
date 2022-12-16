@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.front_end.dse;
 
-import static difflib.DiffUtils.diff;
 import static java.lang.Integer.toUnsignedLong;
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
@@ -28,9 +27,9 @@ import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
+import static uk.ac.manchester.spinnaker.front_end.DebuggingUtils.compareBuffers;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInProtocol.computeNumPackets;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
-import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
 
 import java.io.BufferedWriter;
@@ -54,10 +53,6 @@ import org.slf4j.Logger;
 import com.google.errorprone.annotations.CheckReturnValue;
 import com.google.errorprone.annotations.MustBeClosed;
 
-import difflib.ChangeDelta;
-import difflib.Chunk;
-import difflib.DeleteDelta;
-import difflib.InsertDelta;
 import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
@@ -79,7 +74,6 @@ import uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.utils.MathUtils;
 
 /**
  * Implementation of the Data Specification Executor that uses the Fast Data In
@@ -331,50 +325,6 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		}
 	}
 
-	private static void compareBuffers(ByteBuffer original,
-			ByteBuffer downloaded) {
-		for (int i = 0; i < original.remaining(); i++) {
-			if (original.get(i) != downloaded.get(i)) {
-				log.error("downloaded buffer contents different");
-				for (var delta : diff(list(original), list(downloaded))
-						.getDeltas()) {
-					if (delta instanceof ChangeDelta) {
-						var delete = delta.getOriginal();
-						var insert = delta.getRevised();
-						log.warn(
-								"swapped {} bytes (SCP) for {} (gather) "
-										+ "at {}->{}",
-								delete.getLines().size(),
-								insert.getLines().size(), delete.getPosition(),
-								insert.getPosition());
-						log.info("change {} -> {}", describeChunk(delete),
-								describeChunk(insert));
-					} else if (delta instanceof DeleteDelta) {
-						var delete = delta.getOriginal();
-						log.warn("gather deleted {} bytes at {}",
-								delete.getLines().size(), delete.getPosition());
-						log.info("delete {}", describeChunk(delete));
-					} else if (delta instanceof InsertDelta) {
-						var insert = delta.getRevised();
-						log.warn("gather inserted {} bytes at {}",
-								insert.getLines().size(), insert.getPosition());
-						log.info("insert {}", describeChunk(insert));
-					}
-				}
-				break;
-			}
-		}
-	}
-
-	private static List<Byte> list(ByteBuffer buffer) {
-		return sliceUp(buffer, 1).map(ByteBuffer::get).toList();
-	}
-
-	private static List<String> describeChunk(Chunk<Byte> chunk) {
-		return chunk.getLines().stream().map(MathUtils::hexbyte)
-				.collect(toList());
-	}
-
 	/**
 	 * The worker class that handles a particular board of a SpiNNaker machine.
 	 * Instances of this class are only ever used from a single thread.
@@ -503,7 +453,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 				if (SPINNAKER_COMPARE_UPLOAD != null) {
 					var readBack = txrx.readMemory(ctl.core,
 							r.getRegionBase(), r.getRegionData().remaining());
-					compareBuffers(r.getRegionData(), readBack);
+					compareBuffers(r.getRegionData(), readBack, log);
 				}
 			}
 

@@ -227,11 +227,7 @@ public final class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 
 		@Override
 		public boolean equals(Object other) {
-			if (!(other instanceof EthernetImpl)) {
-				return false;
-			}
-			var b = (EthernetImpl) other;
-			return id == b.id;
+			return (other instanceof EthernetImpl b) && id == b.id;
 		}
 
 		@Override

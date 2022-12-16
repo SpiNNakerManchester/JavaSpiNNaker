@@ -16,19 +16,17 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download;
 
-import static difflib.DiffUtils.diff;
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import static java.lang.Thread.sleep;
 import static java.nio.ByteBuffer.allocate;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
+import static uk.ac.manchester.spinnaker.front_end.DebuggingUtils.compareBuffers;
 import static uk.ac.manchester.spinnaker.front_end.download.MissingSequenceNumbersMessage.createMessages;
 import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.io.IOException;
@@ -46,13 +44,8 @@ import com.google.errorprone.annotations.ForOverride;
 import com.google.errorprone.annotations.MustBeClosed;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 
-import difflib.ChangeDelta;
-import difflib.Chunk;
-import difflib.DeleteDelta;
-import difflib.InsertDelta;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
 import uk.ac.manchester.spinnaker.connections.MostDirectConnectionSelector;
-import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor.SimpleCallable;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
@@ -69,7 +62,6 @@ import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
-import uk.ac.manchester.spinnaker.utils.MathUtils;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
@@ -338,14 +330,10 @@ public abstract sealed class DataGatherer extends BoardLocalSupport implements
 			if (!work.containsKey(gathererChip)) {
 				continue;
 			}
-			SCPConnection scp = null;
-			if (job != null) {
-				scp = job.getConnection(gathererChip);
-			} else {
-				scp = txrx.locateSpinnakerConnection(
-						g.getIptag().getBoardAddress());
-			}
-			var conn = new GatherDownloadConnection(scp);
+			var conn = new GatherDownloadConnection(
+					(job != null) ? job.getConnection(gathererChip)
+							: txrx.locateSpinnakerConnection(
+									g.getIptag().getBoardAddress()));
 			conn.setIPTag(txrx, g.getIptag());
 			connections.put(gathererChip, conn);
 		}
@@ -452,45 +440,7 @@ public abstract sealed class DataGatherer extends BoardLocalSupport implements
 			log.error("different buffer sizes: {} with gatherer, {} with SCP",
 					data.remaining(), data2.remaining());
 		}
-		for (int i = 0; i < data.remaining(); i++) {
-			if (data.get(i) != data2.get(i)) {
-				log.error("downloaded buffer contents different");
-				for (var delta : diff(list(data2), list(data)).getDeltas()) {
-					if (delta instanceof ChangeDelta) {
-						var delete = delta.getOriginal();
-						var insert = delta.getRevised();
-						log.warn(
-								"swapped {} bytes (SCP) for {} (gather) "
-										+ "at {}->{}",
-								delete.getLines().size(),
-								insert.getLines().size(), delete.getPosition(),
-								insert.getPosition());
-						log.info("change {} -> {}", describeChunk(delete),
-								describeChunk(insert));
-					} else if (delta instanceof DeleteDelta) {
-						var delete = delta.getOriginal();
-						log.warn("gather deleted {} bytes at {}",
-								delete.getLines().size(), delete.getPosition());
-						log.info("delete {}", describeChunk(delete));
-					} else if (delta instanceof InsertDelta) {
-						var insert = delta.getRevised();
-						log.warn("gather inserted {} bytes at {}",
-								insert.getLines().size(), insert.getPosition());
-						log.info("insert {}", describeChunk(insert));
-					}
-				}
-				break;
-			}
-		}
-	}
-
-	private static List<Byte> list(ByteBuffer buffer) {
-		return sliceUp(buffer, 1).map(ByteBuffer::get).toList();
-	}
-
-	private static List<String> describeChunk(Chunk<Byte> chunk) {
-		return chunk.getLines().stream().map(MathUtils::hexbyte)
-				.collect(toList());
+		compareBuffers(data, data2, log);
 	}
 
 	/**

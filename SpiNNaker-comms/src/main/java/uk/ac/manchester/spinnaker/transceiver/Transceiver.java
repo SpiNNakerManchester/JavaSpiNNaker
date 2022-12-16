@@ -1154,9 +1154,9 @@ public class Transceiver extends UDPTransceiver
 			throws IOException {
 
 		// Avoid delegation of the connection if not needed
-		if (connector instanceof SCPConnection) {
-			return new TxrxProcess(new SingletonConnectionSelector<>(
-					(SCPConnection) connector), this);
+		if (connector instanceof SCPConnection scpConn) {
+			return new TxrxProcess(new SingletonConnectionSelector<>(scpConn),
+					this);
 		}
 		return new TxrxProcess(new SingletonConnectionSelector<>(
 				new DelegatingSCPConnection(connector)), this);
