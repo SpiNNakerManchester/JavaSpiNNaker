@@ -826,7 +826,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	 * {@link ConnectionImpl}. {@link #stateMap} is responsible for issuing the
 	 * correct one for a connection.
 	 */
-	private static class ConnectionState {
+	private static final class ConnectionState {
 		private boolean inTransaction;
 
 		private boolean isLockedForWrites;
@@ -892,7 +892,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 			return state.canTombstone;
 		}
 
-		private class Locker implements AutoCloseable {
+		private final class Locker implements AutoCloseable {
 			private final long lockTimestamp;
 
 			private final Object lockingContext;
