@@ -44,7 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<log4j.version>2.19.0</log4j.version>
 
 		<spring.version>5.3.24</spring.version>
-		<spring.boot.version>2.7.6</spring.boot.version>
+		<spring.boot.version>2.7.7</spring.boot.version>
 		<!--
 		DKF: if you update spring.boot.version, also update the annotation
 		  processor binding in Eclipse for SpiNNaker-allocserv:
