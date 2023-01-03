@@ -1276,7 +1276,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 					+ "BMPController$AbstractSQL");
 
 	private static final Set<String> FILTERED_PREFIXES = Set.of(//
-			"java", "javax", "sun");
+			"java", "javax", "sun", "jakarta");
 
 	/**
 	 * Get the stack frame description of the caller of the of the transaction.

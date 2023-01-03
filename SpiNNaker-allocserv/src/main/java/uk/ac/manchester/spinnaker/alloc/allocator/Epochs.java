@@ -20,11 +20,11 @@ import static java.lang.System.currentTimeMillis;
 
 import java.time.Duration;
 
-import javax.annotation.PreDestroy;
-
 import org.springframework.stereotype.Service;
 
 import com.google.errorprone.annotations.concurrent.GuardedBy;
+
+import jakarta.annotation.PreDestroy;
 
 /**
  * Manages epoch counters.

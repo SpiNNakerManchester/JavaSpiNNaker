@@ -35,7 +35,6 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.core.io.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -52,7 +51,6 @@ import uk.ac.manchester.spinnaker.utils.validation.TCPPort;
  * @author Donal Fellows
  */
 @ConfigurationProperties("spalloc")
-@ConstructorBinding
 @Validated
 public class SpallocProperties {
 	/** Path to the main database file. */
