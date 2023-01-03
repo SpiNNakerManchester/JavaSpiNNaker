@@ -251,10 +251,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					</configuration>
 				</plugin>
 				<plugin>
-					<groupId>org.apache.sling</groupId>
+					<groupId>io.leonard.maven.plugins</groupId>
 					<artifactId>jspc-maven-plugin</artifactId>
 					<configuration>
-						<sourceDirectory>${project.basedir}/src/main/webapp/WEB-INF</sourceDirectory>
+						<includes>
+							<include>${project.basedir}/src/main/webapp/WEB-INF/**/*.jsp</include>
+						</includes>
 					</configuration>
 				</plugin>
 			</plugins>
@@ -515,14 +517,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugins>
 					<plugin>
 						<!-- JSP syntax check via pre-compilation -->
-						<groupId>org.apache.sling</groupId>
+						<groupId>io.leonard.maven.plugins</groupId>
 						<artifactId>jspc-maven-plugin</artifactId>
 						<executions>
 							<execution>
+								<id>jspc</id>
 								<goals>
-									<goal>jspc</goal>
+									<goal>compile</goal>
 								</goals>
-								<phase>compile</phase>
 							</execution>
 						</executions>
 					</plugin>

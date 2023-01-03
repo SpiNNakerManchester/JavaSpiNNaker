@@ -587,9 +587,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<version>1.0</version>
 				</plugin>
 				<plugin>
-					<groupId>org.apache.sling</groupId>
+					<groupId>io.leonard.maven.plugins</groupId>
 					<artifactId>jspc-maven-plugin</artifactId>
-					<version>2.3.4</version>
+					<version>4.0.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.rat</groupId>
