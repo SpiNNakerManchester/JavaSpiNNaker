@@ -31,12 +31,11 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
 import org.slf4j.Logger;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.tags.TagID;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;

@@ -22,12 +22,11 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 import java.io.IOException;
 import java.util.List;
 
-import javax.validation.Valid;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import jakarta.validation.Valid;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.ValidP;
 import uk.ac.manchester.spinnaker.machine.ValidX;

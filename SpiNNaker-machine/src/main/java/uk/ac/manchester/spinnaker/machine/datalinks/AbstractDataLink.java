@@ -19,10 +19,9 @@ package uk.ac.manchester.spinnaker.machine.datalinks;
 import java.net.InetAddress;
 import java.util.Objects;
 
-import javax.validation.Valid;
-
 import com.google.errorprone.annotations.Immutable;
 
+import jakarta.validation.Valid;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;

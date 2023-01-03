@@ -21,10 +21,10 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRI
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 /**
  * The encoded form of a command to the server. This is basically a Python

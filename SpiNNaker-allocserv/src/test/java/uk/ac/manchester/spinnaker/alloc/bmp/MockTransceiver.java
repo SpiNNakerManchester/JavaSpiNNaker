@@ -35,13 +35,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.CRC32;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;

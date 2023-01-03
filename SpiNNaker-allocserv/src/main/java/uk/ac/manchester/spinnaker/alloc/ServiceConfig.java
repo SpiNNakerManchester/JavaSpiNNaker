@@ -18,11 +18,11 @@ package uk.ac.manchester.spinnaker.alloc;
 
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
-import static java.lang.System.setProperty;
-import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
 import static jakarta.ws.rs.core.Response.status;
 import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static java.lang.System.setProperty;
+import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static org.apache.cxf.message.Message.PROTOCOL_HEADERS;
 import static org.apache.cxf.phase.Phase.RECEIVE;
 import static org.apache.cxf.transport.http.AbstractHTTPDestination.HTTP_REQUEST;
@@ -35,14 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.servlet.ServletRequest;
-import javax.validation.ValidationException;
-import jakarta.ws.rs.ApplicationPath;
-import jakarta.ws.rs.core.Application;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.ext.ExceptionMapper;
 
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.endpoint.Server;
@@ -77,6 +69,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.ServletRequest;
+import jakarta.validation.ValidationException;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;

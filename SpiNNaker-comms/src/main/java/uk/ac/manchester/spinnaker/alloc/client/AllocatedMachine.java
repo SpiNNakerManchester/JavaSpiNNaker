@@ -22,9 +22,6 @@ import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.readOnlyCopy;
 
 import java.util.List;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -34,6 +31,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.google.errorprone.annotations.Immutable;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient.Machine;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadDepth;

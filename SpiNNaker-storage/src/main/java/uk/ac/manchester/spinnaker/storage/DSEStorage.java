@@ -19,9 +19,8 @@ package uk.ac.manchester.spinnaker.storage;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Positive;
-
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;

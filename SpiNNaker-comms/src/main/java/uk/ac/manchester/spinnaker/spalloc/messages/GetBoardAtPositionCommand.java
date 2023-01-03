@@ -16,9 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 
 /**

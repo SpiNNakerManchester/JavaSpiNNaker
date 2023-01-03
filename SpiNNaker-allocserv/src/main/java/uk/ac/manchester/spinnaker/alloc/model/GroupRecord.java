@@ -24,12 +24,11 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Null;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Null;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 
 /**

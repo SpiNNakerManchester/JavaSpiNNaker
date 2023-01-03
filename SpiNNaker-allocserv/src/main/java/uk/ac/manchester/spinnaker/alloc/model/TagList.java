@@ -26,8 +26,8 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.validation.Payload;
-import javax.validation.constraints.Pattern;
+import jakarta.validation.Payload;
+import jakarta.validation.constraints.Pattern;
 
 /**
  * Validates that a string looks like a comma-separated tag list.

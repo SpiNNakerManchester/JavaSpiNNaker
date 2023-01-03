@@ -21,11 +21,11 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Objects;
 
-import javax.validation.Valid;
-
 import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.Immutable;
+
+import jakarta.validation.Valid;
 
 /**
  * Represents a directional link between SpiNNaker chips in the machine.

@@ -21,13 +21,12 @@ import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
 import java.util.Objects;
 
-import javax.validation.Valid;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.errorprone.annotations.Immutable;
 
+import jakarta.validation.Valid;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.Connection;

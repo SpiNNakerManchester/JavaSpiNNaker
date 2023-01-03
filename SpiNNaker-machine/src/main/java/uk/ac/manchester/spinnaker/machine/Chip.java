@@ -30,7 +30,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.TreeMap;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import uk.ac.manchester.spinnaker.machine.bean.ChipBean;
 import uk.ac.manchester.spinnaker.machine.tags.TagID;

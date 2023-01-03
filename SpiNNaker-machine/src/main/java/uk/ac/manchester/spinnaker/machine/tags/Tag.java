@@ -21,8 +21,7 @@ import static java.lang.Integer.compare;
 import java.net.InetAddress;
 import java.util.Objects;
 
-import javax.validation.constraints.NotNull;
-
+import jakarta.validation.constraints.NotNull;
 import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
 
 /** Common properties of SpiNNaker IP tags and reverse IP tags. */

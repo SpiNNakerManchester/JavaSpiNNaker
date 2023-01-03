@@ -26,11 +26,10 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import com.google.errorprone.annotations.MustBeClosed;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;

@@ -16,11 +16,11 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import javax.validation.constraints.Positive;
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.google.errorprone.annotations.Immutable;
+
+import jakarta.validation.constraints.Positive;
 
 /**
  * A description of the state of a job, in terms of its state, whether its

@@ -16,15 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
 
-import javax.validation.constraints.NotNull;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.constraints.NotNull;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /**

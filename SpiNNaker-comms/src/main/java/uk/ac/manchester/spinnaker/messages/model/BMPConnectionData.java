@@ -27,8 +27,7 @@ import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.List;
 
-import javax.validation.Valid;
-
+import jakarta.validation.Valid;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;

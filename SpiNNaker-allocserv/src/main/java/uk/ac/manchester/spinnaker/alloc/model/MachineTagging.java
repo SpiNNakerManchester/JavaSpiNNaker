@@ -23,10 +23,9 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.validation.constraints.NotBlank;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
+import jakarta.validation.constraints.NotBlank;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;

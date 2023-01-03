@@ -24,9 +24,8 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMa
 import java.nio.ByteBuffer;
 import java.util.Map;
 
-import javax.validation.Valid;
-import javax.validation.constraints.PositiveOrZero;
-
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.PositiveOrZero;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.SerializableMessage;

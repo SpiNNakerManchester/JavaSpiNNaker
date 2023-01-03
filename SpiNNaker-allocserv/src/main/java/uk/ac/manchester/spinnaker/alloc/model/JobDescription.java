@@ -25,9 +25,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import uk.ac.manchester.spinnaker.machine.ValidMachineHeight;
 import uk.ac.manchester.spinnaker.machine.ValidMachineWidth;
 

@@ -18,9 +18,9 @@ package uk.ac.manchester.spinnaker.alloc.model;
 
 import static java.util.Objects.requireNonNull;
 
-import javax.validation.constraints.AssertFalse;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * Describes basic information about a user that they'd use to change their
