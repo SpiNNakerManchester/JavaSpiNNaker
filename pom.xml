@@ -43,8 +43,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<slf4j.version>2.0.6</slf4j.version>
 		<log4j.version>2.19.0</log4j.version>
 
-		<spring.version>6.0.0</spring.version>
-		<spring.boot.version>3.0.0</spring.boot.version>
+		<spring.version>6.0.3</spring.version>
+		<spring.boot.version>3.0.1</spring.boot.version>
 		<!--
 		DKF: if you update spring.boot.version, also update the annotation
 		  processor binding in Eclipse for SpiNNaker-allocserv:
@@ -54,7 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		  Failure to do this leads to strange misbehaviour in tooltips when
 		  editing application.yml
 		-->
-		<spring.security.version>6.0.0</spring.security.version>
+		<spring.security.version>6.0.1</spring.security.version>
 
 		<cxf.version>4.0.0</cxf.version>
 		<jackson.version>2.14.1</jackson.version>
