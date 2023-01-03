@@ -32,7 +32,6 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 import static uk.ac.manchester.spinnaker.alloc.model.Utils.chip;
-import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 import static uk.ac.manchester.spinnaker.utils.OptionalUtils.apply;
 
@@ -49,7 +48,6 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -338,7 +336,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	@Override
-	@PostFilter(MAY_SEE_JOB_DETAILS)
 	public Optional<Job> getJob(Permit permit, int id) {
 		return executeRead(conn -> getJob(id, conn).map(j -> (Job) j));
 	}
@@ -351,7 +348,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	@Override
-	@PostFilter(MAY_SEE_JOB_DETAILS)
 	public Optional<JobDescription> getJobInfo(Permit permit, int id) {
 		return executeRead(conn -> {
 			try (var s = conn.query(GET_JOB);
