@@ -667,11 +667,6 @@ public abstract class UDPConnection<T> implements Connection {
 		if (socket == null) {
 			return;
 		}
-		try {
-			socket.disconnect();
-		} catch (Exception e) {
-			log.debug("failed to disconnect prior to close", e);
-		}
 		socket.close();
 	}
 

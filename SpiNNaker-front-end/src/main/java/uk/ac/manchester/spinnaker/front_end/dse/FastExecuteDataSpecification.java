@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.SocketTimeoutException;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayDeque;
@@ -72,7 +73,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
-import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
+import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
@@ -131,21 +132,28 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 * @param reportDir
 	 *            Where to write reports, or {@code null} if no reports are to
 	 *            be written.
+	 * @param db
+	 *            The DSE Database.
 	 * @throws IOException
 	 *             If IO goes wrong.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws URISyntaxException
+	 *             If the proxy URI is provided but not valid.
+	 * @throws StorageException
+	 *             If there is an error reading the database.
 	 * @throws IllegalStateException
 	 *             If something really strange occurs with talking to the BMP;
 	 *             this constructor should not be doing that!
 	 */
 	@MustBeClosed
 	public FastExecuteDataSpecification(Machine machine, List<Gather> gatherers,
-			File reportDir)
-			throws IOException, ProcessException, InterruptedException {
-		super(machine);
+			File reportDir, DSEDatabaseEngine db)
+			throws IOException, ProcessException, InterruptedException,
+			StorageException, URISyntaxException {
+		super(machine, db);
 		if (SPINNAKER_COMPARE_UPLOAD != null) {
 			log.warn(
 					"detailed comparison of uploaded data enabled; "
@@ -186,8 +194,6 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 * knows about, storing back in the database the information collected about
 	 * those executions. Data is transferred using the Fast Data In protocol.
 	 *
-	 * @param connection
-	 *            The handle to the database.
 	 * @throws StorageException
 	 *             If the database can't be talked to.
 	 * @throws IOException
@@ -202,10 +208,10 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             If an unexpected exception occurs in any of the parallel
 	 *             tasks.
 	 */
-	public void loadCores(ConnectionProvider<DSEStorage> connection)
+	public void loadCores()
 			throws StorageException, IOException, ProcessException,
 			DataSpecificationException, InterruptedException {
-		var storage = connection.getStorageInterface();
+		var storage = db.getStorageInterface();
 		var ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
 		try (var bar = new Progress(opsToRun, LOADING_MSG)) {
@@ -402,7 +408,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 			this.bar = bar;
 			this.execContext = new ExecutionContext(txrx);
 			connection = new ThrottledConnection(txrx, board,
-					gathererForChip.get(board.location).getIptag());
+					gathererForChip.get(board.location).getIptag(), job);
 		}
 
 		@Override
@@ -578,10 +584,12 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		 *             If anything goes wrong with I/O.
 		 * @throws ProcessException
 		 *             If SCAMP rejects the request.
+		 * @throws InterruptedException
+		 *             If communications are interrupted.
 		 */
 		private int writeRegion(CoreLocation core, MemoryRegionReal region,
 				MemoryLocation baseAddress, Gather gather)
-				throws IOException, ProcessException {
+				throws IOException, ProcessException, InterruptedException {
 			var data = region.getRegionData().duplicate();
 
 			data.flip();
@@ -650,9 +658,12 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		 *            responsible for Fast Data In transaction ID issuing.
 		 * @throws IOException
 		 *             If IO fails.
+		 * @throws InterruptedException
+		 *            If communications are interrupted.
 		 */
 		private void fastWrite(CoreLocation core, MemoryLocation baseAddress,
-				ByteBuffer data, Gather gather) throws IOException {
+				ByteBuffer data, Gather gather)
+						throws IOException, InterruptedException {
 			int timeoutCount = 0;
 			int numPackets = computeNumPackets(data);
 			var protocol = new GathererProtocol(core);
@@ -671,8 +682,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 				// Wait for confirmation and do required retransmits
 				innerLoop: while (true) {
 					try {
-						var packet = connection.receiveWithAddress();
-						var buf = packet.getByteBuffer();
+						var buf = connection.receive();
 						var received = buf.order(LITTLE_ENDIAN).asIntBuffer();
 						timeoutCount = 0; // Reset the timeout counter
 						int command = received.get();
@@ -731,7 +741,8 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 							}
 						} catch (IllegalArgumentException e) {
 							log.error("Unexpected command code " + command
-									+ " received from " + packet.getAddress());
+									+ " received from "
+									+ connection.getLocation());
 						}
 					} catch (SocketTimeoutException e) {
 						if (timeoutCount++ > TIMEOUT_RETRY_LIMIT) {

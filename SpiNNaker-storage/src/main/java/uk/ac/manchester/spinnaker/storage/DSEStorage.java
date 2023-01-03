@@ -32,7 +32,7 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  *
  * @author Donal Fellows
  */
-public interface DSEStorage extends DatabaseAPI {
+public interface DSEStorage extends ProxyAwareStorage {
 	/**
 	 * See how many DSE loading actions have to be done.
 	 *

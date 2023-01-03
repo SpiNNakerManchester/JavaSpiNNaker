@@ -32,17 +32,17 @@ import static uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.net.InetAddress;
 import java.net.SocketTimeoutException;
-import java.nio.IntBuffer;
+import java.nio.ByteBuffer;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.MustBeClosed;
 
+import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
-import uk.ac.manchester.spinnaker.connections.UDPPacket;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
@@ -77,9 +77,9 @@ class ThrottledConnection implements Closeable {
 
 	private final ChipLocation location;
 
-	private final InetAddress addr;
+	private final SCPConnection connection;
 
-	private SCPConnection connection;
+	private final AtomicBoolean closed = new AtomicBoolean();
 
 	private long lastSend = nanoTime();
 
@@ -93,6 +93,8 @@ class ThrottledConnection implements Closeable {
 	 *            The SpiNNaker board to talk to.
 	 * @param iptag
 	 *            The tag to reprogram to talk to this connection.
+	 * @param job
+	 *            A spalloc job to use to open the connection, or null if none.
 	 * @throws IOException
 	 *             If IO fails.
 	 * @throws ProcessException
@@ -101,16 +103,21 @@ class ThrottledConnection implements Closeable {
 	 *             If communications are interrupted.
 	 */
 	@MustBeClosed
+	@SuppressWarnings("MustBeClosed")
 	ThrottledConnection(TransceiverInterface transceiver, Ethernet board,
-			IPTag iptag)
+			IPTag iptag, SpallocClient.Job job)
 			throws IOException, ProcessException, InterruptedException {
 		location = board.location;
-		addr = getByName(board.ethernetAddress);
-		connection = new SCPConnection(location, addr, SCP_SCAMP_PORT);
+		if (job == null) {
+			connection = new SCPConnection(location,
+					getByName(board.ethernetAddress), SCP_SCAMP_PORT);
+		} else {
+			connection = job.getConnection(location);
+		}
 		log.info(
 				"created throttled connection to {} ({}) from {}:{}; "
 						+ "reprogramming tag #{} to point to this connection",
-				location, addr, connection.getLocalIPAddress(),
+				location, board.ethernetAddress, connection.getLocalIPAddress(),
 				connection.getLocalPort(), iptag.getTag());
 		transceiver.setIPTag(iptag, connection);
 	}
@@ -126,10 +133,9 @@ class ThrottledConnection implements Closeable {
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
 	 */
-	public IntBuffer receive()
+	public ByteBuffer receive()
 			throws SocketTimeoutException, IOException, InterruptedException {
-		return connection.receive(TIMEOUT_MS).slice().order(LITTLE_ENDIAN)
-				.asIntBuffer();
+		return connection.receive(TIMEOUT_MS).slice().order(LITTLE_ENDIAN);
 	}
 
 	/**
@@ -162,24 +168,24 @@ class ThrottledConnection implements Closeable {
 	@Override
 	@SuppressWarnings("FutureReturnValueIgnored")
 	public void close() {
-		var c = connection;
-		connection = null;
-		// Prevent reuse of existing socket IDs for other boards
-		CLOSER.schedule(() -> {
-			try {
-				Object name = null;
-				if (log.isInfoEnabled()) {
-					name = c.toString();
+		if (closed.compareAndSet(false, true)) {
+			// Prevent reuse of existing socket IDs for other boards
+			CLOSER.schedule(() -> {
+				try {
+					Object name = null;
+					if (log.isInfoEnabled()) {
+						name = connection.toString();
+					}
+					connection.close();
+					log.info("closed {}", name);
+				} catch (IOException e) {
+					log.warn("failed to close connection", e);
 				}
-				c.close();
-				log.info("closed {}", name);
-			} catch (IOException e) {
-				log.warn("failed to close connection", e);
-			}
-		}, 1, SECONDS);
+			}, 1, SECONDS);
+		}
 	}
 
-	public UDPPacket receiveWithAddress() throws IOException {
-		return connection.receiveWithAddress(TIMEOUT_MS);
+	public ChipLocation getLocation() {
+		return location;
 	}
 }

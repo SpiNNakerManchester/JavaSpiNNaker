@@ -112,6 +112,8 @@ abstract class DatabaseCache<Conn extends Connection> {
 
 		private final Conn resource;
 
+		private boolean stopped;
+
 		@SuppressWarnings("ThreadPriorityCheck")
 		CloserThread(Conn c) {
 			owner = currentThread();
@@ -130,6 +132,7 @@ abstract class DatabaseCache<Conn extends Connection> {
 			} catch (InterruptedException e) {
 				log.trace("interrupted when thread already dying", e);
 			} finally {
+				stopped = true;
 				closeDatabaseConnection(resource, owner);
 			}
 		}
@@ -165,7 +168,10 @@ abstract class DatabaseCache<Conn extends Connection> {
 		long before = currentTimeMillis();
 		for (var t : List.copyOf(closerThreads)) {
 			try {
-				t.join();
+				if (!t.stopped) {
+					t.interrupt();
+					t.join();
+				}
 			} catch (InterruptedException e) {
 				log.trace("interrupted when waiting for "
 						+ "database connections to close", e);

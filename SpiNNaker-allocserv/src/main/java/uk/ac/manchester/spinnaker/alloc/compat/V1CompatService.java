@@ -173,14 +173,17 @@ public class V1CompatService {
 		}
 
 		// Shut down the clients
-		executor.shutdown();
 		var remainingTasks = executor.shutdownNow();
 		if (!remainingTasks.isEmpty()) {
 			log.warn("there are {} compat tasks outstanding",
 					remainingTasks.size());
 		}
-		executor.awaitTermination(shutdownTimeout.toMillis(), MILLISECONDS);
-		log.info("compat service stopped");
+		if (executor.awaitTermination(shutdownTimeout.toMillis(),
+				MILLISECONDS)) {
+			log.info("compat service stopped");
+		} else {
+			log.warn("compat service executor ({}) still running!", executor);
+		}
 	}
 
 	/**
