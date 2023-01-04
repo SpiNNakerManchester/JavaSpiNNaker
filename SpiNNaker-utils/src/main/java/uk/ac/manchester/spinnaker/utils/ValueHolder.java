@@ -46,6 +46,15 @@ public class ValueHolder<T> {
 	}
 
 	/**
+	 * Get whether a (non-{@code null}) value is absent.
+	 *
+	 * @return Whether a value is absent and this holder is empty.
+	 */
+	public boolean isEmpty() {
+		return value == null;
+	}
+
+	/**
 	 * Get the value held.
 	 *
 	 * @return The value held.

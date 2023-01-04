@@ -1014,6 +1014,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 													 documentation for getters, and its suggested replacement
 													 is terrible. -->
 												-Xep:MissingSummary:OFF
+												<!-- Broken in 2.17.0 only -->
+												-Xep:StatementSwitchToExpressionSwitch:OFF
 											</arg>
 										</compilerArgs>
 										<annotationProcessorPaths>
@@ -1042,6 +1044,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 													 documentation for getters, and its suggested replacement
 													 is terrible. -->
 												-Xep:MissingSummary:OFF
+												<!-- Broken in 2.17.0 only -->
+												-Xep:StatementSwitchToExpressionSwitch:OFF
 											</arg>
 										</compilerArgs>
 										<annotationProcessorPaths>

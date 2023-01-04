@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
  * Triad coordinates.
@@ -162,27 +163,22 @@ public record TriadCoords(//
 
 		@Override
 		TriadCoords deserializeObject() throws IOException {
-			Integer x = null, y = null, z = null;
+			ValueHolder<Integer> x = new ValueHolder<>(),
+					y = new ValueHolder<>(), z = new ValueHolder<>();
 			String name;
 			while ((name = getNextFieldName()) != null) {
 				switch (name) {
-				case "x":
-					x = requireSetOnceInt(name, x);
-					break;
-				case "y":
-					y = requireSetOnceInt(name, y);
-					break;
-				case "z":
-					z = requireSetOnceInt(name, z);
-					break;
-				default:
-					unknownProperty(name);
+				case "x" -> requireSetOnceInt(name, x);
+				case "y" -> requireSetOnceInt(name, y);
+				case "z" -> requireSetOnceInt(name, z);
+				default -> unknownProperty(name);
 				}
 			}
-			if (x == null || y == null || z == null) {
-				missingProperty("x", x, "y", y, "z", z);
+			if (x.isEmpty() || y.isEmpty() || z.isEmpty()) {
+				missingProperty("x", x.getValue(), "y", y.getValue(), "z",
+						z.getValue());
 			}
-			return new TriadCoords(x, y, z);
+			return new TriadCoords(x.getValue(), y.getValue(), z.getValue());
 		}
 
 		@Override

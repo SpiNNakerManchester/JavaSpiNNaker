@@ -27,6 +27,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.errorprone.annotations.Immutable;
 
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
+
 /**
  * A simple description of a BMP to talk to. Supports equality and being used as
  * a hash key.
@@ -120,23 +122,20 @@ public record BMPCoords(@ValidCabinetNumber int cabinet,
 
 		@Override
 		BMPCoords deserializeObject() throws IOException {
-			Integer c = null, f = null;
+			ValueHolder<Integer> c = new ValueHolder<>(),
+					f = new ValueHolder<>();
 			String name;
 			while ((name = getNextFieldName()) != null) {
 				switch (name) {
-				case "cabinet", "c" -> {
-					c = requireSetOnceInt(name, c);
-				}
-				case "frame", "f" -> {
-					f = requireSetOnceInt(name, f);
-				}
+				case "cabinet", "c" -> requireSetOnceInt(name, c);
+				case "frame", "f" -> requireSetOnceInt(name, f);
 				default -> unknownProperty(name);
 				}
 			}
-			if (c == null || f == null) {
-				missingProperty("c", c, "f", f);
+			if (c.isEmpty() || f.isEmpty()) {
+				missingProperty("c", c.getValue(), "f", f.getValue());
 			}
-			return new BMPCoords(c, f);
+			return new BMPCoords(c.getValue(), f.getValue());
 		}
 
 		@Override

@@ -25,6 +25,8 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.google.errorprone.annotations.ForOverride;
 import com.google.errorprone.annotations.FormatMethod;
 
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
+
 /**
  * A helper class for JSON deserializers.
  *
@@ -167,6 +169,14 @@ abstract class DeserializerHelper<T> extends StdDeserializer<T> {
 			inputMismatch("Duplicate property '%s'", name);
 		}
 		return PARSER.get().nextIntValue(0);
+	}
+
+	void requireSetOnceInt(String name, ValueHolder<Integer> holder)
+			throws IOException {
+		if (!holder.isEmpty()) {
+			inputMismatch("Duplicate property '%s'", name);
+		}
+		holder.setValue(PARSER.get().nextIntValue(0));
 	}
 
 	void missingProperty(String n1, Object v1) throws IOException {

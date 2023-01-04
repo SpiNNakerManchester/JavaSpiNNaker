@@ -29,6 +29,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.errorprone.annotations.Immutable;
 
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
+
 /**
  * Physical board coordinates. The {@code cabinet} and {@code frame} (with
  * multiple frames per cabinet) describe where a board is located within the
@@ -137,26 +139,22 @@ public record PhysicalCoords(//
 
 		@Override
 		PhysicalCoords deserializeObject() throws IOException {
-			Integer c = null, f = null, b = null;
+			ValueHolder<Integer> c = new ValueHolder<>(),
+					f = new ValueHolder<>(), b = new ValueHolder<>();
 			String name;
 			while ((name = getNextFieldName()) != null) {
 				switch (name) {
-				case "cabinet", "c" -> {
-					c = requireSetOnceInt(name, c);
-				}
-				case "frame", "f" -> {
-					f = requireSetOnceInt(name, f);
-				}
-				case "board", "b" -> {
-					b = requireSetOnceInt(name, b);
-				}
+				case "cabinet", "c" -> requireSetOnceInt(name, c);
+				case "frame", "f" -> requireSetOnceInt(name, f);
+				case "board", "b" -> requireSetOnceInt(name, b);
 				default -> unknownProperty(name);
 				}
 			}
-			if (c == null || f == null || b == null) {
-				missingProperty("c", c, "f", f, "b", b);
+			if (c.isEmpty() || f.isEmpty() || b.isEmpty()) {
+				missingProperty("c", c.getValue(), "f", f.getValue(), "b",
+						b.getValue());
 			}
-			return new PhysicalCoords(c, f, b);
+			return new PhysicalCoords(c.getValue(), f.getValue(), b.getValue());
 		}
 
 		@Override
