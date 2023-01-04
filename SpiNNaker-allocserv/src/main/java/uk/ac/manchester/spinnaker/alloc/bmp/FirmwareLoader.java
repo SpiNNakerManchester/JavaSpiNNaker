@@ -416,15 +416,9 @@ public class FirmwareLoader {
 					DATA_SECTOR_CHUNK_SIZE).order(LITTLE_ENDIAN);
 			byte type = chunk.get();
 			switch (DataSectorTypes.get(type)) {
-			case REGISTER:
-				logRegisterSets(chunk);
-				break;
-			case BITFILE:
-				logFPGABootBitfile(chunk, i);
-				break;
-			default:
-				// Ignore the chunk
-				break;
+			case REGISTER -> logRegisterSets(chunk);
+			case BITFILE -> logFPGABootBitfile(chunk, i);
+			default -> log.trace("ignoring chunk with type code {}", type);
 			}
 		}
 	}

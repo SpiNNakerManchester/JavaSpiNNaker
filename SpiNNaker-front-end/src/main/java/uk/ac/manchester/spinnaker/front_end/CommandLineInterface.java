@@ -108,6 +108,7 @@ public final class CommandLineInterface {
 	 * @param args
 	 *            The command line arguments.
 	 */
+	// TODO rewrite to use picocli?
 	public static void main(String... args) {
 		if (args.length < 1) {
 			err.printf(
@@ -183,7 +184,7 @@ public final class CommandLineInterface {
 
 			case CLICommands.LISTEN:
 				LocateConnectedMachineIPAddress.main(args);
-				return;
+				exit(0);
 
 			case CLICommands.VERSION:
 				System.out.println(VERSION);

@@ -288,17 +288,16 @@ public enum SystemVariableDefinition {
 	 * @return The default value, or a copy of it if the type of the value is an
 	 *         array.
 	 */
-	@SuppressWarnings("checkstyle:JavadocMethod")
 	// AssertionError not in signature because it should be unreachable
 	public Object getDefault() {
-		switch (type) {
-		case BYTE_ARRAY:
+		return switch (type) {
+		// CHECKSTYLE:OFF
+		case BYTE_ARRAY ->
 			throw new AssertionError("unreachable location reached");
-		case ADDRESS:
-			return defAddr;
-		default:
-			return def;
-		}
+		// CHECKSTYLE:ON
+		case ADDRESS -> defAddr;
+		default -> def;
+		};
 	}
 
 	/** @return Whether this is a variable with a usefully-defined default. */
@@ -322,28 +321,15 @@ public enum SystemVariableDefinition {
 	 */
 	public void addToBuffer(Object value, ByteBuffer buffer) {
 		switch (type) {
-		case BYTE:
-			buffer.put(((Number) value).byteValue());
-			return;
-		case SHORT:
-			buffer.putShort(((Number) value).shortValue());
-			return;
-		case INT:
-			buffer.putInt(((Number) value).intValue());
-			return;
-		case LONG:
-			buffer.putLong(((Number) value).longValue());
-			return;
-		case BYTE_ARRAY:
-			buffer.put((byte[]) value);
-			return;
-		case ADDRESS:
-			buffer.putInt(((MemoryLocation) value).address());
-			return;
-		default:
-			// CHECKSTYLE:OFF
-			throw new Error("unreachable?");
-			// CHECKSTYLE:ON
+		case BYTE -> buffer.put(((Number) value).byteValue());
+		case SHORT -> buffer.putShort(((Number) value).shortValue());
+		case INT -> buffer.putInt(((Number) value).intValue());
+		case LONG -> buffer.putLong(((Number) value).longValue());
+		case BYTE_ARRAY -> buffer.put((byte[]) value);
+		case ADDRESS -> buffer.putInt(((MemoryLocation) value).address());
+		// CHECKSTYLE:OFF
+		default -> throw new Error("unreachable?");
+		// CHECKSTYLE:ON
 		}
 	}
 

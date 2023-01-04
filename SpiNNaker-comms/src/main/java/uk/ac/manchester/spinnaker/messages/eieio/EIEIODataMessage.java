@@ -215,28 +215,15 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 					throw new NoSuchElementException("read all elements");
 				}
 				elementsRead++;
-				int key;
-				Integer payload;
-				switch (header.eieioType) {
-				case KEY_16_BIT:
-					key = d.getShort();
-					payload = null;
-					break;
-				case KEY_PAYLOAD_16_BIT:
-					key = d.getShort();
-					payload = (int) d.getShort();
-					break;
-				case KEY_32_BIT:
-					key = d.getInt();
-					payload = null;
-					break;
-				case KEY_PAYLOAD_32_BIT:
-					key = d.getInt();
-					payload = d.getInt();
-					break;
-				default:
-					throw new IllegalStateException();
-				}
+				int key = switch (header.eieioType) {
+				case KEY_16_BIT, KEY_PAYLOAD_16_BIT -> d.getShort();
+				case KEY_32_BIT, KEY_PAYLOAD_32_BIT -> d.getInt();
+				};
+				Integer payload = switch (header.eieioType) {
+				case KEY_PAYLOAD_16_BIT -> (int) d.getShort();
+				case KEY_PAYLOAD_32_BIT -> d.getInt();
+				default -> null;
+				};
 				if (header.prefix != null) {
 					key |= header.prefix << header.prefixType.shift;
 				}
@@ -247,10 +234,9 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 						payload = header.payloadBase;
 					}
 				}
-				if (payload == null) {
-					return new KeyDataElement(key);
-				}
-				return new KeyPayloadDataElement(key, payload, header.isTime);
+				return (payload == null) ? new KeyDataElement(key)
+						: new KeyPayloadDataElement(key, payload,
+								header.isTime);
 			}
 		};
 	}
@@ -328,12 +314,9 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 			count = buffer.get();
 			byte flags = buffer.get();
 			boolean havePrefix = bit(flags, PREFIX_BIT) != 0;
-			if (havePrefix) {
-				prefixType =
-						EIEIOPrefix.getByValue(bit(flags, PREFIX_TYPE_BIT));
-			} else {
-				prefixType = null;
-			}
+			prefixType = havePrefix
+					? EIEIOPrefix.getByValue(bit(flags, PREFIX_TYPE_BIT))
+					: null;
 			boolean havePayload = bit(flags, PAYLOAD_BIT) != 0;
 			isTime = bit(flags, TIME_BIT) != 0;
 			eieioType = EIEIOType.getByValue(bits(flags, TYPE_BITS));
@@ -344,18 +327,12 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 				prefix = null;
 			}
 			if (havePayload) {
-				switch (eieioType) {
-				case KEY_PAYLOAD_16_BIT:
-				case KEY_16_BIT:
-					payloadBase = toUnsignedInt(buffer.getShort());
-					break;
-				case KEY_PAYLOAD_32_BIT:
-				case KEY_32_BIT:
-					payloadBase = buffer.getInt();
-					break;
-				default:
-					payloadBase = null;
-				}
+				payloadBase = switch (eieioType) {
+				case KEY_PAYLOAD_16_BIT, KEY_16_BIT ->
+					toUnsignedInt(buffer.getShort());
+				case KEY_PAYLOAD_32_BIT, KEY_32_BIT -> buffer.getInt();
+				default -> null;
+				};
 			} else {
 				payloadBase = null;
 			}
@@ -443,16 +420,11 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 				return;
 			}
 			switch (eieioType) {
-			case KEY_PAYLOAD_16_BIT:
-			case KEY_16_BIT:
+			case KEY_PAYLOAD_16_BIT, KEY_16_BIT ->
 				buffer.putShort((short) payloadBase.intValue());
-				return;
-			case KEY_PAYLOAD_32_BIT:
-			case KEY_32_BIT:
+			case KEY_PAYLOAD_32_BIT, KEY_32_BIT ->
 				buffer.putInt(payloadBase.intValue());
-				return;
-			default:
-				throw new IllegalStateException("unexpected EIEIO type");
+			default -> throw new IllegalStateException("unexpected EIEIO type");
 			}
 		}
 	}

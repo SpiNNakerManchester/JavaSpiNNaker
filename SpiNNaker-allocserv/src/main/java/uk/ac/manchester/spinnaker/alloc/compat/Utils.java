@@ -225,18 +225,14 @@ abstract class Utils {
 	 * @return The converted state.
 	 */
 	static State state(Job job) {
-		switch (job.getState()) {
-		case QUEUED:
-			return State.QUEUED;
-		case POWER:
-			return State.POWER;
-		case READY:
-			return State.READY;
-		case DESTROYED:
-			return State.DESTROYED;
-		default:
-			return State.UNKNOWN;
-		}
+		// So trivial...
+		return switch (job.getState()) {
+		case QUEUED -> State.QUEUED;
+		case POWER -> State.POWER;
+		case READY -> State.READY;
+		case DESTROYED -> State.DESTROYED;
+		default -> State.UNKNOWN;
+		};
 	}
 
 	/**

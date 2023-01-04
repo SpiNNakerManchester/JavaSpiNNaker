@@ -54,7 +54,7 @@ public abstract class DebuggingUtils {
 				for (var delta : diff(list(original), list(downloaded))
 						.getDeltas()) {
 					switch (delta.getType()) {
-					case CHANGE:
+					case CHANGE -> {
 						var changeFrom = delta.getOriginal();
 						var changeTo = delta.getRevised();
 						log.warn(
@@ -66,22 +66,19 @@ public abstract class DebuggingUtils {
 								changeTo.getPosition());
 						log.info("change {} -> {}", describeChunk(changeFrom),
 								describeChunk(changeTo));
-						break;
-					case DELETE:
+					}
+					case DELETE -> {
 						var delete = delta.getOriginal();
 						log.warn("gather deleted {} bytes at {}",
 								delete.getLines().size(), delete.getPosition());
 						log.info("delete {}", describeChunk(delete));
-						break;
-					case INSERT:
+					}
+					default /* INSERT */ -> {
 						var insert = delta.getRevised();
 						log.warn("gather inserted {} bytes at {}",
 								insert.getLines().size(), insert.getPosition());
 						log.info("insert {}", describeChunk(insert));
-						break;
-					default:
-						// Should be unreachable
-						break;
+					}
 					}
 				}
 				break;

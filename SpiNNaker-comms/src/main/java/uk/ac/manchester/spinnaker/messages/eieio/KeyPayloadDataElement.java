@@ -28,9 +28,13 @@ public class KeyPayloadDataElement implements AbstractDataElement {
 
 	/**
 	 * Create a data element.
-	 * @param key The key in the element.
-	 * @param payload The payload in the element.
-	 * @param isTimestamp Whether this is a timestamp.
+	 *
+	 * @param key
+	 *            The key in the element.
+	 * @param payload
+	 *            The payload in the element.
+	 * @param isTimestamp
+	 *            Whether this is a timestamp.
 	 */
 	public KeyPayloadDataElement(int key, int payload, boolean isTimestamp) {
 		this.key = key;
@@ -51,16 +55,15 @@ public class KeyPayloadDataElement implements AbstractDataElement {
 							+ " payload");
 		}
 		switch (eieioType) {
-		case KEY_PAYLOAD_16_BIT:
+		case KEY_PAYLOAD_16_BIT -> {
 			buffer.putShort((short) key);
 			buffer.putShort((short) payload);
-			return;
-		case KEY_PAYLOAD_32_BIT:
+		}
+		case KEY_PAYLOAD_32_BIT -> {
 			buffer.putInt(key);
 			buffer.putInt(payload);
-			return;
-		default:
-			throw new IllegalArgumentException("Unknown type");
+		}
+		default -> throw new IllegalArgumentException("Unknown type");
 		}
 	}
 }

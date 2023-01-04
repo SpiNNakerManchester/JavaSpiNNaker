@@ -165,10 +165,8 @@ abstract class SQLiteConnectionManager<APIType extends DatabaseAPI> {
 				return;
 			} catch (SQLiteException e) {
 				switch (e.getResultCode()) {
-				case SQLITE_BUSY:
-				case SQLITE_BUSY_RECOVERY:
-				case SQLITE_BUSY_SNAPSHOT:
-				case SQLITE_BUSY_TIMEOUT:
+				case SQLITE_BUSY, SQLITE_BUSY_RECOVERY, SQLITE_BUSY_SNAPSHOT,
+						SQLITE_BUSY_TIMEOUT:
 					if (log.isDebugEnabled()) {
 						log.debug("database busy; trying to relock");
 					}

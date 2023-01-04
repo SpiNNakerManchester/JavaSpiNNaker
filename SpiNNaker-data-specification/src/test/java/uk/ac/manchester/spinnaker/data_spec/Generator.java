@@ -120,13 +120,59 @@ public final class Generator {
 	/** Types of values to write. */
 	public enum DataType {
 		/** 8-bit integer. */
-		INT8(1, LEN2),
+		INT8(1, LEN2) {
+			@Override
+			void putPacked(ByteBuffer buffer, Number n) {
+				buffer.put(n.byteValue());
+			}
+
+			@Override
+			void putPadded(ByteBuffer buffer, Number n) {
+				buffer.put(n.byteValue());
+				// Add padding
+				buffer.put((byte) 0);
+				buffer.put((byte) 0);
+				buffer.put((byte) 0);
+			}
+		},
 		/** 16-bit integer. */
-		INT16(2, LEN2),
+		INT16(2, LEN2) {
+			@Override
+			void putPacked(ByteBuffer buffer, Number n) {
+				buffer.putShort(n.shortValue());
+			}
+
+			@Override
+			void putPadded(ByteBuffer buffer, Number n) {
+				buffer.putShort(n.shortValue());
+				// Add padding
+				buffer.putShort((short) 0);
+			}
+		},
 		/** 32-bit integer. */
-		INT32(4, LEN2),
+		INT32(4, LEN2) {
+			@Override
+			void putPacked(ByteBuffer buffer, Number n) {
+				buffer.putInt(n.intValue());
+			}
+
+			@Override
+			void putPadded(ByteBuffer buffer, Number n) {
+				buffer.putInt(n.intValue());
+			}
+		},
 		/** 64-bit integer. */
-		INT64(8, LEN3);
+		INT64(8, LEN3) {
+			@Override
+			void putPacked(ByteBuffer buffer, Number n) {
+				buffer.putLong(n.longValue());
+			}
+
+			@Override
+			void putPadded(ByteBuffer buffer, Number n) {
+				buffer.putLong(n.longValue());
+			}
+		};
 
 		private final int size;
 
@@ -137,49 +183,9 @@ public final class Generator {
 			this.writeLength = writeLength;
 		}
 
-		void putPacked(ByteBuffer buffer, Number n) {
-			switch (this) {
-			case INT8:
-				buffer.put(n.byteValue());
-				break;
-			case INT16:
-				buffer.putShort(n.shortValue());
-				break;
-			case INT32:
-				buffer.putInt(n.intValue());
-				break;
-			case INT64:
-				buffer.putLong(n.longValue());
-				break;
-			default:
-				throw new UnsupportedOperationException();
-			}
-		}
+		abstract void putPacked(ByteBuffer buffer, Number n);
 
-		void putPadded(ByteBuffer buffer, Number n) {
-			switch (this) {
-			case INT8:
-				buffer.put(n.byteValue());
-				// Add padding
-				buffer.put((byte) 0);
-				buffer.put((byte) 0);
-				buffer.put((byte) 0);
-				break;
-			case INT16:
-				buffer.putShort(n.shortValue());
-				// Add padding
-				buffer.putShort((short) 0);
-				break;
-			case INT32:
-				buffer.putInt(n.intValue());
-				break;
-			case INT64:
-				buffer.putLong(n.longValue());
-				break;
-			default:
-				throw new UnsupportedOperationException();
-			}
-		}
+		abstract void putPadded(ByteBuffer buffer, Number n);
 	}
 
 	/**

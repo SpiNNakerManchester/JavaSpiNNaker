@@ -141,20 +141,16 @@ public record PhysicalCoords(//
 			String name;
 			while ((name = getNextFieldName()) != null) {
 				switch (name) {
-				case "cabinet":
-				case "c":
+				case "cabinet", "c" -> {
 					c = requireSetOnceInt(name, c);
-					break;
-				case "frame":
-				case "f":
+				}
+				case "frame", "f" -> {
 					f = requireSetOnceInt(name, f);
-					break;
-				case "board":
-				case "b":
+				}
+				case "board", "b" -> {
 					b = requireSetOnceInt(name, b);
-					break;
-				default:
-					unknownProperty(name);
+				}
+				default -> unknownProperty(name);
 				}
 			}
 			if (c == null || f == null || b == null) {

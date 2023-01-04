@@ -412,20 +412,11 @@ class Functions implements FunctionAPI {
 		var b = allocate(numRepeats * dataLen).order(LITTLE_ENDIAN);
 		for (int i = 0; i < numRepeats; i++) {
 			switch (dataLen) {
-			case 1:
-				b.put((byte) value);
-				break;
-			case 2:
-				b.putShort((short) value);
-				break;
-			case INT_SIZE:
-				b.putInt((int) value);
-				break;
-			case LONG_SIZE:
-				b.putLong(value);
-				break;
-			default:
-				throw new UnknownTypeLengthException(dataLen, command);
+			case 1 -> b.put((byte) value);
+			case 2 -> b.putShort((short) value);
+			case INT_SIZE -> b.putInt((int) value);
+			case LONG_SIZE -> b.putLong(value);
+			default -> throw new UnknownTypeLengthException(dataLen, command);
 			}
 		}
 		writeToMemory(b.array(), command);

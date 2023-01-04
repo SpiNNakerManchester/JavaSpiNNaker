@@ -112,19 +112,12 @@ public interface AbstractIO extends AutoCloseable {
 	default void seek(int numBytes, Seek whence)
 			throws IOException, ProcessException {
 		switch (whence) {
-		case SET:
-			seek(numBytes);
-			break;
-		case CUR:
-			seek(numBytes + tell());
-			break;
-		case END:
-			seek(numBytes + size());
-			break;
-		default:
-			// CHECKSTYLE:OFF
-			throw new IllegalArgumentException();
-			// CHECKSTYLE:ON
+		case SET -> seek(numBytes);
+		case CUR -> seek(numBytes + tell());
+		case END -> seek(numBytes + size());
+		// CHECKSTYLE:OFF
+		default -> throw new IllegalArgumentException();
+		// CHECKSTYLE:ON
 		}
 	}
 

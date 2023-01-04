@@ -289,19 +289,16 @@ final class ClientSession implements Session {
 			message.order(LITTLE_ENDIAN);
 			int code = message.getInt();
 			switch (ProxyProtocol.values()[code]) {
-			case OPEN:
-			case CLOSE:
-			case OPEN_U:
+			case OPEN, CLOSE, OPEN_U ->
+				// Response to call
 				requireNonNull(replyHandlers.remove(message.getInt()),
 						"uncorrelated response").complete(message);
-				break;
-			case MSG:
+			case MSG ->
+				// Async message from board
 				requireNonNull(channels.get(message.getInt()),
-						"unrecognised channel").receive(message);
-				break;
-			// case MSG_TO: // Never sent
-			default:
-				log.error("unexpected message code: {}", code);
+					"unrecognised channel").receive(message);
+			// case MSG_TO -> // Never sent by service, only by us
+			default -> log.error("unexpected message code: {}", code);
 			}
 		}
 

@@ -38,14 +38,9 @@ public class KeyDataElement implements AbstractDataElement {
 							+ " payload");
 		}
 		switch (eieioType) {
-		case KEY_16_BIT:
-			buffer.putShort((short) key);
-			return;
-		case KEY_32_BIT:
-			buffer.putInt(key);
-			return;
-		default:
-			throw new IllegalArgumentException("Unknown type");
+		case KEY_16_BIT -> buffer.putShort((short) key);
+		case KEY_32_BIT -> buffer.putInt(key);
+		default -> throw new IllegalArgumentException("Unknown type");
 		}
 	}
 }

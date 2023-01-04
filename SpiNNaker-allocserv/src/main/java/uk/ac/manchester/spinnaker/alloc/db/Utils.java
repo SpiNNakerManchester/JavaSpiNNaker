@@ -152,91 +152,48 @@ public abstract class Utils {
 					"$1");
 			replaced = true;
 		}
-		switch (exn.getResultCode()) {
-		case SQLITE_CONSTRAINT:
-		case SQLITE_CONSTRAINT_CHECK:
-		case SQLITE_CONSTRAINT_COMMITHOOK:
-		case SQLITE_CONSTRAINT_FOREIGNKEY:
-		case SQLITE_CONSTRAINT_FUNCTION:
-		case SQLITE_CONSTRAINT_PRIMARYKEY:
-		case SQLITE_CONSTRAINT_UNIQUE:
-		case SQLITE_CONSTRAINT_NOTNULL:
-		case SQLITE_CONSTRAINT_TRIGGER:
-		case SQLITE_CONSTRAINT_ROWID:
-		case SQLITE_CONSTRAINT_VTAB:
-		case SQLITE_MISMATCH:
-			return restack(new DataIntegrityViolationException(msg, exn));
+		return switch (exn.getResultCode()) {
+		case SQLITE_CONSTRAINT, SQLITE_CONSTRAINT_CHECK,
+				SQLITE_CONSTRAINT_COMMITHOOK, SQLITE_CONSTRAINT_FOREIGNKEY,
+				SQLITE_CONSTRAINT_FUNCTION, SQLITE_CONSTRAINT_PRIMARYKEY,
+				SQLITE_CONSTRAINT_UNIQUE, SQLITE_CONSTRAINT_NOTNULL,
+				SQLITE_CONSTRAINT_TRIGGER, SQLITE_CONSTRAINT_ROWID,
+				SQLITE_CONSTRAINT_VTAB, SQLITE_MISMATCH ->
+			restack(new DataIntegrityViolationException(msg, exn));
 
-		case SQLITE_BUSY:
-		case SQLITE_BUSY_RECOVERY:
-		case SQLITE_BUSY_SNAPSHOT:
-		case SQLITE_LOCKED:
-		case SQLITE_LOCKED_SHAREDCACHE:
-			return restack(new PessimisticLockingFailureException(msg, exn));
+		case SQLITE_BUSY, SQLITE_BUSY_RECOVERY, SQLITE_BUSY_SNAPSHOT,
+				SQLITE_BUSY_TIMEOUT, SQLITE_LOCKED, SQLITE_LOCKED_SHAREDCACHE ->
+			restack(new PessimisticLockingFailureException(msg, exn));
 
-		case SQLITE_ABORT:
-		case SQLITE_ABORT_ROLLBACK:
-		case SQLITE_FULL:
-		case SQLITE_EMPTY:
-			return restack(new RecoverableDataAccessException(msg, exn));
+		case SQLITE_ABORT, SQLITE_ABORT_ROLLBACK, SQLITE_FULL, SQLITE_EMPTY ->
+			restack(new RecoverableDataAccessException(msg, exn));
 
-		case SQLITE_SCHEMA:
-		case SQLITE_TOOBIG:
-		case SQLITE_RANGE:
-			return restack(
-					new InvalidDataAccessResourceUsageException(msg, exn));
+		case SQLITE_SCHEMA, SQLITE_TOOBIG, SQLITE_RANGE ->
+			restack(new InvalidDataAccessResourceUsageException(msg, exn));
 
-		case SQLITE_IOERR:
-		case SQLITE_IOERR_SHORT_READ:
-		case SQLITE_IOERR_READ:
-		case SQLITE_IOERR_WRITE:
-		case SQLITE_IOERR_FSYNC:
-		case SQLITE_IOERR_DIR_FSYNC:
-		case SQLITE_IOERR_TRUNCATE:
-		case SQLITE_IOERR_FSTAT:
-		case SQLITE_IOERR_UNLOCK:
-		case SQLITE_IOERR_RDLOCK:
-		case SQLITE_IOERR_DELETE:
-		case SQLITE_IOERR_NOMEM:
-		case SQLITE_IOERR_ACCESS:
-		case SQLITE_IOERR_CHECKRESERVEDLOCK:
-		case SQLITE_IOERR_LOCK:
-		case SQLITE_IOERR_CLOSE:
-		case SQLITE_IOERR_SHMOPEN:
-		case SQLITE_IOERR_SHMSIZE:
-		case SQLITE_IOERR_SHMMAP:
-		case SQLITE_IOERR_SEEK:
-		case SQLITE_IOERR_DELETE_NOENT:
-		case SQLITE_IOERR_MMAP:
-		case SQLITE_IOERR_GETTEMPPATH:
-		case SQLITE_IOERR_CONVPATH:
-		case SQLITE_PERM:
-		case SQLITE_READONLY:
-		case SQLITE_READONLY_RECOVERY:
-		case SQLITE_READONLY_CANTLOCK:
-		case SQLITE_READONLY_ROLLBACK:
-		case SQLITE_READONLY_DBMOVED:
-		case SQLITE_AUTH:
-		case SQLITE_MISUSE:
-		case SQLITE_NOLFS:
-		case SQLITE_CORRUPT:
-		case SQLITE_CORRUPT_VTAB:
-		case SQLITE_CANTOPEN:
-		case SQLITE_CANTOPEN_ISDIR:
-		case SQLITE_CANTOPEN_FULLPATH:
-		case SQLITE_CANTOPEN_CONVPATH:
-		case SQLITE_NOTADB:
-		case SQLITE_FORMAT:
-			return restack(new DataAccessResourceFailureException(msg, exn));
+		case SQLITE_IOERR, SQLITE_IOERR_SHORT_READ, SQLITE_IOERR_READ,
+				SQLITE_IOERR_WRITE, SQLITE_IOERR_FSYNC, SQLITE_IOERR_DIR_FSYNC,
+				SQLITE_IOERR_TRUNCATE, SQLITE_IOERR_FSTAT, SQLITE_IOERR_UNLOCK,
+				SQLITE_IOERR_RDLOCK, SQLITE_IOERR_DELETE, SQLITE_IOERR_NOMEM,
+				SQLITE_IOERR_ACCESS, SQLITE_IOERR_CHECKRESERVEDLOCK,
+				SQLITE_IOERR_LOCK, SQLITE_IOERR_CLOSE, SQLITE_IOERR_SHMOPEN,
+				SQLITE_IOERR_SHMSIZE, SQLITE_IOERR_SHMMAP, SQLITE_IOERR_SEEK,
+				SQLITE_IOERR_DELETE_NOENT, SQLITE_IOERR_MMAP,
+				SQLITE_IOERR_GETTEMPPATH, SQLITE_IOERR_CONVPATH, SQLITE_PERM,
+				SQLITE_READONLY, SQLITE_READONLY_RECOVERY,
+				SQLITE_READONLY_CANTLOCK, SQLITE_READONLY_ROLLBACK,
+				SQLITE_READONLY_DBMOVED, SQLITE_AUTH, SQLITE_MISUSE,
+				SQLITE_NOLFS, SQLITE_CORRUPT, SQLITE_CORRUPT_VTAB,
+				SQLITE_CANTOPEN, SQLITE_CANTOPEN_ISDIR,
+				SQLITE_CANTOPEN_FULLPATH, SQLITE_CANTOPEN_CONVPATH,
+				SQLITE_NOTADB, SQLITE_FORMAT ->
+			restack(new DataAccessResourceFailureException(msg, exn));
 
-		default:
-			if (replaced) {
-				return restack(new BadSqlGrammarException(msg,
+		default -> restack(replaced
+				? new BadSqlGrammarException(msg, trimSQLComments(sql), exn)
+				: new UncategorizedSQLException("general SQL exception",
 						trimSQLComments(sql), exn));
-			}
-			return restack(new UncategorizedSQLException(
-					"general SQL exception", trimSQLComments(sql), exn));
-		}
+		};
 	}
 
 	// 2 = restack() and mapException() themselves

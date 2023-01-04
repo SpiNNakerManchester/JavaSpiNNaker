@@ -73,15 +73,12 @@ public abstract sealed class NotificationMessage implements SerializableMessage
 	 *             If the message is not understood.
 	 */
 	public static NotificationMessage build(ByteBuffer buffer) {
-		switch (NotificationMessageCode.get(buffer.getShort(0) & MAX_COMMAND)) {
-		case DATABASE_CONFIRMATION:
-			return new DatabaseConfirmation(buffer);
-		case START_RESUME_NOTIFICATION:
-			return new StartResume(buffer);
-		case STOP_PAUSE_NOTIFICATION:
-			return new PauseStop(buffer);
-		default:
-			throw new UnsupportedOperationException();
-		}
+		return switch (NotificationMessageCode
+				.get(buffer.getShort(0) & MAX_COMMAND)) {
+		case DATABASE_CONFIRMATION -> new DatabaseConfirmation(buffer);
+		case START_RESUME_NOTIFICATION -> new StartResume(buffer);
+		case STOP_PAUSE_NOTIFICATION -> new PauseStop(buffer);
+		default -> throw new UnsupportedOperationException();
+		};
 	}
 }

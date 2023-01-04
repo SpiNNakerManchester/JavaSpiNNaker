@@ -23,11 +23,26 @@ import java.nio.ByteBuffer;
  */
 public enum FillDataType {
 	/** Fill by words (4 bytes). */
-	WORD(4),
+	WORD(4) {
+		@Override
+		public void writeTo(int value, ByteBuffer buffer) {
+			buffer.putInt(value);
+		}
+	},
 	/** Fill by half words (2 bytes). */
-	HALF_WORD(2),
+	HALF_WORD(2) {
+		@Override
+		public void writeTo(int value, ByteBuffer buffer) {
+			buffer.putShort((short) value);
+		}
+	},
 	/** Fill by single bytes. */
-	BYTE(1);
+	BYTE(1) {
+		@Override
+		public void writeTo(int value, ByteBuffer buffer) {
+			buffer.put((byte) value);
+		}
+	};
 
 	/** The encoding of the fill unit size. */
 	public final int size;
@@ -44,22 +59,5 @@ public enum FillDataType {
 	 * @param buffer
 	 *            The buffer to write to.
 	 */
-	public void writeTo(int value, ByteBuffer buffer) {
-		switch (this) {
-		case WORD:
-			buffer.putInt(value);
-			break;
-		case HALF_WORD:
-			buffer.putShort((short) value);
-			break;
-		case BYTE:
-			buffer.put((byte) value);
-			break;
-		default:
-			// unreachable
-			// CHECKSTYLE:OFF
-			throw new IllegalStateException();
-			// CHECKSTYLE:ON
-		}
-	}
+	public abstract void writeTo(int value, ByteBuffer buffer);
 }

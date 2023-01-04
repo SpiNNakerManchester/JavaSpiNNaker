@@ -187,19 +187,12 @@ public class ChipInfo implements HasChipLocation {
 	}
 
 	private int read(SystemVariableDefinition var) {
-		switch (var.type) {
-		case BYTE:
-			return systemData.get(systemData.position() + var.offset);
-		case INT:
-			return systemData.getInt(systemData.position() + var.offset);
-		case SHORT:
-			return systemData.getShort(systemData.position() + var.offset);
-		case BYTE_ARRAY:
-		case LONG:
-		case ADDRESS:
-		default:
-			throw new IllegalArgumentException();
-		}
+		return switch (var.type) {
+		case BYTE -> systemData.get(systemData.position() + var.offset);
+		case INT -> systemData.getInt(systemData.position() + var.offset);
+		case SHORT -> systemData.getShort(systemData.position() + var.offset);
+		default -> throw new IllegalArgumentException();
+		};
 	}
 
 	private long readLong(SystemVariableDefinition var) {

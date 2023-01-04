@@ -980,17 +980,10 @@ public class BMPController extends DatabaseAwareBean {
 				throws InterruptedException {
 			return bmpAction(() -> {
 				switch (op) {
-				case WRITE:
-					writeBlacklist(controller);
-					break;
-				case READ:
-					readBlacklist(controller);
-					break;
-				case GET_SERIAL:
-					readSerial(controller);
-					break;
-				default:
-					throw new IllegalArgumentException();
+				case WRITE -> writeBlacklist(controller);
+				case READ -> readBlacklist(controller);
+				case GET_SERIAL -> readSerial(controller);
+				default -> throw new IllegalArgumentException();
 				}
 			}, e -> {
 				cleanupTasks.add(curry(this::failed, e));

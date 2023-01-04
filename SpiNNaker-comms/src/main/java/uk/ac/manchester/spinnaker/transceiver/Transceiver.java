@@ -724,25 +724,20 @@ public class Transceiver extends UDPTransceiver
 			throws IOException, ProcessException, InterruptedException {
 		var buffer = readMemory(chip, SYS_VARS.add(dataItem.offset),
 				dataItem.type.value);
-		switch (dataItem.type) {
-		case BYTE:
-			return Byte.toUnsignedInt(buffer.get());
-		case SHORT:
-			return Short.toUnsignedInt(buffer.getShort());
-		case INT:
-			return buffer.getInt();
-		case LONG:
-			return buffer.getLong();
-		case BYTE_ARRAY:
+		return switch (dataItem.type) {
+		case BYTE -> Byte.toUnsignedInt(buffer.get());
+		case SHORT -> Short.toUnsignedInt(buffer.getShort());
+		case INT -> buffer.getInt();
+		case LONG -> buffer.getLong();
+		case BYTE_ARRAY -> {
 			byte[] dst = (byte[]) dataItem.getDefault();
 			buffer.get(dst);
-			return dst;
-		case ADDRESS:
-			return new MemoryLocation(buffer.getInt());
-		default:
-			// Unreachable
-			throw new IllegalStateException();
+			yield dst;
 		}
+		case ADDRESS -> new MemoryLocation(buffer.getInt());
+		// Unreachable
+		default -> throw new IllegalStateException();
+		};
 	}
 
 	private ConnectionSelector<BMPConnection> bmpConnection(BMPCoords bmp) {

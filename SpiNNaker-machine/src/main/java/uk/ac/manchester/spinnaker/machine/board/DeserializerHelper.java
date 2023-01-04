@@ -48,17 +48,15 @@ abstract class DeserializerHelper<T> extends StdDeserializer<T> {
 		try {
 			CONTEXT.set(ctxt);
 			PARSER.set(p);
-			switch (p.currentToken()) {
-			case START_ARRAY:
-				return deserializeArray();
-			case START_OBJECT:
-				return deserializeObject();
-			case VALUE_STRING:
-				return deserializeString(p.getValueAsString());
-			default:
+			return switch (p.currentToken()) {
+			case START_ARRAY -> deserializeArray();
+			case START_OBJECT -> deserializeObject();
+			case VALUE_STRING -> deserializeString(p.getValueAsString());
+			default -> {
 				ctxt.handleUnexpectedToken(_valueClass, p);
-				return null;
+				yield null;
 			}
+			};
 		} finally {
 			CONTEXT.remove();
 			PARSER.remove();
