@@ -16,14 +16,20 @@
  */
 package uk.ac.manchester.spinnaker.front_end;
 
-import static java.lang.System.err;
 import static java.lang.System.exit;
 import static java.lang.System.out;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.slf4j.LoggerFactory.getLogger;
+import static picocli.CommandLine.ExitCode.SOFTWARE;
 import static uk.ac.manchester.spinnaker.alloc.client.SpallocClientFactory.getJobFromProxyInfo;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.LogControl.setLoggerDir;
+import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.GATHER;
+import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.MACHINE;
+import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.MAP;
+import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.PLACEMENT;
+import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.REPORT;
+import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.RUN;
 import static uk.ac.manchester.spinnaker.machine.bean.MapperFactory.createMapper;
 
 import java.io.File;
@@ -31,6 +37,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
@@ -39,6 +46,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.errorprone.annotations.MustBeClosed;
 
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Parameters;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
 import uk.ac.manchester.spinnaker.connections.LocateConnectedMachineIPAddress;
 import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
@@ -66,20 +76,20 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  *
  * @author Donal Fellows
  */
+@Command(name = "spinnaker-exe", subcommands = CommandLine.HelpCommand.class)
 public final class CommandLineInterface {
 	private CommandLineInterface() {
 	}
-
-	private static final String JAR_FILE;
-
-	@SuppressWarnings("unused")
-	private static final String MAIN_CLASS;
 
 	private static final String VERSION;
 
 	private static final ObjectMapper MAPPER = createMapper();
 
 	private static final String BUFFER_DB_FILE = "buffer.sqlite3";
+
+	private static final String DSE_DB_FILE = "ds.sqlite3";
+
+	private static final int MISBUILT_EXIT_CODE = 3;
 
 	static {
 		var cls = CommandLineInterface.class;
@@ -88,17 +98,97 @@ public final class CommandLineInterface {
 			prop.load(cls.getResourceAsStream("command-line.properties"));
 		} catch (IOException | NullPointerException e) {
 			getLogger(cls).error("failed to read properties", e);
-			exit(2);
+			exit(MISBUILT_EXIT_CODE);
 		}
-		JAR_FILE = prop.getProperty("jar");
-		MAIN_CLASS = prop.getProperty("mainClass");
 		VERSION = prop.getProperty("version");
 	}
 
-	private static void wrongArgs(String cmd, String args) {
-		err.printf("wrong # args: must be \"java -jar %s %s %s\"\n",
-				JAR_FILE, cmd, args);
-		exit(1);
+	@Command(name = "gather", description = "Retrieve recording "
+			+ "regions using the fast data movement protocol. Requires system "
+			+ "cores to be fully configured.")
+	private void gather(@Parameters(description = GATHER) String gatherFile,
+			@Parameters(description = MACHINE) String machineFile,
+			@Parameters(description = RUN) String runFolder) throws Exception {
+		setLoggerDir(runFolder);
+		gatherRun(gatherFile, machineFile, runFolder);
+	}
+
+	@Command(name = "download", description = "Retrieve recording "
+			+ "regions using classic SpiNNaker control protocol transfers.")
+	private void download(
+			@Parameters(description = PLACEMENT) String placementFile,
+			@Parameters(description = MACHINE) String machineFile,
+			@Parameters(description = RUN) String runFolder) throws Exception {
+		setLoggerDir(runFolder);
+		downloadRun(placementFile, machineFile, runFolder);
+	}
+
+	@Command(name = "dse", description = "Evaluate data "
+			+ "specifications for all cores and upload the results to "
+			+ "SpiNNaker using the classic protocol.")
+	private void dseAllCores(
+			@Parameters(description = MACHINE) String machineFile,
+			@Parameters(description = RUN) String runFolder) throws Exception {
+		setLoggerDir(runFolder);
+		dseRun(machineFile, runFolder, null);
+	}
+
+	@Command(name = "dse_sys", description = "Evaluate data "
+			+ "specifications for system cores and upload the results to "
+			+ "SpiNNaker (always uses the classic protocol).")
+	private void dseSystemCores(
+			@Parameters(description = MACHINE) String machineFile,
+			@Parameters(description = RUN) String runFolder) throws Exception {
+		setLoggerDir(runFolder);
+		dseRun(machineFile, runFolder, false);
+	}
+
+	@Command(name = "dse_app", description = "Evaluate data "
+			+ "specifications for application cores and upload the results to "
+			+ "SpiNNaker using the classic protocol.")
+	private void dseApplicationCores(
+			@Parameters(description = MACHINE) String machineFile,
+			@Parameters(description = RUN) String runFolder) throws Exception {
+		setLoggerDir(runFolder);
+		dseRun(machineFile, runFolder, true);
+	}
+
+	@Command(name = "dse_app_mon", description = "Evaluate data "
+			+ "specifications for application cores and upload the results to "
+			+ "SpiNNaker using the fast data upload protocol. Requires system "
+			+ "cores to be fully configured.")
+	private void dseApplicationCoresViaMonitors(
+			@Parameters(description = GATHER) String gatherFile,
+			@Parameters(description = MACHINE) String machineFile,
+			@Parameters(description = RUN) String runFolder,
+			@Parameters(description = REPORT, arity = "0..1") Optional<
+					String> reportFolder)
+			throws Exception {
+		setLoggerDir(runFolder);
+		dseAppMonRun(gatherFile, machineFile, runFolder,
+				reportFolder.orElse(null));
+	}
+
+	@Command(name = "iobuf", description = "Download the contents "
+			+ "of the IOBUF buffers and process them.")
+	private void readIobufs(
+			@Parameters(description = MACHINE) String machineFile,
+			@Parameters(description = MAP) String iobufMapFile,
+			@Parameters(description = RUN) String runFolder) throws Exception {
+		setLoggerDir(runFolder);
+		iobufRun(machineFile, iobufMapFile, runFolder);
+	}
+
+	@Command(name = "listen_for_unbooted", description = "Listen for unbooted "
+			+ "SpiNNaker boards on the local network. Depends on "
+			+ "receiving broadcast UDP messages.")
+	private void listen() throws IOException {
+		LocateConnectedMachineIPAddress.main();
+	}
+
+	@Command(name = "version", description = "Print the software version.")
+	private void version() {
+		System.out.println(VERSION);
 	}
 
 	/**
@@ -109,110 +199,17 @@ public final class CommandLineInterface {
 	 *            The command line arguments.
 	 */
 	public static void main(String... args) {
-		if (args.length < 1) {
-			err.printf(
-					"wrong # args: must be \"java -jar %s <command> ...\"\n",
-					JAR_FILE);
-			exit(1);
-		}
-		try {
-			switch (args[0]) {
-			case CLICommands.GATHER:
-				if (args.length != NUM_DOWNLOAD_ARGS) {
-					wrongArgs(CLICommands.GATHER,
-							"<gatherFile> <machineFile> <runFolder>");
-				}
-				setLoggerDir(args[THIRD]);
-				gatherRun(args[1], args[2], args[THIRD]);
-				exit(0);
-
-			case CLICommands.DOWNLOAD:
-				if (args.length != NUM_DOWNLOAD_ARGS) {
-					wrongArgs(CLICommands.DOWNLOAD,
-							"<placementFile> <machineFile> <runFolder>");
-				}
-				setLoggerDir(args[THIRD]);
-				downloadRun(args[1], args[2], args[THIRD]);
-				exit(0);
-
-			case CLICommands.DSE:
-				if (args.length != NUM_DSE_ARGS) {
-					wrongArgs(CLICommands.DSE, "<machineFile> <runFolder>");
-				}
-				setLoggerDir(args[2]);
-				dseRun(args[1], args[2], null);
-				exit(0);
-
-			case CLICommands.DSE_SYS:
-				if (args.length != NUM_DSE_ARGS) {
-					wrongArgs(CLICommands.DSE_SYS, "<machineFile> <runFolder>");
-				}
-				setLoggerDir(args[2]);
-				dseRun(args[1], args[2], false);
-				exit(0);
-
-			case CLICommands.DSE_APP:
-				if (args.length != NUM_DSE_ARGS) {
-					wrongArgs(CLICommands.DSE_APP, "<machineFile> <runFolder>");
-				}
-				setLoggerDir(args[2]);
-				dseRun(args[1], args[2], true);
-				exit(0);
-
-			case CLICommands.DSE_APP_MON:
-				if (args.length != NUM_DSE_APP_MON_ARGS
-						&& args.length != NUM_DSE_APP_MON_ARGS + 1) {
-					wrongArgs(CLICommands.DSE_APP_MON,
-							"<gatherFile> <machineFile> <runFolder> "
-									+ "?<reportFolder>?");
-				}
-				setLoggerDir(args[THIRD]);
-				dseAppMonRun(args[1], args[2], args[THIRD],
-						args.length > NUM_DSE_APP_MON_ARGS ? args[FOURTH]
-								: null);
-				exit(0);
-
-			case CLICommands.IOBUF:
-				if (args.length != NUM_IOBUF_ARGS) {
-					wrongArgs(CLICommands.IOBUF,
-							"<machineFile> <iobufMapFile> <runFolder>");
-				}
-				setLoggerDir(args[THIRD]);
-				iobufRun(args[1], args[2], args[THIRD]);
-				exit(0);
-
-			case CLICommands.LISTEN:
-				LocateConnectedMachineIPAddress.main(args);
-				return;
-
-			case CLICommands.VERSION:
-				System.out.println(VERSION);
-				exit(0);
-
-			default:
-				err.printf("unknown command \"%s\": must be one of %s\n",
-						args[0], CLICommands.list());
-				exit(1);
-			}
-		} catch (Throwable t) {
-			t.printStackTrace(err);
-			exit(2);
+		var cmd = new CommandLine(new CommandLineInterface());
+		cmd.setExecutionExceptionHandler((ex, commandLine, parseResult) -> {
+			ex.printStackTrace(System.err);
+			return SOFTWARE;
+		});
+		if (args.length == 0) {
+			cmd.usage(System.out);
+		} else {
+			cmd.execute(args);
 		}
 	}
-
-	private static final int NUM_DOWNLOAD_ARGS = 4;
-
-	private static final int THIRD = 3;
-
-	private static final int FOURTH = 4;
-
-	private static final int NUM_DSE_ARGS = 3;
-
-	private static final int NUM_DSE_APP_MON_ARGS = 4;
-
-	private static final String DSE_DB_FILE = "ds.sqlite3";
-
-	private static final int NUM_IOBUF_ARGS = 4;
 
 	/**
 	 * Run the data specifications in parallel.
@@ -223,8 +220,8 @@ public final class CommandLineInterface {
 	 *            Name of directory containing per-run information (i.e., the
 	 *            database that holds the data specifications to execute).
 	 * @param filterSystemCores
-	 *            If {@code true}, only run the DSE for application vertices.
-	 *            If {@code false}, only run the DSE for system vertices. If
+	 *            If {@code true}, only run the DSE for application vertices. If
+	 *            {@code false}, only run the DSE for system vertices. If
 	 *            {@code null}, run the DSE for all vertices.
 	 * @throws IOException
 	 *             If the communications fail.
@@ -297,8 +294,8 @@ public final class CommandLineInterface {
 		var db = new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
 		var reportDir = reportFolder == null ? null : new File(reportFolder);
 
-		try (var dseExec = new FastExecuteDataSpecification(
-				machine, gathers, reportDir, db)) {
+		try (var dseExec = new FastExecuteDataSpecification(machine, gathers,
+				reportDir, db)) {
 			dseExec.loadCores();
 		}
 	}
@@ -326,9 +323,8 @@ public final class CommandLineInterface {
 	 *             If there is an error reading the database
 	 */
 	public static void iobufRun(String machineJsonFile, String iobufMapFile,
-			String runFolder)
-			throws IOException, SpinnmanException, InterruptedException,
-			StorageException, URISyntaxException {
+			String runFolder) throws IOException, SpinnmanException,
+			InterruptedException, StorageException, URISyntaxException {
 		var machine = getMachine(machineJsonFile);
 		var request = getIobufRequest(iobufMapFile);
 		var db = getDatabase(runFolder);
@@ -363,9 +359,9 @@ public final class CommandLineInterface {
 	 *             If the proxy URI is invalid
 	 */
 	public static void downloadRun(String placementsJsonFile,
-			String machineJsonFile, String runFolder) throws IOException,
-			SpinnmanException, StorageException, InterruptedException,
-			URISyntaxException {
+			String machineJsonFile, String runFolder)
+			throws IOException, SpinnmanException, StorageException,
+			InterruptedException, URISyntaxException {
 		var placements = getPlacements(placementsJsonFile);
 		var machine = getMachine(machineJsonFile);
 		var db = getDatabase(runFolder);
@@ -400,17 +396,17 @@ public final class CommandLineInterface {
 	 *             If the URI of the proxy is invalid
 	 */
 	public static void gatherRun(String gatherersJsonFile,
-			String machineJsonFile, String runFolder) throws IOException,
-			SpinnmanException, StorageException, InterruptedException,
-			URISyntaxException {
+			String machineJsonFile, String runFolder)
+			throws IOException, SpinnmanException, StorageException,
+			InterruptedException, URISyntaxException {
 		var gathers = getGatherers(gatherersJsonFile);
 		var machine = getMachine(machineJsonFile);
 		var db = getDatabase(runFolder);
 		var job = getJob(db);
 
 		try (var trans = getTransceiver(machine, job);
-				var r = new RecordingRegionDataGatherer(
-						trans, machine, db, job)) {
+				var r = new RecordingRegionDataGatherer(trans, machine, db,
+						job)) {
 			int misses = r.gather(gathers);
 			getLogger(CommandLineInterface.class).info("total misses: {}",
 					misses);
@@ -468,56 +464,28 @@ public final class CommandLineInterface {
 }
 
 /**
- * The names of supported commands.
+ * The descriptions of various parameters to commands, many of which are shared.
  *
  * @author Donal Fellows
  */
-interface CLICommands {
-	/** The fast-data-out download command name. */
-	String GATHER = "gather";
+interface ParamDescriptions {
+	/** Description of {@code gatherFile} parameter. */
+	String GATHER = "The name of the gatherer description JSON file.";
 
-	/** The SCP-based download command name. */
-	String DOWNLOAD = "download";
+	/** Description of {@code machineFile} parameter. */
+	String MACHINE = "The name of the machine description JSON file.";
 
-	/** The basic DSE command name. */
-	String DSE = "dse";
+	/** Description of {@code iobufMapFile} parameter. */
+	String MAP = "The name of the IOBUF map description file.";
 
-	/** The system DSE command name. */
-	String DSE_SYS = "dse_sys";
+	/** Description of {@code placementFile} parameter. */
+	String PLACEMENT = "The name of the placement description JSON file.";
 
-	/** The application DSE command name. */
-	String DSE_APP = "dse_app";
+	/** Description of {@code reportFolder} parameter. */
+	String REPORT = "The name of the run's reporting folder. "
+			+ "If not provided, this is guessed from the "
+			+ "name of the overall run folder.";
 
-	/** The application DSE (with fast-data-in) command name. */
-	String DSE_APP_MON = "dse_app_mon";
-
-	/** The IOBUF-retrieval command name. */
-	String IOBUF = "iobuf";
-
-	/** The listen-for-an-unbooted-machine command name. */
-	String LISTEN = "listen_for_unbooted";
-
-	/** The version command name. */
-	String VERSION = "version";
-
-	/** All the command names. Sorted. */
-	List<String> ALL = List.of(DOWNLOAD, DSE, DSE_APP, DSE_APP_MON, DSE_SYS,
-			GATHER, IOBUF, LISTEN, VERSION);
-
-	/**
-	 * @return A human-readable list of all command names.
-	 */
-	static String list() {
-		var sb = new StringBuilder();
-		var sep = "";
-		for (var item : ALL) {
-			sb.append(sep);
-			sep = ", ";
-			if (item.equals(VERSION)) {
-				sb.append("or ");
-			}
-			sb.append(item);
-		}
-		return sb.toString();
-	}
+	/** Description of {@code runFolder} parameter. */
+	String RUN = "The name of the run data folder.";
 }
