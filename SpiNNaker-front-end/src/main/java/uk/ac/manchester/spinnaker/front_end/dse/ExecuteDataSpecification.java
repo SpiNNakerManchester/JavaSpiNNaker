@@ -68,7 +68,6 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 	/** How to run tasks in parallel. */
 	private final BasicExecutor executor;
 
-
 	/**
 	 * @param machine
 	 *            The description of the SpiNNaker machine.

@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.front_end;
 
-import static java.lang.System.exit;
-import static java.lang.System.out;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.slf4j.LoggerFactory.getLogger;
 import static picocli.CommandLine.ExitCode.SOFTWARE;
@@ -41,13 +39,12 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.errorprone.annotations.MustBeClosed;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.ITypeConverter;
 import picocli.CommandLine.Parameters;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
 import uk.ac.manchester.spinnaker.connections.LocateConnectedMachineIPAddress;
@@ -76,7 +73,9 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  *
  * @author Donal Fellows
  */
-@Command(name = "spinnaker-exe", subcommands = CommandLine.HelpCommand.class)
+// NB: Must match with build/finalName in pom.xml
+@Command(name = "java -jar spinnaker-exe.jar", //
+		subcommands = CommandLine.HelpCommand.class)
 public final class CommandLineInterface {
 	private CommandLineInterface() {
 	}
@@ -98,7 +97,7 @@ public final class CommandLineInterface {
 			prop.load(cls.getResourceAsStream("command-line.properties"));
 		} catch (IOException | NullPointerException e) {
 			getLogger(cls).error("failed to read properties", e);
-			exit(MISBUILT_EXIT_CODE);
+			System.exit(MISBUILT_EXIT_CODE);
 		}
 		VERSION = prop.getProperty("version");
 	}
@@ -106,19 +105,25 @@ public final class CommandLineInterface {
 	@Command(name = "gather", description = "Retrieve recording "
 			+ "regions using the fast data movement protocol. Requires system "
 			+ "cores to be fully configured.")
-	private void gather(@Parameters(description = GATHER) String gatherFile,
-			@Parameters(description = MACHINE) String machineFile,
-			@Parameters(description = RUN) String runFolder) throws Exception {
+	private void gather(//
+			@Parameters(description = GATHER, //
+					converter = GatherersReader.class) List<Gather> gatherFile,
+			@Parameters(description = MACHINE, //
+					converter = MachineReader.class) Machine machineFile,
+			@Parameters(description = RUN) File runFolder) throws Exception {
 		setLoggerDir(runFolder);
 		gatherRun(gatherFile, machineFile, runFolder);
 	}
 
 	@Command(name = "download", description = "Retrieve recording "
 			+ "regions using classic SpiNNaker control protocol transfers.")
-	private void download(
-			@Parameters(description = PLACEMENT) String placementFile,
-			@Parameters(description = MACHINE) String machineFile,
-			@Parameters(description = RUN) String runFolder) throws Exception {
+	private void download(//
+			@Parameters(description = PLACEMENT, //
+					converter = PlacementsReader.class) //
+			List<Placement> placementFile, //
+			@Parameters(description = MACHINE, //
+					converter = MachineReader.class) Machine machineFile,
+			@Parameters(description = RUN) File runFolder) throws Exception {
 		setLoggerDir(runFolder);
 		downloadRun(placementFile, machineFile, runFolder);
 	}
@@ -126,9 +131,10 @@ public final class CommandLineInterface {
 	@Command(name = "dse", description = "Evaluate data "
 			+ "specifications for all cores and upload the results to "
 			+ "SpiNNaker using the classic protocol.")
-	private void dseAllCores(
-			@Parameters(description = MACHINE) String machineFile,
-			@Parameters(description = RUN) String runFolder) throws Exception {
+	private void dseAllCores(//
+			@Parameters(description = MACHINE, //
+					converter = MachineReader.class) Machine machineFile,
+			@Parameters(description = RUN) File runFolder) throws Exception {
 		setLoggerDir(runFolder);
 		dseRun(machineFile, runFolder, null);
 	}
@@ -136,9 +142,10 @@ public final class CommandLineInterface {
 	@Command(name = "dse_sys", description = "Evaluate data "
 			+ "specifications for system cores and upload the results to "
 			+ "SpiNNaker (always uses the classic protocol).")
-	private void dseSystemCores(
-			@Parameters(description = MACHINE) String machineFile,
-			@Parameters(description = RUN) String runFolder) throws Exception {
+	private void dseSystemCores(//
+			@Parameters(description = MACHINE, //
+					converter = MachineReader.class) Machine machineFile,
+			@Parameters(description = RUN) File runFolder) throws Exception {
 		setLoggerDir(runFolder);
 		dseRun(machineFile, runFolder, false);
 	}
@@ -146,9 +153,10 @@ public final class CommandLineInterface {
 	@Command(name = "dse_app", description = "Evaluate data "
 			+ "specifications for application cores and upload the results to "
 			+ "SpiNNaker using the classic protocol.")
-	private void dseApplicationCores(
-			@Parameters(description = MACHINE) String machineFile,
-			@Parameters(description = RUN) String runFolder) throws Exception {
+	private void dseApplicationCores(//
+			@Parameters(description = MACHINE, //
+					converter = MachineReader.class) Machine machineFile,
+			@Parameters(description = RUN) File runFolder) throws Exception {
 		setLoggerDir(runFolder);
 		dseRun(machineFile, runFolder, true);
 	}
@@ -158,11 +166,13 @@ public final class CommandLineInterface {
 			+ "SpiNNaker using the fast data upload protocol. Requires system "
 			+ "cores to be fully configured.")
 	private void dseApplicationCoresViaMonitors(
-			@Parameters(description = GATHER) String gatherFile,
-			@Parameters(description = MACHINE) String machineFile,
-			@Parameters(description = RUN) String runFolder,
+			@Parameters(description = GATHER, //
+					converter = GatherersReader.class) List<Gather> gatherFile,
+			@Parameters(description = MACHINE, //
+					converter = MachineReader.class) Machine machineFile,
+			@Parameters(description = RUN) File runFolder,
 			@Parameters(description = REPORT, arity = "0..1") Optional<
-					String> reportFolder)
+					File> reportFolder)
 			throws Exception {
 		setLoggerDir(runFolder);
 		dseAppMonRun(gatherFile, machineFile, runFolder,
@@ -171,10 +181,13 @@ public final class CommandLineInterface {
 
 	@Command(name = "iobuf", description = "Download the contents "
 			+ "of the IOBUF buffers and process them.")
-	private void readIobufs(
-			@Parameters(description = MACHINE) String machineFile,
-			@Parameters(description = MAP) String iobufMapFile,
-			@Parameters(description = RUN) String runFolder) throws Exception {
+	private void readIobufs(//
+			@Parameters(description = MACHINE, //
+					converter = MachineReader.class) Machine machineFile,
+			@Parameters(description = MAP, //
+					converter = IobufRequestReader.class) //
+			IobufRequest iobufMapFile,
+			@Parameters(description = RUN) File runFolder) throws Exception {
 		setLoggerDir(runFolder);
 		iobufRun(machineFile, iobufMapFile, runFolder);
 	}
@@ -201,11 +214,11 @@ public final class CommandLineInterface {
 	public static void main(String... args) {
 		var cmd = new CommandLine(new CommandLineInterface());
 		cmd.setExecutionExceptionHandler((ex, commandLine, parseResult) -> {
-			ex.printStackTrace(System.err);
+			ex.printStackTrace(commandLine.getErr());
 			return SOFTWARE;
 		});
 		if (args.length == 0) {
-			cmd.usage(System.out);
+			cmd.usage(cmd.getErr());
 		} else {
 			cmd.execute(args);
 		}
@@ -214,11 +227,11 @@ public final class CommandLineInterface {
 	/**
 	 * Run the data specifications in parallel.
 	 *
-	 * @param machineJsonFile
-	 *            Name of file containing JSON description of overall machine.
+	 * @param machine
+	 *            Description of overall machine.
 	 * @param runFolder
-	 *            Name of directory containing per-run information (i.e., the
-	 *            database that holds the data specifications to execute).
+	 *            Directory containing per-run information (i.e., the database
+	 *            that holds the data specifications to execute).
 	 * @param filterSystemCores
 	 *            If {@code true}, only run the DSE for application vertices. If
 	 *            {@code false}, only run the DSE for system vertices. If
@@ -238,12 +251,11 @@ public final class CommandLineInterface {
 	 * @throws URISyntaxException
 	 *             If the proxy URI is provided but not valid.
 	 */
-	public static void dseRun(String machineJsonFile, String runFolder,
+	public static void dseRun(Machine machine, File runFolder,
 			Boolean filterSystemCores) throws IOException, SpinnmanException,
 			StorageException, ExecutionException, InterruptedException,
 			DataSpecificationException, URISyntaxException {
-		var machine = getMachine(machineJsonFile);
-		var db = new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
+		var db = getDataSpecDB(runFolder);
 
 		try (var dseExec = new HostExecuteDataSpecification(machine, db)) {
 			if (filterSystemCores == null) {
@@ -259,16 +271,16 @@ public final class CommandLineInterface {
 	/**
 	 * Run the data specifications in parallel.
 	 *
-	 * @param gatherersJsonFile
-	 *            Name of file containing JSON description of gatherers.
-	 * @param machineJsonFile
-	 *            Name of file containing JSON description of overall machine.
+	 * @param gatherers
+	 *            List of descriptions of gatherers.
+	 * @param machine
+	 *            Description of overall machine.
 	 * @param runFolder
-	 *            Name of directory containing per-run information (i.e., the
-	 *            database that holds the data specifications to execute).
-	 * @param reportFolder
-	 *            Name of directory containing reports. If {@code null}, no
-	 *            report will be written.
+	 *            Directory containing per-run information (i.e., the database
+	 *            that holds the data specifications to execute).
+	 * @param reportDir
+	 *            Directory containing reports. If {@code null}, no report will
+	 *            be written.
 	 * @throws IOException
 	 *             If the communications fail.
 	 * @throws SpinnmanException
@@ -284,17 +296,14 @@ public final class CommandLineInterface {
 	 * @throws URISyntaxException
 	 *             If a proxy URI is provided but invalid.
 	 */
-	public static void dseAppMonRun(String gatherersJsonFile,
-			String machineJsonFile, String runFolder, String reportFolder)
+	public static void dseAppMonRun(List<Gather> gatherers, Machine machine,
+			File runFolder, File reportDir)
 			throws IOException, SpinnmanException, StorageException,
 			ExecutionException, InterruptedException,
 			DataSpecificationException, URISyntaxException {
-		var gathers = getGatherers(gatherersJsonFile);
-		var machine = getMachine(machineJsonFile);
-		var db = new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
-		var reportDir = reportFolder == null ? null : new File(reportFolder);
+		var db = getDataSpecDB(runFolder);
 
-		try (var dseExec = new FastExecuteDataSpecification(machine, gathers,
+		try (var dseExec = new FastExecuteDataSpecification(machine, gatherers,
 				reportDir, db)) {
 			dseExec.loadCores();
 		}
@@ -303,11 +312,12 @@ public final class CommandLineInterface {
 	/**
 	 * Retrieve IOBUFs in parallel.
 	 *
-	 * @param machineJsonFile
-	 *            Name of file containing JSON description of overall machine.
-	 * @param iobufMapFile
-	 *            Name of file containing mapping from APLX executable names
-	 *            (full paths) to what cores are running those executables.
+	 * @param machine
+	 *            Description of overall machine.
+	 * @param request
+	 *            Mapping from APLX executable names (full paths) to what cores
+	 *            are running those executables, and which we will download
+	 *            IOBUFs for.
 	 * @param runFolder
 	 *            Name of directory containing per-run information (i.e., the
 	 *            database that holds the data specifications to execute).
@@ -322,31 +332,29 @@ public final class CommandLineInterface {
 	 * @throws StorageException
 	 *             If there is an error reading the database
 	 */
-	public static void iobufRun(String machineJsonFile, String iobufMapFile,
-			String runFolder) throws IOException, SpinnmanException,
+	public static void iobufRun(Machine machine, IobufRequest request,
+			File runFolder) throws IOException, SpinnmanException,
 			InterruptedException, StorageException, URISyntaxException {
-		var machine = getMachine(machineJsonFile);
-		var request = getIobufRequest(iobufMapFile);
-		var db = getDatabase(runFolder);
+		var db = getBufferManagerDB(runFolder);
 		var job = getJob(db);
 
 		try (var txrx = getTransceiver(machine, job);
 				var r = new IobufRetriever(txrx, machine, PARALLEL_SIZE)) {
 			var result = r.retrieveIobufContents(request, runFolder);
-			MAPPER.writeValue(out, result);
+			MAPPER.writeValue(System.out, result);
 		}
 	}
 
 	/**
 	 * Download data without using data gatherer cores.
 	 *
-	 * @param placementsJsonFile
-	 *            Name of file containing JSON description of placements.
-	 * @param machineJsonFile
-	 *            Name of file containing JSON description of overall machine.
+	 * @param placements
+	 *            List of descriptions of binary placements.
+	 * @param machine
+	 *            Description of overall machine.
 	 * @param runFolder
-	 *            Name of directory containing per-run information (i.e., the
-	 *            database that receives the output).
+	 *            Directory containing per-run information (i.e., the database
+	 *            that receives the output).
 	 * @throws IOException
 	 *             If the communications fail
 	 * @throws SpinnmanException
@@ -358,13 +366,10 @@ public final class CommandLineInterface {
 	 * @throws URISyntaxException
 	 *             If the proxy URI is invalid
 	 */
-	public static void downloadRun(String placementsJsonFile,
-			String machineJsonFile, String runFolder)
-			throws IOException, SpinnmanException, StorageException,
-			InterruptedException, URISyntaxException {
-		var placements = getPlacements(placementsJsonFile);
-		var machine = getMachine(machineJsonFile);
-		var db = getDatabase(runFolder);
+	public static void downloadRun(List<Placement> placements, Machine machine,
+			File runFolder) throws IOException, SpinnmanException,
+			StorageException, InterruptedException, URISyntaxException {
+		var db = getBufferManagerDB(runFolder);
 		var job = getJob(db);
 
 		try (var trans = getTransceiver(machine, job)) {
@@ -376,13 +381,13 @@ public final class CommandLineInterface {
 	/**
 	 * Download data using data gatherer cores.
 	 *
-	 * @param gatherersJsonFile
-	 *            Name of file containing JSON description of gatherers.
-	 * @param machineJsonFile
-	 *            Name of file containing JSON description of overall machine.
+	 * @param gatherers
+	 *            List of descriptions of gatherers.
+	 * @param machine
+	 *            Description of overall machine.
 	 * @param runFolder
-	 *            Name of directory containing per-run information (i.e., the
-	 *            database that receives the output).
+	 *            Directory containing per-run information (i.e., the database
+	 *            that receives the output).
 	 * @throws IOException
 	 *             If the communications fail
 	 * @throws SpinnmanException
@@ -395,54 +400,65 @@ public final class CommandLineInterface {
 	 * @throws URISyntaxException
 	 *             If the URI of the proxy is invalid
 	 */
-	public static void gatherRun(String gatherersJsonFile,
-			String machineJsonFile, String runFolder)
-			throws IOException, SpinnmanException, StorageException,
-			InterruptedException, URISyntaxException {
-		var gathers = getGatherers(gatherersJsonFile);
-		var machine = getMachine(machineJsonFile);
-		var db = getDatabase(runFolder);
+	public static void gatherRun(List<Gather> gatherers, Machine machine,
+			File runFolder) throws IOException, SpinnmanException,
+			StorageException, InterruptedException, URISyntaxException {
+		var db = getBufferManagerDB(runFolder);
 		var job = getJob(db);
 
 		try (var trans = getTransceiver(machine, job);
 				var r = new RecordingRegionDataGatherer(trans, machine, db,
 						job)) {
-			int misses = r.gather(gathers);
+			int misses = r.gather(gatherers);
 			getLogger(CommandLineInterface.class).info("total misses: {}",
 					misses);
 		}
 	}
 
-	private static Machine getMachine(String filename)
-			throws JsonParseException, JsonMappingException, IOException {
-		try (var machineReader = new FileReader(filename, UTF_8)) {
-			return new Machine(
-					MAPPER.readValue(machineReader, MachineBean.class));
+	private static class MachineReader implements ITypeConverter<Machine> {
+		@Override
+		public Machine convert(String filename) throws IOException {
+			try (var reader = new FileReader(filename, UTF_8)) {
+				return new Machine(MAPPER.readValue(reader, MachineBean.class));
+			}
 		}
 	}
 
-	private static IobufRequest getIobufRequest(String filename)
-			throws IOException {
-		try (var gatherReader = new FileReader(filename, UTF_8)) {
-			return MAPPER.readValue(gatherReader, IobufRequest.class);
+	private static class IobufRequestReader
+			implements ITypeConverter<IobufRequest> {
+		@Override
+		public IobufRequest convert(String filename) throws IOException {
+			try (var reader = new FileReader(filename, UTF_8)) {
+				return MAPPER.readValue(reader, IobufRequest.class);
+			}
 		}
 	}
 
-	private static List<Gather> getGatherers(String filename)
-			throws IOException {
-		try (var gatherReader = new FileReader(filename, UTF_8)) {
-			return MAPPER.readValue(gatherReader, Gather.LIST);
+	private static class GatherersReader
+			implements ITypeConverter<List<Gather>> {
+		@Override
+		public List<Gather> convert(String filename) throws IOException {
+			try (var reader = new FileReader(filename, UTF_8)) {
+				return MAPPER.readValue(reader, Gather.LIST);
+			}
 		}
 	}
 
-	private static List<Placement> getPlacements(String placementsFile)
-			throws IOException {
-		try (var placementReader = new FileReader(placementsFile, UTF_8)) {
-			return MAPPER.readValue(placementReader, Placement.LIST);
+	private static class PlacementsReader
+			implements ITypeConverter<List<Placement>> {
+		@Override
+		public List<Placement> convert(String filename) throws IOException {
+			try (var reader = new FileReader(filename, UTF_8)) {
+				return MAPPER.readValue(reader, Placement.LIST);
+			}
 		}
 	}
 
-	private static BufferManagerStorage getDatabase(String runFolder) {
+	private static DSEDatabaseEngine getDataSpecDB(File runFolder) {
+		return new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
+	}
+
+	private static BufferManagerStorage getBufferManagerDB(File runFolder) {
 		return new BufferManagerDatabaseEngine(
 				new File(runFolder, BUFFER_DB_FILE)).getStorageInterface();
 	}
@@ -483,8 +499,7 @@ interface ParamDescriptions {
 
 	/** Description of {@code reportFolder} parameter. */
 	String REPORT = "The name of the run's reporting folder. "
-			+ "If not provided, this is guessed from the "
-			+ "name of the overall run folder.";
+			+ "If not provided, no report will be written.";
 
 	/** Description of {@code runFolder} parameter. */
 	String RUN = "The name of the run data folder.";
