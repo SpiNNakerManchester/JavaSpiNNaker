@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.front_end;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.slf4j.LoggerFactory.getLogger;
-import static picocli.CommandLine.ExitCode.SOFTWARE;
+import static picocli.CommandLine.ExitCode.USAGE;
 import static uk.ac.manchester.spinnaker.alloc.client.SpallocClientFactory.getJobFromProxyInfo;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.LogControl.setLoggerDir;
@@ -44,7 +44,9 @@ import com.google.errorprone.annotations.MustBeClosed;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.IModelTransformer;
 import picocli.CommandLine.ITypeConverter;
+import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Parameters;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
 import uk.ac.manchester.spinnaker.connections.LocateConnectedMachineIPAddress;
@@ -73,14 +75,12 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  *
  * @author Donal Fellows
  */
-// NB: Must match with build/finalName in pom.xml
-@Command(name = "java -jar spinnaker-exe.jar", //
-		subcommands = CommandLine.HelpCommand.class)
+@Command(subcommands = CommandLine.HelpCommand.class, //
+		mixinStandardHelpOptions = true, //
+		modelTransformer = CommandLineInterface.BuildPropsLoader.class)
 public final class CommandLineInterface {
 	private CommandLineInterface() {
 	}
-
-	private static final String VERSION;
 
 	private static final ObjectMapper MAPPER = createMapper();
 
@@ -88,108 +88,32 @@ public final class CommandLineInterface {
 
 	private static final String DSE_DB_FILE = "ds.sqlite3";
 
-	private static final int MISBUILT_EXIT_CODE = 3;
+	private static final String PROPS = "command-line.properties";
 
-	static {
-		var cls = CommandLineInterface.class;
-		var prop = new Properties();
-		try {
-			prop.load(cls.getResourceAsStream("command-line.properties"));
-		} catch (IOException | NullPointerException e) {
-			getLogger(cls).error("failed to read properties", e);
-			System.exit(MISBUILT_EXIT_CODE);
+	private static class BuildPropsLoader implements IModelTransformer {
+		private Properties loadProps() throws IOException {
+			var prop = new Properties();
+			try (var clp = getClass().getResourceAsStream(PROPS)) {
+				prop.load(clp);
+			}
+			return prop;
 		}
-		VERSION = prop.getProperty("version");
-	}
 
-	@Command(name = "gather", description = "Retrieve recording "
-			+ "regions using the fast data movement protocol. Requires system "
-			+ "cores to be fully configured.")
-	private void gather(//
-			@Parameters(description = GATHER, //
-					converter = GatherersReader.class) List<Gather> gatherFile,
-			@Parameters(description = MACHINE, //
-					converter = MachineReader.class) Machine machineFile,
-			@Parameters(description = RUN) File runFolder) throws Exception {
-		setLoggerDir(runFolder);
-		gatherRun(gatherFile, machineFile, runFolder);
-	}
+		@Override
+		public CommandSpec transform(CommandSpec commandSpec) {
+			try {
+				var prop = loadProps();
+				var jar = prop.getProperty("jar");
+				var ver = prop.getProperty("version");
 
-	@Command(name = "download", description = "Retrieve recording "
-			+ "regions using classic SpiNNaker control protocol transfers.")
-	private void download(//
-			@Parameters(description = PLACEMENT, //
-					converter = PlacementsReader.class) //
-			List<Placement> placementFile, //
-			@Parameters(description = MACHINE, //
-					converter = MachineReader.class) Machine machineFile,
-			@Parameters(description = RUN) File runFolder) throws Exception {
-		setLoggerDir(runFolder);
-		downloadRun(placementFile, machineFile, runFolder);
-	}
-
-	@Command(name = "dse", description = "Evaluate data "
-			+ "specifications for all cores and upload the results to "
-			+ "SpiNNaker using the classic protocol.")
-	private void dseAllCores(//
-			@Parameters(description = MACHINE, //
-					converter = MachineReader.class) Machine machineFile,
-			@Parameters(description = RUN) File runFolder) throws Exception {
-		setLoggerDir(runFolder);
-		dseRun(machineFile, runFolder, null);
-	}
-
-	@Command(name = "dse_sys", description = "Evaluate data "
-			+ "specifications for system cores and upload the results to "
-			+ "SpiNNaker (always uses the classic protocol).")
-	private void dseSystemCores(//
-			@Parameters(description = MACHINE, //
-					converter = MachineReader.class) Machine machineFile,
-			@Parameters(description = RUN) File runFolder) throws Exception {
-		setLoggerDir(runFolder);
-		dseRun(machineFile, runFolder, false);
-	}
-
-	@Command(name = "dse_app", description = "Evaluate data "
-			+ "specifications for application cores and upload the results to "
-			+ "SpiNNaker using the classic protocol.")
-	private void dseApplicationCores(//
-			@Parameters(description = MACHINE, //
-					converter = MachineReader.class) Machine machineFile,
-			@Parameters(description = RUN) File runFolder) throws Exception {
-		setLoggerDir(runFolder);
-		dseRun(machineFile, runFolder, true);
-	}
-
-	@Command(name = "dse_app_mon", description = "Evaluate data "
-			+ "specifications for application cores and upload the results to "
-			+ "SpiNNaker using the fast data upload protocol. Requires system "
-			+ "cores to be fully configured.")
-	private void dseApplicationCoresViaMonitors(
-			@Parameters(description = GATHER, //
-					converter = GatherersReader.class) List<Gather> gatherFile,
-			@Parameters(description = MACHINE, //
-					converter = MachineReader.class) Machine machineFile,
-			@Parameters(description = RUN) File runFolder,
-			@Parameters(description = REPORT, arity = "0..1") Optional<
-					File> reportFolder)
-			throws Exception {
-		setLoggerDir(runFolder);
-		dseAppMonRun(gatherFile, machineFile, runFolder,
-				reportFolder.orElse(null));
-	}
-
-	@Command(name = "iobuf", description = "Download the contents "
-			+ "of the IOBUF buffers and process them.")
-	private void readIobufs(//
-			@Parameters(description = MACHINE, //
-					converter = MachineReader.class) Machine machineFile,
-			@Parameters(description = MAP, //
-					converter = IobufRequestReader.class) //
-			IobufRequest iobufMapFile,
-			@Parameters(description = RUN) File runFolder) throws Exception {
-		setLoggerDir(runFolder);
-		iobufRun(machineFile, iobufMapFile, runFolder);
+				commandSpec.name("java -jar " + jar);
+				commandSpec.version(jar + " version " + ver);
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.exit(USAGE);
+			}
+			return commandSpec;
+		}
 	}
 
 	@Command(name = "listen_for_unbooted", description = "Listen for unbooted "
@@ -197,11 +121,6 @@ public final class CommandLineInterface {
 			+ "receiving broadcast UDP messages.")
 	private void listen() throws IOException {
 		LocateConnectedMachineIPAddress.main();
-	}
-
-	@Command(name = "version", description = "Print the software version.")
-	private void version() {
-		System.out.println(VERSION);
 	}
 
 	/**
@@ -213,15 +132,42 @@ public final class CommandLineInterface {
 	 */
 	public static void main(String... args) {
 		var cmd = new CommandLine(new CommandLineInterface());
-		cmd.setExecutionExceptionHandler((ex, commandLine, parseResult) -> {
-			ex.printStackTrace(commandLine.getErr());
-			return SOFTWARE;
-		});
 		if (args.length == 0) {
 			cmd.usage(cmd.getErr());
 		} else {
 			cmd.execute(args);
 		}
+	}
+
+	// Wrappers because of three configurations varying in one parameter
+	@Command(name = "dse", description = "Evaluate data "
+			+ "specifications for all cores and upload the results to "
+			+ "SpiNNaker using the classic protocol.")
+	private void dseAllCores(//
+			@Parameters(description = MACHINE, //
+					converter = MachineReader.class) Machine machineFile,
+			@Parameters(description = RUN) File runFolder) throws Exception {
+		runDSEUploadingViaClassicTransfer(machineFile, runFolder, null);
+	}
+
+	@Command(name = "dse_sys", description = "Evaluate data "
+			+ "specifications for system cores and upload the results to "
+			+ "SpiNNaker (always uses the classic protocol).")
+	private void dseSystemCores(//
+			@Parameters(description = MACHINE, //
+					converter = MachineReader.class) Machine machineFile,
+			@Parameters(description = RUN) File runFolder) throws Exception {
+		runDSEUploadingViaClassicTransfer(machineFile, runFolder, false);
+	}
+
+	@Command(name = "dse_app", description = "Evaluate data "
+			+ "specifications for application cores and upload the results to "
+			+ "SpiNNaker using the classic protocol.")
+	private void dseApplicationCores(//
+			@Parameters(description = MACHINE, //
+					converter = MachineReader.class) Machine machineFile,
+			@Parameters(description = RUN) File runFolder) throws Exception {
+		runDSEUploadingViaClassicTransfer(machineFile, runFolder, true);
 	}
 
 	/**
@@ -251,10 +197,12 @@ public final class CommandLineInterface {
 	 * @throws URISyntaxException
 	 *             If the proxy URI is provided but not valid.
 	 */
-	public static void dseRun(Machine machine, File runFolder,
-			Boolean filterSystemCores) throws IOException, SpinnmanException,
-			StorageException, ExecutionException, InterruptedException,
+	public void runDSEUploadingViaClassicTransfer(Machine machine,
+			File runFolder, Boolean filterSystemCores)
+			throws IOException, SpinnmanException, StorageException,
+			ExecutionException, InterruptedException,
 			DataSpecificationException, URISyntaxException {
+		setLoggerDir(runFolder);
 		var db = getDataSpecDB(runFolder);
 
 		try (var dseExec = new HostExecuteDataSpecification(machine, db)) {
@@ -278,9 +226,9 @@ public final class CommandLineInterface {
 	 * @param runFolder
 	 *            Directory containing per-run information (i.e., the database
 	 *            that holds the data specifications to execute).
-	 * @param reportDir
-	 *            Directory containing reports. If {@code null}, no report will
-	 *            be written.
+	 * @param reportFolder
+	 *            Directory containing reports. If {@link Optional#empty()}, no
+	 *            report will be written.
 	 * @throws IOException
 	 *             If the communications fail.
 	 * @throws SpinnmanException
@@ -296,15 +244,27 @@ public final class CommandLineInterface {
 	 * @throws URISyntaxException
 	 *             If a proxy URI is provided but invalid.
 	 */
-	public static void dseAppMonRun(List<Gather> gatherers, Machine machine,
-			File runFolder, File reportDir)
+	@Command(name = "dse_app_mon", description = "Evaluate data "
+			+ "specifications for application cores and upload the results to "
+			+ "SpiNNaker using the fast data upload protocol. Requires system "
+			+ "cores to be fully configured, so can't be used to set up "
+			+ "system cores.")
+	public void runDSEForAppCoresUploadingViaMonitorStreaming(
+			@Parameters(paramLabel = "<gatherFile>", description = GATHER, //
+					converter = GatherersReader.class) List<Gather> gatherers,
+			@Parameters(paramLabel = "<machineFile>", description = MACHINE, //
+					converter = MachineReader.class) Machine machine,
+			@Parameters(description = RUN) File runFolder,
+			@Parameters(description = REPORT, arity = "0..1") Optional<
+					File> reportFolder)
 			throws IOException, SpinnmanException, StorageException,
 			ExecutionException, InterruptedException,
 			DataSpecificationException, URISyntaxException {
+		setLoggerDir(runFolder);
 		var db = getDataSpecDB(runFolder);
 
 		try (var dseExec = new FastExecuteDataSpecification(machine, gatherers,
-				reportDir, db)) {
+				reportFolder.orElse(null), db)) {
 			dseExec.loadCores();
 		}
 	}
@@ -332,9 +292,17 @@ public final class CommandLineInterface {
 	 * @throws StorageException
 	 *             If there is an error reading the database
 	 */
-	public static void iobufRun(Machine machine, IobufRequest request,
-			File runFolder) throws IOException, SpinnmanException,
-			InterruptedException, StorageException, URISyntaxException {
+	@Command(name = "iobuf", description = "Download the contents "
+			+ "of the IOBUF buffers and process them.")
+	public void retrieveIOBUFs(
+			@Parameters(paramLabel = "<machineFile>", description = MACHINE, //
+					converter = MachineReader.class) Machine machine,
+			@Parameters(paramLabel = "<iobufMapFile>", description = MAP, //
+					converter = IobufRequestReader.class) //
+			IobufRequest request, @Parameters(description = RUN) File runFolder)
+			throws IOException, SpinnmanException, InterruptedException,
+			StorageException, URISyntaxException {
+		setLoggerDir(runFolder);
 		var db = getBufferManagerDB(runFolder);
 		var job = getJob(db);
 
@@ -366,9 +334,19 @@ public final class CommandLineInterface {
 	 * @throws URISyntaxException
 	 *             If the proxy URI is invalid
 	 */
-	public static void downloadRun(List<Placement> placements, Machine machine,
-			File runFolder) throws IOException, SpinnmanException,
-			StorageException, InterruptedException, URISyntaxException {
+	@Command(name = "download", description = "Retrieve recording "
+			+ "regions using classic SpiNNaker control protocol transfers.")
+	public void downloadRecordingChannelsViaClassicTransfer(
+			@Parameters(paramLabel = "<placementFile>", //
+					description = PLACEMENT, //
+					converter = PlacementsReader.class) //
+			List<Placement> placements,
+			@Parameters(paramLabel = "<machineFile>", description = MACHINE, //
+					converter = MachineReader.class) Machine machine,
+			@Parameters(description = RUN) File runFolder)
+			throws IOException, SpinnmanException, StorageException,
+			InterruptedException, URISyntaxException {
+		setLoggerDir(runFolder);
 		var db = getBufferManagerDB(runFolder);
 		var job = getJob(db);
 
@@ -400,9 +378,18 @@ public final class CommandLineInterface {
 	 * @throws URISyntaxException
 	 *             If the URI of the proxy is invalid
 	 */
-	public static void gatherRun(List<Gather> gatherers, Machine machine,
-			File runFolder) throws IOException, SpinnmanException,
-			StorageException, InterruptedException, URISyntaxException {
+	@Command(name = "gather", description = "Retrieve recording "
+			+ "regions using the fast data movement protocol. Requires system "
+			+ "cores to be fully configured.")
+	public void downloadRecordingChannelsViaMonitorStreaming(
+			@Parameters(paramLabel = "<gatherFile>", description = GATHER, //
+					converter = GatherersReader.class) List<Gather> gatherers,
+			@Parameters(paramLabel = "<machineFile>", description = MACHINE, //
+					converter = MachineReader.class) Machine machine,
+			@Parameters(description = RUN) File runFolder)
+			throws IOException, SpinnmanException, StorageException,
+			InterruptedException, URISyntaxException {
+		setLoggerDir(runFolder);
 		var db = getBufferManagerDB(runFolder);
 		var job = getJob(db);
 
