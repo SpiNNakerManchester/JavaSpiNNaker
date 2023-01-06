@@ -100,7 +100,7 @@ public final class CommandLineInterface {
 
 	private static final String PROPS = "command-line.properties";
 
-	private static class BuildPropsLoader implements IModelTransformer {
+	static class BuildPropsLoader implements IModelTransformer {
 		private Properties loadProps() throws IOException {
 			var prop = new Properties();
 			try (var clp = getClass().getResourceAsStream(PROPS)) {
@@ -399,7 +399,7 @@ public final class CommandLineInterface {
 			return machine;
 		}
 
-		private static class Converter implements ITypeConverter<Machine> {
+		static class Converter implements ITypeConverter<Machine> {
 			@Override
 			public Machine convert(String filename) throws IOException {
 				try (var reader = new FileReader(filename, UTF_8)) {
@@ -431,7 +431,7 @@ public final class CommandLineInterface {
 			return request;
 		}
 
-		private static class Converter implements ITypeConverter<IobufRequest> {
+		static class Converter implements ITypeConverter<IobufRequest> {
 			@Override
 			public IobufRequest convert(String filename) throws IOException {
 				try (var reader = new FileReader(filename, UTF_8)) {
@@ -462,7 +462,7 @@ public final class CommandLineInterface {
 			return gatherers;
 		}
 
-		private static class Converter implements ITypeConverter<List<Gather>> {
+		static class Converter implements ITypeConverter<List<Gather>> {
 			@Override
 			public List<Gather> convert(String filename) throws IOException {
 				try (var reader = new FileReader(filename, UTF_8)) {
@@ -493,7 +493,7 @@ public final class CommandLineInterface {
 			return placements;
 		}
 
-		private static class Converter
+		static class Converter
 				implements ITypeConverter<List<Placement>> {
 			@Override
 			public List<Placement> convert(String filename) throws IOException {
