@@ -20,6 +20,14 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.slf4j.LoggerFactory.getLogger;
 import static picocli.CommandLine.ExitCode.USAGE;
 import static uk.ac.manchester.spinnaker.alloc.client.SpallocClientFactory.getJobFromProxyInfo;
+import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DOWNLOAD_DESC;
+import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_APP_DESC;
+import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_DESC;
+import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_MON_DESC;
+import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_SYS_DESC;
+import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.GATHER_DESC;
+import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.IOBUF_DESC;
+import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.LISTEN_DESC;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.LogControl.setLoggerDir;
 import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.GATHER;
@@ -38,6 +46,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.errorprone.annotations.MustBeClosed;
@@ -46,6 +55,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.IModelTransformer;
 import picocli.CommandLine.ITypeConverter;
+import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Parameters;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
@@ -116,9 +126,7 @@ public final class CommandLineInterface {
 		}
 	}
 
-	@Command(name = "listen_for_unbooted", description = "Listen for unbooted "
-			+ "SpiNNaker boards on the local network. Depends on "
-			+ "receiving broadcast UDP messages.")
+	@Command(name = "listen_for_unbooted", description = LISTEN_DESC)
 	private void listen() throws IOException {
 		LocateConnectedMachineIPAddress.main();
 	}
@@ -140,34 +148,22 @@ public final class CommandLineInterface {
 	}
 
 	// Wrappers because of three configurations varying in one parameter
-	@Command(name = "dse", description = "Evaluate data "
-			+ "specifications for all cores and upload the results to "
-			+ "SpiNNaker using the classic protocol.")
-	private void dseAllCores(//
-			@Parameters(description = MACHINE, //
-					converter = MachineReader.class) Machine machineFile,
+	@Command(name = "dse", description = DSE_DESC)
+	private void dseAllCores(@Mixin MachineParam machine,
 			@Parameters(description = RUN) File runFolder) throws Exception {
-		runDSEUploadingViaClassicTransfer(machineFile, runFolder, null);
+		runDSEUploadingViaClassicTransfer(machine.get(), runFolder, null);
 	}
 
-	@Command(name = "dse_sys", description = "Evaluate data "
-			+ "specifications for system cores and upload the results to "
-			+ "SpiNNaker (always uses the classic protocol).")
-	private void dseSystemCores(//
-			@Parameters(description = MACHINE, //
-					converter = MachineReader.class) Machine machineFile,
+	@Command(name = "dse_sys", description = DSE_SYS_DESC)
+	private void dseSystemCores(@Mixin MachineParam machine,
 			@Parameters(description = RUN) File runFolder) throws Exception {
-		runDSEUploadingViaClassicTransfer(machineFile, runFolder, false);
+		runDSEUploadingViaClassicTransfer(machine.get(), runFolder, false);
 	}
 
-	@Command(name = "dse_app", description = "Evaluate data "
-			+ "specifications for application cores and upload the results to "
-			+ "SpiNNaker using the classic protocol.")
-	private void dseApplicationCores(//
-			@Parameters(description = MACHINE, //
-					converter = MachineReader.class) Machine machineFile,
+	@Command(name = "dse_app", description = DSE_APP_DESC)
+	private void dseApplicationCores(@Mixin MachineParam machine,
 			@Parameters(description = RUN) File runFolder) throws Exception {
-		runDSEUploadingViaClassicTransfer(machineFile, runFolder, true);
+		runDSEUploadingViaClassicTransfer(machine.get(), runFolder, true);
 	}
 
 	/**
@@ -244,16 +240,9 @@ public final class CommandLineInterface {
 	 * @throws URISyntaxException
 	 *             If a proxy URI is provided but invalid.
 	 */
-	@Command(name = "dse_app_mon", description = "Evaluate data "
-			+ "specifications for application cores and upload the results to "
-			+ "SpiNNaker using the fast data upload protocol. Requires system "
-			+ "cores to be fully configured, so can't be used to set up "
-			+ "system cores.")
+	@Command(name = "dse_app_mon", description = DSE_MON_DESC)
 	public void runDSEForAppCoresUploadingViaMonitorStreaming(
-			@Parameters(paramLabel = "<gatherFile>", description = GATHER, //
-					converter = GatherersReader.class) List<Gather> gatherers,
-			@Parameters(paramLabel = "<machineFile>", description = MACHINE, //
-					converter = MachineReader.class) Machine machine,
+			@Mixin GatherersParam gatherers, @Mixin MachineParam machine,
 			@Parameters(description = RUN) File runFolder,
 			@Parameters(description = REPORT, arity = "0..1") Optional<
 					File> reportFolder)
@@ -263,8 +252,8 @@ public final class CommandLineInterface {
 		setLoggerDir(runFolder);
 		var db = getDataSpecDB(runFolder);
 
-		try (var dseExec = new FastExecuteDataSpecification(machine, gatherers,
-				reportFolder.orElse(null), db)) {
+		try (var dseExec = new FastExecuteDataSpecification(machine.get(),
+				gatherers.get(), reportFolder.orElse(null), db)) {
 			dseExec.loadCores();
 		}
 	}
@@ -274,7 +263,7 @@ public final class CommandLineInterface {
 	 *
 	 * @param machine
 	 *            Description of overall machine.
-	 * @param request
+	 * @param iobuf
 	 *            Mapping from APLX executable names (full paths) to what cores
 	 *            are running those executables, and which we will download
 	 *            IOBUFs for.
@@ -292,23 +281,20 @@ public final class CommandLineInterface {
 	 * @throws StorageException
 	 *             If there is an error reading the database
 	 */
-	@Command(name = "iobuf", description = "Download the contents "
-			+ "of the IOBUF buffers and process them.")
-	public void retrieveIOBUFs(
-			@Parameters(paramLabel = "<machineFile>", description = MACHINE, //
-					converter = MachineReader.class) Machine machine,
-			@Parameters(paramLabel = "<iobufMapFile>", description = MAP, //
-					converter = IobufRequestReader.class) //
-			IobufRequest request, @Parameters(description = RUN) File runFolder)
+	@Command(name = "iobuf", description = IOBUF_DESC)
+	public void retrieveIOBUFs(@Mixin MachineParam machine,
+			@Mixin IobufMapParam iobuf,
+			@Parameters(description = RUN) File runFolder)
 			throws IOException, SpinnmanException, InterruptedException,
 			StorageException, URISyntaxException {
 		setLoggerDir(runFolder);
 		var db = getBufferManagerDB(runFolder);
 		var job = getJob(db);
 
-		try (var txrx = getTransceiver(machine, job);
-				var r = new IobufRetriever(txrx, machine, PARALLEL_SIZE)) {
-			var result = r.retrieveIobufContents(request, runFolder);
+		try (var txrx = getTransceiver(machine.get(), job);
+				var r = new IobufRetriever(txrx, machine.get(),
+						PARALLEL_SIZE)) {
+			var result = r.retrieveIobufContents(iobuf.get(), runFolder);
 			MAPPER.writeValue(System.out, result);
 		}
 	}
@@ -334,15 +320,9 @@ public final class CommandLineInterface {
 	 * @throws URISyntaxException
 	 *             If the proxy URI is invalid
 	 */
-	@Command(name = "download", description = "Retrieve recording "
-			+ "regions using classic SpiNNaker control protocol transfers.")
+	@Command(name = "download", description = DOWNLOAD_DESC)
 	public void downloadRecordingChannelsViaClassicTransfer(
-			@Parameters(paramLabel = "<placementFile>", //
-					description = PLACEMENT, //
-					converter = PlacementsReader.class) //
-			List<Placement> placements,
-			@Parameters(paramLabel = "<machineFile>", description = MACHINE, //
-					converter = MachineReader.class) Machine machine,
+			@Mixin PlacementsParam placements, @Mixin MachineParam machine,
 			@Parameters(description = RUN) File runFolder)
 			throws IOException, SpinnmanException, StorageException,
 			InterruptedException, URISyntaxException {
@@ -350,9 +330,9 @@ public final class CommandLineInterface {
 		var db = getBufferManagerDB(runFolder);
 		var job = getJob(db);
 
-		try (var trans = getTransceiver(machine, job)) {
-			var r = new DataReceiver(trans, machine, db);
-			r.getDataForPlacementsParallel(placements, PARALLEL_SIZE);
+		try (var trans = getTransceiver(machine.get(), job)) {
+			var r = new DataReceiver(trans, machine.get(), db);
+			r.getDataForPlacementsParallel(placements.get(), PARALLEL_SIZE);
 		}
 	}
 
@@ -378,14 +358,9 @@ public final class CommandLineInterface {
 	 * @throws URISyntaxException
 	 *             If the URI of the proxy is invalid
 	 */
-	@Command(name = "gather", description = "Retrieve recording "
-			+ "regions using the fast data movement protocol. Requires system "
-			+ "cores to be fully configured.")
+	@Command(name = "gather", description = GATHER_DESC)
 	public void downloadRecordingChannelsViaMonitorStreaming(
-			@Parameters(paramLabel = "<gatherFile>", description = GATHER, //
-					converter = GatherersReader.class) List<Gather> gatherers,
-			@Parameters(paramLabel = "<machineFile>", description = MACHINE, //
-					converter = MachineReader.class) Machine machine,
+			@Mixin GatherersParam gatherers, @Mixin MachineParam machine,
 			@Parameters(description = RUN) File runFolder)
 			throws IOException, SpinnmanException, StorageException,
 			InterruptedException, URISyntaxException {
@@ -393,50 +368,137 @@ public final class CommandLineInterface {
 		var db = getBufferManagerDB(runFolder);
 		var job = getJob(db);
 
-		try (var trans = getTransceiver(machine, job);
-				var r = new RecordingRegionDataGatherer(trans, machine, db,
-						job)) {
-			int misses = r.gather(gatherers);
+		try (var trans = getTransceiver(machine.get(), job);
+				var r = new RecordingRegionDataGatherer(trans, machine.get(),
+						db, job)) {
+			int misses = r.gather(gatherers.get());
 			getLogger(CommandLineInterface.class).info("total misses: {}",
 					misses);
 		}
 	}
 
-	private static class MachineReader implements ITypeConverter<Machine> {
+	/**
+	 * Mixin handler for the {@code <machineFile>} parameter.
+	 * <p>
+	 * Do not make instances of this class yourself; leave that to picocli.
+	 *
+	 * @author Donal Fellows
+	 * @see Mixin
+	 * @see Parameters
+	 */
+	public static class MachineParam implements Supplier<Machine> {
+		/** The machine. */
+		@Parameters(paramLabel = "<machineFile>", description = MACHINE, //
+				converter = Converter.class)
+		private Machine machine;
+
+		/** @return The machine parsed from the named file. */
 		@Override
-		public Machine convert(String filename) throws IOException {
-			try (var reader = new FileReader(filename, UTF_8)) {
-				return new Machine(MAPPER.readValue(reader, MachineBean.class));
+		public Machine get() {
+			return machine;
+		}
+
+		private static class Converter implements ITypeConverter<Machine> {
+			@Override
+			public Machine convert(String filename) throws IOException {
+				try (var reader = new FileReader(filename, UTF_8)) {
+					return new Machine(
+							MAPPER.readValue(reader, MachineBean.class));
+				}
 			}
 		}
 	}
 
-	private static class IobufRequestReader
-			implements ITypeConverter<IobufRequest> {
+	/**
+	 * Mixin handler for the {@code <iobufMapFile>} parameter.
+	 * <p>
+	 * Do not make instances of this class yourself; leave that to picocli.
+	 *
+	 * @author Donal Fellows
+	 * @see Mixin
+	 * @see Parameters
+	 */
+	public static class IobufMapParam implements Supplier<IobufRequest> {
+		/** The request. */
+		@Parameters(paramLabel = "<iobufMapFile>", description = MAP, //
+				converter = Converter.class)
+		private IobufRequest request;
+
+		/** @return The request parsed from the named file. */
 		@Override
-		public IobufRequest convert(String filename) throws IOException {
-			try (var reader = new FileReader(filename, UTF_8)) {
-				return MAPPER.readValue(reader, IobufRequest.class);
+		public IobufRequest get() {
+			return request;
+		}
+
+		private static class Converter implements ITypeConverter<IobufRequest> {
+			@Override
+			public IobufRequest convert(String filename) throws IOException {
+				try (var reader = new FileReader(filename, UTF_8)) {
+					return MAPPER.readValue(reader, IobufRequest.class);
+				}
 			}
 		}
 	}
 
-	private static class GatherersReader
-			implements ITypeConverter<List<Gather>> {
+	/**
+	 * Mixin handler for the {@code <gatherFile>} parameter.
+	 * <p>
+	 * Do not make instances of this class yourself; leave that to picocli.
+	 *
+	 * @author Donal Fellows
+	 * @see Mixin
+	 * @see Parameters
+	 */
+	public static class GatherersParam implements Supplier<List<Gather>> {
+		/** The gatherers. */
+		@Parameters(paramLabel = "<gatherFile>", description = GATHER, //
+				converter = Converter.class)
+		private List<Gather> gatherers;
+
+		/** @return The gatherers parsed from the named file. */
 		@Override
-		public List<Gather> convert(String filename) throws IOException {
-			try (var reader = new FileReader(filename, UTF_8)) {
-				return MAPPER.readValue(reader, Gather.LIST);
+		public List<Gather> get() {
+			return gatherers;
+		}
+
+		private static class Converter implements ITypeConverter<List<Gather>> {
+			@Override
+			public List<Gather> convert(String filename) throws IOException {
+				try (var reader = new FileReader(filename, UTF_8)) {
+					return MAPPER.readValue(reader, Gather.LIST);
+				}
 			}
 		}
 	}
 
-	private static class PlacementsReader
-			implements ITypeConverter<List<Placement>> {
+	/**
+	 * Mixin handler for the {@code <placementFile>} parameter.
+	 * <p>
+	 * Do not make instances of this class yourself; leave that to picocli.
+	 *
+	 * @author Donal Fellows
+	 * @see Mixin
+	 * @see Parameters
+	 */
+	public static class PlacementsParam implements Supplier<List<Placement>> {
+		/** The placements. */
+		@Parameters(paramLabel = "<placementFile>", description = PLACEMENT, //
+				converter = Converter.class)
+		private List<Placement> placements;
+
+		/** @return The placements parsed from the named file. */
 		@Override
-		public List<Placement> convert(String filename) throws IOException {
-			try (var reader = new FileReader(filename, UTF_8)) {
-				return MAPPER.readValue(reader, Placement.LIST);
+		public List<Placement> get() {
+			return placements;
+		}
+
+		private static class Converter
+				implements ITypeConverter<List<Placement>> {
+			@Override
+			public List<Placement> convert(String filename) throws IOException {
+				try (var reader = new FileReader(filename, UTF_8)) {
+					return MAPPER.readValue(reader, Placement.LIST);
+				}
 			}
 		}
 	}
@@ -464,6 +526,50 @@ public final class CommandLineInterface {
 		}
 		return job.getTransceiver();
 	}
+}
+
+/**
+ * The descriptions of various commands.
+ *
+ * @author Donal Fellows
+ */
+interface CommandDescriptions {
+	/** Description of {@code download} command. */
+	String DOWNLOAD_DESC = "Retrieve recording regions using "
+			+ "classic SpiNNaker control protocol transfers.";
+
+	/** Description of {@code gather} command. */
+	String GATHER_DESC = "Retrieve recording regions using the "
+			+ "fast data streaming protocol. "
+			+ "Requires system cores to be fully configured.";
+
+	/** Description of {@code dse} command. */
+	String DSE_DESC = "Evaluate data specifications for all cores and upload "
+			+ "the results to SpiNNaker using the classic protocol.";
+
+	/** Description of {@code dse_app} command. */
+	String DSE_APP_DESC = "Evaluate data specifications for application cores "
+			+ "and upload the results to SpiNNaker using the classic protocol.";
+
+	/** Description of {@code dse_app_mon} command. */
+	String DSE_MON_DESC = "Evaluate data specifications for application cores "
+			+ "and upload the results to SpiNNaker using the fast data "
+			+ "streaming protocol. "
+			+ "Requires system cores to be fully configured, so "
+			+ "can't be used to set up system cores.";
+
+	/** Description of {@code dse_sys} command. */
+	String DSE_SYS_DESC = "Evaluate data specifications for system cores and "
+			+ "upload the results to SpiNNaker (always uses the classic "
+			+ "protocol).";
+
+	/** Description of {@code iobuf} command. */
+	String IOBUF_DESC = "Download the contents "
+			+ "of the IOBUF buffers and process them.";
+
+	/** Description of {@code listen_for_unbooted} command. */
+	String LISTEN_DESC = "Listen for unbooted SpiNNaker boards on the local "
+			+ "network. Depends on receiving broadcast UDP messages.";
 }
 
 /**
