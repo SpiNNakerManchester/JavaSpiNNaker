@@ -91,6 +91,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<groupId>info.picocli</groupId>
 			<artifactId>picocli</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.github.stefanbirkner</groupId>
+			<artifactId>system-lambda</artifactId>
+		</dependency>
 	</dependencies>
 	<description>The front-end interface. NB: not a GUI!</description>
 	<name>SpiNNaker Front End Interface</name>

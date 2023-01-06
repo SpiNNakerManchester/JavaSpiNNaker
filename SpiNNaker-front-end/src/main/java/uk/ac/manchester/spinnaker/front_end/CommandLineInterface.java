@@ -142,8 +142,9 @@ public final class CommandLineInterface {
 		var cmd = new CommandLine(new CommandLineInterface());
 		if (args.length == 0) {
 			cmd.usage(cmd.getErr());
+			System.exit(USAGE);
 		} else {
-			cmd.execute(args);
+			System.exit(cmd.execute(args));
 		}
 	}
 
