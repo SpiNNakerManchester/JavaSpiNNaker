@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.db;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BLACKLIST_OP;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BMP;
@@ -681,6 +682,7 @@ class DMLTest extends MemDBTestBase {
 	@Test
 	void copyAllocsToHistoricalData() {
 		assumeWritable(c);
+		assumeTrue(c.isHistoricalDBAvailable());
 		try (var q = c.query(copyAllocsToHistoricalData)) {
 			assertEquals(1, q.getNumArguments());
 			assertEquals(Set.of("alloc_id"), q.getRowColumnNames());
@@ -693,6 +695,7 @@ class DMLTest extends MemDBTestBase {
 	@Test
 	void copyJobsToHistoricalData() {
 		assumeWritable(c);
+		assumeTrue(c.isHistoricalDBAvailable());
 		try (var q = c.query(copyJobsToHistoricalData)) {
 			assertEquals(1, q.getNumArguments());
 			assertEquals(Set.of("job_id"), q.getRowColumnNames());

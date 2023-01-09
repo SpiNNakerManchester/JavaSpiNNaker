@@ -1622,8 +1622,14 @@ public class SpallocProperties {
 		private boolean performanceLog;
 
 		/**
+		 * If the performance log is enabled, also write the EXPLAIN of the code
+		 * to the log on termination (for slow queries only).
+		 */
+		private boolean autoExplain;
+
+		/**
 		 * Performance stats not reported for queries with a max less than this
-		 * (in nanoseconds).
+		 * (in &mu;s).
 		 */
 		private double performanceThreshold;
 
@@ -1659,9 +1665,13 @@ public class SpallocProperties {
 		 * @param performanceLog
 		 *            Whether to collect and write query performance metrics to
 		 *            the log on termination.
+		 * @param autoExplain
+		 *            If the performance log is enabled, also write the EXPLAIN
+		 *            of the code to the log on termination (for slow queries
+		 *            only).
 		 * @param performanceThreshold
 		 *            Performance stats not reported for queries with a max less
-		 *            than this (in nanoseconds).
+		 *            than this (in &mu;s).
 		 * @param lockTries
 		 *            Number of times to try to take the lock in a transaction.
 		 * @param lockFailedDelay
@@ -1679,6 +1689,7 @@ public class SpallocProperties {
 				@DefaultValue("false") boolean debugFailures,
 				@DefaultValue("400") int analysisLimit,
 				@DefaultValue("false") boolean performanceLog,
+				@DefaultValue("true") boolean autoExplain,
 				@DefaultValue("1e6") double performanceThreshold,
 				@DefaultValue("3") int lockTries,
 				@DefaultValue("100ms") Duration lockFailedDelay,
@@ -1690,6 +1701,7 @@ public class SpallocProperties {
 			this.debugFailures = debugFailures;
 			this.analysisLimit = analysisLimit;
 			this.performanceLog = performanceLog;
+			this.autoExplain = autoExplain;
 			this.performanceThreshold = performanceThreshold;
 			this.lockTries = lockTries;
 			this.lockFailedDelay = lockFailedDelay;
@@ -1754,8 +1766,21 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Number of nanoseconds where performance stats are not
-		 *         reported for queries with a max less than this.
+		 * @return Whether, if the performance log is enabled, to also write the
+		 *         EXPLAIN of the code to the log on termination (for slow
+		 *         queries only).
+		 */
+		public final boolean isAutoExplain() {
+			return autoExplain;
+		}
+
+		void setAutoExplain(boolean flag) {
+			this.autoExplain = flag;
+		}
+
+		/**
+		 * @return Performance stats are not reported for queries with a max
+		 *         less than this, in microseconds.
 		 */
 		@Positive
 		public final double getPerformanceThreshold() {

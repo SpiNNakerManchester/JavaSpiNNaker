@@ -73,8 +73,6 @@ public final class ChipSummaryInfo {
 
 	private static final int NUM_CORES = 18;
 
-	private static final int NUM_LINKS = 6;
-
 	private static final int LINKS_FIELD_SHIFT = 8;
 
 	private static final int NUM_CORES_FIELD_MASK = 0b00011111;

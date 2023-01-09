@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.alloc.db;
 
 import static java.lang.System.arraycopy;
 import static java.util.Objects.isNull;
-import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
 
 import java.sql.SQLException;
 
@@ -99,8 +98,33 @@ public abstract class Utils {
 	 */
 	public static boolean isBusy(DataAccessException exception) {
 		var root = exception.getMostSpecificCause();
-		return root instanceof SQLiteException
-				&& ((SQLiteException) root).getResultCode() == SQLITE_BUSY;
+		if (root instanceof SQLiteException) {
+			return isBusy((SQLiteException) root);
+		}
+		return false;
+	}
+
+	/**
+	 * Utility for testing whether an exception was thrown because the database
+	 * was busy.
+	 *
+	 * @param exception
+	 *            The exception to test.
+	 * @return Whether it was caused by the database being busy.
+	 */
+	public static boolean isBusy(SQLException exception) {
+		if (exception instanceof SQLiteException) {
+			switch (((SQLiteException) exception).getResultCode()) {
+			case SQLITE_BUSY:
+			case SQLITE_BUSY_SNAPSHOT:
+			case SQLITE_BUSY_TIMEOUT:
+			case SQLITE_BUSY_RECOVERY:
+				return true;
+			default:
+				return false;
+			}
+		}
+		return false;
 	}
 
 	/**

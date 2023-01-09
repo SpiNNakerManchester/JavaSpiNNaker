@@ -42,7 +42,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
@@ -63,7 +63,7 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 
 	private static final int ENTRY_TEXT = 2;
 
-	private Transceiver txrx;
+	private TransceiverInterface txrx;
 
 	private Machine machine;
 
@@ -81,7 +81,7 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
-	public IobufRetriever(Transceiver transceiver, Machine machine,
+	public IobufRetriever(TransceiverInterface transceiver, Machine machine,
 			int parallelSize) {
 		super(machine);
 		txrx = transceiver;
