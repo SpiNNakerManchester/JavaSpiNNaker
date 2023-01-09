@@ -405,6 +405,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
 									<addHeader>false</addHeader>
 								</transformer>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.properties.PropertiesTransformer">
+									<resource>META-INF/io.netty.versions.properties</resource>
+									<ordinalKey>ordinal</ordinalKey>
+								</transformer>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<manifestEntries>
 										<Main-Class>${main.class}</Main-Class>
