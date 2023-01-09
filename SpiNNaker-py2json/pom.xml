@@ -121,11 +121,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						</goals>
 						<configuration>
 							<shadedArtifactAttached>true</shadedArtifactAttached>
-							<transformers>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>${main.class}</mainClass>
-								</transformer>
-							</transformers>
 						</configuration>
 					</execution>
 				</executions>
