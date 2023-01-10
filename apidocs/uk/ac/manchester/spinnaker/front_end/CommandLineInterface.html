@@ -19,8 +19,8 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":9,"i5":9};
-var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],8:["t4","Concrete Methods"]};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":9,"i3":10,"i4":10,"i5":10};
+var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
@@ -56,7 +56,7 @@ loadScripts(document, 'script');</script>
 <div>
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
-<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="#nested.class.summary">Nested</a>&nbsp;|&nbsp;</li>
 <li>Field&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
@@ -102,6 +102,56 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </section>
 <section class="summary">
 <ul class="blockList">
+<!-- ======== NESTED CLASS SUMMARY ======== -->
+<li class="blockList">
+<section class="nestedClassSummary"><a id="nested.class.summary">
+<!--   -->
+</a>
+<h2>Nested Class Summary</h2>
+<div class="memberSummary">
+<table>
+<caption><span>Nested Classes</span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="CommandLineInterface.GatherersParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.GatherersParam</a></span></code></th>
+<td class="colLast">
+<div class="block">Mixin handler for the <code>&lt;gatherFile&gt;</code> parameter.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="CommandLineInterface.IobufMapParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.IobufMapParam</a></span></code></th>
+<td class="colLast">
+<div class="block">Mixin handler for the <code>&lt;iobufMapFile&gt;</code> parameter.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a></span></code></th>
+<td class="colLast">
+<div class="block">Mixin handler for the <code>&lt;machineFile&gt;</code> parameter.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="CommandLineInterface.PlacementsParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.PlacementsParam</a></span></code></th>
+<td class="colLast">
+<div class="block">Mixin handler for the <code>&lt;placementFile&gt;</code> parameter.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
 <!-- ========== METHOD SUMMARY =========== -->
 <li class="blockList">
 <section class="methodSummary"><a id="method.summary">
@@ -109,7 +159,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </a>
 <h2>Method Summary</h2>
 <div class="memberSummary">
-<div role="tablist" aria-orientation="horizontal"><button role="tab" aria-selected="true" aria-controls="memberSummary_tabpanel" tabindex="0" onkeydown="switchTab(event)" id="t0" class="activeTableTab">All Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t1" class="tableTab" onclick="show(1);">Static Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t4" class="tableTab" onclick="show(8);">Concrete Methods</button></div>
+<div role="tablist" aria-orientation="horizontal"><button role="tab" aria-selected="true" aria-controls="memberSummary_tabpanel" tabindex="0" onkeydown="switchTab(event)" id="t0" class="activeTableTab">All Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t1" class="tableTab" onclick="show(1);">Static Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t2" class="tableTab" onclick="show(2);">Instance Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t4" class="tableTab" onclick="show(8);">Concrete Methods</button></div>
 <div id="memberSummary_tabpanel" role="tabpanel">
 <table aria-labelledby="t0">
 <thead>
@@ -121,56 +171,56 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code>static void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#downloadRun(java.lang.String,java.lang.String,java.lang.String)">downloadRun</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;placementsJsonFile,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineJsonFile,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;runFolder)</code></th>
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#downloadRecordingChannelsViaClassicTransfer(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.PlacementsParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,java.io.File)">downloadRecordingChannelsViaClassicTransfer</a></span>&#8203;(<a href="CommandLineInterface.PlacementsParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.PlacementsParam</a>&nbsp;placements,
+<a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;runFolder)</code></th>
 <td class="colLast">
 <div class="block">Download data without using data gatherer cores.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i1">
-<td class="colFirst"><code>static void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#dseAppMonRun(java.lang.String,java.lang.String,java.lang.String,java.lang.String)">dseAppMonRun</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;gatherersJsonFile,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineJsonFile,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;runFolder,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reportFolder)</code></th>
-<td class="colLast">
-<div class="block">Run the data specifications in parallel.</div>
-</td>
-</tr>
-<tr class="altColor" id="i2">
-<td class="colFirst"><code>static void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#dseRun(java.lang.String,java.lang.String,java.lang.Boolean)">dseRun</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineJsonFile,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;runFolder,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a>&nbsp;filterSystemCores)</code></th>
-<td class="colLast">
-<div class="block">Run the data specifications in parallel.</div>
-</td>
-</tr>
-<tr class="rowColor" id="i3">
-<td class="colFirst"><code>static void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#gatherRun(java.lang.String,java.lang.String,java.lang.String)">gatherRun</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;gatherersJsonFile,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineJsonFile,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;runFolder)</code></th>
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#downloadRecordingChannelsViaMonitorStreaming(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.GatherersParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,java.io.File)">downloadRecordingChannelsViaMonitorStreaming</a></span>&#8203;(<a href="CommandLineInterface.GatherersParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.GatherersParam</a>&nbsp;gatherers,
+<a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;runFolder)</code></th>
 <td class="colLast">
 <div class="block">Download data using data gatherer cores.</div>
 </td>
 </tr>
-<tr class="altColor" id="i4">
-<td class="colFirst"><code>static void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#iobufRun(java.lang.String,java.lang.String,java.lang.String)">iobufRun</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineJsonFile,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;iobufMapFile,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;runFolder)</code></th>
-<td class="colLast">
-<div class="block">Retrieve IOBUFs in parallel.</div>
-</td>
-</tr>
-<tr class="rowColor" id="i5">
+<tr class="altColor" id="i2">
 <td class="colFirst"><code>static void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#main(java.lang.String...)">main</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>...&nbsp;args)</code></th>
 <td class="colLast">
 <div class="block">The main command line interface.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i3">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#retrieveIOBUFs(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.IobufMapParam,java.io.File)">retrieveIOBUFs</a></span>&#8203;(<a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
+<a href="CommandLineInterface.IobufMapParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.IobufMapParam</a>&nbsp;iobuf,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;runFolder)</code></th>
+<td class="colLast">
+<div class="block">Retrieve IOBUFs in parallel.</div>
+</td>
+</tr>
+<tr class="altColor" id="i4">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runDSEForAppCoresUploadingViaMonitorStreaming(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.GatherersParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,java.io.File,java.util.Optional)">runDSEForAppCoresUploadingViaMonitorStreaming</a></span>&#8203;(<a href="CommandLineInterface.GatherersParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.GatherersParam</a>&nbsp;gatherers,
+<a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;runFolder,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&gt;&nbsp;reportFolder)</code></th>
+<td class="colLast">
+<div class="block">Run the data specifications in parallel.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i5">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runDSEUploadingViaClassicTransfer(uk.ac.manchester.spinnaker.machine.Machine,java.io.File,java.lang.Boolean)">runDSEUploadingViaClassicTransfer</a></span>&#8203;(<a href="../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;runFolder,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a>&nbsp;filterSystemCores)</code></th>
+<td class="colLast">
+<div class="block">Run the data specifications in parallel.</div>
 </td>
 </tr>
 </tbody>
@@ -209,11 +259,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="dseRun(java.lang.String,java.lang.String,java.lang.Boolean)">dseRun</a></h3>
-<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">dseRun</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineJsonFile,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;runFolder,
+<h3><a id="runDSEUploadingViaClassicTransfer(uk.ac.manchester.spinnaker.machine.Machine,java.io.File,java.lang.Boolean)">runDSEUploadingViaClassicTransfer</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">runDSEUploadingViaClassicTransfer</span>&#8203;(<span class="arguments"><a href="../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;runFolder,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a>&nbsp;filterSystemCores)</span>
-                   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+                                       throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a>,
 <a href="../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/ExecutionException.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">ExecutionException</a>,
@@ -223,11 +273,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="block">Run the data specifications in parallel.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>machineJsonFile</code> - Name of file containing JSON description of overall machine.</dd>
-<dd><code>runFolder</code> - Name of directory containing per-run information (i.e., the
-            database that holds the data specifications to execute).</dd>
-<dd><code>filterSystemCores</code> - If <code>true</code>, only run the DSE for application vertices.
-            If <code>false</code>, only run the DSE for system vertices. If
+<dd><code>machine</code> - Description of overall machine.</dd>
+<dd><code>runFolder</code> - Directory containing per-run information (i.e., the database
+            that holds the data specifications to execute).</dd>
+<dd><code>filterSystemCores</code> - If <code>true</code>, only run the DSE for application vertices. If
+            <code>false</code>, only run the DSE for system vertices. If
             <code>null</code>, run the DSE for all vertices.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the communications fail.</dd>
@@ -242,12 +292,12 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="dseAppMonRun(java.lang.String,java.lang.String,java.lang.String,java.lang.String)">dseAppMonRun</a></h3>
-<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">dseAppMonRun</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;gatherersJsonFile,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineJsonFile,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;runFolder,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reportFolder)</span>
-                         throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<h3><a id="runDSEForAppCoresUploadingViaMonitorStreaming(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.GatherersParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,java.io.File,java.util.Optional)">runDSEForAppCoresUploadingViaMonitorStreaming</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">runDSEForAppCoresUploadingViaMonitorStreaming</span>&#8203;(<span class="arguments"><a href="CommandLineInterface.GatherersParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.GatherersParam</a>&nbsp;gatherers,
+<a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;runFolder,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&gt;&nbsp;reportFolder)</span>
+                                                   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a>,
 <a href="../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/ExecutionException.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">ExecutionException</a>,
@@ -257,11 +307,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="block">Run the data specifications in parallel.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>gatherersJsonFile</code> - Name of file containing JSON description of gatherers.</dd>
-<dd><code>machineJsonFile</code> - Name of file containing JSON description of overall machine.</dd>
-<dd><code>runFolder</code> - Name of directory containing per-run information (i.e., the
-            database that holds the data specifications to execute).</dd>
-<dd><code>reportFolder</code> - Name of directory containing reports. If <code>null</code>, no
+<dd><code>gatherers</code> - List of descriptions of gatherers.</dd>
+<dd><code>machine</code> - Description of overall machine.</dd>
+<dd><code>runFolder</code> - Directory containing per-run information (i.e., the database
+            that holds the data specifications to execute).</dd>
+<dd><code>reportFolder</code> - Directory containing reports. If <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true#empty()" title="class or interface in java.util" class="externalLink"><code>Optional.empty()</code></a>, no
             report will be written.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the communications fail.</dd>
@@ -276,11 +326,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="iobufRun(java.lang.String,java.lang.String,java.lang.String)">iobufRun</a></h3>
-<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">iobufRun</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineJsonFile,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;iobufMapFile,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;runFolder)</span>
-                     throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<h3><a id="retrieveIOBUFs(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.IobufMapParam,java.io.File)">retrieveIOBUFs</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">retrieveIOBUFs</span>&#8203;(<span class="arguments"><a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
+<a href="CommandLineInterface.IobufMapParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.IobufMapParam</a>&nbsp;iobuf,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;runFolder)</span>
+                    throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a>,
 <a href="../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a>,
@@ -288,9 +338,10 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="block">Retrieve IOBUFs in parallel.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>machineJsonFile</code> - Name of file containing JSON description of overall machine.</dd>
-<dd><code>iobufMapFile</code> - Name of file containing mapping from APLX executable names
-            (full paths) to what cores are running those executables.</dd>
+<dd><code>machine</code> - Description of overall machine.</dd>
+<dd><code>iobuf</code> - Mapping from APLX executable names (full paths) to what cores
+            are running those executables, and which we will download
+            IOBUFs for.</dd>
 <dd><code>runFolder</code> - Name of directory containing per-run information (i.e., the
             database that holds the data specifications to execute).</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -304,11 +355,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="downloadRun(java.lang.String,java.lang.String,java.lang.String)">downloadRun</a></h3>
-<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">downloadRun</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;placementsJsonFile,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineJsonFile,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;runFolder)</span>
-                        throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<h3><a id="downloadRecordingChannelsViaClassicTransfer(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.PlacementsParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,java.io.File)">downloadRecordingChannelsViaClassicTransfer</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">downloadRecordingChannelsViaClassicTransfer</span>&#8203;(<span class="arguments"><a href="CommandLineInterface.PlacementsParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.PlacementsParam</a>&nbsp;placements,
+<a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;runFolder)</span>
+                                                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a>,
 <a href="../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a>,
@@ -316,10 +367,10 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="block">Download data without using data gatherer cores.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>placementsJsonFile</code> - Name of file containing JSON description of placements.</dd>
-<dd><code>machineJsonFile</code> - Name of file containing JSON description of overall machine.</dd>
-<dd><code>runFolder</code> - Name of directory containing per-run information (i.e., the
-            database that receives the output).</dd>
+<dd><code>placements</code> - List of descriptions of binary placements.</dd>
+<dd><code>machine</code> - Description of overall machine.</dd>
+<dd><code>runFolder</code> - Directory containing per-run information (i.e., the database
+            that receives the output).</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the communications fail</dd>
 <dd><code><a href="../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a></code> - If a BMP is uncontactable or SpiNNaker rejects a message</dd>
@@ -331,11 +382,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="gatherRun(java.lang.String,java.lang.String,java.lang.String)">gatherRun</a></h3>
-<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">gatherRun</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;gatherersJsonFile,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineJsonFile,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;runFolder)</span>
-                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<h3><a id="downloadRecordingChannelsViaMonitorStreaming(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.GatherersParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,java.io.File)">downloadRecordingChannelsViaMonitorStreaming</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">downloadRecordingChannelsViaMonitorStreaming</span>&#8203;(<span class="arguments"><a href="CommandLineInterface.GatherersParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.GatherersParam</a>&nbsp;gatherers,
+<a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;runFolder)</span>
+                                                  throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a>,
 <a href="../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a>,
@@ -343,10 +394,10 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="block">Download data using data gatherer cores.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>gatherersJsonFile</code> - Name of file containing JSON description of gatherers.</dd>
-<dd><code>machineJsonFile</code> - Name of file containing JSON description of overall machine.</dd>
-<dd><code>runFolder</code> - Name of directory containing per-run information (i.e., the
-            database that receives the output).</dd>
+<dd><code>gatherers</code> - List of descriptions of gatherers.</dd>
+<dd><code>machine</code> - Description of overall machine.</dd>
+<dd><code>runFolder</code> - Directory containing per-run information (i.e., the database
+            that receives the output).</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the communications fail</dd>
 <dd><code><a href="../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a></code> - If a BMP is uncontactable or SpiNNaker rejects a message</dd>
@@ -390,7 +441,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div>
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
-<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="#nested.class.summary">Nested</a>&nbsp;|&nbsp;</li>
 <li>Field&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>

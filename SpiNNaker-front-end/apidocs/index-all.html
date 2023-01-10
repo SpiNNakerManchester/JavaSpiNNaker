@@ -152,6 +152,22 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">The main command line interface.</div>
 </dd>
+<dt><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.GatherersParam.html" title="class in uk.ac.manchester.spinnaker.front_end"><span class="typeNameLink">CommandLineInterface.GatherersParam</span></a> - Class in <a href="uk/ac/manchester/spinnaker/front_end/package-summary.html">uk.ac.manchester.spinnaker.front_end</a></dt>
+<dd>
+<div class="block">Mixin handler for the <code>&lt;gatherFile&gt;</code> parameter.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.IobufMapParam.html" title="class in uk.ac.manchester.spinnaker.front_end"><span class="typeNameLink">CommandLineInterface.IobufMapParam</span></a> - Class in <a href="uk/ac/manchester/spinnaker/front_end/package-summary.html">uk.ac.manchester.spinnaker.front_end</a></dt>
+<dd>
+<div class="block">Mixin handler for the <code>&lt;iobufMapFile&gt;</code> parameter.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end"><span class="typeNameLink">CommandLineInterface.MachineParam</span></a> - Class in <a href="uk/ac/manchester/spinnaker/front_end/package-summary.html">uk.ac.manchester.spinnaker.front_end</a></dt>
+<dd>
+<div class="block">Mixin handler for the <code>&lt;machineFile&gt;</code> parameter.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.PlacementsParam.html" title="class in uk.ac.manchester.spinnaker.front_end"><span class="typeNameLink">CommandLineInterface.PlacementsParam</span></a> - Class in <a href="uk/ac/manchester/spinnaker/front_end/package-summary.html">uk.ac.manchester.spinnaker.front_end</a></dt>
+<dd>
+<div class="block">Mixin handler for the <code>&lt;placementFile&gt;</code> parameter.</div>
+</dd>
 <dt><a href="uk/ac/manchester/spinnaker/front_end/Constants.html" title="class in uk.ac.manchester.spinnaker.front_end"><span class="typeNameLink">Constants</span></a> - Class in <a href="uk/ac/manchester/spinnaker/front_end/package-summary.html">uk.ac.manchester.spinnaker.front_end</a></dt>
 <dd>
 <div class="block">Miscellaneous constants that can be overridden by system properties.</div>
@@ -205,17 +221,13 @@ loadScripts(document, 'script');</script>
 <div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span></div>
 <div class="block">Create a data gatherer.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#downloadRun(java.lang.String,java.lang.String,java.lang.String)">downloadRun(String, String, String)</a></span> - Static method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#downloadRecordingChannelsViaClassicTransfer(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.PlacementsParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,java.io.File)">downloadRecordingChannelsViaClassicTransfer(CommandLineInterface.PlacementsParam, CommandLineInterface.MachineParam, File)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface</a></dt>
 <dd>
 <div class="block">Download data without using data gatherer cores.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#dseAppMonRun(java.lang.String,java.lang.String,java.lang.String,java.lang.String)">dseAppMonRun(String, String, String, String)</a></span> - Static method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#downloadRecordingChannelsViaMonitorStreaming(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.GatherersParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,java.io.File)">downloadRecordingChannelsViaMonitorStreaming(CommandLineInterface.GatherersParam, CommandLineInterface.MachineParam, File)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface</a></dt>
 <dd>
-<div class="block">Run the data specifications in parallel.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#dseRun(java.lang.String,java.lang.String,java.lang.Boolean)">dseRun(String, String, Boolean)</a></span> - Static method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface</a></dt>
-<dd>
-<div class="block">Run the data specifications in parallel.</div>
+<div class="block">Download data using data gatherer cores.</div>
 </dd>
 </dl>
 <a id="I:E">
@@ -267,6 +279,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Data speed up packet gatherer description.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.GatherersParam.html#%3Cinit%3E()">GatherersParam()</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.GatherersParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.GatherersParam</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/front_end/download/GatherProtocolMessage.html" title="class in uk.ac.manchester.spinnaker.front_end.download"><span class="typeNameLink">GatherProtocolMessage</span></a> - Class in <a href="uk/ac/manchester/spinnaker/front_end/download/package-summary.html">uk.ac.manchester.spinnaker.front_end.download</a></dt>
 <dd>
 <div class="block">A message participating in the fast-data-download protocol.</div>
@@ -279,10 +293,14 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">The various IDs of messages used in the fast download protocol.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#gatherRun(java.lang.String,java.lang.String,java.lang.String)">gatherRun(String, String, String)</a></span> - Static method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface</a></dt>
-<dd>
-<div class="block">Download data using data gatherer cores.</div>
-</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.GatherersParam.html#get()">get()</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.GatherersParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.GatherersParam</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.IobufMapParam.html#get()">get()</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.IobufMapParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.IobufMapParam</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.MachineParam.html#get()">get()</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.PlacementsParam.html#get()">get()</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.PlacementsParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.PlacementsParam</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/request/Vertex.html#getBase()">getBase()</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.request.<a href="uk/ac/manchester/spinnaker/front_end/download/request/Vertex.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Vertex</a></dt>
 <dd>
 <div class="block">Get the recording region base address.</div>
@@ -377,6 +395,8 @@ loadScripts(document, 'script');</script>
 </a>
 <h2 class="title">I</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.IobufMapParam.html#%3Cinit%3E()">IobufMapParam()</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.IobufMapParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.IobufMapParam</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/front_end/iobuf/IobufRequest.html" title="class in uk.ac.manchester.spinnaker.front_end.iobuf"><span class="typeNameLink">IobufRequest</span></a> - Class in <a href="uk/ac/manchester/spinnaker/front_end/iobuf/package-summary.html">uk.ac.manchester.spinnaker.front_end.iobuf</a></dt>
 <dd>
 <div class="block">The request to read some IOBUFs off a SpiNNaker system.</div>
@@ -390,10 +410,6 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/iobuf/IobufRetriever.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,int)">IobufRetriever(TransceiverInterface, Machine, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.iobuf.<a href="uk/ac/manchester/spinnaker/front_end/iobuf/IobufRetriever.html" title="class in uk.ac.manchester.spinnaker.front_end.iobuf">IobufRetriever</a></dt>
 <dd>
 <div class="block">Create a IOBUF retriever.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#iobufRun(java.lang.String,java.lang.String,java.lang.String)">iobufRun(String, String, String)</a></span> - Static method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface</a></dt>
-<dd>
-<div class="block">Retrieve IOBUFs in parallel.</div>
 </dd>
 </dl>
 <a id="I:J">
@@ -461,6 +477,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">The description of the SpiNNaker machine.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.MachineParam.html#%3Cinit%3E()">MachineParam()</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#main(java.lang.String...)">main(String...)</a></span> - Static method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface</a></dt>
 <dd>
 <div class="block">The main command line interface.</div>
@@ -545,6 +563,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Vertex placement information.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.PlacementsParam.html#%3Cinit%3E()">PlacementsParam()</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.PlacementsParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.PlacementsParam</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/ExecuteDataSpecification.html#processTasksInParallel(java.util.List,java.util.function.Function)">processTasksInParallel(List&lt;DSEStorage.Ethernet&gt;, Function&lt;DSEStorage.Ethernet, BasicExecutor.SimpleCallable&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/ExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">ExecuteDataSpecification</a></dt>
 <dd>
 <div class="block">Run the tasks in parallel.</div>
@@ -590,13 +610,25 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Create a data gatherer.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/iobuf/IobufRetriever.html#retrieveIobufContents(uk.ac.manchester.spinnaker.front_end.iobuf.IobufRequest,java.lang.String)">retrieveIobufContents(IobufRequest, String)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.iobuf.<a href="uk/ac/manchester/spinnaker/front_end/iobuf/IobufRetriever.html" title="class in uk.ac.manchester.spinnaker.front_end.iobuf">IobufRetriever</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/iobuf/IobufRetriever.html#retrieveIobufContents(uk.ac.manchester.spinnaker.front_end.iobuf.IobufRequest,java.io.File)">retrieveIobufContents(IobufRequest, File)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.iobuf.<a href="uk/ac/manchester/spinnaker/front_end/iobuf/IobufRetriever.html" title="class in uk.ac.manchester.spinnaker.front_end.iobuf">IobufRetriever</a></dt>
 <dd>
 <div class="block">Retrieve and translate some IOBUFs.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/iobuf/IobufRetriever.html#retrieveIobufContents(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.io.File,java.io.File)">retrieveIobufContents(CoreSubsets, File, File)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.iobuf.<a href="uk/ac/manchester/spinnaker/front_end/iobuf/IobufRetriever.html" title="class in uk.ac.manchester.spinnaker.front_end.iobuf">IobufRetriever</a></dt>
 <dd>
 <div class="block">Retrieve and translate some IOBUFs.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#retrieveIOBUFs(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.IobufMapParam,java.io.File)">retrieveIOBUFs(CommandLineInterface.MachineParam, CommandLineInterface.IobufMapParam, File)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface</a></dt>
+<dd>
+<div class="block">Retrieve IOBUFs in parallel.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#runDSEForAppCoresUploadingViaMonitorStreaming(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.GatherersParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,java.io.File,java.util.Optional)">runDSEForAppCoresUploadingViaMonitorStreaming(CommandLineInterface.GatherersParam, CommandLineInterface.MachineParam, File, Optional&lt;File&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface</a></dt>
+<dd>
+<div class="block">Run the data specifications in parallel.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#runDSEUploadingViaClassicTransfer(uk.ac.manchester.spinnaker.machine.Machine,java.io.File,java.lang.Boolean)">runDSEUploadingViaClassicTransfer(Machine, File, Boolean)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface</a></dt>
+<dd>
+<div class="block">Run the data specifications in parallel.</div>
 </dd>
 </dl>
 <a id="I:S">
@@ -616,7 +648,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Host to Gatherer: all data transmitted.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/LogControl.html#setLoggerDir(java.lang.String)">setLoggerDir(String)</a></span> - Static method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/LogControl.html" title="class in uk.ac.manchester.spinnaker.front_end">LogControl</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/LogControl.html#setLoggerDir(java.io.File)">setLoggerDir(File)</a></span> - Static method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/LogControl.html" title="class in uk.ac.manchester.spinnaker.front_end">LogControl</a></dt>
 <dd>
 <div class="block">Initialise the logging subsystem to log to the correct directory.</div>
 </dd>
