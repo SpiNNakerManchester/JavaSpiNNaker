@@ -197,11 +197,11 @@ public final class LogControl {
 	 * Note that this reads system properties, and probably should only be
 	 * called once.
 	 *
-	 * @param directoryName
+	 * @param directory
 	 *            The directory where the log should written inside.
 	 */
-	public static void setLoggerDir(String directoryName) {
-		var logfile = new File(new File(directoryName), LOG_FILE);
+	public static void setLoggerDir(File directory) {
+		var logfile = new File(directory, LOG_FILE);
 		var level = getProperty(Props.LOGGING_LEVEL_NAME, "info");
 		var lc = new LogControl();
 		reconfigure(lc.configuration(logfile, level));
