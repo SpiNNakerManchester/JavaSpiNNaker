@@ -19,14 +19,14 @@ package uk.ac.manchester.spinnaker.py2json;
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
-import static java.lang.System.err;
 import static java.lang.System.exit;
 import static org.python.core.Py.getSystemState;
 import static org.python.core.Py.newString;
 import static org.python.core.PySystemState.initialize;
-import static picocli.CommandLine.populateCommand;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.Callable;
 
 import org.python.core.PySystemState;
 import org.python.util.PythonInterpreter;
@@ -35,8 +35,9 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.google.errorprone.annotations.MustBeClosed;
 
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
 import picocli.CommandLine.ITypeConverter;
-import picocli.CommandLine.ParameterException;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.TypeConversionException;
 
@@ -46,7 +47,8 @@ import picocli.CommandLine.TypeConversionException;
  *
  * @author Donal Fellows
  */
-public class MachineDefinitionConverter implements AutoCloseable {
+public class MachineDefinitionConverter
+		implements AutoCloseable {
 	private PySystemState sys;
 
 	/**
@@ -107,10 +109,12 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	}
 
 	/**
-	 * The command line arguments of
-	 * {@link MachineDefinitionConverter#main(String[])}.
+	 * Command line definition.
 	 */
-	private static class Arguments {
+	@Command(name = "py2json", mixinStandardHelpOptions = true, version = {
+		"version 0.1", "NB: this tool is only partially supported; it "
+				+ "exists to support University of Manchester staff only"})
+	private class CmdImpl implements Callable<Integer> {
 		@Parameters(index = "0", paramLabel = "source.py",
 				description = "The file to load the configuration Python from.",
 				converter = ExistingFileConverter.class)
@@ -119,6 +123,22 @@ public class MachineDefinitionConverter implements AutoCloseable {
 		@Parameters(index = "1", paramLabel = "target.json",
 				description = "The file to write the configuration JSON into.")
 		private File destination;
+
+		/**
+		 * Load a configuration from a Python config file and write it to a JSON
+		 * file. Which files to use are defined by command line arguments.
+		 *
+		 * @return The exit code.
+		 * @throws IOException
+		 *             If anything goes wrong.
+		 */
+		@Override
+		public Integer call() throws IOException {
+			var config = loadClassicConfigurationDefinition(configFile, false);
+			// TODO validate the config here
+			getJsonWriter().writeValue(destination, config);
+			return CommandLine.ExitCode.OK;
+		}
 	}
 
 	/**
@@ -145,15 +165,10 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	 *             If things go wrong
 	 */
 	public static void main(String... args) throws Exception {
+		int code;
 		try (var loader = new MachineDefinitionConverter()) {
-			var a = populateCommand(new Arguments(), args);
-			var config = loader.loadClassicConfigurationDefinition(a.configFile,
-					false);
-			getJsonWriter().writeValue(a.destination, config);
-		} catch (ParameterException e) {
-			err.println(e.getMessage());
-			e.getCommandLine().usage(err);
-			exit(1);
+			code = new CommandLine(loader.new CmdImpl()).execute(args);
 		}
+		exit(code);
 	}
 }

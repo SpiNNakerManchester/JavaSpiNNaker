@@ -65,6 +65,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.3</jython.version>
 		<error-prone.version>2.17.0</error-prone.version>
+		<picocli.version>4.7.0</picocli.version>
 	</properties>
 
 	<dependencyManagement>
@@ -301,7 +302,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<dependency>
 				<groupId>info.picocli</groupId>
 				<artifactId>picocli</artifactId>
-				<version>4.7.0</version>
+				<version>${picocli.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.keycloak</groupId>
@@ -343,6 +344,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<groupId>org.glassfish</groupId>
 				<artifactId>javax.el</artifactId>
 				<version>3.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.stefanbirkner</groupId>
+				<artifactId>system-lambda</artifactId>
+				<version>1.2.1</version>
+				<scope>test</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -686,6 +693,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.skife.maven</groupId>
+					<artifactId>really-executable-jar-maven-plugin</artifactId>
+					<version>2.0.0</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
