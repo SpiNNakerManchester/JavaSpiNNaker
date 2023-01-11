@@ -122,6 +122,7 @@ class TestFrontEnd {
 
 	@ParameterizedTest
 	@ValueSource(strings = {"dse", "dse_sys", "dse_app"})
+	@SuppressWarnings("MustBeClosed")
 	void testSimpleDSE(String cmd) throws Exception {
 		var machineFile = getClass().getResource("/machine.json").getFile();
 		var runFolder = "target/test/SimpleDSE";
@@ -170,6 +171,7 @@ class TestFrontEnd {
 	}
 
 	@Test
+	@SuppressWarnings("MustBeClosed")
 	void testAdvancedDSE() throws Exception {
 		var cls = getClass();
 		var gatherFile = cls.getResource("/gather.json").getFile();
