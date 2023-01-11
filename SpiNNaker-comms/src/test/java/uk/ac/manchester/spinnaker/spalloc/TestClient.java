@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.OVERALL_TEST_TIMEOUT;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.TIMEOUT;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.assertTimeout;
-import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.backgroundAccept;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.withConnection;
 import static uk.ac.manchester.spinnaker.spalloc.messages.State.READY;
 
@@ -83,7 +82,7 @@ class TestClient {
 			assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
 				try (var c =
 						new SpallocClient("localhost", s.getPort(), null)) {
-					var t = backgroundAccept(s);
+					var t = s.backgroundAccept();
 					try (var context = c.withConnection()) {
 						return; // do nothing
 					} finally {

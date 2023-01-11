@@ -22,7 +22,7 @@ import static testconfig.BoardTestConfiguration.OWNER;
 import static uk.ac.manchester.spinnaker.spalloc.MockServer.STOP;
 import static uk.ac.manchester.spinnaker.spalloc.SpallocJob.DEFAULT_CONFIGURATION_SOURCE;
 import static uk.ac.manchester.spinnaker.spalloc.SpallocJob.setConfigurationSource;
-import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.withConnection;
+import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.withAdvancedConnection;
 import static uk.ac.manchester.spinnaker.spalloc.messages.State.READY;
 
 import java.util.List;
@@ -31,7 +31,6 @@ import java.util.concurrent.LinkedBlockingDeque;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -55,7 +54,6 @@ class TestJob {
 	 * depending on when the previous state was requested.
 	 */
 	@Test
-	@Disabled("unreliable: depends on timing")
 	void testCoreJobFlow() throws Exception {
 		var send = new LinkedBlockingDeque<String>();
 		var received = new LinkedBlockingDeque<JSONObject>();
@@ -77,18 +75,15 @@ class TestJob {
 		send.offer(STOP);
 
 		// Run the core of test
-		withConnection((s, c, bgAccept) -> {
-			int id;
-			List<BoardCoordinates> boards;
-			State state;
-			Boolean power;
-
-			// Get the mock server to do message interchange interception
-			s.advancedEmulationMode(send, received, keepalives, bgAccept);
+		withAdvancedConnection(send, received, keepalives, c -> {
+			final int id;
+			final List<BoardCoordinates> boards;
+			final State state;
+			final Boolean power;
 
 			// The actual flow that we'd expect from normal usage
-			try (var j = new SpallocJob("localhost",
-					new CreateJob(1, 2, 3).owner(OWNER).keepAlive(1))) {
+			try (var j = new SpallocJob(c, new CreateJob(1, 2, 3)
+					.tags("default").owner(OWNER).keepAlive(1))) {
 				id = j.getID();
 				sleep(1200);
 				j.setPower(true);

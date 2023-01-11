@@ -16,8 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -25,10 +27,11 @@ import java.util.concurrent.BlockingDeque;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import uk.ac.manchester.spinnaker.utils.Daemon;
+import org.slf4j.Logger;
 
 abstract class SupportUtils {
+	private static final Logger log = getLogger(SupportUtils.class);
+
 	private SupportUtils() {
 	}
 
@@ -49,16 +52,6 @@ abstract class SupportUtils {
 	/** Requested timeout. */
 	static final int TIMEOUT = 101;
 
-	static Joinable backgroundAccept(MockServer s) throws Exception {
-		var t = new Daemon(s::connectQuietly, "background accept");
-		t.start();
-		return () -> t.join();
-	}
-
-	interface Joinable {
-		void join() throws InterruptedException;
-	}
-
 	interface IServer extends AutoCloseable {
 		void send(JSONObject obj);
 
@@ -70,24 +63,48 @@ abstract class SupportUtils {
 
 		void advancedEmulationMode(BlockingDeque<String> send,
 				BlockingDeque<JSONObject> received,
-				BlockingDeque<JSONObject> keepalives, Joinable bgAccept);
+				BlockingDeque<JSONObject> keepalives,
+				MockServer.Joinable bgAccept) throws InterruptedException;
 
 		int getPort();
 	}
 
 	interface WithConn {
-		void act(IServer s, SpallocClient c, Joinable bgAccept)
+		void act(IServer s, SpallocClient c, MockServer.Joinable bgAccept)
 				throws Exception;
 	}
 
 	static void withConnection(WithConn op) throws Exception {
 		try (var s = new MockServer();
 				var c = new SpallocClient("localhost", s.getPort(), null)) {
-			var bgAccept = backgroundAccept(s);
+			log.error("starting withConnection");
+			var bgAccept = s.backgroundAccept();
+			log.error("made joinable {}", bgAccept);
 			assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
 				op.act(s, c, bgAccept);
 			});
 			bgAccept.join();
+		}
+	}
+
+	interface WithAdvancedConn {
+		void act(SpallocClient c) throws Exception;
+	}
+
+	static void withAdvancedConnection(BlockingDeque<String> send,
+			BlockingDeque<JSONObject> received,
+			BlockingDeque<JSONObject> keepalives, WithAdvancedConn op)
+			throws Exception {
+		try (var s = new MockServer();
+				var c = new SpallocClient("localhost", s.getPort(), null)) {
+			log.error("starting withConnection");
+			var bgAccept = s.backgroundAccept(false);
+			assertDoesNotThrow(() -> {
+				s.advancedEmulationMode(send, received, keepalives, bgAccept);
+			});
+			assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
+				op.act(c);
+			});
 		}
 	}
 }

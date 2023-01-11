@@ -36,7 +36,6 @@ import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.MustBeClosed;
 
-import uk.ac.manchester.spinnaker.spalloc.SupportUtils.Joinable;
 import uk.ac.manchester.spinnaker.utils.Daemon;
 import uk.ac.manchester.spinnaker.utils.OneShotEvent;
 
@@ -64,6 +63,7 @@ class MockServer implements SupportUtils.IServer {
 		started = new OneShotEvent();
 		serverSocket = new ServerSocket(0, QUEUE_LENGTH);
 		port = serverSocket.getLocalPort();
+		log.error("made server socket {}", serverSocket);
 	}
 
 	@Override
@@ -71,11 +71,16 @@ class MockServer implements SupportUtils.IServer {
 		return port;
 	}
 
-	public InetAddress connect() throws IOException {
+	public InetAddress connect(boolean doClose) throws IOException {
 		started.fire();
+		log.error("waiting for accept on port {}", port);
 		sock = serverSocket.accept();
-		serverSocket.close();
-		serverSocket = null;
+		log.error("accepted {}", sock);
+		if (doClose) {
+			log.error("closing server socket NOW");
+			serverSocket.close();
+			serverSocket = null;
+		}
 		out = new PrintWriter(
 				new OutputStreamWriter(sock.getOutputStream(), UTF_8));
 		in = new BufferedReader(
@@ -84,26 +89,45 @@ class MockServer implements SupportUtils.IServer {
 		return sock.getInetAddress();
 	}
 
-	void connectQuietly() {
+	void connectQuietly(boolean doClose) {
 		try {
-			connect();
+			connect(doClose);
 		} catch (IOException e) {
 			// Just totally ignore early closing of sockets
 			if (!e.getMessage().equals("Socket closed")) {
 				log.warn("problem with mock IO", e);
+			} else {
+				log.error("sock closed", e);
 			}
 		} catch (RuntimeException e) {
 			log.warn("problem with mock IO", e);
 		}
 	}
 
+	Joinable backgroundAccept() throws Exception {
+		return backgroundAccept(true);
+	}
+
+	Joinable backgroundAccept(boolean closeServerSocket) throws Exception {
+		var t = new Daemon(() -> connectQuietly(closeServerSocket),
+				"background accept");
+		t.start();
+		return () -> t.join();
+	}
+
+	interface Joinable {
+		void join() throws InterruptedException;
+	}
+
 	@Override
 	public void close() throws IOException {
 		if (serverSocket != null && !serverSocket.isClosed()) {
+			log.error("closing server socket in close()");
 			serverSocket.close();
 		}
 		serverSocket = null;
 		if (sock != null) {
+			log.error("closing client socket in close()");
 			sock.close();
 		}
 		sock = null;
@@ -125,13 +149,34 @@ class MockServer implements SupportUtils.IServer {
 	/** Message used to stop the server. */
 	public static final String STOP = "STOP";
 
+	static class Lock {
+		private boolean set;
+
+		synchronized void mark() {
+			set = true;
+			notifyAll();
+		}
+
+		synchronized void waitForMark() throws InterruptedException {
+			while (!set) {
+				wait();
+			}
+		}
+	}
+
 	@Override
 	public void advancedEmulationMode(BlockingDeque<String> send,
 			BlockingDeque<JSONObject> received,
-			BlockingDeque<JSONObject> keepaliveQueue, Joinable bgAccept) {
+			BlockingDeque<JSONObject> keepaliveQueue, Joinable bgAccept)
+			throws InterruptedException {
+		log.error("aem manufacture");
+		var lock = new Lock();
 		new Daemon(() -> {
 			try {
+				log.error("aem commencing");
+				lock.mark();
 				bgAccept.join();
+				log.error("aem launched");
 				launchKeepaliveListener(keepaliveQueue);
 				while (true) {
 					if (STOP.equals(send.peek())) {
@@ -151,13 +196,16 @@ class MockServer implements SupportUtils.IServer {
 				log.error("failure in mock server", e);
 			}
 		}, "mock server advanced emulator").start();
+		lock.waitForMark();
 	}
 
 	private static void launchKeepaliveListener(
 			BlockingDeque<JSONObject> keepaliveQueue) {
 		new Daemon(() -> {
 			try (var s = new MockServer()) {
-				s.connect();
+				log.error("keepalive listener launching...");
+				s.connect(false);
+				log.error("keepalive listener launched");
 				while (true) {
 					var o = s.recv();
 					if (o == null) {
