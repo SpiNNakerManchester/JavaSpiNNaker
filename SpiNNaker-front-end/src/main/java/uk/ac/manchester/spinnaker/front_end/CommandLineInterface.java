@@ -52,12 +52,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.errorprone.annotations.MustBeClosed;
 
 import picocli.CommandLine;
+import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.IModelTransformer;
 import picocli.CommandLine.ITypeConverter;
-import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Parameters;
+import picocli.CommandLine.TypeConversionException;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
 import uk.ac.manchester.spinnaker.connections.LocateConnectedMachineIPAddress;
 import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
@@ -150,21 +151,27 @@ public final class CommandLineInterface {
 
 	// Wrappers because of three configurations varying in one parameter
 	@Command(name = "dse", description = DSE_DESC)
-	private void dseAllCores(@Mixin MachineParam machine,
-			@Parameters(description = RUN) File runFolder) throws Exception {
-		runDSEUploadingViaClassicTransfer(machine.get(), runFolder, null);
+	private void dseAllCores(@ArgGroup(multiplicity = "1") MachineParam machine,
+			@ArgGroup(multiplicity = "1") RunFolder runFolder)
+			throws Exception {
+		runDSEUploadingViaClassicTransfer(machine.get(), runFolder.get(), null);
 	}
 
 	@Command(name = "dse_sys", description = DSE_SYS_DESC)
-	private void dseSystemCores(@Mixin MachineParam machine,
-			@Parameters(description = RUN) File runFolder) throws Exception {
-		runDSEUploadingViaClassicTransfer(machine.get(), runFolder, false);
+	private void dseSystemCores(
+			@ArgGroup(multiplicity = "1") MachineParam machine,
+			@ArgGroup(multiplicity = "1") RunFolder runFolder)
+			throws Exception {
+		runDSEUploadingViaClassicTransfer(machine.get(), runFolder.get(),
+				false);
 	}
 
 	@Command(name = "dse_app", description = DSE_APP_DESC)
-	private void dseApplicationCores(@Mixin MachineParam machine,
-			@Parameters(description = RUN) File runFolder) throws Exception {
-		runDSEUploadingViaClassicTransfer(machine.get(), runFolder, true);
+	private void dseApplicationCores(
+			@ArgGroup(multiplicity = "1") MachineParam machine,
+			@ArgGroup(multiplicity = "1") RunFolder runFolder)
+			throws Exception {
+		runDSEUploadingViaClassicTransfer(machine.get(), runFolder.get(), true);
 	}
 
 	/**
@@ -243,15 +250,16 @@ public final class CommandLineInterface {
 	 */
 	@Command(name = "dse_app_mon", description = DSE_MON_DESC)
 	public void runDSEForAppCoresUploadingViaMonitorStreaming(
-			@Mixin GatherersParam gatherers, @Mixin MachineParam machine,
-			@Parameters(description = RUN) File runFolder,
-			@Parameters(description = REPORT, arity = "0..1") Optional<
-					File> reportFolder)
+			@ArgGroup(multiplicity = "1") GatherersParam gatherers,
+			@ArgGroup(multiplicity = "1") MachineParam machine,
+			@ArgGroup(multiplicity = "1") RunFolder runFolder,
+			@Parameters(description = REPORT, arity = "0..1", index = "3")
+			Optional<File> reportFolder)
 			throws IOException, SpinnmanException, StorageException,
 			ExecutionException, InterruptedException,
 			DataSpecificationException, URISyntaxException {
-		setLoggerDir(runFolder);
-		var db = getDataSpecDB(runFolder);
+		setLoggerDir(runFolder.get());
+		var db = getDataSpecDB(runFolder.get());
 
 		try (var dseExec = new FastExecuteDataSpecification(machine.get(),
 				gatherers.get(), reportFolder.orElse(null), db)) {
@@ -283,19 +291,20 @@ public final class CommandLineInterface {
 	 *             If there is an error reading the database
 	 */
 	@Command(name = "iobuf", description = IOBUF_DESC)
-	public void retrieveIOBUFs(@Mixin MachineParam machine,
-			@Mixin IobufMapParam iobuf,
-			@Parameters(description = RUN) File runFolder)
+	public void retrieveIOBUFs(
+			@ArgGroup(multiplicity = "1") MachineParam machine,
+			@ArgGroup(multiplicity = "1") IobufMapParam iobuf,
+			@ArgGroup(multiplicity = "1") RunFolder runFolder)
 			throws IOException, SpinnmanException, InterruptedException,
 			StorageException, URISyntaxException {
-		setLoggerDir(runFolder);
-		var db = getBufferManagerDB(runFolder);
+		setLoggerDir(runFolder.get());
+		var db = getBufferManagerDB(runFolder.get());
 		var job = getJob(db);
 
 		try (var txrx = getTransceiver(machine.get(), job);
 				var r = new IobufRetriever(txrx, machine.get(),
 						PARALLEL_SIZE)) {
-			var result = r.retrieveIobufContents(iobuf.get(), runFolder);
+			var result = r.retrieveIobufContents(iobuf.get(), runFolder.get());
 			MAPPER.writeValue(System.out, result);
 		}
 	}
@@ -323,12 +332,13 @@ public final class CommandLineInterface {
 	 */
 	@Command(name = "download", description = DOWNLOAD_DESC)
 	public void downloadRecordingChannelsViaClassicTransfer(
-			@Mixin PlacementsParam placements, @Mixin MachineParam machine,
-			@Parameters(description = RUN) File runFolder)
+			@ArgGroup(multiplicity = "1") PlacementsParam placements,
+			@ArgGroup(multiplicity = "1") MachineParam machine,
+			@ArgGroup(multiplicity = "1") RunFolder runFolder)
 			throws IOException, SpinnmanException, StorageException,
 			InterruptedException, URISyntaxException {
-		setLoggerDir(runFolder);
-		var db = getBufferManagerDB(runFolder);
+		setLoggerDir(runFolder.get());
+		var db = getBufferManagerDB(runFolder.get());
 		var job = getJob(db);
 
 		try (var trans = getTransceiver(machine.get(), job)) {
@@ -361,12 +371,13 @@ public final class CommandLineInterface {
 	 */
 	@Command(name = "gather", description = GATHER_DESC)
 	public void downloadRecordingChannelsViaMonitorStreaming(
-			@Mixin GatherersParam gatherers, @Mixin MachineParam machine,
-			@Parameters(description = RUN) File runFolder)
+			@ArgGroup(multiplicity = "1") GatherersParam gatherers,
+			@ArgGroup(multiplicity = "1") MachineParam machine,
+			@ArgGroup(multiplicity = "1") RunFolder runFolder)
 			throws IOException, SpinnmanException, StorageException,
 			InterruptedException, URISyntaxException {
-		setLoggerDir(runFolder);
-		var db = getBufferManagerDB(runFolder);
+		setLoggerDir(runFolder.get());
+		var db = getBufferManagerDB(runFolder.get());
 		var job = getJob(db);
 
 		try (var trans = getTransceiver(machine.get(), job);
@@ -379,12 +390,12 @@ public final class CommandLineInterface {
 	}
 
 	/**
-	 * Mixin handler for the {@code <machineFile>} parameter.
+	 * Argument handler for the {@code <machineFile>} parameter.
 	 * <p>
 	 * Do not make instances of this class yourself; leave that to picocli.
 	 *
 	 * @author Donal Fellows
-	 * @see Mixin
+	 * @see ArgGroup
 	 * @see Parameters
 	 */
 	public static class MachineParam implements Supplier<Machine> {
@@ -411,12 +422,12 @@ public final class CommandLineInterface {
 	}
 
 	/**
-	 * Mixin handler for the {@code <iobufMapFile>} parameter.
+	 * Argument handler for the {@code <iobufMapFile>} parameter.
 	 * <p>
 	 * Do not make instances of this class yourself; leave that to picocli.
 	 *
 	 * @author Donal Fellows
-	 * @see Mixin
+	 * @see ArgGroup
 	 * @see Parameters
 	 */
 	public static class IobufMapParam implements Supplier<IobufRequest> {
@@ -442,64 +453,101 @@ public final class CommandLineInterface {
 	}
 
 	/**
-	 * Mixin handler for the {@code <gatherFile>} parameter.
+	 * Argument handler for the {@code <gatherFile>} parameter.
 	 * <p>
 	 * Do not make instances of this class yourself; leave that to picocli.
 	 *
 	 * @author Donal Fellows
-	 * @see Mixin
+	 * @see ArgGroup
 	 * @see Parameters
 	 */
 	public static class GatherersParam implements Supplier<List<Gather>> {
 		/** The gatherers. */
 		@Parameters(paramLabel = "<gatherFile>", description = GATHER, //
 				converter = Converter.class)
-		private List<Gather> gatherers;
+		private Supplier<List<Gather>> gatherers;
 
 		/** @return The gatherers parsed from the named file. */
 		@Override
 		public List<Gather> get() {
-			return gatherers;
+			return gatherers.get();
 		}
 
-		static class Converter implements ITypeConverter<List<Gather>> {
+		static class Converter
+				implements ITypeConverter<Supplier<List<Gather>>> {
 			@Override
-			public List<Gather> convert(String filename) throws IOException {
+			public Supplier<List<Gather>> convert(String filename)
+					throws IOException {
 				try (var reader = new FileReader(filename, UTF_8)) {
-					return MAPPER.readValue(reader, Gather.LIST);
+					var g = MAPPER.readValue(reader, Gather.LIST);
+					return () -> g;
 				}
 			}
 		}
 	}
 
 	/**
-	 * Mixin handler for the {@code <placementFile>} parameter.
+	 * Argument handler for the {@code <placementFile>} parameter.
 	 * <p>
 	 * Do not make instances of this class yourself; leave that to picocli.
 	 *
 	 * @author Donal Fellows
-	 * @see Mixin
+	 * @see ArgGroup
 	 * @see Parameters
 	 */
 	public static class PlacementsParam implements Supplier<List<Placement>> {
 		/** The placements. */
 		@Parameters(paramLabel = "<placementFile>", description = PLACEMENT, //
 				converter = Converter.class)
-		private List<Placement> placements;
+		private Supplier<List<Placement>> placements;
 
 		/** @return The placements parsed from the named file. */
 		@Override
 		public List<Placement> get() {
-			return placements;
+			return placements.get();
 		}
 
 		static class Converter
-				implements ITypeConverter<List<Placement>> {
+				implements ITypeConverter<Supplier<List<Placement>>> {
 			@Override
-			public List<Placement> convert(String filename) throws IOException {
+			public Supplier<List<Placement>> convert(String filename)
+					throws IOException {
 				try (var reader = new FileReader(filename, UTF_8)) {
-					return MAPPER.readValue(reader, Placement.LIST);
+					var p = MAPPER.readValue(reader, Placement.LIST);
+					return () -> p;
 				}
+			}
+		}
+	}
+
+	/**
+	 * Argument handler for the {@code <runFolder>} parameter.
+	 * <p>
+	 * Do not make instances of this class yourself; leave that to picocli.
+	 *
+	 * @author Donal Fellows
+	 * @see ArgGroup
+	 * @see Parameters
+	 */
+	public static class RunFolder implements Supplier<File> {
+		@Parameters(description = RUN, converter = Converter.class)
+		private File runFolder;
+
+		/** @return The folder for the run. */
+		@Override
+		public File get() {
+			return runFolder;
+		}
+
+		static class Converter implements ITypeConverter<File> {
+			@Override
+			public File convert(String filename) throws IOException {
+				var f = new File(filename);
+				if (!f.isDirectory()) {
+					throw new TypeConversionException(
+							"<runFolder> must be a directory");
+				}
+				return f;
 			}
 		}
 	}
