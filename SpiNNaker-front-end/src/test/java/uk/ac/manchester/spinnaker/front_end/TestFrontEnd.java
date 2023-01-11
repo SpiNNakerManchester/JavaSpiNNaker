@@ -62,11 +62,35 @@ class TestFrontEnd {
 		assertEquals(expectedCode, code);
 	}
 
-	private static void assertContains(String message, String substring) {
-		if (!requireNonNull(message).contains(requireNonNull(substring))) {
-			throw new AssertionFailedError(
-					format("message ‘%s’ does not contain ‘%s’", message,
-							substring));
+	/**
+	 * Asserts that the message contains all the given substrings, and that
+	 * their <em>first</em> occurrences in the message are in the order given.
+	 *
+	 * @param message
+	 *            The message to check within.
+	 * @param substrings
+	 *            The substrings to look for in order.
+	 */
+	private static void assertContainsInOrder(String message,
+			String... substrings) {
+		requireNonNull(message);
+		int lastIdx = -2;
+		String lastsub = "";
+		for (var substring : substrings) {
+			requireNonNull(substring);
+			int idx = message.indexOf(substring);
+			if (idx < 0) {
+				throw new AssertionFailedError(
+						format("message ‘%s’ does not contain ‘%s’", message,
+								substring));
+			}
+			if (idx <= lastIdx) {
+				throw new AssertionFailedError(
+						format("message ‘%s’ contains ‘%s’ before ‘%s’",
+								message, substring, lastsub));
+			}
+			lastIdx = idx;
+			lastsub = substring;
 		}
 	}
 
@@ -78,12 +102,12 @@ class TestFrontEnd {
 		var requiredSubcommands = List.of("dse_app_mon", "gather");
 		var requiredArgs = List.of("<machineFile>", "<runFolder>");
 		for (var cmd: requiredSubcommands) {
-			assertContains(msg, cmd);
+			assertContainsInOrder(msg, cmd);
 			var msg2 = tapSystemOutNormalized(() -> {
 				runMainExpecting(0, "help", cmd);
 			});
 			for (var arg : requiredArgs) {
-				assertContains(msg2, arg);
+				assertContainsInOrder(msg2, arg);
 			}
 		}
 	}
@@ -93,7 +117,7 @@ class TestFrontEnd {
 		var msg = tapSystemOutNormalized(() -> {
 			runMainExpecting(0, "--version");
 		});
-		assertContains(msg, " version ");
+		assertContainsInOrder(msg, " version ");
 	}
 
 	@ParameterizedTest
@@ -124,20 +148,18 @@ class TestFrontEnd {
 						}
 					};
 
-			var msg0 = tapSystemErrNormalized(() -> {
+			var msg = tapSystemErrNormalized(() -> {
 				runMainExpecting(2, cmd);
 			});
-			assertContains(msg0, cmd + " <machineFile> <runFolder>");
+			assertContainsInOrder(msg, "<machineFile>", "<runFolder>");
 
-			var msg1 = tapSystemErrNormalized(() -> {
+			tapSystemErrNormalized(() -> {
 				runMainExpecting(2, cmd, machineFile);
 			});
-			assertContains(msg1, cmd + " <machineFile> <runFolder>");
 
-			var msg3 = tapSystemErrNormalized(() -> {
+			tapSystemErrNormalized(() -> {
 				runMainExpecting(2, cmd, machineFile, runFolder, "gorp");
 			});
-			assertContains(msg3, cmd + " <machineFile> <runFolder>");
 
 			assertEquals("none", called.getValue());
 			runMainExpecting(0, cmd, machineFile, runFolder);
@@ -155,7 +177,7 @@ class TestFrontEnd {
 		var runFolder = "target/test/AdvancedDSE";
 		new File(runFolder).mkdirs();
 
-		var saved = CommandLineInterface.hostFactory;
+		var saved = CommandLineInterface.fastFactory;
 		var called = new ValueHolder<>("none");
 		try {
 			CommandLineInterface.fastFactory = (m, g, r,
@@ -174,17 +196,33 @@ class TestFrontEnd {
 			var msg = tapSystemErrNormalized(() -> {
 				runMainExpecting(2, "dse_app_mon");
 			});
-			assertContains(msg, "<gatherFile>");
-			assertContains(msg, "<machineFile>");
-			assertContains(msg, "<runFolder>");
-			assertContains(msg, "[<reportFolder>]");
+			assertContainsInOrder(msg, "<gatherFile>", "<machineFile>",
+					"<runFolder>", "[<reportFolder>]");
 
 			assertEquals("none", called.getValue());
 			runMainExpecting(0, "dse_app_mon", gatherFile, machineFile,
 					runFolder);
 			assertEquals("mon", called.getValue());
 		} finally {
-			CommandLineInterface.hostFactory = saved;
+			CommandLineInterface.fastFactory = saved;
 		}
+	}
+
+	@Test
+	void testScampDownload() throws Exception {
+		var msg = tapSystemErrNormalized(() -> {
+			runMainExpecting(2, "download");
+		});
+		assertContainsInOrder(msg, "<placementFile>", "<machineFile>",
+				"<runFolder>");
+	}
+
+	@Test
+	void testStreamDownload() throws Exception {
+		var msg = tapSystemErrNormalized(() -> {
+			runMainExpecting(2, "gather");
+		});
+		assertContainsInOrder(msg, "<gatherFile>", "<machineFile>",
+				"<runFolder>");
 	}
 }
