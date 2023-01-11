@@ -56,6 +56,7 @@ import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.IModelTransformer;
 import picocli.CommandLine.ITypeConverter;
+import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.TypeConversionException;
@@ -80,6 +81,7 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
  * The main command line interface.
@@ -149,18 +151,22 @@ public final class CommandLineInterface {
 		}
 	}
 
+	static CommandSpec getSpec() {
+		return new CommandLine(new CommandLineInterface()).getCommandSpec();
+	}
+
 	// Wrappers because of three configurations varying in one parameter
 	@Command(name = "dse", description = DSE_DESC)
-	private void dseAllCores(@ArgGroup(multiplicity = "1") MachineParam machine,
-			@ArgGroup(multiplicity = "1") RunFolder runFolder)
+	private void dseAllCores(@Mixin MachineParam machine,
+			@Mixin RunFolder runFolder)
 			throws Exception {
 		runDSEUploadingViaClassicTransfer(machine.get(), runFolder.get(), null);
 	}
 
 	@Command(name = "dse_sys", description = DSE_SYS_DESC)
 	private void dseSystemCores(
-			@ArgGroup(multiplicity = "1") MachineParam machine,
-			@ArgGroup(multiplicity = "1") RunFolder runFolder)
+			@Mixin MachineParam machine,
+			@Mixin RunFolder runFolder)
 			throws Exception {
 		runDSEUploadingViaClassicTransfer(machine.get(), runFolder.get(),
 				false);
@@ -168,11 +174,38 @@ public final class CommandLineInterface {
 
 	@Command(name = "dse_app", description = DSE_APP_DESC)
 	private void dseApplicationCores(
-			@ArgGroup(multiplicity = "1") MachineParam machine,
-			@ArgGroup(multiplicity = "1") RunFolder runFolder)
+			@Mixin MachineParam machine,
+			@Mixin RunFolder runFolder)
 			throws Exception {
 		runDSEUploadingViaClassicTransfer(machine.get(), runFolder.get(), true);
 	}
+
+	@FunctionalInterface
+	interface HostDSEFactory {
+		HostExecuteDataSpecification create(Machine m, DSEDatabaseEngine db)
+				throws IOException, SpinnmanException, StorageException,
+				ExecutionException, InterruptedException, URISyntaxException;
+	}
+
+	/**
+	 * Makes {@link HostExecuteDataSpecification} instances. Allows for
+	 * injection of debugging tooling.
+	 */
+	static HostDSEFactory hostFactory = HostExecuteDataSpecification::new;
+
+	@FunctionalInterface
+	interface FastDSEFactory {
+		FastExecuteDataSpecification create(Machine machine,
+				List<Gather> gatherers, File reportDir, DSEDatabaseEngine db)
+				throws IOException, SpinnmanException, StorageException,
+				ExecutionException, InterruptedException, URISyntaxException;
+	}
+
+	/**
+	 * Makes {@link FastExecuteDataSpecification} instances. Allows for
+	 * injection of debugging tooling.
+	 */
+	static FastDSEFactory fastFactory = FastExecuteDataSpecification::new;
 
 	/**
 	 * Run the data specifications in parallel.
@@ -209,7 +242,7 @@ public final class CommandLineInterface {
 		setLoggerDir(runFolder);
 		var db = getDataSpecDB(runFolder);
 
-		try (var dseExec = new HostExecuteDataSpecification(machine, db)) {
+		try (var dseExec = hostFactory.create(machine, db)) {
 			if (filterSystemCores == null) {
 				dseExec.loadAllCores();
 			} else if (filterSystemCores) {
@@ -250,9 +283,9 @@ public final class CommandLineInterface {
 	 */
 	@Command(name = "dse_app_mon", description = DSE_MON_DESC)
 	public void runDSEForAppCoresUploadingViaMonitorStreaming(
-			@ArgGroup(multiplicity = "1") GatherersParam gatherers,
-			@ArgGroup(multiplicity = "1") MachineParam machine,
-			@ArgGroup(multiplicity = "1") RunFolder runFolder,
+			@Mixin GatherersParam gatherers,
+			@Mixin MachineParam machine,
+			@Mixin RunFolder runFolder,
 			@Parameters(description = REPORT, arity = "0..1", index = "3")
 			Optional<File> reportFolder)
 			throws IOException, SpinnmanException, StorageException,
@@ -261,8 +294,8 @@ public final class CommandLineInterface {
 		setLoggerDir(runFolder.get());
 		var db = getDataSpecDB(runFolder.get());
 
-		try (var dseExec = new FastExecuteDataSpecification(machine.get(),
-				gatherers.get(), reportFolder.orElse(null), db)) {
+		try (var dseExec = fastFactory.create(machine.get(), gatherers.get(),
+				reportFolder.orElse(null), db)) {
 			dseExec.loadCores();
 		}
 	}
@@ -292,9 +325,9 @@ public final class CommandLineInterface {
 	 */
 	@Command(name = "iobuf", description = IOBUF_DESC)
 	public void retrieveIOBUFs(
-			@ArgGroup(multiplicity = "1") MachineParam machine,
-			@ArgGroup(multiplicity = "1") IobufMapParam iobuf,
-			@ArgGroup(multiplicity = "1") RunFolder runFolder)
+			@Mixin MachineParam machine,
+			@Mixin IobufMapParam iobuf,
+			@Mixin RunFolder runFolder)
 			throws IOException, SpinnmanException, InterruptedException,
 			StorageException, URISyntaxException {
 		setLoggerDir(runFolder.get());
@@ -332,9 +365,9 @@ public final class CommandLineInterface {
 	 */
 	@Command(name = "download", description = DOWNLOAD_DESC)
 	public void downloadRecordingChannelsViaClassicTransfer(
-			@ArgGroup(multiplicity = "1") PlacementsParam placements,
-			@ArgGroup(multiplicity = "1") MachineParam machine,
-			@ArgGroup(multiplicity = "1") RunFolder runFolder)
+			@Mixin PlacementsParam placements,
+			@Mixin MachineParam machine,
+			@Mixin RunFolder runFolder)
 			throws IOException, SpinnmanException, StorageException,
 			InterruptedException, URISyntaxException {
 		setLoggerDir(runFolder.get());
@@ -371,9 +404,9 @@ public final class CommandLineInterface {
 	 */
 	@Command(name = "gather", description = GATHER_DESC)
 	public void downloadRecordingChannelsViaMonitorStreaming(
-			@ArgGroup(multiplicity = "1") GatherersParam gatherers,
-			@ArgGroup(multiplicity = "1") MachineParam machine,
-			@ArgGroup(multiplicity = "1") RunFolder runFolder)
+			@Mixin GatherersParam gatherers,
+			@Mixin MachineParam machine,
+			@Mixin RunFolder runFolder)
 			throws IOException, SpinnmanException, StorageException,
 			InterruptedException, URISyntaxException {
 		setLoggerDir(runFolder.get());
@@ -530,24 +563,25 @@ public final class CommandLineInterface {
 	 * @see Parameters
 	 */
 	public static class RunFolder implements Supplier<File> {
-		@Parameters(description = RUN, converter = Converter.class)
-		private File runFolder;
+		@Parameters(description = RUN, converter = Converter.class, arity = "1")
+		private ValueHolder<File> runFolder = new ValueHolder<>();
 
 		/** @return The folder for the run. */
 		@Override
 		public File get() {
-			return runFolder;
+			return runFolder.getValue();
 		}
 
-		static class Converter implements ITypeConverter<File> {
+		static class Converter implements ITypeConverter<ValueHolder<File>> {
 			@Override
-			public File convert(String filename) throws IOException {
+			public ValueHolder<File> convert(String filename)
+					throws IOException {
 				var f = new File(filename);
 				if (!f.isDirectory()) {
 					throw new TypeConversionException(
 							"<runFolder> must be a directory");
 				}
-				return f;
+				return new ValueHolder<>(f);
 			}
 		}
 	}
