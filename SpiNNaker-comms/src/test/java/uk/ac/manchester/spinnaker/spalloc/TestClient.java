@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.OVERALL_TEST_TIMEOUT;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.TIMEOUT;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.assertTimeout;
+import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.withConnectedConnection;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.withConnection;
 import static uk.ac.manchester.spinnaker.spalloc.messages.State.READY;
 
@@ -86,7 +87,7 @@ class TestClient {
 					try (var context = c.withConnection()) {
 						return; // do nothing
 					} finally {
-						t.join();
+						t.flushjoin();
 					}
 				}
 			});
@@ -110,57 +111,61 @@ class TestClient {
 		withConnection((s, c, bgAccept) -> {
 			assertThrows(EOFException.class, () -> c.receiveResponse(null));
 			c.connect();
-			bgAccept.join();
+			try (var sc = bgAccept.join()) {
+				// Test the timeout
+				long before = System.currentTimeMillis();
+				assertThrows(SpallocProtocolTimeoutException.class,
+						() -> c.receiveResponse(TIMEOUT));
+				long after = System.currentTimeMillis();
+				assertTimeout(before, after);
 
-			// Test the timeout
-			long before = System.currentTimeMillis();
-			assertThrows(SpallocProtocolTimeoutException.class,
-					() -> c.receiveResponse(TIMEOUT));
-			long after = System.currentTimeMillis();
-			assertTimeout(before, after);
+				// Transfer an actual message
+				sc.send("{\"return\": \"bar\"}");
+				assertEquals("\"bar\"",
+						((ReturnResponse) c.receiveResponse(null))
+								.getReturnValue());
 
-			// Transfer an actual message
-			s.send("{\"return\": \"bar\"}");
-			assertEquals("\"bar\"", ((ReturnResponse) c.receiveResponse(null))
-					.getReturnValue());
+				// Return a large message
+				var a1 = new JSONArray();
+				for (int i = 0; i < 1000; i++) {
+					a1.put(i);
+				}
+				var o = new JSONObject();
+				o.put("return", a1);
+				sc.send(o);
+				var a2 = new JSONArray(
+						((ReturnResponse) c.receiveResponse(null))
+								.getReturnValue());
+				for (int i = 0; i < 1000; i++) {
+					assertEquals(a1.get(i), a2.get(i));
+				}
 
-			// Return a large message
-			var a1 = new JSONArray();
-			for (int i = 0; i < 1000; i++) {
-				a1.put(i);
+				// Test message ordering
+				sc.send("{\"return\": \"foo\"}");
+				sc.send("{\"return\": \"bar\"}");
+				assertEquals("\"foo\"",
+						((ReturnResponse) c.receiveResponse(null))
+								.getReturnValue());
+				assertEquals("\"bar\"",
+						((ReturnResponse) c.receiveResponse(null))
+								.getReturnValue());
+
+				// Test other message types
+				sc.send("{\"exception\": \"bar\"}");
+				assertEquals("bar",
+						((ExceptionResponse) c.receiveResponse(null))
+								.getException());
+				sc.send("{\"machines_changed\": [\"foo\",\"bar\"]}");
+				assertEquals(List.of("foo", "bar"),
+						((MachinesChangedNotification) c.receiveResponse(null))
+								.getMachinesChanged());
+				sc.send("{\"jobs_changed\": [1, 2]}");
+				assertEquals(List.of(1, 2),
+						((JobsChangedNotification) c.receiveResponse(null))
+								.getJobsChanged());
 			}
-			var o = new JSONObject();
-			o.put("return", a1);
-			s.send(o);
-			var a2 = new JSONArray(((ReturnResponse) c.receiveResponse(null))
-					.getReturnValue());
-			for (int i = 0; i < 1000; i++) {
-				assertEquals(a1.get(i), a2.get(i));
-			}
-
-			// Test message ordering
-			s.send("{\"return\": \"foo\"}");
-			s.send("{\"return\": \"bar\"}");
-			assertEquals("\"foo\"", ((ReturnResponse) c.receiveResponse(null))
-					.getReturnValue());
-			assertEquals("\"bar\"", ((ReturnResponse) c.receiveResponse(null))
-					.getReturnValue());
-
-			// Test other message types
-			s.send("{\"exception\": \"bar\"}");
-			assertEquals("bar", ((ExceptionResponse) c.receiveResponse(null))
-					.getException());
-			s.send("{\"machines_changed\": [\"foo\",\"bar\"]}");
-			assertEquals(List.of("foo", "bar"),
-					((MachinesChangedNotification) c.receiveResponse(null))
-							.getMachinesChanged());
-			s.send("{\"jobs_changed\": [1, 2]}");
-			assertEquals(List.of(1, 2),
-					((JobsChangedNotification) c.receiveResponse(null))
-							.getJobsChanged());
 
 			// When socket becomes closed should fail
-			s.close();
 			assertThrows(EOFException.class, () -> c.receiveResponse(null));
 		});
 	}
@@ -173,22 +178,19 @@ class TestClient {
 					() -> c.sendCommand(new VersionCommand(), 250));
 
 			c.connect();
-			bgAccept.join();
-
-			// Make sure we can send JSON
-			c.sendCommand(new VersionCommand(), 250);
-			JSONAssert.assertEquals(
-					"{\"command\":\"version\",\"args\":[],\"kwargs\":{}}",
-					s.recv(), true);
+			try (var sc = bgAccept.join()) {
+				// Make sure we can send JSON
+				c.sendCommand(new VersionCommand(), 250);
+				JSONAssert.assertEquals(
+						"{\"command\":\"version\",\"args\":[],\"kwargs\":{}}",
+						sc.recv(), true);
+			}
 		});
 	}
 
 	@Test
 	void testCall() throws Exception {
-		withConnection((s, c, bgAccept) -> {
-			c.connect();
-			bgAccept.join();
-
+		withConnectedConnection((c, s) -> {
 			// Basic calls should work
 			s.send("{\"return\": \"Woo\"}");
 			assertEquals("\"Woo\"",
@@ -242,10 +244,7 @@ class TestClient {
 
 	@Test
 	void testWaitForNotification() throws Exception {
-		withConnection((s, c, bgAccept) -> {
-			c.connect();
-			bgAccept.join();
-
+		withConnectedConnection((c, s) -> {
 			// Should be able to timeout
 			assertThrows(SpallocProtocolTimeoutException.class,
 					() -> c.waitForNotification(TIMEOUT));
@@ -276,12 +275,9 @@ class TestClient {
 	}
 
 	@Test
-	@SuppressWarnings({"deprecation", "removal"})
+	@SuppressWarnings({ "deprecation", "removal" })
 	void testCommandCreateJob() throws Exception {
-		withConnection((s, c, bgAccept) -> {
-			c.connect();
-			bgAccept.join();
-
+		withConnectedConnection((c, s) -> {
 			// Old style create_job
 			s.send("{\"return\": 123}");
 			Map<String, Object> kwargs = Map.of("bar", 2, "owner", "dummy");
@@ -303,10 +299,7 @@ class TestClient {
 
 	@Test
 	void testCommandListJobs() throws Exception {
-		withConnection((s, c, bgAccept) -> {
-			c.connect();
-			bgAccept.join();
-
+		withConnectedConnection((c, s) -> {
 			s.send("{\"return\":[{\"job_id\":123},{\"job_id\":99}]}");
 			var result = c.listJobs();
 			assertEquals(2, result.size());
@@ -319,10 +312,7 @@ class TestClient {
 
 	@Test
 	void testCommandListMachines() throws Exception {
-		withConnection((s, c, bgAccept) -> {
-			c.connect();
-			bgAccept.join();
-
+		withConnectedConnection((c, s) -> {
 			s.send("{\"return\":[{\"name\":\"foo\"},{\"name\":\"bar\"}]}");
 			var result = c.listMachines();
 			assertEquals(2, result.size());
@@ -335,10 +325,7 @@ class TestClient {
 
 	@Test
 	void testCommandDestroyJob() throws Exception {
-		withConnection((s, c, bgAccept) -> {
-			c.connect();
-			bgAccept.join();
-
+		withConnectedConnection((c, s) -> {
 			s.send("{\"return\":null}");
 			c.destroyJob(123, "gorp");
 			JSONAssert.assertEquals(
@@ -350,10 +337,7 @@ class TestClient {
 
 	@Test
 	void testCommandGetBoardPosition() throws Exception {
-		withConnection((s, c, bgAccept) -> {
-			c.connect();
-			bgAccept.join();
-
+		withConnectedConnection((c, s) -> {
 			s.send("{\"return\":[4,5,6]}");
 			var pc = c.getBoardPosition("gorp", new BoardCoordinates(1, 2, 3));
 			assertEquals(new BoardPhysicalCoordinates(4, 5, 6), pc);
@@ -374,10 +358,7 @@ class TestClient {
 
 	@Test
 	void testCommandGetJobMachineInfo() throws Exception {
-		withConnection((s, c, bgAccept) -> {
-			c.connect();
-			bgAccept.join();
-
+		withConnectedConnection((c, s) -> {
 			s.send("{\"return\":{\"boards\": [[1,2,3]],"
 					+ "\"connections\": [[[1,2],\"gorp\"]]}}");
 			var result = c.getJobMachineInfo(123);
@@ -397,10 +378,7 @@ class TestClient {
 
 	@Test
 	void testCommandGetJobState() throws Exception {
-		withConnection((s, c, bgAccept) -> {
-			c.connect();
-			bgAccept.join();
-
+		withConnectedConnection((c, s) -> {
 			s.send("{\"return\":{\"state\":3,\"power\":true}}");
 			var result = c.getJobState(123);
 			assertEquals(true, result.getPower());
@@ -414,10 +392,7 @@ class TestClient {
 
 	@Test
 	void testCommandNotifyJob() throws Exception {
-		withConnection((s, c, bgAccept) -> {
-			c.connect();
-			bgAccept.join();
-
+		withConnectedConnection((c, s) -> {
 			s.send("{\"return\":null}");
 			c.notifyJob(123, false);
 			JSONAssert.assertEquals(
@@ -435,10 +410,7 @@ class TestClient {
 
 	@Test
 	void testCommandNotifyMachine() throws Exception {
-		withConnection((s, c, bgAccept) -> {
-			c.connect();
-			bgAccept.join();
-
+		withConnectedConnection((c, s) -> {
 			s.send("{\"return\":null}");
 			c.notifyMachine("foo", false);
 			JSONAssert.assertEquals(
@@ -456,10 +428,7 @@ class TestClient {
 
 	@Test
 	void testCommandPower() throws Exception {
-		withConnection((s, c, bgAccept) -> {
-			c.connect();
-			bgAccept.join();
-
+		withConnectedConnection((c, s) -> {
 			s.send("{\"return\":null}");
 			c.powerOffJobBoards(123);
 			JSONAssert.assertEquals(
@@ -477,10 +446,7 @@ class TestClient {
 
 	@Test
 	void testCommandVersion() throws Exception {
-		withConnection((s, c, bgAccept) -> {
-			c.connect();
-			bgAccept.join();
-
+		withConnectedConnection((c, s) -> {
 			s.send("{\"return\":\"1.2.3\"}");
 			var result = c.version();
 			assertEquals(1, result.majorVersion);
@@ -494,9 +460,7 @@ class TestClient {
 
 	@Test
 	void testCommandWhereIs() throws Exception {
-		withConnection((s, c, bgAccept) -> {
-			c.connect();
-			bgAccept.join();
+		withConnectedConnection((c, s) -> {
 			WhereIs result;
 
 			s.send("{\"return\":{\"machine\":\"gorp\",\"logical\":[2,3,4]}}");

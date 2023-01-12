@@ -107,9 +107,8 @@ class TestJob {
 		// Check that the messages sent were the ones we expected
 		JSONAssert.assertEquals("{\"command\": \"create_job\", "
 				+ "\"args\": [1, 2, 3], \"kwargs\": {"
-				+ "\"keepalive\": 1, \"max_dead_boards\": 0, "
-				+ "\"min_ratio\": 0.333, \"owner\": \"dummy\", "
-				+ "\"require_torus\": false}}", received.take(), true);
+				+ "\"keepalive\": 1, \"owner\": \"java test harness\", "
+				+ "\"tags\": [\"default\"]}}", received.take(), true);
 		JSONAssert.assertEquals(
 				"{\"command\": \"power_on_job_boards\", \"args\": [123], "
 						+ "\"kwargs\": {}}",

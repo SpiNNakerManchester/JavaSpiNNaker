@@ -25,10 +25,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.Callable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,8 +38,10 @@ import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.MustBeClosed;
 
+import uk.ac.manchester.spinnaker.spalloc.SupportUtils.IConnection;
 import uk.ac.manchester.spinnaker.utils.Daemon;
 import uk.ac.manchester.spinnaker.utils.OneShotEvent;
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 class MockServer implements SupportUtils.IServer {
 	private static final Logger log = getLogger(MockServer.class);
@@ -52,18 +56,13 @@ class MockServer implements SupportUtils.IServer {
 
 	private final OneShotEvent started;
 
-	private Socket sock;
-
-	private PrintWriter out;
-
-	private BufferedReader in;
+	private List<Connection> connections = new ArrayList<>();
 
 	@MustBeClosed
 	MockServer() throws IOException {
 		started = new OneShotEvent();
 		serverSocket = new ServerSocket(0, QUEUE_LENGTH);
 		port = serverSocket.getLocalPort();
-		log.error("made server socket {}", serverSocket);
 	}
 
 	@Override
@@ -71,37 +70,75 @@ class MockServer implements SupportUtils.IServer {
 		return port;
 	}
 
-	public InetAddress connect(boolean doClose) throws IOException {
+	@Override
+	public String toString() {
+		if (serverSocket != null) {
+			return "MockServer(open:" + port + ")";
+		}
+		return "MockServer(closed:" + port + ")";
+	}
+
+	class Connection implements SupportUtils.IConnection {
+		private final Socket sock;
+
+		private final PrintWriter out;
+
+		private final BufferedReader in;
+
+		Connection(Socket sock) throws IOException {
+			this.sock = sock;
+			out = new PrintWriter(
+					new OutputStreamWriter(sock.getOutputStream(), UTF_8));
+			in = new BufferedReader(
+					new InputStreamReader(sock.getInputStream(), UTF_8),
+					BUFFER_SIZE);
+		}
+
+		@Override
+		public void close() throws IOException {
+			sock.close();
+		}
+
+		@Override
+		public void send(JSONObject json) {
+			json.write(out);
+			out.println();
+			out.flush();
+		}
+
+		@Override
+		public JSONObject recv() throws JSONException, IOException {
+			var line = in.readLine();
+			return line == null ? null : new JSONObject(line);
+		}
+	}
+
+	public Connection connect(boolean doClose) throws IOException {
 		started.fire();
-		log.error("waiting for accept on port {}", port);
-		sock = serverSocket.accept();
-		log.error("accepted {}", sock);
+		var sock = serverSocket.accept();
 		if (doClose) {
-			log.error("closing server socket NOW");
 			serverSocket.close();
 			serverSocket = null;
 		}
-		out = new PrintWriter(
-				new OutputStreamWriter(sock.getOutputStream(), UTF_8));
-		in = new BufferedReader(
-				new InputStreamReader(sock.getInputStream(), UTF_8),
-				BUFFER_SIZE);
-		return sock.getInetAddress();
+		var c = new Connection(sock);
+		synchronized (connections) {
+			connections.add(c);
+		}
+		return c;
 	}
 
-	void connectQuietly(boolean doClose) {
+	Connection connectQuietly(boolean doClose) {
 		try {
-			connect(doClose);
+			return connect(doClose);
 		} catch (IOException e) {
 			// Just totally ignore early closing of sockets
 			if (!e.getMessage().equals("Socket closed")) {
 				log.warn("problem with mock IO", e);
-			} else {
-				log.error("sock closed", e);
 			}
 		} catch (RuntimeException e) {
 			log.warn("problem with mock IO", e);
 		}
+		return null;
 	}
 
 	Joinable backgroundAccept() throws Exception {
@@ -109,41 +146,40 @@ class MockServer implements SupportUtils.IServer {
 	}
 
 	Joinable backgroundAccept(boolean closeServerSocket) throws Exception {
-		var t = new Daemon(() -> connectQuietly(closeServerSocket),
+		var result = new ValueHolder<IConnection>();
+		var t = new Daemon(
+				() -> result.setValue(connectQuietly(closeServerSocket)),
 				"background accept");
 		t.start();
-		return () -> t.join();
+		return () -> {
+			t.join();
+			return result.getValue();
+		};
 	}
 
 	interface Joinable {
-		void join() throws InterruptedException;
+		IConnection join() throws InterruptedException;
+
+		default void flushjoin() throws InterruptedException, IOException {
+			try (var c = join()) {
+				if (c != null) {
+					log.debug("{} closing", c);
+				}
+			}
+		}
 	}
 
 	@Override
 	public void close() throws IOException {
 		if (serverSocket != null && !serverSocket.isClosed()) {
-			log.error("closing server socket in close()");
 			serverSocket.close();
 		}
 		serverSocket = null;
-		if (sock != null) {
-			log.error("closing client socket in close()");
-			sock.close();
+		synchronized (connections) {
+			for (var c : connections) {
+				c.close();
+			}
 		}
-		sock = null;
-	}
-
-	@Override
-	public void send(JSONObject json) {
-		json.write(out);
-		out.println();
-		out.flush();
-	}
-
-	@Override
-	public JSONObject recv() throws JSONException, IOException {
-		var line = in.readLine();
-		return line == null ? null : new JSONObject(line);
 	}
 
 	/** Message used to stop the server. */
@@ -157,9 +193,40 @@ class MockServer implements SupportUtils.IServer {
 			notifyAll();
 		}
 
-		synchronized void waitForMark() throws InterruptedException {
+		synchronized void waitForMark() {
 			while (!set) {
-				wait();
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					throw new RuntimeException("interrupted", e);
+				}
+			}
+		}
+	}
+
+	static final class InterlockedDaemon extends Thread {
+		private final Callable<?> target;
+
+		private final Lock lock;
+
+		InterlockedDaemon(Callable<?> target, String name) {
+			super(name);
+			this.target = target;
+			this.lock = new Lock();
+			setDaemon(true);
+			start();
+			lock.waitForMark();
+		}
+
+		@Override
+		public void run() {
+			lock.mark();
+			try {
+				target.call();
+			} catch (EOFException e) {
+				// do nothing
+			} catch (Exception e) {
+				log.error("exception in {}", getName(), e);
 			}
 		}
 	}
@@ -167,58 +234,38 @@ class MockServer implements SupportUtils.IServer {
 	@Override
 	public void advancedEmulationMode(BlockingDeque<String> send,
 			BlockingDeque<JSONObject> received,
-			BlockingDeque<JSONObject> keepaliveQueue, Joinable bgAccept)
-			throws InterruptedException {
-		log.error("aem manufacture");
-		var lock = new Lock();
-		new Daemon(() -> {
-			try {
-				log.error("aem commencing");
-				lock.mark();
-				bgAccept.join();
-				log.error("aem launched");
-				launchKeepaliveListener(keepaliveQueue);
-				while (true) {
-					if (STOP.equals(send.peek())) {
-						send.take();
-						break;
-					}
-					var r = recv();
-					if (r == null) {
-						break;
-					}
-					received.offer(r);
-					do {
-						send(send.take());
-					} while (send.peek().contains("changed"));
-				}
-			} catch (Exception e) {
-				log.error("failure in mock server", e);
-			}
-		}, "mock server advanced emulator").start();
-		lock.waitForMark();
-	}
-
-	private static void launchKeepaliveListener(
-			BlockingDeque<JSONObject> keepaliveQueue) {
-		new Daemon(() -> {
-			try (var s = new MockServer()) {
-				log.error("keepalive listener launching...");
-				s.connect(false);
-				log.error("keepalive listener launched");
-				while (true) {
-					var o = s.recv();
+			BlockingDeque<JSONObject> keepaliveQueue, Joinable bgAccept) {
+		new InterlockedDaemon(() -> {
+			var sc = bgAccept.join();
+			var go = new ValueHolder<Boolean>(true);
+			new InterlockedDaemon(() -> {
+				var kal = connect(true);
+				while (go.getValue()) {
+					var o = kal.recv();
 					if (o == null) {
-						break;
+						return o;
 					}
 					keepaliveQueue.offer(o);
-					s.send("{\"return\": null}");
+					kal.send("{\"return\": null}");
 				}
-			} catch (EOFException e) {
-				// do nothing
-			} catch (Exception e) {
-				log.error("failure in keepalive listener", e);
+				return null;
+			}, "mock server keepalive listener");
+			while (true) {
+				if (STOP.equals(send.peek())) {
+					send.take();
+					go.setValue(false);
+					break;
+				}
+				var r = sc.recv();
+				if (r == null) {
+					break;
+				}
+				received.offer(r);
+				do {
+					sc.send(send.take());
+				} while (send.peek().contains("changed"));
 			}
-		}, "mock server keepalive listener").start();
+			return 0;
+		}, "mock server advanced emulator");
 	}
 }
