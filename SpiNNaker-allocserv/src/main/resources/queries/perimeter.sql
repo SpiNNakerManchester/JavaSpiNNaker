@@ -15,11 +15,13 @@
 
 WITH
 	-- Boards that are allocated to the job
-	bs AS (SELECT boards.* FROM boards WHERE boards.allocated_job = :job_id)
-SELECT links.board_1 AS board_id, links.dir_1 AS direction
-	FROM links JOIN bs ON links.board_1 IN (SELECT board_id FROM bs)
-	WHERE links.live AND NOT links.board_2 IN (SELECT board_id FROM bs)
+	bs AS (SELECT board_id FROM boards WHERE allocated_job = :job_id)
+SELECT board_1 AS board_id, dir_1 AS direction FROM links
+	WHERE board_1 IN (SELECT board_id FROM bs)
+	AND live
+	AND NOT board_2 IN (SELECT board_id FROM bs)
 UNION
-SELECT links.board_2 AS board_id, links.dir_2 AS direction
-	FROM links JOIN bs ON links.board_2 IN (SELECT board_id FROM bs)
-	WHERE links.live AND NOT links.board_1 IN (SELECT board_id FROM bs);
+SELECT board_2 AS board_id, dir_2 AS direction FROM links
+	WHERE board_2 IN (SELECT board_id FROM bs)
+	AND live
+	AND NOT board_1 IN (SELECT board_id FROM bs);

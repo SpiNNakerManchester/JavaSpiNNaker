@@ -176,7 +176,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	public List<MachineListEntryRecord>
 			listMachines(boolean allowOutOfService) {
 		try (var sql = new ListMachinesSQL()) {
-			return sql.transaction(false,
+			return sql.transactionRead(
 					() -> sql.listMachines.call(allowOutOfService)
 							.map(sql::makeMachineListEntryRecord).toList());
 		}
@@ -242,7 +242,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	public Optional<MachineDescription> getMachineInfo(String machine,
 			boolean allowOutOfService, Permit permit) {
 		try (var sql = new DescribeMachineSQL()) {
-			return sql.transaction(false, () -> apply(
+			return sql.transactionRead(() -> apply(
 					sql.namedMachine.call1(machine, allowOutOfService)
 							.map(Spalloc::getBasicMachineInfo),
 					md -> sql.countMachineThings.call1(md.getId())

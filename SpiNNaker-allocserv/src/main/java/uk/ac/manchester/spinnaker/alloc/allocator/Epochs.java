@@ -20,6 +20,8 @@ import static java.lang.System.currentTimeMillis;
 
 import java.time.Duration;
 
+import javax.annotation.PreDestroy;
+
 import org.springframework.stereotype.Service;
 
 import com.google.errorprone.annotations.concurrent.GuardedBy;
@@ -39,6 +41,13 @@ public class Epochs {
 
 	@GuardedBy("this")
 	private long blacklistEpoch = 0L;
+
+	private volatile boolean shutdown;
+
+	@PreDestroy
+	private void inShutdown() {
+		shutdown = true;
+	}
 
 	/**
 	 * Get the current jobs epoch.
@@ -110,14 +119,15 @@ public class Epochs {
 		return currentTimeMillis() + timeout.toMillis();
 	}
 
-	private static boolean waiting(long expiry) {
-		return currentTimeMillis() < expiry;
+	private boolean waiting(long expiry) {
+		return currentTimeMillis() < expiry && !shutdown;
 	}
 
 	// The loops are in the callers
 	@SuppressWarnings("WaitNotInLoop")
 	private void waitUntil(long expiry) throws InterruptedException {
-		wait(expiry - currentTimeMillis());
+		long t = expiry - currentTimeMillis();
+		wait(t);
 	}
 
 	/**

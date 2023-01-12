@@ -33,7 +33,7 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
  *
  * @author Donal Fellows
  */
-public interface BufferManagerStorage extends DatabaseAPI {
+public interface BufferManagerStorage extends ProxyAwareStorage {
 	/**
 	 * Retrieves some bytes from the database. The bytes represent the contents
 	 * of a DSE region of a particular SpiNNaker core.
@@ -288,12 +288,4 @@ public interface BufferManagerStorage extends DatabaseAPI {
 		contents.slice().get(ary);
 		appendRecordingContents(region, ary);
 	}
-
-	/**
-	 * Get the proxy information from the database, or null if none defined.
-	 *
-	 * @return The proxy information, or null if none defined.
-	 * @throws StorageException If anything goes wrong.
-	 */
-	ProxyInformation getProxyInformation() throws StorageException;
 }

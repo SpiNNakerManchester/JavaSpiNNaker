@@ -60,10 +60,8 @@ final class GatherDownloadConnection {
 	/**
 	 * Create an instance.
 	 *
-	 * @param location
-	 *            Where the connection is talking to.
-	 * @param iptag
-	 *            What IPtag the Data Speed Up protocol is working on.
+	 * @param connection
+	 *            What connection are we using to talk to the board.
 	 * @throws IOException
 	 *             If anything goes wrong with socket setup.
 	 */

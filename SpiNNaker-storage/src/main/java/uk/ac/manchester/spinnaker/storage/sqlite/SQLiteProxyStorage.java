@@ -16,9 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.storage.sqlite;
 
-import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FIRST;
-import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.SECOND;
-import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.SEVENTH;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_PROXY_INFORMATION;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.PROXY_AUTH;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.PROXY_URI;
@@ -27,49 +24,73 @@ import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.SPALLOC_URI;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
+import uk.ac.manchester.spinnaker.storage.DatabaseAPI;
+import uk.ac.manchester.spinnaker.storage.ProxyAwareStorage;
 import uk.ac.manchester.spinnaker.storage.ProxyInformation;
+import uk.ac.manchester.spinnaker.storage.StorageException;
 
-public final class SQLiteProxyInformation {
+abstract class SQLiteProxyStorage<T extends DatabaseAPI>
+		extends SQLiteConnectionManager<T> implements ProxyAwareStorage {
+	/** Standard prefix for the bearer token header, which will be stripped. */
+	private static final String PREFIX = "Bearer ";
 
-	private SQLiteProxyInformation() {
+	protected SQLiteProxyStorage(ConnectionProvider<T> connProvider) {
+		super(connProvider);
+	}
+
+	@Override
+	public ProxyInformation getProxyInformation() throws StorageException {
+		return callR(conn -> getProxyInfo(conn), "get proxy");
 	}
 
 	/**
 	 * Get the proxy information from a database.
 	 *
-	 * @param conn The connection to read the data from.
+	 * @param conn
+	 *            The connection to read the data from.
 	 * @return The proxy information.
-	 * @throws SQLException If there is an error reading the database.
+	 * @throws SQLException
+	 *             If there is an error reading the database.
+	 * @throws IllegalStateException
+	 *             If a bad row is retrieved; should be unreachable if SQL is
+	 *             synched to code.
 	 */
-	public static ProxyInformation getSQLProxyInformation(Connection conn)
-			throws SQLException {
+	private ProxyInformation getProxyInfo(Connection conn) throws SQLException {
 		String spallocUri = null;
 		String jobUri = null;
 		String bearerToken = null;
 		try (var s = conn.prepareStatement(GET_PROXY_INFORMATION);
 				var rs = s.executeQuery()) {
 			while (rs.next()) {
-				String name = rs.getString(FIRST);
-				String value = rs.getString(SECOND);
-				if (name.equals(SPALLOC_URI)) {
+				var name = rs.getString("name");
+				var value = rs.getString("value");
+				if (name == null || value == null) {
+					continue;
+				}
+				switch (name) {
+				case SPALLOC_URI:
 					spallocUri = value;
-				} else if (name.equals(PROXY_URI)) {
+					break;
+				case PROXY_URI:
 					jobUri = value;
-				} else if (name.equals(PROXY_AUTH)) {
-					bearerToken = value;
-					if (!bearerToken.startsWith("Bearer ")) {
+					break;
+				case PROXY_AUTH:
+					if (!value.startsWith(PREFIX)) {
 						throw new SQLException(
-								"Unexpected proxy authentication: "
-										+ bearerToken);
+								"Unexpected proxy authentication: " + value);
 					}
-					bearerToken = bearerToken.substring(SEVENTH);
+					bearerToken = value.substring(PREFIX.length());
+					break;
+				default:
+					throw new IllegalStateException("unreachable reached");
 				}
 			}
 		}
+		// If we don't have all pieces of info, we can't talk to the proxy
 		if (spallocUri == null || jobUri == null || bearerToken == null) {
 			return null;
 		}
 		return new ProxyInformation(spallocUri, jobUri, bearerToken);
 	}
-
 }

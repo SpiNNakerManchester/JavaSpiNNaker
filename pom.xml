@@ -40,11 +40,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<javadoc.version>3.4.1</javadoc.version>
 		<testing.version>3.0.0-M7</testing.version>
 
-		<slf4j.version>2.0.4</slf4j.version>
+		<slf4j.version>2.0.6</slf4j.version>
 		<log4j.version>2.19.0</log4j.version>
 
 		<spring.version>5.3.24</spring.version>
-		<spring.boot.version>2.7.5</spring.boot.version>
+		<spring.boot.version>2.7.7</spring.boot.version>
 		<!--
 		DKF: if you update spring.boot.version, also update the annotation
 		  processor binding in Eclipse for SpiNNaker-allocserv:
@@ -54,17 +54,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		  Failure to do this leads to strange misbehaviour in tooltips when
 		  editing application.yml
 		-->
-		<spring.security.version>5.7.5</spring.security.version>
+		<spring.security.version>5.8.1</spring.security.version>
 
-		<cxf.version>3.5.4</cxf.version>
+		<cxf.version>3.5.5</cxf.version>
 		<jackson.version>2.14.1</jackson.version>
 		<jackson.doc.version>2.14</jackson.doc.version>
 		<sqlite.version>3.40.0.0</sqlite.version>
-		<keycloak.version>20.0.1</keycloak.version>
+		<keycloak.version>20.0.2</keycloak.version>
 		<swagger.version>4.15.5</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.3</jython.version>
-		<error-prone.version>2.16</error-prone.version>
+		<error-prone.version>2.17.0</error-prone.version>
+		<picocli.version>4.7.0</picocli.version>
 	</properties>
 
 	<dependencyManagement>
@@ -301,7 +302,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<dependency>
 				<groupId>info.picocli</groupId>
 				<artifactId>picocli</artifactId>
-				<version>4.7.0</version>
+				<version>${picocli.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.keycloak</groupId>
@@ -344,6 +345,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<artifactId>javax.el</artifactId>
 				<version>3.0.0</version>
 			</dependency>
+			<dependency>
+				<groupId>com.github.stefanbirkner</groupId>
+				<artifactId>system-lambda</artifactId>
+				<version>1.2.1</version>
+				<scope>test</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -358,7 +365,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
-					<version>3.3.0</version>
+					<version>3.4.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -556,7 +563,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>uk.co.automatictester</groupId>
 					<artifactId>truststore-maven-plugin</artifactId>
-					<version>3.0.0</version>
+					<version>4.0.0</version>
 				</plugin>
 				<plugin>
 					<groupId>com.github.eirslett</groupId>
@@ -670,6 +677,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.skife.maven</groupId>
+					<artifactId>really-executable-jar-maven-plugin</artifactId>
+					<version>2.0.0</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

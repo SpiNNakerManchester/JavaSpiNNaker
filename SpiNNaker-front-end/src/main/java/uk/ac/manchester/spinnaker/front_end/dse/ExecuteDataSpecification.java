@@ -20,7 +20,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.function.Function;
@@ -69,7 +68,6 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 	/** How to run tasks in parallel. */
 	private final BasicExecutor executor;
 
-
 	/**
 	 * @param machine
 	 *            The description of the SpiNNaker machine.
@@ -99,16 +97,21 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 		this.db = db;
 		executor = new BasicExecutor(PARALLEL_SIZE);
 		try {
+			if (db == null) {
+				// For testing only
+				job = null;
+				txrx = null;
+				return;
+			}
 			var proxy = db.getStorageInterface().getProxyInformation();
 			if (proxy == null) {
-				log.debug("Using real machine for transceiver");
+				log.debug("Using direct machine access for transceiver");
 				job = null;
 				txrx = new Transceiver(machine);
 			} else {
 				log.debug("Getting transceiver via proxy on {}",
 						proxy.spallocUrl);
-				job = new SpallocClientFactory(new URI(proxy.spallocUrl))
-						.getJob(proxy.jobUrl, proxy.bearerToken);
+				job = SpallocClientFactory.getJobFromProxyInfo(proxy);
 				txrx = job.getTransceiver();
 			}
 		} catch (ProcessException e) {
@@ -121,7 +124,9 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 
 	@Override
 	public final void close() throws IOException, InterruptedException {
-		txrx.close();
+		if (txrx != null) {
+			txrx.close();
+		}
 		executor.close();
 	}
 

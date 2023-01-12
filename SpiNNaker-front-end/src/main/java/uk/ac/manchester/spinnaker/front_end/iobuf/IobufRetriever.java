@@ -116,10 +116,9 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 	 *             If an unexpected exception happens.
 	 */
 	public NotableMessages retrieveIobufContents(IobufRequest request,
-			String provenanceDir)
+			File provenanceDir)
 			throws IOException, ProcessException, InterruptedException {
-		var provDir = new File(provenanceDir);
-		validateProvenanceDirectory(provDir);
+		validateProvenanceDirectory(provenanceDir);
 		var errorEntries = new ArrayList<String>();
 		var warnEntries = new ArrayList<String>();
 		var mapping = request.getRequestDetails();
@@ -128,8 +127,8 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 					.map(this::partitionByBoard).flatMap(entry -> {
 						var r = new Replacer(entry.getKey());
 						return entry.getValue().stream().map(cs -> {
-							return () -> retrieveIobufContents(cs, r, provDir,
-									errorEntries, warnEntries);
+							return () -> retrieveIobufContents(cs, r,
+									provenanceDir, errorEntries, warnEntries);
 						});
 					})).awaitAndCombineExceptions();
 		} catch (Replacer.WrappedException e) {
