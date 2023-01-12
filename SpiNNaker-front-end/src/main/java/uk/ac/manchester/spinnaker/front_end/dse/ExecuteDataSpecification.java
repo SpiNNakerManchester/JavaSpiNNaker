@@ -97,6 +97,12 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 		this.db = db;
 		executor = new BasicExecutor(PARALLEL_SIZE);
 		try {
+			if (db == null) {
+				// For testing only
+				job = null;
+				txrx = null;
+				return;
+			}
 			var proxy = db.getStorageInterface().getProxyInformation();
 			if (proxy == null) {
 				log.debug("Using direct machine access for transceiver");
@@ -118,7 +124,9 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 
 	@Override
 	public final void close() throws IOException, InterruptedException {
-		txrx.close();
+		if (txrx != null) {
+			txrx.close();
+		}
 		executor.close();
 	}
 
