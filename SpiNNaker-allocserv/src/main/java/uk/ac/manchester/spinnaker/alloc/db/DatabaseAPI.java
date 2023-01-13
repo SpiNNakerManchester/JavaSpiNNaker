@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.db;
 
 import java.io.File;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -204,6 +205,15 @@ public interface DatabaseAPI {
 		 * @see java.sql.Connection#isReadOnly()
 		 */
 		boolean isReadOnly();
+
+		/**
+		 * Whether the historical data DB is available. If it isn't, you can't
+		 * move any data to longer-term storage, but ordinary operations should
+		 * be fine.
+		 *
+		 * @return Whether the historical data DB is available.
+		 */
+		boolean isHistoricalDBAvailable();
 
 		/**
 		 * A nestable transaction runner. If the {@code operation} completes
@@ -557,6 +567,16 @@ public interface DatabaseAPI {
 		 */
 		@Override
 		void close();
+
+		/**
+		 * Get the query plan explanation. Note that DML and DDL <em>may</em>
+		 * have empty query plans; that's up to the DB.
+		 *
+		 * @return A list of lines that describe the query plan.
+		 * @see <a href="https://www.sqlite.org/eqp.html">SQLite
+		 *      documentation</a>
+		 */
+		List<String> explainQueryPlan();
 	}
 
 	/**

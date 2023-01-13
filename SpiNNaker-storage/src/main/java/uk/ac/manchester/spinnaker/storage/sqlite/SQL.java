@@ -224,4 +224,28 @@ abstract class SQL {
 	static final String ADD_LOADING_METADATA = "UPDATE core "
 			+ "SET start_address = ?, memory_used = ?, memory_written = ? "
 			+ "WHERE core_id = ?";
+
+	/**
+	 * The name of the result containing the spalloc URI.
+	 */
+	static final String SPALLOC_URI = "service uri";
+
+	/**
+	 * The name of the result containing the proxy URI.
+	 */
+	static final String PROXY_URI = "job uri";
+
+	/**
+	 * The name of the result containing the proxy Authorization.
+	 */
+	static final String PROXY_AUTH = "Authorization";
+
+	/**
+	 * Get information about the proxy.
+	 */
+	static final String GET_PROXY_INFORMATION =
+			"SELECT name, value FROM proxy_configuration WHERE "
+			+ "((kind = 'SPALLOC' AND name = '" + PROXY_URI + "') OR"
+			+ " (kind = 'HEADER' AND name = '" + PROXY_AUTH + "') OR"
+			+ " (kind = 'SPALLOC' AND name = '" + SPALLOC_URI + "'))";
 }

@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc;
 import static java.util.Objects.nonNull;
 
 import java.io.File;
+import java.net.URI;
 import java.time.Duration;
 import java.util.Set;
 
@@ -1089,6 +1090,12 @@ public class SpallocProperties {
 		 */
 		private String secret;
 
+		/** Location of the OpenID Opaque Token Introspection service. */
+		private String introspection;
+
+		/** Location of the OpenID User Info service. */
+		private String userinfo;
+
 		/** Prefix for user names originating from OpenID auto-registration. */
 		private String usernamePrefix;
 
@@ -1117,6 +1124,14 @@ public class SpallocProperties {
 		 * @param secret
 		 *            The application installation secret. Required for allowing
 		 *            people to use HBP/EBRAINS identities.
+		 * @param introspection
+		 *            Location of the OpenID Opaque Token Introspection service.
+		 *            Resolved with respect to {@code domain} (if that is given
+		 *            and non-empty).
+		 * @param userinfo
+		 *            Location of the OpenID User Info service. Resolved with
+		 *            respect to {@code domain} (if that is given and
+		 *            non-empty).
 		 * @param usernamePrefix
 		 *            Prefix for user names originating from OpenID
 		 *            auto-registration.
@@ -1132,6 +1147,8 @@ public class SpallocProperties {
 				Set<String> scopes, //
 				@DefaultValue("") String id, //
 				@DefaultValue("") String secret,
+				@DefaultValue("/") String introspection,
+				@DefaultValue("/") String userinfo,
 				@DefaultValue("openid.") String usernamePrefix,
 				@DefaultValue("PKCS12") String truststoreType,
 				@DefaultValue("classpath:/truststore.p12") //
@@ -1142,10 +1159,19 @@ public class SpallocProperties {
 			this.setScopes(scopes != null ? scopes : Set.of());
 			this.id = id;
 			this.secret = secret;
+			this.introspection = resolve(domain, introspection);
+			this.userinfo = resolve(domain, userinfo);
 			this.usernamePrefix = usernamePrefix;
 			this.truststoreType = truststoreType;
 			this.truststorePath = truststorePath;
 			this.truststorePassword = truststorePassword;
+		}
+
+		private static String resolve(String base, String ref) {
+			if (base == null || base.isEmpty()) {
+				return null;
+			}
+			return URI.create(base).resolve(ref).toString();
 		}
 
 		/**
@@ -1188,6 +1214,24 @@ public class SpallocProperties {
 
 		void setSecret(String secret) {
 			this.secret = secret;
+		}
+
+		/**
+		 * Location of the OpenID Opaque Token Introspection service.
+		 *
+		 * @return The Introspection location.
+		 */
+		public String getIntrospection() {
+			return introspection;
+		}
+
+		/**
+		 * Location of the OpenID User Information service.
+		 *
+		 * @return The Userinfo location.
+		 */
+		public String getUserinfo() {
+			return userinfo;
 		}
 
 		/**
@@ -1578,8 +1622,14 @@ public class SpallocProperties {
 		private boolean performanceLog;
 
 		/**
+		 * If the performance log is enabled, also write the EXPLAIN of the code
+		 * to the log on termination (for slow queries only).
+		 */
+		private boolean autoExplain;
+
+		/**
 		 * Performance stats not reported for queries with a max less than this
-		 * (in nanoseconds).
+		 * (in &mu;s).
 		 */
 		private double performanceThreshold;
 
@@ -1615,9 +1665,13 @@ public class SpallocProperties {
 		 * @param performanceLog
 		 *            Whether to collect and write query performance metrics to
 		 *            the log on termination.
+		 * @param autoExplain
+		 *            If the performance log is enabled, also write the EXPLAIN
+		 *            of the code to the log on termination (for slow queries
+		 *            only).
 		 * @param performanceThreshold
 		 *            Performance stats not reported for queries with a max less
-		 *            than this (in nanoseconds).
+		 *            than this (in &mu;s).
 		 * @param lockTries
 		 *            Number of times to try to take the lock in a transaction.
 		 * @param lockFailedDelay
@@ -1635,6 +1689,7 @@ public class SpallocProperties {
 				@DefaultValue("false") boolean debugFailures,
 				@DefaultValue("400") int analysisLimit,
 				@DefaultValue("false") boolean performanceLog,
+				@DefaultValue("true") boolean autoExplain,
 				@DefaultValue("1e6") double performanceThreshold,
 				@DefaultValue("3") int lockTries,
 				@DefaultValue("100ms") Duration lockFailedDelay,
@@ -1646,6 +1701,7 @@ public class SpallocProperties {
 			this.debugFailures = debugFailures;
 			this.analysisLimit = analysisLimit;
 			this.performanceLog = performanceLog;
+			this.autoExplain = autoExplain;
 			this.performanceThreshold = performanceThreshold;
 			this.lockTries = lockTries;
 			this.lockFailedDelay = lockFailedDelay;
@@ -1710,8 +1766,21 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Number of nanoseconds where performance stats are not
-		 *         reported for queries with a max less than this.
+		 * @return Whether, if the performance log is enabled, to also write the
+		 *         EXPLAIN of the code to the log on termination (for slow
+		 *         queries only).
+		 */
+		public final boolean isAutoExplain() {
+			return autoExplain;
+		}
+
+		void setAutoExplain(boolean flag) {
+			this.autoExplain = flag;
+		}
+
+		/**
+		 * @return Performance stats are not reported for queries with a max
+		 *         less than this, in microseconds.
 		 */
 		@Positive
 		public final double getPerformanceThreshold() {

@@ -27,6 +27,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import java.io.IOException;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,7 +49,10 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 @ActiveProfiles("unittest")
 @TestPropertySource(properties = {
 	"spalloc.database-path=" + AllocatorTest.DB,
-	"spalloc.historical-data.path=" + AllocatorTest.HIST_DB
+	"spalloc.historical-data.path=" + AllocatorTest.HIST_DB,
+	// These tests sometimes hold transactions for a long time; this is OK
+	"spalloc.sqlite.lock-note-threshold=2200ms",
+	"spalloc.sqlite.lock-warn-threshold=3s"
 })
 class AllocatorTest extends TestSupport {
 	/** The name of the database file. */
@@ -75,6 +79,17 @@ class AllocatorTest extends TestSupport {
 		MockTransceiver.installIntoFactory(txrxFactory);
 		setupDB3();
 		this.bmpCtrl = bmpCtrl.getTestAPI();
+		this.bmpCtrl.clearBmpException();
+	}
+
+	@AfterEach
+	void checkBMPWasFine() {
+		var exn = bmpCtrl.getBmpException();
+		assertDoesNotThrow(() -> {
+			if (exn != null) {
+				throw exn;
+			}
+		}, "BMP controller must not have thrown, but did");
 	}
 
 	private void assertState(int jobId, JobState state, int requestCount,
@@ -390,6 +405,8 @@ class AllocatorTest extends TestSupport {
 	@Test
 	public void tombstone() throws Exception {
 		doTransactionalTest(() -> {
+			assumeTrue(conn.isHistoricalDBAvailable());
+
 			int job = makeQueuedJob(1);
 			conn.update(TEST_SET_JOB_STATE).call(DESTROYED, job);
 			conn.update(TEST_SET_JOB_DEATH_TIME).call(0, job);

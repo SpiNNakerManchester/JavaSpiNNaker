@@ -46,7 +46,7 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  *
  * @author Donal Fellows
  */
-public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
+public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 		implements DSEStorage {
 	/**
 	 * Create an instance.

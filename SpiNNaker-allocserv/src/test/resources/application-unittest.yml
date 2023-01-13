@@ -25,5 +25,10 @@ spalloc:
       # configurations anyway, so force things earlier with a shorter error
       # message. It reduces the amount of pain, believe it or not...
       domain: file:/there-is-no-such-file.txt
+      introspection: file:/there-is-no-such-file.txt
+      userinfo: file:/there-is-no-such-file.txt
   transceiver:
     dummy: true
+  sqlite:
+    performance-log: true
+    performance-threshold: 1e2

@@ -1158,21 +1158,6 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	/**
-	 * A neater way of getting a process for running simple SCP requests.
-	 *
-	 * @param connector
-	 *            The specific connector to talk to the board along.
-	 * @return The SCP runner process
-	 * @throws IOException
-	 *             If anything fails (unexpected).
-	 */
-	private TxrxProcess simpleProcess(SCPConnection connector)
-			throws IOException {
-		return new TxrxProcess(new SingletonConnectionSelector<>(connector),
-				this);
-	}
-
-	/**
 	 * A neater way of getting a process for running simple SCP requests against
 	 * a specific SDP connection. Note that the connection is just SDP, not
 	 * guaranteed to be SCP; that matters because it is used to set up
@@ -1186,6 +1171,12 @@ public class Transceiver extends UDPTransceiver
 	 */
 	private TxrxProcess simpleProcess(SDPConnection connector)
 			throws IOException {
+
+		// Avoid delegation of the connection if not needed
+		if (connector instanceof SCPConnection) {
+			return new TxrxProcess(new SingletonConnectionSelector<>(
+					(SCPConnection) connector), this);
+		}
 		return new TxrxProcess(new SingletonConnectionSelector<>(
 				new DelegatingSCPConnection(connector)), this);
 	}
@@ -2177,9 +2168,9 @@ public class Transceiver extends UDPTransceiver
 					"The given board address is not recognised");
 		}
 
-		simpleProcess(connection)
-				.synchronousCall(new IPTagSet(connection.getChip(), null, 0,
-						tag.getTag(), tag.isStripSDP(), true));
+		var process = simpleProcess(connection);
+		process.synchronousCall(new IPTagSet(connection.getChip(), null, 0,
+					tag.getTag(), tag.isStripSDP(), true));
 	}
 
 	@Override

@@ -42,7 +42,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
@@ -63,7 +63,7 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 
 	private static final int ENTRY_TEXT = 2;
 
-	private Transceiver txrx;
+	private TransceiverInterface txrx;
 
 	private Machine machine;
 
@@ -81,7 +81,7 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
-	public IobufRetriever(Transceiver transceiver, Machine machine,
+	public IobufRetriever(TransceiverInterface transceiver, Machine machine,
 			int parallelSize) {
 		super(machine);
 		txrx = transceiver;
@@ -116,10 +116,9 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 	 *             If an unexpected exception happens.
 	 */
 	public NotableMessages retrieveIobufContents(IobufRequest request,
-			String provenanceDir)
+			File provenanceDir)
 			throws IOException, ProcessException, InterruptedException {
-		var provDir = new File(provenanceDir);
-		validateProvenanceDirectory(provDir);
+		validateProvenanceDirectory(provenanceDir);
 		var errorEntries = new ArrayList<String>();
 		var warnEntries = new ArrayList<String>();
 		var mapping = request.getRequestDetails();
@@ -128,8 +127,8 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 					.map(this::partitionByBoard).flatMap(entry -> {
 						var r = new Replacer(entry.getKey());
 						return entry.getValue().stream().map(cs -> {
-							return () -> retrieveIobufContents(cs, r, provDir,
-									errorEntries, warnEntries);
+							return () -> retrieveIobufContents(cs, r,
+									provenanceDir, errorEntries, warnEntries);
 						});
 					})).awaitAndCombineExceptions();
 		} catch (Replacer.WrappedException e) {

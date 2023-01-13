@@ -155,6 +155,8 @@ spalloc:
       # Support OIDC
       enable: true
       domain: https://iam.ebrains.eu/auth/realms/hbp
+      introspection: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token/introspect
+      userinfo: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/userinfo
       scopes: [ openid, profile, roles, email, team, group ]
       # The credentials for HBP/EBRAINS go here
       id: spalloc
@@ -197,8 +199,10 @@ spalloc:
     analysis-limit: 400
     # Whether to record and report statement execution time statistics
     performance-log: false
-    # Number of nanoseconds below which statement execution time is not important
-    performance-threshold: 1e6
+    # Whether to also write explanations of queries to the log for slow queries
+    auto-explain: true
+    # Number of microseconds below which statement execution time is not important
+    performance-threshold: 1e3
     # How many times to try to get a lock
     lock-tries: 3
     # Delay between a lock failure and the next attempt
@@ -267,9 +271,3 @@ spring:
           hbp-ebrains:
             issuer-uri: ${spalloc.auth.openid.domain}
             user-name-attribute: preferred_username
-      resourceserver:
-        jwt:
-          issuer-uri: ${spalloc.auth.openid.domain}
-        opaquetoken:
-          client-id: ${spalloc.auth.openid.id}
-          client-secret: ${spalloc.auth.openid.secret}

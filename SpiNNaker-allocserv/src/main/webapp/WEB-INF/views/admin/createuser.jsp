@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <h1>Create User</h1>
 
 <form:form method="POST" modelAttribute="user">
+	<form:hidden path="internal"/>
 	<form:label path="userName">User Name: </form:label>
 	<form:input path="userName" type="text"/>
 	<form:select path="trustLevel">
@@ -37,8 +38,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<form:label path="hasPassword">Has Password: </form:label>
 	<form:checkbox path="hasPassword"/>
 	<br>
-	<form:label path="isEnabled">Is enabled? </form:label>
-	<form:checkbox path="isEnabled"/>
+	<form:label path="enabled">Is enabled? </form:label>
+	<form:checkbox path="enabled"/>
 	<p>
 	<input type="submit" value="Create" />
 </form:form>

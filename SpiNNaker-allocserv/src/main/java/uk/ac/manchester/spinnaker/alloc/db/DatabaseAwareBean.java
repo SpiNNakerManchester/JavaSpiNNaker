@@ -149,22 +149,18 @@ public abstract class DatabaseAwareBean extends SQLQueries {
 		 * A nestable transaction runner. If the {@code action} completes
 		 * normally (and this isn't a nested use), the transaction commits. If a
 		 * runtime exception is thrown, the transaction is rolled back (and the
-		 * exception flows through).
+		 * exception flows through). A read lock is used; multiple read locks
+		 * may be held at once, but no {@code UPDATE}s may be performed as locks
+		 * <em>cannot</em> be safely upgraded.
 		 *
 		 * @param <T>
 		 *            The type of the result of {@code action}
-		 * @param lockForWriting
-		 *            Whether to lock for writing. Multiple read locks can be
-		 *            held at once, but only one write lock. Locks
-		 *            <em>cannot</em> be upgraded (because that causes
-		 *            deadlocks).
 		 * @param action
 		 *            The code to run inside the transaction.
 		 * @return Whatever the {@code action} returns.
 		 */
-		public final <T> T transaction(boolean lockForWriting,
-				TransactedWithResult<T> action) {
-			return conn.transaction(lockForWriting, action);
+		public final <T> T transactionRead(TransactedWithResult<T> action) {
+			return conn.transaction(false, action);
 		}
 
 		/** @return The encapsulated connection. */

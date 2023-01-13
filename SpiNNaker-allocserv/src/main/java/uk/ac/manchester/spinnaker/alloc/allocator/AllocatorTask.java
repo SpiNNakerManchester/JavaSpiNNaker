@@ -490,6 +490,11 @@ public class AllocatorTask extends DatabaseAwareBean
 	 * @return Description of the tombstoned IDs
 	 */
 	private Copied tombstone(Connection conn) {
+		// No tombstoning without the target DB!
+		if (!conn.isHistoricalDBAvailable()) {
+			return new Copied(List.of(), List.of());
+		}
+
 		try (var copyJobs = conn.query(copyJobsToHistoricalData);
 				var copyAllocs = conn.query(copyAllocsToHistoricalData);
 				var deleteJobs = conn.update(DELETE_JOB_RECORD);

@@ -61,7 +61,7 @@ public class QuotaManager extends DatabaseAwareBean {
 	 */
 	public boolean mayCreateJob(int groupId) {
 		try (var sql = new CreateCheckSQL()) {
-			return sql.transaction(false, () -> sql.mayCreateJob(groupId));
+			return sql.transactionRead(() -> sql.mayCreateJob(groupId));
 		}
 	}
 
@@ -103,7 +103,7 @@ public class QuotaManager extends DatabaseAwareBean {
 	 */
 	public boolean mayLetJobContinue(int jobId) {
 		try (var sql = new ContinueCheckSQL()) {
-			return sql.transaction(false, () -> sql.mayLetJobContinue(jobId));
+			return sql.transactionRead(() -> sql.mayLetJobContinue(jobId));
 		}
 	}
 

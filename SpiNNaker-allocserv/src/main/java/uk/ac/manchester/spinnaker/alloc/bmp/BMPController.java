@@ -50,7 +50,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
@@ -158,6 +160,16 @@ public class BMPController extends DatabaseAwareBean {
 
 	/** We have our own pool. */
 	private ExecutorService executor = newCachedThreadPool(this::makeThread);
+
+	@GuardedBy("this")
+	private Throwable bmpProcessingException;
+
+	/**
+	 * What jobs are currently being processed? Matters because they might be
+	 * busy because of BMPs that are busy with reloading FPGAs, which is a very
+	 * slow business because bandwidth isn't great on the management channel.
+	 */
+	private final Set<Integer> busyJobs = new ConcurrentSkipListSet<>();
 
 	/**
 	 * A {@link ThreadFactory}.
@@ -609,6 +621,7 @@ public class BMPController extends DatabaseAwareBean {
 				 */
 				deallocated = sql.deallocateBoards(jobId);
 			}
+			busyJobs.remove(jobId);
 			int killed = changeIds.stream().mapToInt(sql::deleteChange).sum();
 			log.debug(
 					"BMP ACTION SUCCEEDED ({}:{}->{}): on:{} off:{} "
@@ -633,6 +646,7 @@ public class BMPController extends DatabaseAwareBean {
 					.mapToInt(changeId -> sql.setInProgress(false, changeId))
 					.sum();
 			int jobChange = sql.setJobState(from, 0, jobId);
+			busyJobs.remove(jobId);
 			log.debug(
 					"BMP ACTION FAILED ({}:{}->{}): on:{} off:{} "
 							+ "jobChangesApplied:{} boardsDeallocated:{} "
@@ -695,6 +709,9 @@ public class BMPController extends DatabaseAwareBean {
 				cleanupTasks.add(this::done);
 			}, e -> {
 				cleanupTasks.add(this::failed);
+				synchronized (BMPController.this) {
+					bmpProcessingException = e;
+				}
 			}, ppe -> {
 				/*
 				 * It's OK (not great, but OK) for things to be unreachable when
@@ -1085,6 +1102,7 @@ public class BMPController extends DatabaseAwareBean {
 				for (var machine : machines) {
 					sql.getJobIdsWithChanges.call(machine.getId())
 							.map(integer("job_id"))
+							.filter(jobId -> !busyJobs.contains(jobId))
 							.forEach(jobId -> takeRequestsForJob(machine, jobId,
 									sql, requestCollector));
 					requestCollector.addAll(sql.getBlacklistReads(machine));
@@ -1106,6 +1124,7 @@ public class BMPController extends DatabaseAwareBean {
 		JobState from = UNKNOWN, to = UNKNOWN;
 		var idToBoard =
 				new DefaultMap<BMPCoords, Map<Integer, BMPBoard>>(HashMap::new);
+		busyJobs.add(jobId);
 
 		for (var row : sql.getPowerChangesToDo.call(jobId)) {
 			changeIds.add(row.getInteger("change_id"));
@@ -1424,7 +1443,7 @@ public class BMPController extends DatabaseAwareBean {
 			} catch (InterruptedException e) {
 				// Thread is being shut down
 				markAllForStop();
-				log.info("worker thread '{}' was interrupted", t.getName());
+				log.debug("worker thread '{}' was interrupted", t.getName());
 			} catch (Exception e) {
 				/*
 				 * If the thread crashes something has gone wrong with this
@@ -1626,6 +1645,10 @@ public class BMPController extends DatabaseAwareBean {
 		 */
 		void processRequests(long millis)
 				throws IOException, SpinnmanException, InterruptedException;
+
+		Throwable getBmpException();
+
+		void clearBmpException();
 	}
 
 	/**
@@ -1649,6 +1672,20 @@ public class BMPController extends DatabaseAwareBean {
 				BMPController.this.processRequests();
 				Thread.sleep(millis);
 				BMPController.this.processRequests();
+			}
+
+			@Override
+			public Throwable getBmpException() {
+				synchronized (BMPController.this) {
+					return bmpProcessingException;
+				}
+			}
+
+			@Override
+			public void clearBmpException() {
+				synchronized (BMPController.this) {
+					bmpProcessingException = null;
+				}
 			}
 		};
 	}
