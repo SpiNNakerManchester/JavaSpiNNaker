@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.py2json;
 
+import static com.github.stefanbirkner.systemlambda.SystemLambda.catchSystemExit;
 import static java.io.File.createTempFile;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.*;
@@ -158,9 +159,8 @@ class TestConvert {
 		var src = getFile(SINGLE_BOARD);
 		var dst = createTempFile("dst", ".json");
 		try {
-			// Can't test command line parse errors; System.exit() is called
-			// TODO check out https://stefanbirkner.github.io/system-rules/
-			main(src.getAbsolutePath(), dst.getAbsolutePath());
+			catchSystemExit(
+					() -> main(src.getAbsolutePath(), dst.getAbsolutePath()));
 
 			assertTrue(dst.exists());
 			try (var r = new BufferedReader(new FileReader(dst, UTF_8))) {
