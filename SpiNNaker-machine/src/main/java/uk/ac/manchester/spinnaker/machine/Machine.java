@@ -42,8 +42,6 @@ import java.util.TreeMap;
 
 import jakarta.validation.Valid;
 
-import org.slf4j.Logger;
-
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.machine.datalinks.FPGALinkData;
 import uk.ac.manchester.spinnaker.machine.datalinks.FpgaEnum;
@@ -66,8 +64,6 @@ import uk.ac.manchester.spinnaker.utils.TripleMapIterable;
  * @author Christian-B
  */
 public class Machine implements MappableIterable<Chip> {
-	private static final Logger log = getLogger(Link.class);
-
 	/** Size of the machine along the x and y axes in Chips. */
 	@Valid
 	public final MachineDimensions machineDimensions;
@@ -217,6 +213,7 @@ public class Machine implements MappableIterable<Chip> {
 		if (ignoreLinks.isEmpty() && ignoreChips.isEmpty()) {
 			return this;
 		}
+		var log = getLogger(Link.class);
 		var rebuilt = new Machine(machineDimensions, boot);
 		for (var chip : this) {
 			var location = chip.asChipLocation();

@@ -172,7 +172,19 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		buildMaps(gatherers);
 	}
 
-	private void buildMaps(List<Gather> gatherers)
+	/**
+	 * Construct the internal mappings for gatherers and monitors.
+	 *
+	 * @param gatherers
+	 *            The descriptions of whether the gatherers are located.
+	 * @throws IOException
+	 *             If IDs can't be read from the machine for network reasons.
+	 * @throws ProcessException
+	 *             If IDs can't be read from the machine for machine reasons.
+	 * @throws InterruptedException
+	 *             If we are interrupted.
+	 */
+	protected void buildMaps(List<Gather> gatherers)
 			throws IOException, ProcessException, InterruptedException {
 		for (var g : gatherers) {
 			g.updateTransactionIdFromMachine(txrx);
