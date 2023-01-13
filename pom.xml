@@ -470,7 +470,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							</group>
 							<group>
 								<title>Communications</title>
-								<packages>uk.ac.manchester.spinnaker.connections*:uk.ac.manchester.spinnaker.alloc.client:uk.ac.manchester.spinnaker.io:uk.ac.manchester.spinnaker.messages*:uk.ac.manchester.spinnaker.transceiver*:uk.ac.manchester.spinnaker.spalloc*</packages>
+								<packages>uk.ac.manchester.spinnaker.connections*:uk.ac.manchester.spinnaker.alloc.client:uk.ac.manchester.spinnaker.messages*:uk.ac.manchester.spinnaker.transceiver*:uk.ac.manchester.spinnaker.spalloc*</packages>
 							</group>
 							<group>
 								<title>Data Management</title>
