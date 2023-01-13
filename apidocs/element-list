@@ -17,7 +17,6 @@ uk.ac.manchester.spinnaker.front_end.download
 uk.ac.manchester.spinnaker.front_end.download.request
 uk.ac.manchester.spinnaker.front_end.dse
 uk.ac.manchester.spinnaker.front_end.iobuf
-uk.ac.manchester.spinnaker.io
 uk.ac.manchester.spinnaker.machine
 uk.ac.manchester.spinnaker.machine.bean
 uk.ac.manchester.spinnaker.machine.board
