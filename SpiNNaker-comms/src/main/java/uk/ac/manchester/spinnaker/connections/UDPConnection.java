@@ -388,7 +388,11 @@ public abstract class UDPConnection<T> implements Connection {
 		var pkt = new DatagramPacket(buffer.array(), receivePacketSize);
 		socket.receive(pkt);
 		buffer.position(pkt.getLength()).flip();
-		logRecv(buffer, pkt.getSocketAddress());
+		if (log.isDebugEnabled()) {
+			log.debug("received data of length {} from {}", buffer.remaining(),
+					pkt.getSocketAddress());
+			log.debug("message data: {}", describe(buffer));
+		}
 		return buffer.order(LITTLE_ENDIAN);
 	}
 
@@ -424,7 +428,11 @@ public abstract class UDPConnection<T> implements Connection {
 		var pkt = new DatagramPacket(buffer.array(), receivePacketSize);
 		socket.receive(pkt);
 		buffer.position(pkt.getLength()).flip();
-		logRecv(buffer, pkt.getSocketAddress());
+		if (log.isDebugEnabled()) {
+			log.debug("received data of length {} from {}", buffer.remaining(),
+					pkt.getSocketAddress());
+			log.debug("message data: {}", describe(buffer));
+		}
 		return new UDPPacket(buffer.order(LITTLE_ENDIAN),
 				(InetSocketAddress) pkt.getSocketAddress());
 	}
@@ -521,7 +529,11 @@ public abstract class UDPConnection<T> implements Connection {
 	 */
 	@ForOverride
 	protected void doSend(ByteBuffer data) throws IOException {
-		logSend(data, getRemoteAddress());
+		if (log.isDebugEnabled()) {
+			log.debug("sending data of length {} to {}", data.remaining(),
+					getRemoteAddress());
+			log.debug("message data: {}", describe(data));
+		}
 		socket.send(formSendPacket(data, remoteAddress));
 	}
 
@@ -622,24 +634,12 @@ public abstract class UDPConnection<T> implements Connection {
 	protected void doSendTo(ByteBuffer data, InetAddress address, int port)
 			throws IOException {
 		var addr = new InetSocketAddress(address, port);
-		logSend(data, addr);
-		socket.send(formSendPacket(data, addr));
-	}
-
-	private void logSend(ByteBuffer data, SocketAddress addr) {
 		if (log.isDebugEnabled()) {
 			log.debug("sending data of length {} to {}", data.remaining(),
 					addr);
 			log.debug("message data: {}", describe(data));
 		}
-	}
-
-	private void logRecv(ByteBuffer data, SocketAddress addr) {
-		if (log.isDebugEnabled()) {
-			log.debug("received data of length {} from {}", data.remaining(),
-					addr);
-			log.debug("message data: {}", describe(data));
-		}
+		socket.send(formSendPacket(data, addr));
 	}
 
 	private String describe(ByteBuffer data) {
