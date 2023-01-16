@@ -17,8 +17,10 @@
 package uk.ac.manchester.spinnaker.data_spec;
 
 import static java.lang.String.format;
+import static java.util.Arrays.stream;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.lang.ref.WeakReference;
@@ -26,6 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.slf4j.Logger;
@@ -43,10 +46,13 @@ abstract class OperationMapper {
 
 	/** Cache of what methods implement operations in a class. */
 	private static final Map<Class<? extends FunctionAPI>,
-			Map<Commands, Method>> OPS_MAP = synchronizedMap(new HashMap<>());
+			Map<Commands, WrappedMethod>> OPS_MAP =
+					synchronizedMap(new HashMap<>());
 
 	/**
 	 * Cache of callables for a particular operation on a particular executor.
+	 * This is a <em>weak</em> map; entries are reclaimed when the instance
+	 * isn't used elsewhere.
 	 */
 	private static final Map<FunctionAPI, Map<Commands, Callable>> MAP =
 			synchronizedMap(new WeakHashMap<>());
@@ -79,118 +85,135 @@ abstract class OperationMapper {
 				 * the same weak reference for all the method wrappers that we
 				 * create.
 				 */
-				k -> manufactureCallables(new WeakReference<>(k),
-						OPS_MAP.computeIfAbsent(k.getClass(),
+				__ -> manufactureCallables(new WeakReference<>(funcs),
+						OPS_MAP.computeIfAbsent(funcs.getClass(),
 								OperationMapper::getOperations)));
 		return map.get(opcode);
 	}
 
+	/**
+	 * Manufacture callables for a particular function API instance.
+	 *
+	 * @param objref
+	 *            The reference to the function API instance.
+	 * @param ops
+	 *            The parsed wrapped methods in the function API class.
+	 * @return The callables for the commands.
+	 */
 	private static Map<Commands, Callable> manufactureCallables(
-			WeakReference<FunctionAPI> objref, Map<Commands, Method> ops) {
-		Map<Commands, Callable> map = new HashMap<>();
-		// Note that getOperations() below ensures the safety of this
-		ops.forEach((c, m) -> {
-			if (m.getReturnType().equals(Void.TYPE)) {
-				map.put(c, cmd -> doVoidCall(objref.get(), m, c, cmd));
-			} else {
-				map.put(c, cmd -> doIntCall(objref.get(), m, c, cmd));
-			}
-		});
-		return map;
-	}
-
-	private static Map<Commands, Method> getOperations(
-			Class<? extends FunctionAPI> cls) {
-		var ops = new HashMap<Commands, Method>();
-		for (var m : cls.getMethods()) {
-			// Skip methods without the annotation. They're no problem.
-			if (!m.isAnnotationPresent(Operation.class)) {
-				continue;
-			}
-			var c = m.getAnnotation(Operation.class).value();
-
-			/*
-			 * If there are any arguments, or the method has a return type that
-			 * isn't void or int, or the annotation value is null, that's an
-			 * error.
-			 */
-			if (m.getParameterCount() != 0
-					|| !(m.getReturnType().equals(Void.TYPE)
-							|| m.getReturnType().equals(Integer.TYPE))
-					|| c == null) {
-				throw new IllegalArgumentException(
-						format("bad Operation annotation on method %s of %s",
-								m.getName(), cls));
-			}
-			if (log.isDebugEnabled()) {
-				log.debug(
-						"discovered operation {} on {} is "
-								+ "implemented by {}()",
-						c.name(), cls, m.getName());
-			}
-			ops.put(c, m);
-		}
-		return ops;
+			WeakReference<FunctionAPI> objref,
+			Map<Commands, WrappedMethod> ops) {
+		return ops.entrySet().stream().collect(toMap(Map.Entry::getKey,
+				e -> cmd -> e.getValue().call(objref, e.getKey(), cmd)));
 	}
 
 	/**
-	 * Ugly stuff to wrap methods as {@link Callable}. The truly nasty part is
-	 * the handling of exceptions, which have to be unwrapped from the dynamic
-	 * method calling machinery.
+	 * Manufacture wrapped methods for a function API class. Methods are only
+	 * wrapped if they are annotated with {@code @}{@link Operation}.
+	 *
+	 * @param cls
+	 *            The function API class to analyse.
+	 * @return The wrapped (and annotated) methods for the commands.
 	 */
-	private static int doIntCall(FunctionAPI funcs, Method method,
-			Commands command, int encodedOpcode)
-			throws DataSpecificationException {
-		requireNonNull(funcs, "unexpectedly early deallocation");
-		funcs.unpack(encodedOpcode);
-		if (log.isDebugEnabled()) {
-			log.debug("EXEC: {} ({})", command, format("%08x", encodedOpcode));
-		}
-		try {
-			try {
-				return (int) method.invoke(funcs);
-			} catch (InvocationTargetException innerException) {
-				// Unwrap the inner exception
-				throw innerException.getTargetException();
-			}
-		} catch (RuntimeException | Error
-				| DataSpecificationException realException) {
-			// These are the real things that can be thrown
-			throw realException;
-		} catch (Throwable badException) {
-			// Should be unreachable
-			throw new RuntimeException("bad call", badException);
-		}
+	private static Map<Commands, WrappedMethod> getOperations(Class<?> cls) {
+		return stream(cls.getMethods())
+				.filter(m -> m.isAnnotationPresent(Operation.class))
+				.collect(toMap(m -> m.getAnnotation(Operation.class).value(),
+						m -> wrapMethod(cls, m)));
 	}
 
+	/** The types we allow as return values: {@code int} and {@code void}. */
+	private static final Set<Class<?>> ALLOWED_RETURN_TYPES =
+			Set.of(Void.TYPE, Integer.TYPE);
+
 	/**
-	 * Ugly stuff to wrap methods as {@link Callable}. The truly nasty part is
-	 * the handling of exceptions, which have to be unwrapped from the dynamic
-	 * method calling machinery.
+	 * Check a particular method for validity and wrap it. If there are any
+	 * arguments, or the method has a return type that isn't {@code void} or
+	 * {@code int}, that's an error.
+	 *
+	 * @param cls
+	 *            The class, for the exception message.
+	 * @param m
+	 *            The (annotated) method to check.
+	 * @return The checked method, wrapped.
 	 */
-	private static int doVoidCall(FunctionAPI funcs, Method method,
-			Commands command, int encodedOpcode)
-			throws DataSpecificationException {
-		requireNonNull(funcs, "unexpectedly early deallocation");
-		funcs.unpack(encodedOpcode);
-		if (log.isDebugEnabled()) {
-			log.debug("EXEC: {} ({})", command, format("%08x", encodedOpcode));
+	private static WrappedMethod wrapMethod(Class<?> cls, Method m) {
+		if (m.getParameterCount() != 0
+				|| !ALLOWED_RETURN_TYPES.contains(m.getReturnType())) {
+			throw new IllegalArgumentException(
+					format("bad Operation annotation on method %s of %s",
+							m.getName(), cls));
 		}
-		try {
-			try {
-				method.invoke(funcs);
+
+		if (m.getReturnType().equals(Void.TYPE)) {
+			// Synthesise a return value
+			return obj -> {
+				m.invoke(obj);
 				return 0;
-			} catch (InvocationTargetException innerException) {
-				// Unwrap the inner exception
-				throw innerException.getTargetException();
+			};
+		} else {
+			return obj -> (Integer) m.invoke(obj);
+		}
+	}
+
+	/**
+	 * A wrapper around {@link Method} of a {@link FunctionAPI} subclass.
+	 */
+	@FunctionalInterface
+	private interface WrappedMethod {
+		/**
+		 * How to actually call the wrapped method.
+		 *
+		 * @param funcs
+		 *            The instance to call the method on.
+		 * @return The integer result.
+		 * @throws InvocationTargetException
+		 *             If the method throws
+		 * @throws IllegalAccessException
+		 *             If the method can't be accessed.
+		 */
+		int operation(FunctionAPI funcs)
+				throws InvocationTargetException, IllegalAccessException;
+
+		/**
+		 * Ugly stuff to wrap {@link WrappedMethod} as {@link Callable}. The
+		 * truly nasty part is the handling of exceptions, which have to be
+		 * unwrapped from the dynamic method calling machinery.
+		 *
+		 * @param objref
+		 *            Reference to target object.
+		 * @param command
+		 *            What command this operation is.
+		 * @param encodedOpcode
+		 *            The actual operation code from the DSE bytecode.
+		 * @return The result of the operation
+		 * @throws DataSpecificationException
+		 *             If the operation fails.
+		 */
+		default int call(WeakReference<FunctionAPI> objref, Commands command,
+				int encodedOpcode) throws DataSpecificationException {
+			var funcs = objref.get();
+			requireNonNull(funcs, "unexpectedly early deallocation");
+			funcs.unpack(encodedOpcode);
+			if (log.isDebugEnabled()) {
+				log.debug("EXEC: {} ({})", command,
+						format("%08x", encodedOpcode));
 			}
-		} catch (RuntimeException | Error
-				| DataSpecificationException realException) {
-			// These are the real things that can be thrown
-			throw realException;
-		} catch (Throwable badException) {
-			// Should be unreachable
-			throw new RuntimeException("bad call", badException);
+			try {
+				try {
+					return operation(funcs);
+				} catch (InvocationTargetException innerException) {
+					// Unwrap the inner exception
+					throw innerException.getTargetException();
+				}
+			} catch (RuntimeException | Error
+					| DataSpecificationException realException) {
+				// These are the real things that can be thrown
+				throw realException;
+			} catch (Throwable badException) {
+				// Should be unreachable
+				throw new RuntimeException("bad call", badException);
+			}
 		}
 	}
 }

@@ -22,7 +22,7 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Objects.requireNonNullElse;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.IPV4_SIZE;
@@ -43,8 +43,6 @@ import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.util.List;
-import java.util.function.IntFunction;
 
 import org.slf4j.Logger;
 
@@ -390,7 +388,11 @@ public abstract class UDPConnection<T> implements Connection {
 		var pkt = new DatagramPacket(buffer.array(), receivePacketSize);
 		socket.receive(pkt);
 		buffer.position(pkt.getLength()).flip();
-		logRecv(buffer, pkt.getSocketAddress());
+		if (log.isDebugEnabled()) {
+			log.debug("received data of length {} from {}", buffer.remaining(),
+					pkt.getSocketAddress());
+			log.debug("message data: {}", describe(buffer));
+		}
 		return buffer.order(LITTLE_ENDIAN);
 	}
 
@@ -426,7 +428,11 @@ public abstract class UDPConnection<T> implements Connection {
 		var pkt = new DatagramPacket(buffer.array(), receivePacketSize);
 		socket.receive(pkt);
 		buffer.position(pkt.getLength()).flip();
-		logRecv(buffer, pkt.getSocketAddress());
+		if (log.isDebugEnabled()) {
+			log.debug("received data of length {} from {}", buffer.remaining(),
+					pkt.getSocketAddress());
+			log.debug("message data: {}", describe(buffer));
+		}
 		return new UDPPacket(buffer.order(LITTLE_ENDIAN),
 				(InetSocketAddress) pkt.getSocketAddress());
 	}
@@ -524,7 +530,9 @@ public abstract class UDPConnection<T> implements Connection {
 	@ForOverride
 	protected void doSend(ByteBuffer data) throws IOException {
 		if (log.isDebugEnabled()) {
-			logSend(data, getRemoteAddress());
+			log.debug("sending data of length {} to {}", data.remaining(),
+					getRemoteAddress());
+			log.debug("message data: {}", describe(data));
 		}
 		socket.send(formSendPacket(data, remoteAddress));
 	}
@@ -627,25 +635,18 @@ public abstract class UDPConnection<T> implements Connection {
 			throws IOException {
 		var addr = new InetSocketAddress(address, port);
 		if (log.isDebugEnabled()) {
-			logSend(data, addr);
+			log.debug("sending data of length {} to {}", data.remaining(),
+					addr);
+			log.debug("message data: {}", describe(data));
 		}
 		socket.send(formSendPacket(data, addr));
 	}
 
-	private void logSend(ByteBuffer data, SocketAddress addr) {
-		log.debug("sending data of length {} to {}", data.remaining(), addr);
-		log.debug("message data: {}", describe(data));
-	}
-
-	private void logRecv(ByteBuffer data, SocketAddress addr) {
-		log.debug("received data of length {} from {}", data.remaining(), addr);
-		log.debug("message data: {}", describe(data));
-	}
-
-	private List<String> describe(ByteBuffer data) {
+	private String describe(ByteBuffer data) {
 		int pos = data.position();
-		IntFunction<String> foo = i -> hexbyte(data.get(pos + i));
-		return range(0, data.remaining()).mapToObj(foo).collect(toList());
+		return range(0, data.remaining())
+				.mapToObj(i -> hexbyte(data.get(pos + i)))
+				.collect(joining(",", "[", "]"));
 	}
 
 	@Override
