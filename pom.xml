@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		<spinnaker.version>6.0.1-SNAPSHOT</spinnaker.version>
 
-		<junit.version>5.9.1</junit.version>
+		<junit.version>5.9.2</junit.version>
 		<checkstyle.version>10.3.3</checkstyle.version>
 		<javadoc.version>3.4.1</javadoc.version>
 		<testing.version>3.0.0-M7</testing.version>
@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<slf4j.version>2.0.6</slf4j.version>
 		<log4j.version>2.19.0</log4j.version>
 
-		<spring.version>5.3.24</spring.version>
+		<spring.version>5.3.25</spring.version>
 		<spring.boot.version>2.7.7</spring.boot.version>
 		<!--
 		DKF: if you update spring.boot.version, also update the annotation
@@ -441,7 +441,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>3.2.0</version>
+					<version>3.2.1</version>
 					<configuration>
 						<configLocation>src/support/checkstyle/style.xml</configLocation>
 						<propertyExpansion>
