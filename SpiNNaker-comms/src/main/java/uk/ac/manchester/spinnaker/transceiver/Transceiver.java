@@ -1634,14 +1634,13 @@ public class Transceiver extends UDPTransceiver
 	private <T extends BMPRequest.BMPResponse> T bmpCall(BMPCoords bmp,
 			BMPRequest<T> request)
 			throws IOException, ProcessException, InterruptedException {
-		return new BMPCommandProcess<T>(bmpConnection(bmp), this)
-				.execute(request);
+		return new BMPCommandProcess(bmpConnection(bmp), this).execute(request);
 	}
 
 	private <T extends BMPRequest.BMPResponse> T bmpCall(BMPCoords bmp,
 			int timeout, int retries, BMPRequest<T> request)
 			throws IOException, ProcessException, InterruptedException {
-		return new BMPCommandProcess<T>(bmpConnection(bmp), timeout, this)
+		return new BMPCommandProcess(bmpConnection(bmp), timeout, this)
 				.execute(request, retries);
 	}
 

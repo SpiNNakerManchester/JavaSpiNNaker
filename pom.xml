@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		<spinnaker.version>6.0.1-SNAPSHOT</spinnaker.version>
 
-		<junit.version>5.9.1</junit.version>
+		<junit.version>5.9.2</junit.version>
 		<checkstyle.version>10.3.3</checkstyle.version>
 		<javadoc.version>3.4.1</javadoc.version>
 		<testing.version>3.0.0-M7</testing.version>
@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<slf4j.version>2.0.6</slf4j.version>
 		<log4j.version>2.19.0</log4j.version>
 
-		<spring.version>5.3.24</spring.version>
+		<spring.version>5.3.25</spring.version>
 		<spring.boot.version>2.7.7</spring.boot.version>
 		<!--
 		DKF: if you update spring.boot.version, also update the annotation
@@ -365,7 +365,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
-					<version>3.4.0</version>
+					<version>3.5.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -394,12 +394,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<artifact>*:*</artifact>
 								<excludes>
 									<!-- Strip unwanted junk -->
-									<exclude>module-info.class</exclude>
-									<exclude>META-INF/MANIFEST.MF</exclude>
-									<exclude>META-INF/LICENSE</exclude>
-									<exclude>META-INF/LICENSE.txt</exclude>
-									<exclude>META-INF/NOTICE</exclude>
-									<exclude>META-INF/NOTICE.txt</exclude>
+									<exclude>**/*module-info.class</exclude>
+									<exclude>META-INF/*.MF</exclude>
 									<exclude>META-INF/DEPENDENCIES</exclude>
 									<exclude>META-INF/*.SF</exclude>
 									<exclude>META-INF/*.DSA</exclude>
@@ -407,6 +403,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								</excludes>
 							</filter>
 						</filters>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+									<resource>.md</resource>
+								</transformer>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer" />
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+									<addHeader>false</addHeader>
+								</transformer>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.properties.PropertiesTransformer">
+									<resource>META-INF/io.netty.versions.properties</resource>
+									<ordinalKey>ordinal</ordinalKey>
+								</transformer>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<manifestEntries>
+										<Main-Class>${main.class}</Main-Class>
+										<Multi-Release>true</Multi-Release>
+									</manifestEntries>
+								</transformer>
+							</transformers>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -425,7 +441,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>3.2.0</version>
+					<version>3.2.1</version>
 					<configuration>
 						<configLocation>src/support/checkstyle/style.xml</configLocation>
 						<propertyExpansion>
@@ -454,7 +470,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							</group>
 							<group>
 								<title>Communications</title>
-								<packages>uk.ac.manchester.spinnaker.connections*:uk.ac.manchester.spinnaker.alloc.client:uk.ac.manchester.spinnaker.io:uk.ac.manchester.spinnaker.messages*:uk.ac.manchester.spinnaker.transceiver*:uk.ac.manchester.spinnaker.spalloc*</packages>
+								<packages>uk.ac.manchester.spinnaker.connections*:uk.ac.manchester.spinnaker.alloc.client:uk.ac.manchester.spinnaker.messages*:uk.ac.manchester.spinnaker.transceiver*:uk.ac.manchester.spinnaker.spalloc*</packages>
 							</group>
 							<group>
 								<title>Data Management</title>
@@ -878,7 +894,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>3.4.1</version>
+				<version>3.4.2</version>
 				<reportSets>
 					<reportSet>
 						<reports><!-- select reports -->
