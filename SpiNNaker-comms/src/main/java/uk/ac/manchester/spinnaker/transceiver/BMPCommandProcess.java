@@ -79,10 +79,6 @@ class BMPCommandProcess<R extends BMPResponse> {
 
 	private final RetryTracker retryTracker;
 
-	private BMPRequest<?> errorRequest;
-
-	private Throwable exception;
-
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
@@ -129,23 +125,18 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	@SuppressWarnings("unchecked")
 	<T extends R> T execute(BMPRequest<T> request)
 			throws IOException, ProcessException, InterruptedException {
-		var holder = new ValueHolder<R>();
+		var holder = new ValueHolder<T>();
 		/*
 		 * If no pipeline built yet, build one on the connection selected for
 		 * it.
 		 */
-		var requestPipeline = new RequestPipeline(
+		var pipeline = new RequestPipeline<T>(
 				connectionSelector.getNextConnection(request));
-		requestPipeline.sendRequest((BMPRequest<R>) request, holder::setValue);
-		requestPipeline.finish();
-		if (exception != null) {
-			throw makeInstance(errorRequest.sdpHeader.getDestination(),
-					exception);
-		}
-		return (T) holder.getValue();
+		pipeline.sendRequest(request, holder::setValue);
+		pipeline.finish();
+		return holder.getValue();
 	}
 
 	/**
@@ -166,24 +157,18 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	@SuppressWarnings("unchecked")
 	<T extends R> T execute(BMPRequest<T> request, int retries)
 			throws IOException, ProcessException, InterruptedException {
-		var holder = new ValueHolder<R>();
+		var holder = new ValueHolder<T>();
 		/*
 		 * If no pipeline built yet, build one on the connection selected for
 		 * it.
 		 */
-		var requestPipeline = new RequestPipeline(
+		var pipeline = new RequestPipeline<T>(
 				connectionSelector.getNextConnection(request));
-		requestPipeline.sendRequest((BMPRequest<R>) request, retries,
-				holder::setValue);
-		requestPipeline.finish();
-		if (exception != null) {
-			throw makeInstance(errorRequest.sdpHeader.getDestination(),
-					exception);
-		}
-		return (T) holder.getValue();
+		pipeline.sendRequest(request, retries, holder::setValue);
+		pipeline.finish();
+		return holder.getValue();
 	}
 
 	/**
@@ -205,21 +190,18 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	@SuppressWarnings("unchecked")
 	<T extends R> List<T> execute(Iterable<? extends BMPRequest<T>> requests)
 			throws IOException, ProcessException, InterruptedException {
-		var results = new ArrayList<R>();
+		var results = new ArrayList<T>();
+		var map = new HashMap<BMPConnection, RequestPipeline<T>>();
 		for (var request : requests) {
-			var requestPipeline = new RequestPipeline(
-					connectionSelector.getNextConnection(request));
-			requestPipeline.sendRequest((BMPRequest<R>) request, results::add);
-			requestPipeline.finish();
+			var pipeline = map.computeIfAbsent(
+					connectionSelector.getNextConnection(request),
+					RequestPipeline::new);
+			pipeline.sendRequest(request, results::add);
+			pipeline.finish();
 		}
-		if (exception != null) {
-			throw makeInstance(errorRequest.sdpHeader.getDestination(),
-					exception);
-		}
-		return (List<T>) results;
+		return results;
 	}
 
 	/**
@@ -243,31 +225,19 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	@SuppressWarnings("unchecked")
 	<T extends R> List<T> execute(Iterable<? extends BMPRequest<T>> requests,
 			int retries)
 			throws IOException, ProcessException, InterruptedException {
-		var results = new ArrayList<R>();
-		RequestPipeline requestPipeline = null;
+		var results = new ArrayList<T>();
+		var map = new HashMap<BMPConnection, RequestPipeline<T>>();
 		for (var request : requests) {
-			if (requestPipeline == null) {
-				/*
-				 * If no pipeline built yet, build one on the connection
-				 * selected for it.
-				 */
-
-				requestPipeline = new RequestPipeline(
-						connectionSelector.getNextConnection(request));
-			}
-			requestPipeline.sendRequest((BMPRequest<R>) request, retries,
-					results::add);
-			requestPipeline.finish();
+			var pipeline = map.computeIfAbsent(
+					connectionSelector.getNextConnection(request),
+					RequestPipeline::new);
+			pipeline.sendRequest(request, retries, results::add);
+			pipeline.finish();
 		}
-		if (exception != null) {
-			throw makeInstance(errorRequest.sdpHeader.getDestination(),
-					exception);
-		}
-		return (List<T>) results;
+		return results;
 	}
 
 	/**
@@ -285,7 +255,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * @author Andrew Rowley
 	 * @author Donal Fellows
 	 */
-	private final class RequestPipeline {
+	private final class RequestPipeline<T extends R> {
 		/** The connection over which the communication is to take place. */
 		private BMPConnection connection;
 
@@ -293,16 +263,22 @@ class BMPCommandProcess<R extends BMPResponse> {
 		private final Map<Integer, Request> requests =
 				synchronizedMap(new HashMap<>());
 
+		/** The exception thrown by the message receive code. */
+		private Throwable exception;
+
+		/** What request had the exception thrown for it. */
+		private BMPRequest<?> errorRequest;
+
 		/** Per message record. */
 		private final class Request {
 			/** request in progress. */
-			private final BMPRequest<R> request;
+			private final BMPRequest<T> request;
 
 			/** payload of request in progress. */
 			private final ByteBuffer requestData;
 
 			/** callback function for response. */
-			private final Consumer<R> callback;
+			private final Consumer<T> callback;
 
 			/** retry reason. */
 			private final List<String> retryReason = new ArrayList<>();
@@ -310,14 +286,14 @@ class BMPCommandProcess<R extends BMPResponse> {
 			/** number of retries for the packet. */
 			private int retries = BMP_RETRIES;
 
-			private Request(BMPRequest<R> request, Consumer<R> callback) {
+			private Request(BMPRequest<T> request, Consumer<T> callback) {
 				this.request = request;
 				this.requestData = request.getMessageData(connection.getChip());
 				this.callback = callback;
 			}
 
-			private Request(BMPRequest<R> request, int retries,
-					Consumer<R> callback) {
+			private Request(BMPRequest<T> request, int retries,
+					Consumer<T> callback) {
 				this(request, callback);
 				this.retries = retries;
 			}
@@ -379,7 +355,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 		 * @throws IOException
 		 *             If things go really wrong.
 		 */
-		private void sendRequest(BMPRequest<R> request, Consumer<R> callback)
+		private void sendRequest(BMPRequest<T> request, Consumer<T> callback)
 				throws IOException {
 			// Get the next sequence to be used and store it in the header
 			int sequence = request.scpRequestHeader
@@ -408,8 +384,8 @@ class BMPCommandProcess<R extends BMPResponse> {
 		 * @throws IOException
 		 *             If things go really wrong.
 		 */
-		private void sendRequest(BMPRequest<R> request, int retries,
-				Consumer<R> callback) throws IOException {
+		private void sendRequest(BMPRequest<T> request, int retries,
+				Consumer<T> callback) throws IOException {
 			// Get the next sequence to be used and store it in the header
 			int sequence = request.scpRequestHeader
 					.issueSequenceNumber(requests.keySet());
@@ -431,8 +407,11 @@ class BMPCommandProcess<R extends BMPResponse> {
 		 *             If anything goes wrong with communications.
 		 * @throws InterruptedException
 		 *             If communications are interrupted.
+		 * @throws ProcessException
+		 *             If SpiNNaker rejects a message.
 		 */
-		private void finish() throws IOException, InterruptedException {
+		private void finish()
+				throws IOException, InterruptedException, ProcessException {
 			// While there are still more packets in progress than some
 			// threshold
 			while (!requests.isEmpty()) {
@@ -442,6 +421,13 @@ class BMPCommandProcess<R extends BMPResponse> {
 				} catch (SocketTimeoutException e) {
 					handleReceiveTimeout();
 				}
+			}
+			if (exception != null) {
+				var exn = exception;
+				var req = errorRequest;
+				exception = null;
+				errorRequest = null;
+				throw makeInstance(req.sdpHeader.getDestination(), exn);
 			}
 		}
 
