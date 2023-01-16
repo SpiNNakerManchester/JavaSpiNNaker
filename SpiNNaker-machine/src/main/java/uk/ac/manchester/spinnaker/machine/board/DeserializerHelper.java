@@ -148,7 +148,7 @@ abstract class DeserializerHelper<T> extends StdDeserializer<T> {
 
 	String getNextFieldName() throws IOException {
 		var p = PARSER.get();
-		String name = p.nextFieldName();
+		var name = p.nextFieldName();
 		if (name == null) {
 			if (!p.currentToken().isStructEnd()) {
 				unexpectedToken(_valueClass);

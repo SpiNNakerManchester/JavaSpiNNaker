@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.front_end.dse;
 
+import static java.lang.String.format;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Objects.isNull;
@@ -42,11 +43,10 @@ import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
- * A context for the execution of multiple data specifications with
- * cross-references.
+ * A context for the execution of multiple data specifications that handles
+ * linking cross-references.
  */
 class ExecutionContext implements AutoCloseable {
-
 	private final TransceiverInterface txrx;
 
 	private final Map<Reference, RegionToRef> regionsToRef = new HashMap<>();
@@ -101,9 +101,9 @@ class ExecutionContext implements AutoCloseable {
 			var ref = r.getReference();
 			if (regionsToRef.containsKey(ref)) {
 				var reg = regionsToRef.get(ref);
-				throw new DataSpecificationException(
-						"Reference " + ref + " from " + core + ", " + region
-								+ " already exists from " + reg);
+				throw new DataSpecificationException(format(
+						"Reference %s from %s, %d already exists from %s", ref,
+						core, region, reg));
 			}
 			regionsToRef.put(ref, new RegionToRef(core, r.getRegionBase()));
 		}
@@ -192,14 +192,14 @@ class ExecutionContext implements AutoCloseable {
 
 		DanglingReferenceException(Reference ref, RegionToRef reg,
 				CoreLocation core, int region) {
-			super("Region " + ref + " on " + reg + " cannot be"
-					+ " referenced from " + core + ", " + region);
+			super(format("Region %s on %s cannot be referenced from %s, %d",
+					ref, reg, core, region));
 		}
 
 		DanglingReferenceException(MemoryRegionReference ref, RegionToRef reg,
 				CoreToFill toFill) {
-			super("Region " + ref + " on " + reg + " cannot be"
-					+ " referenced from " + toFill);
+			super(format("Region %s on %s cannot be referenced from %s", ref,
+					reg, toFill));
 		}
 	}
 

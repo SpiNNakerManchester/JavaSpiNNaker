@@ -257,7 +257,7 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 		void loadCore(CoreToLoad ctl) throws IOException, ProcessException,
 				DataSpecificationException, StorageException,
 				InterruptedException {
-			ByteBuffer ds = getDataSpec(ctl);
+			var ds = getDataSpec(ctl);
 			var start = malloc(ctl, ctl.sizeToWrite);
 			var executor = new Executor(ds, machine.getChipAt(ctl.core).sdram);
 			try (executor) {
