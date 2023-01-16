@@ -51,11 +51,9 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * <p>
  * Does not inherit from {@link TxrxProcess} for ugly type reasons.
  *
- * @param <R>
- *            The type of the response; implicit in the type of the request.
  * @author Donal Fellows
  */
-class BMPCommandProcess<R extends BMPResponse> {
+class BMPCommandProcess {
 	private static final Logger log = getLogger(BMPCommandProcess.class);
 
 	/*
@@ -114,10 +112,10 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * completely processing the interaction before returning its response.
 	 *
 	 * @param <T>
-	 *            The real type of the response
+	 *            The type of the response.
 	 * @param request
-	 *            The request to send
-	 * @return The successful response to the request
+	 *            The request to send.
+	 * @return The successful response to the request.
 	 * @throws IOException
 	 *             If the communications fail
 	 * @throws ProcessException
@@ -125,7 +123,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	<T extends R> T execute(BMPRequest<T> request)
+	<T extends BMPResponse> T execute(BMPRequest<T> request)
 			throws IOException, ProcessException, InterruptedException {
 		var holder = new ValueHolder<T>();
 		/*
@@ -144,12 +142,12 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * completely processing the interaction before returning its response.
 	 *
 	 * @param <T>
-	 *            The real type of the response
+	 *            The type of the response.
 	 * @param request
-	 *            The request to send
+	 *            The request to send.
 	 * @param retries
-	 *            The number of times to retry
-	 * @return The successful response to the request
+	 *            The number of times to retry.
+	 * @return The successful response to the request.
 	 * @throws IOException
 	 *             If the communications fail
 	 * @throws ProcessException
@@ -157,7 +155,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	<T extends R> T execute(BMPRequest<T> request, int retries)
+	<T extends BMPResponse> T execute(BMPRequest<T> request, int retries)
 			throws IOException, ProcessException, InterruptedException {
 		var holder = new ValueHolder<T>();
 		/*
@@ -177,7 +175,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * interaction before doing the next one.
 	 *
 	 * @param <T>
-	 *            The real type of the responses
+	 *            The type of the responses.
 	 * @param requests
 	 *            The sequence of requests to send; note that these are handled
 	 *            sequentially, as the BMP typically cannot handle parallel
@@ -190,7 +188,8 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	<T extends R> List<T> execute(Iterable<? extends BMPRequest<T>> requests)
+	<T extends BMPResponse> List<T> execute(
+			Iterable<? extends BMPRequest<T>> requests)
 			throws IOException, ProcessException, InterruptedException {
 		var results = new ArrayList<T>();
 		var map = new HashMap<BMPConnection, RequestPipeline<T>>();
@@ -210,7 +209,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * the next one.
 	 *
 	 * @param <T>
-	 *            The real type of the response
+	 *            The type of the responses.
 	 * @param requests
 	 *            The sequence of requests to send; note that these are handled
 	 *            sequentially, as the BMP typically cannot handle parallel
@@ -225,8 +224,8 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	<T extends R> List<T> execute(Iterable<? extends BMPRequest<T>> requests,
-			int retries)
+	<T extends BMPResponse> List<T> execute(
+			Iterable<? extends BMPRequest<T>> requests, int retries)
 			throws IOException, ProcessException, InterruptedException {
 		var results = new ArrayList<T>();
 		var map = new HashMap<BMPConnection, RequestPipeline<T>>();
@@ -255,7 +254,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * @author Andrew Rowley
 	 * @author Donal Fellows
 	 */
-	private final class RequestPipeline<T extends R> {
+	private final class RequestPipeline<T extends BMPResponse> {
 		/** The connection over which the communication is to take place. */
 		private BMPConnection connection;
 
