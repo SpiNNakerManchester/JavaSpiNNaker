@@ -25,10 +25,10 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation is used to indicate which methods should be used to implement
- * DSE operations. Methods annotated with this <em>must</em> take no arguments,
- * and <em>must</em> have a return type of either {@code void} or {@code int}.
- * The operation calling mechanism treats methods that don't return a value as
- * if they returned zero.
+ * DSE operations. Methods annotated with this <em>must</em> be {@code public},
+ * <em>must</em> take no arguments, and <em>must</em> have a return type of
+ * either {@code void} or {@code int}. The operation calling mechanism treats
+ * methods that don't return a value as if they returned zero.
  *
  * @author Donal Fellows
  */

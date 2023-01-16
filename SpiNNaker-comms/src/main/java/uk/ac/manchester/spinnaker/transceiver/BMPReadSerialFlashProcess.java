@@ -29,12 +29,11 @@ import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadSerialFlash;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.transceiver.Accumulator.BufferAccumulator;
 import uk.ac.manchester.spinnaker.transceiver.Accumulator.FileAccumulator;
 
 /** A process for reading serial flash on a BMP. */
-class BMPReadSerialFlashProcess extends BMPCommandProcess<BMPResponse> {
+class BMPReadSerialFlashProcess extends BMPCommandProcess {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
