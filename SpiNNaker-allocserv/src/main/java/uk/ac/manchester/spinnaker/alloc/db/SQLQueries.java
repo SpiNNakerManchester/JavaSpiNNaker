@@ -245,8 +245,8 @@ public abstract class SQLQueries {
 			+ "original_request, keepalive_timestamp, create_timestamp, "
 			+ "job_state) "
 			+ "VALUES(:machine_id, :user_id, :group_id, :keepalive_interval, "
-			+ ":original_request, CAST(strftime('%s','now') AS INTEGER), "
-			+ "CAST(strftime('%s','now') AS INTEGER), " + /* QUEUED */ "1)";
+			+ ":original_request, :keepalive_timestamp, :create_timestamp), "
+		    + /* QUEUED */ "1)";
 
 	/** Create a request to allocate a number of boards. */
 	@Parameter("job_id")
@@ -482,8 +482,7 @@ public abstract class SQLQueries {
 	@Parameter("keepalive_host")
 	@Parameter("job_id")
 	protected static final String UPDATE_KEEPALIVE =
-			"UPDATE jobs SET keepalive_timestamp = "
-					+ "CAST(strftime('%s','now') AS INTEGER), "
+			"UPDATE jobs SET keepalive_timestamp = :keepalive_timestamp, "
 					+ "keepalive_host = :keepalive_host WHERE job_id = :job_id "
 					+ "AND job_state != 4"; // DESTROYED
 
@@ -674,7 +673,7 @@ public abstract class SQLQueries {
 			"SELECT job_id FROM jobs " //
 					+ "WHERE job_state != 4 " // DESTROYED
 					+ "AND keepalive_timestamp + keepalive_interval < "
-					+ "CAST(strftime('%s','now') AS INTEGER)";
+					+ ":time_now";
 
 	/**
 	 * Set the state and number of pending changes for a job.
@@ -1037,7 +1036,7 @@ public abstract class SQLQueries {
 	@ResultColumn("quota")
 	@SingleRowResult
 	protected static final String GET_GROUP_QUOTA =
-			"SELECT quota FROM groups WHERE group_id = :group_id LIMIT 1";
+			"SELECT quota FROM user_groups WHERE group_id = :group_id LIMIT 1";
 
 	/**
 	 * Get the current non-consolidated usage for a group.
@@ -1086,7 +1085,7 @@ public abstract class SQLQueries {
 	@Parameter("usage")
 	@Parameter("group_id")
 	protected static final String DECREMENT_QUOTA =
-			"UPDATE groups SET quota = quota - :usage "
+			"UPDATE user_groups SET quota = quota - :usage "
 					+ "WHERE group_id = :group_id AND quota IS NOT NULL";
 
 	/**
@@ -1109,7 +1108,7 @@ public abstract class SQLQueries {
 	@ResultColumn("group_name")
 	@ResultColumn("quota")
 	protected static final String ADJUST_QUOTA =
-			"UPDATE groups SET quota = max(0, quota + :delta) "
+			"UPDATE user_groups SET quota = max(0, quota + :delta) "
 					+ "WHERE group_id = :group_id AND quota IS NOT NULL "
 					+ "RETURNING group_name, quota";
 
@@ -1217,7 +1216,7 @@ public abstract class SQLQueries {
 	@ResultColumn("group_id")
 	@SingleRowResult
 	protected static final String GET_GROUP_BY_NAME_AND_MEMBER =
-			"SELECT groups.group_id FROM groups "
+			"SELECT user_groups.group_id FROM user_groups "
 					+ "JOIN group_memberships USING (group_id) "
 					+ "JOIN user_info USING (user_id) "
 					+ "WHERE user_name = :user_name "
@@ -1232,12 +1231,13 @@ public abstract class SQLQueries {
 	@ResultColumn("group_id")
 	@ResultColumn("quota")
 	protected static final String GET_GROUPS_AND_QUOTAS_OF_USER =
-			"SELECT groups.group_id, COALESCE(groups.quota, 1) AS quota "
+			"SELECT user_groups.group_id, COALESCE(user_groups.quota, 1) "
+	                + "AS quota "
 					+ "FROM group_memberships "
 					+ "JOIN user_info USING (user_id) "
-					+ "JOIN groups USING (group_id) "
+					+ "JOIN user_groups USING (group_id) "
 					+ "WHERE user_name = :user_name AND quota > 0 "
-					+ "ORDER BY groups.quota DESC";
+					+ "ORDER BY user_groups.quota DESC";
 
 	/**
 	 * List the members of a group.
@@ -1251,10 +1251,11 @@ public abstract class SQLQueries {
 	@ResultColumn("user_id")
 	@ResultColumn("user_name")
 	protected static final String GET_USERS_OF_GROUP =
-			"SELECT membership_id, groups.group_id, groups.group_name, "
+			"SELECT membership_id, user_groups.group_id, "
+	                + "user_groups.group_name, "
 					+ "user_info.user_id, user_info.user_name "
 					+ "FROM group_memberships JOIN user_info USING (user_id) "
-					+ "JOIN groups USING (group_id) "
+					+ "JOIN user_groups USING (group_id) "
 					+ "WHERE group_id = :group_id";
 
 	/**
@@ -1270,10 +1271,10 @@ public abstract class SQLQueries {
 	@ResultColumn("group_name")
 	@SingleRowResult
 	protected static final String GET_MEMBERSHIP =
-			"SELECT membership_id, user_info.user_id, groups.group_id, "
+			"SELECT membership_id, user_info.user_id, user_groups.group_id, "
 					+ "user_name, group_name FROM group_memberships "
 					+ "JOIN user_info USING (user_id) "
-					+ "JOIN groups USING (group_id) "
+					+ "JOIN user_groups USING (group_id) "
 					+ "WHERE membership_id = :membership_id";
 
 	/**
@@ -1288,10 +1289,10 @@ public abstract class SQLQueries {
 	@ResultColumn("group_name")
 	@ResultColumn("user_name")
 	protected static final String GET_MEMBERSHIPS_OF_USER =
-			"SELECT membership_id, user_info.user_id, groups.group_id, "
+			"SELECT membership_id, user_info.user_id, user_groups.group_id, "
 					+ "user_name, group_name FROM group_memberships "
 					+ "JOIN user_info USING (user_id) "
-					+ "JOIN groups USING (group_id) "
+					+ "JOIN user_groups USING (group_id) "
 					+ "WHERE group_memberships.user_id = :user_id";
 
 	/**
@@ -1304,7 +1305,7 @@ public abstract class SQLQueries {
 	@Parameter("group_type")
 	@GeneratesID
 	protected static final String CREATE_GROUP =
-			"INSERT INTO groups(group_name, quota, group_type) "
+			"INSERT INTO user_groups(group_name, quota, group_type) "
 					+ "VALUES(:group_name, :quota, :group_type)";
 
 	/**
@@ -1316,7 +1317,7 @@ public abstract class SQLQueries {
 	@Parameter("quota")
 	@Parameter("group_type")
 	protected static final String CREATE_GROUP_IF_NOT_EXISTS =
-			"INSERT OR IGNORE INTO groups(group_name, quota, group_type) "
+			"INSERT OR IGNORE INTO user_groups(group_name, quota, group_type) "
 					+ "VALUES(:group_name, :quota, :group_type)";
 
 	/**
@@ -1328,7 +1329,7 @@ public abstract class SQLQueries {
 	@ResultColumn("group_name")
 	@SingleRowResult
 	protected static final String DELETE_GROUP =
-			"DELETE FROM groups WHERE group_id = :group_id "
+			"DELETE FROM user_groups WHERE group_id = :group_id "
 					// + "LIMIT 1 " // Not supported in Xerial driver build
 					+ "RETURNING group_name";
 
@@ -1345,7 +1346,7 @@ public abstract class SQLQueries {
 	@ResultColumn("quota")
 	@ResultColumn("group_type")
 	@SingleRowResult
-	protected static final String UPDATE_GROUP = "UPDATE groups SET "
+	protected static final String UPDATE_GROUP = "UPDATE user_groups SET "
 			+ "group_name = COALESCE(:group_name, group_name), "
 			+ "quota = :quota WHERE group_id = :group_id "
 			// + "LIMIT 1 " // Not supported in Xerial driver build
@@ -1394,7 +1395,7 @@ public abstract class SQLQueries {
 	@Parameter("group_name")
 	@Parameter("group_type")
 	protected static final String GROUP_SYNC_INSERT_TEMP_ROW =
-			"INSERT INTO temp.usergroupids SELECT group_id FROM groups "
+			"INSERT INTO temp.usergroupids SELECT group_id FROM user_groups "
 					+ "WHERE group_name = :group_name "
 					+ "AND group_type = :group_type";
 
@@ -1478,7 +1479,7 @@ public abstract class SQLQueries {
 	@Parameter("user_id")
 	protected static final String MARK_LOGIN_SUCCESS =
 			"UPDATE user_info SET last_successful_login_timestamp = "
-					+ "CAST(strftime('%s','now') AS INTEGER), "
+					+ ":login_timestamp, "
 					+ "failure_count = 0, openid_subject = :openid_subject "
 					+ "WHERE user_id = :user_id";
 
@@ -1494,7 +1495,7 @@ public abstract class SQLQueries {
 	protected static final String MARK_LOGIN_FAILURE =
 			"UPDATE user_info SET failure_count = failure_count + 1, "
 					+ "last_fail_timestamp = "
-					+ "CAST(strftime('%s','now') AS INTEGER), "
+					+ ":login_timestamp, "
 					+ "locked = (failure_count + 1 >= :failure_limit) "
 					+ "WHERE user_id = :user_id RETURNING locked";
 
@@ -1508,8 +1509,8 @@ public abstract class SQLQueries {
 	protected static final String UNLOCK_LOCKED_USERS =
 			"UPDATE user_info SET failure_count = 0, last_fail_timestamp = 0, "
 					+ "locked = 0 WHERE last_fail_timestamp + :lock_interval "
-					+ "< CAST(strftime('%s','now') AS INTEGER) "
-					+ "AND locked RETURNING user_name";
+					+ "< :timestamp_now "
+					+ "AND locked";
 
 	/**
 	 * Delete a user.
@@ -1641,7 +1642,7 @@ public abstract class SQLQueries {
 	@ResultColumn("quota")
 	@ResultColumn("group_type")
 	protected static final String LIST_ALL_GROUPS =
-			"SELECT group_id, group_name, quota, group_type FROM groups";
+			"SELECT group_id, group_name, quota, group_type FROM user_groups";
 
 	/**
 	 * Get a list of all groups of a given type.
@@ -1654,7 +1655,7 @@ public abstract class SQLQueries {
 	@ResultColumn("quota")
 	@ResultColumn("group_type")
 	protected static final String LIST_ALL_GROUPS_OF_TYPE =
-			"SELECT group_id, group_name, quota, group_type FROM groups "
+			"SELECT group_id, group_name, quota, group_type FROM user_groups "
 					+ "WHERE group_type = :type";
 
 	/**
@@ -1669,7 +1670,7 @@ public abstract class SQLQueries {
 	@ResultColumn("group_type")
 	@SingleRowResult
 	protected static final String GET_GROUP_BY_ID =
-			"SELECT group_id, group_name, quota, group_type FROM groups "
+			"SELECT group_id, group_name, quota, group_type FROM user_groups "
 					+ "WHERE group_id = :group_id LIMIT 1";
 
 	/**
@@ -1684,7 +1685,7 @@ public abstract class SQLQueries {
 	@ResultColumn("group_type")
 	@SingleRowResult
 	protected static final String GET_GROUP_BY_NAME =
-			"SELECT group_id, group_name, quota, group_type FROM groups "
+			"SELECT group_id, group_name, quota, group_type FROM user_groups "
 					+ "WHERE group_name = :group_name LIMIT 1";
 
 	/**
@@ -1784,7 +1785,7 @@ public abstract class SQLQueries {
 	@Parameter("board_id")
 	protected static final String MARK_BOARD_BLACKLIST_CHANGED =
 			"UPDATE boards SET blacklist_set_timestamp = "
-					+ "CAST(strftime('%s','now') AS INTEGER) "
+					+ ":timestamp_now "
 					+ "WHERE board_id = :board_id";
 
 	/**
@@ -1795,7 +1796,7 @@ public abstract class SQLQueries {
 	@Parameter("board_id")
 	protected static final String MARK_BOARD_BLACKLIST_SYNCHED =
 			"UPDATE boards SET blacklist_sync_timestamp = "
-					+ "CAST(strftime('%s','now') AS INTEGER) "
+					+ ":timestamp_now "
 					+ "WHERE board_id = :board_id";
 
 	/**

@@ -16,11 +16,16 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
+import static uk.ac.manchester.spinnaker.alloc.IOUtils.deserialize;
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngineSQLiteImpl.columnNames;
+import static uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
+
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.function.ToIntFunction;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.TypeMismatchDataAccessException;
@@ -34,7 +39,58 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * @author Donal Fellows
  */
 @UsedInJavadocOnly(DataAccessException.class)
-public interface Row {
+public final class RowResultSetImpl implements Row {
+	private final ResultSet rs;
+
+	private Set<String> columns;
+
+	RowResultSetImpl(ResultSet rs) {
+		this.rs = rs;
+	}
+
+	private String getSQL() {
+		try {
+			return rs.getStatement().toString();
+		} catch (SQLException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Produce a value or throw. Only used in {@link Row}.
+	 *
+	 * @param <T>
+	 *            The type of value to produce.
+	 */
+	private interface Getter<T> {
+		/**
+		 * Produce a value or throw.
+		 *
+		 * @return The value produced.
+		 * @throws SQLException
+		 *             If things fail.
+		 */
+		T get() throws SQLException;
+	}
+
+	/**
+	 * Handles exception mapping if an exception is thrown.
+	 *
+	 * @param <T>
+	 *            The type of the result.
+	 * @param getter
+	 *            How to get the result. May throw.
+	 * @return The result.
+	 * @throws DataAccessException
+	 *             If the interior code throws an {@link SQLException}.
+	 */
+	private <T> T get(Getter<T> getter) {
+		try {
+			return getter.get();
+		} catch (SQLException e) {
+			throw mapException(e, getSQL());
+		}
+	}
 
 	/**
 	 * Get the column names from this row.
@@ -46,7 +102,15 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column names can't be retrieved.
 	 */
-	public Set<String> getColumnNames();
+	public Set<String> getColumnNames() {
+		if (columns != null) {
+			return columns;
+		}
+		return get(() -> {
+			columns = columnNames(rs.getMetaData());
+			return columns;
+		});
+	}
 
 	/**
 	 * Get the contents of the named column.
@@ -57,17 +121,8 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column's contents can't be retrieved.
 	 */
-	public String getString(String columnLabel);
-
-	/**
-	 * Get a function to get the contents of the named column.
-	 *
-	 * @param columnLabel
-	 *            The name of the column.
-	 * @return A function to get the string from the column of a row.
-	 */
-	public static Function<Row, String> string(String columnLabel) {
-		return r -> r.getString(columnLabel);
+	public String getString(String columnLabel) {
+		return get(() -> rs.getString(columnLabel));
 	}
 
 	/**
@@ -79,17 +134,8 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column's contents can't be retrieved.
 	 */
-	public boolean getBoolean(String columnLabel);
-
-	/**
-	 * Get a function to get the contents of the named column.
-	 *
-	 * @param columnLabel
-	 *            The name of the column.
-	 * @return A function to get the {@code boolean} from the column of a row.
-	 */
-	public static Function<Row, Boolean> bool(String columnLabel) {
-		return r -> r.getBoolean(columnLabel);
+	public boolean getBoolean(String columnLabel) {
+		return get(() -> rs.getBoolean(columnLabel));
 	}
 
 	/**
@@ -101,17 +147,8 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column's contents can't be retrieved.
 	 */
-	public int getInt(String columnLabel);
-
-	/**
-	 * Get a function to get the contents of the named column.
-	 *
-	 * @param columnLabel
-	 *            The name of the column.
-	 * @return A function to get the {@code int} from the column of a row.
-	 */
-	public static ToIntFunction<Row> int32(String columnLabel) {
-		return r -> r.getInt(columnLabel);
+	public int getInt(String columnLabel) {
+		return get(() -> rs.getInt(columnLabel));
 	}
 
 	/**
@@ -123,17 +160,8 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column's contents can't be retrieved.
 	 */
-	public Integer getInteger(String columnLabel);
-
-	/**
-	 * Get a function to get the contents of the named column.
-	 *
-	 * @param columnLabel
-	 *            The name of the column.
-	 * @return A function to get the nullable integer from the column of a row.
-	 */
-	public static Function<Row, Integer> integer(String columnLabel) {
-		return r -> r.getInteger(columnLabel);
+	public Integer getInteger(String columnLabel) {
+		return get(() -> (Integer) rs.getObject(columnLabel));
 	}
 
 	/**
@@ -145,17 +173,8 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column's contents can't be retrieved.
 	 */
-	public byte[] getBytes(String columnLabel);
-
-	/**
-	 * Get a function to get the contents of the named column.
-	 *
-	 * @param columnLabel
-	 *            The name of the column.
-	 * @return A function to get the byte array from the column of a row.
-	 */
-	public static Function<Row, byte[]> bytes(String columnLabel) {
-		return r -> r.getBytes(columnLabel);
+	public byte[] getBytes(String columnLabel) {
+		return get(() -> rs.getBytes(columnLabel));
 	}
 
 	/**
@@ -173,23 +192,17 @@ public interface Row {
 	 * @throws TypeMismatchDataAccessException
 	 *             If the object is not of the required type.
 	 */
-	public <T> T getSerial(String columnLabel, Class<T> cls);
-
-	/**
-	 * Get a function to get the contents of the named column.
-	 *
-	 * @param <T>
-	 *            The type of value expected.
-	 * @param columnLabel
-	 *            The name of the column.
-	 * @param cls
-	 *            The type of value expected.
-	 * @return A function to get the deserialized object from the column of a
-	 *         row.
-	 */
-	public static <T> Function<Row, T> serial(String columnLabel,
-			Class<T> cls) {
-		return r -> r.getSerial(columnLabel, cls);
+	public <T> T getSerial(String columnLabel, Class<T> cls) {
+		var bytes = getBytes(columnLabel);
+		if (bytes == null) {
+			return null;
+		}
+		try {
+			return deserialize(bytes, cls);
+		} catch (IOException | ClassNotFoundException | ClassCastException e) {
+			throw new TypeMismatchDataAccessException(
+					"bad data in column " + columnLabel, e);
+		}
 	}
 
 	/**
@@ -201,17 +214,14 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column's contents can't be retrieved.
 	 */
-	public Instant getInstant(String columnLabel);
-
-	/**
-	 * Get a function to get the contents of the named column.
-	 *
-	 * @param columnLabel
-	 *            The name of the column.
-	 * @return A function to get the instant from the column of a row.
-	 */
-	public static Function<Row, Instant> instant(String columnLabel) {
-		return r -> r.getInstant(columnLabel);
+	public Instant getInstant(String columnLabel) {
+		return get(() -> {
+			long moment = rs.getLong(columnLabel);
+			if (rs.wasNull()) {
+				return null;
+			}
+			return Instant.ofEpochSecond(moment);
+		});
 	}
 
 	/**
@@ -223,17 +233,14 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column's contents can't be retrieved.
 	 */
-	public Duration getDuration(String columnLabel);
-
-	/**
-	 * Get a function to get the contents of the named column.
-	 *
-	 * @param columnLabel
-	 *            The name of the column.
-	 * @return A function to get the duration from the column of a row.
-	 */
-	public static Function<Row, Duration> duration(String columnLabel) {
-		return r -> r.getDuration(columnLabel);
+	public Duration getDuration(String columnLabel) {
+		return get(() -> {
+			long span = rs.getLong(columnLabel);
+			if (rs.wasNull()) {
+				return null;
+			}
+			return Duration.ofSeconds(span);
+		});
 	}
 
 	/**
@@ -248,17 +255,8 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column's contents can't be retrieved.
 	 */
-	public Object getObject(String columnLabel);
-
-	/**
-	 * Get a function to get the contents of the named column.
-	 *
-	 * @param columnLabel
-	 *            The name of the column.
-	 * @return A function to get the object from the column of a row.
-	 */
-	public static Function<Row, Object> object(String columnLabel) {
-		return r -> r.getObject(columnLabel);
+	public Object getObject(String columnLabel) {
+		return get(() -> rs.getObject(columnLabel));
 	}
 
 	/**
@@ -274,22 +272,14 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column's contents can't be retrieved.
 	 */
-	public <T extends Enum<T>> T getEnum(String columnLabel, Class<T> type);
-
-	/**
-	 * Get a function to get the contents of the named column.
-	 *
-	 * @param <T>
-	 *            The enumeration type.
-	 * @param columnLabel
-	 *            The name of the column.
-	 * @param type
-	 *            The enumeration type class.
-	 * @return A function to get the {@code enum} from the column of a row.
-	 */
-	public static <T extends Enum<T>> Function<Row, T>
-			enumerate(String columnLabel, Class<T> type) {
-		return r -> r.getEnum(columnLabel, type);
+	public <T extends Enum<T>> T getEnum(String columnLabel, Class<T> type) {
+		return get(() -> {
+			int value = rs.getInt(columnLabel);
+			if (rs.wasNull()) {
+				return null;
+			}
+			return type.getEnumConstants()[value];
+		});
 	}
 
 	/**
@@ -301,17 +291,32 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column's contents can't be retrieved.
 	 */
-	public Long getLong(String columnLabel);
+	public Long getLong(String columnLabel) {
+		return get(() -> {
+			var value = (Number) rs.getObject(columnLabel);
+			if (rs.wasNull()) {
+				return null;
+			}
+			return value.longValue();
+		});
+	}
 
-	/**
-	 * Get a function to get the contents of the named column.
-	 *
-	 * @param columnLabel
-	 *            The name of the column.
-	 * @return A function to get the nullable {@code long} from the column of a
-	 *         row.
-	 */
-	public static Function<Row, Long> int64(String columnLabel) {
-		return r -> r.getLong(columnLabel);
+	@Override
+	public String toString() {
+		var sb = new StringBuilder("Row(");
+		try {
+			var md = rs.getMetaData();
+			var sep = "";
+			for (int i = 1; i <= md.getColumnCount(); i++) {
+				var col = md.getColumnName(i);
+				var val = rs.getObject(i);
+				sb.append(sep).append(col).append(":").append(val);
+				sep = ", ";
+			}
+		} catch (Exception e) {
+			// Can't get the contents of the row after all
+			sb.append("...");
+		}
+		return sb.append(")").toString();
 	}
 }

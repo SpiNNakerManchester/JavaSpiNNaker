@@ -2,17 +2,23 @@ package uk.ac.manchester.spinnaker.alloc.db;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
+import static uk.ac.manchester.spinnaker.alloc.IOUtils.serialize;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -31,9 +37,12 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
+import org.springframework.jdbc.core.namedparam.NamedParameterUtils;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
@@ -78,10 +87,11 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 	@PostConstruct
 	private void setup() {
-		String sql = readSQL(sqlDDLFile);
+		// Skip for now - use sql directly if needed
+		/* String sql = readSQL(sqlDDLFile);
 		for (String part : sql.split(";")) {
 		    jdbcTemplate.execute(part + ";");
-		}
+		} */
 	}
 
 	private final class ConnectionImpl implements Connection {
@@ -175,8 +185,9 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		private final PreparedStatementCreator delegate;
 
 		PreparedStatementSaver(String sql, Object... arguments) {
+			List<Object> resolved = resolveArguments(arguments);
 			delegate = new PreparedStatementCreatorFactory(sql)
-					.newPreparedStatementCreator(arguments);
+					.newPreparedStatementCreator(resolved);
 		}
 
 		@Override
@@ -199,12 +210,38 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		}
 	}
 
+	private final class PreparedStatementCreatorImpl
+	        implements PreparedStatementCreator {
+
+		private final String query;
+
+		private final List<Object> values;
+
+		private PreparedStatementCreatorImpl(String query,
+				List<Object> values) {
+			this.query = query;
+			this.values = values;
+		}
+
+		@Override
+		public PreparedStatement createPreparedStatement(
+				java.sql.Connection con) throws SQLException {
+		    var stmt = con.prepareStatement(query,
+		    		Statement.RETURN_GENERATED_KEYS);
+		    for (int i = 0; i < values.size(); i++) {
+		    	stmt.setObject(i + 1, values.get(i));
+		    }
+		    return stmt;
+		}
+
+	}
+
 	private final class QueryImpl implements Query {
 
 		private final String sql;
 
 		QueryImpl(String sql) {
-			this.sql = sql;
+			this.sql = NamedParameterUtils.parseSqlStatementIntoString(sql);
 		}
 
 		@Override
@@ -214,72 +251,53 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 		@Override
 		public MappableIterable<Row> call(Object... arguments) {
-			return jdbcTemplate.query(sql, (ResultSet resSet) -> {
-				final ResultSet rs = resSet;
-				return () -> new Iterator<Row>() {
-					private boolean finished = false;
-					private boolean consumed = true;
-					private boolean closed = false;
-					// Share this row wrapper; underlying row changes
-					private final Row row = new Row(rs);
+			List<Object> resolved = resolveArguments(arguments);
+			SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, resolved.toArray());
 
-					@Override
-					public boolean hasNext() {
-						if (finished) {
-							return false;
-						}
-						if (!consumed) {
-							return true;
-						}
-						boolean result = false;
-						try {
-							result = rs.next();
-						} catch (SQLException e) {
-							throw mapException(e, sql);
-						} finally {
-							if (result) {
-								consumed = false;
-							} else {
-								finished = true;
-								closeResults();
-							}
-						}
-						return result;
-					}
+			return () -> new Iterator<Row>() {
+				private boolean finished = false;
+				private boolean consumed = true;
+				// Share this row wrapper; underlying row changes
+				private final Row row = new RowSQLRowSetImpl(rs, sql);
 
-					@Override
-					public Row next() {
-						if (finished) {
-							throw new NoSuchElementException();
-						}
-						consumed = true;
-						return row;
+				@Override
+				public boolean hasNext() {
+					if (finished) {
+						return false;
 					}
+					if (!consumed) {
+						return true;
+					}
+					boolean result = rs.next();
+					if (result) {
+						consumed = false;
+					} else {
+						finished = true;
+					}
+					return result;
+				}
 
-					final void closeResults() {
-						if (!closed) {
-							try {
-								log.debug("closing result set");
-								rs.close();
-							} catch (SQLException e) {
-								log.trace("failure when closing result set", e);
-							}
-						}
-						closed = true;
+				@Override
+				public Row next() {
+					if (finished) {
+						throw new NoSuchElementException();
 					}
-				};
-			}, arguments);
+					consumed = true;
+					return row;
+				}
+			};
 		}
 
 		@Override
 		public Optional<Row> call1(Object... arguments) {
+			List<Object> resolved = resolveArguments(arguments);
 			return jdbcTemplate.query(sql, (ResultSet rs) -> {
 				if (rs.next()) {
-					return Optional.of(new Row(rs));
+					return Optional.of(new RowResultSetImpl(rs));
 				} else {
 					return Optional.empty();
 				}
-			}, arguments);
+			}, resolved);
 		}
 
 		@Override
@@ -291,6 +309,12 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		public Set<String> getRowColumnNames() {
 			return getColumnNames(sql);
 		}
+
+		@Override
+		public List<String> explainQueryPlan() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 
 	private final class UpdateImpl implements Update {
@@ -298,7 +322,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		private String sql;
 
 		UpdateImpl(String sql) {
-			this.sql = sql;
+			this.sql = NamedParameterUtils.parseSqlStatementIntoString(sql);
 		}
 
 		@Override
@@ -308,14 +332,15 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 		@Override
 		public int call(Object... arguments) {
-			return jdbcTemplate.update(sql, arguments);
+			List<Object> resolved = resolveArguments(arguments);
+			return jdbcTemplate.update(sql, resolved.toArray());
 		}
 
 		@Override
 		public MappableIterable<Integer> keys(Object... arguments) {
+			List<Object> resolved = resolveArguments(arguments);
 			KeyHolder keyHolder = new GeneratedKeyHolder();
-			var pss = new PreparedStatementCreatorFactory(sql)
-					.newPreparedStatementCreator(arguments);
+			var pss = new PreparedStatementCreatorImpl(sql, resolved);
 			jdbcTemplate.update(pss, keyHolder);
 			return () -> keyHolder.getKeyList().stream().mapToInt(
 					map -> Integer.class.cast(
@@ -324,8 +349,10 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 		@Override
 		public Optional<Integer> key(Object... arguments) {
+			List<Object> resolved = resolveArguments(arguments);
 			KeyHolder keyHolder = new GeneratedKeyHolder();
-			jdbcTemplate.update(sql, arguments);
+			var pss = new PreparedStatementCreatorImpl(sql, resolved);
+			jdbcTemplate.update(pss, keyHolder);
 			Number key = keyHolder.getKey();
 			if (key == null) {
 				return Optional.empty();
@@ -341,6 +368,12 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		@Override
 		public Set<String> getRowColumnNames() {
 			return getColumnNames(sql);
+		}
+
+		@Override
+		public List<String> explainQueryPlan() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 	}
@@ -369,6 +402,35 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 			}
 		}
 		return pss.rowColumnNames;
+	}
+
+	private List<Object> resolveArguments(Object[] arguments) {
+		List<Object> resolved = new ArrayList<Object>();
+		for (var arg : arguments) {
+			// The classes we augment the DB driver with
+			if (arg instanceof Optional) {
+				// Unpack one layer of Optional only; absent = NULL
+				arg = ((Optional<?>) arg).orElse(null);
+			}
+			if (arg instanceof Instant) {
+				arg = ((Instant) arg).getEpochSecond();
+			} else if (arg instanceof Duration) {
+				arg = ((Duration) arg).getSeconds();
+			} else if (arg instanceof Enum) {
+				arg = ((Enum<?>) arg).ordinal();
+			} else if (arg != null && arg instanceof Serializable
+					&& !(arg instanceof String || arg instanceof Number
+							|| arg instanceof Boolean
+							|| arg instanceof byte[])) {
+				try {
+					arg = serialize(arg);
+				} catch (IOException e) {
+					arg = null;
+				}
+			}
+			resolved.add(arg);
+		}
+		return resolved;
 	}
 
 	/**
@@ -424,6 +486,14 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 	@Override
 	public DatabaseAPI getInMemoryDB() {
 		return new DatabaseEngineJDBCImpl();
+	}
+
+	static Set<String> columnNames(SqlRowSetMetaData md) throws SQLException {
+		var names = new LinkedHashSet<String>();
+		for (int i = 1; i <= md.getColumnCount(); i++) {
+			names.add(md.getColumnName(i));
+		}
+		return names;
 	}
 
 }

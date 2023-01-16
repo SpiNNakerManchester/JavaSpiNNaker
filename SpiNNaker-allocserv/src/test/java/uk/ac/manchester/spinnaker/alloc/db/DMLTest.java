@@ -68,11 +68,11 @@ class DMLTest extends MemDBTestBase {
 		assumeWritable(c);
 		var d = Duration.ofSeconds(100);
 		try (var u = c.update(INSERT_JOB)) {
-			assertEquals(5, u.getNumArguments());
+			assertEquals(7, u.getNumArguments());
 			c.transaction(() -> {
 				// No such machine
 				assertThrowsFK(() -> u.keys(NO_MACHINE, NO_USER, NO_GROUP, d,
-						new byte[0]));
+						new byte[0], 0, 0));
 			});
 		}
 	}
@@ -132,9 +132,9 @@ class DMLTest extends MemDBTestBase {
 	void updateKeepalive() {
 		assumeWritable(c);
 		try (var u = c.update(UPDATE_KEEPALIVE)) {
-			assertEquals(2, u.getNumArguments());
+			assertEquals(3, u.getNumArguments());
 			c.transaction(() -> {
-				assertEquals(0, u.call(NO_NAME, NO_JOB));
+				assertEquals(0, u.call(0, NO_NAME, NO_JOB));
 			});
 		}
 	}
@@ -433,9 +433,9 @@ class DMLTest extends MemDBTestBase {
 	void markLoginSuccess() {
 		assumeWritable(c);
 		try (var u = c.update(MARK_LOGIN_SUCCESS)) {
-			assertEquals(2, u.getNumArguments());
+			assertEquals(3, u.getNumArguments());
 			c.transaction(() -> {
-				assertEquals(0, u.call(NO_NAME, NO_USER));
+				assertEquals(0, u.call(0, NO_NAME, NO_USER));
 			});
 		}
 	}
@@ -445,10 +445,10 @@ class DMLTest extends MemDBTestBase {
 		assumeWritable(c);
 		// Tricky! Has a RETURNING clause
 		try (var u = c.query(MARK_LOGIN_FAILURE)) {
-			assertEquals(2, u.getNumArguments());
+			assertEquals(3, u.getNumArguments());
 			assertEquals(Set.of("locked"), u.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(u.call1(0, NO_USER).isPresent());
+				assertFalse(u.call1(0, 0, NO_USER).isPresent());
 			});
 		}
 	}
@@ -458,10 +458,10 @@ class DMLTest extends MemDBTestBase {
 		assumeWritable(c);
 		// Tricky! Has a RETURNING clause
 		try (var u = c.query(UNLOCK_LOCKED_USERS)) {
-			assertEquals(1, u.getNumArguments());
+			assertEquals(2, u.getNumArguments());
 			assertEquals(Set.of("user_name"), u.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(u.call1(Duration.ofDays(1000)).isPresent());
+				assertFalse(u.call1(Duration.ofDays(1000), 0).isPresent());
 			});
 		}
 	}
@@ -881,10 +881,10 @@ class DMLTest extends MemDBTestBase {
 	void markBoardBlacklistChanged() {
 		assumeWritable(c);
 		try (var u = c.update(MARK_BOARD_BLACKLIST_CHANGED)) {
-			assertEquals(1, u.getNumArguments());
+			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				// No such board, so no delete
-				assertEquals(0, u.call(NO_BOARD));
+				assertEquals(0, u.call(0, NO_BOARD));
 			});
 		}
 	}
@@ -893,10 +893,10 @@ class DMLTest extends MemDBTestBase {
 	void markBoardBlacklistSynched() {
 		assumeWritable(c);
 		try (var u = c.update(MARK_BOARD_BLACKLIST_SYNCHED)) {
-			assertEquals(1, u.getNumArguments());
+			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				// No such board, so no delete
-				assertEquals(0, u.call(NO_BOARD));
+				assertEquals(0, u.call(0, NO_BOARD));
 			});
 		}
 	}

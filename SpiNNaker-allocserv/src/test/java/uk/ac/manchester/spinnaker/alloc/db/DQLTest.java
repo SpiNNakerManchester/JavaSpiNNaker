@@ -464,10 +464,10 @@ class DQLTest extends MemDBTestBase {
 	@Test
 	void findExpiredJobs() {
 		try (var q = c.query(FIND_EXPIRED_JOBS)) {
-			assertEquals(0, q.getNumArguments());
+			assertEquals(1, q.getNumArguments());
 			assertEquals(Set.of("job_id"), q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1().isPresent());
+				assertFalse(q.call1(0).isPresent());
 			});
 		}
 	}

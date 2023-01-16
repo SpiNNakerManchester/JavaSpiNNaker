@@ -130,9 +130,9 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * @author Donal Fellows
  */
 @Service
-public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
-		implements DatabaseAPI {
-	private static final Logger log = getLogger(DatabaseEngine.class);
+public final class DatabaseEngineSQLiteImpl
+        extends DatabaseCache<SQLiteConnection>	implements DatabaseAPI {
+	private static final Logger log = getLogger(DatabaseEngineSQLiteImpl.class);
 
 	/**
 	 * The name of the mounted database. Always {@code main} by SQLite
@@ -434,7 +434,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	 *             immediately.
 	 */
 	@Autowired
-	public DatabaseEngine(SpallocProperties properties) {
+	public DatabaseEngineSQLiteImpl(SpallocProperties properties) {
 		dbPath = requireNonNull(properties.getDatabasePath(),
 				"a database file must be given").getAbsoluteFile().toPath();
 		tombstoneFile = requireNonNull(properties.getHistoricalData().getPath(),
@@ -457,7 +457,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	 *            Used to initialise fields normally set by injection. Must not
 	 *            be {@code null}.
 	 */
-	private DatabaseEngine(DatabaseEngine prototype) {
+	private DatabaseEngineSQLiteImpl(DatabaseEngineSQLiteImpl prototype) {
 		dbPath = null;
 		tombstoneFile = ":memory:";
 		dbConnectionUrl = "jdbc:sqlite::memory:";
@@ -474,8 +474,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 	}
 
 	@Override
-	public DatabaseEngine getInMemoryDB() {
-		return new DatabaseEngine(this);
+	public DatabaseEngineSQLiteImpl getInMemoryDB() {
+		return new DatabaseEngineSQLiteImpl(this);
 	}
 
 	/**
@@ -1519,7 +1519,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 				private boolean finished = false;
 				private boolean consumed = true;
 				// Share this row wrapper; underlying row changes
-				private final Row row = new Row(rs);
+				private final Row row = new RowResultSetImpl(rs);
 
 				@Override
 				public boolean hasNext() {
@@ -1569,7 +1569,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection>
 				long post = nanoTime();
 				statementLength(s, pre, post);
 				if (rs.next()) {
-					return Optional.of(new Row(rs));
+					return Optional.of(new RowResultSetImpl(rs));
 				} else {
 					return Optional.empty();
 				}

@@ -584,7 +584,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	private static Optional<Integer> insertJob(Connection conn, MachineImpl m,
 			int owner, int group, Duration keepaliveInterval, byte[] req) {
 		try (var makeJob = conn.update(INSERT_JOB)) {
-			return makeJob.key(m.id, owner, group, keepaliveInterval, req);
+			long now = System.currentTimeMillis() / 1000;
+			return makeJob.key(m.id, owner, group, keepaliveInterval, req,
+					now, now);
 		}
 	}
 
@@ -1176,7 +1178,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			}
 			try (var conn = getConnection();
 					var keepAlive = conn.update(UPDATE_KEEPALIVE)) {
-				conn.transaction(() -> keepAlive.call(keepaliveAddress, id));
+				long now = System.currentTimeMillis() / 1000;
+				conn.transaction(() -> keepAlive.call(now, keepaliveAddress,
+						id));
 			}
 		}
 

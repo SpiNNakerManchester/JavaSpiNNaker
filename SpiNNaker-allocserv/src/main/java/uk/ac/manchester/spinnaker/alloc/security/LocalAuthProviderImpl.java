@@ -165,6 +165,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			if (e.getMessage().contains("A UNIQUE constraint failed")) {
 				// Already exists; no big deal
 				return Optional.empty();
+			} else if (e.getMessage().contains("Duplicate entry")) {
+				return Optional.empty();
 			}
 			throw e;
 		}
@@ -503,7 +505,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		private final Update createGroup =
 				conn.update(CREATE_GROUP_IF_NOT_EXISTS);
 
-		Query unlock = conn.query(UNLOCK_LOCKED_USERS);
+		Update unlock = conn.update(UNLOCK_LOCKED_USERS);
 
 		@Override
 		public void close() {
@@ -593,7 +595,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 *            Who logged in?
 		 */
 		void noteLoginSuccessForUser(int userId) {
-			if (loginSuccess.call(null, userId) != 1) {
+			long now = System.currentTimeMillis() / 1000;
+			if (loginSuccess.call(now, null, userId) != 1) {
 				log.warn("failed to note success for user {}", userId);
 			}
 		}
@@ -608,7 +611,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 *            What is their OpenID {@code sub} (subject) claim?
 		 */
 		void noteLoginSuccessForUser(int userId, String subject) {
-			if (loginSuccess.call(subject, userId) != 1) {
+			long now = System.currentTimeMillis() / 1000;
+			if (loginSuccess.call(now, subject, userId) != 1) {
 				log.warn("failed to note success for user {}", userId);
 			}
 		}
@@ -624,7 +628,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 *            gets a temporary lock applied.
 		 */
 		void noteLoginFailureForUser(int userId, String username) {
-			if (loginFailure.call1(authProps.getMaxLoginFailures(), userId)
+			long now = System.currentTimeMillis() / 1000;
+			if (loginFailure.call1(now, authProps.getMaxLoginFailures(), userId)
 					.map(bool("locked")).orElse(false)) {
 				log.warn("automatically locking user {} for {}", username,
 						authProps.getAccountLockDuration());
@@ -632,9 +637,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 
 		void unlock() {
-			unlock.call(authProps.getAccountLockDuration())
-					.map(string("user_name")).forEach(user -> log
-							.info("automatically unlocked user {}", user));
+			long now = System.currentTimeMillis() / 1000;
+			unlock.call(authProps.getAccountLockDuration(), now);
 		}
 	}
 

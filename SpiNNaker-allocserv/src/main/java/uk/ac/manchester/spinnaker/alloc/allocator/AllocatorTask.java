@@ -400,8 +400,9 @@ public class AllocatorTask extends DatabaseAwareBean
 	 */
 	private boolean expireJobs(Connection conn) {
 		boolean changed = false;
+		long now = System.currentTimeMillis() / 1000;
 		try (var find = conn.query(FIND_EXPIRED_JOBS)) {
-			var toKill = find.call().map(integer("job_id")).toList();
+			var toKill = find.call(now).map(integer("job_id")).toList();
 			for (var id : toKill) {
 				changed |= destroyJob(conn, id, "keepalive expired");
 			}

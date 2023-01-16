@@ -274,4 +274,4 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/spalloc
     username: spalloc
-    password: spa11oc
+    password: spalloc
