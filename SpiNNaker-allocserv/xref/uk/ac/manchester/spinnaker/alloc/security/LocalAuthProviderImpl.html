@@ -511,7 +511,7 @@
 <a class="jxr_linenumber" name="L503" href="#L503">503</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Update createGroup =
 <a class="jxr_linenumber" name="L504" href="#L504">504</a> 				conn.update(CREATE_GROUP_IF_NOT_EXISTS);
 <a class="jxr_linenumber" name="L505" href="#L505">505</a> 
-<a class="jxr_linenumber" name="L506" href="#L506">506</a> 		Query unlock = conn.query(UNLOCK_LOCKED_USERS);
+<a class="jxr_linenumber" name="L506" href="#L506">506</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Query unlock = conn.query(UNLOCK_LOCKED_USERS);
 <a class="jxr_linenumber" name="L507" href="#L507">507</a> 
 <a class="jxr_linenumber" name="L508" href="#L508">508</a> 		@Override
 <a class="jxr_linenumber" name="L509" href="#L509">509</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> close() {

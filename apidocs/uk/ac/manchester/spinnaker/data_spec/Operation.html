@@ -86,10 +86,10 @@ loadScripts(document, 'script');</script>
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/annotation/Documented.html?is-external=true" title="class or interface in java.lang.annotation" class="externalLink">@Documented</a>
 public @interface <span class="memberNameLabel">Operation</span></pre>
 <div class="block">This annotation is used to indicate which methods should be used to implement
- DSE operations. Methods annotated with this <em>must</em> take no arguments,
- and <em>must</em> have a return type of either <code>void</code> or <code>int</code>.
- The operation calling mechanism treats methods that don't return a value as
- if they returned zero.</div>
+ DSE operations. Methods annotated with this <em>must</em> be <code>public</code>,
+ <em>must</em> take no arguments, and <em>must</em> have a return type of
+ either <code>void</code> or <code>int</code>. The operation calling mechanism treats
+ methods that don't return a value as if they returned zero.</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
 <dd>Donal Fellows</dd>

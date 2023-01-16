@@ -265,7 +265,7 @@
 <a class="jxr_linenumber" name="L257" href="#L257">257</a> 		<strong class="jxr_keyword">void</strong> loadCore(CoreToLoad ctl) <strong class="jxr_keyword">throws</strong> IOException, ProcessException,
 <a class="jxr_linenumber" name="L258" href="#L258">258</a> 				DataSpecificationException, StorageException,
 <a class="jxr_linenumber" name="L259" href="#L259">259</a> 				InterruptedException {
-<a class="jxr_linenumber" name="L260" href="#L260">260</a> 			ByteBuffer ds = getDataSpec(ctl);
+<a class="jxr_linenumber" name="L260" href="#L260">260</a> 			<strong class="jxr_keyword">var</strong> ds = getDataSpec(ctl);
 <a class="jxr_linenumber" name="L261" href="#L261">261</a> 			<strong class="jxr_keyword">var</strong> start = malloc(ctl, ctl.sizeToWrite);
 <a class="jxr_linenumber" name="L262" href="#L262">262</a> 			<strong class="jxr_keyword">var</strong> executor = <strong class="jxr_keyword">new</strong> <a name="Executor" href="../../../../../../uk/ac/manchester/spinnaker/data_spec/Executor.html#Executor">Executor</a>(ds, machine.getChipAt(ctl.core).sdram);
 <a class="jxr_linenumber" name="L263" href="#L263">263</a> 			<strong class="jxr_keyword">try</strong> (executor) {

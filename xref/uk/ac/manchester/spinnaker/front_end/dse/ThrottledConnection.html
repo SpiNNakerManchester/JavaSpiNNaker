@@ -180,7 +180,7 @@
 <a class="jxr_linenumber" name="L172" href="#L172">172</a> 			<em class="jxr_comment">// Prevent reuse of existing socket IDs for other boards</em>
 <a class="jxr_linenumber" name="L173" href="#L173">173</a> 			CLOSER.schedule(() -&gt; {
 <a class="jxr_linenumber" name="L174" href="#L174">174</a> 				<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L175" href="#L175">175</a> 					Object name = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L175" href="#L175">175</a> 					<strong class="jxr_keyword">var</strong> name = <span class="jxr_string">""</span>;
 <a class="jxr_linenumber" name="L176" href="#L176">176</a> 					<strong class="jxr_keyword">if</strong> (log.isInfoEnabled()) {
 <a class="jxr_linenumber" name="L177" href="#L177">177</a> 						name = connection.toString();
 <a class="jxr_linenumber" name="L178" href="#L178">178</a> 					}
