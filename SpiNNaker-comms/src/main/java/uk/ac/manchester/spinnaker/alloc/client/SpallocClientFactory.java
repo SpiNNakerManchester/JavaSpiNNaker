@@ -541,7 +541,7 @@ public class SpallocClientFactory {
 			if (dead) {
 				throw new IllegalStateException("job is already deleted");
 			}
-			Thread t = new Daemon(() -> {
+			var t = new Daemon(() -> {
 				try {
 					while (true) {
 						sleep(DELAY);
@@ -712,6 +712,11 @@ public class SpallocClientFactory {
 			}
 			conns.add(new ProxiedBootConnection(ws));
 			return new ProxiedTransceiver(conns, ws);
+		}
+
+		@Override
+		public String toString() {
+			return "Job(" + uri + ")";
 		}
 	}
 
