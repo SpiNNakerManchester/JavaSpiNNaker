@@ -309,9 +309,10 @@ public final class CommandLineInterface {
 	 *            Mapping from APLX executable names (full paths) to what cores
 	 *            are running those executables, and which we will download
 	 *            IOBUFs for.
+	 * @param dbFile
+	 *            The database that receives the output).
 	 * @param runFolder
-	 *            Name of directory containing per-run information (i.e., the
-	 *            database that holds the data specifications to execute).
+	 *            Directory containing per-run information (i.e., where to log).
 	 * @throws IOException
 	 *             If the communications fail.
 	 * @throws SpinnmanException
@@ -350,9 +351,10 @@ public final class CommandLineInterface {
 	 *            List of descriptions of binary placements.
 	 * @param machine
 	 *            Description of overall machine.
+	 * @param dbFile
+	 *            The database that receives the output).
 	 * @param runFolder
-	 *            Directory containing per-run information (i.e., the database
-	 *            that receives the output).
+	 *            Directory containing per-run information (i.e., where to log).
 	 * @throws IOException
 	 *             If the communications fail
 	 * @throws SpinnmanException
@@ -389,9 +391,10 @@ public final class CommandLineInterface {
 	 *            List of descriptions of gatherers.
 	 * @param machine
 	 *            Description of overall machine.
+	 * @param dbFile
+	 *            The database that receives the output).
 	 * @param runFolder
-	 *            Directory containing per-run information (i.e., the database
-	 *            that receives the output).
+	 *            Directory containing per-run information (i.e., where to log).
 	 * @throws IOException
 	 *             If the communications fail
 	 * @throws SpinnmanException
