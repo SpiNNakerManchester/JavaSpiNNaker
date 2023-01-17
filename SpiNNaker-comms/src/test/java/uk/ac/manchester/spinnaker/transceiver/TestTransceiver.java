@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static testconfig.BoardTestConfiguration.NOHOST;
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.software_watchdog_count;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.BOOT_CHIP;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.SYS_VARS;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
@@ -69,7 +70,7 @@ class TestTransceiver {
 		var connections = new ArrayList<Connection>();
 
 		boardConfig.setUpRemoteBoard();
-		connections.add(new SCPConnection(boardConfig.remotehost));
+		connections.add(new SCPConnection(BOOT_CHIP, boardConfig.remotehost));
 
 		try (var txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
@@ -82,7 +83,7 @@ class TestTransceiver {
 		var connections = new ArrayList<Connection>();
 
 		boardConfig.setUpRemoteBoard();
-		connections.add(new SCPConnection(boardConfig.remotehost));
+		connections.add(new SCPConnection(BOOT_CHIP, boardConfig.remotehost));
 
 		try (var txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
@@ -95,10 +96,10 @@ class TestTransceiver {
 		var connections = new ArrayList<Connection>();
 
 		boardConfig.setUpRemoteBoard();
-		connections.add(new SCPConnection(boardConfig.remotehost));
+		connections.add(new SCPConnection(BOOT_CHIP, boardConfig.remotehost));
 
 		boardConfig.setUpLocalVirtualBoard();
-		connections.add(new SCPConnection(boardConfig.remotehost));
+		connections.add(new SCPConnection(BOOT_CHIP, boardConfig.remotehost));
 
 		try (var txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
@@ -114,7 +115,7 @@ class TestTransceiver {
 		var connections = new ArrayList<Connection>();
 
 		boardConfig.setUpRemoteBoard();
-		connections.add(new SCPConnection(boardConfig.remotehost));
+		connections.add(new SCPConnection(BOOT_CHIP, boardConfig.remotehost));
 
 		boardConfig.setUpLocalVirtualBoard();
 		connections.add(
@@ -163,7 +164,7 @@ class TestTransceiver {
 		assumeFalse(ping(noHost) == 0,
 				() -> "unreachable host (" + noHost + ") appears to be up");
 		var connections = new ArrayList<Connection>();
-		connections.add(new SCPConnection(null, (Integer) null, noHost, null));
+		connections.add(new SCPConnection(BOOT_CHIP, noHost));
 		var orig = new EIEIOConnection(null, null, null, null);
 		connections.add(orig);
 
@@ -207,7 +208,7 @@ class TestTransceiver {
 
 		var connections = new ArrayList<Connection>();
 		var noHost = InetFactory.getByName(NOHOST);
-		connections.add(new SCPConnection(noHost));
+		connections.add(new SCPConnection(BOOT_CHIP, noHost));
 		try (var txrx = new MockWriteTransceiver(FIVE, connections)) {
 			// All chips
 			txrx.enableWatchDogTimer(true);

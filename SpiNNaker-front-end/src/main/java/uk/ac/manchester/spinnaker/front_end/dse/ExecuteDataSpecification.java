@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.client.SpallocClientFactory.getJobFromProxyInfo;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 
 import java.io.IOException;
@@ -28,8 +29,6 @@ import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.MustBeClosed;
 
-import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
-import uk.ac.manchester.spinnaker.alloc.client.SpallocClientFactory;
 import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
@@ -61,9 +60,6 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 
 	/** The database. */
 	protected final DSEDatabaseEngine db;
-
-	/** A spalloc job, or null if not used. */
-	protected final SpallocClient.Job job;
 
 	/** How to run tasks in parallel. */
 	private final BasicExecutor executor;
@@ -99,20 +95,17 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 		try {
 			if (db == null) {
 				// For testing only
-				job = null;
 				txrx = null;
 				return;
 			}
 			var proxy = db.getStorageInterface().getProxyInformation();
 			if (proxy == null) {
 				log.debug("Using direct machine access for transceiver");
-				job = null;
 				txrx = new Transceiver(machine);
 			} else {
 				log.debug("Getting transceiver via proxy on {}",
 						proxy.spallocUrl);
-				job = SpallocClientFactory.getJobFromProxyInfo(proxy);
-				txrx = job.getTransceiver();
+				txrx = getJobFromProxyInfo(proxy).getTransceiver();
 			}
 		} catch (ProcessException e) {
 			throw e;

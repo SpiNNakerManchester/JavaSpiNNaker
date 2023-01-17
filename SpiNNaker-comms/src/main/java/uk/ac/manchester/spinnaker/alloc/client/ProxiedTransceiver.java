@@ -19,9 +19,12 @@ package uk.ac.manchester.spinnaker.alloc.client;
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.TRIAD_NO_WRAPAROUND;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Collection;
 
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 
@@ -55,5 +58,15 @@ final class ProxiedTransceiver extends Transceiver {
 	public void close() throws IOException {
 		super.close();
 		websocket.close();
+	}
+
+	@Override
+	public SCPConnection createScpConnection(ChipLocation chip,
+			InetAddress addr) throws IOException {
+		try {
+			return new ProxiedSCPConnection(chip, websocket);
+		} catch (InterruptedException e) {
+			throw new IOException("failed to proxy connection", e);
+		}
 	}
 }

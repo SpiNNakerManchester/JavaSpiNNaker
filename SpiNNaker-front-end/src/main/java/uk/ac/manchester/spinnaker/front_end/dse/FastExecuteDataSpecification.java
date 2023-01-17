@@ -420,7 +420,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 			this.bar = bar;
 			this.execContext = new ExecutionContext(txrx);
 			connection = new ThrottledConnection(txrx, board,
-					gathererForChip.get(board.location).getIptag(), job);
+					gathererForChip.get(board.location).getIptag());
 		}
 
 		@Override
