@@ -165,7 +165,7 @@ class TestTransceiver {
 				() -> "unreachable host (" + noHost + ") appears to be up");
 		var connections = new ArrayList<Connection>();
 		connections.add(new SCPConnection(BOOT_CHIP, noHost));
-		var orig = new EIEIOConnection(null, null, null, null);
+		var orig = new EIEIOConnection(null, null);
 		connections.add(orig);
 
 		var mh = new EIEIOMessageHandler() {

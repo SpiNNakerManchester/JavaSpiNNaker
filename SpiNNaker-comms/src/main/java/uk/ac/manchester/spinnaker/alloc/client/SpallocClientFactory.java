@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.Inet4Address;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,6 +65,7 @@ import uk.ac.manchester.spinnaker.alloc.client.SpallocClient.SpallocException;
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
@@ -706,12 +708,15 @@ public class SpallocClientFactory {
 			var ws = getProxy();
 			var am = machine();
 			var conns = new ArrayList<Connection>();
+			var hostToChip = new HashMap<Inet4Address, ChipLocation>();
 			for (var bc : am.getConnections()) {
 				conns.add(new ProxiedSCPConnection(
 						bc.getChip().asChipLocation(), ws));
+				hostToChip.put(getByNameQuietly(bc.getHostname()),
+						bc.getChip());
 			}
 			conns.add(new ProxiedBootConnection(ws));
-			return new ProxiedTransceiver(conns, ws);
+			return new ProxiedTransceiver(conns, hostToChip, ws);
 		}
 
 		@Override
