@@ -610,14 +610,7 @@ public final class CommandLineInterface {
 
 	private static SpallocClient.Job getJob(ProxyAwareStorage storage)
 			throws StorageException, IOException {
-		try {
-			return getJobFromProxyInfo(storage.getProxyInformation());
-		} catch (StorageException e) {
-			if (e.getMessage().contains("no such table: proxy_configuration")) {
-				return null;
-			}
-			throw e;
-		}
+		return getJobFromProxyInfo(storage.getProxyInformation());
 	}
 
 	@MustBeClosed
