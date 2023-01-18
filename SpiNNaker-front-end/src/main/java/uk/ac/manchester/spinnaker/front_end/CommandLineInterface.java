@@ -76,6 +76,7 @@ import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
+import uk.ac.manchester.spinnaker.storage.DatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.ProxyAwareStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
@@ -182,7 +183,8 @@ public final class CommandLineInterface {
 
 	@FunctionalInterface
 	interface HostDSEFactory {
-		HostExecuteDataSpecification create(Machine m, DSEDatabaseEngine db)
+		HostExecuteDataSpecification create(TransceiverInterface txrx,
+				Machine m, DSEDatabaseEngine db)
 				throws IOException, SpinnmanException, StorageException,
 				ExecutionException, InterruptedException, URISyntaxException;
 	}
@@ -195,8 +197,9 @@ public final class CommandLineInterface {
 
 	@FunctionalInterface
 	interface FastDSEFactory {
-		FastExecuteDataSpecification create(Machine machine,
-				List<Gather> gatherers, File reportDir, DSEDatabaseEngine db)
+		FastExecuteDataSpecification create(TransceiverInterface txrx,
+				Machine machine, List<Gather> gatherers, File reportDir,
+				DSEDatabaseEngine db)
 				throws IOException, SpinnmanException, StorageException,
 				ExecutionException, InterruptedException, URISyntaxException;
 	}
@@ -241,8 +244,10 @@ public final class CommandLineInterface {
 			DataSpecificationException, URISyntaxException {
 		setLoggerDir(runFolder);
 		var db = getDataSpecDB(runFolder);
+		var job = getJob(db);
 
-		try (var dseExec = hostFactory.create(machine, db)) {
+		try (var txrx = getTransceiver(machine, job);
+				var dseExec = hostFactory.create(txrx, machine, db)) {
 			if (filterSystemCores == null) {
 				dseExec.loadAllCores();
 			} else if (filterSystemCores) {
@@ -293,9 +298,11 @@ public final class CommandLineInterface {
 			DataSpecificationException, URISyntaxException {
 		setLoggerDir(runFolder.get());
 		var db = getDataSpecDB(runFolder.get());
+		var job = getJob(db);
 
-		try (var dseExec = fastFactory.create(machine.get(), gatherers.get(),
-				reportFolder.orElse(null), db)) {
+		try (var txrx = getTransceiver(machine.get(), job);
+				var dseExec = fastFactory.create(txrx, machine.get(),
+						gatherers.get(), reportFolder.orElse(null), db)) {
 			dseExec.loadCores();
 		}
 	}
@@ -415,7 +422,7 @@ public final class CommandLineInterface {
 
 		try (var trans = getTransceiver(machine.get(), job);
 				var r = new RecordingRegionDataGatherer(trans, machine.get(),
-						db, job)) {
+						db)) {
 			int misses = r.gather(gatherers.get());
 			getLogger(CommandLineInterface.class).info("total misses: {}",
 					misses);
@@ -595,6 +602,12 @@ public final class CommandLineInterface {
 				new File(runFolder, BUFFER_DB_FILE)).getStorageInterface();
 	}
 
+	private static SpallocClient.Job getJob(
+			DatabaseEngine<? extends ProxyAwareStorage> databaseEngine)
+			throws StorageException, IOException {
+		return getJob(databaseEngine.getStorageInterface());
+	}
+
 	private static SpallocClient.Job getJob(ProxyAwareStorage storage)
 			throws StorageException, IOException {
 		return getJobFromProxyInfo(storage.getProxyInformation());
@@ -605,6 +618,7 @@ public final class CommandLineInterface {
 			SpallocClient.Job job)
 			throws IOException, SpinnmanException, InterruptedException {
 		if (job == null) {
+			// No job; must be a direct connection
 			return new Transceiver(machine);
 		}
 		return job.getTransceiver();

@@ -56,3 +56,10 @@ CREATE VIEW IF NOT EXISTS core_view AS
 		x, y, processor, is_system, app_id, content,
 		start_address, memory_used, memory_written
 	FROM ethernet NATURAL JOIN core;
+
+-- Information about how to access the connection proxying
+-- WARNING! May include credentials
+CREATE TABLE IF NOT EXISTS proxy_configuration(
+    kind TEXT NOT NULL,
+    name TEXT NOT NULL,
+    value TEXT NOT NULL);

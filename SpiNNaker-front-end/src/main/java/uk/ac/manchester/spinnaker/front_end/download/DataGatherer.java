@@ -50,9 +50,7 @@ import difflib.ChangeDelta;
 import difflib.Chunk;
 import difflib.DeleteDelta;
 import difflib.InsertDelta;
-import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
 import uk.ac.manchester.spinnaker.connections.MostDirectConnectionSelector;
-import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor.SimpleCallable;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
@@ -128,15 +126,9 @@ public abstract class DataGatherer extends BoardLocalSupport
 	private static final String SPINNAKER_COMPARE_DOWNLOAD =
 			getProperty("spinnaker.compare.download");
 
-	private final TransceiverInterface txrx;
-
-	private final SpallocClient.Job job;
-
 	private final BasicExecutor pool;
 
 	private int missCount;
-
-	private Machine machine;
 
 	/**
 	 * Create an instance of the protocol implementation. (Subclasses handle
@@ -147,8 +139,6 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *            is located.
 	 * @param machine
 	 *            The description of the SpiNNaker machine being talked to.
-	 * @param job
-	 *            The spalloc job to connect to on null if none.
 	 * @throws ProcessException
 	 *             If we can't discover the machine details due to SpiNNaker
 	 *             rejecting messages
@@ -157,13 +147,9 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
-	public DataGatherer(TransceiverInterface transceiver, Machine machine,
-			SpallocClient.Job job)
+	public DataGatherer(TransceiverInterface transceiver, Machine machine)
 			throws IOException, ProcessException {
-		super(machine);
-		this.txrx = transceiver;
-		this.machine = machine;
-		this.job = job;
+		super(transceiver, machine);
 		this.pool = new BasicExecutor(PARALLEL_SIZE);
 		this.missCount = 0;
 	}
@@ -347,14 +333,8 @@ public abstract class DataGatherer extends BoardLocalSupport
 			if (!work.containsKey(gathererChip)) {
 				continue;
 			}
-			SCPConnection scp = null;
-			if (job != null) {
-				scp = job.getConnection(gathererChip);
-			} else {
-				scp = txrx.locateSpinnakerConnection(
-						g.getIptag().getBoardAddress());
-			}
-			var conn = new GatherDownloadConnection(scp);
+			var conn = new GatherDownloadConnection(txrx.createScpConnection(
+					gathererChip, g.getIptag().getBoardAddress()));
 			conn.setIPTag(txrx, g.getIptag());
 			connections.put(gathererChip, conn);
 		}
