@@ -79,6 +79,7 @@ import uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import uk.ac.manchester.spinnaker.utils.MathUtils;
 
 /**
@@ -125,6 +126,8 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	/**
 	 * Create an instance of this class.
 	 *
+	 * @param txrx
+	 *            The transceiver for talking to the SpiNNaker machine.
 	 * @param machine
 	 *            The SpiNNaker machine description.
 	 * @param gatherers
@@ -149,11 +152,11 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             this constructor should not be doing that!
 	 */
 	@MustBeClosed
-	public FastExecuteDataSpecification(Machine machine, List<Gather> gatherers,
-			File reportDir, DSEDatabaseEngine db)
-			throws IOException, ProcessException, InterruptedException,
-			StorageException, URISyntaxException {
-		super(machine, db);
+	public FastExecuteDataSpecification(TransceiverInterface txrx,
+			Machine machine, List<Gather> gatherers, File reportDir,
+			DSEDatabaseEngine db) throws IOException, ProcessException,
+			InterruptedException, StorageException, URISyntaxException {
+		super(txrx, machine, db);
 		if (SPINNAKER_COMPARE_UPLOAD != null) {
 			log.warn(
 					"detailed comparison of uploaded data enabled; "
@@ -419,7 +422,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 			this.storage = storage;
 			this.bar = bar;
 			this.execContext = new ExecutionContext(txrx);
-			connection = new ThrottledConnection(txrx, board,
+			this.connection = new ThrottledConnection(txrx, board,
 					gathererForChip.get(board.location).getIptag());
 		}
 
