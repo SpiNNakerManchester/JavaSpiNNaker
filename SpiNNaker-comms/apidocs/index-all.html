@@ -976,6 +976,14 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Close the transceiver and any threads that are running.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#closeAndLogNoExcept()">closeAndLogNoExcept()</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
+<dd>
+<div class="block">Close this connection, logging failures instead of throwing.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#closeEventually()">closeEventually()</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
+<dd>
+<div class="block">Close this connection eventually.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/IPTagCommand.html#CLR">CLR</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/IPTagCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">IPTagCommand</a></dt>
 <dd>
 <div class="block">Delete.</div>
@@ -1442,6 +1450,12 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Static method to create the object mapper.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/Transceiver.html#createScpConnection(uk.ac.manchester.spinnaker.machine.ChipLocation,java.net.InetAddress)">createScpConnection(ChipLocation, InetAddress)</a></span> - Method in class uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/Transceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver">Transceiver</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html#createScpConnection(uk.ac.manchester.spinnaker.machine.ChipLocation,java.net.InetAddress)">createScpConnection(ChipLocation, InetAddress)</a></span> - Method in interface uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></dt>
+<dd>
+<div class="block">Create a connection to a particular instance of SCAMP.</div>
+</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/eieio/CustomEIEIOCommand.html" title="class in uk.ac.manchester.spinnaker.messages.eieio"><span class="typeNameLink">CustomEIEIOCommand</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/eieio/package-summary.html">uk.ac.manchester.spinnaker.messages.eieio</a></dt>
 <dd>
 <div class="block">A non-standard EIEIO command.</div>
@@ -1789,18 +1803,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Create an EIEIO connection where the mechanism for the sending and
  listening is implemented by a subclass.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#%3Cinit%3E(java.net.InetAddress)">EIEIOConnection(InetAddress)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html" title="class in uk.ac.manchester.spinnaker.connections">EIEIOConnection</a></dt>
-<dd>
-<div class="block">Create an EIEIO connection only available for listening, using default
- local port.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#%3Cinit%3E(java.net.InetAddress,java.lang.Integer)">EIEIOConnection(InetAddress, Integer)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html" title="class in uk.ac.manchester.spinnaker.connections">EIEIOConnection</a></dt>
 <dd>
 <div class="block">Create an EIEIO connection only available for listening.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#%3Cinit%3E(java.net.InetAddress,java.lang.Integer,java.net.InetAddress,java.lang.Integer)">EIEIOConnection(InetAddress, Integer, InetAddress, Integer)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html" title="class in uk.ac.manchester.spinnaker.connections">EIEIOConnection</a></dt>
-<dd>
-<div class="block">Create an EIEIO connection.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/eieio/HostSendSequencedData.html#eieioDataMessage">eieioDataMessage</a></span> - Variable in class uk.ac.manchester.spinnaker.messages.eieio.<a href="uk/ac/manchester/spinnaker/messages/eieio/HostSendSequencedData.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">HostSendSequencedData</a></dt>
 <dd>
@@ -4942,6 +4947,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Create.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/UDPTransceiver.html#newEieioConnection(java.net.InetAddress,java.lang.Integer)">newEieioConnection(InetAddress, Integer)</a></span> - Method in class uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/UDPTransceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver">UDPTransceiver</a></dt>
+<dd>
+<div class="block">Create an EIEIO connection only available for listening (or directed
+ sending towards a SpiNNaker board).</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/Utils.html#newMessageBuffer()">newMessageBuffer()</a></span> - Static method in class uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/Utils.html" title="class in uk.ac.manchester.spinnaker.transceiver">Utils</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/HeapElement.html#nextAddress">nextAddress</a></span> - Variable in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/HeapElement.html" title="class in uk.ac.manchester.spinnaker.messages.model">HeapElement</a></dt>
@@ -6485,14 +6495,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">A UDP connection to SC&amp;MP on the board.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#%3Cinit%3E(java.net.InetAddress)">SCPConnection(InetAddress)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
-<dd>
-<div class="block">Create a connection to a particular instance of SCAMP.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#%3Cinit%3E(java.net.InetAddress,java.lang.Integer,java.net.InetAddress,java.lang.Integer)">SCPConnection(InetAddress, Integer, InetAddress, Integer)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
-<dd>
-<div class="block">Create a connection to a particular instance of SCAMP.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation)">SCPConnection(HasChipLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
 <dd>
 <div class="block">Create a connection where the mechanism for sending and receiving
@@ -6502,11 +6504,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Create a connection to a particular instance of SCAMP.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress,java.lang.Integer)">SCPConnection(HasChipLocation, InetAddress, Integer)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
-<dd>
-<div class="block">Create a connection to a particular instance of SCAMP.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress,java.lang.Integer,java.net.InetAddress,java.lang.Integer)">SCPConnection(HasChipLocation, InetAddress, Integer, InetAddress, Integer)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress,java.lang.Integer,java.net.InetAddress,int)">SCPConnection(HasChipLocation, InetAddress, Integer, InetAddress, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
 <dd>
 <div class="block">Create a connection to a particular instance of SCAMP.</div>
 </dd>

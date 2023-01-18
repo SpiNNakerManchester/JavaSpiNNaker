@@ -134,7 +134,12 @@ extends <a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester
 <h3>Fields inherited from class&nbsp;uk.ac.manchester.spinnaker.front_end.dse.<a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">ExecuteDataSpecification</a></h3>
 <a id="fields.inherited.from.class.uk.ac.manchester.spinnaker.front_end.dse.ExecuteDataSpecification">
 <!--   -->
-</a><code><a href="ExecuteDataSpecification.html#db">db</a>, <a href="ExecuteDataSpecification.html#job">job</a>, <a href="ExecuteDataSpecification.html#machine">machine</a>, <a href="ExecuteDataSpecification.html#txrx">txrx</a></code></div>
+</a><code><a href="ExecuteDataSpecification.html#db">db</a></code></div>
+<div class="inheritedList">
+<h3>Fields inherited from class&nbsp;uk.ac.manchester.spinnaker.front_end.<a href="../BoardLocalSupport.html" title="class in uk.ac.manchester.spinnaker.front_end">BoardLocalSupport</a></h3>
+<a id="fields.inherited.from.class.uk.ac.manchester.spinnaker.front_end.BoardLocalSupport">
+<!--   -->
+</a><code><a href="../BoardLocalSupport.html#machine">machine</a>, <a href="../BoardLocalSupport.html#txrx">txrx</a></code></div>
 </section>
 </li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
@@ -154,7 +159,8 @@ extends <a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,java.util.List,java.io.File,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">FastExecuteDataSpecification</a></span>&#8203;(uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,java.util.List,java.io.File,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">FastExecuteDataSpecification</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">TransceiverInterface</a>&nbsp;txrx,
+uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;reportDir,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/DSEDatabaseEngine.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">DSEDatabaseEngine</a>&nbsp;db)</code></th>
@@ -242,9 +248,10 @@ uk.ac.manchester.spinnaker.machine.MemoryLocation&nbsp;baseAddress,
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.Machine,java.util.List,java.io.File,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">FastExecuteDataSpecification</a></h3>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,java.util.List,java.io.File,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">FastExecuteDataSpecification</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/MustBeClosed.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@MustBeClosed</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="memberName">FastExecuteDataSpecification</span>&#8203;(<span class="arguments">uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
+</span><span class="modifiers">public</span>&nbsp;<span class="memberName">FastExecuteDataSpecification</span>&#8203;(<span class="arguments"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">TransceiverInterface</a>&nbsp;txrx,
+uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;reportDir,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/DSEDatabaseEngine.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">DSEDatabaseEngine</a>&nbsp;db)</span>
@@ -256,6 +263,7 @@ uk.ac.manchester.spinnaker.machine.MemoryLocation&nbsp;baseAddress,
 <div class="block">Create an instance of this class.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>txrx</code> - The transceiver for talking to the SpiNNaker machine.</dd>
 <dd><code>machine</code> - The SpiNNaker machine description.</dd>
 <dd><code>gatherers</code> - The description of where the gatherers and monitors are.</dd>
 <dd><code>reportDir</code> - Where to write reports, or <code>null</code> if no reports are to

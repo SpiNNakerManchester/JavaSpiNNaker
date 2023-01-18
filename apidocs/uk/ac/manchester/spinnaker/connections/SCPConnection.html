@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -142,23 +142,6 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>&nbsp;</code></td>
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.net.InetAddress)">SCPConnection</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;remoteHost)</code></th>
-<td class="colLast">
-<div class="block">Create a connection to a particular instance of SCAMP.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>&nbsp;</code></td>
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.net.InetAddress,java.lang.Integer,java.net.InetAddress,java.lang.Integer)">SCPConnection</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;localPort,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;remoteHost,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;remotePort)</code></th>
-<td class="colLast">
-<div class="block">Create a connection to a particular instance of SCAMP.</div>
-</td>
-</tr>
-<tr class="altColor">
 <td class="colFirst"><code>protected </code></td>
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation)">SCPConnection</a></span>&#8203;(<a href="../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">
@@ -175,21 +158,12 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>&nbsp;</code></td>
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress,java.lang.Integer)">SCPConnection</a></span>&#8203;(<a href="../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;remoteHost,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;remotePort)</code></th>
-<td class="colLast">
-<div class="block">Create a connection to a particular instance of SCAMP.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>&nbsp;</code></td>
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress,java.lang.Integer,java.net.InetAddress,java.lang.Integer)">SCPConnection</a></span>&#8203;(<a href="../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<td class="colFirst"><code>protected </code></td>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress,java.lang.Integer,java.net.InetAddress,int)">SCPConnection</a></span>&#8203;(<a href="../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;localPort,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;remoteHost,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;remotePort)</code></th>
+int&nbsp;remotePort)</code></th>
 <td class="colLast">
 <div class="block">Create a connection to a particular instance of SCAMP.</div>
 </td>
@@ -218,13 +192,27 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
+<td class="colFirst"><code>protected void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#closeAndLogNoExcept()">closeAndLogNoExcept</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Close this connection, logging failures instead of throwing.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i1">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#closeEventually()">closeEventually</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Close this connection eventually.</div>
+</td>
+</tr>
+<tr class="altColor" id="i2">
 <td class="colFirst"><code><a href="../messages/scp/SCPResultMessage.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPResultMessage</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#receiveSCPResponse(int)">receiveSCPResponse</a></span>&#8203;(int&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Receives an SCP response from this connection.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i1">
+<tr class="rowColor" id="i3">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#send(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">send</a></span>&#8203;(<a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;?&gt;&nbsp;scpRequest)</code></th>
 <td class="colLast">
@@ -280,44 +268,6 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(java.net.InetAddress)">SCPConnection</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SCPConnection</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;remoteHost)</span>
-              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
-<div class="block">Create a connection to a particular instance of SCAMP.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>remoteHost</code> - The remote host to send messages to.</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong with socket setup.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="&lt;init&gt;(java.net.InetAddress,java.lang.Integer,java.net.InetAddress,java.lang.Integer)">SCPConnection</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SCPConnection</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;localPort,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;remoteHost,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;remotePort)</span>
-              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
-<div class="block">Create a connection to a particular instance of SCAMP.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>localHost</code> - The optional host of the local interface to
-            listen on; use <code>null</code> to listen on all local
-            interfaces.</dd>
-<dd><code>localPort</code> - The optional local port to listen on; use <code>null</code> to
-            pick a random port.</dd>
-<dd><code>remoteHost</code> - The remote host to send messages to.</dd>
-<dd><code>remotePort</code> - The optional remote port number to send messages to. If
-            <code>null</code>, the default remote port is used.</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong with socket setup.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress)">SCPConnection</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SCPConnection</span>&#8203;(<span class="arguments"><a href="../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;remoteHost)</span>
@@ -334,41 +284,22 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress,java.lang.Integer)">SCPConnection</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SCPConnection</span>&#8203;(<span class="arguments"><a href="../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;remoteHost,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;remotePort)</span>
-              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
-<div class="block">Create a connection to a particular instance of SCAMP.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>chip</code> - The location of the chip on the board with this remoteHost</dd>
-<dd><code>remoteHost</code> - The remote host to send messages to.</dd>
-<dd><code>remotePort</code> - The optional remote port number to send messages to. If
-            <code>null</code>, the default remote port is used.</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong with socket setup.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress,java.lang.Integer,java.net.InetAddress,java.lang.Integer)">SCPConnection</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SCPConnection</span>&#8203;(<span class="arguments"><a href="../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress,java.lang.Integer,java.net.InetAddress,int)">SCPConnection</a></h3>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="memberName">SCPConnection</span>&#8203;(<span class="arguments"><a href="../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;localPort,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;remoteHost,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;remotePort)</span>
-              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
-<div class="block">Create a connection to a particular instance of SCAMP.</div>
+int&nbsp;remotePort)</span>
+                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block">Create a connection to a particular instance of SCAMP. Can use a
+ specified local network interface.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>chip</code> - The location of the chip on the board with this remoteHost</dd>
-<dd><code>localHost</code> - The optional host of the local interface to
-            listen on; use <code>null</code> to listen on all local
-            interfaces.</dd>
-<dd><code>localPort</code> - The optional local port to listen on; use <code>null</code> to
-            pick a random port.</dd>
+<dd><code>localHost</code> - The optional host of the local interface to listen on; use
+            <code>null</code> to listen on all local interfaces.</dd>
+<dd><code>localPort</code> - The optional local port to listen on; use <code>null</code> to pick
+            a random port.</dd>
 <dd><code>remoteHost</code> - The remote host to send messages to.</dd>
 <dd><code>remotePort</code> - The optional remote port number to send messages to. If
             <code>null</code>, the default remote port is used.</dd>
@@ -456,6 +387,22 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If there is an error sending the message</dd>
 </dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="closeEventually()">closeEventually</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">closeEventually</span>()</div>
+<div class="block">Close this connection eventually. The close might not happen immediately.</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="closeAndLogNoExcept()">closeAndLogNoExcept</a></h3>
+<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">closeAndLogNoExcept</span>()</div>
+<div class="block">Close this connection, logging failures instead of throwing.
+ <p>
+ Core of implementation of <a href="#closeEventually()"><code>closeEventually()</code></a>.</div>
 </section>
 </li>
 </ul>

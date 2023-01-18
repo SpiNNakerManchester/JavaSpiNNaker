@@ -144,28 +144,10 @@ extends <a href="UDPConnection.html" title="class in uk.ac.manchester.spinnaker.
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>&nbsp;</code></td>
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.net.InetAddress)">EIEIOConnection</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost)</code></th>
-<td class="colLast">
-<div class="block">Create an EIEIO connection only available for listening, using default
- local port.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>&nbsp;</code></td>
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.net.InetAddress,java.lang.Integer)">EIEIOConnection</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;localPort)</code></th>
 <td class="colLast">
 <div class="block">Create an EIEIO connection only available for listening.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>&nbsp;</code></td>
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.net.InetAddress,java.lang.Integer,java.net.InetAddress,java.lang.Integer)">EIEIOConnection</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;localPort,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;remoteHost,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;remotePort)</code></th>
-<td class="colLast">
-<div class="block">Create an EIEIO connection.</div>
 </td>
 </tr>
 </tbody>
@@ -278,24 +260,6 @@ int&nbsp;port)</code></th>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(java.net.InetAddress)">EIEIOConnection</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">EIEIOConnection</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost)</span>
-                throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
-<div class="block">Create an EIEIO connection only available for listening, using default
- local port.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>localHost</code> - The local IP address to bind to. If not specified, it defaults
-            to binding to all interfaces, unless remoteHost is specified,
-            in which case binding is done to the IP address that will be
-            used to send packets.</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If there is an error setting up the communication channel</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="&lt;init&gt;(java.net.InetAddress,java.lang.Integer)">EIEIOConnection</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">EIEIOConnection</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;localPort)</span>
@@ -308,34 +272,6 @@ int&nbsp;port)</code></th>
             in which case binding is done to the IP address that will be
             used to send packets.</dd>
 <dd><code>localPort</code> - The local port to bind to, 0 or between 1025 and 65535.</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If there is an error setting up the communication channel</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="&lt;init&gt;(java.net.InetAddress,java.lang.Integer,java.net.InetAddress,java.lang.Integer)">EIEIOConnection</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">EIEIOConnection</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;localPort,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;remoteHost,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;remotePort)</span>
-                throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
-<div class="block">Create an EIEIO connection.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>localHost</code> - The local host to bind to. If not specified, it defaults to
-            binding to all interfaces, unless remoteHost is specified, in
-            which case binding is done to the IP address that will be used
-            to send packets.</dd>
-<dd><code>localPort</code> - The local port to bind to, 0 or between 1025 and 65535.</dd>
-<dd><code>remoteHost</code> - The remote host to send packets to. If not specified, the
-            socket will be available for listening only, and will throw
-            and exception if used for sending.</dd>
-<dd><code>remotePort</code> - The remote port to send packets to. If remoteHost is
-            <code>null</code>, this is ignored. If remoteHost is specified,
-            this must also be specified as non-zero for the connection to
-            allow sending.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If there is an error setting up the communication channel</dd>
 </dl>

@@ -150,30 +150,14 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <div class="block">The database.</div>
 </td>
 </tr>
-<tr class="rowColor">
-<td class="colFirst"><code>protected <a href="../../alloc/client/SpallocClient.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient.Job</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#job">job</a></span></code></th>
-<td class="colLast">
-<div class="block">A spalloc job, or null if not used.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>protected <a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#machine">machine</a></span></code></th>
-<td class="colLast">
-<div class="block">The description of the SpiNNaker machine.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>protected <a href="../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#txrx">txrx</a></span></code></th>
-<td class="colLast">
-<div class="block">The transceiver for talking to the SpiNNaker machine.</div>
-</td>
-</tr>
 </tbody>
 </table>
 </div>
+<div class="inheritedList">
+<h3>Fields inherited from class&nbsp;uk.ac.manchester.spinnaker.front_end.<a href="../BoardLocalSupport.html" title="class in uk.ac.manchester.spinnaker.front_end">BoardLocalSupport</a></h3>
+<a id="fields.inherited.from.class.uk.ac.manchester.spinnaker.front_end.BoardLocalSupport">
+<!--   -->
+</a><code><a href="../BoardLocalSupport.html#machine">machine</a>, <a href="../BoardLocalSupport.html#txrx">txrx</a></code></div>
 </section>
 </li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
@@ -195,7 +179,8 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>protected </code></td>
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">ExecuteDataSpecification</a></span>&#8203;(<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">ExecuteDataSpecification</a></span>&#8203;(<a href="../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
 <a href="../../storage/DSEDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DSEDatabaseEngine</a>&nbsp;db)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -259,30 +244,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="machine">machine</a></h3>
-<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType"><a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></span>&nbsp;<span class="memberName">machine</span></div>
-<div class="block">The description of the SpiNNaker machine.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="txrx">txrx</a></h3>
-<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType"><a href="../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></span>&nbsp;<span class="memberName">txrx</span></div>
-<div class="block">The transceiver for talking to the SpiNNaker machine.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="db">db</a></h3>
 <div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType"><a href="../../storage/DSEDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DSEDatabaseEngine</a></span>&nbsp;<span class="memberName">db</span></div>
 <div class="block">The database.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="job">job</a></h3>
-<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType"><a href="../../alloc/client/SpallocClient.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient.Job</a></span>&nbsp;<span class="memberName">job</span></div>
-<div class="block">A spalloc job, or null if not used.</div>
 </section>
 </li>
 </ul>
@@ -297,9 +261,10 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">ExecuteDataSpecification</a></h3>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">ExecuteDataSpecification</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/MustBeClosed.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@MustBeClosed</a>
-</span><span class="modifiers">protected</span>&nbsp;<span class="memberName">ExecuteDataSpecification</span>&#8203;(<span class="arguments"><a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+</span><span class="modifiers">protected</span>&nbsp;<span class="memberName">ExecuteDataSpecification</span>&#8203;(<span class="arguments"><a href="../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
 <a href="../../storage/DSEDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DSEDatabaseEngine</a>&nbsp;db)</span>
                             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
@@ -308,6 +273,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URISyntaxException.html?is-external=true" title="class or interface in java.net" class="externalLink">URISyntaxException</a></span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>txrx</code> - The transceiver for talking to the SpiNNaker machine.</dd>
 <dd><code>machine</code> - The description of the SpiNNaker machine.</dd>
 <dd><code>db</code> - The DSE database.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>

@@ -1261,7 +1261,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">A class for making things easier to do on a per-board basis.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/BoardLocalSupport.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine)">BoardLocalSupport(Machine)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/BoardLocalSupport.html" title="class in uk.ac.manchester.spinnaker.front_end">BoardLocalSupport</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/BoardLocalSupport.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine)">BoardLocalSupport(TransceiverInterface, Machine)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/BoardLocalSupport.html" title="class in uk.ac.manchester.spinnaker.front_end">BoardLocalSupport</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/front_end/BoardLocalSupport.BoardLocal.html" title="class in uk.ac.manchester.spinnaker.front_end"><span class="typeNameLink">BoardLocalSupport.BoardLocal</span></a> - Class in <a href="uk/ac/manchester/spinnaker/front_end/package-summary.html">uk.ac.manchester.spinnaker.front_end</a></dt>
 <dd>
@@ -1973,6 +1973,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Ask for a channel (created with <a href="uk/ac/manchester/spinnaker/alloc/proxy/ProxyOp.html#OPEN"><code>ProxyOp.OPEN</code></a> or
  <a href="uk/ac/manchester/spinnaker/alloc/proxy/ProxyOp.html#OPEN_UNCONNECTED"><code>ProxyOp.OPEN_UNCONNECTED</code></a>) to be closed.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#closeAndLogNoExcept()">closeAndLogNoExcept()</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
+<dd>
+<div class="block">Close this connection, logging failures instead of throwing.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/proxy/ProxyCore.html#closeChannel(java.nio.ByteBuffer)">closeChannel(ByteBuffer)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.proxy.<a href="uk/ac/manchester/spinnaker/alloc/proxy/ProxyCore.html" title="class in uk.ac.manchester.spinnaker.alloc.proxy">ProxyCore</a></dt>
 <dd>
 <div class="block">Close a channel in response to a <a href="uk/ac/manchester/spinnaker/alloc/proxy/ProxyOp.html#CLOSE"><code>ProxyOp.CLOSE</code></a> message.</div>
@@ -1980,6 +1984,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/proxy/SpinWSHandler.html#closed(org.springframework.web.socket.WebSocketSession,uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore,uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job)">closed(WebSocketSession, ProxyCore, SpallocAPI.Job)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.proxy.<a href="uk/ac/manchester/spinnaker/alloc/proxy/SpinWSHandler.html" title="class in uk.ac.manchester.spinnaker.alloc.proxy">SpinWSHandler</a></dt>
 <dd>
 <div class="block">Connection closed.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#closeEventually()">closeEventually()</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
+<dd>
+<div class="block">Close this connection eventually.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/compat/V1CompatTask.html#closeNotifiers()">closeNotifiers()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.compat.<a href="uk/ac/manchester/spinnaker/alloc/compat/V1CompatTask.html" title="class in uk.ac.manchester.spinnaker.alloc.compat">V1CompatTask</a></dt>
 <dd>
@@ -2909,6 +2917,12 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Request a count of boards.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/Transceiver.html#createScpConnection(uk.ac.manchester.spinnaker.machine.ChipLocation,java.net.InetAddress)">createScpConnection(ChipLocation, InetAddress)</a></span> - Method in class uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/Transceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver">Transceiver</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html#createScpConnection(uk.ac.manchester.spinnaker.machine.ChipLocation,java.net.InetAddress)">createScpConnection(ChipLocation, InetAddress)</a></span> - Method in interface uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></dt>
+<dd>
+<div class="block">Create a connection to a particular instance of SCAMP.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/UncheckedConnection.html#createSQLXML()">createSQLXML()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/UncheckedConnection.html" title="class in uk.ac.manchester.spinnaker.alloc.db">UncheckedConnection</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/UncheckedConnection.html#createStatement()">createStatement()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/UncheckedConnection.html" title="class in uk.ac.manchester.spinnaker.alloc.db">UncheckedConnection</a></dt>
@@ -3137,7 +3151,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Implementation of the SpiNNaker Fast Data Download Protocol.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.alloc.client.SpallocClient.Job)">DataGatherer(TransceiverInterface, Machine, SpallocClient.Job)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DataGatherer</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine)">DataGatherer(TransceiverInterface, Machine)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DataGatherer</a></dt>
 <dd>
 <div class="block">Create an instance of the protocol implementation.</div>
 </dd>
@@ -3601,7 +3615,7 @@ loadScripts(document, 'script');</script>
              regions.</div>
 </div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage,uk.ac.manchester.spinnaker.alloc.client.SpallocClient.Job)">DirectDataGatherer(TransceiverInterface, Machine, BufferManagerStorage, SpallocClient.Job)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DirectDataGatherer</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">DirectDataGatherer(TransceiverInterface, Machine, BufferManagerStorage)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DirectDataGatherer</a></dt>
 <dd>
 <div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span></div>
 <div class="block">Create a data gatherer.</div>
@@ -3889,18 +3903,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Create an EIEIO connection where the mechanism for the sending and
  listening is implemented by a subclass.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#%3Cinit%3E(java.net.InetAddress)">EIEIOConnection(InetAddress)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html" title="class in uk.ac.manchester.spinnaker.connections">EIEIOConnection</a></dt>
-<dd>
-<div class="block">Create an EIEIO connection only available for listening, using default
- local port.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#%3Cinit%3E(java.net.InetAddress,java.lang.Integer)">EIEIOConnection(InetAddress, Integer)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html" title="class in uk.ac.manchester.spinnaker.connections">EIEIOConnection</a></dt>
 <dd>
 <div class="block">Create an EIEIO connection only available for listening.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#%3Cinit%3E(java.net.InetAddress,java.lang.Integer,java.net.InetAddress,java.lang.Integer)">EIEIOConnection(InetAddress, Integer, InetAddress, Integer)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html" title="class in uk.ac.manchester.spinnaker.connections">EIEIOConnection</a></dt>
-<dd>
-<div class="block">Create an EIEIO connection.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/eieio/HostSendSequencedData.html#eieioDataMessage">eieioDataMessage</a></span> - Variable in class uk.ac.manchester.spinnaker.messages.eieio.<a href="uk/ac/manchester/spinnaker/messages/eieio/HostSendSequencedData.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">HostSendSequencedData</a></dt>
 <dd>
@@ -4335,7 +4340,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Common base for executing data specifications.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/ExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">ExecuteDataSpecification(Machine, DSEDatabaseEngine)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/ExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">ExecuteDataSpecification</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/ExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">ExecuteDataSpecification(TransceiverInterface, Machine, DSEDatabaseEngine)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/ExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">ExecuteDataSpecification</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html#executeFlood(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.io.File,uk.ac.manchester.spinnaker.messages.model.AppID)">executeFlood(CoreSubsets, File, AppID)</a></span> - Method in interface uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></dt>
 <dd>
@@ -4487,7 +4492,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Implementation of the Data Specification Executor that uses the Fast Data In
  protocol to upload the results to a SpiNNaker machine.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/FastExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,java.util.List,java.io.File,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">FastExecuteDataSpecification(Machine, List&lt;Gather&gt;, File, DSEDatabaseEngine)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/FastExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">FastExecuteDataSpecification</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/FastExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,java.util.List,java.io.File,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">FastExecuteDataSpecification(TransceiverInterface, Machine, List&lt;Gather&gt;, File, DSEDatabaseEngine)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/FastExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">FastExecuteDataSpecification</a></dt>
 <dd>
 <div class="block">Create an instance of this class.</div>
 </dd>
@@ -8777,7 +8782,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Executes the host based data specification.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/HostExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">HostExecuteDataSpecification(Machine, DSEDatabaseEngine)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/HostExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">HostExecuteDataSpecification</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/HostExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">HostExecuteDataSpecification(TransceiverInterface, Machine, DSEDatabaseEngine)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/HostExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">HostExecuteDataSpecification</a></dt>
 <dd>
 <div class="block">Create a high-level DSE interface.</div>
 </dd>
@@ -9587,10 +9592,6 @@ loadScripts(document, 'script');</script>
 </a>
 <h2 class="title">J</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/ExecuteDataSpecification.html#job">job</a></span> - Variable in class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/ExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">ExecuteDataSpecification</a></dt>
-<dd>
-<div class="block">A spalloc job, or null if not used.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/WebServiceComponentNames.html#JOB">JOB</a></span> - Static variable in interface uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/WebServiceComponentNames.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">WebServiceComponentNames</a></dt>
 <dd>
 <div class="block">The job resource name component.</div>
@@ -10443,7 +10444,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">The name of the machine.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/ExecuteDataSpecification.html#machine">machine</a></span> - Variable in class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/ExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">ExecuteDataSpecification</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/BoardLocalSupport.html#machine">machine</a></span> - Variable in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/BoardLocalSupport.html" title="class in uk.ac.manchester.spinnaker.front_end">BoardLocalSupport</a></dt>
 <dd>
 <div class="block">The description of the SpiNNaker machine.</div>
 </dd>
@@ -11316,6 +11317,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Create a new map that manufactures new elements that are aware of their
  key from the beginning.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/UDPTransceiver.html#newEieioConnection(java.net.InetAddress,java.lang.Integer)">newEieioConnection(InetAddress, Integer)</a></span> - Method in class uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/UDPTransceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver">UDPTransceiver</a></dt>
+<dd>
+<div class="block">Create an EIEIO connection only available for listening (or directed
+ sending towards a SpiNNaker board).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/utils/DefaultMap.html#newMapWithDefault(DV)">newMapWithDefault(DV)</a></span> - Static method in class uk.ac.manchester.spinnaker.utils.<a href="uk/ac/manchester/spinnaker/utils/DefaultMap.html" title="class in uk.ac.manchester.spinnaker.utils">DefaultMap</a></dt>
 <dd>
@@ -13364,7 +13370,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">A data gatherer that pulls the data from a recording region.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage,uk.ac.manchester.spinnaker.alloc.client.SpallocClient.Job)">RecordingRegionDataGatherer(TransceiverInterface, Machine, BufferManagerStorage, SpallocClient.Job)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">RecordingRegionDataGatherer</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">RecordingRegionDataGatherer(TransceiverInterface, Machine, BufferManagerStorage)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">RecordingRegionDataGatherer</a></dt>
 <dd>
 <div class="block">Create a data gatherer.</div>
 </dd>
@@ -14148,14 +14154,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">A UDP connection to SC&amp;MP on the board.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#%3Cinit%3E(java.net.InetAddress)">SCPConnection(InetAddress)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
-<dd>
-<div class="block">Create a connection to a particular instance of SCAMP.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#%3Cinit%3E(java.net.InetAddress,java.lang.Integer,java.net.InetAddress,java.lang.Integer)">SCPConnection(InetAddress, Integer, InetAddress, Integer)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
-<dd>
-<div class="block">Create a connection to a particular instance of SCAMP.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation)">SCPConnection(HasChipLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
 <dd>
 <div class="block">Create a connection where the mechanism for sending and receiving
@@ -14165,11 +14163,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Create a connection to a particular instance of SCAMP.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress,java.lang.Integer)">SCPConnection(HasChipLocation, InetAddress, Integer)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
-<dd>
-<div class="block">Create a connection to a particular instance of SCAMP.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress,java.lang.Integer,java.net.InetAddress,java.lang.Integer)">SCPConnection(HasChipLocation, InetAddress, Integer, InetAddress, Integer)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress,java.lang.Integer,java.net.InetAddress,int)">SCPConnection(HasChipLocation, InetAddress, Integer, InetAddress, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
 <dd>
 <div class="block">Create a connection to a particular instance of SCAMP.</div>
 </dd>
@@ -17022,7 +17016,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Transmit pre-emphasis.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/ExecuteDataSpecification.html#txrx">txrx</a></span> - Variable in class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/ExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">ExecuteDataSpecification</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/BoardLocalSupport.html#txrx">txrx</a></span> - Variable in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/BoardLocalSupport.html" title="class in uk.ac.manchester.spinnaker.front_end">BoardLocalSupport</a></dt>
 <dd>
 <div class="block">The transceiver for talking to the SpiNNaker machine.</div>
 </dd>

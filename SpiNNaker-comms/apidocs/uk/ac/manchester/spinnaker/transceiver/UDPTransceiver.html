@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":6,"i1":10,"i2":10,"i3":10,"i4":10};
+<script type="text/javascript">var data = {"i0":6,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -173,13 +173,22 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 </td>
 </tr>
 <tr class="altColor" id="i2">
+<td class="colFirst"><code>protected <a href="../connections/EIEIOConnection.html" title="class in uk.ac.manchester.spinnaker.connections">EIEIOConnection</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#newEieioConnection(java.net.InetAddress,java.lang.Integer)">newEieioConnection</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;localPort)</code></th>
+<td class="colLast">
+<div class="block">Create an EIEIO connection only available for listening (or directed
+ sending towards a SpiNNaker board).</div>
+</td>
+</tr>
+<tr class="rowColor" id="i3">
 <td class="colFirst"><code><a href="../connections/EIEIOConnection.html" title="class in uk.ac.manchester.spinnaker.connections">EIEIOConnection</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#registerEIEIOListener(uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessageHandler)">registerEIEIOListener</a></span>&#8203;(<a href="../messages/eieio/EIEIOMessageHandler.html" title="interface in uk.ac.manchester.spinnaker.messages.eieio">EIEIOMessageHandler</a>&nbsp;callback)</code></th>
 <td class="colLast">
 <div class="block">Register a callback for EIEIO traffic to be received.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="altColor" id="i4">
 <td class="colFirst"><code><a href="../connections/EIEIOConnection.html" title="class in uk.ac.manchester.spinnaker.connections">EIEIOConnection</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#registerEIEIOListener(uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessageHandler,int)">registerEIEIOListener</a></span>&#8203;(<a href="../messages/eieio/EIEIOMessageHandler.html" title="interface in uk.ac.manchester.spinnaker.messages.eieio">EIEIOMessageHandler</a>&nbsp;callback,
 int&nbsp;localPort)</code></th>
@@ -187,7 +196,7 @@ int&nbsp;localPort)</code></th>
 <div class="block">Register a callback for EIEIO traffic to be received.</div>
 </td>
 </tr>
-<tr class="altColor" id="i4">
+<tr class="rowColor" id="i5">
 <td class="colFirst"><code><a href="../connections/EIEIOConnection.html" title="class in uk.ac.manchester.spinnaker.connections">EIEIOConnection</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#registerEIEIOListener(uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessageHandler,int,java.net.InetAddress)">registerEIEIOListener</a></span>&#8203;(<a href="../messages/eieio/EIEIOMessageHandler.html" title="interface in uk.ac.manchester.spinnaker.messages.eieio">EIEIOMessageHandler</a>&nbsp;callback,
 int&nbsp;localPort,
@@ -286,6 +295,27 @@ int&nbsp;localPort,
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If basic sanity checks fail.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the networking fails.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="newEieioConnection(java.net.InetAddress,java.lang.Integer)">newEieioConnection</a></h3>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="../connections/EIEIOConnection.html" title="class in uk.ac.manchester.spinnaker.connections">EIEIOConnection</a></span>&nbsp;<span class="memberName">newEieioConnection</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;localPort)</span>
+                                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block">Create an EIEIO connection only available for listening (or directed
+ sending towards a SpiNNaker board).</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>localHost</code> - The local IP address to bind to. If <code>null</code>, it defaults
+            to binding to all interfaces or a system-specified interface.</dd>
+<dd><code>localPort</code> - The local port to bind to, <code>null</code> or between 1025 and
+            65535.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The listen-only EIEIO connection.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If there is an error setting up the communication channel</dd>
 </dl>
 </section>
 </li>
