@@ -392,6 +392,7 @@ public class Transceiver extends UDPTransceiver
 	 *             If the communications were interrupted.
 	 */
 	@MustBeClosed
+	@SuppressWarnings("MustBeClosed")
 	public Transceiver(InetAddress host, MachineVersion version,
 			Collection<BMPConnectionData> bmpConnectionData,
 			Integer numberOfBoards, Set<ChipLocation> ignoredChips,
@@ -431,7 +432,7 @@ public class Transceiver extends UDPTransceiver
 			scampConnections = List.of();
 		}
 		if (scampConnections.isEmpty()) {
-			connections.add(new SCPConnection(host));
+			connections.add(createScpConnection(BOOT_CHIP, host));
 		}
 
 		// handle the boot connection
@@ -453,8 +454,12 @@ public class Transceiver extends UDPTransceiver
 		allConnections.addAll(connections);
 		// if there has been SCAMP connections given, build them
 		for (var desc : scampConnections) {
-			connections.add(new SCPConnection(desc.chip, desc.hostname,
-					desc.portNumber));
+			if (desc.portNumber != null
+					&& desc.portNumber != SCP_SCAMP_PORT) {
+				log.warn("ignoring unexpected SCAMP port: {}",
+						desc.portNumber);
+			}
+			connections.add(createScpConnection(desc.chip, desc.hostname));
 		}
 		for (Connection conn : connections) {
 			identifyConnection(conn);
@@ -597,6 +602,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
+	@SuppressWarnings("MustBeClosed")
 	public Transceiver(MachineVersion version,
 			Collection<Connection> connections,
 			Collection<ChipLocation> ignoredChips,
@@ -626,8 +632,12 @@ public class Transceiver extends UDPTransceiver
 		// if there has been SCAMP connections given, build them
 		if (scampConnections != null) {
 			for (ConnectionDescriptor desc : scampConnections) {
-				connections.add(new SCPConnection(desc.chip, desc.hostname,
-						desc.portNumber));
+				if (desc.portNumber != null
+						&& desc.portNumber != SCP_SCAMP_PORT) {
+					log.warn("ignoring unexpected SCAMP port: {}",
+							desc.portNumber);
+				}
+				connections.add(createScpConnection(desc.chip, desc.hostname));
 			}
 		}
 		for (Connection conn : connections) {
@@ -635,6 +645,12 @@ public class Transceiver extends UDPTransceiver
 		}
 		scpSelector = makeConnectionSelector();
 		checkBMPConnections();
+	}
+
+	@Override
+	public SCPConnection createScpConnection(ChipLocation chip,
+			InetAddress addr) throws IOException {
+		return new SCPConnection(chip, addr);
 	}
 
 	private ConnectionSelector<SCPConnection> makeConnectionSelector() {
@@ -952,6 +968,7 @@ public class Transceiver extends UDPTransceiver
 	 *             If the communications were interrupted.
 	 */
 	@CheckReturnValue
+	@SuppressWarnings("MustBeClosed")
 	public List<SCPConnection> discoverScampConnections()
 			throws IOException, ProcessException, InterruptedException {
 		/*
@@ -977,7 +994,7 @@ public class Transceiver extends UDPTransceiver
 
 			// if no data, no proxy
 			if (conn == null) {
-				conn = new SCPConnection(chip, ipAddress);
+				conn = createScpConnection(chip, ipAddress);
 			} else {
 				// proxy, needs an adjustment
 				udpScpConnections.remove(conn.getRemoteIPAddress());
