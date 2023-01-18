@@ -63,11 +63,7 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 
 	private static final int ENTRY_TEXT = 2;
 
-	private TransceiverInterface txrx;
-
-	private Machine machine;
-
-	private BasicExecutor executor;
+	private final BasicExecutor executor;
 
 	/**
 	 * Create a IOBUF retriever.
@@ -83,9 +79,7 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 	@SuppressWarnings("MustBeClosed")
 	public IobufRetriever(TransceiverInterface transceiver, Machine machine,
 			int parallelSize) {
-		super(machine);
-		txrx = transceiver;
-		this.machine = machine;
+		super(transceiver, machine);
 		executor = new BasicExecutor(parallelSize);
 	}
 

@@ -57,11 +57,13 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
 import com.google.errorprone.annotations.CheckReturnValue;
+import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SDPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.Direction;
@@ -78,6 +80,7 @@ import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
 import uk.ac.manchester.spinnaker.machine.tags.TagID;
+import uk.ac.manchester.spinnaker.messages.Constants;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.model.CPUState;
@@ -97,6 +100,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * The interface supported by the {@link Transceiver}. Emulates a lot of default
@@ -4201,4 +4205,24 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafeWithCare
 	void loadSystemRouterTables(@Valid CoreSubsets monitorCores)
 			throws IOException, ProcessException, InterruptedException;
+
+	/**
+	 * Create a connection to a particular instance of SCAMP. Note that this
+	 * connection is a new connection; it is not a previously existing
+	 * connection.
+	 *
+	 * @param chip
+	 *            The location of the chip on the board with this remoteHost
+	 * @param addr
+	 *            The IP address of the SpiNNaker board to send messages to.
+	 * @return The SCP connection to use. It is up to the caller to arrange for
+	 *         this to be closed at the right time.
+	 * @throws IOException
+	 *             If anything goes wrong with socket setup.
+	 */
+	@ParallelSafe
+	@MustBeClosed
+	@UsedInJavadocOnly(Constants.class)
+	SCPConnection createScpConnection(ChipLocation chip, InetAddress addr)
+			throws IOException;
 }

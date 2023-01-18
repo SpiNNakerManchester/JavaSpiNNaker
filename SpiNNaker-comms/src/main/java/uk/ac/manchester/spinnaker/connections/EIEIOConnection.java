@@ -34,22 +34,6 @@ import uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessage;
 public class EIEIOConnection
 		extends UDPConnection<EIEIOMessage<? extends EIEIOHeader>> {
 	/**
-	 * Create an EIEIO connection only available for listening, using default
-	 * local port.
-	 *
-	 * @param localHost
-	 *            The local IP address to bind to. If not specified, it defaults
-	 *            to binding to all interfaces, unless remoteHost is specified,
-	 *            in which case binding is done to the IP address that will be
-	 *            used to send packets.
-	 * @throws IOException
-	 *             If there is an error setting up the communication channel
-	 */
-	public EIEIOConnection(InetAddress localHost) throws IOException {
-		super(localHost, null, null, null, null);
-	}
-
-	/**
 	 * Create an EIEIO connection only available for listening.
 	 *
 	 * @param localHost
@@ -64,34 +48,7 @@ public class EIEIOConnection
 	 */
 	public EIEIOConnection(InetAddress localHost, Integer localPort)
 			throws IOException {
-		super(localHost, localPort, null, null, null);
-	}
-
-	/**
-	 * Create an EIEIO connection.
-	 *
-	 * @param localHost
-	 *            The local host to bind to. If not specified, it defaults to
-	 *            binding to all interfaces, unless remoteHost is specified, in
-	 *            which case binding is done to the IP address that will be used
-	 *            to send packets.
-	 * @param localPort
-	 *            The local port to bind to, 0 or between 1025 and 65535.
-	 * @param remoteHost
-	 *            The remote host to send packets to. If not specified, the
-	 *            socket will be available for listening only, and will throw
-	 *            and exception if used for sending.
-	 * @param remotePort
-	 *            The remote port to send packets to. If remoteHost is
-	 *            {@code null}, this is ignored. If remoteHost is specified,
-	 *            this must also be specified as non-zero for the connection to
-	 *            allow sending.
-	 * @throws IOException
-	 *             If there is an error setting up the communication channel
-	 */
-	public EIEIOConnection(InetAddress localHost, Integer localPort,
-			InetAddress remoteHost, Integer remotePort) throws IOException {
-		super(localHost, localPort, remoteHost, remotePort, IPTOS_THROUGHPUT);
+		super(localHost, localPort, null, null, IPTOS_THROUGHPUT);
 	}
 
 	/**

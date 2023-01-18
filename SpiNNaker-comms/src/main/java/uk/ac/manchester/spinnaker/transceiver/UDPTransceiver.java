@@ -256,13 +256,32 @@ public abstract class UDPTransceiver implements Closeable {
 		log.info("finding/creating connection listening on {}:{}",
 				addr.getHostAddress(), localPort);
 		var pair = unwrap(() -> lookup(addr, localPort).orElseGet(
-				() -> new Pair<>(wrap(() -> new EIEIOConnection(addr, port)),
+				() -> new Pair<>(wrap(() -> newEieioConnection(addr, port)),
 						true)));
 
 		// Launch a listener if one is required
 		pair.initListener(addr, callback);
 		eieioListeners.add(pair);
 		return (EIEIOConnection) pair.connection;
+	}
+
+	/**
+	 * Create an EIEIO connection only available for listening (or directed
+	 * sending towards a SpiNNaker board).
+	 *
+	 * @param localHost
+	 *            The local IP address to bind to. If {@code null}, it defaults
+	 *            to binding to all interfaces or a system-specified interface.
+	 * @param localPort
+	 *            The local port to bind to, {@code null} or between 1025 and
+	 *            65535.
+	 * @return The listen-only EIEIO connection.
+	 * @throws IOException
+	 *             If there is an error setting up the communication channel
+	 */
+	protected EIEIOConnection newEieioConnection(InetAddress localHost,
+			Integer localPort) throws IOException {
+		return new EIEIOConnection(localHost, localPort);
 	}
 
 	/**

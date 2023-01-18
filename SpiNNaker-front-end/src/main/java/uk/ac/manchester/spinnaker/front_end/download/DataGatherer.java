@@ -44,7 +44,6 @@ import com.google.errorprone.annotations.ForOverride;
 import com.google.errorprone.annotations.MustBeClosed;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 
-import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
 import uk.ac.manchester.spinnaker.connections.MostDirectConnectionSelector;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor.SimpleCallable;
@@ -121,15 +120,9 @@ public abstract sealed class DataGatherer extends BoardLocalSupport implements
 	private static final String SPINNAKER_COMPARE_DOWNLOAD =
 			getProperty("spinnaker.compare.download");
 
-	private final TransceiverInterface txrx;
-
-	private final SpallocClient.Job job;
-
 	private final BasicExecutor pool;
 
 	private int missCount;
-
-	private Machine machine;
 
 	/**
 	 * Create an instance of the protocol implementation. (Subclasses handle
@@ -140,8 +133,6 @@ public abstract sealed class DataGatherer extends BoardLocalSupport implements
 	 *            is located.
 	 * @param machine
 	 *            The description of the SpiNNaker machine being talked to.
-	 * @param job
-	 *            The spalloc job to connect to on null if none.
 	 * @throws ProcessException
 	 *             If we can't discover the machine details due to SpiNNaker
 	 *             rejecting messages
@@ -150,13 +141,9 @@ public abstract sealed class DataGatherer extends BoardLocalSupport implements
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
-	public DataGatherer(TransceiverInterface transceiver, Machine machine,
-			SpallocClient.Job job)
+	public DataGatherer(TransceiverInterface transceiver, Machine machine)
 			throws IOException, ProcessException {
-		super(machine);
-		this.txrx = transceiver;
-		this.machine = machine;
-		this.job = job;
+		super(transceiver, machine);
 		this.pool = new BasicExecutor(PARALLEL_SIZE);
 		this.missCount = 0;
 	}
@@ -330,10 +317,8 @@ public abstract sealed class DataGatherer extends BoardLocalSupport implements
 			if (!work.containsKey(gathererChip)) {
 				continue;
 			}
-			var conn = new GatherDownloadConnection(
-					(job != null) ? job.getConnection(gathererChip)
-							: txrx.locateSpinnakerConnection(
-									g.getIptag().getBoardAddress()));
+			var conn = new GatherDownloadConnection(txrx.createScpConnection(
+					gathererChip, g.getIptag().getBoardAddress()));
 			conn.setIPTag(txrx, g.getIptag());
 			connections.put(gathererChip, conn);
 		}

@@ -51,11 +51,7 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  * @author Christian-B
  */
 public class DataReceiver extends BoardLocalSupport {
-	private final TransceiverInterface txrx;
-
 	private final BufferedReceivingData receivedData;
-
-	private final Machine machine;
 
 	private static final Logger log = getLogger(DataReceiver.class);
 
@@ -71,11 +67,9 @@ public class DataReceiver extends BoardLocalSupport {
 	 */
 	public DataReceiver(TransceiverInterface tranceiver, Machine machine,
 			BufferManagerStorage storage) {
-		super(machine);
-		txrx = tranceiver;
+		super(tranceiver, machine);
 		// storage area for received data from cores
 		receivedData = new BufferedReceivingData(storage);
-		this.machine = machine;
 	}
 
 	private Stream<List<Placement>> partitionByBoard(
