@@ -33,19 +33,31 @@ WITH RECURSIVE
 		LIMIT (SELECT height FROM m)),
 	-- Form the sequences into grids of points
 	c(x,y,z) AS (SELECT x, y, z FROM cx, cy, triad),
-	g(x,y) AS (SELECT x, y FROM gx, gy)
+	g(x,y) AS (SELECT x, y FROM gx, gy),
+	-- Root coords and number of boards available from that point
+	-- NB: Can't use board ID safely as we are using a GROUP BY
+	root(x,y,z,available) AS (
+		SELECT g.x AS x, g.y AS y, 0 AS z,
+			SUM(boards.may_be_allocated) AS available
+		FROM args
+			JOIN c
+			JOIN g
+			JOIN boards USING (machine_id)
+			JOIN m
+		WHERE
+			boards.x = (c.x + g.x) % m.width
+			AND boards.y = (c.y + g.y) % m.height
+			AND boards.z = c.z
+		GROUP BY g.x, g.y)
 SELECT
-	root.board_id AS id,
-	root.x AS x, root.y AS y, root.z AS z,
+	boards.board_id AS id,
+	boards.x AS x,
+	boards.y AS y,
+	boards.z AS z,
 	root.available AS available
-FROM args, boards, (
-	SELECT board_id, boards.x AS x, boards.y AS y, boards.z AS z,
-		SUM(boards.may_be_allocated) AS available
-	FROM args JOIN c JOIN g JOIN boards USING (machine_id) JOIN m
-	WHERE
-		boards.x = (c.x + g.x) % m.width AND boards.y = (c.y + g.y) % m.height
-		AND boards.z = c.z
-	GROUP BY g.x, g.y) AS root
-WHERE available >= args.width * args.height - args.max_dead_boards
-	AND boards.board_id = id AND boards.may_be_allocated > 0
+FROM args
+	JOIN boards USING (machine_id)
+	JOIN root USING (x, y, z)
+WHERE root.available >= args.width * args.height - args.max_dead_boards
+	AND boards.may_be_allocated > 0
 ORDER BY power_off_timestamp ASC;

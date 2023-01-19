@@ -656,11 +656,10 @@ public abstract class SQLQueries {
 	protected static final String GET_MACHINE_REPORTS = """
 			SELECT board_id, report_id, reported_issue, report_timestamp,
 				user_name AS reporter_name
-			FROM board_reports
-				JOIN user_info ON reporter = user_id
+			FROM board_reports JOIN user_info ON reporter = user_id
 				JOIN boards USING (board_id)
 			WHERE machine_id = :machine_id
-			GROUP BY board_id
+			ORDER BY board_id, report_id
 			""";
 
 	/**
@@ -2484,20 +2483,25 @@ public abstract class SQLQueries {
 	@ResultColumn("z")
 	@ResultColumn("address")
 	protected static final String GET_REPORTED_BOARDS = """
+			WITH report_counts AS (
+				SELECT
+					board_reports.board_id,
+					COUNT(board_reports.report_id) AS num_reports
+				FROM board_reports
+					JOIN boards USING (board_id)
+				WHERE boards.functioning IS NOT 0
+				GROUP BY board_id)
 			SELECT
-				board_reports.board_id,
-				COUNT(*) AS num_reports,
-				boards.x,
-				boards.y,
-				boards.z,
-				boards.address
+			    boards.board_id,
+			    report_counts.num_reports,
+			    boards.x,
+			    boards.y,
+			    boards.z,
+			    boards.address
 			FROM
-				board_reports
+				report_counts
 				JOIN boards USING (board_id)
-				JOIN jobs USING (job_id)
-			WHERE functioning IS NOT 0
-			GROUP BY board_reports.board_id
-			HAVING num_reports >= :threshold
+			WHERE report_counts.num_reports >= :threshold
 			""";
 
 	/** Create a request to change the power status of a board. */
