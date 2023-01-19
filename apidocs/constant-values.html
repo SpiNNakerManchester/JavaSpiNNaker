@@ -930,7 +930,7 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_MACHINE_REPORTS">GET_MACHINE_REPORTS</a></code></th>
-<td class="colLast"><code>"SELECT board_id, report_id, reported_issue, report_timestamp, user_name AS reporter_name FROM board_reports JOIN user_info ON reporter = user_id JOIN boards USING (board_id) WHERE machine_id = :machine_id GROUP BY board_id"</code></td>
+<td class="colLast"><code>"SELECT board_id, report_id, reported_issue, report_timestamp, user_name AS reporter_name FROM board_reports JOIN user_info ON reporter = user_id JOIN boards USING (board_id) WHERE machine_id = :machine_id ORDER BY board_id, report_id"</code></td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_MEMBERSHIP">
