@@ -14,17 +14,22 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -- Get boards with more problem reports than a critical threshold
+WITH report_counts AS (
+	SELECT
+		board_reports.board_id,
+		COUNT(board_report.report_id) AS num_reports
+	FROM board_reports
+	JOIN boards USING (board_id)
+	WHERE boards.functioning IS NOT 0 -- Ignore disabled boards
+	GROUP BY board_id)
 SELECT
-    board_reports.board_id,
-    COUNT(*) AS num_reports,
+    boards.board_id,
+    report_counts.num_reports,
     boards.x,
     boards.y,
     boards.z,
     boards.address
 FROM
-	board_reports
+	report_counts
 	JOIN boards USING (board_id)
-	JOIN jobs USING (job_id)
-WHERE functioning IS NOT 0
-GROUP BY board_reports.board_id
-HAVING num_reports >= :threshold;
+WHERE report_counts.num_reports >= :threshold;
