@@ -25,6 +25,6 @@ FROM
 	board_reports
 	JOIN boards USING (board_id)
 	JOIN jobs USING (job_id)
-WHERE functioning IS NOT 0
+WHERE functioning != 0
 GROUP BY board_reports.board_id
 HAVING num_reports >= :threshold;

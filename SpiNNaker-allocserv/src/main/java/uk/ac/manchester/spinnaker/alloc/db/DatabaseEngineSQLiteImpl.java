@@ -129,7 +129,7 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  *
  * @author Donal Fellows
  */
-@Service
+// @Service
 public final class DatabaseEngineSQLiteImpl
         extends DatabaseCache<SQLiteConnection>	implements DatabaseAPI {
 	private static final Logger log = getLogger(DatabaseEngineSQLiteImpl.class);

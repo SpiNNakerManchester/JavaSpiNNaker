@@ -664,8 +664,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		email.header(description, 1, permit.name);
 		int userId = getUser(sql.getConnection(), permit.name).orElseThrow(
 				() -> new ReportRollbackExn("no such user: %s", permit.name));
+		long now = System.currentTimeMillis() / 1000;
 		sql.insertReport.key(row.getInt("board_id"), row.getInt("job_id"),
-				description, userId).ifPresent(email::issue);
+				description, userId, now).ifPresent(email::issue);
 		return takeBoardsOutOfService(sql, email).map(acted -> {
 			email.footer(acted);
 			return email;
@@ -1407,7 +1408,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		 */
 		private void addIssueReport(BoardReportSQL u, int boardId, String issue,
 				int userId, EmailBuilder email) {
-			u.insertReport.key(boardId, id, issue, userId)
+			long now = System.currentTimeMillis() / 1000;
+			u.insertReport.key(boardId, id, issue, userId, now)
 					.ifPresent(email::issue);
 		}
 

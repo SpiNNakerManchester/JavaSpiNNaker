@@ -154,8 +154,12 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		try {
 			while (!interrupted()) {
 				if (!communicate()) {
+					log.debug("Communcation break");
 					break;
 				}
+			}
+			if (interrupted()) {
+				log.debug("Shutdown on interrupt");
 			}
 		} catch (UnknownIOException e) {
 			/*
@@ -165,10 +169,11 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			 * the problem with PrintWriters is they swallow exceptions and
 			 * throw the information away. I'm not going to fix that.
 			 */
+			log.error("Something went wrong in comms", e);
 		} catch (IOException e) {
 			log.error("problem with socket {}", sock, e);
 		} catch (InterruptedException interrupted) {
-			// ignored
+		    log.error("Interrupted Exception!", interrupted);
 		} finally {
 			log.debug("closing down connection from {}", sock);
 			closeNotifiers();
@@ -252,6 +257,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		String line;
 		try {
 			line = in.readLine();
+			log.debug("Incoming message: {}", line);
 		} catch (SocketException e) {
 			/*
 			 * Don't know why we get a generic socket exception for some of
@@ -270,10 +276,6 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			default:
 				throw e;
 			}
-		} catch (InterruptedIOException e) {
-			var ex = new InterruptedException();
-			ex.initCause(e);
-			throw ex;
 		}
 		if (isNull(line)) {
 			if (currentThread().isInterrupted()) {
@@ -285,6 +287,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		if (isNull(c) || isNull(c.getCommand())) {
 			throw new IOException("message did not specify a command");
 		}
+		log.debug("Command: {}", c);
 		return Optional.of(c);
 	}
 
@@ -401,10 +404,11 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			}
 			cmd = c.orElseThrow();
 		} catch (SocketTimeoutException e) {
-			log.debug("timeout");
+			log.trace("timeout");
 			// Message was not read by time timeout expired
 			return !currentThread().isInterrupted();
 		} catch (JsonMappingException | JsonParseException e) {
+			log.error("Error on message reception", e);
 			writeException(e);
 			return true;
 		}

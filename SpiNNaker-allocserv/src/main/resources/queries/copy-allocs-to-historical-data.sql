@@ -12,16 +12,12 @@
 --
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-WITH
-	t(now) AS (VALUES (CAST(strftime('%s','now') AS INTEGER)))
-INSERT OR IGNORE INTO tombstone.board_allocations(
+INSERT IGNORE INTO tombstone.board_allocations(
 	alloc_id, job_id, board_id, allocation_timestamp)
 SELECT
 	src.alloc_id, src.job_id, src.board_id, src.alloc_timestamp
 FROM
 	old_board_allocations AS src
 	JOIN jobs USING (job_id)
-	JOIN t
-WHERE jobs.death_timestamp + :grace_period < t.now
+WHERE jobs.death_timestamp + :grace_period < :time_now
 RETURNING alloc_id;

@@ -15,7 +15,7 @@
 
 INSERT INTO pending_changes(
 	job_id, board_id, from_state, to_state,
-	"power", fpga_n, fpga_e, fpga_se, fpga_s, fpga_w, fpga_nw)
+	power, fpga_n, fpga_e, fpga_se, fpga_s, fpga_w, fpga_nw)
 VALUES (
 	:job_id, :board_id, :from_state, :to_state,
 	:power, :fpga_n, :fpga_e, :fpga_se, :fpga_s, :fpga_w, :fpga_nw);

@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.alloc.compat;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +60,7 @@ public final class Command {
 	}
 
 	void setArgs(List<Object> args) {
-		this.args = List.copyOf(args);
+		this.args = new ArrayList<Object>(args);
 	}
 
 	/** @return The keyword arguments to the command. */
@@ -67,6 +69,6 @@ public final class Command {
 	}
 
 	void setKwargs(Map<String, Object> kwargs) {
-		this.kwargs = Map.copyOf(kwargs);
+		this.kwargs = new HashMap<String, Object>(kwargs);
 	}
 }

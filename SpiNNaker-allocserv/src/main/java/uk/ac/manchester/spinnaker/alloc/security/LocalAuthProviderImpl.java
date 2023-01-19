@@ -49,6 +49,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.intercept.RunAsUserToken;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -664,6 +665,11 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			super(sql.getConnection());
 			try (var make = conn.update(GROUP_SYNC_MAKE_TEMP_TABLE)) {
 				make.call();
+			} catch (BadSqlGrammarException e) {
+				if (!e.getMessage().contains("already exists")) {
+					throw e;
+				}
+				log.warn("Group temp table already exists (" + e.getMessage() + ")");
 			}
 			insert = conn.update(GROUP_SYNC_INSERT_TEMP_ROW);
 			add = conn.update(GROUP_SYNC_ADD_GROUPS);
@@ -967,6 +973,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 					return Optional.empty();
 				}
 				var trust = authInfo.getEnum("trust_level", TrustLevel.class);
+				log.info("User trust level is " + trust);
 				return Optional.of(new LocalAuthResult(userId, trust, encPass));
 			} catch (AuthenticationException e) {
 				queries.noteLoginFailureForUser(userId, username);
@@ -1029,6 +1036,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		var orgs = new ArrayList<String>();
 		authorities.forEach(ga -> inflateGroup(ga, collabs, orgs, queries));
 		return ifElse(queries.getUser(username), userInfo -> {
+			log.info("Found user " + username + " in database");
 			int userId = userInfo.getInt("user_id");
 			synchExternalGroups(username, userId, orgs, collabs, queries);
 			if (userInfo.getBoolean("disabled")) {

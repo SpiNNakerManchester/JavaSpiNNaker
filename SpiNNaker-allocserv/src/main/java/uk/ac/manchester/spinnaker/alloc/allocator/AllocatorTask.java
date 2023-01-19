@@ -190,6 +190,9 @@ public class AllocatorTask extends DatabaseAwareBean
 		/** Set the state and number of pending changes for a job. */
 		private final Update setStatePending;
 
+		/** Set the state to destroyed. */
+		private final Update setStateDestroyed;
+
 		PowerSQL(Connection conn) {
 			super(conn);
 			getJobState = conn.query(GET_JOB);
@@ -197,6 +200,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			getPerimeter = conn.query(getPerimeterLinks);
 			issuePowerChange = conn.update(issueChangeForJob);
 			setStatePending = conn.update(SET_STATE_PENDING);
+			setStateDestroyed = conn.update(SET_STATE_DESTROYED);
 		}
 
 		@Override
@@ -206,6 +210,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			getPerimeter.close();
 			issuePowerChange.close();
 			setStatePending.close();
+			setStateDestroyed.close();
 		}
 	}
 
@@ -355,7 +360,8 @@ public class AllocatorTask extends DatabaseAwareBean
 				}
 				var handled = allocate(sql, row);
 				changed |= handled;
-				log.debug("allocate for {}: {}", id, handled);
+				log.debug("allocate for {} (job {}): {}", id,
+						row.getInt("job_id"), handled);
 			}
 			/*
 			 * Those tasks which weren't allocated get their importance bumped
@@ -500,10 +506,13 @@ public class AllocatorTask extends DatabaseAwareBean
 				var copyAllocs = conn.query(copyAllocsToHistoricalData);
 				var deleteJobs = conn.update(DELETE_JOB_RECORD);
 				var deleteAllocs = conn.update(DELETE_ALLOC_RECORD)) {
+			long now = System.currentTimeMillis() / 1000;
 			var grace = historyProps.getGracePeriod();
 			var copied = conn.transaction(() -> new Copied(
-					copyJobs.call(grace).map(integer("job_id")).toList(),
-					copyAllocs.call(grace).map(integer("alloc_id")).toList()));
+					copyJobs.call(grace, now).map(
+							integer("job_id")).toList(),
+					copyAllocs.call(grace, now).map(
+							integer("alloc_id")).toList()));
 			conn.transaction(() -> {
 				copied.allocs().forEach(deleteAllocs::call);
 				copied.jobs().forEach(deleteJobs::call);
@@ -658,6 +667,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		if (nonNull(numBoards) && numBoards > 0) {
 			// Single-board case gets its own allocator that's better at that
 			if (numBoards == 1) {
+				log.debug("Allocate one board");
 				return allocateOneBoard(sql, jobId, machineId);
 			}
 			var estimate = new DimensionEstimate(numBoards, max);
@@ -740,6 +750,7 @@ public class AllocatorTask extends DatabaseAwareBean
 				return true;
 			}
 		}
+		log.debug("Could not allocate min area {}", minArea);
 		return false;
 	}
 
@@ -866,8 +877,10 @@ public class AllocatorTask extends DatabaseAwareBean
 			sql.allocBoard.call(jobId, boardId);
 		}
 
+		long now = System.currentTimeMillis() / 1000;
+		var board = boardsToAllocate.get(0);
 		sql.allocJob.call(rect.width, rect.height, rect.depth,
-				boardsToAllocate.get(0), boardsToAllocate.size(), jobId);
+				board, boardsToAllocate.size(), now, board, jobId);
 		log.debug("allocated {} boards to {}; issuing power up commands",
 				boardsToAllocate.size(), jobId);
 		// Any proxies that existed are now defunct; user must make anew
@@ -953,11 +966,13 @@ public class AllocatorTask extends DatabaseAwareBean
 
 		if (targetState == DESTROYED) {
 			log.debug("num changes for {} in destroy: {}", jobId, numPending);
-		}
-		sql.setStatePending.call(
-				targetState == DESTROYED ? DESTROYED
-						: numPending > 0 ? POWER : targetState,
+			long now = System.currentTimeMillis() / 1000;
+			sql.setStateDestroyed.call(numPending, now, jobId);
+		} else {
+		    sql.setStatePending.call(
+				numPending > 0 ? POWER : targetState,
 				numPending, jobId);
+		}
 
 		return numPending > 0;
 	}

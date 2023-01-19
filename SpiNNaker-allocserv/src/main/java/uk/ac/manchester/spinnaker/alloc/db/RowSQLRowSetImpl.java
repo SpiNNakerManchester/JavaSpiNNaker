@@ -21,6 +21,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngineJDBCImpl.columnN
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
@@ -156,7 +157,15 @@ public final class RowSQLRowSetImpl implements Row {
 	 *             If the column's contents can't be retrieved.
 	 */
 	public Integer getInteger(String columnLabel) {
-		return get(() -> (Integer) rs.getObject(columnLabel));
+		Object value = rs.getObject(columnLabel);
+		if (value instanceof Long) {
+			return Integer.valueOf(((Long) value).intValue());
+		}
+		if (value instanceof BigDecimal) {
+			return Integer.valueOf(((BigDecimal) value).intValue());
+		}
+		// Hopefully now an Integer, but if not this will fail!
+		return (Integer) value;
 	}
 
 	/**

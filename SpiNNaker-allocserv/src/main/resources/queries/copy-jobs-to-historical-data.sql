@@ -12,10 +12,7 @@
 --
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-WITH
-	t(now) AS (VALUES (CAST(strftime('%s','now') AS INTEGER)))
-INSERT OR IGNORE INTO tombstone.jobs(
+INSERT IGNORE INTO tombstone.jobs(
 	job_id, machine_id, owner, create_timestamp,
 	width, height, "depth", root_id,
 	keepalive_interval, keepalive_host,
@@ -37,6 +34,5 @@ FROM
 	JOIN groups USING (group_id)
 	JOIN machines USING (machine_id)
 	JOIN user_info ON jobs.owner = user_info.user_id
-	JOIN t
-WHERE death_timestamp + :grace_period < t.now
+WHERE death_timestamp + :grace_period < :time_now
 RETURNING job_id;

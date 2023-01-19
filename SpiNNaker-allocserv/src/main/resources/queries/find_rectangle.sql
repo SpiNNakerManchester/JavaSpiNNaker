@@ -16,28 +16,28 @@
 WITH RECURSIVE
 	-- Name the arguments for sanity
 	args(width, height, machine_id, max_dead_boards) AS (
-		VALUES (:width, :height, :machine_id, :max_dead_boards)),
+		SELECT :width, :height, :machine_id, :max_dead_boards),
 	-- Profile the machines and boards to the one we care about
 	m AS (SELECT machines.* FROM machines JOIN args USING (machine_id) LIMIT 1),
 	-- Generate sequences of right size
-	cx(x) AS (SELECT 0 UNION ALL SELECT x+1 FROM cx
-		LIMIT (SELECT width FROM args)),
-	cy(y) AS (SELECT 0 UNION ALL SELECT y+1 FROM cy
-		LIMIT (SELECT height FROM args)),
-	triad(z) AS (VALUES (0), (1), (2)),
-	gx(x) AS (SELECT 0 UNION ALL SELECT x+1 FROM gx
-		LIMIT (SELECT width FROM m)),
-	gy(y) AS (SELECT 0 UNION ALL SELECT y+1 FROM gy
-		LIMIT (SELECT height FROM m)),
+	cx(x) AS (SELECT 0 UNION ALL SELECT x+1 FROM cx, args
+		WHERE x < args.width - 1),
+	cy(y) AS (SELECT 0 UNION ALL SELECT y+1 FROM cy, args
+		WHERE y < args.height - 1),
+	triad(z) AS (SELECT 0 UNION SELECT 1 UNION SELECT 2),
+	gx(x) AS (SELECT 0 UNION ALL SELECT x+1 FROM gx, m
+		WHERE x < m.width - 1),
+	gy(y) AS (SELECT 0 UNION ALL SELECT y+1 FROM gy, m
+		WHERE y < m.height - 1),
 	-- Form the sequences into grids of points
 	c(x,y,z) AS (SELECT x, y, z FROM cx, cy, triad),
 	g(x,y) AS (SELECT x, y FROM gx, gy)
 SELECT
-	root.board_id AS id,
-	root.x AS x, root.y AS y, root.z AS z,
-	root.available AS available
+	DISTINCT(boards.board_id) AS id,
+	boards.x, boards.y, boards.z,
+	root.available AS available, boards.power_off_timestamp
 FROM args, boards, (
-	SELECT board_id, boards.x AS x, boards.y AS y, boards.z AS z,
+	SELECT min(board_id) as board_id,
 		SUM(boards.may_be_allocated) AS available
 	FROM args JOIN c JOIN g JOIN boards USING (machine_id) JOIN m
 	WHERE
@@ -45,5 +45,5 @@ FROM args, boards, (
 		AND boards.z = c.z
 	GROUP BY g.x, g.y) AS root
 WHERE available >= args.width * args.height - args.max_dead_boards
-	AND boards.board_id = id AND boards.may_be_allocated > 0
+	AND boards.board_id = root.board_id AND boards.may_be_allocated > 0
 ORDER BY power_off_timestamp ASC;

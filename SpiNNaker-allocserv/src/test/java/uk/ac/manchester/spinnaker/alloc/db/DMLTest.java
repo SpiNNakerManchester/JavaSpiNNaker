@@ -165,9 +165,10 @@ class DMLTest extends MemDBTestBase {
 	void allocateBoardsJob() {
 		assumeWritable(c);
 		try (var u = c.update(ALLOCATE_BOARDS_JOB)) {
-			assertEquals(6, u.getNumArguments());
+			assertEquals(8, u.getNumArguments());
 			c.transaction(() -> {
-				assertEquals(0, u.call(-1, -1, -1, NO_BOARD, 0, NO_JOB));
+				assertEquals(0, u.call(-1, -1, -1, NO_BOARD, 0, 0, NO_BOARD,
+						NO_JOB));
 			});
 		}
 	}
@@ -201,6 +202,17 @@ class DMLTest extends MemDBTestBase {
 			assertEquals(3, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(JobState.UNKNOWN, 0, NO_JOB));
+			});
+		}
+	}
+
+	@Test
+	void setStateDestroyed() {
+		assumeWritable(c);
+		try (var u = c.update(SET_STATE_DESTROYED)) {
+			assertEquals(3, u.getNumArguments());
+			c.transaction(() -> {
+				assertEquals(0, u.call(0, 0, NO_JOB));
 			});
 		}
 	}
@@ -264,12 +276,23 @@ class DMLTest extends MemDBTestBase {
 	}
 
 	@Test
-	void setBoardPower() {
+	void setBoardPowerOn() {
 		assumeWritable(c);
-		try (var u = c.update(SET_BOARD_POWER)) {
+		try (var u = c.update(SET_BOARD_POWER_ON)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
-				assertEquals(0, u.call(false, NO_BOARD));
+				assertEquals(0, u.call(0, NO_BOARD));
+			});
+		}
+	}
+
+	@Test
+	void setBoardPowerOff() {
+		assumeWritable(c);
+		try (var u = c.update(SET_BOARD_POWER_OFF)) {
+			assertEquals(2, u.getNumArguments());
+			c.transaction(() -> {
+				assertEquals(0, u.call(0, NO_BOARD));
 			});
 		}
 	}
@@ -649,10 +672,10 @@ class DMLTest extends MemDBTestBase {
 	void insertBoardReport() {
 		assumeWritable(c);
 		try (var u = c.update(INSERT_BOARD_REPORT)) {
-			assertEquals(4, u.getNumArguments());
+			assertEquals(5, u.getNumArguments());
 			c.transaction(() -> {
 				assertThrowsFK(
-						() -> u.call(NO_BOARD, NO_JOB, NO_NAME, NO_USER));
+						() -> u.call(NO_BOARD, NO_JOB, NO_NAME, NO_USER, 0));
 			});
 		}
 	}
@@ -684,10 +707,10 @@ class DMLTest extends MemDBTestBase {
 		assumeWritable(c);
 		assumeTrue(c.isHistoricalDBAvailable());
 		try (var q = c.query(copyAllocsToHistoricalData)) {
-			assertEquals(1, q.getNumArguments());
+			assertEquals(2, q.getNumArguments());
 			assertEquals(Set.of("alloc_id"), q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1(A_LONG_TIME).isPresent());
+				assertFalse(q.call1(A_LONG_TIME, 0).isPresent());
 			});
 		}
 	}
@@ -697,10 +720,10 @@ class DMLTest extends MemDBTestBase {
 		assumeWritable(c);
 		assumeTrue(c.isHistoricalDBAvailable());
 		try (var q = c.query(copyJobsToHistoricalData)) {
-			assertEquals(1, q.getNumArguments());
+			assertEquals(2, q.getNumArguments());
 			assertEquals(Set.of("job_id"), q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1(A_LONG_TIME).isPresent());
+				assertFalse(q.call1(A_LONG_TIME, 0).isPresent());
 			});
 		}
 	}

@@ -608,11 +608,11 @@ public class BMPController extends DatabaseAwareBean {
 		private boolean done(AfterSQL sql) {
 			int turnedOn = powerOnBoards.values().stream()
 					.flatMap(Collection::stream)
-					.mapToInt(board -> sql.setBoardState(true, board)).sum();
+					.mapToInt(board -> sql.setBoardPowerOn(board)).sum();
 			int jobChange = sql.setJobState(to, 0, jobId);
 			int turnedOff = powerOffBoards.values().stream()
 					.flatMap(Collection::stream)
-					.mapToInt(board -> sql.setBoardState(false, board)).sum();
+					.mapToInt(board -> sql.setBoardPowerOff(board)).sum();
 			int deallocated = 0;
 			if (to == DESTROYED) {
 				/*
@@ -1100,7 +1100,8 @@ public class BMPController extends DatabaseAwareBean {
 				var requestCollector = new ArrayList<Request>();
 				// The outer loop is always over a small set, fortunately
 				for (var machine : machines) {
-					sql.getJobIdsWithChanges.call(machine.getId())
+					long now = System.currentTimeMillis() / 1000;
+					sql.getJobIdsWithChanges.call(machine.getId(), now)
 							.map(integer("job_id"))
 							.filter(jobId -> !busyJobs.contains(jobId))
 							.forEach(jobId -> takeRequestsForJob(machine, jobId,
@@ -1178,9 +1179,13 @@ public class BMPController extends DatabaseAwareBean {
 	 * {@code processAfterChange()}.
 	 */
 	private final class AfterSQL extends AbstractSQL {
-		private final Update setBoardState;
+		private final Update setBoardPowerOn;
+
+		private final Update setBoardPowerOff;
 
 		private final Update setJobState;
+
+		private final Update setJobDestroyed;
 
 		private final Update setInProgress;
 
@@ -1210,8 +1215,10 @@ public class BMPController extends DatabaseAwareBean {
 
 		AfterSQL(Connection conn) {
 			super(conn);
-			setBoardState = conn.update(SET_BOARD_POWER);
+			setBoardPowerOn = conn.update(SET_BOARD_POWER_ON);
+			setBoardPowerOff = conn.update(SET_BOARD_POWER_OFF);
 			setJobState = conn.update(SET_STATE_PENDING);
+			setJobDestroyed = conn.update(SET_STATE_DESTROYED);
 			setInProgress = conn.update(SET_IN_PROGRESS);
 			deallocateBoards = conn.update(DEALLOCATE_BOARDS_JOB);
 			deleteChange = conn.update(FINISHED_PENDING);
@@ -1243,17 +1250,29 @@ public class BMPController extends DatabaseAwareBean {
 			deallocateBoards.close();
 			setInProgress.close();
 			setJobState.close();
-			setBoardState.close();
+			setJobDestroyed.close();
+			setBoardPowerOn.close();
+			setBoardPowerOff.close();
 			super.close();
 		}
 
 		// What follows are type-safe wrappers
 
-		int setBoardState(boolean state, Integer boardId) {
-			return setBoardState.call(state, boardId);
+		int setBoardPowerOn(Integer boardId) {
+			long now = System.currentTimeMillis() / 1000;
+			return setBoardPowerOn.call(now, boardId);
+		}
+
+		int setBoardPowerOff(Integer boardId) {
+			long now = System.currentTimeMillis() / 1000;
+			return setBoardPowerOff.call(now, boardId);
 		}
 
 		int setJobState(JobState state, int pending, Integer jobId) {
+			if (state == JobState.DESTROYED) {
+				long now = System.currentTimeMillis() / 1000;
+				return setJobDestroyed.call(pending, now, jobId);
+			}
 			return setJobState.call(state, pending, jobId);
 		}
 
@@ -1297,7 +1316,8 @@ public class BMPController extends DatabaseAwareBean {
 
 		int insertBoardReport(
 				int boardId, Integer jobId, String issue, int userId) {
-			return insertBoardReport.key(boardId, jobId, issue, userId)
+			long now = System.currentTimeMillis() / 1000;
+			return insertBoardReport.key(boardId, jobId, issue, userId, now)
 					.orElseThrow();
 		}
 

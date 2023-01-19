@@ -291,13 +291,12 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		@Override
 		public Optional<Row> call1(Object... arguments) {
 			List<Object> resolved = resolveArguments(arguments);
-			return jdbcTemplate.query(sql, (ResultSet rs) -> {
-				if (rs.next()) {
-					return Optional.of(new RowResultSetImpl(rs));
-				} else {
-					return Optional.empty();
-				}
-			}, resolved);
+			SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, resolved.toArray());
+			if (rs.next()) {
+				return Optional.of(new RowSQLRowSetImpl(rs, sql));
+			} else {
+				return Optional.empty();
+			}
 		}
 
 		@Override

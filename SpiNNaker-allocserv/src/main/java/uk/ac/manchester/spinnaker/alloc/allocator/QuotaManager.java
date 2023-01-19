@@ -132,7 +132,7 @@ public class QuotaManager extends DatabaseAwareBean {
 		private boolean mayLetJobContinue(int jobId) {
 			return getUsageAndQuota.call1(jobId)
 					// If we have an entry, check if usage <= quota
-					.map(row -> row.getInt("usage") <= row.getInt("quota"))
+					.map(row -> row.getInt("quota_used") <= row.getInt("quota"))
 					// Otherwise, we'll just allow it
 					.orElse(true);
 		}
@@ -246,7 +246,7 @@ public class QuotaManager extends DatabaseAwareBean {
 		// Result is arbitrary and ignored
 		private Void consolidate() {
 			for (var row : getConsoldationTargets.call()) {
-				decrementQuota.call(row.getObject("usage"),
+				decrementQuota.call(row.getObject("quota_used"),
 						row.getInt("group_id"));
 				markConsolidated.call(row.getInt("job_id"));
 			}

@@ -856,7 +856,7 @@ class DQLTest extends MemDBTestBase {
 	void getJobUsageAndQuota() {
 		try (var q = c.query(GET_JOB_USAGE_AND_QUOTA)) {
 			assertEquals(1, q.getNumArguments());
-			assertEquals(Set.of("quota", "usage"), q.getRowColumnNames());
+			assertEquals(Set.of("quota", "quota_used"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_JOB).isPresent());
 			});
@@ -867,7 +867,7 @@ class DQLTest extends MemDBTestBase {
 	void getConsolidationTargets() {
 		try (var q = c.query(GET_CONSOLIDATION_TARGETS)) {
 			assertEquals(0, q.getNumArguments());
-			assertEquals(Set.of("job_id", "group_id", "usage"),
+			assertEquals(Set.of("job_id", "group_id", "quota_used"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				// Empty DB has no consolidation targets

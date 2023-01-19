@@ -111,7 +111,7 @@ public abstract class SQLQueries {
 	@ResultColumn("num_jobs")
 	@SingleRowResult
 	protected static final String COUNT_MACHINE_THINGS =
-			"WITH args(m) AS (VALUES (:machine_id)), "
+			"WITH args(m) AS (SELECT :machine_id), "
 					+ "b AS (SELECT * from boards,args WHERE machine_id = m), "
 					+ "bc AS (SELECT COUNT(*) AS c FROM b), "
 					+ "iu AS (SELECT COUNT(*) AS c FROM b "
@@ -245,7 +245,7 @@ public abstract class SQLQueries {
 			+ "original_request, keepalive_timestamp, create_timestamp, "
 			+ "job_state) "
 			+ "VALUES(:machine_id, :user_id, :group_id, :keepalive_interval, "
-			+ ":original_request, :keepalive_timestamp, :create_timestamp), "
+			+ ":original_request, :keepalive_timestamp, :create_timestamp, "
 		    + /* QUEUED */ "1)";
 
 	/** Create a request to allocate a number of boards. */
@@ -369,7 +369,7 @@ public abstract class SQLQueries {
 					+ "boards.address FROM boards JOIN bmp USING (bmp_id) "
 					+ "WHERE boards.machine_id = :machine_id "
 					+ "AND board_num IS NOT NULL "
-					+ "AND functioning IS 1 ORDER BY z ASC, x ASC, y ASC";
+					+ "AND functioning = 1 ORDER BY z ASC, x ASC, y ASC";
 
 	/**
 	 * Get the boards (and related info) of a machine that have been disabled.
@@ -387,7 +387,7 @@ public abstract class SQLQueries {
 			"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, "
 					+ "boards.address FROM boards JOIN bmp USING (bmp_id) "
 					+ "WHERE boards.machine_id = :machine_id "
-					+ "AND (board_num IS NULL OR functioning IS 0) "
+					+ "AND (board_num IS NULL OR functioning = 0) "
 					+ "ORDER BY z ASC, x ASC, y ASC";
 
 	/**
@@ -568,7 +568,8 @@ public abstract class SQLQueries {
 					+ "user_name AS reporter_name "
 					+ "FROM board_reports JOIN user_info ON reporter = user_id "
 					+ "JOIN boards USING (board_id) "
-					+ "WHERE machine_id = :machine_id GROUP BY board_id";
+					+ "WHERE machine_id = :machine_id "
+					+ "ORDER BY board_id";
 
 	/**
 	 * Get the problem reports about a board.
@@ -614,11 +615,15 @@ public abstract class SQLQueries {
 	@Parameter("depth")
 	@Parameter("board_id")
 	@Parameter("num_boards")
+	@Parameter("time_now")
+	@Parameter("allocated_board_id")
 	@Parameter("job_id")
 	protected static final String ALLOCATE_BOARDS_JOB = "UPDATE jobs SET "
 			+ "width = :width, height = :height, depth = :depth, "
 			+ "num_pending = 0, root_id = :board_id, "
-			+ "allocation_size = :num_boards WHERE job_id = :job_id";
+			+ "allocation_size = :num_boards, allocation_timestamp = :time_now,"
+			+ "allocated_root = :allocated_board_id "
+			+ "WHERE job_id = :job_id";
 
 	/** Get a board's ID by its coordinates. */
 	@Parameter("machine_id")
@@ -657,10 +662,23 @@ public abstract class SQLQueries {
 	 * Set the power state of a board. Related timestamps are updated by
 	 * trigger.
 	 */
-	@Parameter("board_power")
+	@Parameter("time_now")
 	@Parameter("board_id")
-	protected static final String SET_BOARD_POWER =
-			"UPDATE boards SET board_power = :board_power "
+	protected static final String SET_BOARD_POWER_ON =
+			"UPDATE boards SET board_power = 1, "
+	                + "power_on_timestamp = :time_now "
+					+ "WHERE board_id = :board_id";
+
+	/**
+	 * Set the power state of a board. Related timestamps are updated by
+	 * trigger.
+	 */
+	@Parameter("board_power")
+	@Parameter("time_now")
+	@Parameter("board_id")
+	protected static final String SET_BOARD_POWER_OFF =
+			"UPDATE boards SET board_power = 0, "
+					+ "power_off_timestamp = :time_now "
 					+ "WHERE board_id = :board_id";
 
 	/**
@@ -686,6 +704,19 @@ public abstract class SQLQueries {
 	protected static final String SET_STATE_PENDING =
 			"UPDATE jobs SET job_state = :job_state, "
 					+ "num_pending = :num_pending WHERE job_id = :job_id";
+
+	/**
+	 * Set the state destroyed and number of pending changes for a job.
+	 *
+	 * @see AllocatorTask
+	 */
+	@Parameter("num_pending")
+	@Parameter("time_now")
+	@Parameter("job_id")
+	protected static final String SET_STATE_DESTROYED =
+			"UPDATE jobs SET job_state = 4, "
+					+ "num_pending = :num_pending, "
+					+ "death_timestamp = :time_now WHERE job_id = :job_id";
 
 	/** Delete a request to allocate resources for a job. */
 	@Parameter("job_id")
@@ -816,7 +847,7 @@ public abstract class SQLQueries {
 	@Parameter("live")
 	@GeneratesID
 	protected static final String INSERT_LINK =
-			"INSERT OR IGNORE INTO links(board_1, dir_1, board_2, dir_2, live) "
+			"INSERT IGNORE INTO links(board_1, dir_1, board_2, dir_2, live) "
 					+ "VALUES (:board_1, :dir_1, :board_2, :dir_2, :live)";
 
 	/**
@@ -1021,11 +1052,10 @@ public abstract class SQLQueries {
 	@ResultColumn("quota_total")
 	@ResultColumn("user_id")
 	@SingleRowResult
-	protected static final String GET_USER_QUOTA = "SELECT * FROM ("
-			+ "SELECT SUM(quota) AS quota_total, quotas.user_id FROM quotas "
+	protected static final String GET_USER_QUOTA =
+			"SELECT SUM(quota) AS quota_total, quotas.user_id FROM quotas "
 			+ "JOIN user_info USING (user_id) "
-			+ "WHERE user_info.user_name = :user_name"
-			+ ") WHERE user_id IS NOT NULL";
+			+ "WHERE user_info.user_name = :user_name AND user_id IS NOT NULL";
 
 	/**
 	 * Get the quota for a group.
@@ -1047,7 +1077,7 @@ public abstract class SQLQueries {
 	@ResultColumn("current_usage")
 	@SingleRowResult
 	protected static final String GET_CURRENT_USAGE =
-			"SELECT SUM(usage) AS current_usage FROM jobs_usage "
+			"SELECT SUM(quota_used) AS current_usage FROM jobs_usage "
 					+ "WHERE group_id = :group_id";
 
 	/**
@@ -1056,12 +1086,12 @@ public abstract class SQLQueries {
 	 * @see QuotaManager
 	 */
 	@Parameter("job_id")
-	@ResultColumn("usage")
+	@ResultColumn("quota_used")
 	@ResultColumn("quota")
 	@SingleRowResult
 	protected static final String GET_JOB_USAGE_AND_QUOTA =
-			"SELECT [usage], quota FROM jobs_usage "
-					+ "WHERE :job_id = :job_id AND [usage] IS NOT NULL "
+			"SELECT quota_used, quota FROM jobs_usage "
+					+ "WHERE job_id = :job_id AND quota_used IS NOT NULL "
 					+ "AND quota IS NOT NULL LIMIT 1";
 
 	/**
@@ -1072,9 +1102,9 @@ public abstract class SQLQueries {
 	 */
 	@ResultColumn("job_id")
 	@ResultColumn("group_id")
-	@ResultColumn("usage")
+	@ResultColumn("quota_used")
 	protected static final String GET_CONSOLIDATION_TARGETS =
-			"SELECT job_id, group_id, [usage] FROM jobs_usage "
+			"SELECT job_id, group_id, quota_used FROM jobs_usage "
 					+ "WHERE complete AND quota IS NOT NULL";
 
 	/**
@@ -1317,7 +1347,7 @@ public abstract class SQLQueries {
 	@Parameter("quota")
 	@Parameter("group_type")
 	protected static final String CREATE_GROUP_IF_NOT_EXISTS =
-			"INSERT OR IGNORE INTO user_groups(group_name, quota, group_type) "
+			"INSERT IGNORE INTO user_groups(group_name, quota, group_type) "
 					+ "VALUES(:group_name, :quota, :group_type)";
 
 	/**
@@ -1382,7 +1412,7 @@ public abstract class SQLQueries {
 	 * @see LocalAuthProviderImpl
 	 */
 	protected static final String GROUP_SYNC_MAKE_TEMP_TABLE =
-			"CREATE TEMP TABLE IF NOT EXISTS usergroupids(group_id INTEGER)";
+			"CREATE TEMPORARY TABLE usergroupids(group_id INTEGER)";
 
 	/**
 	 * Step 2 of group synchronisation: add a desired group to the temp table.
@@ -1395,7 +1425,7 @@ public abstract class SQLQueries {
 	@Parameter("group_name")
 	@Parameter("group_type")
 	protected static final String GROUP_SYNC_INSERT_TEMP_ROW =
-			"INSERT INTO temp.usergroupids SELECT group_id FROM user_groups "
+			"INSERT INTO usergroupids SELECT group_id FROM user_groups "
 					+ "WHERE group_name = :group_name "
 					+ "AND group_type = :group_type";
 
@@ -1410,9 +1440,9 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("user_id")
 	protected static final String GROUP_SYNC_ADD_GROUPS =
-			"INSERT OR IGNORE INTO group_memberships(user_id, group_id) "
+			"INSERT IGNORE INTO group_memberships(user_id, group_id) "
 					+ "SELECT :user_id AS user_id, "
-					+ "group_id FROM temp.usergroupids";
+					+ "group_id FROM usergroupids";
 
 	/**
 	 * Step 4 of group synchronisation: remove real groups no longer wanted.
@@ -1427,7 +1457,7 @@ public abstract class SQLQueries {
 	protected static final String GROUP_SYNC_REMOVE_GROUPS =
 			"DELETE FROM group_memberships "
 					+ "WHERE user_id = :user_id AND group_id NOT IN ("
-					+ "SELECT group_id FROM temp.usergroupids)";
+					+ "SELECT group_id FROM usergroupids)";
 
 	/**
 	 * Step 5 of group synchronisation: drop the temporary table. Except we
@@ -1440,7 +1470,7 @@ public abstract class SQLQueries {
 	 * @see LocalAuthProviderImpl
 	 */
 	protected static final String GROUP_SYNC_DROP_TEMP_TABLE =
-			"DELETE FROM temp.usergroupids";
+			"DROP TEMPORARY TABLE usergroupids";
 
 	/**
 	 * Test if a user account is locked or disabled.
@@ -1627,7 +1657,7 @@ public abstract class SQLQueries {
 	@Parameter("openid_subject")
 	@GeneratesID
 	protected static final String CREATE_USER =
-			"INSERT OR IGNORE INTO user_info(user_name, encrypted_password, "
+			"INSERT IGNORE INTO user_info(user_name, encrypted_password, "
 					+ "trust_level, disabled, openid_subject) "
 					+ "VALUES(:user_name, :encoded_password, :trust_level, "
 					+ ":disabled, :openid_subject)";
@@ -1697,11 +1727,13 @@ public abstract class SQLQueries {
 	@Parameter("job_id")
 	@Parameter("issue")
 	@Parameter("user_id")
+	@Parameter("time_now")
 	@GeneratesID
 	protected static final String INSERT_BOARD_REPORT =
 			"INSERT INTO board_reports("
-					+ "board_id, job_id, reported_issue, reporter) "
-					+ "VALUES(:board_id, :job_id, :issue, :user_id)";
+					+ "board_id, job_id, reported_issue, reporter, "
+					+ "report_timestamp) "
+					+ "VALUES(:board_id, :job_id, :issue, :user_id, :time_now)";
 
 	/**
 	 * Actually delete a job record. Only called by the data tombstone-r. This
@@ -1824,7 +1856,7 @@ public abstract class SQLQueries {
 	@Parameter("x")
 	@Parameter("y")
 	protected static final String ADD_BLACKLISTED_CHIP =
-			"WITH args(board_id, x, y) AS (VALUES(:board_id, :x, :y)),"
+			"WITH args(board_id, x, y) AS (SELECT :board_id, :x, :y),"
 					+ "m(model) AS (SELECT board_model FROM machines "
 					+ "JOIN boards USING (machine_id) "
 					+ "JOIN args USING (board_id)) "
@@ -1845,7 +1877,7 @@ public abstract class SQLQueries {
 	@Parameter("y")
 	@Parameter("p")
 	protected static final String ADD_BLACKLISTED_CORE =
-			"WITH args(board_id, x, y, p) AS (VALUES(:board_id, :x, :y, :p)),"
+			"WITH args(board_id, x, y, p) AS (SELECT :board_id, :x, :y, :p),"
 					+ "m(model) AS (SELECT board_model FROM machines "
 					+ "JOIN boards USING (machine_id) "
 					+ "JOIN args USING (board_id)) "
@@ -1868,7 +1900,7 @@ public abstract class SQLQueries {
 	@Parameter("direction")
 	protected static final String ADD_BLACKLISTED_LINK =
 			"WITH args(board_id, x, y, dir) AS ("
-					+ "VALUES(:board_id, :x, :y, :direction)),"
+					+ "SELECT :board_id, :x, :y, :direction),"
 					+ "m(model) AS (SELECT board_model FROM machines "
 					+ "JOIN boards USING (machine_id) "
 					+ "JOIN args USING (board_id)) "
@@ -1980,9 +2012,9 @@ public abstract class SQLQueries {
 			"INSERT INTO board_serial("
 					+ "board_id, bmp_serial_id, physical_serial_id) "
 					+ "VALUES(:board_id, :bmp_serial_id, :physical_serial_id) "
-					+ "ON CONFLICT DO UPDATE SET "
-					+ "bmp_serial_id = excluded.bmp_serial_id, "
-					+ "physical_serial_id = excluded.physical_serial_id";
+					+ "ON DUPLICATE KEY UPDATE "
+					+ "bmp_serial_id = VALUES(bmp_serial_id), "
+					+ "physical_serial_id = VALUES(physical_serial_id)";
 
 	/**
 	 * Mark a read of a blacklist as completed.
@@ -2340,6 +2372,7 @@ public abstract class SQLQueries {
 	 * of how long after switching a board on or off is applied.)
 	 */
 	@Parameter("machine_id")
+	@Parameter("time_now")
 	@ResultColumn("job_id")
 	@Value("classpath:queries/get_jobs_with_changes.sql")
 	protected Resource getJobsWithChanges;
@@ -2422,6 +2455,7 @@ public abstract class SQLQueries {
 	 * @see AllocatorTask#tombstone()
 	 */
 	@Parameter("grace_period")
+	@Parameter("time_now")
 	@ResultColumn("job_id")
 	@Value("classpath:queries/copy-jobs-to-historical-data.sql")
 	protected Resource copyJobsToHistoricalData;
@@ -2434,6 +2468,7 @@ public abstract class SQLQueries {
 	 * @see AllocatorTask#tombstone()
 	 */
 	@Parameter("grace_period")
+	@Parameter("time_now")
 	@ResultColumn("alloc_id")
 	@Value("classpath:queries/copy-allocs-to-historical-data.sql")
 	protected Resource copyAllocsToHistoricalData;
