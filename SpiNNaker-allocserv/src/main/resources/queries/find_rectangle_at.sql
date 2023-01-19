@@ -37,7 +37,7 @@ WITH RECURSIVE
 	-- NB: Can't use board ID safely as we are using a GROUP BY
 	root(x,y,z,available) AS (
 		SELECT g.x AS x, g.y AS y, 0 AS z,
-			SUM(boards.may_be_allocated) AS available
+			SUM(bs.may_be_allocated) AS available
 		FROM args
 			JOIN c
 			JOIN g

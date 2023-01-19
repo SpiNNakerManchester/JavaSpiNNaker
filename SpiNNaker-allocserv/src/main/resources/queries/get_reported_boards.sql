@@ -17,7 +17,7 @@
 WITH report_counts AS (
 	SELECT
 		board_reports.board_id,
-		COUNT(board_report.report_id) AS num_reports
+		COUNT(board_reports.report_id) AS num_reports
 	FROM board_reports
 	JOIN boards USING (board_id)
 	WHERE boards.functioning IS NOT 0 -- Ignore disabled boards
