@@ -569,7 +569,7 @@ public abstract class SQLQueries {
 					+ "FROM board_reports JOIN user_info ON reporter = user_id "
 					+ "JOIN boards USING (board_id) "
 					+ "WHERE machine_id = :machine_id "
-					+ "ORDER BY board_id";
+					+ "ORDER BY board_id, report_id";
 
 	/**
 	 * Get the problem reports about a board.
