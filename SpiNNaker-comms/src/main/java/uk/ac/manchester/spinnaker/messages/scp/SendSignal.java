@@ -38,10 +38,10 @@ public class SendSignal extends SCPRequest<CheckOKResponse> {
 	 */
 	public SendSignal(AppID appID, Signal signal) {
 		super(BOOT_MONITOR_CORE, CMD_SIG, signal.type.value,
-				argument2(appID, signal), ALL_CORE_SIGNAL_MASK);
+				data(appID, signal), ALL_CORE_SIGNAL_MASK);
 	}
 
-	private static int argument2(AppID appID, Signal signal) {
+	private static int data(AppID appID, Signal signal) {
 		return (signal.value << BYTE2) | (APP_MASK << BYTE1)
 				| (appID.appID << BYTE0);
 	}
