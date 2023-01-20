@@ -1260,12 +1260,12 @@ public abstract class SQLQueries {
 	@ResultColumn("group_id")
 	@ResultColumn("quota")
 	protected static final String GET_GROUPS_AND_QUOTAS_OF_USER =
-			"SELECT user_groups.group_id, COALESCE(user_groups.quota, 1) "
-	                + "AS quota "
+			"SELECT user_groups.group_id, user_groups.quota "
 					+ "FROM group_memberships "
 					+ "JOIN user_info USING (user_id) "
 					+ "JOIN user_groups USING (group_id) "
-					+ "WHERE user_name = :user_name AND quota > 0 "
+					+ "WHERE user_name = :user_name "
+					+ "AND (quota > 0 OR quota IS NULL)"
 					+ "ORDER BY user_groups.quota DESC";
 
 	/**
