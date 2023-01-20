@@ -75,8 +75,13 @@ cxf:
 spalloc:
   # Where we hold files that we write to
   working-directory: "."
-  # Where's the database?
+  # Where's the (SQLite) database?
   database-path: ${spalloc.working-directory}/spalloc.sqlite3
+  # Where is the (JDBC) datasource?
+  datasource:
+      uri: jdbc:mysql://localhost:3306/spalloc
+      username: REPLACE_ME
+      password: REPLACE_ME
   # How long should long calls take before returning anyway?
   wait: 30s
   # Whether to pause ALL periodic callbacks; probably only useful for debugging
@@ -272,6 +277,6 @@ spring:
             issuer-uri: ${spalloc.auth.openid.domain}
             user-name-attribute: preferred_username
   datasource:
-    url: jdbc:mysql://localhost:3306/spalloc
-    username: spalloc
-    password: spalloc
+    url: ${spalloc.datasource.uri}
+    username: ${spalloc.datasource.username}
+    password: ${spalloc.datasource.password}
