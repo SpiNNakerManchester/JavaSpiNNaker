@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":9,"i2":10,"i3":9};
+<script type="text/javascript">var data = {"i0":10,"i1":9,"i2":10,"i3":9,"i4":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -179,6 +179,13 @@ boolean&nbsp;doCd)</code></th>
 <div class="block">Main entry point.</div>
 </td>
 </tr>
+<tr class="altColor" id="i4">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#validate(uk.ac.manchester.spinnaker.py2json.Configuration)">validate</a></span>&#8203;(<a href="Configuration.html" title="class in uk.ac.manchester.spinnaker.py2json">Configuration</a>&nbsp;config)</code></th>
+<td class="colLast">
+<div class="block">Validate a configuration, writing failures to <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/System.html?is-external=true#err" title="class or interface in java.lang" class="externalLink"><code>System.err</code></a>.</div>
+</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -245,6 +252,17 @@ boolean&nbsp;doCd)</span></div>
             duration. Some scripts (especially test cases) need this.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The converted configuration.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="validate(uk.ac.manchester.spinnaker.py2json.Configuration)">validate</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">validate</span>&#8203;(<span class="arguments"><a href="Configuration.html" title="class in uk.ac.manchester.spinnaker.py2json">Configuration</a>&nbsp;config)</span></div>
+<div class="block">Validate a configuration, writing failures to <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/System.html?is-external=true#err" title="class or interface in java.lang" class="externalLink"><code>System.err</code></a>.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>config</code> - The configuration to validate.</dd>
 </dl>
 </section>
 </li>
