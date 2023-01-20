@@ -41,7 +41,7 @@ import javax.validation.Payload;
 @Documented
 @Retention(RUNTIME)
 @Target({ METHOD, FIELD, PARAMETER, TYPE_USE })
-@Constraint(validatedBy = TCPPortValidator.class)
+@Constraint(validatedBy = TCPPort.Validator.class)
 public @interface TCPPort {
 	/** The minimum ordinary TCP port number. */
 	int MIN_TCP_PORT = 1024;
@@ -92,32 +92,36 @@ public @interface TCPPort {
 	 * @return Payloads, if any.
 	 */
 	Class<? extends Payload>[] payload() default {};
-}
 
-class TCPPortValidator implements ConstraintValidator<TCPPort, Integer> {
-	private static final int MAX_STD_PORT = 32767;
+	/**
+	 * Validator for {@link TCPPort} constraints. Not intended for direct use.
+	 */
+	class Validator implements ConstraintValidator<TCPPort, Integer> {
+		private static final int MAX_STD_PORT = 32767;
 
-	private boolean acceptZero;
+		private boolean acceptZero;
 
-	private int min;
+		private int min;
 
-	private int max;
+		private int max;
 
-	@Override
-	public void initialize(TCPPort annotation) {
-		acceptZero = annotation.any();
-		min = annotation.system() ? 1 : TCPPort.MIN_TCP_PORT;
-		max = annotation.ephemeral() ? TCPPort.MAX_TCP_PORT : MAX_STD_PORT;
-	}
-
-	@Override
-	public boolean isValid(Integer value, ConstraintValidatorContext context) {
-		if (isNull(value)) {
-			return true;
+		@Override
+		public void initialize(TCPPort annotation) {
+			acceptZero = annotation.any();
+			min = annotation.system() ? 1 : TCPPort.MIN_TCP_PORT;
+			max = annotation.ephemeral() ? TCPPort.MAX_TCP_PORT : MAX_STD_PORT;
 		}
-		if (value == 0) {
-			return acceptZero;
+
+		@Override
+		public boolean isValid(Integer value,
+				ConstraintValidatorContext context) {
+			if (isNull(value)) {
+				return true;
+			}
+			if (value == 0) {
+				return acceptZero;
+			}
+			return (value >= min) && (value <= max);
 		}
-		return (value >= min) && (value <= max);
 	}
 }
