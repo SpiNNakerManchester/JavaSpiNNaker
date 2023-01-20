@@ -22,8 +22,6 @@ import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.security.oauth2.core.oidc.IdTokenClaimNames.SUB;
 import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.PREFERRED_USERNAME;
-import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
-import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.COLLABRATORY;
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.INTERNAL;
@@ -499,7 +497,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 		private final Update loginSuccess = conn.update(MARK_LOGIN_SUCCESS);
 
-		private final Query loginFailure = conn.query(MARK_LOGIN_FAILURE);
+		private final Update loginFailure = conn.update(MARK_LOGIN_FAILURE);
 
 		private final Update createUser = conn.update(CREATE_USER);
 
@@ -630,11 +628,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 */
 		void noteLoginFailureForUser(int userId, String username) {
 			long now = System.currentTimeMillis() / 1000;
-			if (loginFailure.call1(now, authProps.getMaxLoginFailures(), userId)
-					.map(bool("locked")).orElse(false)) {
-				log.warn("automatically locking user {} for {}", username,
-						authProps.getAccountLockDuration());
-			}
+			loginFailure.call(now, authProps.getMaxLoginFailures(), userId);
 		}
 
 		void unlock() {

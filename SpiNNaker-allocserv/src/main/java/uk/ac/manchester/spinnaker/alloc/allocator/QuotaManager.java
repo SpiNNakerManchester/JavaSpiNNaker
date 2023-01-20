@@ -183,7 +183,9 @@ public class QuotaManager extends DatabaseAwareBean {
 	}
 
 	private class AdjustQuotaSQL extends AbstractSQL {
-		private final Query adjustQuota = conn.query(ADJUST_QUOTA);
+		private final Update adjustQuota = conn.update(ADJUST_QUOTA);
+
+		private final Query getQuota = conn.query(GET_GROUP_QUOTA);
 
 		@Override
 		public void close() {
@@ -192,7 +194,10 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 
 		private Optional<Row> adjustQuota(int groupId, int delta) {
-			return adjustQuota.call1(delta, groupId);
+			if (adjustQuota.call(delta, groupId) == 0) {
+				return Optional.empty();
+			}
+			return getQuota.call1(groupId);
 		}
 	}
 

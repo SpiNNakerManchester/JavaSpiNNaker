@@ -21,7 +21,6 @@ import static java.util.Objects.nonNull;
 import static java.util.function.Function.identity;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
-import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 
 import java.net.URI;
 import java.security.Principal;
@@ -215,9 +214,9 @@ public class UserControl extends DatabaseAwareBean {
 
 		private final Update insertGroup = conn.update(CREATE_GROUP);
 
-		private final Query updateGroup = conn.query(UPDATE_GROUP);
+		private final Update updateGroup = conn.update(UPDATE_GROUP);
 
-		private final Query deleteGroup = conn.query(DELETE_GROUP);
+		private final Update deleteGroup = conn.update(DELETE_GROUP);
 
 		@Override
 		public void close() {
@@ -254,11 +253,18 @@ public class UserControl extends DatabaseAwareBean {
 
 		public Optional<Row> updateGroup(int id, String name,
 				Optional<Long> quota) {
-			return updateGroup.call1(name, quota.orElse(null), id);
+			if (updateGroup.call(name, quota.orElse(null), id) == 0) {
+				return Optional.empty();
+			}
+			return getGroupId(id);
 		}
 
-		Optional<Row> deleteGroup(int id) {
-			return deleteGroup.call1(id);
+		Optional<String> deleteGroup(int id) {
+			return getGroupId.call1(id).map(row -> {
+				// Order matters! Get the name before the delete
+				var groupName = row.getString("group_name");
+				return deleteGroup.call(id) == 1 ? groupName : null;
+			});
 		}
 
 		Function<GroupRecord, GroupRecord>
@@ -812,7 +818,7 @@ public class UserControl extends DatabaseAwareBean {
 	public Optional<String> deleteGroup(int groupId) {
 		try (var sql = new GroupsSQL()) {
 			return sql.transaction(
-					() -> sql.deleteGroup(groupId).map(string("group_name")));
+					() -> sql.deleteGroup(groupId));
 		}
 	}
 

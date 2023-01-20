@@ -1139,8 +1139,7 @@ public abstract class SQLQueries {
 	@ResultColumn("quota")
 	protected static final String ADJUST_QUOTA =
 			"UPDATE user_groups SET quota = max(0, quota + :delta) "
-					+ "WHERE group_id = :group_id AND quota IS NOT NULL "
-					+ "RETURNING group_name, quota";
+					+ "WHERE group_id = :group_id AND quota IS NOT NULL";
 
 	/**
 	 * Get details about a user. This is pretty much everything except their
@@ -1359,9 +1358,7 @@ public abstract class SQLQueries {
 	@ResultColumn("group_name")
 	@SingleRowResult
 	protected static final String DELETE_GROUP =
-			"DELETE FROM user_groups WHERE group_id = :group_id "
-					// + "LIMIT 1 " // Not supported in Xerial driver build
-					+ "RETURNING group_name";
+			"DELETE FROM user_groups WHERE group_id = :group_id ";
 
 	/**
 	 * Update a single group record's name and quota.
@@ -1371,16 +1368,10 @@ public abstract class SQLQueries {
 	@Parameter("group_name")
 	@Parameter("quota")
 	@Parameter("group_id")
-	@ResultColumn("group_id")
-	@ResultColumn("group_name")
-	@ResultColumn("quota")
-	@ResultColumn("group_type")
 	@SingleRowResult
 	protected static final String UPDATE_GROUP = "UPDATE user_groups SET "
 			+ "group_name = COALESCE(:group_name, group_name), "
-			+ "quota = :quota WHERE group_id = :group_id "
-			// + "LIMIT 1 " // Not supported in Xerial driver build
-			+ "RETURNING group_id, group_name, quota, group_type";
+			+ "quota = :quota WHERE group_id = :group_id ";
 
 	/**
 	 * Adds a user to a group.
@@ -1527,7 +1518,7 @@ public abstract class SQLQueries {
 					+ "last_fail_timestamp = "
 					+ ":login_timestamp, "
 					+ "locked = (failure_count + 1 >= :failure_limit) "
-					+ "WHERE user_id = :user_id RETURNING locked";
+					+ "WHERE user_id = :user_id";
 
 	/**
 	 * Unlock accounts.
