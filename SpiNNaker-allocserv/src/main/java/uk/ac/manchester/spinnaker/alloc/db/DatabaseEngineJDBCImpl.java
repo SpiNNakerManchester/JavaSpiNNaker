@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -38,12 +37,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
 import org.springframework.jdbc.core.namedparam.NamedParameterUtils;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
@@ -69,20 +71,27 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 	private final JdbcTemplate tombstoneJdbcTemplate;
 
+	private final TransactionTemplate transactionTemplate;
+
 	private DatabaseEngineJDBCImpl() {
 		DataSource ds = DataSourceBuilder.create()
 				.url("jdbc:sqlite:mem:data").build();
 		DataSource tombstoneDs = DataSourceBuilder.create()
 				.url("jdbc:sqlite:mem:tombstone").build();
+		PlatformTransactionManager txManager =
+				new DataSourceTransactionManager(ds);
 		jdbcTemplate = new JdbcTemplate(ds);
 		tombstoneJdbcTemplate = new JdbcTemplate(tombstoneDs);
+		transactionTemplate = new TransactionTemplate(txManager);
 		setup();
 	}
 
 	@Autowired
-	public DatabaseEngineJDBCImpl(JdbcTemplate jdbcTemplate) {
+	public DatabaseEngineJDBCImpl(JdbcTemplate jdbcTemplate,
+			PlatformTransactionManager transactionManager) {
 		this.jdbcTemplate = jdbcTemplate;
 		this.tombstoneJdbcTemplate = null;
+		this.transactionTemplate = new TransactionTemplate(transactionManager);
 	}
 
 	@PostConstruct
@@ -123,22 +132,30 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 		@Override
 		public void transaction(boolean lockForWriting, Transacted operation) {
-			operation.act();
+			// Use the other method, ignoring the result value
+			transaction(lockForWriting, () -> {
+				operation.act();
+				return this;
+			});
 		}
 
 		@Override
 		public void transaction(Transacted operation) {
-			operation.act();
+			transaction(true, operation);
 		}
 
 		@Override
 		public <T> T transaction(TransactedWithResult<T> operation) {
-			return operation.act();
+			return transaction(true, operation);
 		}
 
 		@Override
-		public <T> T transaction(boolean lockForWriting, TransactedWithResult<T> operation) {
-			return operation.act();
+		public <T> T transaction(boolean lockForWriting,
+				TransactedWithResult<T> operation) {
+			// TODO: Lock for writing is currently ignored
+			return transactionTemplate.execute(status -> {
+				return operation.act();
+			});
 		}
 
 		@Override
