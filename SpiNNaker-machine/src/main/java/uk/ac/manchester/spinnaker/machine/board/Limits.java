@@ -16,20 +16,33 @@
  */
 package uk.ac.manchester.spinnaker.machine.board;
 
-/** Various limits. */
+/**
+ * Various limits. These are constrained by the requirement that each of the
+ * dimensions of the coordinates for a chip fit in an unsigned byte.
+ */
 interface Limits {
 	/**
-	 * Max triad X coordinate. Any larger and the chips become unaddressible, as
-	 * some of the coordinates on the board will go above 256.
+	 * Max triad X coordinate. Any larger and the chips become unaddressible.
 	 */
 	int MAX_TRIAD_X = 20;
 
 	/**
-	 * Max triad Y coordinate. Any larger and the chips become unaddressible, as
-	 * some of the coordinates on the board will go above 256.
+	 * Max triad Y coordinate. Any larger and the chips become unaddressible.
 	 */
 	int MAX_TRIAD_Y = 20;
 
 	/** Max triad Z coordinate. */
 	int MAX_TRIAD_Z = 2;
+
+	/**
+	 * Maximum cabinet number. Any larger than this will result in the
+	 * underlying chips becoming unaddressible.
+	 */
+	int MAX_CABINET = 31;
+
+	/**
+	 * Maximum frame number. Any larger than this will result in the underlying
+	 * chips becoming unaddressible.
+	 */
+	int MAX_FRAME = 31;
 }

@@ -40,7 +40,7 @@ import jakarta.validation.Payload;
 @Documented
 @Retention(RUNTIME)
 @Target({ METHOD, FIELD, PARAMETER, TYPE_USE })
-@Constraint(validatedBy = UDPPortValidator.class)
+@Constraint(validatedBy = UDPPort.Validator.class)
 public @interface UDPPort {
 	/** The minimum ordinary UDP port number. */
 	int MIN_UDP_PORT = 1024;
@@ -91,32 +91,36 @@ public @interface UDPPort {
 	 * @return Payloads, if any.
 	 */
 	Class<? extends Payload>[] payload() default {};
-}
 
-class UDPPortValidator implements ConstraintValidator<UDPPort, Integer> {
-	private static final int MAX_STD_PORT = 32767;
+	/**
+	 * Validator for {@link UDPPort} constraints. Not intended for direct use.
+	 */
+	class Validator implements ConstraintValidator<UDPPort, Integer> {
+		private static final int MAX_STD_PORT = 32767;
 
-	private boolean acceptZero;
+		private boolean acceptZero;
 
-	private int min;
+		private int min;
 
-	private int max;
+		private int max;
 
-	@Override
-	public void initialize(UDPPort annotation) {
-		acceptZero = annotation.any();
-		min = annotation.system() ? 1 : UDPPort.MIN_UDP_PORT;
-		max = annotation.ephemeral() ? UDPPort.MAX_UDP_PORT : MAX_STD_PORT;
-	}
-
-	@Override
-	public boolean isValid(Integer value, ConstraintValidatorContext context) {
-		if (isNull(value)) {
-			return true;
+		@Override
+		public void initialize(UDPPort annotation) {
+			acceptZero = annotation.any();
+			min = annotation.system() ? 1 : UDPPort.MIN_UDP_PORT;
+			max = annotation.ephemeral() ? UDPPort.MAX_UDP_PORT : MAX_STD_PORT;
 		}
-		if (value == 0) {
-			return acceptZero;
+
+		@Override
+		public boolean isValid(Integer value,
+				ConstraintValidatorContext context) {
+			if (isNull(value)) {
+				return true;
+			}
+			if (value == 0) {
+				return acceptZero;
+			}
+			return (value >= min) && (value <= max);
 		}
-		return (value >= min) && (value <= max);
 	}
 }
