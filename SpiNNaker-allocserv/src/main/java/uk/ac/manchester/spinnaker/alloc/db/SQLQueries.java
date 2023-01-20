@@ -2492,12 +2492,12 @@ public abstract class SQLQueries {
 				WHERE boards.functioning IS NOT 0
 				GROUP BY board_id)
 			SELECT
-			    boards.board_id,
-			    report_counts.num_reports,
-			    boards.x,
-			    boards.y,
-			    boards.z,
-			    boards.address
+				boards.board_id,
+				report_counts.num_reports,
+				boards.x,
+				boards.y,
+				boards.z,
+				boards.address
 			FROM
 				report_counts
 				JOIN boards USING (board_id)
