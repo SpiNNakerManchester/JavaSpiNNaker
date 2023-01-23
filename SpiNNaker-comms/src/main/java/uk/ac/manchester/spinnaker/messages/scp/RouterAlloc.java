@@ -28,7 +28,12 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
 
-/** An SCP Request to allocate space for routing entries. */
+/**
+ * An SCP Request to allocate space for routing entries.
+ * <p>
+ * Calls {@code rtr_alloc_id()} in {@code sark_alloc.c} via {@code cmd_alloc()}
+ * in {@code scamp-cmd.c}.
+ */
 public class RouterAlloc extends SCPRequest<RouterAlloc.Response> {
 	private final int numEntries;
 

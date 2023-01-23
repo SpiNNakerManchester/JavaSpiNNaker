@@ -25,6 +25,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 
 /**
  * An SCP Request to clear the IOBUF on a core.
+ * <p>
+ * This calls {@code sark_io_buf_reset()} in {@code sark_io.c}.
  */
 public class ClearIOBUF extends SCPRequest<CheckOKResponse> {
 	/**

@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static uk.ac.manchester.spinnaker.messages.model.RouterCommand.ROUTER_FIXED;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.TOP_BIT;
@@ -30,10 +31,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 
 /** Gets a fixed route entry. */
 public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
-	private static final int MAGIC = 3;
-
 	private static int argument1(AppID appID) {
-		return (appID.appID << BYTE1) | (MAGIC << BYTE0);
+		return (appID.appID << BYTE1) | (ROUTER_FIXED.value << BYTE0);
 	}
 
 	private static int argument2() {

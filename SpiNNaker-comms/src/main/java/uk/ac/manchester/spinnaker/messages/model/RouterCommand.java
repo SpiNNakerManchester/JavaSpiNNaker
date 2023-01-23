@@ -16,21 +16,27 @@
  */
 package uk.ac.manchester.spinnaker.messages.model;
 
-/** The SCP LED actions. */
-public enum LEDAction {
-	/** Do nothing. */
-	NO_CHANGE(0),
-	/** Toggle the LED status. */
-	TOGGLE(1),
-	/** Turn the LED off. */
-	OFF(2),
-	/** Turn the LED on. */
-	ON(3);
+/**
+ * The basic router commands, handled by {@code cmd_rtr()} in
+ * {@code scamp-cmd.c}.
+ */
+public enum RouterCommand {
+	/** Initialise. */
+	ROUTER_INIT,
+	/** Clear (entry=arg2, count). */
+	ROUTER_CLEAR,
+	/** Load (addr=arg2, count, offset=arg3, app_id). */
+	ROUTER_LOAD,
+	/**
+	 * Set/get Fixed Route register (arg2 = route). if bit 31 of arg1 set then
+	 * return FR reg else set it
+	 */
+	ROUTER_FIXED;
 
-	/** The SCAMP-encoded value. */
+	/** The BMP-encoded value. */
 	public final byte value;
 
-	LEDAction(int value) {
-		this.value = (byte) value;
+	RouterCommand() {
+		value = (byte) ordinal();
 	}
 }

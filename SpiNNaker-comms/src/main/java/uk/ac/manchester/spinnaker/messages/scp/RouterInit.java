@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static uk.ac.manchester.spinnaker.messages.model.RouterCommand.ROUTER_LOAD;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.HALF1;
@@ -27,7 +28,11 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 
-/** A request to initialise the router on a chip. */
+/**
+ * A request to initialise the router on a chip. Ultimately handled by
+ * {@code rtr_mc_load()} in {@code sark_hw.c} (via {@code cmd_rtr()} in
+ * {@code scamp-cmd.c}).
+ */
 public class RouterInit extends SCPRequest<CheckOKResponse> {
 	/** One reserved for SCAMP. */
 	private static final int MAX_ENTRIES = 1023;
@@ -67,7 +72,8 @@ public class RouterInit extends SCPRequest<CheckOKResponse> {
 			throw new IllegalArgumentException(
 					"numEntries must be no more than " + MAX_ENTRIES);
 		}
-		return (numEntries << HALF1) | (appID.appID << BYTE1) | (2 << BYTE0);
+		return (numEntries << HALF1) | (appID.appID << BYTE1)
+				| (ROUTER_LOAD.value << BYTE0);
 	}
 
 	@Override

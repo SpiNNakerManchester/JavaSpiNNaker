@@ -24,7 +24,12 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 
-/** An SCP request to read the version of software running on a core. */
+/**
+ * An SCP request to read the version of software running on a core.
+ * <p>
+ * Calls {@code cmd_ver()} in {@code scamp-cmd.c} or {@code sark_cmd_ver()} in
+ * {@code sark_base.c}, depending on which core the message is sent to.
+ */
 public class GetVersion extends SCPRequest<GetVersion.Response> {
 	/**
 	 * @param core

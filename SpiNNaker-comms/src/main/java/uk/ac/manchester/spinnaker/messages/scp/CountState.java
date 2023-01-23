@@ -30,11 +30,18 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.CPUState;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/** An SCP Request to get a count of the cores in a particular state. */
+/**
+ * An SCP Request to get a count of the cores in a particular state.
+ * <p>
+ * Actual adding up of states is in {@code proc_process()} and
+ * {@code p2p_region()} in {@code scamp-cmd.c}.
+ */
 public class CountState extends SCPRequest<CountState.Response> {
-	private static final int COUNT_OPERATION = 1;
+	/* enum send_reg_ctrl */
+	private static final int APP_STAT = 1;
 
-	private static final int COUNT_MODE = 2;
+	/* enum state_coalesce_mode */
+	private static final int MODE_SUM = 2;
 
 	private static final int OP_SHIFT = 22;
 
@@ -48,13 +55,17 @@ public class CountState extends SCPRequest<CountState.Response> {
 	 */
 	public CountState(AppID appID, CPUState state) {
 		super(BOOT_MONITOR_CORE, CMD_SIG, POINT_TO_POINT.value,
-				argument2(appID, state), ALL_CORE_SIGNAL_MASK);
+				data(appID, state), ALL_CORE_SIGNAL_MASK);
 	}
 
-	private static int argument2(AppID appId, CPUState state) {
+	/*
+	 * [  31-28 | 27-26 | 25-24  | 23-22 | 21-20 | 19-16 |     15-8 |    7-0 ]
+	 * [ unused | level | unused |    op |  mode | state | app_mask | app_id ]
+	 */
+	private static int data(AppID appId, CPUState state) {
 		int data = (APP_MASK << BYTE1) | (appId.appID << BYTE0);
-		data |= COUNT_OPERATION << OP_SHIFT;
-		data |= COUNT_MODE << MODE_SHIFT;
+		data |= APP_STAT << OP_SHIFT;
+		data |= MODE_SUM << MODE_SHIFT;
 		data |= state.value << BYTE2;
 		return data;
 	}

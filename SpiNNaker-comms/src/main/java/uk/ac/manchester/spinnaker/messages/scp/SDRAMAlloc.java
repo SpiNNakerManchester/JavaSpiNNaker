@@ -30,7 +30,12 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
 
-/** An SCP Request to allocate space in the SDRAM space. */
+/**
+ * An SCP Request to allocate space in the SDRAM space.
+ * <p>
+ * Calls {@code cmd_alloc()} (and hence {@code sark_xalloc()}) in
+ * {@code scamp-cmd.c}.
+ */
 public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	private static final int MAX_SDRAM_TAG = 255;
 
@@ -65,7 +70,7 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	 *             If a bad tag is given.
 	 */
 	public SDRAMAlloc(HasChipLocation chip, AppID appID, int size, int tag) {
-		super(chip.getScampCore(), CMD_ALLOC, argument1(appID), size, tag);
+		super(chip.getScampCore(), CMD_ALLOC, argument(appID), size, tag);
 		this.size = size;
 		if (tag < 0 || tag > MAX_SDRAM_TAG) {
 			throw new IllegalArgumentException(
@@ -74,7 +79,11 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 		}
 	}
 
-	private static int argument1(AppID appID) {
+	/*
+	 * [  31-24 |      23-16 |   15-8 | 7-0 ]
+	 * [ unused | extra_flag | app_id |  op ]
+	 */
+	private static int argument(AppID appID) {
 		return (FLAG_TAG_RETRY << BYTE2) | (appID.appID << BYTE1)
 				| (ALLOC_SDRAM.value << BYTE0);
 	}

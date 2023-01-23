@@ -23,17 +23,24 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
-/** An SCP request to fill a region of memory on a chip with repeated data. */
+/**
+ * An SCP request to fill a region of memory on a chip with repeated words of
+ * data.
+ * <p>
+ * Calls {@code sark_cmd_fill()} in {@code sark_base.c}.
+ */
 public final class FillRequest extends SCPRequest<CheckOKResponse> {
 	/**
 	 * @param chip
 	 *            The chip to read from
 	 * @param baseAddress
-	 *            The positive base address to start the fill from
+	 *            The positive base address to start the fill from. <em>Must be
+	 *            word-aligned.</em>
 	 * @param data
-	 *            The data to fill in the space with
+	 *            The <em>word</em> of data to fill in the space with.
 	 * @param size
-	 *            The number of bytes to fill in
+	 *            The number of <em>bytes</em> to fill in. <em>Must be a
+	 *            multiple of 4.</em>
 	 */
 	public FillRequest(HasChipLocation chip, MemoryLocation baseAddress,
 			int data, int size) {

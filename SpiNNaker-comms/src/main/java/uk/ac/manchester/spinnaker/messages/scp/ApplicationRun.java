@@ -27,10 +27,17 @@ import javax.validation.Valid;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.ValidP;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
+import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
- * A request to run an application.
+ * An SCP request to run an application. The application code must have been
+ * placed at the location
+ * {@link SystemVariableDefinition#system_sdram_base_address} points at.
+ * <p>
+ * Calls {@code proc_start_app()} in {@code scamp-app.c}.
  */
+@UsedInJavadocOnly(SystemVariableDefinition.class)
 public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 	private static final int WAIT_BIT = 18;
 
@@ -59,24 +66,31 @@ public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 	 */
 	public ApplicationRun(AppID appId, @Valid HasChipLocation chip,
 			Iterable<@ValidP Integer> processors, boolean wait) {
-		super(chip.getScampCore(), CMD_AR, argument1(appId, processors, wait));
+		super(chip.getScampCore(), CMD_AR, idOpMask(appId, processors, wait));
 	}
 
-	private static int argument1(AppID appId, Iterable<Integer> processors,
+	/*
+	 * bits:   [  31-24 |     23-18 |           17-0 ]
+	 * labels: [ app_id | app_flags | processor_mask ]
+	 *
+	 * It is an error to ask for this operation for the SCAMP core.
+	 * The only app_flag we use is in the lowest bit: WAIT.
+	 */
+	private static int idOpMask(AppID appId, Iterable<Integer> processors,
 			boolean wait) {
-		int processorMask = 0;
+		int mask = 0;
 		if (processors != null) {
 			for (int p : processors) {
 				if (p >= 1 && p < MAX_NUM_CORES) {
-					processorMask |= 1 << p;
+					mask |= 1 << p;
 				}
 			}
 		}
-		processorMask |= appId.appID << BYTE3;
+		mask |= appId.appID << BYTE3;
 		if (wait) {
-			processorMask |= 1 << WAIT_BIT;
+			mask |= 1 << WAIT_BIT;
 		}
-		return processorMask;
+		return mask;
 	}
 
 	@Override

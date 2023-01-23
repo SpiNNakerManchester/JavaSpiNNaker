@@ -29,7 +29,12 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
 
-/** An SCP Request to free space in the SDRAM. */
+/**
+ * An SCP Request to free space in the SDRAM.
+ * <p>
+ * Calls {@code cmd_alloc()} (and hence {@code sark_xfree()} or
+ * {@code sark_xfree_id()}) in {@code scamp-cmd.c}.
+ */
 public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 	private final boolean readNumFreedBlocks;
 
@@ -61,6 +66,10 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 		readNumFreedBlocks = false;
 	}
 
+	/*
+	 * [  31-16 |   15-8 | 7-0 ]
+	 * [ unused | app_id |  op ]
+	 */
 	private static int argument1(AppID appID) {
 		return (appID.appID << BYTE1) | (FREE_SDRAM_BY_APP_ID.value << BYTE0);
 	}

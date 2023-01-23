@@ -24,7 +24,11 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/** An SCP request to read the chip information from a core. */
+/**
+ * An SCP request to read the chip information from a core.
+ * <p>
+ * Calls {@code cmd_info()} in {@code scamp-cmd.c}.
+ */
 public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 	private static final int FLAGS = 0x5F;
 
@@ -42,13 +46,14 @@ public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 	 * @param chip
 	 *            the chip to read from
 	 * @param withSize
-	 *            Whether the size should be included in the response
+	 *            Whether the size should be included in the response. <em>Might
+	 *            be ignored by SCAMP.</em>
 	 */
 	public GetChipInfo(HasChipLocation chip, boolean withSize) {
-		super(chip.getScampCore(), CMD_INFO, argument1(withSize));
+		super(chip.getScampCore(), CMD_INFO, informationSelect(withSize));
 	}
 
-	private static int argument1(boolean withSize) {
+	private static int informationSelect(boolean withSize) {
 		// Bits 0-4 + bit 6 = all information except size
 		// Bits 0-6 = all information including size
 		return FLAGS | (withSize ? SIZE_FLAG : 0);

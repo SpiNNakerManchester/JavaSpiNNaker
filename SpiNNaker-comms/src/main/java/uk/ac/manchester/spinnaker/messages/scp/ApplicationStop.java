@@ -30,9 +30,11 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 
 /**
- * An SCP Request to stop an application. This maps to a call to
- * {@code ff_nn_send()} in {@code scamp-nn.c}, which in turn triggers a call to
- * {@code proc_stop_app()} in {@code scamp-app.c} across all SCAMP instances.
+ * An SCP Request to stop an application.
+ * <p>
+ * This maps to a call to {@code ff_nn_send()} in {@code scamp-nn.c}, which in
+ * turn triggers a call to {@code proc_stop_app()} in {@code scamp-app.c} across
+ * all SCAMP instances.
  */
 public final class ApplicationStop extends SCPRequest<CheckOKResponse> {
 	private static final int SHIFT = 28;
