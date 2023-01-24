@@ -79,13 +79,16 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	 * An SCP response to a request to read a region of memory via a link on a
 	 * chip.
 	 */
-	public static class Response extends CheckOKResponse {
-		/** The data read. */
-		public final ByteBuffer data;
-
+	public static final class Response
+			extends PayloadedResponse<ByteBuffer, RuntimeException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("Read Link", CMD_LINK_READ, buffer);
-			this.data = buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		}
+
+		/** @return The data read, as a read-only little-endian buffer. */
+		@Override
+		protected ByteBuffer parse(ByteBuffer buffer) {
+			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 		}
 	}
 }

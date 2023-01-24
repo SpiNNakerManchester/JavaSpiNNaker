@@ -34,7 +34,6 @@ public class ClearReinjectionQueue extends ReinjectorRequest<CheckOKResponse> {
 
 	@Override
 	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Set reinjected packet types", CLEAR,
-				buffer);
+		return new CheckOKResponse("Clear reinjection queue", CLEAR, buffer);
 	}
 }

@@ -43,14 +43,17 @@ public class GetReinjectionStatus
 	/**
 	 * An SCP response to a request for the dropped packet reinjection status.
 	 */
-	public static final class Response extends CheckOKResponse {
-		/** The chip information received. */
-		public final ReinjectionStatus reinjectionStatus;
-
+	public static final class Response
+			extends PayloadedResponse<ReinjectionStatus, RuntimeException> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Get packet reinjection status", GET_STATUS, buffer);
-			this.reinjectionStatus = new ReinjectionStatus(buffer);
+		}
+
+		/** @return The chip information received. */
+		@Override
+		protected ReinjectionStatus parse(ByteBuffer buffer) {
+			return new ReinjectionStatus(buffer);
 		}
 	}
 }

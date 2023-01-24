@@ -29,6 +29,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
  * @param <T>
  *            The type of response expected.
  */
+// TODO Seal in 17
 public abstract class Spin1ApiRequest<T extends SCPResponse>
 		extends SCPRequest<T> {
 	/**

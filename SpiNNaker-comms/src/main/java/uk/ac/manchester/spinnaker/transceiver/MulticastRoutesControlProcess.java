@@ -157,11 +157,10 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 		writeMemory(chip.getScampCore(), ROUTING_TABLE_DATA, routingData);
 
 		// Allocate space in the router table
-		int baseIndex = synchronousCall(
-				new RouterAlloc(chip, appID, routes.size())).baseIndex;
+		int baseIndex = retrieve(new RouterAlloc(chip, appID, routes.size()));
 
 		// Load the entries
-		synchronousCall(new RouterInit(chip, routes.size(),
+		call(new RouterInit(chip, routes.size(),
 				ROUTING_TABLE_DATA, baseIndex, appID));
 	}
 
@@ -193,7 +192,7 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 					new ReadMemory(chip,
 							baseAddress.add(offset * BYTES_PER_ENTRY),
 							UDP_MESSAGE_MAX_SIZE),
-					response -> addRoutes(response.data, offset, routes,
+					response -> addRoutes(response.get(), offset, routes,
 							appID));
 		}
 		finishBatch();

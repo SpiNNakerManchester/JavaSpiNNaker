@@ -60,8 +60,8 @@ public class CountState extends SCPRequest<CountState.Response> {
 	}
 
 	/*
-	 * [  31-28 | 27-26 | 25-24  | 23-22 | 21-20 | 19-16 |     15-8 |    7-0 ]
-	 * [ unused | level | unused |    op |  mode | state | app_mask | app_id ]
+	 * [ 31-28 | 27-26 | 25-24 | 23-22 | 21-20 | 19-16 | 15-8 | 7-0 ] [ unused |
+	 * level | unused | op | mode | state | app_mask | app_id ]
 	 */
 	private static int data(AppID appId, CPUState state) {
 		int data = (APP_MASK << BYTE1) | (appId.appID << BYTE0);
@@ -79,13 +79,15 @@ public class CountState extends SCPRequest<CountState.Response> {
 	/**
 	 * An SCP response to a request for the number of cores in a given state.
 	 */
-	public static final class Response extends CheckOKResponse {
-		/** The count of the number of cores with the requested state. */
-		public final int count;
-
+	public static final class Response
+			extends PayloadedResponse<Integer, RuntimeException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("CountState", CMD_SIG, buffer);
-			count = buffer.getInt();
+		}
+
+		@Override
+		protected Integer parse(ByteBuffer buffer) {
+			return buffer.getInt();
 		}
 	}
 }

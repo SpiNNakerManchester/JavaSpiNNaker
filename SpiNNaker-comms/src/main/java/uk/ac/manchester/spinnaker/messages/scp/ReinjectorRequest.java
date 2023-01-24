@@ -31,6 +31,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
  * @param <T>
  *            The type of response.
  */
+//TODO Seal in 17
 public abstract class ReinjectorRequest<T extends CheckOKResponse>
 		extends SCPRequest<T> {
 	/**

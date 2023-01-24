@@ -95,7 +95,7 @@ class RuntimeControlProcess extends TxrxProcess {
 	 */
 	void clearIOBUF(CoreLocation core)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(new ClearIOBUF(core));
+		call(new ClearIOBUF(core));
 	}
 
 	/**
@@ -193,7 +193,7 @@ class RuntimeControlProcess extends TxrxProcess {
 			sendRequest(new ReadMemory(core.getScampCore(),
 					getVcpuAddress(core).add(CPU_IOBUF_ADDRESS_OFFSET), WORD),
 					response -> issueReadForIOBufHead(core, 0,
-							new MemoryLocation(response.data.getInt()),
+							new MemoryLocation(response.get().getInt()),
 							chunk(size + BUF_HEADER_BYTES)));
 		}
 		finishBatch();
@@ -211,9 +211,9 @@ class RuntimeControlProcess extends TxrxProcess {
 				sendRequest(read.message(), response -> {
 					// Unpack the IOBuf header
 					var nextAddress =
-							new MemoryLocation(response.data.getInt());
-					response.data.getLong(); // Ignore 8 bytes
-					int bytesToRead = response.data.getInt();
+							new MemoryLocation(response.get().getInt());
+					response.get().getLong(); // Ignore 8 bytes
+					int bytesToRead = response.get().getInt();
 
 					// Save the rest of the IOBuf
 					int packetBytes =
@@ -262,9 +262,9 @@ class RuntimeControlProcess extends TxrxProcess {
 		// Create a buffer for the data
 		var buffer = allocate(bytesToRead).order(LITTLE_ENDIAN);
 		// Put the data from this packet into the buffer
-		int packetBytes = min(response.data.remaining(), bytesToRead);
+		int packetBytes = min(response.get().remaining(), bytesToRead);
 		if (packetBytes > 0) {
-			buffer.put(response.data);
+			buffer.put(response.get());
 		}
 		iobuf.get(read.core).put(read.blockID, buffer);
 		return packetBytes;
@@ -288,7 +288,7 @@ class RuntimeControlProcess extends TxrxProcess {
 		var buffer = iobuf.get(read.core).get(read.blockID);
 		synchronized (buffer) {
 			buffer.position(read.offset);
-			buffer.put(response.data);
+			buffer.put(response.get());
 		}
 	}
 

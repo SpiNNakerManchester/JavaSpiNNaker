@@ -69,7 +69,7 @@ class GetCPUInfoProcess extends TxrxProcess {
 			sendRequest(
 					new ReadMemory(core.getScampCore(), getVcpuAddress(core),
 							CPU_INFO_BYTES),
-					response -> cpuInfo.add(new CPUInfo(core, response.data)));
+					response -> cpuInfo.add(new CPUInfo(core, response.get())));
 		}
 		finishBatch();
 		return cpuInfo::iterator;

@@ -72,13 +72,16 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	/**
 	 * An SCP response to a request to read a region of memory on a chip.
 	 */
-	public static class Response extends CheckOKResponse {
-		/** The data read, in a little-endian read-only buffer. */
-		public final ByteBuffer data;
-
+	public static final class Response
+			extends PayloadedResponse<ByteBuffer, RuntimeException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("Read", CMD_READ, buffer);
-			this.data = buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		}
+
+		/** @return The data read, in a little-endian read-only buffer. */
+		@Override
+		protected ByteBuffer parse(ByteBuffer buffer) {
+			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 		}
 	}
 }

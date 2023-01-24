@@ -57,21 +57,26 @@ public class RouterAlloc extends SCPRequest<RouterAlloc.Response> {
 
 	@Override
 	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new Response(numEntries, buffer);
+		return new Response(buffer);
 	}
 
 	/** An SCP response to a request to allocate router entries. */
-	public static class Response extends CheckOKResponse {
-		/** The base entry index allocated within the router, or 0 if none. */
-		public final int baseIndex;
-
-		Response(int size, ByteBuffer buffer) throws Exception {
+	public final class Response extends
+			PayloadedResponse<Integer, MemoryAllocationFailedException> {
+		Response(ByteBuffer buffer) throws Exception {
 			super("Router Allocation", CMD_ALLOC, buffer);
-			baseIndex = buffer.getInt();
+		}
+
+		/** @return The base entry index allocated within the router. */
+		@Override
+		protected Integer parse(ByteBuffer buffer)
+				throws MemoryAllocationFailedException {
+			int baseIndex = buffer.getInt();
 			if (baseIndex == 0) {
-				throw new MemoryAllocationFailedException(
-						format("Could not allocate %d router entries", size));
+				throw new MemoryAllocationFailedException(format(
+						"Could not allocate %d router entries", numEntries));
 			}
+			return baseIndex;
 		}
 	}
 }

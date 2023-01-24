@@ -51,6 +51,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.CommandCode;
 import uk.ac.manchester.spinnaker.messages.scp.NoResponse;
+import uk.ac.manchester.spinnaker.messages.scp.PayloadedResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
@@ -301,14 +302,43 @@ public class TxrxProcess {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	protected final <Resp extends CheckOKResponse> Resp synchronousCall(
+	protected final <
+			Resp extends CheckOKResponse> Resp call(SCPRequest<Resp> request)
+					throws IOException, ProcessException, InterruptedException {
+		var holder = new ValueHolder<Resp>();
+		resetFailureState();
+		sendRequest(request, holder::setValue);
+		finishBatch();
+		return holder.getValue();
+	}
+
+	/**
+	 * Do a synchronous call of an SCP operation, sending the given message and
+	 * completely processing the interaction before returning its parsed
+	 * payload.
+	 *
+	 * @param <T>
+	 *            The type of the payload of the response.
+	 * @param <Resp>
+	 *            The type of the response; implicit in the type of the request.
+	 * @param request
+	 *            The request to send
+	 * @return The successful response to the request
+	 * @throws IOException
+	 *             If the communications fail
+	 * @throws ProcessException
+	 *             If the other side responds with a failure code
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
+	 */
+	protected final <T, Resp extends PayloadedResponse<T, ?>> T retrieve(
 			SCPRequest<Resp> request)
 			throws IOException, ProcessException, InterruptedException {
 		var holder = new ValueHolder<Resp>();
 		resetFailureState();
 		sendRequest(request, holder::setValue);
 		finishBatch();
-		return holder.getValue();
+		return holder.getValue().get();
 	}
 
 	/**

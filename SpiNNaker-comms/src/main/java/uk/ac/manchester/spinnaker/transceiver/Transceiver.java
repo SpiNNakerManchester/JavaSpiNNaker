@@ -155,6 +155,7 @@ import uk.ac.manchester.spinnaker.messages.scp.GetVersion;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagClear;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagSet;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagSetTTO;
+import uk.ac.manchester.spinnaker.messages.scp.PayloadedResponse;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.messages.scp.ReverseIPTagSet;
 import uk.ac.manchester.spinnaker.messages.scp.RouterClear;
@@ -871,7 +872,7 @@ public class Transceiver extends UDPTransceiver
 		for (int r = 0; r < CONNECTION_CHECK_RETRY_COUNT; r++) {
 			try {
 				var chipInfo = simpleProcess(connection)
-						.synchronousCall(new GetChipInfo(chip)).chipInfo;
+						.retrieve(new GetChipInfo(chip));
 				if (chipInfo.isEthernetAvailable) {
 					return true;
 				}
@@ -1109,8 +1110,8 @@ public class Transceiver extends UDPTransceiver
 		if (connectionSelector == null) {
 			connectionSelector = scpSelector;
 		}
-		return simpleProcess(connectionSelector).synchronousCall(
-				new GetVersion(chip.getScampCore())).versionInfo;
+		return simpleProcess(connectionSelector)
+				.retrieve(new GetVersion(chip.getScampCore()));
 	}
 
 	@Override
@@ -1217,9 +1218,36 @@ public class Transceiver extends UDPTransceiver
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	private <T extends CheckOKResponse> T simpleProcess(SCPRequest<T> request)
+	private <T extends CheckOKResponse> T simpleCall(SCPRequest<T> request)
 			throws ProcessException, IOException, InterruptedException {
-		return new TxrxProcess(scpSelector, this).synchronousCall(request);
+		return new TxrxProcess(scpSelector, this).call(request);
+	}
+
+	/**
+	 * Do a synchronous call of an SCP operation using the default connection
+	 * for a request, sending the given message and completely processing the
+	 * interaction before returning its response. This can only properly handle
+	 * those calls that involve a single request and a single reply;
+	 * fortunately, that's many of them!
+	 *
+	 * @param <T>
+	 *            The type of the payload.
+	 * @param <R>
+	 *            The type of the response that the payload is extracted from.
+	 * @param request
+	 *            The request to make.
+	 * @return The successful response to the request.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a request.
+	 * @throws IOException
+	 *             If anything fails with networking.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
+	 */
+	private <T, R extends PayloadedResponse<T, ?>> T simpleGet(
+			SCPRequest<R> request)
+			throws ProcessException, IOException, InterruptedException {
+		return new TxrxProcess(scpSelector, this).retrieve(request);
 	}
 
 	@Override
@@ -1273,7 +1301,7 @@ public class Transceiver extends UDPTransceiver
 		 */
 		var process = simpleProcess();
 		for (var connection : scpConnections) {
-			process.synchronousCall(
+			process.call(
 					new IPTagSetTTO(connection.getChip(), TIMEOUT_2560_ms));
 		}
 
@@ -1461,7 +1489,7 @@ public class Transceiver extends UDPTransceiver
 	@ParallelUnsafe
 	public int getCoreStateCount(AppID appID, CPUState state)
 			throws IOException, ProcessException, InterruptedException {
-		return simpleProcess(new CountState(appID, state)).count;
+		return simpleGet(new CountState(appID, state));
 	}
 
 	/**
@@ -1559,7 +1587,7 @@ public class Transceiver extends UDPTransceiver
 			writeMemory(chip, EXECUTABLE_ADDRESS, executable, numBytes);
 
 			// Request the start of the executable
-			simpleProcess(new ApplicationRun(appID, chip, processors, wait));
+			simpleCall(new ApplicationRun(appID, chip, processors, wait));
 		}
 	}
 
@@ -1575,7 +1603,7 @@ public class Transceiver extends UDPTransceiver
 			writeMemory(chip, EXECUTABLE_ADDRESS, executable);
 
 			// Request the start of the executable
-			simpleProcess(new ApplicationRun(appID, chip, processors, wait));
+			simpleCall(new ApplicationRun(appID, chip, processors, wait));
 		}
 	}
 
@@ -1590,7 +1618,7 @@ public class Transceiver extends UDPTransceiver
 			writeMemory(chip, EXECUTABLE_ADDRESS, executable);
 
 			// Request the start of the executable
-			simpleProcess(new ApplicationRun(appID, chip, processors, wait));
+			simpleCall(new ApplicationRun(appID, chip, processors, wait));
 		}
 	}
 
@@ -2038,7 +2066,7 @@ public class Transceiver extends UDPTransceiver
 					+ "Please fix and try again");
 			return;
 		}
-		simpleProcess(new ApplicationStop(appID));
+		simpleCall(new ApplicationStop(appID));
 	}
 
 	@CheckReturnValue
@@ -2121,14 +2149,14 @@ public class Transceiver extends UDPTransceiver
 	@ParallelUnsafe
 	public void sendSignal(AppID appID, Signal signal)
 			throws IOException, ProcessException, InterruptedException {
-		simpleProcess(new SendSignal(appID, signal));
+		simpleCall(new SendSignal(appID, signal));
 	}
 
 	@Override
 	@ParallelSafe
 	public void setLEDs(HasCoreLocation core, Map<Integer, LEDAction> ledStates)
 			throws IOException, ProcessException, InterruptedException {
-		simpleProcess(new SetLED(core, ledStates));
+		simpleCall(new SetLED(core, ledStates));
 	}
 
 	@Override
@@ -2165,7 +2193,7 @@ public class Transceiver extends UDPTransceiver
 					|| host.isLoopbackAddress()) {
 				host = connection.getLocalIPAddress();
 			}
-			process.synchronousCall(new IPTagSet(connection.getChip(),
+			process.call(new IPTagSet(connection.getChip(),
 					host.getAddress(), tag.getPort(), tag.getTag(),
 					tag.isStripSDP(), false));
 		}
@@ -2185,7 +2213,7 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		var process = simpleProcess(connection);
-		process.synchronousCall(new IPTagSet(connection.getChip(), null, 0,
+		process.call(new IPTagSet(connection.getChip(), null, 0,
 					tag.getTag(), tag.isStripSDP(), true));
 	}
 
@@ -2213,7 +2241,7 @@ public class Transceiver extends UDPTransceiver
 
 		var process = simpleProcess();
 		for (var connection : connections) {
-			process.synchronousCall(new ReverseIPTagSet(connection.getChip(),
+			process.call(new ReverseIPTagSet(connection.getChip(),
 					tag.getDestination(), tag.getPort(), tag.getTag(),
 					tag.getPort()));
 		}
@@ -2225,7 +2253,7 @@ public class Transceiver extends UDPTransceiver
 			throws IOException, ProcessException, InterruptedException {
 		var process = simpleProcess();
 		for (var conn : getConnectionList(boardAddress)) {
-			process.synchronousCall(new IPTagClear(conn.getChip(), tag));
+			process.call(new IPTagClear(conn.getChip(), tag));
 		}
 	}
 
@@ -2261,22 +2289,21 @@ public class Transceiver extends UDPTransceiver
 	public MemoryLocation mallocSDRAM(HasChipLocation chip, int size,
 			AppID appID, int tag)
 			throws IOException, ProcessException, InterruptedException {
-		return simpleProcess(
-				new SDRAMAlloc(chip, appID, size, tag)).baseAddress;
+		return simpleGet(new SDRAMAlloc(chip, appID, size, tag));
 	}
 
 	@Override
 	@ParallelSafe
 	public void freeSDRAM(HasChipLocation chip, MemoryLocation baseAddress)
 			throws IOException, ProcessException, InterruptedException {
-		simpleProcess(new SDRAMDeAlloc(chip, baseAddress));
+		simpleCall(new SDRAMDeAlloc(chip, baseAddress));
 	}
 
 	@Override
 	@ParallelSafe
 	public int freeSDRAM(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
-		return simpleProcess(new SDRAMDeAlloc(chip, appID)).numFreedBlocks;
+		return simpleGet(new SDRAMDeAlloc(chip, appID));
 	}
 
 	@Override
@@ -2322,7 +2349,7 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafe
 	public void clearMulticastRoutes(HasChipLocation chip)
 			throws IOException, ProcessException, InterruptedException {
-		simpleProcess(new RouterClear(chip));
+		simpleCall(new RouterClear(chip));
 	}
 
 	@Override
@@ -2371,8 +2398,8 @@ public class Transceiver extends UDPTransceiver
 		}
 		var address =
 				ROUTER_FILTERS.add(position * ROUTER_DIAGNOSTIC_FILTER_SIZE);
-		var response = simpleProcess(new ReadMemory(chip, address, WORD_SIZE));
-		return new DiagnosticFilter(response.data.getInt());
+		var response = simpleGet(new ReadMemory(chip, address, WORD_SIZE));
+		return new DiagnosticFilter(response.getInt());
 	}
 
 	@Override

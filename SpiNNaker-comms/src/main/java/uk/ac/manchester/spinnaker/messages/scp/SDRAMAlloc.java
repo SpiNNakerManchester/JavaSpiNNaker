@@ -80,8 +80,7 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	}
 
 	/*
-	 * [  31-24 |      23-16 |   15-8 | 7-0 ]
-	 * [ unused | extra_flag | app_id |  op ]
+	 * [ 31-24 | 23-16 | 15-8 | 7-0 ] [ unused | extra_flag | app_id | op ]
 	 */
 	private static int argument(AppID appID) {
 		return (FLAG_TAG_RETRY << BYTE2) | (appID.appID << BYTE1)
@@ -90,21 +89,26 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 
 	@Override
 	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new Response(size, buffer);
+		return new Response(buffer);
 	}
 
 	/** An SCP response to a request to allocate space in SDRAM. */
-	public static class Response extends CheckOKResponse {
-		/** The base address allocated. */
-		public final MemoryLocation baseAddress;
-
-		Response(int size, ByteBuffer buffer) throws Exception {
+	public final class Response extends
+			PayloadedResponse<MemoryLocation, MemoryAllocationFailedException> {
+		Response(ByteBuffer buffer) throws Exception {
 			super("SDRAM Allocation", CMD_ALLOC, buffer);
-			baseAddress = new MemoryLocation(buffer.getInt());
+		}
+
+		/** @return The base address allocated. */
+		@Override
+		protected MemoryLocation parse(ByteBuffer buffer)
+				throws MemoryAllocationFailedException {
+			var baseAddress = new MemoryLocation(buffer.getInt());
 			if (baseAddress.isNull()) {
 				throw new MemoryAllocationFailedException(
 						format("Could not allocate %d bytes of SDRAM", size));
 			}
+			return baseAddress;
 		}
 	}
 }

@@ -81,7 +81,7 @@ class RouterControlProcess extends TxrxProcess {
 	 */
 	void clearQueue(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(new ClearReinjectionQueue(monitorCore));
+		call(new ClearReinjectionQueue(monitorCore));
 	}
 
 	/**
@@ -118,7 +118,7 @@ class RouterControlProcess extends TxrxProcess {
 	 */
 	void resetCounters(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(new ResetReinjectionCounters(monitorCore));
+		call(new ResetReinjectionCounters(monitorCore));
 	}
 
 	/**
@@ -164,7 +164,7 @@ class RouterControlProcess extends TxrxProcess {
 	void setPacketTypes(CoreLocation monitorCore, boolean multicast,
 			boolean pointToPoint, boolean fixedRoute, boolean nearestNeighbour)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(new SetReinjectionPacketTypes(monitorCore, multicast,
+		call(new SetReinjectionPacketTypes(monitorCore, multicast,
 				pointToPoint, fixedRoute, nearestNeighbour));
 	}
 
@@ -217,7 +217,7 @@ class RouterControlProcess extends TxrxProcess {
 	void setTimeout(CoreLocation monitorCore, int timeoutMantissa,
 			int timeoutExponent)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(new SetRouterTimeout(monitorCore, timeoutMantissa,
+		call(new SetRouterTimeout(monitorCore, timeoutMantissa,
 				timeoutExponent));
 	}
 
@@ -266,7 +266,7 @@ class RouterControlProcess extends TxrxProcess {
 	void setEmergencyTimeout(CoreLocation monitorCore, int timeoutMantissa,
 			int timeoutExponent)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(new SetRouterEmergencyTimeout(monitorCore,
+		call(new SetRouterEmergencyTimeout(monitorCore,
 				timeoutMantissa, timeoutExponent));
 	}
 
@@ -310,7 +310,7 @@ class RouterControlProcess extends TxrxProcess {
 	 */
 	void saveApplicationRouterTable(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(new SaveApplicationRoutes(monitorCore));
+		call(new SaveApplicationRoutes(monitorCore));
 	}
 
 	/**
@@ -349,7 +349,7 @@ class RouterControlProcess extends TxrxProcess {
 	 */
 	void loadSystemRouterTable(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(new LoadSystemRoutes(monitorCore));
+		call(new LoadSystemRoutes(monitorCore));
 	}
 
 	/**
@@ -388,7 +388,7 @@ class RouterControlProcess extends TxrxProcess {
 	 */
 	void loadApplicationRouterTable(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(new LoadApplicationRoutes(monitorCore));
+		call(new LoadApplicationRoutes(monitorCore));
 	}
 
 	/**
@@ -427,8 +427,7 @@ class RouterControlProcess extends TxrxProcess {
 	 */
 	ReinjectionStatus getReinjectionStatus(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
-		return synchronousCall(
-				new GetReinjectionStatus(monitorCore)).reinjectionStatus;
+		return retrieve(new GetReinjectionStatus(monitorCore));
 	}
 
 	/**
@@ -450,7 +449,7 @@ class RouterControlProcess extends TxrxProcess {
 		var status = new HashMap<CoreLocation, ReinjectionStatus>();
 		for (var core : monitorCoreSubsets) {
 			sendRequest(new GetReinjectionStatus(core),
-					response -> status.put(core, response.reinjectionStatus));
+					response -> status.put(core, response.get()));
 		}
 		finishBatch();
 		return unmodifiableMap(status);
@@ -477,14 +476,14 @@ class RouterControlProcess extends TxrxProcess {
 
 		sendRequest(
 				new ReadMemory(chip, ROUTER_CONTROL, REGISTER),
-				response -> cr.setValue(response.data.getInt()));
+				response -> cr.setValue(response.get().getInt()));
 		sendRequest(
 				new ReadMemory(chip, ROUTER_ERROR, REGISTER),
-				response -> es.setValue(response.data.getInt()));
+				response -> es.setValue(response.get().getInt()));
 		sendRequest(
 				new ReadMemory(chip, ROUTER_DIAGNOSTICS,
 						NUM_REGISTERS * REGISTER),
-				response -> response.data.asIntBuffer().get(reg));
+				response -> response.get().asIntBuffer().get(reg));
 
 		finishBatch();
 		return new RouterDiagnostics(cr.getValue(), es.getValue(), reg);

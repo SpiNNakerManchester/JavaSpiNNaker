@@ -55,18 +55,17 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	}
 
 	/** Response for the fixed route read. */
-	public static final class Response extends CheckOKResponse {
-		private final int route;
-
+	public static final class Response
+			extends PayloadedResponse<RoutingEntry, RuntimeException> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Read Fixed RoutingEntry route", CMD_RTR, buffer);
-			route = buffer.getInt();
 		}
 
 		/** @return the fixed route router route. */
-		public RoutingEntry getRoute() {
-			return new RoutingEntry(route);
+		@Override
+		protected RoutingEntry parse(ByteBuffer buffer) {
+			return new RoutingEntry(buffer.getInt());
 		}
 	}
 }

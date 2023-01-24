@@ -45,13 +45,16 @@ public class GetVersion extends SCPRequest<GetVersion.Response> {
 	}
 
 	/** An SCP response to a request for the version of software running. */
-	public static final class Response extends CheckOKResponse {
-		/** The version information received. */
-		public final VersionInfo versionInfo;
-
+	public static final class Response
+			extends PayloadedResponse<VersionInfo, RuntimeException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("Version", CMD_VER, buffer);
-			versionInfo = new VersionInfo(buffer, false);
+		}
+
+		/** @return The version information received. */
+		@Override
+		protected VersionInfo parse(ByteBuffer buffer) {
+			return new VersionInfo(buffer, false);
 		}
 	}
 }
