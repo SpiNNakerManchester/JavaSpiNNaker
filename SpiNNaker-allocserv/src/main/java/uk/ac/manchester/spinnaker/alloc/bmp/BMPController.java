@@ -1106,9 +1106,21 @@ public class BMPController extends DatabaseAwareBean {
 							.filter(jobId -> !busyJobs.contains(jobId))
 							.forEach(jobId -> takeRequestsForJob(machine, jobId,
 									sql, requestCollector));
-					requestCollector.addAll(sql.getBlacklistReads(machine));
-					requestCollector.addAll(sql.getBlacklistWrites(machine));
-					requestCollector.addAll(sql.getReadSerialInfos(machine));
+
+					// Avoid doing these in the case that anything else is
+					// being done with the board
+					if (requestCollector.isEmpty()) {
+					    requestCollector.addAll(
+					    		sql.getBlacklistReads(machine));
+					}
+					if (requestCollector.isEmpty()) {
+					    requestCollector.addAll(
+					    		sql.getBlacklistWrites(machine));
+					}
+					if (requestCollector.isEmpty()) {
+					    requestCollector.addAll(
+					    		sql.getReadSerialInfos(machine));
+					}
 				}
 				return requestCollector;
 			});
