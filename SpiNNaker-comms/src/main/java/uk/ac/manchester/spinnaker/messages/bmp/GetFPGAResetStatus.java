@@ -44,18 +44,17 @@ public class GetFPGAResetStatus
 	private static final int XIL_RST_BIT = 14;
 
 	/** The response to a request to get the FPGA reset status of a board. */
-	public static final class Response extends BMPRequest.BMPResponse {
-		private int ioPortControlWord;
-
+	public static final class Response
+			extends BMPRequest.PayloadedResponse<Boolean> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Read XIL_RST", CMD_READ, buffer);
-			buffer.order(LITTLE_ENDIAN);
-			ioPortControlWord = buffer.getInt();
 		}
 
 		/** @return The reset status of the FPGA. */
-		public boolean isReset() {
+		@Override
+		protected Boolean parse(ByteBuffer buffer) {
+			int ioPortControlWord = buffer.order(LITTLE_ENDIAN).getInt();
 			return ((ioPortControlWord >> XIL_RST_BIT) & 1) != 0;
 		}
 	}

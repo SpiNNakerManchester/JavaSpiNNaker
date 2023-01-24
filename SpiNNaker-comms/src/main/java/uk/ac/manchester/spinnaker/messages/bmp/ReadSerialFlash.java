@@ -54,15 +54,20 @@ public class ReadSerialFlash extends BMPRequest<ReadSerialFlash.Response> {
 	}
 
 	/**
-	 * An SCP response to a request to read a region of memory on a chip.
+	 * An SCP response to a request to read a region of memory on a chip. Note
+	 * that it is up to the caller to manage the buffer position of the returned
+	 * response if it is to be read from multiple times.
 	 */
-	public static class Response extends BMPRequest.BMPResponse {
-		/** The data read, in a little-endian read-only buffer. */
-		public final ByteBuffer data;
-
+	public static final class Response
+			extends BMPRequest.PayloadedResponse<ByteBuffer> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("Read Serial Flash", CMD_BMP_SF, buffer);
-			this.data = buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		}
+
+		/** @return The data read, in a little-endian read-only buffer. */
+		@Override
+		protected ByteBuffer parse(ByteBuffer buffer) {
+			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 		}
 	}
 }

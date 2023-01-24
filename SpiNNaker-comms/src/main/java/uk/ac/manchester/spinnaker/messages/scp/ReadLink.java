@@ -77,7 +77,8 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 
 	/**
 	 * An SCP response to a request to read a region of memory via a link on a
-	 * chip.
+	 * chip. Note that it is up to the caller to manage the buffer position of
+	 * the returned response if it is to be read from multiple times.
 	 */
 	public static final class Response
 			extends PayloadedResponse<ByteBuffer, RuntimeException> {

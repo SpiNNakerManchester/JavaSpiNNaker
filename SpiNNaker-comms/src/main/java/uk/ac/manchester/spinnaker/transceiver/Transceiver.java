@@ -1189,7 +1189,6 @@ public class Transceiver extends UDPTransceiver
 	 */
 	private TxrxProcess simpleProcess(SDPConnection connector)
 			throws IOException {
-
 		// Avoid delegation of the connection if not needed
 		if (connector instanceof SCPConnection) {
 			return new TxrxProcess(new SingletonConnectionSelector<>(
@@ -1218,7 +1217,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	private <T extends CheckOKResponse> T simpleCall(SCPRequest<T> request)
+	private <T extends CheckOKResponse> T call(SCPRequest<T> request)
 			throws ProcessException, IOException, InterruptedException {
 		return new TxrxProcess(scpSelector, this).call(request);
 	}
@@ -1244,8 +1243,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	private <T, R extends PayloadedResponse<T, ?>> T simpleGet(
-			SCPRequest<R> request)
+	private <T, R extends PayloadedResponse<T, ?>> T get(SCPRequest<R> request)
 			throws ProcessException, IOException, InterruptedException {
 		return new TxrxProcess(scpSelector, this).retrieve(request);
 	}
@@ -1489,7 +1487,7 @@ public class Transceiver extends UDPTransceiver
 	@ParallelUnsafe
 	public int getCoreStateCount(AppID appID, CPUState state)
 			throws IOException, ProcessException, InterruptedException {
-		return simpleGet(new CountState(appID, state));
+		return get(new CountState(appID, state));
 	}
 
 	/**
@@ -1587,7 +1585,7 @@ public class Transceiver extends UDPTransceiver
 			writeMemory(chip, EXECUTABLE_ADDRESS, executable, numBytes);
 
 			// Request the start of the executable
-			simpleCall(new ApplicationRun(appID, chip, processors, wait));
+			call(new ApplicationRun(appID, chip, processors, wait));
 		}
 	}
 
@@ -1603,7 +1601,7 @@ public class Transceiver extends UDPTransceiver
 			writeMemory(chip, EXECUTABLE_ADDRESS, executable);
 
 			// Request the start of the executable
-			simpleCall(new ApplicationRun(appID, chip, processors, wait));
+			call(new ApplicationRun(appID, chip, processors, wait));
 		}
 	}
 
@@ -1618,7 +1616,7 @@ public class Transceiver extends UDPTransceiver
 			writeMemory(chip, EXECUTABLE_ADDRESS, executable);
 
 			// Request the start of the executable
-			simpleCall(new ApplicationRun(appID, chip, processors, wait));
+			call(new ApplicationRun(appID, chip, processors, wait));
 		}
 	}
 
@@ -1676,17 +1674,112 @@ public class Transceiver extends UDPTransceiver
 		}
 	}
 
-	private <T extends BMPRequest.BMPResponse> T bmpCall(BMPCoords bmp,
+	/**
+	 * Call a BMP operation on a BMP.
+	 *
+	 * @param <T>
+	 *            The type of the response.
+	 * @param bmp
+	 *            The BMP to call.
+	 * @param request
+	 *            The request to make.
+	 * @return The response from the request.
+	 * @throws IOException
+	 *             If networking fails.
+	 * @throws ProcessException
+	 *             If the BMP rejects the message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted.
+	 */
+	private <T extends BMPRequest.BMPResponse> T call(BMPCoords bmp,
 			BMPRequest<T> request)
 			throws IOException, ProcessException, InterruptedException {
 		return new BMPCommandProcess(bmpConnection(bmp), this).execute(request);
 	}
 
-	private <T extends BMPRequest.BMPResponse> T bmpCall(BMPCoords bmp,
+	/**
+	 * Call a BMP operation on a BMP.
+	 *
+	 * @param <T>
+	 *            The type of the response.
+	 * @param bmp
+	 *            The BMP to call.
+	 * @param timeout
+	 *            The timeout, in milliseconds.
+	 * @param retries
+	 *            The number of times to retry the call on a transient failure.
+	 * @param request
+	 *            The request to make.
+	 * @return The response from the request.
+	 * @throws IOException
+	 *             If networking fails.
+	 * @throws ProcessException
+	 *             If the BMP rejects the message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted.
+	 */
+	private <T extends BMPRequest.BMPResponse> T call(BMPCoords bmp,
 			int timeout, int retries, BMPRequest<T> request)
-			throws IOException, ProcessException, InterruptedException {
+					throws IOException, ProcessException, InterruptedException {
 		return new BMPCommandProcess(bmpConnection(bmp), timeout, this)
 				.execute(request, retries);
+	}
+
+	/**
+	 * Call a BMP operation on a BMP and return the parsed payload of the
+	 * response.
+	 *
+	 * @param <T>
+	 *            The type of the parsed payload.
+	 * @param <R>
+	 *            The type of the response.
+	 * @param bmp
+	 *            The BMP to call.
+	 * @param request
+	 *            The request to make.
+	 * @return The response from the request.
+	 * @throws IOException
+	 *             If networking fails.
+	 * @throws ProcessException
+	 *             If the BMP rejects the message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted.
+	 */
+	private <T, R extends BMPRequest.PayloadedResponse<T>> T get(BMPCoords bmp,
+			BMPRequest<R> request)
+			throws IOException, ProcessException, InterruptedException {
+		return new BMPCommandProcess(bmpConnection(bmp), this).call(request);
+	}
+
+	/**
+	 * Call a BMP operation on a BMP and return the parsed payload of the
+	 * response.
+	 *
+	 * @param <T>
+	 *            The type of the parsed payload.
+	 * @param <R>
+	 *            The type of the response.
+	 * @param bmp
+	 *            The BMP to call.
+	 * @param timeout
+	 *            The timeout, in milliseconds.
+	 * @param retries
+	 *            The number of times to retry the call on a transient failure.
+	 * @param request
+	 *            The request to make.
+	 * @return The response from the request.
+	 * @throws IOException
+	 *             If networking fails.
+	 * @throws ProcessException
+	 *             If the BMP rejects the message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted.
+	 */
+	private <T, R extends BMPRequest.PayloadedResponse<T>> T get(BMPCoords bmp,
+			int timeout, int retries, BMPRequest<R> request)
+			throws IOException, ProcessException, InterruptedException {
+		return new BMPCommandProcess(bmpConnection(bmp), timeout, this)
+				.execute(request, retries).get();
 	}
 
 	@Override
@@ -1721,7 +1814,7 @@ public class Transceiver extends UDPTransceiver
 		int timeout = (int) (MSEC_PER_SEC
 				* (powerCommand == POWER_ON ? BMP_POWER_ON_TIMEOUT
 						: BMP_TIMEOUT));
-		requireNonNull(bmpCall(bmp, timeout, 0,
+		requireNonNull(call(bmp, timeout, 0,
 				new SetPower(powerCommand, boards, 0.0)));
 		machineOff = powerCommand == POWER_OFF;
 
@@ -1736,7 +1829,7 @@ public class Transceiver extends UDPTransceiver
 	public void setLED(Collection<Integer> leds, LEDAction action,
 			BMPCoords bmp, Collection<BMPBoard> board)
 			throws IOException, ProcessException, InterruptedException {
-		bmpCall(bmp, new BMPSetLED(leds, action, board));
+		call(bmp, new BMPSetLED(leds, action, board));
 	}
 
 	@Override
@@ -1745,8 +1838,7 @@ public class Transceiver extends UDPTransceiver
 	public int readFPGARegister(FPGA fpga, MemoryLocation register,
 			BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException, InterruptedException {
-		return bmpCall(bmp,
-				new ReadFPGARegister(fpga, register, board)).fpgaRegister;
+		return get(bmp, new ReadFPGARegister(fpga, register, board));
 	}
 
 	@Override
@@ -1754,7 +1846,7 @@ public class Transceiver extends UDPTransceiver
 	public void writeFPGARegister(FPGA fpga, MemoryLocation register, int value,
 			BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException, InterruptedException {
-		bmpCall(bmp, new WriteFPGARegister(fpga, register, value, board));
+		call(bmp, new WriteFPGARegister(fpga, register, value, board));
 	}
 
 	@Override
@@ -1762,7 +1854,7 @@ public class Transceiver extends UDPTransceiver
 	@ParallelUnsafe
 	public ADCInfo readADCData(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException, InterruptedException {
-		return bmpCall(bmp, new ReadADC(board)).adcInfo;
+		return get(bmp, new ReadADC(board));
 	}
 
 	@Override
@@ -1770,7 +1862,7 @@ public class Transceiver extends UDPTransceiver
 	@ParallelUnsafe
 	public VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException, InterruptedException {
-		return bmpCall(bmp, new GetBMPVersion(board)).versionInfo;
+		return get(bmp, new GetBMPVersion(board));
 	}
 
 	@Override
@@ -1805,15 +1897,14 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public MemoryLocation getSerialFlashBuffer(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException, InterruptedException {
-		return bmpCall(bmp, new ReadSerialVector(board)).vector
-				.getFlashBuffer();
+		return get(bmp, new ReadSerialVector(board)).getFlashBuffer();
 	}
 
 	@Override
 	public String readBoardSerialNumber(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException, InterruptedException {
 		var serialNumber = new int[SERIAL_LENGTH];
-		bmpCall(bmp, new ReadSerialVector(board)).vector.getSerialNumber()
+		get(bmp, new ReadSerialVector(board)).getSerialNumber()
 				.get(serialNumber);
 		return format("%08x-%08x-%08x-%08x",
 				stream(serialNumber).mapToObj(Integer::valueOf).toArray());
@@ -1836,8 +1927,8 @@ public class Transceiver extends UDPTransceiver
 	public int readSerialFlashCRC(BMPCoords bmp, BMPBoard board,
 			MemoryLocation address, int length)
 			throws IOException, ProcessException, InterruptedException {
-		return bmpCall(bmp, CRC_TIMEOUT, BMP_RETRIES /* =default */,
-				new ReadSerialFlashCRC(board, address, length)).crc;
+		return get(bmp, CRC_TIMEOUT, BMP_RETRIES /* =default */,
+				new ReadSerialFlashCRC(board, address, length));
 	}
 
 	@Override
@@ -1871,7 +1962,7 @@ public class Transceiver extends UDPTransceiver
 	public void writeBMPFlash(BMPCoords bmp, BMPBoard board,
 			MemoryLocation address)
 			throws IOException, ProcessException, InterruptedException {
-		bmpCall(bmp, new WriteFlashBuffer(board, address, true));
+		call(bmp, new WriteFlashBuffer(board, address, true));
 	}
 
 	@Override
@@ -1887,16 +1978,16 @@ public class Transceiver extends UDPTransceiver
 
 		int size = data.remaining();
 		var workingBuffer =
-				bmpCall(bmp, new EraseFlash(board, baseAddress, size)).address;
+				get(bmp, new EraseFlash(board, baseAddress, size));
 		var targetAddr = baseAddress;
 		for (var buf : sliceUp(data, FLASH_CHUNK_SIZE)) {
 			writeBMPMemory(bmp, board, workingBuffer, buf);
-			bmpCall(bmp, new WriteFlashBuffer(board, targetAddr, false));
+			call(bmp, new WriteFlashBuffer(board, targetAddr, false));
 			targetAddr = targetAddr.add(FLASH_CHUNK_SIZE);
 		}
 
 		if (update) {
-			bmpCall(bmp, (int) (MSEC_PER_SEC * BMP_TIMEOUT), 0,
+			call(bmp, (int) (MSEC_PER_SEC * BMP_TIMEOUT), 0,
 					new UpdateFlash(board, baseAddress, size));
 		}
 	}
@@ -1905,7 +1996,7 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafe
 	public boolean getResetStatus(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException, InterruptedException {
-		return bmpCall(bmp, new GetFPGAResetStatus(board)).isReset();
+		return get(bmp, new GetFPGAResetStatus(board));
 	}
 
 	@Override
@@ -1913,15 +2004,14 @@ public class Transceiver extends UDPTransceiver
 	public void resetFPGA(BMPCoords bmp, BMPBoard board,
 			FPGAResetType resetType)
 			throws IOException, ProcessException, InterruptedException {
-		bmpCall(bmp, new ResetFPGA(board, resetType));
+		call(bmp, new ResetFPGA(board, resetType));
 	}
 
 	@Override
 	@CheckReturnValue
 	public MappableIterable<BMPBoard> availableBoards(BMPCoords bmp)
 			throws IOException, ProcessException, InterruptedException {
-		return bmpCall(bmp, new ReadCANStatus()).availableBoards()
-				.map(BMPBoard::new);
+		return get(bmp, new ReadCANStatus()).map(BMPBoard::new);
 	}
 
 	private WriteMemoryProcess writeProcess(long size) {
@@ -2066,7 +2156,7 @@ public class Transceiver extends UDPTransceiver
 					+ "Please fix and try again");
 			return;
 		}
-		simpleCall(new ApplicationStop(appID));
+		call(new ApplicationStop(appID));
 	}
 
 	@CheckReturnValue
@@ -2149,14 +2239,14 @@ public class Transceiver extends UDPTransceiver
 	@ParallelUnsafe
 	public void sendSignal(AppID appID, Signal signal)
 			throws IOException, ProcessException, InterruptedException {
-		simpleCall(new SendSignal(appID, signal));
+		call(new SendSignal(appID, signal));
 	}
 
 	@Override
 	@ParallelSafe
 	public void setLEDs(HasCoreLocation core, Map<Integer, LEDAction> ledStates)
 			throws IOException, ProcessException, InterruptedException {
-		simpleCall(new SetLED(core, ledStates));
+		call(new SetLED(core, ledStates));
 	}
 
 	@Override
@@ -2289,21 +2379,21 @@ public class Transceiver extends UDPTransceiver
 	public MemoryLocation mallocSDRAM(HasChipLocation chip, int size,
 			AppID appID, int tag)
 			throws IOException, ProcessException, InterruptedException {
-		return simpleGet(new SDRAMAlloc(chip, appID, size, tag));
+		return get(new SDRAMAlloc(chip, appID, size, tag));
 	}
 
 	@Override
 	@ParallelSafe
 	public void freeSDRAM(HasChipLocation chip, MemoryLocation baseAddress)
 			throws IOException, ProcessException, InterruptedException {
-		simpleCall(new SDRAMDeAlloc(chip, baseAddress));
+		call(new SDRAMDeAlloc(chip, baseAddress));
 	}
 
 	@Override
 	@ParallelSafe
 	public int freeSDRAM(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
-		return simpleGet(new SDRAMDeAlloc(chip, appID));
+		return get(new SDRAMDeAlloc(chip, appID));
 	}
 
 	@Override
@@ -2349,7 +2439,7 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafe
 	public void clearMulticastRoutes(HasChipLocation chip)
 			throws IOException, ProcessException, InterruptedException {
-		simpleCall(new RouterClear(chip));
+		call(new RouterClear(chip));
 	}
 
 	@Override
@@ -2398,7 +2488,7 @@ public class Transceiver extends UDPTransceiver
 		}
 		var address =
 				ROUTER_FILTERS.add(position * ROUTER_DIAGNOSTIC_FILTER_SIZE);
-		var response = simpleGet(new ReadMemory(chip, address, WORD_SIZE));
+		var response = get(new ReadMemory(chip, address, WORD_SIZE));
 		return new DiagnosticFilter(response.getInt());
 	}
 

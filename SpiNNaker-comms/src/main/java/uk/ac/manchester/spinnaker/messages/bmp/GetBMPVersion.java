@@ -42,14 +42,17 @@ public class GetBMPVersion extends BMPRequest<GetBMPVersion.Response> {
 	}
 
 	/** An SCP response to a request for the version of software running. */
-	public static final class Response extends BMPRequest.BMPResponse {
-		/** The version information received. */
-		public final VersionInfo versionInfo;
-
+	public static final class Response
+			extends BMPRequest.PayloadedResponse<VersionInfo> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Read Version", CMD_VER, buffer);
-			versionInfo = new VersionInfo(buffer, true);
+		}
+
+		/** @return The version information received. */
+		@Override
+		protected VersionInfo parse(ByteBuffer buffer) {
+			return new VersionInfo(buffer, true);
 		}
 	}
 }

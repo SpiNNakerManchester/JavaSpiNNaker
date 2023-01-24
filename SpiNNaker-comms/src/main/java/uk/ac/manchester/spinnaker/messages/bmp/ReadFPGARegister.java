@@ -60,14 +60,17 @@ public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 	}
 
 	/** An SCP response to a request for the contents of an FPGA register. */
-	public static final class Response extends BMPRequest.BMPResponse {
-		/** The ADC information. */
-		public final int fpgaRegister;
-
+	public static final class Response
+			extends BMPRequest.PayloadedResponse<Integer> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Read FPGA register", CMD_LINK_READ, buffer);
-			fpgaRegister = buffer.getInt();
+		}
+
+		/** @return The FPGA register contents, not further interpreted. */
+		@Override
+		protected Integer parse(ByteBuffer buffer) {
+			return buffer.getInt();
 		}
 	}
 }

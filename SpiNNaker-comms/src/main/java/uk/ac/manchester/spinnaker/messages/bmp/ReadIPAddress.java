@@ -44,8 +44,8 @@ public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
 		return new Response(buffer);
 	}
 
-	/** An SCP response to a request for IP address information. */
-	public static final class Response extends BMPRequest.BMPResponse {
+	/** The IP addresses associated with a SpiNNaker board. */
+	public static final class Addresses {
 		/** The IP address of the BMP. */
 		public final InetAddress bmpIPAddress;
 
@@ -58,25 +58,44 @@ public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
 
 		private static final int IP_LEN = 4;
 
-		private byte[] getChunk(ByteBuffer buffer) {
+		private static byte[] getChunk(ByteBuffer buffer) {
 			byte[] chunk = new byte[CHUNK_LEN];
 			buffer.get(chunk);
 			return chunk;
 		}
 
-		private InetAddress getIP(byte[] chunk) throws UnknownHostException {
+		private static InetAddress getIP(byte[] chunk)
+				throws UnknownHostException {
 			byte[] bytes = new byte[IP_LEN];
 			System.arraycopy(chunk, IP_OFFSET, bytes, 0, IP_LEN);
 			return getByAddress(bytes);
 		}
 
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException, UnknownHostException {
-			super("Read IP Address Data", CMD_BMP_INFO, buffer);
+		private Addresses(ByteBuffer buffer) throws UnknownHostException {
 			byte[] bmpChunk = getChunk(buffer);
 			byte[] spinChunk = getChunk(buffer);
 			bmpIPAddress = getIP(bmpChunk);
 			spinIPAddress = getIP(spinChunk);
+		}
+	}
+
+	/** An SCP response to a request for IP address information. */
+	public static final class Response
+			extends BMPRequest.PayloadedResponse<Addresses> {
+		private Response(ByteBuffer buffer)
+				throws UnexpectedResponseCodeException {
+			super("Read IP Address Data", CMD_BMP_INFO, buffer);
+		}
+
+		/** @return The addresses of the SpiNNaker board. */
+		@Override
+		protected Addresses parse(ByteBuffer buffer) {
+			try {
+				return new Addresses(buffer);
+			} catch (UnknownHostException e) {
+				// Should be unreachable
+				return null;
+			}
 		}
 	}
 }

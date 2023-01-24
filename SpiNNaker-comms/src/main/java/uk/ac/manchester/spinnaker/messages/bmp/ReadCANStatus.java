@@ -46,19 +46,25 @@ public class ReadCANStatus extends BMPRequest<ReadCANStatus.Response> {
 	}
 
 	/** An SCP response to a request for the CAN status. */
-	public static final class Response extends BMPRequest.BMPResponse {
-		/**
-		 * The status data. The byte at {@code x} is zero if the BMP with that
-		 * index is disabled.
-		 */
-		public final byte[] statusData;
+	public static final class Response
+			extends BMPRequest.PayloadedResponse<MappableIterable<Integer>> {
+		private Response(ByteBuffer buffer)
+				throws UnexpectedResponseCodeException {
+			super("Read CAN Status", CMD_BMP_INFO, buffer);
+		}
 
 		/**
-		 * What boards are available to be managed by the BMP?
-		 *
-		 * @return Ordered sequence of board numbers.
+		 * @return Ordered sequence of board numbers available to be managed by
+		 *         the BMP.
 		 */
-		public MappableIterable<Integer> availableBoards() {
+		@Override
+		protected MappableIterable<Integer> parse(ByteBuffer buffer) {
+			/*
+			 * The status data. The byte at {@code x} is zero if the BMP with
+			 * that index is disabled.
+			 */
+			var statusData = new byte[buffer.remaining()];
+			buffer.get(statusData);
 			var boards = new ArrayList<Integer>();
 			for (int i = 0; i < MAX_BOARDS_PER_FRAME; i++) {
 				if (statusData[i] != 0) {
@@ -66,13 +72,6 @@ public class ReadCANStatus extends BMPRequest<ReadCANStatus.Response> {
 				}
 			}
 			return boards::iterator;
-		}
-
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
-			super("Read CAN Status", CMD_BMP_INFO, buffer);
-			statusData = new byte[buffer.remaining()];
-			buffer.get(statusData);
 		}
 	}
 }

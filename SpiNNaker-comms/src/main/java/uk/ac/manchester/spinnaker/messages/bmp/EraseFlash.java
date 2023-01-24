@@ -66,14 +66,17 @@ public final class EraseFlash extends BMPRequest<EraseFlash.Response> {
 	}
 
 	/** The response from a request to erase flash. */
-	public static final class Response extends BMPRequest.BMPResponse {
-		/** Where the buffer is located. */
-		public final MemoryLocation address;
-
+	public static final class Response
+			extends BMPRequest.PayloadedResponse<MemoryLocation> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Erase flash memory", CMD_FLASH_ERASE, buffer);
-			address = new MemoryLocation(buffer.getInt());
+		}
+
+		/** @return Where the buffer is located. */
+		@Override
+		protected MemoryLocation parse(ByteBuffer buffer) {
+			return new MemoryLocation(buffer.getInt());
 		}
 	}
 }

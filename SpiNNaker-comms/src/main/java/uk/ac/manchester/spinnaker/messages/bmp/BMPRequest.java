@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2023 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.DEFAULT_PORT;
 
 import java.nio.ByteBuffer;
 import java.util.Collection;
+import java.util.function.Supplier;
 
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
@@ -190,5 +191,49 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 			super(buffer);
 			throwIfNotOK(operation, command);
 		}
+	}
+
+	/**
+	 * A BMP response that contains a payload of interest.
+	 *
+	 * @param <T>
+	 *            The type of the parsed payload.
+	 */
+	public abstract static class PayloadedResponse<T> extends BMPResponse
+			implements Supplier<T> {
+		private final T value;
+
+		/**
+		 * Make a response object.
+		 *
+		 * @param operation
+		 *            The operation that this part of.
+		 * @param command
+		 *            The command that this is a response to.
+		 * @param buffer
+		 *            The buffer to read the response from.
+		 * @throws UnexpectedResponseCodeException
+		 *             If the response is not a success.
+		 */
+		public PayloadedResponse(String operation, SCPCommand command,
+				ByteBuffer buffer) throws UnexpectedResponseCodeException {
+			super(operation, command, buffer);
+			value = parse(buffer);
+		}
+
+		@Override
+		public final T get() {
+			return value;
+		}
+
+		/**
+		 * Parse the buffer.
+		 *
+		 * @param buffer
+		 *            The buffer to parse. Will be positioned after the message
+		 *            header.
+		 * @return The parsed value.
+		 */
+		protected abstract T parse(ByteBuffer buffer);
 	}
 }

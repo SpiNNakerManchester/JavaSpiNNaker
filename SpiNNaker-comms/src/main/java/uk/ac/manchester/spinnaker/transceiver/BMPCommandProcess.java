@@ -139,6 +139,39 @@ class BMPCommandProcess {
 
 	/**
 	 * Do a synchronous call of a BMP operation, sending the given message and
+	 * completely processing the interaction before returning the parsed payload
+	 * of the response.
+	 *
+	 * @param <T>
+	 *            The type of the parsed payload.
+	 * @param <R>
+	 *            The type of the response message containing the payload.
+	 * @param request
+	 *            The request to send.
+	 * @return The successful response to the request.
+	 * @throws IOException
+	 *             If the communications fail
+	 * @throws ProcessException
+	 *             If the other side responds with a failure code
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
+	 */
+	<T, R extends BMPRequest.PayloadedResponse<T>> T call(BMPRequest<R> request)
+			throws IOException, ProcessException, InterruptedException {
+		var holder = new ValueHolder<R>();
+		/*
+		 * If no pipeline built yet, build one on the connection selected for
+		 * it.
+		 */
+		var pipeline = new RequestPipeline<R>(
+				connectionSelector.getNextConnection(request));
+		pipeline.sendRequest(request, holder::setValue);
+		pipeline.finish();
+		return holder.getValue().get();
+	}
+
+	/**
+	 * Do a synchronous call of a BMP operation, sending the given message and
 	 * completely processing the interaction before returning its response.
 	 *
 	 * @param <T>
