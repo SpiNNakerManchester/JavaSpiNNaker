@@ -284,6 +284,25 @@ public class SystemControllerImpl implements SystemController {
 			mach.setRequest(new String(mach.getRequestBytes(), UTF_8));
 		}
 		mach.setMachineUrl(uri(self().getMachineInfo(mach.getMachine())));
+		var mav = view(JOB_VIEW, ONE_JOB_OBJ, mach);
+		mav.addObject("deleteUri", uri(self().destroyJob(id, null)));
+		return mav;
+	}
+
+	@Override
+	@PreAuthorize(IS_READER)
+	@Action("deleting job")
+	public ModelAndView destroyJob(int id, String reason) {
+		var permit = new Permit(getContext());
+		var job = spallocCore.getJob(permit, id)
+				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+		job.destroy(reason);
+		var mach = spallocCore.getJobInfo(permit, id)
+				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+		if (nonNull(mach.getRequestBytes())) {
+			mach.setRequest(new String(mach.getRequestBytes(), UTF_8));
+		}
+		mach.setMachineUrl(uri(self().getMachineInfo(mach.getMachine())));
 		return view(JOB_VIEW, ONE_JOB_OBJ, mach);
 	}
 }

@@ -137,8 +137,13 @@ public class JobStateResponse {
 	}
 
 	private static URI makeProxyURI(Job job, UriInfo ui, String servletPath) {
+		// Try to match the secure / insecure nature of the original request
+		String scheme = "wss";
+		if (ui.getBaseUri().getScheme().equals("http")) {
+			scheme = "ws";
+		}
 		// Messy; needs to refer to the other half of the application
-		return ui.getBaseUriBuilder().scheme("wss").replacePath(servletPath)
+		return ui.getBaseUriBuilder().scheme(scheme).replacePath(servletPath)
 				.path(SpinWSHandler.PATH).build(job.getId());
 	}
 
