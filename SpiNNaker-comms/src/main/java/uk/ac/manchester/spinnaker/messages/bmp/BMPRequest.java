@@ -167,6 +167,26 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 		super(bmpHeader(boards), command, argument1, argument2, 0, NO_DATA);
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(getClass().getName());
+		builder.append('(');
+		builder.append("command=");
+		builder.append(scpRequestHeader.command);
+		builder.append(", ");
+		builder.append("argument1=");
+		builder.append(argument1);
+		builder.append(", ");
+		builder.append("argument2=");
+		builder.append(argument2);
+		builder.append(", ");
+		builder.append("argument3=");
+		builder.append(argument3);
+		builder.append(')');
+		return builder.toString();
+	}
+
 	/**
 	 * Represents an SCP request thats tailored for the BMP connection. This
 	 * basic class handles checking that the result is OK; subclasses manage

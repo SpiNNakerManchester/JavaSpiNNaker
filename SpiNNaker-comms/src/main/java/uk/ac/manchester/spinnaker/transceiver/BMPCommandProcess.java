@@ -513,11 +513,11 @@ class BMPCommandProcess<R extends BMPResponse> {
 				// Report timeouts as timeout exception
 				if (req.allTimeoutFailures()) {
 					throw new BMPSendTimedOutException(
-							req.request.scpRequestHeader, timeout);
+							req.request, timeout);
 				}
 
 				// Report any other exception
-				throw new BMPSendFailedException(req.request.scpRequestHeader,
+				throw new BMPSendFailedException(req.request,
 						req.dest(), req.retryReason);
 			}
 
