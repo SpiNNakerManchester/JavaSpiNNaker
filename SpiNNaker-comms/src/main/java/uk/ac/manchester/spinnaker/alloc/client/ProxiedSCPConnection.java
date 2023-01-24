@@ -104,4 +104,13 @@ final class ProxiedSCPConnection extends SCPConnection {
 		throw new UnsupportedOperationException(
 				"receiveWithAddress() not supported by this connection type");
 	}
+
+	/**
+	 * Close this connection eventually. Actually processes it immediately
+	 * because the other end of the proxy makes it eventual.
+	 */
+	@Override
+	public void closeEventually() {
+		closeAndLogNoExcept();
+	}
 }

@@ -21,6 +21,7 @@ import org.slf4j.MDC.MDCCloseable;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * A class for making things easier to do on a per-board basis.
@@ -30,10 +31,23 @@ import uk.ac.manchester.spinnaker.machine.Machine;
 public abstract class BoardLocalSupport {
 	private static final String BOARD_ROOT = "boardRoot";
 
-	private final Machine machine;
+	/** The transceiver for talking to the SpiNNaker machine. */
+	protected final TransceiverInterface txrx;
 
-	/** @param machine Which machine is this on? Used for address mapping. */
-	protected BoardLocalSupport(Machine machine) {
+	/** The description of the SpiNNaker machine. */
+	protected final Machine machine;
+
+	/**
+	 * @param transceiver
+	 *            How to talk to the SpiNNaker system via SCP. Where the system
+	 *            is located.
+	 * @param machine
+	 *            Which machine is this on? Used for address mapping and
+	 *            provided as a general service to subclasses.
+	 */
+	protected BoardLocalSupport(TransceiverInterface transceiver,
+			Machine machine) {
+		this.txrx = transceiver;
 		this.machine = machine;
 	}
 

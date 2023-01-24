@@ -21,7 +21,6 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.ElementType.TYPE_USE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.machine.board.BMPBoard.MAX_BOARD_NUMBER;
 
 import java.lang.annotation.Documented;
@@ -29,9 +28,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import javax.validation.Constraint;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
+import javax.validation.ReportAsSingleViolation;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.PositiveOrZero;
 
 /**
  * Validates that a board number is in a sane range.
@@ -41,7 +41,10 @@ import javax.validation.Payload;
 @Documented
 @Retention(RUNTIME)
 @Target({ METHOD, FIELD, PARAMETER, TYPE_USE })
-@Constraint(validatedBy = BoardNumberValidator.class)
+@PositiveOrZero
+@Max(MAX_BOARD_NUMBER)
+@Constraint(validatedBy = {})
+@ReportAsSingleViolation
 public @interface ValidBoardNumber {
 	/**
 	 * Message on constraint violated.
@@ -64,16 +67,4 @@ public @interface ValidBoardNumber {
 	 * @return Payloads, if any.
 	 */
 	Class<? extends Payload>[] payload() default {};
-}
-
-class BoardNumberValidator
-		implements ConstraintValidator<ValidBoardNumber, Integer> {
-	@Override
-	public void initialize(ValidBoardNumber annotation) {
-	}
-
-	@Override
-	public boolean isValid(Integer value, ConstraintValidatorContext context) {
-		return isNull(value) || ((value >= 0) && (value <= MAX_BOARD_NUMBER));
-	}
 }

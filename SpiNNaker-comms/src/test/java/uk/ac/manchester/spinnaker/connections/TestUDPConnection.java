@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
 import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.BOOT_CHIP;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.BUFFERED_SDRAM_START;
 
@@ -60,7 +61,8 @@ public class TestUDPConnection {
 		var scpReq = new GetVersion(ZERO_CORE);
 		scpReq.scpRequestHeader.issueSequenceNumber(Set.of());
 		SCPResultMessage result;
-		try (var connection = new SCPConnection(boardConfig.remotehost)) {
+		try (var connection =
+				new SCPConnection(BOOT_CHIP, boardConfig.remotehost)) {
 			connection.send(scpReq);
 			result = connection.receiveSCPResponse(TIMEOUT);
 		} catch (SocketTimeoutException e) {
@@ -82,7 +84,8 @@ public class TestUDPConnection {
 				new ReadLink(ZERO_CHIP, EAST, BUFFERED_SDRAM_START, LINK_SIZE);
 		scpReq.scpRequestHeader.issueSequenceNumber(Set.of());
 		SCPResultMessage result;
-		try (var connection = new SCPConnection(boardConfig.remotehost)) {
+		try (var connection =
+				new SCPConnection(BOOT_CHIP, boardConfig.remotehost)) {
 			connection.send(scpReq);
 			result = connection.receiveSCPResponse(TIMEOUT);
 		} catch (SocketTimeoutException e) {
@@ -100,7 +103,8 @@ public class TestUDPConnection {
 				UDP_MESSAGE_MAX_SIZE);
 		scpReq.scpRequestHeader.issueSequenceNumber(Set.of());
 		SCPResultMessage result;
-		try (var connection = new SCPConnection(boardConfig.remotehost)) {
+		try (var connection =
+				new SCPConnection(BOOT_CHIP, boardConfig.remotehost)) {
 			connection.send(scpReq);
 			result = connection.receiveSCPResponse(TIMEOUT);
 		} catch (SocketTimeoutException e) {
@@ -116,7 +120,8 @@ public class TestUDPConnection {
 			throws UnknownHostException {
 		boardConfig.setUpNonexistentBoard();
 		assertThrows(IOException.class, () -> {
-			try (var connection = new SCPConnection(boardConfig.remotehost)) {
+			try (var connection =
+					new SCPConnection(BOOT_CHIP, boardConfig.remotehost)) {
 				var scp = new ReadMemory(ZERO_CHIP, NULL, UDP_MESSAGE_MAX_SIZE);
 				scp.scpRequestHeader.issueSequenceNumber(Set.of());
 				connection.send(scp);
