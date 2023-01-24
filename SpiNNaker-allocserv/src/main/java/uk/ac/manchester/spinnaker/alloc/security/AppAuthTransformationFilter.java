@@ -76,7 +76,7 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 		if (nonNull(savedAuth)) {
 			ctx.setAuthentication(savedAuth);
 		} else {
-			var a = localAuthProvider.updateAuthentication(ctx);
+			var a = localAuthProvider.updateAuthentication(request, ctx);
 			if (nonNull(a)) {
 				saveToken(s, a);
 			}

@@ -42,6 +42,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -269,7 +270,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	@Override
-	public Authentication updateAuthentication(SecurityContext ctx) {
+	public Authentication updateAuthentication(HttpServletRequest req,
+			SecurityContext ctx) {
 		var current = ctx.getAuthentication();
 		if (nonNull(current)) {
 			if (supports(current.getClass())) {
@@ -281,8 +283,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 					return updated;
 				}
 			} else if (!isUnsupportedAuthTokenClass(current.getClass())) {
-				log.warn("unexpected authentication type {} (token: {})",
-						current.getClass(), current);
+				log.warn("unexpected authentication type {} (token: {})"
+						+ "on request {}",
+						current.getClass(), current, req.getRequestURI());
 			}
 		}
 		return null;
