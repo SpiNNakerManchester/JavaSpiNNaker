@@ -26,7 +26,8 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 /**
  * An SCP Request to set the dropped packet reinjected packet types.
  */
-public class SetReinjectionPacketTypes extends SCPRequest<CheckOKResponse> {
+public class SetReinjectionPacketTypes
+		extends ReinjectorRequest<CheckOKResponse> {
 	/**
 	 * @param core
 	 *            The coordinates of the monitor core.
@@ -42,9 +43,8 @@ public class SetReinjectionPacketTypes extends SCPRequest<CheckOKResponse> {
 	public SetReinjectionPacketTypes(HasCoreLocation core, boolean multicast,
 			boolean pointToPoint, boolean fixedRoute,
 			boolean nearestNeighbour) {
-		super(new ReinjectionSDPHeader(core), SET_PACKET_TYPES,
-				encode(multicast), encode(pointToPoint), encode(fixedRoute),
-				encodeAsBA(nearestNeighbour));
+		super(core, SET_PACKET_TYPES, encode(multicast), encode(pointToPoint),
+				encode(fixedRoute), encodeAsBA(nearestNeighbour));
 	}
 
 	private static ByteBuffer encodeAsBA(boolean flag) {

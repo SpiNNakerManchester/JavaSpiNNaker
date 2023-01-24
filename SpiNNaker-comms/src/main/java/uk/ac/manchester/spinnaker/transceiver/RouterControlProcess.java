@@ -36,9 +36,9 @@ import uk.ac.manchester.spinnaker.messages.scp.ClearReinjectionQueue;
 import uk.ac.manchester.spinnaker.messages.scp.GetReinjectionStatus;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.messages.scp.ResetReinjectionCounters;
-import uk.ac.manchester.spinnaker.messages.scp.RouterTableLoadApplicationRoutes;
-import uk.ac.manchester.spinnaker.messages.scp.RouterTableLoadSystemRoutes;
-import uk.ac.manchester.spinnaker.messages.scp.RouterTableSaveApplicationRoutes;
+import uk.ac.manchester.spinnaker.messages.scp.LoadApplicationRoutes;
+import uk.ac.manchester.spinnaker.messages.scp.LoadSystemRoutes;
+import uk.ac.manchester.spinnaker.messages.scp.SaveApplicationRoutes;
 import uk.ac.manchester.spinnaker.messages.scp.SetReinjectionPacketTypes;
 import uk.ac.manchester.spinnaker.messages.scp.SetRouterEmergencyTimeout;
 import uk.ac.manchester.spinnaker.messages.scp.SetRouterTimeout;
@@ -310,7 +310,7 @@ class RouterControlProcess extends TxrxProcess {
 	 */
 	void saveApplicationRouterTable(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(new RouterTableSaveApplicationRoutes(monitorCore));
+		synchronousCall(new SaveApplicationRoutes(monitorCore));
 	}
 
 	/**
@@ -329,7 +329,7 @@ class RouterControlProcess extends TxrxProcess {
 	void saveApplicationRouterTable(CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException, InterruptedException {
 		for (var core : monitorCoreSubsets) {
-			sendRequest(new RouterTableSaveApplicationRoutes(core));
+			sendRequest(new SaveApplicationRoutes(core));
 		}
 		finishBatch();
 	}
@@ -349,7 +349,7 @@ class RouterControlProcess extends TxrxProcess {
 	 */
 	void loadSystemRouterTable(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(new RouterTableLoadSystemRoutes(monitorCore));
+		synchronousCall(new LoadSystemRoutes(monitorCore));
 	}
 
 	/**
@@ -368,7 +368,7 @@ class RouterControlProcess extends TxrxProcess {
 	void loadSystemRouterTable(CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException, InterruptedException {
 		for (var core : monitorCoreSubsets) {
-			sendRequest(new RouterTableLoadSystemRoutes(core));
+			sendRequest(new LoadSystemRoutes(core));
 		}
 		finishBatch();
 	}
@@ -388,7 +388,7 @@ class RouterControlProcess extends TxrxProcess {
 	 */
 	void loadApplicationRouterTable(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(new RouterTableLoadApplicationRoutes(monitorCore));
+		synchronousCall(new LoadApplicationRoutes(monitorCore));
 	}
 
 	/**
@@ -407,7 +407,7 @@ class RouterControlProcess extends TxrxProcess {
 	void loadApplicationRouterTable(CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException, InterruptedException {
 		for (var core : monitorCoreSubsets) {
-			sendRequest(new RouterTableLoadApplicationRoutes(core));
+			sendRequest(new LoadApplicationRoutes(core));
 		}
 		finishBatch();
 	}

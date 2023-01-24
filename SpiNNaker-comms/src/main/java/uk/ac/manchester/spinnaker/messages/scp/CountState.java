@@ -34,7 +34,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * An SCP Request to get a count of the cores in a particular state.
  * <p>
  * Actual adding up of states is in {@code proc_process()} and
- * {@code p2p_region()} in {@code scamp-cmd.c}.
+ * {@code p2p_region()} in {@code scamp-cmd.c}. This is the main use of
+ * point-to-point signals (and the only one exposed to users).
  */
 public class CountState extends SCPRequest<CountState.Response> {
 	/* enum send_reg_ctrl */

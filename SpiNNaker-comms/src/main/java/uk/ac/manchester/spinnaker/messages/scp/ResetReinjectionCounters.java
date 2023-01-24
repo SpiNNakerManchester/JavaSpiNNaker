@@ -26,13 +26,14 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  * An SCP Request to reset the statistics counters of the dropped packet
  * reinjection.
  */
-public class ResetReinjectionCounters extends SCPRequest<CheckOKResponse> {
+public class ResetReinjectionCounters
+		extends ReinjectorRequest<CheckOKResponse> {
 	/**
 	 * @param core
 	 *            The coordinates of the monitor core.
 	 */
 	public ResetReinjectionCounters(HasCoreLocation core) {
-		super(new ReinjectionSDPHeader(core), RESET_COUNTERS, 0, 0, 0, null);
+		super(core, RESET_COUNTERS);
 	}
 
 	@Override

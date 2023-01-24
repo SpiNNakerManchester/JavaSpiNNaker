@@ -33,9 +33,10 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 /**
- * An SCP request to start a flood fill of data. Calls {@cod nn_cmd_ffs()} in
- * {@code scamp-nn.c} on all cores via {@code ff_nn_send()} in
- * {@code scamp-nn.c}.
+ * An SCP request to start a flood fill of data.
+ * <p>
+ * Calls {@code nn_cmd_ffs()} in {@code scamp-nn.c} on all cores via
+ * {@code ff_nn_send()} in {@code scamp-nn.c}.
  */
 public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
 	// See nn_rcv_pkt()
@@ -60,7 +61,8 @@ public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
 	 *            255
 	 */
 	public FloodFillStart(byte nearestNeighbourID, int numBlocks) {
-		this(nearestNeighbourID, numBlocks, null);
+		super(BOOT_MONITOR_CORE, CMD_NNP, key(nearestNeighbourID, numBlocks),
+				NO_CHIP, NNP_FORWARD_RETRY);
 	}
 
 	/**
@@ -72,8 +74,7 @@ public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
 	 *            The number of blocks of data that will be sent, between 0 and
 	 *            255
 	 * @param chip
-	 *            The chip to load the data on to, or {@code null} to load data
-	 *            onto all chips.
+	 *            The chip to load the data on to.
 	 */
 	public FloodFillStart(byte nearestNeighbourID, int numBlocks,
 			HasChipLocation chip) {
@@ -92,9 +93,6 @@ public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
 	}
 
 	private static int data(HasChipLocation chip) {
-		if (chip == null) {
-			return NO_CHIP;
-		}
 		int mask = 1 << (((chip.getY() & LOW_BITS_MASK) << 2)
 				+ (chip.getX() & LOW_BITS_MASK));
 		int region = ((chip.getX() & HIGH_BITS_MASK) << BYTE1)

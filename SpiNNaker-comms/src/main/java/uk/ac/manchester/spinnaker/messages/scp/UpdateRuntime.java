@@ -26,7 +26,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 /**
  * An SCP Request to update the runtime info on a core.
  */
-public class UpdateRuntime extends SCPRequest<CheckOKResponse> {
+public class UpdateRuntime extends Spin1ApiRequest<CheckOKResponse> {
 	/**
 	 * @param core
 	 *            The SpiNNaker core to update the runtime info of.
@@ -37,8 +37,8 @@ public class UpdateRuntime extends SCPRequest<CheckOKResponse> {
 	 */
 	public UpdateRuntime(HasCoreLocation core, int runTime,
 			boolean infiniteRun) {
-		super(new RunningSDPHeader(core, true), NEW_RUNTIME_ID, runTime,
-				bool(infiniteRun), bool(true), null);
+		super(core, true, NEW_RUNTIME_ID, runTime, bool(infiniteRun),
+				bool(true));
 	}
 
 	private static int bool(boolean value) {

@@ -26,13 +26,13 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 
 /** An SCP Request to get the status of the dropped packet reinjection. */
 public class GetReinjectionStatus
-		extends SCPRequest<GetReinjectionStatus.Response> {
+		extends ReinjectorRequest<GetReinjectionStatus.Response> {
 	/**
 	 * @param core
 	 *            the monitor core to read from
 	 */
 	public GetReinjectionStatus(HasCoreLocation core) {
-		super(new ReinjectionSDPHeader(core), GET_STATUS, 0, 0, 0, null);
+		super(core, GET_STATUS);
 	}
 
 	@Override

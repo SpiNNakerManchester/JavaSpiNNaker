@@ -77,33 +77,34 @@ public enum SCPCommand implements CommandCode {
 	CMD_INFO(31),
 	/** Get BMP info structures. */
 	CMD_BMP_INFO(48),
-	/** */
+	/** Copy working buffer to flash memory. BMP-only operation. */
 	CMD_FLASH_COPY(49),
-	/** */
+	/** Erase part of flash memory. BMP-only operation. */
 	CMD_FLASH_ERASE(50),
-	/** */
+	/** Write to flash memory. BMP-only operation. */
 	CMD_FLASH_WRITE(51),
-	/** Serial flash access. */
+	/** Serial flash access. BMP-only operation. */
 	CMD_BMP_SF(53),
-	/** EEPROM access? */
+	/** EEPROM access? BMP-only operation. */
 	@Deprecated
 	CMD_BMP_EE(54),
-	/** */
+	/** BMP-only operation. */
 	CMD_RESET(55),
 	/** FPGA control. BMP-only operation. */
 	CMD_XILINX(56),
 	/** Turns on or off the machine via BMP. */
 	CMD_BMP_POWER(57),
-	/** Access I2C bus. */
+	/** Access I2C bus. BMP-only operation. */
 	@Deprecated
 	CMD_BMP_I2C(61),
-	/** Configure pulse-width modulation hardware. */
+	/** Configure pulse-width modulation hardware. BMP-only operation. */
 	@Deprecated
 	CMD_BMP_PWM(62),
-	/** Test feature control. */
+	/** Test feature control. BMP-only operation. */
 	@Deprecated
 	CMD_BMP_TEST(63),
-	/** Tube output. */
+	/** Tube output. Special. */
+	@Deprecated
 	CMD_TUBE(64);
 
 	/** The SCAMP encoding. */

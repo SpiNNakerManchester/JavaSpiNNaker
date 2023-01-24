@@ -16,28 +16,25 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.EXTRA_MONITOR_CORE_REINJECTION;
+import static uk.ac.manchester.spinnaker.messages.scp.RouterTableCommand.LOAD_SYSTEM_ROUTES;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /**
- * Variant of SCP that talks to the packet reinjector. It <i>always</i> wants a
- * reply and always talks to a particular SDP port (the port for the
- * reinjector).
- *
- * @author Donal Fellows
+ * An SDP Request to load the previously-configured system multicast router
+ * table.
  */
-class ReinjectionSDPHeader extends SDPHeader {
+public final class LoadSystemRoutes extends RouterTableRequest {
 	/**
-	 * Make a header.
-	 *
 	 * @param core
-	 *            The SpiNNaker core that we want to talk to. Should be running
-	 *            the extra monitor core.
+	 *            The coordinates of the monitor core.
 	 */
-	ReinjectionSDPHeader(HasCoreLocation core) {
-		super(REPLY_EXPECTED, core, EXTRA_MONITOR_CORE_REINJECTION);
+	public LoadSystemRoutes(HasCoreLocation core) {
+		super(core, LOAD_SYSTEM_ROUTES);
+	}
+
+	@Override
+	String describe() {
+		return "Load system multicast routes";
 	}
 }

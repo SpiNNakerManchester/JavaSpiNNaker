@@ -16,11 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_NUM_CORES;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE3;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_AR;
 
 import java.nio.ByteBuffer;
+import java.util.Collection;
 
 import javax.validation.Valid;
 
@@ -50,7 +52,7 @@ public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 	 *            The processors of the chip to run on, between 1 and 17
 	 */
 	public ApplicationRun(AppID appID, @Valid HasChipLocation chip,
-			Iterable<@ValidP Integer> processors) {
+			Collection<@ValidP Integer> processors) {
 		this(appID, chip, processors, false);
 	}
 
@@ -65,7 +67,7 @@ public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 	 *            True if the processors should enter a "wait" state on starting
 	 */
 	public ApplicationRun(AppID appId, @Valid HasChipLocation chip,
-			Iterable<@ValidP Integer> processors, boolean wait) {
+			Collection<@ValidP Integer> processors, boolean wait) {
 		super(chip.getScampCore(), CMD_AR, idOpMask(appId, processors, wait));
 	}
 
@@ -76,14 +78,13 @@ public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 	 * It is an error to ask for this operation for the SCAMP core.
 	 * The only app_flag we use is in the lowest bit: WAIT.
 	 */
-	private static int idOpMask(AppID appId, Iterable<Integer> processors,
+	private static int idOpMask(AppID appId, Collection<Integer> processors,
 			boolean wait) {
 		int mask = 0;
-		if (processors != null) {
-			for (int p : processors) {
-				if (p >= 1 && p < MAX_NUM_CORES) {
-					mask |= 1 << p;
-				}
+		for (int p : requireNonNull(processors,
+				"set of processors on chip must be not null")) {
+			if (p >= 1 && p < MAX_NUM_CORES) {
+				mask |= 1 << p;
 			}
 		}
 		mask |= appId.appID << BYTE3;

@@ -23,13 +23,13 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /** An SCP Request to set the dropped packet reinjected packet types. */
-public class ClearReinjectionQueue extends SCPRequest<CheckOKResponse> {
+public class ClearReinjectionQueue extends ReinjectorRequest<CheckOKResponse> {
 	/**
 	 * @param core
 	 *            The coordinates of the monitor core.
 	 */
 	public ClearReinjectionQueue(HasCoreLocation core) {
-		super(new ReinjectionSDPHeader(core), CLEAR, 0, 0, 0, null);
+		super(core, CLEAR);
 	}
 
 	@Override

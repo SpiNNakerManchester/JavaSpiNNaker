@@ -244,21 +244,21 @@ class GeneralMessageTest {
 			}
 
 			@Test
-			void routerTableLoadApplicationRoutes() {
-				assertEquals(NO_PAYLOAD, length(
-						new RouterTableLoadApplicationRoutes(ZERO_ZERO_ZERO)));
+			void loadApplicationRoutes() {
+				assertEquals(NO_PAYLOAD,
+						length(new LoadApplicationRoutes(ZERO_ZERO_ZERO)));
 			}
 
 			@Test
-			void routerTableLoadSystemRoutes() {
-				assertEquals(NO_PAYLOAD, length(
-						new RouterTableLoadSystemRoutes(ZERO_ZERO_ZERO)));
+			void loadSystemRoutes() {
+				assertEquals(NO_PAYLOAD,
+						length(new LoadSystemRoutes(ZERO_ZERO_ZERO)));
 			}
 
 			@Test
-			void routerTableSaveApplicationRoutes() {
-				assertEquals(NO_PAYLOAD, length(
-						new RouterTableSaveApplicationRoutes(ZERO_ZERO_ZERO)));
+			void saveApplicationRoutes() {
+				assertEquals(NO_PAYLOAD,
+						length(new SaveApplicationRoutes(ZERO_ZERO_ZERO)));
 			}
 
 			@Test
@@ -304,8 +304,6 @@ class GeneralMessageTest {
 			@Test
 			void floodFillEnd() {
 				assertEquals(NO_PAYLOAD, length(new FloodFillEnd((byte) 0)));
-				assertEquals(NO_PAYLOAD,
-						length(new FloodFillEnd((byte) 0, APP, PROCS)));
 				assertEquals(NO_PAYLOAD,
 						length(new FloodFillEnd((byte) 0, APP, PROCS, false)));
 			}

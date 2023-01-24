@@ -16,27 +16,25 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.GATHERER_DATA_SPEED_UP;
+import static uk.ac.manchester.spinnaker.messages.scp.RouterTableCommand.SAVE_APPLICATION_ROUTES;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /**
- * Variant of SCP that talks to the packet reinjector for doing saving and
- * loading of multicast router tables.
- *
- * @author Donal Fellows
+ * An SDP Request to save the currently-installed application multicast router
+ * table.
  */
-class RouterTableSDPHeader extends SDPHeader {
+public final class SaveApplicationRoutes extends RouterTableRequest {
 	/**
-	 * Make a header.
-	 *
 	 * @param core
-	 *            The SpiNNaker core that we want to talk to. Should be running
-	 *            the extra monitor core.
+	 *            The coordinates of the monitor core.
 	 */
-	RouterTableSDPHeader(HasCoreLocation core) {
-		super(REPLY_EXPECTED, core, GATHERER_DATA_SPEED_UP);
+	public SaveApplicationRoutes(HasCoreLocation core) {
+		super(core, SAVE_APPLICATION_ROUTES);
+	}
+
+	@Override
+	String describe() {
+		return "Save application multicast routes";
 	}
 }

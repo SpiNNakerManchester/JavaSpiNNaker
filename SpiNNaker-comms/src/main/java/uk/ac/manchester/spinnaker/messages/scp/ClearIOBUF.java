@@ -28,18 +28,18 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * This calls {@code sark_io_buf_reset()} in {@code sark_io.c}.
  */
-public class ClearIOBUF extends SCPRequest<CheckOKResponse> {
+public class ClearIOBUF extends Spin1ApiRequest<CheckOKResponse> {
 	/**
 	 * @param core
 	 *            The core to clear the IOBUF of.
 	 */
 	public ClearIOBUF(HasCoreLocation core) {
-		super(new RunningSDPHeader(core, true), CLEAR_IOBUF, 0, 0, 1, null);
+		super(core, true, CLEAR_IOBUF);
 	}
 
 	@Override
 	public CheckOKResponse getSCPResponse(ByteBuffer buffer)
 			throws UnexpectedResponseCodeException {
-		return new CheckOKResponse("clear iobuf", CLEAR_IOBUF, buffer);
+		return new CheckOKResponse("clear IOBUF", CLEAR_IOBUF, buffer);
 	}
 }
