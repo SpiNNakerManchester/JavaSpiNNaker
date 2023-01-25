@@ -170,18 +170,17 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append(getClass().getName());
+		builder.append(getClass().getSimpleName());
 		builder.append('(');
 		builder.append("command=");
 		builder.append(scpRequestHeader.command);
-		builder.append(", ");
-		builder.append("argument1=");
+		builder.append(", sequence=");
+		builder.append(scpRequestHeader.getSequence());
+		builder.append(", argument1=");
 		builder.append(argument1);
-		builder.append(", ");
-		builder.append("argument2=");
+		builder.append(", argument2=");
 		builder.append(argument2);
-		builder.append(", ");
-		builder.append("argument3=");
+		builder.append(", argument3=");
 		builder.append(argument3);
 		builder.append(')');
 		return builder.toString();
