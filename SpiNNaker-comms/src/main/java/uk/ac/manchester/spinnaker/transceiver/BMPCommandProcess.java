@@ -399,6 +399,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 				throw new RuntimeException(
 						"duplicate sequence number catastrophe");
 			}
+			log.debug("Sending request {}", request);
 			req.send();
 		}
 
@@ -428,6 +429,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 				throw new RuntimeException(
 						"duplicate sequence number catastrophe");
 			}
+			log.debug("Sending request {}", request);
 			req.send();
 		}
 
@@ -464,6 +466,9 @@ class BMPCommandProcess<R extends BMPResponse> {
 				log.info("discarded message: {}", msg);
 				return;
 			}
+
+			log.debug("Received message with sequence {}",
+					msg.getSequenceNumber());
 
 			// If the response can be retried, retry it
 			try {
