@@ -23,6 +23,9 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 /**
  * An SDP Request to load the previously-configured system multicast router
  * table.
+ * <p>
+ * Handled by {@code data_in_speed_up_load_in_system_tables()} in
+ * {@code extra_monitor_support.c}.
  */
 public final class LoadSystemRoutes extends RouterTableRequest {
 	/**

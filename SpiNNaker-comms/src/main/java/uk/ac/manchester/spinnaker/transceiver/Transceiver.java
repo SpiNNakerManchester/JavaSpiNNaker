@@ -1431,7 +1431,8 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	@ParallelSafeWithCare
-	public void updateRuntime(Integer runTimesteps, CoreSubsets coreSubsets)
+	public void updateRuntime(Integer runTimesteps, int currentTime,
+			int syncTimesteps, CoreSubsets coreSubsets)
 			throws IOException, ProcessException, InterruptedException {
 		// Get all the cores if the subsets are not given
 		if (coreSubsets == null) {
@@ -1440,7 +1441,7 @@ public class Transceiver extends UDPTransceiver
 
 		// set the information
 		new RuntimeControlProcess(scpSelector, this).updateRuntime(runTimesteps,
-				coreSubsets);
+				currentTime, syncTimesteps, coreSubsets);
 	}
 
 	@Override

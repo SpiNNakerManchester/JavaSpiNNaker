@@ -25,8 +25,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 
 /**
  * An SCP Request to update the runtime info on a core.
+ * <p>
+ * This calls {@code simulation_control_scp_callback()} in {@code simulation.c}.
  */
-public class UpdateRuntime extends Spin1ApiRequest<CheckOKResponse> {
+public class UpdateRuntime extends FECRequest<CheckOKResponse> {
 	/**
 	 * @param core
 	 *            The SpiNNaker core to update the runtime info of.
@@ -34,11 +36,15 @@ public class UpdateRuntime extends Spin1ApiRequest<CheckOKResponse> {
 	 *            The number of machine timesteps.
 	 * @param infiniteRun
 	 *            Whether we are doing infinite running.
+	 * @param currentTime
+	 *            The current simulation time.
+	 * @param numSyncSteps
+	 *            The number of timesteps before we pause to synchronise.
 	 */
 	public UpdateRuntime(HasCoreLocation core, int runTime,
-			boolean infiniteRun) {
+			boolean infiniteRun, int currentTime, int numSyncSteps) {
 		super(core, true, NEW_RUNTIME_ID, runTime, bool(infiniteRun),
-				bool(true));
+				currentTime, numSyncSteps);
 	}
 
 	private static int bool(boolean value) {

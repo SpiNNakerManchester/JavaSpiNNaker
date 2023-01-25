@@ -1452,6 +1452,10 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *            How many machine timesteps will the run last. {@code null} is
 	 *            used to indicate an infinite (unbounded until explicitly
 	 *            stopped) run.
+	 * @param currentTime
+	 *            The current simulation time.
+	 * @param syncTimesteps
+	 *            The number of timesteps before we pause to synchronise.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -1460,9 +1464,11 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
-	default void updateRuntime(@PositiveOrZero Integer runTimesteps)
+	default void updateRuntime(@PositiveOrZero Integer runTimesteps,
+			@PositiveOrZero int currentTime, @PositiveOrZero int syncTimesteps)
 			throws IOException, ProcessException, InterruptedException {
-		updateRuntime(runTimesteps, (CoreSubsets) null);
+		updateRuntime(runTimesteps, currentTime, syncTimesteps,
+				(CoreSubsets) null);
 	}
 
 	/**
@@ -1472,6 +1478,10 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *            How many machine timesteps will the run last. {@code null} is
 	 *            used to indicate an infinite (unbounded until explicitly
 	 *            stopped) run.
+	 * @param currentTime
+	 *            The current simulation time.
+	 * @param syncTimesteps
+	 *            The number of timesteps before we pause to synchronise.
 	 * @param core
 	 *            The coordinates of the processor to clear the IOBUF on.
 	 * @throws IOException
@@ -1483,9 +1493,11 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	default void updateRuntime(@PositiveOrZero Integer runTimesteps,
+			@PositiveOrZero int currentTime, @PositiveOrZero int syncTimesteps,
 			@Valid HasCoreLocation core)
 			throws IOException, ProcessException, InterruptedException {
-		updateRuntime(runTimesteps, new CoreSubsets(core));
+		updateRuntime(runTimesteps, currentTime, syncTimesteps,
+				new CoreSubsets(core));
 	}
 
 	/**
@@ -1495,6 +1507,10 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *            How many machine timesteps will the run last. {@code null} is
 	 *            used to indicate an infinite (unbounded until explicitly
 	 *            stopped) run.
+	 * @param currentTime
+	 *            The current simulation time.
+	 * @param syncTimesteps
+	 *            The number of timesteps before we pause to synchronise.
 	 * @param coreSubsets
 	 *            A set of chips and cores on which to set the running time.
 	 * @throws IOException
@@ -1506,6 +1522,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 */
 	@ParallelSafeWithCare
 	void updateRuntime(@PositiveOrZero Integer runTimesteps,
+			@PositiveOrZero int currentTime, @PositiveOrZero int syncTimesteps,
 			@Valid CoreSubsets coreSubsets)
 			throws IOException, ProcessException, InterruptedException;
 

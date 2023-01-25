@@ -16,22 +16,27 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.RUNNING_COMMAND_SDP_PORT;
+
+import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /**
- * A command message to a core using Spin1_API.
+ * A command message to a core using FrontEndCommon lib's simulation management
+ * subsystem.
  *
  * @param <T>
  *            The type of response expected.
  */
 // TODO Seal in 17
-public abstract class Spin1ApiRequest<T extends SCPResponse>
-		extends SCPRequest<T> {
+public abstract class FECRequest<T extends SCPResponse> extends SCPRequest<T> {
 	/**
 	 * @param core
 	 *            Where to send the request.
@@ -40,7 +45,7 @@ public abstract class Spin1ApiRequest<T extends SCPResponse>
 	 * @param command
 	 *            What command we are invoking.
 	 */
-	Spin1ApiRequest(HasCoreLocation core, boolean replyExpected,
+	FECRequest(HasCoreLocation core, boolean replyExpected,
 			RunningCommand command) {
 		super(new Header(core, replyExpected), command, 0, 0, 0, NO_DATA);
 	}
@@ -58,11 +63,19 @@ public abstract class Spin1ApiRequest<T extends SCPResponse>
 	 *            Argument 2.
 	 * @param arg3
 	 *            Argument 3.
+	 * @param arg4
+	 *            Argument 4.
 	 */
-	Spin1ApiRequest(HasCoreLocation core, boolean replyExpected,
-			RunningCommand command, int arg1, int arg2, int arg3) {
+	FECRequest(HasCoreLocation core, boolean replyExpected,
+			RunningCommand command, int arg1, int arg2, int arg3, int arg4) {
 		super(new Header(core, replyExpected), command, arg1, arg2, arg3,
-				NO_DATA);
+				packInt(arg4));
+	}
+
+	private static ByteBuffer packInt(int value) {
+		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
+		b.putInt(value).flip();
+		return b;
 	}
 
 	/**

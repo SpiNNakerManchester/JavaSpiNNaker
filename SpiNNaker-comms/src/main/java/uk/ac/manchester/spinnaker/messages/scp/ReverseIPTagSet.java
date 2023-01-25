@@ -42,6 +42,9 @@ import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
 /**
  * An SCP Request to set a Reverse IP Tag. Reverse IP tags are tags that funnel
  * packets from the outside world to a particular SpiNNaker core.
+ * <p>
+ * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},
+ * if sent to a BMP).
  *
  * @see IPTagSet
  */
@@ -66,6 +69,7 @@ public class ReverseIPTagSet extends SCPRequest<CheckOKResponse> {
 				argument2(destination, port), 0);
 	}
 
+	// arg1 = flags[11:8] : timeout : command : dest_port : tag
 	private static int argument1(int sdpPort, HasCoreLocation destination,
 			int tag) {
 		final int strip = 1;
@@ -77,6 +81,7 @@ public class ReverseIPTagSet extends SCPRequest<CheckOKResponse> {
 				| (tag & THREE_BITS_MASK);
 	}
 
+	// arg2 = dest_addr : port
 	private static int argument2(HasCoreLocation destination, int port) {
 		return (destination.getX() << DEST_X_FIELD)
 				| (destination.getY() << DEST_Y_FIELD) | (port & PORT_MASK);

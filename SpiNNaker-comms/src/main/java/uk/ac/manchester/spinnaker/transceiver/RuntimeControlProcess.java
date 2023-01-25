@@ -124,6 +124,10 @@ class RuntimeControlProcess extends TxrxProcess {
 	 * @param runTimesteps
 	 *            The number of machine timesteps to run for. {@code null}
 	 *            indicates an infinite run.
+	 * @param currentTime
+	 *            The current simulation time.
+	 * @param syncTimesteps
+	 *            The number of timesteps before we pause to synchronise.
 	 * @param coreSubsets
 	 *            the cores to update the information of.
 	 * @throws IOException
@@ -133,13 +137,15 @@ class RuntimeControlProcess extends TxrxProcess {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	void updateRuntime(Integer runTimesteps, CoreSubsets coreSubsets)
+	void updateRuntime(Integer runTimesteps, int currentTime, int syncTimesteps,
+			CoreSubsets coreSubsets)
 			throws IOException, ProcessException, InterruptedException {
 		int runTime = (runTimesteps == null ? 0 : runTimesteps);
 		boolean infiniteRun = runTimesteps == null;
 		for (var core : requireNonNull(coreSubsets,
 				"must have actual core subset to iterate over")) {
-			sendRequest(new UpdateRuntime(core, runTime, infiniteRun));
+			sendRequest(new UpdateRuntime(core, runTime, infiniteRun,
+					currentTime, syncTimesteps));
 		}
 		finishBatch();
 	}

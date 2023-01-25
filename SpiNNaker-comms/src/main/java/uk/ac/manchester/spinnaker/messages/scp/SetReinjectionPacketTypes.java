@@ -25,6 +25,9 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
  * An SCP Request to set the dropped packet reinjected packet types.
+ * <p>
+ * Handled by {@code reinjection_set_packet_types()} in
+ * {@code extra_monitor_support.c}.
  */
 public class SetReinjectionPacketTypes
 		extends ReinjectorRequest<CheckOKResponse> {

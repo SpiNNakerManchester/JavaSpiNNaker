@@ -27,8 +27,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * An SCP Request to update the runtime info on a core. Note that this request
  * does not expect a response; the response to this request is detected by the
  * core entering a non-running state.
+ * <p>
+ * This calls {@code simulation_control_scp_callback()} in {@code simulation.c}.
  */
-public class UpdateProvenanceAndExit extends Spin1ApiRequest<NoResponse> {
+public class UpdateProvenanceAndExit extends FECRequest<NoResponse> {
 	/**
 	 * @param core
 	 *            The SpiNNaker core to update the provenance info of.

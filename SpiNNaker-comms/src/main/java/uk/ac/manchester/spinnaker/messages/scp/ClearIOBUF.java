@@ -26,9 +26,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 /**
  * An SCP Request to clear the IOBUF on a core.
  * <p>
- * This calls {@code sark_io_buf_reset()} in {@code sark_io.c}.
+ * This calls {@code sark_io_buf_reset()} in {@code sark_io.c} (via
+ * {@code simulation_control_scp_callback()} in {@code simulation.c}).
  */
-public class ClearIOBUF extends Spin1ApiRequest<CheckOKResponse> {
+public class ClearIOBUF extends FECRequest<CheckOKResponse> {
 	/**
 	 * @param core
 	 *            The core to clear the IOBUF of.

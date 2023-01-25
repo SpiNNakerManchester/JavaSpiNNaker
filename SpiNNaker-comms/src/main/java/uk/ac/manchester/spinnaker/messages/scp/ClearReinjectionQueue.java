@@ -22,7 +22,11 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
-/** An SCP Request to set the dropped packet reinjected packet types. */
+/**
+ * An SCP Request to set the dropped packet reinjected packet types.
+ * <p>
+ * Handled by {@code reinjection_clear()} in {@code extra_monitor_support.c}.
+ */
 public class ClearReinjectionQueue extends ReinjectorRequest<CheckOKResponse> {
 	/**
 	 * @param core
