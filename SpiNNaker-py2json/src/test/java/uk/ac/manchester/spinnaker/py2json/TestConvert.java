@@ -122,6 +122,7 @@ class TestConvert {
 		var f = getFile(CSV_DEFINED);
 		try (var mdl = new MachineDefinitionConverter()) {
 			var c = mdl.loadClassicConfigurationDefinition(f, true);
+			mdl.validate(c);
 			assertEquals(1, c.machines.size());
 			var machine = c.machines.get(0);
 			assertNotNull(machine);

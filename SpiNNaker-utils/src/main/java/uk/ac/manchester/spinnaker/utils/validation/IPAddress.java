@@ -46,7 +46,7 @@ import javax.validation.Payload;
 @Target({
 	METHOD, FIELD, PARAMETER, TYPE_USE
 })
-@Constraint(validatedBy = IPAddressValidator.class)
+@Constraint(validatedBy = IPAddress.Validator.class)
 public @interface IPAddress {
 	/**
 	 * Whether {@code null} is allowed. It defaults to being disallowed.
@@ -82,41 +82,44 @@ public @interface IPAddress {
 	 * @return Payloads, if any.
 	 */
 	Class<? extends Payload>[] payload() default {};
-}
 
-/** Validator for {@link IPAddress} constraints. */
-class IPAddressValidator implements ConstraintValidator<IPAddress, String> {
-	private Pattern pattern;
+	/**
+	 * Validator for {@link IPAddress} constraints. Not intended for direct use.
+	 */
+	class Validator implements ConstraintValidator<IPAddress, String> {
+		private Pattern pattern;
 
-	private boolean emptyOK;
+		private boolean emptyOK;
 
-	private boolean nullOK;
+		private boolean nullOK;
 
-	@Override
-	public void initialize(IPAddress annotation) {
-		if (isNull(pattern)) {
-			pattern = Pattern.compile("^\\d+[.]\\d+[.]\\d+[.]\\d+$");
+		@Override
+		public void initialize(IPAddress annotation) {
+			if (isNull(pattern)) {
+				pattern = Pattern.compile("^\\d+[.]\\d+[.]\\d+[.]\\d+$");
+			}
+			emptyOK = annotation.emptyOK();
+			nullOK = annotation.nullOK();
 		}
-		emptyOK = annotation.emptyOK();
-		nullOK = annotation.nullOK();
-	}
 
-	@Override
-	public boolean isValid(String value, ConstraintValidatorContext context) {
-		if (isNull(value)) {
-			return nullOK;
-		} else if (value.isEmpty()) {
-			return emptyOK;
-		}
-		if (!pattern.matcher(value).matches()) {
-			return false;
-		}
-		// Cheap checks succeeded; use the real parser now!
-		try {
-			InetAddress.getByName(value);
-			return true;
-		} catch (UnknownHostException e) {
-			return false;
+		@Override
+		public boolean isValid(String value,
+				ConstraintValidatorContext context) {
+			if (isNull(value)) {
+				return nullOK;
+			} else if (value.isEmpty()) {
+				return emptyOK;
+			}
+			if (!pattern.matcher(value).matches()) {
+				return false;
+			}
+			// Cheap checks succeeded; use the real parser now!
+			try {
+				InetAddress.getByName(value);
+				return true;
+			} catch (UnknownHostException e) {
+				return false;
+			}
 		}
 	}
 }

@@ -19,12 +19,9 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 import static java.lang.System.nanoTime;
 import static java.net.InetAddress.getByName;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.hexbyte;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_USEC;
 import static uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
@@ -34,14 +31,12 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.MustBeClosed;
 
-import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
@@ -49,7 +44,6 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
-import uk.ac.manchester.spinnaker.utils.Daemon;
 
 /**
  * An SDP connection that uses a throttle to stop SCAMP from overloading. Note
@@ -66,11 +60,7 @@ class ThrottledConnection implements Closeable {
 	/** The {@link #receive()} timeout, in milliseconds. */
 	private static final int TIMEOUT_MS = 2000;
 
-	private static final ScheduledExecutorService CLOSER;
-
 	static {
-		CLOSER = newSingleThreadScheduledExecutor(
-				r -> new Daemon(r, "ThrottledConnection.Closer"));
 		log.info("inter-message minimum time set to {}us",
 				THROTTLE_NS / NSEC_PER_USEC);
 	}
@@ -93,8 +83,6 @@ class ThrottledConnection implements Closeable {
 	 *            The SpiNNaker board to talk to.
 	 * @param iptag
 	 *            The tag to reprogram to talk to this connection.
-	 * @param job
-	 *            A spalloc job to use to open the connection, or null if none.
 	 * @throws IOException
 	 *             If IO fails.
 	 * @throws ProcessException
@@ -105,15 +93,11 @@ class ThrottledConnection implements Closeable {
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
 	ThrottledConnection(TransceiverInterface transceiver, Ethernet board,
-			IPTag iptag, SpallocClient.Job job)
+			IPTag iptag)
 			throws IOException, ProcessException, InterruptedException {
 		location = board.location;
-		if (job == null) {
-			connection = new SCPConnection(location,
-					getByName(board.ethernetAddress), SCP_SCAMP_PORT);
-		} else {
-			connection = job.getConnection(location);
-		}
+		connection = transceiver.createScpConnection(location,
+				getByName(board.ethernetAddress));
 		log.info(
 				"created throttled connection to {} ({}) from {}:{}; "
 						+ "reprogramming tag #{} to point to this connection",
@@ -166,22 +150,9 @@ class ThrottledConnection implements Closeable {
 	}
 
 	@Override
-	@SuppressWarnings("FutureReturnValueIgnored")
 	public void close() {
 		if (closed.compareAndSet(false, true)) {
-			// Prevent reuse of existing socket IDs for other boards
-			CLOSER.schedule(() -> {
-				try {
-					Object name = null;
-					if (log.isInfoEnabled()) {
-						name = connection.toString();
-					}
-					connection.close();
-					log.info("closed {}", name);
-				} catch (IOException e) {
-					log.warn("failed to close connection", e);
-				}
-			}, 1, SECONDS);
+			connection.closeEventually();
 		}
 	}
 

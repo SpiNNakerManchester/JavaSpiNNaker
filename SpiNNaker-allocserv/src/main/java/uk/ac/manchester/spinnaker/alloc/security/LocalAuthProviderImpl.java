@@ -507,7 +507,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		private final Update createGroup =
 				conn.update(CREATE_GROUP_IF_NOT_EXISTS);
 
-		Update unlock = conn.update(UNLOCK_LOCKED_USERS);
+		private final Update unlock = conn.update(UNLOCK_LOCKED_USERS);
 
 		@Override
 		public void close() {

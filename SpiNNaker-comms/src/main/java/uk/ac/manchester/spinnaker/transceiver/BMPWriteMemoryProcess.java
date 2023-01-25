@@ -32,7 +32,6 @@ import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.Constants;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPWriteMemory;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
@@ -40,7 +39,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
 /**
  * Write to memory on a BMP.
  */
-class BMPWriteMemoryProcess extends BMPCommandProcess<BMPResponse> {
+class BMPWriteMemoryProcess extends BMPCommandProcess {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.

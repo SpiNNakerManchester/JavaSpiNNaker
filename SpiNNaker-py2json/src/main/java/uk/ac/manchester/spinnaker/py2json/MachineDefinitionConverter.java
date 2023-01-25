@@ -20,6 +20,7 @@ import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE
 import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static java.lang.System.exit;
+import static javax.validation.Validation.buildDefaultValidatorFactory;
 import static org.python.core.Py.getSystemState;
 import static org.python.core.Py.newString;
 import static org.python.core.PySystemState.initialize;
@@ -27,6 +28,8 @@ import static org.python.core.PySystemState.initialize;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Callable;
+
+import javax.validation.ValidatorFactory;
 
 import org.python.core.PySystemState;
 import org.python.util.PythonInterpreter;
@@ -47,8 +50,10 @@ import picocli.CommandLine.TypeConversionException;
  *
  * @author Donal Fellows
  */
-public class MachineDefinitionConverter
-		implements AutoCloseable {
+public class MachineDefinitionConverter implements AutoCloseable {
+	private static final ValidatorFactory VALIDATOR_FACTORY =
+			buildDefaultValidatorFactory();
+
 	private PySystemState sys;
 
 	/**
@@ -97,6 +102,23 @@ public class MachineDefinitionConverter
 	}
 
 	/**
+	 * Validate a configuration, writing failures to {@link System#err}.
+	 *
+	 * @param config
+	 *            The configuration to validate.
+	 */
+	public void validate(Configuration config) {
+		var failures = VALIDATOR_FACTORY.getValidator().validate(config);
+		failures.forEach(c -> {
+			System.err.println(
+					"WARNING: validation failure: " + c.getMessage());
+		});
+		if (!failures.isEmpty()) {
+			System.err.println("validation failed; JSON may be unusable");
+		}
+	}
+
+	/**
 	 * How we write JSON.
 	 *
 	 * @return A service for writing objects as JSON.
@@ -135,7 +157,7 @@ public class MachineDefinitionConverter
 		@Override
 		public Integer call() throws IOException {
 			var config = loadClassicConfigurationDefinition(configFile, false);
-			// TODO validate the config here
+			validate(config);
 			getJsonWriter().writeValue(destination, config);
 			return CommandLine.ExitCode.OK;
 		}

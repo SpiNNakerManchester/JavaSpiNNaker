@@ -18,8 +18,8 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static java.lang.Integer.toUnsignedLong;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
+import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -44,6 +44,7 @@ import uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * Executes the host based data specification.
@@ -60,6 +61,8 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	/**
 	 * Create a high-level DSE interface.
 	 *
+	 * @param txrx
+	 *            The transceiver for talking to the SpiNNaker machine.
 	 * @param machine
 	 *            The description of the SpiNNaker machine.
 	 * @param db
@@ -79,10 +82,11 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             this constructor should not be doing that!
 	 */
 	@MustBeClosed
-	public HostExecuteDataSpecification(Machine machine, DSEDatabaseEngine db)
+	public HostExecuteDataSpecification(TransceiverInterface txrx,
+			Machine machine, DSEDatabaseEngine db)
 			throws IOException, ProcessException, InterruptedException,
 			StorageException, URISyntaxException {
-		super(machine, db);
+		super(txrx, machine, db);
 	}
 
 	/**
@@ -257,7 +261,7 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 		void loadCore(CoreToLoad ctl) throws IOException, ProcessException,
 				DataSpecificationException, StorageException,
 				InterruptedException {
-			ByteBuffer ds = getDataSpec(ctl);
+			var ds = getDataSpec(ctl);
 			var start = malloc(ctl, ctl.sizeToWrite);
 			var executor = new Executor(ds, machine.getChipAt(ctl.core).sdram);
 			try (executor) {

@@ -4,5 +4,13 @@
 	"root": [0, 0],
 	"ethernetResources": {},
 	"standardResources": {},
-	"chips": []
+	"chips": [
+		[
+			0, 0, {
+				"cores": 1,
+				"ethernet": [0, 0],
+				"ipAddress": "127.0.0.1"
+			}
+		]
+	]
 }
