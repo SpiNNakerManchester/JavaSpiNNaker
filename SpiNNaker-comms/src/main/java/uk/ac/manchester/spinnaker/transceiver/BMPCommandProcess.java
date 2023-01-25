@@ -159,10 +159,6 @@ class BMPCommandProcess {
 	<T, R extends BMPRequest.PayloadedResponse<T>> T call(BMPRequest<R> request)
 			throws IOException, ProcessException, InterruptedException {
 		var holder = new ValueHolder<R>();
-		/*
-		 * If no pipeline built yet, build one on the connection selected for
-		 * it.
-		 */
 		var pipeline = new RequestPipeline<R>(
 				connectionSelector.getNextConnection(request));
 		pipeline.sendRequest(request, holder::setValue);
@@ -191,10 +187,6 @@ class BMPCommandProcess {
 	<T extends BMPResponse> T execute(BMPRequest<T> request, int retries)
 			throws IOException, ProcessException, InterruptedException {
 		var holder = new ValueHolder<T>();
-		/*
-		 * If no pipeline built yet, build one on the connection selected for
-		 * it.
-		 */
 		var pipeline = new RequestPipeline<T>(
 				connectionSelector.getNextConnection(request));
 		pipeline.sendRequest(request, retries, holder::setValue);
@@ -227,6 +219,10 @@ class BMPCommandProcess {
 		var results = new ArrayList<T>();
 		var map = new HashMap<BMPConnection, RequestPipeline<T>>();
 		for (var request : requests) {
+			/*
+			 * If no pipeline built yet, build one on the connection selected
+			 * for it.
+			 */
 			var pipeline = map.computeIfAbsent(
 					connectionSelector.getNextConnection(request),
 					RequestPipeline::new);
@@ -263,6 +259,10 @@ class BMPCommandProcess {
 		var results = new ArrayList<T>();
 		var map = new HashMap<BMPConnection, RequestPipeline<T>>();
 		for (var request : requests) {
+			/*
+			 * If no pipeline built yet, build one on the connection selected
+			 * for it.
+			 */
 			var pipeline = map.computeIfAbsent(
 					connectionSelector.getNextConnection(request),
 					RequestPipeline::new);

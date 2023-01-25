@@ -448,8 +448,7 @@ class RouterControlProcess extends TxrxProcess {
 			throws IOException, ProcessException, InterruptedException {
 		var status = new HashMap<CoreLocation, ReinjectionStatus>();
 		for (var core : monitorCoreSubsets) {
-			sendRequest(new GetReinjectionStatus(core),
-					response -> status.put(core, response.get()));
+			sendGet(new GetReinjectionStatus(core), s -> status.put(core, s));
 		}
 		finishBatch();
 		return unmodifiableMap(status);
@@ -474,16 +473,13 @@ class RouterControlProcess extends TxrxProcess {
 		var es = new ValueHolder<Integer>();
 		var reg = new int[NUM_REGISTERS];
 
-		sendRequest(
-				new ReadMemory(chip, ROUTER_CONTROL, REGISTER),
-				response -> cr.setValue(response.get().getInt()));
-		sendRequest(
-				new ReadMemory(chip, ROUTER_ERROR, REGISTER),
-				response -> es.setValue(response.get().getInt()));
-		sendRequest(
-				new ReadMemory(chip, ROUTER_DIAGNOSTICS,
-						NUM_REGISTERS * REGISTER),
-				response -> response.get().asIntBuffer().get(reg));
+		sendGet(new ReadMemory(chip, ROUTER_CONTROL, REGISTER),
+				bytes -> cr.setValue(bytes.getInt()));
+		sendGet(new ReadMemory(chip, ROUTER_ERROR, REGISTER),
+				bytes -> es.setValue(bytes.getInt()));
+		sendGet(new ReadMemory(chip, ROUTER_DIAGNOSTICS,
+				NUM_REGISTERS * REGISTER),
+				bytes -> bytes.asIntBuffer().get(reg));
 
 		finishBatch();
 		return new RouterDiagnostics(cr.getValue(), es.getValue(), reg);

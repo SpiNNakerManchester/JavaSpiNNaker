@@ -188,12 +188,10 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 		var routes = new TreeMap<Integer, MulticastRoutingEntry>();
 		for (int i = 0; i < NUM_READS; i++) {
 			int offset = i * ENTRIES_PER_READ;
-			sendRequest(
-					new ReadMemory(chip,
-							baseAddress.add(offset * BYTES_PER_ENTRY),
-							UDP_MESSAGE_MAX_SIZE),
-					response -> addRoutes(response.get(), offset, routes,
-							appID));
+			sendGet(new ReadMemory(chip,
+					baseAddress.add(offset * BYTES_PER_ENTRY),
+					UDP_MESSAGE_MAX_SIZE),
+					bytes -> addRoutes(bytes, offset, routes, appID));
 		}
 		finishBatch();
 		return List.copyOf(routes.values());

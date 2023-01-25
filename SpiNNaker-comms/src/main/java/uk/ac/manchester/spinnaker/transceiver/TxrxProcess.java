@@ -22,6 +22,7 @@ import static java.lang.String.format;
 import static java.lang.System.nanoTime;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
+import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_RETRY_DEFAULT;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT_DEFAULT;
@@ -261,20 +262,18 @@ public class TxrxProcess {
 	 */
 	protected final void sendRequest(SCPRequest<CheckOKResponse> request)
 			throws IOException, InterruptedException {
-		sendRequest(request, null);
+		pipeline(request).send(request, null);
 	}
 
 	/**
-	 * Send a request.
+	 * Send a request and handle the response.
 	 *
 	 * @param <Resp>
 	 *            The type of response expected to the request.
 	 * @param request
 	 *            The request to send.
 	 * @param callback
-	 *            The callback that handles the request's response. If
-	 *            {@code null}, the response to the message will be constructed
-	 *            (i.e., checked for any failures) and then discarded.
+	 *            The callback that handles the request's response.
 	 * @throws IOException
 	 *             If sending fails.
 	 * @throws InterruptedException
@@ -283,7 +282,30 @@ public class TxrxProcess {
 	protected final <Resp extends CheckOKResponse> void sendRequest(
 			SCPRequest<Resp> request, Consumer<Resp> callback)
 			throws IOException, InterruptedException {
-		pipeline(request).send(request, callback);
+		pipeline(request).send(request,
+				requireNonNull(callback, "callback must be non-null"));
+	}
+
+	/**
+	 * Send a request for a response with a payload.
+	 *
+	 * @param <T>
+	 *            The type of parsed payload expected.
+	 * @param <R>
+	 *            The type of response expected to the request.
+	 * @param request
+	 *            The request to send.
+	 * @param callback
+	 *            The callback that handles the parsed payload.
+	 * @throws IOException
+	 *             If sending fails.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
+	 */
+	protected final <T, R extends PayloadedResponse<T, ?>> void sendGet(
+			SCPRequest<R> request, Consumer<T> callback)
+			throws IOException, InterruptedException {
+		pipeline(request).send(request, resp -> callback.accept(resp.get()));
 	}
 
 	/**
@@ -319,7 +341,7 @@ public class TxrxProcess {
 	 *
 	 * @param <T>
 	 *            The type of the payload of the response.
-	 * @param <Resp>
+	 * @param <R>
 	 *            The type of the response; implicit in the type of the request.
 	 * @param request
 	 *            The request to send
@@ -331,14 +353,14 @@ public class TxrxProcess {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	protected final <T, Resp extends PayloadedResponse<T, ?>> T retrieve(
-			SCPRequest<Resp> request)
-			throws IOException, ProcessException, InterruptedException {
-		var holder = new ValueHolder<Resp>();
+	protected final <T,
+			R extends PayloadedResponse<T, ?>> T retrieve(SCPRequest<R> request)
+					throws IOException, ProcessException, InterruptedException {
+		var holder = new ValueHolder<T>();
 		resetFailureState();
-		sendRequest(request, holder::setValue);
+		sendGet(request, holder::setValue);
 		finishBatch();
-		return holder.getValue().get();
+		return holder.getValue();
 	}
 
 	/**

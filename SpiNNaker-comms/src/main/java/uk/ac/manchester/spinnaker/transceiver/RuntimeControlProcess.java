@@ -40,7 +40,6 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
 import uk.ac.manchester.spinnaker.messages.scp.ClearIOBUF;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
-import uk.ac.manchester.spinnaker.messages.scp.ReadMemory.Response;
 import uk.ac.manchester.spinnaker.messages.scp.UpdateProvenanceAndExit;
 import uk.ac.manchester.spinnaker.messages.scp.UpdateRuntime;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
@@ -190,10 +189,10 @@ class RuntimeControlProcess extends TxrxProcess {
 		// Get the IOBuf address for each core
 		for (var core : requireNonNull(cores,
 				"must have actual core subset to iterate over")) {
-			sendRequest(new ReadMemory(core.getScampCore(),
+			sendGet(new ReadMemory(core.getScampCore(),
 					getVcpuAddress(core).add(CPU_IOBUF_ADDRESS_OFFSET), WORD),
-					response -> issueReadForIOBufHead(core, 0,
-							new MemoryLocation(response.get().getInt()),
+					bytes -> issueReadForIOBufHead(core, 0,
+							new MemoryLocation(bytes.getInt()),
 							chunk(size + BUF_HEADER_BYTES)));
 		}
 		finishBatch();
@@ -202,22 +201,20 @@ class RuntimeControlProcess extends TxrxProcess {
 		while (!nextReads.isEmpty() || !extraReads.isEmpty()) {
 			while (!extraReads.isEmpty()) {
 				var read = extraReads.remove();
-				sendRequest(read.message(),
-						response -> saveIOBufTailSection(read, response));
+				sendGet(read.message(),
+						bytes -> saveIOBufTailSection(read, bytes));
 			}
 
 			while (!nextReads.isEmpty()) {
 				var read = nextReads.remove();
-				sendRequest(read.message(), response -> {
+				sendGet(read.message(), bytes -> {
 					// Unpack the IOBuf header
-					var nextAddress =
-							new MemoryLocation(response.get().getInt());
-					response.get().getLong(); // Ignore 8 bytes
-					int bytesToRead = response.get().getInt();
+					var nextAddress = new MemoryLocation(bytes.getInt());
+					bytes.getLong(); // Ignore 8 bytes
+					int bytesToRead = bytes.getInt();
 
 					// Save the rest of the IOBuf
-					int packetBytes =
-							saveIOBufHead(read, response, bytesToRead);
+					int packetBytes = saveIOBufHead(read, bytes, bytesToRead);
 
 					// Ask for the rest of the IOBuf buffer to be copied over
 					issueReadsForIOBufTail(read, bytesToRead,
@@ -257,14 +254,14 @@ class RuntimeControlProcess extends TxrxProcess {
 		}
 	}
 
-	private int saveIOBufHead(NextRead read, Response response,
+	private int saveIOBufHead(NextRead read, ByteBuffer bytes,
 			int bytesToRead) {
 		// Create a buffer for the data
 		var buffer = allocate(bytesToRead).order(LITTLE_ENDIAN);
 		// Put the data from this packet into the buffer
-		int packetBytes = min(response.get().remaining(), bytesToRead);
+		int packetBytes = min(bytes.remaining(), bytesToRead);
 		if (packetBytes > 0) {
-			buffer.put(response.get());
+			buffer.put(bytes);
 		}
 		iobuf.get(read.core).put(read.blockID, buffer);
 		return packetBytes;
@@ -284,11 +281,11 @@ class RuntimeControlProcess extends TxrxProcess {
 		}
 	}
 
-	private void saveIOBufTailSection(ExtraRead read, Response response) {
+	private void saveIOBufTailSection(ExtraRead read, ByteBuffer bytes) {
 		var buffer = iobuf.get(read.core).get(read.blockID);
 		synchronized (buffer) {
 			buffer.position(read.offset);
-			buffer.put(response.get());
+			buffer.put(bytes);
 		}
 	}
 

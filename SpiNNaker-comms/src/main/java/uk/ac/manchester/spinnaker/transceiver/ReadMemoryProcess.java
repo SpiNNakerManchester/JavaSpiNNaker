@@ -79,8 +79,8 @@ class ReadMemoryProcess extends TxrxProcess {
 		for (int offset = 0, chunk; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
 			final int thisOffset = offset;
-			sendRequest(new ReadMemory(chip, baseAddress.add(offset), chunk),
-					response -> a.add(thisOffset, response.get()));
+			sendGet(new ReadMemory(chip, baseAddress.add(offset), chunk),
+					bytes -> a.add(thisOffset, bytes));
 		}
 		finishBatch();
 		return a.finish();
@@ -115,10 +115,8 @@ class ReadMemoryProcess extends TxrxProcess {
 		for (int offset = 0, chunk; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
 			int thisOffset = offset;
-			sendRequest(
-					new ReadLink(chip, linkDirection, baseAddress.add(offset),
-							chunk),
-					response -> a.add(thisOffset, response.get()));
+			sendGet(new ReadLink(chip, linkDirection, baseAddress.add(offset),
+					chunk), bytes -> a.add(thisOffset, bytes));
 		}
 		finishBatch();
 		return a.finish();

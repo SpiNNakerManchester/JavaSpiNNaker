@@ -17,12 +17,14 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.min;
+import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.IDLE;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTable.getColumnOffset;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTable.getNumColumnBytes;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTER_P2P;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.range;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -135,19 +137,19 @@ class GetMachineProcess extends TxrxProcess {
 	Machine getMachineDetails(HasChipLocation bootChip, MachineDimensions size)
 			throws IOException, ProcessException, InterruptedException {
 		// Get the P2P table; 8 entries are packed into each 32-bit word
-		var p2pColumnData = new ArrayList<ByteBuffer>();
-		for (int column = 0; column < size.width; column++) {
-			p2pColumnData.add(retrieve(new ReadMemory(bootChip,
-					ROUTER_P2P.add(getColumnOffset(column)),
-					getNumColumnBytes(size.height))));
-			// TODO work out why multiple calls at once is a problem
+		var p2pColumnData = new ByteBuffer[size.width];
+		int byteLength = getNumColumnBytes(size.height);
+		for (int col : range(0, size.width)) {
+			sendGet(new ReadMemory(bootChip,
+					ROUTER_P2P.add(getColumnOffset(col)), byteLength),
+					bytes -> p2pColumnData[col] = bytes);
 		}
-		var p2pTable = new P2PTable(size, p2pColumnData);
+		finishBatch();
+		var p2pTable = new P2PTable(size, asList(p2pColumnData));
 
 		// Get the chip information for each chip
 		for (var chip : p2pTable.getChips()) {
-			sendRequest(new GetChipInfo(chip),
-					response -> chipInfo.put(chip, response.get()));
+			sendGet(new GetChipInfo(chip), info -> chipInfo.put(chip, info));
 		}
 		try {
 			finishBatch();
