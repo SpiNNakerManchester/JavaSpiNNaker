@@ -28,6 +28,9 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * SCP Request for the CAN bus status data from the BMP.
+ * <p>
+ * Handled in {@code cmd_bmp_info()} (in {@code bmp_cmd.c}) by reading from
+ * {@code can_status}.
  */
 public class ReadCANStatus extends BMPRequest<ReadCANStatus.Response> {
 	private static final int MAX_BOARDS_PER_FRAME = 24;

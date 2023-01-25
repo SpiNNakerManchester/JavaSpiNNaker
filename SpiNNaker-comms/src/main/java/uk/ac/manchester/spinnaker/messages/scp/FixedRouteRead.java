@@ -29,7 +29,12 @@ import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/** Gets a fixed route entry. */
+/**
+ * Gets a fixed route entry.
+ * <p>
+ * Calls {@code rtr_fr_get()} in {@code sark_hw.c}, via {@code rtr_cmd()} in
+ * {@code scamp-cmd.c}.
+ */
 public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	private static int argument1(AppID appID) {
 		return (appID.appID << BYTE1) | (ROUTER_FIXED.value << BYTE0);

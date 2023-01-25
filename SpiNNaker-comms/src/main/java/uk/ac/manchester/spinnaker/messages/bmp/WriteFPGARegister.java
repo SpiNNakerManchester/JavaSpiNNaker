@@ -29,6 +29,8 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
 
 /**
  * A request for writing data to a FPGA register.
+ * <p>
+ * Calls {@code cmd_fpga_write()} in {@code bmp_cmd.c}.
  *
  * @see <a href=
  *      "https://github.com/SpiNNakerManchester/spio/blob/master/designs/spinnaker_fpgas/README.md#spi-interface">

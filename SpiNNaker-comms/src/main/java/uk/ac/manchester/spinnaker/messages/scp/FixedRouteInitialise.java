@@ -27,7 +27,12 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 
-/** Sets a fixed route entry. */
+/**
+ * Sets a fixed route entry.
+ * <p>
+ * Calls {@code rtr_fr_set()} in {@code sark_hw.c}, via {@code rtr_cmd()} in
+ * {@code scamp-cmd.c}.
+ */
 public final class FixedRouteInitialise extends SCPRequest<CheckOKResponse> {
 	private static int argument1(AppID appID) {
 		return (appID.appID << BYTE1) | (ROUTER_FIXED.value << BYTE0);

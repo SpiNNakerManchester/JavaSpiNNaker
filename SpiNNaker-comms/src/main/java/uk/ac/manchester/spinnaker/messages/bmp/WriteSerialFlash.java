@@ -27,6 +27,8 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 
 /**
  * A request to write to serial flash on a BMP.
+ * <p>
+ * Calls {@code sf_write()} in {@code bmp_ssp.c}.
  */
 public class WriteSerialFlash extends BMPRequest<BMPRequest.BMPResponse> {
 	/** The size of chunk that will be transferred. Fixed. */

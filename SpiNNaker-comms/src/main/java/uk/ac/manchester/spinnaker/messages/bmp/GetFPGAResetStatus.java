@@ -26,7 +26,12 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/** Get the reset status of a board's FPGAs. */
+/**
+ * Get the reset status of a board's FPGAs.
+ * <p>
+ * Calls {@code cmd_read()} in {@code bmp_cmd.c} with special parameters and
+ * parses the result.
+ */
 public class GetFPGAResetStatus
 		extends BMPRequest<GetFPGAResetStatus.Response> {
 	/** @param board Which board to get the FPGA reset status of. */

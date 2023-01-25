@@ -29,6 +29,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 
 /**
  * SCP Request for the IP address data from a BMP.
+ * <p>
+ * Handled by {@code cmd_bmp_info()} in {@code bmp_cmd.c}.
  */
 public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
 	/**

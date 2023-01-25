@@ -28,7 +28,11 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/** An SCP request to read a region of memory via a link on a chip. */
+/**
+ * An SCP request to read a region of memory via a link on a chip.
+ * <p>
+ * Calls {@code cmd_link_read()} in {@code scamp-cmd.c}.
+ */
 public class ReadLink extends SCPRequest<ReadLink.Response> {
 	private static int validate(int size) {
 		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {

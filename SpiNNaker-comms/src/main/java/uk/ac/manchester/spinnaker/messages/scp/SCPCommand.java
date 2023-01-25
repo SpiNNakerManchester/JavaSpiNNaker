@@ -47,9 +47,13 @@ public enum SCPCommand implements CommandCode {
 	CMD_FILL(5),
 	/** Remap application core. */
 	CMD_REMAP(16),
-	/** Read neighbouring chip's memory. */
+	/**
+	 * Read neighbouring chip's memory, or an FPGA's memory if sent to a BMP.
+	 */
 	CMD_LINK_READ(17),
-	/** Write neighbouring chip's memory. */
+	/**
+	 * Write neighbouring chip's memory, or an FPGA's memory if sent to a BMP.
+	 */
 	CMD_LINK_WRITE(18),
 	/** Application core reset. */
 	CMD_AR(19),

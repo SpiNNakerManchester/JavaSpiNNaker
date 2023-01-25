@@ -28,6 +28,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 
 /**
  * Requests the data from a FPGA's register.
+ * <p>
+ * Calls {@code cmd_fpga_read()} in {@code bmp_cmd.c}.
  */
 public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 	/**

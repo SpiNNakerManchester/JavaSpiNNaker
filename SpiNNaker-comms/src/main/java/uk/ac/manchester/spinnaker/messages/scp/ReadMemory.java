@@ -28,7 +28,11 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/** An SCP request to read a region of memory. */
+/**
+ * An SCP request to read a region of memory.
+ * <p>
+ * Calls {@code sark_cmd_read()} in {@code sark_base.c}.
+ */
 public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	private static int validate(int size) {
 		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {

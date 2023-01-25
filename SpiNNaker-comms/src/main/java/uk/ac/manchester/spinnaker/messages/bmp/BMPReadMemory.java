@@ -27,7 +27,11 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/** An SCP request to read a region of memory from a BMP. */
+/**
+ * An SCP request to read a region of memory from a BMP.
+ * <p>
+ * Calls {@code cmd_read()} in {@code bmp_cmd.c}.
+ */
 public class BMPReadMemory extends BMPRequest<BMPReadMemory.Response> {
 	private static int validate(int size) {
 		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {

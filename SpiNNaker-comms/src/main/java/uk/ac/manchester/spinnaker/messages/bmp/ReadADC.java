@@ -27,6 +27,9 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 
 /**
  * SCP Request for the data from the BMP including voltages and temperature.
+ * <p>
+ * Handled in {@code cmd_bmp_info()} (in {@code bmp_cmd.c}) by reading from
+ * the right element of {@code board_stat}.
  */
 public class ReadADC extends BMPRequest<ReadADC.Response> {
 	/**

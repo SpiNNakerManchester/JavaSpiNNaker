@@ -28,6 +28,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 
 /**
  * SCP Request for the serial data vector from the BMP.
+ * <p>
+ * Handled by {@code cmd_bmp_info()} in {@code bmp_cmd.c}.
  */
 public class ReadSerialVector extends BMPRequest<ReadSerialVector.Response> {
 	/**
