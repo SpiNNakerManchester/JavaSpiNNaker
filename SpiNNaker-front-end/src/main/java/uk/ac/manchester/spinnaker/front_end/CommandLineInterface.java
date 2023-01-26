@@ -316,9 +316,10 @@ public final class CommandLineInterface {
 	 *            Mapping from APLX executable names (full paths) to what cores
 	 *            are running those executables, and which we will download
 	 *            IOBUFs for.
+	 * @param dbFile
+	 *            The database that receives the output).
 	 * @param runFolder
-	 *            Name of directory containing per-run information (i.e., the
-	 *            database that holds the data specifications to execute).
+	 *            Directory containing per-run information (i.e., where to log).
 	 * @throws IOException
 	 *             If the communications fail.
 	 * @throws SpinnmanException
@@ -334,11 +335,12 @@ public final class CommandLineInterface {
 	public void retrieveIOBUFs(
 			@Mixin MachineParam machine,
 			@Mixin IobufMapParam iobuf,
+			@Mixin DbFile dbFile,
 			@Mixin RunFolder runFolder)
 			throws IOException, SpinnmanException, InterruptedException,
 			StorageException, URISyntaxException {
 		setLoggerDir(runFolder.get());
-		var db = getBufferManagerDB(runFolder.get());
+		var db = getBufferManagerDB(dbFile.get());
 		var job = getJob(db);
 
 		try (var txrx = getTransceiver(machine.get(), job);
@@ -356,9 +358,10 @@ public final class CommandLineInterface {
 	 *            List of descriptions of binary placements.
 	 * @param machine
 	 *            Description of overall machine.
+	 * @param dbFile
+	 *            The database that receives the output).
 	 * @param runFolder
-	 *            Directory containing per-run information (i.e., the database
-	 *            that receives the output).
+	 *            Directory containing per-run information (i.e., where to log).
 	 * @throws IOException
 	 *             If the communications fail
 	 * @throws SpinnmanException
@@ -374,11 +377,12 @@ public final class CommandLineInterface {
 	public void downloadRecordingChannelsViaClassicTransfer(
 			@Mixin PlacementsParam placements,
 			@Mixin MachineParam machine,
+			@Mixin DbFile dbFile,
 			@Mixin RunFolder runFolder)
 			throws IOException, SpinnmanException, StorageException,
 			InterruptedException, URISyntaxException {
 		setLoggerDir(runFolder.get());
-		var db = getBufferManagerDB(runFolder.get());
+		var db = getBufferManagerDB(dbFile.get());
 		var job = getJob(db);
 
 		try (var trans = getTransceiver(machine.get(), job)) {
@@ -394,9 +398,10 @@ public final class CommandLineInterface {
 	 *            List of descriptions of gatherers.
 	 * @param machine
 	 *            Description of overall machine.
+	 * @param dbFile
+	 *            The database that receives the output).
 	 * @param runFolder
-	 *            Directory containing per-run information (i.e., the database
-	 *            that receives the output).
+	 *            Directory containing per-run information (i.e., where to log).
 	 * @throws IOException
 	 *             If the communications fail
 	 * @throws SpinnmanException
@@ -413,11 +418,12 @@ public final class CommandLineInterface {
 	public void downloadRecordingChannelsViaMonitorStreaming(
 			@Mixin GatherersParam gatherers,
 			@Mixin MachineParam machine,
+			@Mixin DbFile dbFile,
 			@Mixin RunFolder runFolder)
 			throws IOException, SpinnmanException, StorageException,
 			InterruptedException, URISyntaxException {
 		setLoggerDir(runFolder.get());
-		var db = getBufferManagerDB(runFolder.get());
+		var db = getBufferManagerDB(dbFile.get());
 		var job = getJob(db);
 
 		try (var trans = getTransceiver(machine.get(), job);
@@ -593,13 +599,45 @@ public final class CommandLineInterface {
 		}
 	}
 
+	/**
+	 * Argument handler for the {@code <dbFile>} parameter.
+	 * <p>
+	 * Do not make instances of this class yourself; leave that to picocli.
+	 *
+	 * @author Christian Brenninkmeijer
+	 * @see ArgGroup
+	 * @see Parameters
+	 */
+	public static class DbFile implements Supplier<File> {
+		@Parameters(description = RUN, converter = Converter.class, arity = "1")
+		private ValueHolder<File> dbFile = new ValueHolder<>();
+
+		/** @return The file of the buffer database. */
+		@Override
+		public File get() {
+			return dbFile.getValue();
+		}
+
+		static class Converter implements ITypeConverter<ValueHolder<File>> {
+			@Override
+			public ValueHolder<File> convert(String filename)
+					throws IOException {
+				var f = new File(filename);
+				if (!f.isFile()) {
+					throw new TypeConversionException(
+							"<dbFile> must be a file");
+				}
+				return new ValueHolder<>(f);
+			}
+		}
+	}
+
 	private static DSEDatabaseEngine getDataSpecDB(File runFolder) {
 		return new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
 	}
 
-	private static BufferManagerStorage getBufferManagerDB(File runFolder) {
-		return new BufferManagerDatabaseEngine(
-				new File(runFolder, BUFFER_DB_FILE)).getStorageInterface();
+	private static BufferManagerStorage getBufferManagerDB(File dbFile) {
+		return new BufferManagerDatabaseEngine(dbFile).getStorageInterface();
 	}
 
 	private static SpallocClient.Job getJob(
