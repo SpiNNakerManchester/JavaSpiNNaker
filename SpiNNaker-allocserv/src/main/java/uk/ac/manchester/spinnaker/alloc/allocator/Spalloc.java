@@ -921,8 +921,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		@Override
 		public boolean equals(Object other) {
 			// Equality is defined exactly by the database ID
-			return (other instanceof MachineImpl)
-					&& (id == ((MachineImpl) other).id);
+			return (other instanceof MachineImpl m) && (id == m.id);
 		}
 
 		@Override
@@ -1463,7 +1462,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		@Override
 		public boolean equals(Object other) {
 			// Equality is defined exactly by the database ID
-			return (other instanceof JobImpl) && (id == ((JobImpl) other).id);
+			return (other instanceof JobImpl j) && (id == j.id);
 		}
 
 		@Override

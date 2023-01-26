@@ -142,11 +142,7 @@ public abstract class StubJob implements Job {
 
 	@Override
 	public final boolean equals(Object other) {
-		if (other instanceof Job) {
-			Job j = (Job) other;
-			return getId() == j.getId();
-		}
-		return false;
+		return (other instanceof Job j) && (getId() == j.getId());
 	}
 
 	@Override

@@ -130,11 +130,7 @@ public abstract class StubMachine implements Machine {
 
 	@Override
 	public final boolean equals(Object other) {
-		if (other instanceof Machine) {
-			Machine m = (Machine) other;
-			return getId() == m.getId();
-		}
-		return false;
+		return (other instanceof Machine m) && (getId() == m.getId());
 	}
 
 	@Override
