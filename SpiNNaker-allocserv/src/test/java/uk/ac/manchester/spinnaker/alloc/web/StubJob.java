@@ -20,8 +20,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore;
@@ -34,7 +34,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  *
  * @author Donal Fellows
  */
-public abstract class StubJob implements SpallocAPI.Job {
+public abstract class StubJob implements Job {
 	@Override
 	public void waitForChange(Duration timeout) {
 		throw new UnsupportedOperationException();
@@ -138,5 +138,19 @@ public abstract class StubJob implements SpallocAPI.Job {
 	@Override
 	public void forgetProxy(ProxyCore proxy) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public final boolean equals(Object other) {
+		if (other instanceof Job) {
+			Job j = (Job) other;
+			return getId() == j.getId();
+		}
+		return false;
+	}
+
+	@Override
+	public final int hashCode() {
+		return getId();
 	}
 }

@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.DownLink;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
@@ -36,7 +36,7 @@ import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
  *
  * @author Donal Fellows
  */
-public abstract class StubMachine implements SpallocAPI.Machine {
+public abstract class StubMachine implements Machine {
 	@Override
 	public void waitForChange(Duration timeout) {
 		throw new UnsupportedOperationException();
@@ -126,5 +126,19 @@ public abstract class StubMachine implements SpallocAPI.Machine {
 	@Override
 	public List<Integer> getBoardNumbers(BMPCoords bmp) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public final boolean equals(Object other) {
+		if (other instanceof Machine) {
+			Machine m = (Machine) other;
+			return getId() == m.getId();
+		}
+		return false;
+	}
+
+	@Override
+	public final int hashCode() {
+		return getId();
 	}
 }
