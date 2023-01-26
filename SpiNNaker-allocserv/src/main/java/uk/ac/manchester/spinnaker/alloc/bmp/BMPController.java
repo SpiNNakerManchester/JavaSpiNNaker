@@ -1407,6 +1407,7 @@ public class BMPController extends DatabaseAwareBean {
 
 		WorkerState(Machine machine) {
 			this.machine = machine;
+			log.debug("Created worker thread for machine {}", machine);
 		}
 
 		void interrupt() {
@@ -1421,6 +1422,7 @@ public class BMPController extends DatabaseAwareBean {
 		void launchThreadIfNecessary() throws InterruptedException {
 			synchronized (state) {
 				if (isNull(workerThread)) {
+					log.debug("Starting background thread for machine {}", machine);
 					executor.execute(this::backgroundThread);
 					while (isNull(workerThread)) {
 						state.wait();
