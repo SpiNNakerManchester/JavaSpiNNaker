@@ -1459,6 +1459,17 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			rememberer.removeProxyForJob(id, proxy);
 		}
 
+		@Override
+		public boolean equals(Object other) {
+			// Equality is defined exactly by the database ID
+			return (other instanceof JobImpl) && (id == ((JobImpl) other).id);
+		}
+
+		@Override
+		public int hashCode() {
+			return id;
+		}
+
 		private final class SubMachineImpl implements SubMachine {
 			/** The machine that this sub-machine is part of. */
 			private final Machine machine;
