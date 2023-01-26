@@ -925,6 +925,19 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		public String toString() {
 			return "Machine(" + name + ")";
 		}
+
+		@Override
+		public int hashCode() {
+			return id;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (!(obj instanceof Machine)) {
+				return false;
+			}
+			return id == ((Machine) obj).getId();
+		}
 	}
 
 	private class JobCollection implements Jobs {
