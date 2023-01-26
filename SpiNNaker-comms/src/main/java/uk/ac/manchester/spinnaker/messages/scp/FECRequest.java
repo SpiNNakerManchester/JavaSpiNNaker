@@ -16,14 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.Utils.wordAsBuffer;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.RUNNING_COMMAND_SDP_PORT;
-
-import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
@@ -69,13 +65,7 @@ public abstract class FECRequest<T extends SCPResponse> extends SCPRequest<T> {
 	FECRequest(HasCoreLocation core, boolean replyExpected,
 			RunningCommand command, int arg1, int arg2, int arg3, int arg4) {
 		super(new Header(core, replyExpected), command, arg1, arg2, arg3,
-				packInt(arg4));
-	}
-
-	private static ByteBuffer packInt(int value) {
-		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
-		b.putInt(value).flip();
-		return b;
+				wordAsBuffer(arg4));
 	}
 
 	/**

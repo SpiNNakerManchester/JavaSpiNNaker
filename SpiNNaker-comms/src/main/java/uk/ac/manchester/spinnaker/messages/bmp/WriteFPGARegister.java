@@ -16,10 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_LINK_WRITE;
+import static uk.ac.manchester.spinnaker.messages.Utils.wordAsBuffer;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_FPGA_WRITE;
 
 import java.nio.ByteBuffer;
 
@@ -54,8 +53,8 @@ public class WriteFPGARegister extends BMPRequest<BMPRequest.BMPResponse> {
 	 */
 	public WriteFPGARegister(FPGA fpga, MemoryLocation register, int value,
 			BMPBoard board) {
-		super(board, CMD_LINK_WRITE, register.address, WORD_SIZE, fpga.value,
-				data(value));
+		super(board, CMD_FPGA_WRITE, register.address, WORD_SIZE, fpga.value,
+				wordAsBuffer(value));
 		if (!register.isAligned()) {
 			throw new IllegalArgumentException(
 					"FPGA register addresses must be aligned");
@@ -66,16 +65,9 @@ public class WriteFPGARegister extends BMPRequest<BMPRequest.BMPResponse> {
 		}
 	}
 
-	private static ByteBuffer data(int value) {
-		var buffer = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
-		buffer.putInt(value);
-		buffer.flip();
-		return buffer;
-	}
-
 	@Override
 	public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new BMPResponse("Send FPGA register write", CMD_LINK_WRITE,
+		return new BMPResponse("Send FPGA register write", CMD_FPGA_WRITE,
 				buffer);
 	}
 }

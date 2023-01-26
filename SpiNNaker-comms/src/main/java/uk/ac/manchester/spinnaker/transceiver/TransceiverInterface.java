@@ -17,9 +17,7 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Thread.sleep;
-import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
@@ -28,6 +26,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_1_START_ADD
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_2_START_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.NO_ROUTER_DIAGNOSTIC_FILTERS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.Utils.wordAsBuffer;
 import static uk.ac.manchester.spinnaker.messages.model.AppID.DEFAULT;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.READY;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUN_TIME_EXCEPTION;
@@ -1735,9 +1734,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void writeMemory(@Valid HasCoreLocation core,
 			@NotNull MemoryLocation baseAddress, int dataWord)
 			throws IOException, ProcessException, InterruptedException {
-		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
-		b.putInt(dataWord).flip();
-		writeMemory(core, baseAddress, b);
+		writeMemory(core, baseAddress, wordAsBuffer(dataWord));
 	}
 
 	/**
@@ -2173,9 +2170,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 			@NotNull Direction link, @NotNull MemoryLocation baseAddress,
 			int dataWord)
 			throws IOException, ProcessException, InterruptedException {
-		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
-		b.putInt(dataWord).flip();
-		writeNeighbourMemory(core, link, baseAddress, b);
+		writeNeighbourMemory(core, link, baseAddress, wordAsBuffer(dataWord));
 	}
 
 	/**
@@ -2391,9 +2386,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void writeMemoryFlood(@NotNull MemoryLocation baseAddress,
 			int dataWord)
 			throws IOException, ProcessException, InterruptedException {
-		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
-		b.putInt(dataWord).flip();
-		writeMemoryFlood(baseAddress, b);
+		writeMemoryFlood(baseAddress, wordAsBuffer(dataWord));
 	}
 
 	/**

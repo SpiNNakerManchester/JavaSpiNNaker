@@ -16,7 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-/** The serial flash operations. */
+import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
+
+/**
+ * The serial flash operations for argument three of
+ * {@link SCPCommand#CMD_BMP_SF}.
+ */
+@UsedInJavadocOnly(SCPCommand.class)
 enum SerialFlashOp {
 	/** Read from the Serial Flash. */
 	READ(0),

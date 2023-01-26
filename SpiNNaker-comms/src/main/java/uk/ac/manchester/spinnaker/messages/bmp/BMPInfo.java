@@ -16,7 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-/** The SCP BMP Information Types. */
+import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
+
+/**
+ * The SCP BMP Information types. Used as the first argument of
+ * {@link SCPCommand#CMD_BMP_INFO}.
+ */
+@UsedInJavadocOnly(SCPCommand.class)
 public enum BMPInfo {
 	/** Serial flash information. */
 	SERIAL(0),

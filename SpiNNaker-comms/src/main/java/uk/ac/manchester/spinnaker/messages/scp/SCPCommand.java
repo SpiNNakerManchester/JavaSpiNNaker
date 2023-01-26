@@ -47,13 +47,9 @@ public enum SCPCommand implements CommandCode {
 	CMD_FILL(5),
 	/** Remap application core. */
 	CMD_REMAP(16),
-	/**
-	 * Read neighbouring chip's memory, or an FPGA's memory if sent to a BMP.
-	 */
+	/** Read neighbouring chip's memory. */
 	CMD_LINK_READ(17),
-	/**
-	 * Write neighbouring chip's memory, or an FPGA's memory if sent to a BMP.
-	 */
+	/** Write neighbouring chip's memory. */
 	CMD_LINK_WRITE(18),
 	/** Application core reset. */
 	CMD_AR(19),
@@ -89,7 +85,12 @@ public enum SCPCommand implements CommandCode {
 	CMD_FLASH_WRITE(51),
 	/** Serial flash access. BMP-only operation. */
 	CMD_BMP_SF(53),
-	/** EEPROM access? BMP-only operation. */
+	/**
+	 * EEPROM access. BMP-only operation.
+	 *
+	 * @deprecated This message is under-documented. See {@code cmd_ee()} in
+	 *             {@code bmp_cmd.c} for what it does.
+	 */
 	@Deprecated
 	CMD_BMP_EE(54),
 	/** BMP-only operation. */
@@ -98,18 +99,50 @@ public enum SCPCommand implements CommandCode {
 	CMD_XILINX(56),
 	/** Turns on or off the machine via BMP. */
 	CMD_BMP_POWER(57),
-	/** Access I2C bus. BMP-only operation. */
+	/**
+	 * Access I<sup>2</sup>C bus. BMP-only operation.
+	 *
+	 * @deprecated This message is under-documented. See {@code cmd_i2c()} in
+	 *             {@code bmp_cmd.c} for what it does.
+	 */
 	@Deprecated
 	CMD_BMP_I2C(61),
-	/** Configure pulse-width modulation hardware. BMP-only operation. */
+	/**
+	 * Configure pulse-width modulation hardware. BMP-only operation.
+	 *
+	 * @deprecated This message is under-documented. See {@code configure_pwm()}
+	 *             in {@code bmp_hw.c} for what it does.
+	 */
 	@Deprecated
 	CMD_BMP_PWM(62),
-	/** Test feature control. BMP-only operation. */
-	@Deprecated
+	/**
+	 * Test feature control. BMP-only operation.
+	 *
+	 * @deprecated Not implemented by current BMP.
+	 */
+	@Deprecated(forRemoval = true)
 	CMD_BMP_TEST(63),
-	/** Tube output. Special. */
-	@Deprecated
+	/**
+	 * Tube output. Special.
+	 *
+	 * @deprecated For tubotron use only.
+	 */
+	@Deprecated(forRemoval = true)
 	CMD_TUBE(64);
+
+	/**
+	 * Read FPGA's memory/registers. BMP-only operation.
+	 * <p>
+	 * Same as {@link #CMD_LINK_READ} but used differently.
+	 */
+	public static final SCPCommand CMD_FPGA_READ = CMD_LINK_READ;
+
+	/**
+	 * Write FPGA's memory/registers. BMP-only operation.
+	 * <p>
+	 * Same as {@link #CMD_LINK_WRITE} but used differently.
+	 */
+	public static final SCPCommand CMD_FPGA_WRITE = CMD_LINK_WRITE;
 
 	/** The SCAMP encoding. */
 	public final short value;
