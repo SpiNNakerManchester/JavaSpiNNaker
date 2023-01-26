@@ -26,6 +26,8 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 /**
  * A request to update flash memory on a BMP. Must have already been prepared
  * with {@link EraseFlash} and {@link WriteFlashBuffer}.
+ * <p>
+ * This calls {@code flash_copy()} in {@code bmp_boot.c}.
  */
 public final class UpdateFlash extends BMPRequest<BMPRequest.BMPResponse> {
 	private static final int REAL_FLASH_ADDRESS = 0x10000;

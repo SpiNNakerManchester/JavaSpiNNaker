@@ -151,8 +151,9 @@ class GeneralMessageTest {
 
 		@Test
 		void updateRuntime() {
-			assertEquals(NO_PAYLOAD,
-					length(new UpdateRuntime(ZERO_ZERO_ZERO, 1, false)));
+			// Arguments spill over into body space by one word
+			assertEquals(28,
+					length(new UpdateRuntime(ZERO_ZERO_ZERO, 1, false, 1, 1)));
 		}
 
 		@Nested

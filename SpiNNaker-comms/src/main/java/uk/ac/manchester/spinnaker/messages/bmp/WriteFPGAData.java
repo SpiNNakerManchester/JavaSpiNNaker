@@ -26,6 +26,8 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 /**
  * Upload a chunk of FPGA initialisation data. Must have been set up by
  * {@link InitFPGA}. Upload process will be terminated by {@link ResetFPGA}.
+ * <p>
+ * Calls {@code ssp1_copy()} in {@code bmp_ssp.c}.
  */
 public class WriteFPGAData extends BMPRequest<BMPRequest.BMPResponse> {
 	/**
