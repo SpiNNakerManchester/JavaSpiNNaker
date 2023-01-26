@@ -919,6 +919,18 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 
 		@Override
+		public boolean equals(Object other) {
+			// Equality is defined exactly by the database ID
+			return (other instanceof MachineImpl)
+					&& (id == ((MachineImpl) other).id);
+		}
+
+		@Override
+		public int hashCode() {
+			return id;
+		}
+
+		@Override
 		public String toString() {
 			return "Machine(" + name + ")";
 		}

@@ -23,6 +23,7 @@ import java.util.Set;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.DownLink;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
@@ -126,5 +127,19 @@ public abstract class StubMachine implements SpallocAPI.Machine {
 	@Override
 	public List<Integer> getBoardNumbers(BMPCoords bmp) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public final boolean equals(Object other) {
+		if (other instanceof SpallocAPI.Machine) {
+			SpallocAPI.Machine m = (Machine) other;
+			return getId() == m.getId();
+		}
+		return false;
+	}
+
+	@Override
+	public final int hashCode() {
+		return getId();
 	}
 }
