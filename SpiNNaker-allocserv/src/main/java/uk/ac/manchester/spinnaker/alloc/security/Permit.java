@@ -30,8 +30,8 @@ import java.util.function.Supplier;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.Transient;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.socket.WebSocketSession;
 
 /**
@@ -140,7 +140,8 @@ public final class Permit {
 		 * do so.
 		 */
 		@SuppressWarnings("serial")
-		final class TempAuth implements Authentication {
+		@Transient
+		final class TempAuth implements Authentication, AutoCloseable {
 			// The permit already proves we're authenticated
 			private boolean auth = true;
 
@@ -186,15 +187,24 @@ public final class Permit {
 					throws NotSerializableException {
 				throw new NotSerializableException("not actually serializable");
 			}
+
+			@Override
+			public String toString() {
+				if (!auth) {
+					return "permit[]";
+				}
+				return "permit[" + name + "|" + authorities + "]";
+			}
+
+			@Override
+			public void close() {
+				setAuthenticated(false);
+			}
 		}
 
-		var c = SecurityContextHolder.getContext();
-		var old = c.getAuthentication();
-		c.setAuthentication(new TempAuth());
-		try {
+		try (var a = new TempAuth();
+				var v = new StackedAuthenticationHandler(a)) {
 			return inContext.get();
-		} finally {
-			c.setAuthentication(old);
 		}
 	}
 }

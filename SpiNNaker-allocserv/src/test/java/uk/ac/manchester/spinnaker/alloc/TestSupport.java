@@ -30,6 +30,8 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.BASIC;
 
 import java.io.IOException;
+import java.io.NotSerializableException;
+import java.io.ObjectOutputStream;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
@@ -46,6 +48,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.Transient;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
@@ -460,7 +463,8 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 		 */
 		default Permit setAuth(String name) {
 			@SuppressWarnings("serial")
-			var a = new Authentication() {
+			@Transient
+			class A implements Authentication {
 				@Override
 				public String getName() {
 					return name;
@@ -494,8 +498,15 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 				@Override
 				public void setAuthenticated(boolean isAuthenticated) {
 				}
-			};
-			setAuth(a);
+
+				private void writeObject(ObjectOutputStream out)
+						throws NotSerializableException {
+					throw new NotSerializableException(
+							"not actually serializable");
+				}
+			}
+
+			setAuth(new A());
 			return new Permit(SecurityContextHolder.getContext());
 		}
 	}
