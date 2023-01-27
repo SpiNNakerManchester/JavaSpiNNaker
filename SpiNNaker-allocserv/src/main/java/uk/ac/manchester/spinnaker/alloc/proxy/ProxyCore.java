@@ -347,11 +347,11 @@ public class ProxyCore implements AutoCloseable {
 	 */
 	protected ByteBuffer sendMessage(ByteBuffer message) throws IOException {
 		int id = message.getInt();
-		log.debug("got message for channel {}", id);
+		log.trace("got message for channel {}", id);
 		var conn = getConnection(id);
 		if (isValid(conn) && conn.getRemoteIPAddress() != null) {
 			var payload = message.slice();
-			log.debug("sending message to {} of length {}", conn,
+			log.trace("sending message to {} of length {}", conn,
 					payload.remaining());
 			conn.sendMessage(payload);
 		}
@@ -386,14 +386,14 @@ public class ProxyCore implements AutoCloseable {
 		int port = message.getInt();
 		validatePort(port);
 
-		log.debug("got message for channel {} for {}:{}", id, who, port);
+		log.trace("got message for channel {} for {}:{}", id, who, port);
 		var conn = getConnection(id);
 		if (isValid(conn)) {
 			if (conn.getRemoteIPAddress() != null) {
 				throw new IllegalArgumentException("channel is connected");
 			}
 			var payload = message.slice();
-			log.debug("sending message to {} of length {}", conn,
+			log.trace("sending message to {} of length {}", conn,
 					payload.remaining());
 			conn.sendMessage(payload, who, port);
 		}
