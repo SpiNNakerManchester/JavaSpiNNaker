@@ -197,7 +197,7 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	 *             If the message can't be sent.
 	 */
 	private void handleReceivedMessage(ByteBuffer msg) throws IOException {
-		log.debug("{} received message {}", name, msg);
+		log.trace("{} received message {}", name, msg);
 		var outgoing = workingBuffer.duplicate();
 		outgoing.put(msg);
 		outgoing.flip();
