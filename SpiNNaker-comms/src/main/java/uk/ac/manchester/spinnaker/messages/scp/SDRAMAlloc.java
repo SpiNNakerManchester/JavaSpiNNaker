@@ -31,7 +31,8 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
 
 /**
- * An SCP Request to allocate space in the SDRAM space.
+ * An SCP Request to allocate space in the SDRAM space. The response payload is
+ * the {@linkplain MemoryLocation location} of the block of allocated memory.
  * <p>
  * Calls {@code cmd_alloc()} (and hence {@code sark_xalloc()}) in
  * {@code scamp-cmd.c}.

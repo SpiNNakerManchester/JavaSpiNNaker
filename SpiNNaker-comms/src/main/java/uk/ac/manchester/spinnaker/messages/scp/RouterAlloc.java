@@ -29,7 +29,8 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
 
 /**
- * An SCP Request to allocate space for routing entries.
+ * An SCP Request to allocate space for routing entries. The response payload is
+ * the base index of the allocated block of routing entries.
  * <p>
  * Calls {@code rtr_alloc_id()} in {@code sark_alloc.c} via {@code cmd_alloc()}
  * in {@code scamp-cmd.c}.

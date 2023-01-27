@@ -33,7 +33,7 @@ import uk.ac.manchester.spinnaker.messages.model.Signal;
  * either {@linkplain Signal.Type#MULTICAST multicast} or
  * {@linkplain Signal.Type#NEAREST_NEIGHBOUR nearest neighbour} propagation
  * rules; the difference between propagation types is not normally important to
- * user code.
+ * user code. There is no response payload.
  * <p>
  * See {@code signal_app()} in {@code scamp-app.c} for where these signals
  * handled or transferred to user code, and {@code sark_int()} in

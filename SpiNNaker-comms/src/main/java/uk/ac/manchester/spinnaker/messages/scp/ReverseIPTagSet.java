@@ -41,7 +41,8 @@ import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
 
 /**
  * An SCP Request to set a Reverse IP Tag. Reverse IP tags are tags that funnel
- * packets from the outside world to a particular SpiNNaker core.
+ * packets from the outside world to a particular SpiNNaker core. There is no
+ * response payload.
  * <p>
  * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},
  * if sent to a BMP).

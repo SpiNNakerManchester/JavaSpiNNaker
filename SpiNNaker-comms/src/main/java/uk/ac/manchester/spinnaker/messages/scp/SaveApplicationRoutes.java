@@ -22,7 +22,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
  * An SDP Request to save the currently-installed application multicast router
- * table.
+ * table. There is no response payload.
  * <p>
  * Handled by {@code data_in_save_router()} in {@code extra_monitor_support.c}.
  */

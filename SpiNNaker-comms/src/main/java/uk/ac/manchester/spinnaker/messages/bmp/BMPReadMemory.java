@@ -28,7 +28,8 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP request to read a region of memory from a BMP.
+ * An SCP request to read a region of memory from a BMP. The response payload is
+ * a read-only little-endian {@link ByteBuffer} intended to be read once.
  * <p>
  * Calls {@code cmd_read()} in {@code bmp_cmd.c}.
  */

@@ -26,7 +26,8 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 
 /**
- * An SCP request for the BMP to power on or power off a rack of boards.
+ * An SCP request for the BMP to power on or power off a rack of boards. There
+ * is no response payload.
  * <p>
  * <strong>Note:</strong> There is currently a bug in the BMP that means some
  * boards don't respond to power commands not sent to BMP 0. Because of this,

@@ -24,7 +24,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
  * An SCP Request to reset the statistics counters of the dropped packet
- * reinjection.
+ * reinjection. There is no response payload.
  * <p>
  * Handled by {@code reinjection_reset_counters()} in
  * {@code extra_monitor_support.c}.

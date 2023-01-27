@@ -29,9 +29,10 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 
 /**
- * A request to initialise the router on a chip. Ultimately handled by
- * {@code rtr_mc_load()} in {@code sark_hw.c} (via {@code cmd_rtr()} in
- * {@code scamp-cmd.c}).
+ * A request to initialise the router on a chip. There is no response payload.
+ * <p>
+ * Ultimately handled by {@code rtr_mc_load()} in {@code sark_hw.c} (via
+ * {@code cmd_rtr()} in {@code scamp-cmd.c}).
  */
 public class RouterInit extends SCPRequest<CheckOKResponse> {
 	/** One reserved for SCAMP. */

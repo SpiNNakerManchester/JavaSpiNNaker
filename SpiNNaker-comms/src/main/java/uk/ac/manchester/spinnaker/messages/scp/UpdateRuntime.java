@@ -24,7 +24,8 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP Request to update the runtime info on a core.
+ * An SCP Request to update the runtime info on a core. There is no response
+ * payload.
  * <p>
  * This calls {@code simulation_control_scp_callback()} in {@code simulation.c}.
  */
@@ -41,8 +42,8 @@ public class UpdateRuntime extends FECRequest<CheckOKResponse> {
 	 * @param numSyncSteps
 	 *            The number of timesteps before we pause to synchronise.
 	 */
-	public UpdateRuntime(HasCoreLocation core, int runTime,
-			boolean infiniteRun, int currentTime, int numSyncSteps) {
+	public UpdateRuntime(HasCoreLocation core, int runTime, boolean infiniteRun,
+			int currentTime, int numSyncSteps) {
 		super(core, true, NEW_RUNTIME_ID, runTime, bool(infiniteRun),
 				currentTime, numSyncSteps);
 	}

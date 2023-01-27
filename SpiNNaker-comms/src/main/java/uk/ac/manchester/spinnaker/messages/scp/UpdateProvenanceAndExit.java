@@ -24,9 +24,9 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP Request to update the runtime info on a core. Note that this request
- * does not expect a response; the response to this request is detected by the
- * core entering a non-running state.
+ * An SCP Request to update the runtime info on a core. Note that <em>this
+ * request does not expect a response</em>; the response to this request is
+ * detected by the core entering a non-running state.
  * <p>
  * This calls {@code simulation_control_scp_callback()} in {@code simulation.c}.
  */

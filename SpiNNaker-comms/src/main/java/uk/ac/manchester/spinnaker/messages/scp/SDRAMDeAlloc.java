@@ -30,7 +30,8 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
 
 /**
- * An SCP Request to free space in the SDRAM.
+ * An SCP Request to free space in the SDRAM. The response payload is the number
+ * of blocks that were deallocated.
  * <p>
  * Calls {@code cmd_alloc()} (and hence {@code sark_xfree()} or
  * {@code sark_xfree_id()}) in {@code scamp-cmd.c}.
@@ -87,14 +88,14 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 
 		/**
 		 * @return The number of allocated blocks that have been freed from the
-		 *         appID given, or zero for when the direct block of space to
+		 *         appID given, or one when the direct block of space to
 		 *         deallocate was given.
 		 */
 		@Override
 		protected Integer parse(ByteBuffer buffer)
 				throws MemoryAllocationFailedException {
 			if (!readNumFreedBlocks) {
-				return 0;
+				return 1;
 			}
 			int numFreedBlocks = buffer.getInt();
 			if (numFreedBlocks == 0) {

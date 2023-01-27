@@ -31,7 +31,8 @@ import uk.ac.manchester.spinnaker.messages.model.CPUState;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP Request to get a count of the cores in a particular state.
+ * An SCP Request to get a count of the cores in a particular state. The
+ * response payload is the integer count.
  * <p>
  * Actual adding up of states is in {@code proc_process()} and
  * {@code p2p_region()} in {@code scamp-cmd.c}. This is the main use of

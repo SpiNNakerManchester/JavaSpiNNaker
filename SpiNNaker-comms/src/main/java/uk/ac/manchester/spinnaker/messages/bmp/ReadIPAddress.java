@@ -28,7 +28,9 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * SCP Request for the IP address data from a BMP.
+ * SCP Request for the IP address data from a BMP. The response payload is the
+ * {@linkplain Addresses pair of addresses} that the board is configured to
+ * have.
  * <p>
  * Handled by {@code cmd_bmp_info()} in {@code bmp_cmd.c}.
  */
@@ -47,11 +49,12 @@ public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
 	}
 
 	/** The IP addresses associated with a SpiNNaker board. */
+	// TODO convert to record in 17
 	public static final class Addresses {
-		/** The IP address of the BMP. */
+		/** The IPv4 address of the BMP. */
 		public final InetAddress bmpIPAddress;
 
-		/** The IP address of the managed SpiNNaker board. */
+		/** The IPv4 address of the managed SpiNNaker board. */
 		public final InetAddress spinIPAddress;
 
 		private static final int CHUNK_LEN = 32;

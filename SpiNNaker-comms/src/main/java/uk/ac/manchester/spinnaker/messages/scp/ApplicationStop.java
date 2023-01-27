@@ -30,7 +30,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 
 /**
- * An SCP Request to stop an application.
+ * An SCP Request to stop an application. There is no response payload.
  * <p>
  * This maps to a call to {@code ff_nn_send()} in {@code scamp-nn.c}, which in
  * turn triggers a call to {@code proc_stop_app()} in {@code scamp-app.c} across

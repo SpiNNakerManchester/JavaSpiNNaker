@@ -44,7 +44,8 @@ import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
 
 /**
  * An SCP Request to set a (forward) IP Tag. Forward IP tags are tags that
- * funnel packets from SpiNNaker to the outside world.
+ * funnel packets from SpiNNaker to the outside world. There is no response
+ * payload.
  * <p>
  * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},
  * if sent to a BMP).

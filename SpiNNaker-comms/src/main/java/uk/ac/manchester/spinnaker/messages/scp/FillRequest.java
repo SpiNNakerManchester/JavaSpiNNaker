@@ -25,7 +25,7 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /**
  * An SCP request to fill a region of memory on a chip with repeated words of
- * data.
+ * data. There is no response payload.
  * <p>
  * Calls {@code sark_cmd_fill()} in {@code sark_base.c}, or {@code cmd_fill()}
  * in {@code bmp_cmd.c} if sent to a BMP.

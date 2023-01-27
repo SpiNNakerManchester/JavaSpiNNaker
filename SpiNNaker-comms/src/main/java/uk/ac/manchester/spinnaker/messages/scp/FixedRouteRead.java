@@ -30,7 +30,8 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * Gets a fixed route entry.
+ * Gets a fixed route entry. The response payload is the
+ * {@linkplain RoutingEntry routing entry}.
  * <p>
  * Calls {@code rtr_fr_get()} in {@code sark_hw.c}, via {@code rtr_cmd()} in
  * {@code scamp-cmd.c}.

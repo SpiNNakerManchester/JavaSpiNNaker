@@ -34,7 +34,7 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
 
 /**
  * An SCP request to finish a flood fill of data across all cores and launch the
- * application.
+ * application. There is no response payload.
  * <p>
  * Handled ultimately by {@code nn_cmd_ffe()} in {@code scamp-nn.c}.
  */

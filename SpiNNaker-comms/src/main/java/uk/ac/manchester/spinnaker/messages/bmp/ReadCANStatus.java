@@ -16,18 +16,21 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
+import static java.util.stream.Collectors.toUnmodifiableList;
+import static java.util.stream.IntStream.range;
 import static uk.ac.manchester.spinnaker.messages.bmp.BMPInfo.CAN_STATUS;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_INFO;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
- * SCP Request for the CAN bus status data from the BMP.
+ * SCP Request for the CAN bus status data from the BMP. The response payload is
+ * an {@linkplain MappableIterable iterable} of enabled {@linkplain BMPBoard
+ * board numbers}.
  * <p>
  * Handled in {@code cmd_bmp_info()} (in {@code bmp_cmd.c}) by reading from
  * {@code can_status}.
@@ -50,7 +53,7 @@ public class ReadCANStatus extends BMPRequest<ReadCANStatus.Response> {
 
 	/** An SCP response to a request for the CAN status. */
 	public static final class Response
-			extends BMPRequest.PayloadedResponse<MappableIterable<Integer>> {
+			extends BMPRequest.PayloadedResponse<MappableIterable<BMPBoard>> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Read CAN Status", CMD_BMP_INFO, buffer);
@@ -61,19 +64,16 @@ public class ReadCANStatus extends BMPRequest<ReadCANStatus.Response> {
 		 *         the BMP.
 		 */
 		@Override
-		protected MappableIterable<Integer> parse(ByteBuffer buffer) {
+		protected MappableIterable<BMPBoard> parse(ByteBuffer buffer) {
 			/*
 			 * The status data. The byte at {@code x} is zero if the BMP with
 			 * that index is disabled.
 			 */
 			var statusData = new byte[buffer.remaining()];
 			buffer.get(statusData);
-			var boards = new ArrayList<Integer>();
-			for (int i = 0; i < MAX_BOARDS_PER_FRAME; i++) {
-				if (statusData[i] != 0) {
-					boards.add(i);
-				}
-			}
+			var boards = range(0, MAX_BOARDS_PER_FRAME)
+					.filter(i -> statusData[i] != 0).mapToObj(BMPBoard::new)
+					.collect(toUnmodifiableList());
 			return boards::iterator;
 		}
 	}

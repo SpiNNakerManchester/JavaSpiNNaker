@@ -25,7 +25,8 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /**
- * A request to write memory on a neighbouring chip.
+ * A request to write memory on a neighbouring chip. There is no response
+ * payload.
  * <p>
  * Calls {@code cmd_link_write()} in {@code scamp-cmd.c}.
  */

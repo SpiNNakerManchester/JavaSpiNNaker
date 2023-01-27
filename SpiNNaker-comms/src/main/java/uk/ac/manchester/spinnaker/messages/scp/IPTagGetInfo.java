@@ -28,10 +28,13 @@ import uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP Request information about IP tags.
+ * An SCP Request information about IP tags. The response payload is the
+ * {@linkplain TagInfo tag <em>system</em> information}.
  * <p>
  * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},
  * if sent to a BMP).
+ *
+ * @see IPTagGet
  */
 public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 	private static final int IPTAG_MAX = 255;

@@ -25,7 +25,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
  * An SCP Request to the extra monitor core to set the router timeout for
- * dropped packet reinjection.
+ * dropped packet reinjection. There is no response payload.
  * <p>
  * Handled by {@code reinjection_set_timeout_sdp()} in
  * {@code extra_monitor_support.c}.

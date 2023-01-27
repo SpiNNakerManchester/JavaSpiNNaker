@@ -27,7 +27,8 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * Get the reset status of a board's FPGAs.
+ * Get the reset status of a board's FPGAs. The response payload is a boolean,
+ * {@code true} if the reset bit is asserted for the given FPGA.
  * <p>
  * Calls {@code cmd_read()} in {@code bmp_cmd.c} with special parameters and
  * parses the result.

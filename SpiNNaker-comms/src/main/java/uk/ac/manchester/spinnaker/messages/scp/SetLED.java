@@ -25,7 +25,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
 
 /**
- * An SCP request to change the state of an LED.
+ * An SCP request to change the state of an LED. There is no response payload.
  * <p>
  * Handled by {@code sark_led_set()} in {@code sark_hw.c}.
  */

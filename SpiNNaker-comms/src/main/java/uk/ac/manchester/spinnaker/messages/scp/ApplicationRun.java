@@ -35,7 +35,8 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 /**
  * An SCP request to run an application. The application code must have been
  * placed at the location
- * {@link SystemVariableDefinition#system_sdram_base_address} points at.
+ * {@link SystemVariableDefinition#system_sdram_base_address} points at. There
+ * is no response payload.
  * <p>
  * Calls {@code proc_start_app()} in {@code scamp-app.c}.
  */

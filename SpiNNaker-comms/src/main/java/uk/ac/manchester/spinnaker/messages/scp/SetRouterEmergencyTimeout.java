@@ -25,7 +25,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
  * An SCP Request to set the router emergency timeout for dropped packet
- * reinjection.
+ * reinjection. There is no response payload.
  * <p>
  * Handled by {@code reinjection_set_emergency_timeout_sdp()} in
  * {@code extra_monitor_support.c}.

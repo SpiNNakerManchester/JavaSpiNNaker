@@ -25,7 +25,7 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 
 /**
  * A request to write memory to flash on a BMP. Must have already been prepared
- * with {@link EraseFlash}.
+ * with {@link EraseFlash}. There is no response payload.
  * <p>
  * Calls {@code cmd_flash_write()} in {@code bmp_cmd.c}.
  */

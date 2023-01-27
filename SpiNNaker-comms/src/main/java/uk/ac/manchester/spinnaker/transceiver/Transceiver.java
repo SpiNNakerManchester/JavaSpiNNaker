@@ -39,7 +39,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_DIAGNOSTIC_FI
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_DEFAULT_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-import static uk.ac.manchester.spinnaker.messages.bmp.ReadSerialVector.SerialVector.SERIAL_LENGTH;
+import static uk.ac.manchester.spinnaker.messages.bmp.SerialVector.SERIAL_LENGTH;
 import static uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer.FLASH_CHUNK_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime.TIMEOUT_2560_ms;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
@@ -2012,7 +2012,7 @@ public class Transceiver extends UDPTransceiver
 	@CheckReturnValue
 	public MappableIterable<BMPBoard> availableBoards(BMPCoords bmp)
 			throws IOException, ProcessException, InterruptedException {
-		return get(bmp, new ReadCANStatus()).map(BMPBoard::new);
+		return get(bmp, new ReadCANStatus());
 	}
 
 	private WriteMemoryProcess writeProcess(long size) {

@@ -29,7 +29,8 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP request to read a region of memory.
+ * An SCP request to read a region of memory. The response payload is a
+ * read-only little-endian {@link ByteBuffer} intended to be read once.
  * <p>
  * Calls {@code sark_cmd_read()} in {@code sark_base.c}.
  */

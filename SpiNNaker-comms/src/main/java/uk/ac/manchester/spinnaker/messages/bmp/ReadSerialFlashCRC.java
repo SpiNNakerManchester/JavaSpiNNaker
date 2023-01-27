@@ -26,7 +26,8 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP request to get the CRC of serial flash memory from a BMP.
+ * An SCP request to get the CRC of serial flash memory from a BMP. The response
+ * payload is the 32-bit CRC of the given region of flash.
  * <p>
  * Calls {@code sf_crc32()} in {@code bmp_ssp.c}.
  */
