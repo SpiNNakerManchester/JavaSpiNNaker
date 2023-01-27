@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.storage;
 
+import java.util.Map;
+
 import javax.validation.constraints.NotEmpty;
 
 /**
@@ -35,10 +37,16 @@ public class ProxyInformation {
 	public final String jobUrl;
 
 	/**
-	 * The token to use to authenticate access.
+	 * The headers to use for authentication.
 	 */
 	@NotEmpty
-	public final String bearerToken;
+	public final Map<String, String> headers;
+
+	/**
+	 * The cookies to use for authentication.
+	 */
+	@NotEmpty
+	public final Map<String, String> cookies;
 
 	/**
 	 * Create a new instance.
@@ -47,13 +55,16 @@ public class ProxyInformation {
 	 *            The URL of the Spalloc server.
 	 * @param jobUrl
 	 *            The URL of the job.
-	 * @param bearerToken
-	 *            The bearer token to use as authentication.
+	 * @param headers
+	 *            The headers to use for authentication.
+	 * @param cookies
+	 *            The cookies to use for authentication.
 	 */
 	public ProxyInformation(String spallocUrl, String jobUrl,
-			String bearerToken) {
+			Map<String, String> headers, Map<String, String> cookies) {
 		this.spallocUrl = spallocUrl;
 		this.jobUrl = jobUrl;
-		this.bearerToken = bearerToken;
+		this.headers = headers;
+		this.cookies = cookies;
 	}
 }

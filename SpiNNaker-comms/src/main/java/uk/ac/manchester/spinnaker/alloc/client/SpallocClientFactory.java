@@ -146,8 +146,9 @@ public class SpallocClientFactory {
 		if (proxy == null) {
 			return null;
 		}
+		log.info("Using proxy {} for connections", proxy.spallocUrl);
 		return new SpallocClientFactory(URI.create(proxy.spallocUrl))
-				.getJob(proxy.jobUrl, proxy.bearerToken);
+				.getJob(proxy.jobUrl, proxy.headers, proxy.cookies);
 	}
 
 	/**
@@ -282,21 +283,6 @@ public class SpallocClientFactory {
 	}
 
 	/**
-	 * Create a client and log in.
-	 *
-	 * @param bearerToken
-	 *            The HBP/EBRAINS bearer token to authenticate with.
-	 * @return The client API for the given server.
-	 * @throws IOException
-	 *             If the server doesn't respond or logging in fails.
-	 */
-	public SpallocClient login(String bearerToken) throws IOException {
-		var s = new ClientSession(baseUrl, bearerToken);
-
-		return new ClientImpl(s, s.discoverRoot());
-	}
-
-	/**
 	 * Get direct access to a Job.
 	 *
 	 * @param uri
@@ -307,10 +293,10 @@ public class SpallocClientFactory {
 	 * @throws IOException
 	 *             If there is an error communicating with the server.
 	 */
-	public Job getJob(String uri, String bearerToken)
-			throws IOException {
+	public Job getJob(String uri, Map<String, String> headers,
+			Map<String, String> cookies) throws IOException {
 		var u = URI.create(uri);
-		var s = new ClientSession(baseUrl, bearerToken);
+		var s = new ClientSession(baseUrl, headers, cookies);
 		var c = new ClientImpl(s, s.discoverRoot());
 		log.info("Connecting to job on {}", u);
 		return c.job(u);

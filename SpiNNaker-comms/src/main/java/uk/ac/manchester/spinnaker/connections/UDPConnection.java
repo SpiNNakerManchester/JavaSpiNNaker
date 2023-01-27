@@ -244,6 +244,9 @@ public abstract class UDPConnection<T> implements Connection {
 	 */
 	@ForOverride
 	protected InetSocketAddress getLocalAddress() throws IOException {
+		if (socket == null) {
+			return null;
+		}
 		return (InetSocketAddress) socket.getLocalSocketAddress();
 	}
 
@@ -267,16 +270,12 @@ public abstract class UDPConnection<T> implements Connection {
 	 *             If the socket is closed.
 	 */
 	@ForOverride
-	protected InetSocketAddress getRemoteAddress() throws IOException {
-		return (InetSocketAddress) socket.getRemoteSocketAddress();
+	protected InetSocketAddress getRemoteAddress() {
+		return remoteAddress;
 	}
 
 	private InetSocketAddress remoteAddr() {
-		try {
-			return requireNonNullElse(getRemoteAddress(), ANY);
-		} catch (IOException e) {
-			return ANY;
-		}
+		return requireNonNullElse(getRemoteAddress(), ANY);
 	}
 
 	/** @return The local IP address to which the connection is bound. */
@@ -307,7 +306,7 @@ public abstract class UDPConnection<T> implements Connection {
 	public final InetAddress getRemoteIPAddress() {
 		try {
 			return getRemoteAddress().getAddress();
-		} catch (NullPointerException | IOException e) {
+		} catch (NullPointerException e) {
 			return null;
 		}
 	}
@@ -320,7 +319,7 @@ public abstract class UDPConnection<T> implements Connection {
 	public final int getRemotePort() {
 		try {
 			return getRemoteAddress().getPort();
-		} catch (NullPointerException | IOException e) {
+		} catch (NullPointerException e) {
 			return -1;
 		}
 	}

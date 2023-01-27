@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
+import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -136,5 +137,12 @@ public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 		} catch (IOException e) {
 			log.warn("failed to close connection", e);
 		}
+	}
+
+	@Override
+	public String toString() {
+		return format("%s(%s <-%s-> %s)",
+				getClass().getSimpleName().replaceAll("^.*\\.", ""),
+				getChip(), isClosed() ? "|" : "", getRemoteAddress());
 	}
 }

@@ -236,16 +236,26 @@ abstract class SQL {
 	static final String PROXY_URI = "job uri";
 
 	/**
-	 * The name of the result containing the proxy Authorization.
+	 * The kind of the result containing a proxy cookie.
 	 */
-	static final String PROXY_AUTH = "Authorization";
+	static final String COOKIE = "COOKIE";
+
+	/**
+	 * The kind of the result containing a proxy header.
+	 */
+	static final String HEADER = "HEADER";
+
+	/**
+	 * The kind of the result containing a spalloc information;
+	 */
+	static final String SPALLOC = "SPALLOC";
 
 	/**
 	 * Get information about the proxy.
 	 */
 	static final String GET_PROXY_INFORMATION =
-			"SELECT name, value FROM proxy_configuration WHERE "
-			+ "((kind = 'SPALLOC' AND name = '" + PROXY_URI + "') OR"
-			+ " (kind = 'HEADER' AND name = '" + PROXY_AUTH + "') OR"
-			+ " (kind = 'SPALLOC' AND name = '" + SPALLOC_URI + "'))";
+			"SELECT kind, name, value FROM proxy_configuration WHERE "
+			+ "((kind = '" + SPALLOC + "' AND name = '" + PROXY_URI + "') OR"
+			+ " (kind = '" + HEADER +  "') OR (kind = '" + COOKIE + "') OR"
+			+ " (kind = '" + SPALLOC + "' AND name = '" + SPALLOC_URI + "'))";
 }

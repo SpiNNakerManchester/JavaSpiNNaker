@@ -17,12 +17,15 @@
 package uk.ac.manchester.spinnaker.storage.sqlite;
 
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_PROXY_INFORMATION;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.PROXY_AUTH;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.COOKIE;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.HEADER;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.SPALLOC;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.PROXY_URI;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.SPALLOC_URI;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
 import uk.ac.manchester.spinnaker.storage.DatabaseAPI;
@@ -32,8 +35,6 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 
 abstract class SQLiteProxyStorage<T extends DatabaseAPI>
 		extends SQLiteConnectionManager<T> implements ProxyAwareStorage {
-	/** Standard prefix for the bearer token header, which will be stripped. */
-	private static final String PREFIX = "Bearer ";
 
 	protected SQLiteProxyStorage(ConnectionProvider<T> connProvider) {
 		super(connProvider);
@@ -59,38 +60,47 @@ abstract class SQLiteProxyStorage<T extends DatabaseAPI>
 	private ProxyInformation getProxyInfo(Connection conn) throws SQLException {
 		String spallocUri = null;
 		String jobUri = null;
-		String bearerToken = null;
+		var headers = new HashMap<String, String>();
+		var cookies = new HashMap<String, String>();
+
 		try (var s = conn.prepareStatement(GET_PROXY_INFORMATION);
 				var rs = s.executeQuery()) {
 			while (rs.next()) {
+				var kind = rs.getString("kind");
 				var name = rs.getString("name");
 				var value = rs.getString("value");
 				if (name == null || value == null) {
 					continue;
 				}
-				switch (name) {
-				case SPALLOC_URI:
-					spallocUri = value;
-					break;
-				case PROXY_URI:
-					jobUri = value;
-					break;
-				case PROXY_AUTH:
-					if (!value.startsWith(PREFIX)) {
-						throw new SQLException(
-								"Unexpected proxy authentication: " + value);
+				switch (kind) {
+				case SPALLOC:
+					switch (name) {
+					case SPALLOC_URI:
+						spallocUri = value;
+						break;
+					case PROXY_URI:
+						jobUri = value;
+						break;
+					default:
+						throw new IllegalStateException("unreachable reached");
 					}
-					bearerToken = value.substring(PREFIX.length());
+					break;
+
+				case COOKIE:
+					cookies.put(name, value);
+					break;
+				case HEADER:
+					headers.put(name, value);
 					break;
 				default:
 					throw new IllegalStateException("unreachable reached");
-				}
+			    }
 			}
 		}
 		// If we don't have all pieces of info, we can't talk to the proxy
-		if (spallocUri == null || jobUri == null || bearerToken == null) {
+		if (spallocUri == null || jobUri == null) {
 			return null;
 		}
-		return new ProxyInformation(spallocUri, jobUri, bearerToken);
+		return new ProxyInformation(spallocUri, jobUri, headers, cookies);
 	}
 }

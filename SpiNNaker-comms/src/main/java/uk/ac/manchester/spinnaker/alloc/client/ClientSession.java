@@ -77,6 +77,8 @@ final class ClientSession implements Session {
 
 	private static final String SESSION_NAME = "JSESSIONID";
 
+	private static final String CSRF_HEADER_NAME = "X-CSRF-TOKEN";
+
 	private static final URI LOGIN_FORM = URI.create("system/login.html");
 
 	private static final URI LOGIN_HANDLER = URI.create("system/perform_login");
@@ -105,8 +107,6 @@ final class ClientSession implements Session {
 
 	private final String password;
 
-	private final String bearerToken;
-
 	private String session;
 
 	private String csrfHeader;
@@ -132,7 +132,6 @@ final class ClientSession implements Session {
 		this.baseUri = baseUri;
 		this.username = username;
 		this.password = password;
-		this.bearerToken = null;
 		// This does the actual logging in process
 		renew(false);
 	}
@@ -143,18 +142,27 @@ final class ClientSession implements Session {
 	 * @param baseUri
 	 *            The service base URI. <em>Must</em> be absolute! <em>Must
 	 *            not</em> include a username or password!
-	 * @param bearerToken
-	 *            The bearer token to use. Not {@code null}.
+	 * @param headers
+	 *            The headers to use to authenticate. Not {@code null}.
+	 * @param cookies
+	 *            The cookies to use to authenticate. Not {@code null}.
 	 * @throws IOException
 	 *             If things go wrong.
 	 */
-	ClientSession(URI baseUri, String bearerToken) throws IOException {
+	ClientSession(URI baseUri, Map<String, String> headers,
+			Map<String, String> cookies) throws IOException {
 		this.baseUri = baseUri;
 		this.username = null;
 		this.password = null;
-		this.bearerToken = requireNonNull(bearerToken);
-		// This does the actual logging in process
-		renew(false);
+		this.session = cookies.get(SESSION_NAME);
+		this.csrf = headers.get(CSRF_HEADER_NAME);
+		if (this.csrf != null) {
+			this.csrfHeader = CSRF_HEADER_NAME;
+		}
+		if (session == null) {
+		    // This does the actual logging in process
+		    renew(false);
+		}
 	}
 
 	private static HttpURLConnection createConnection(URI url)
@@ -557,9 +565,6 @@ final class ClientSession implements Session {
 		if (session != null) {
 			log.debug("Attaching to session {}", session);
 			c.setRequestProperty(COOKIE, SESSION_NAME + "=" + session);
-		} else if (bearerToken != null) {
-			log.debug("Using bearer auth {}", bearerToken);
-			c.addRequestProperty("Authorization", "Bearer " + bearerToken);
 		}
 
 		if (csrfHeader != null && csrf != null && forStateChange) {
@@ -664,9 +669,7 @@ final class ClientSession implements Session {
 		var tempCsrf = makeTemporarySession();
 
 		// If we didn't use a bearer token, we need to log in properly
-		if (bearerToken == null) {
-			logSessionIn(tempCsrf);
-		}
+		logSessionIn(tempCsrf);
 
 		if (postRenew) {
 			discoverRoot();
