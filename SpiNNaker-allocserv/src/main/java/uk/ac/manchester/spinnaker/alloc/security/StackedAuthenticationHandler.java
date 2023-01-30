@@ -18,9 +18,15 @@ package uk.ac.manchester.spinnaker.alloc.security;
 
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
+import static org.springframework.security.core.context.SecurityContextHolder.setContext;
 
 import org.slf4j.Logger;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.TransientSecurityContext;
+import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
+
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Handles the applying of an {@linkplain Authentication authentication} to the
@@ -36,14 +42,16 @@ class StackedAuthenticationHandler implements AutoCloseable {
 	/** The authentication we have applied. */
 	private final Authentication ourAuth;
 
-	/** The authentication we will restore. */
-	private final Authentication oldAuth;
+	/** The context we will restore. */
+	private final SecurityContext oldContext;
+
+	private final SecurityContext newContext;
 
 	/**
 	 * Compare two values using their actual object identities.
 	 *
 	 * @param <T>
-	 *            The type of values to compare.
+	 *            The type of values being compared.
 	 * @param a
 	 *            The first value reference. May be {@code null}.
 	 * @param b
@@ -55,30 +63,50 @@ class StackedAuthenticationHandler implements AutoCloseable {
 		return a == b;
 	}
 
+	/**
+	 * Set the current user for this thread.
+	 *
+	 * @param targetUser
+	 *            What user (by token) we will run as.
+	 * @return The transient context.
+	 * @see SwitchUserFilter
+	 * @see TransientSecurityContext
+	 */
+	@UsedInJavadocOnly(SwitchUserFilter.class)
+	private static SecurityContext setUserContext(Authentication targetUser) {
+		var context = new TransientSecurityContext();
+		context.setAuthentication(targetUser);
+		setContext(context);
+		return context;
+	}
+
 	StackedAuthenticationHandler(Authentication auth) {
 		ourAuth = auth;
-		var c = getContext();
-		oldAuth = c.getAuthentication();
-		c.setAuthentication(auth);
-		if (identical(ourAuth, oldAuth)) {
+		oldContext = getContext();
+		newContext = setUserContext(auth);
+		if (identical(ourAuth, oldContext.getAuthentication())) {
+			// Changing to ourself? WTF!
 			log.warn(
 					"unexpectedly identical authentications when pushing "
 							+ "thread security context: had {} pushing {}",
-					oldAuth, ourAuth);
+					oldContext.getAuthentication(), ourAuth);
 		}
 	}
+
+	private static final String UNEXPECTED = "unexpected {} when popping "
+			+ "thread security context: expected {} got {}";
 
 	@Override
 	public void close() {
 		var c = getContext();
+		if (!identical(newContext, c)) {
+			log.warn(UNEXPECTED, "security context", newContext, c);
+		}
 		var got = c.getAuthentication();
 		if (identical(got, ourAuth)) {
-			c.setAuthentication(oldAuth);
+			setContext(oldContext);
 		} else {
-			log.warn(
-					"unexpected authentication token when popping "
-							+ "thread security context: expected {} got {}",
-					ourAuth, got);
+			log.warn(UNEXPECTED, "authentication token", ourAuth, got);
 		}
 	}
 }

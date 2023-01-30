@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.security;
 
+import static java.lang.Thread.currentThread;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_READER;
@@ -133,6 +134,8 @@ public final class Permit {
 	 * @return Whatever the inner code returns
 	 */
 	public <T> T authorize(Supplier<T> inContext) {
+		Thread t = currentThread();
+
 		/**
 		 * A temporarily-installable authentication token. Allows access to
 		 * secured APIs in asynchronous worker threads, provided they provide a
@@ -147,11 +150,17 @@ public final class Permit {
 
 			@Override
 			public String getName() {
+				if (!t.equals(currentThread())) {
+					return name + "(WRONG THREAD)";
+				}
 				return name;
 			}
 
 			@Override
 			public Collection<? extends GrantedAuthority> getAuthorities() {
+				if (!t.equals(currentThread()) || !auth) {
+					return List.of();
+				}
 				return authorities;
 			}
 
@@ -163,16 +172,25 @@ public final class Permit {
 
 			@Override
 			public Permit getDetails() {
+				if (!t.equals(currentThread())) {
+					return null;
+				}
 				return Permit.this;
 			}
 
 			@Override
 			public String getPrincipal() {
+				if (!t.equals(currentThread())) {
+					return null;
+				}
 				return name;
 			}
 
 			@Override
 			public boolean isAuthenticated() {
+				if (!t.equals(currentThread())) {
+					return false;
+				}
 				return auth;
 			}
 
@@ -183,6 +201,7 @@ public final class Permit {
 				}
 			}
 
+			// This object really isn't able to be saved!
 			private void writeObject(ObjectOutputStream out)
 					throws NotSerializableException {
 				throw new NotSerializableException("not actually serializable");
@@ -202,8 +221,8 @@ public final class Permit {
 			}
 		}
 
-		try (var a = new TempAuth();
-				var v = new StackedAuthenticationHandler(a)) {
+		try (var auth = new TempAuth();
+				var stackAuth = new StackedAuthenticationHandler(auth)) {
 			return inContext.get();
 		}
 	}
