@@ -218,7 +218,6 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	@Override
 	protected void handleBinaryMessage(WebSocketSession session,
 			BinaryMessage message) throws Exception {
-		log.debug("Received binary message to session {}", session);
 		delegateToProxy(message, PROXY.get(session));
 	}
 

@@ -156,8 +156,10 @@ public class ProxyCore implements AutoCloseable {
 				session.sendMessage(new BinaryMessage(reply));
 			}
 		} catch (IOException e) {
+			log.error("Closing data on server error", e);
 			session.close(SERVER_ERROR);
 		} catch (IllegalArgumentException | BufferUnderflowException e) {
+			log.error("Closing session on bad data", e);
 			session.close(BAD_DATA);
 		}
 	}
