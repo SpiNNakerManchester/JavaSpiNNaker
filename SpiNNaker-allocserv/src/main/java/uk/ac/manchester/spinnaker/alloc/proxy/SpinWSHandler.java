@@ -231,6 +231,8 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 		if (!(exception instanceof EOFException)) {
 			// We don't log EOFException
 			log.warn("transport error for {}", session, exception);
+		} else {
+			log.debug("End of web socket session {}", session, exception);
 		}
 		// Don't need to close; afterConnectionClosed() will be called next
 	}
