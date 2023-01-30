@@ -442,6 +442,7 @@ public class TxrxProcess {
 				if (retryTracker != null) {
 					retryTracker.retryNeeded();
 				}
+				requestData.rewind();
 				send();
 			}
 

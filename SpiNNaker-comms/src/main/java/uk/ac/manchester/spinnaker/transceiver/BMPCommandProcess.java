@@ -307,6 +307,7 @@ class BMPCommandProcess {
 				if (retryTracker != null) {
 					retryTracker.retryNeeded();
 				}
+				requestData.rewind();
 				send();
 			}
 
