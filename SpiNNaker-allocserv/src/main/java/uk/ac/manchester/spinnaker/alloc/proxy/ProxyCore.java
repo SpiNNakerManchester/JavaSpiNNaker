@@ -274,10 +274,6 @@ public class ProxyCore implements AutoCloseable {
 
 	private int openUnconnected(ValueHolder<InetAddress> localAddress,
 			ValueHolder<Integer> localPort) throws IOException {
-		if (localHost == null) {
-			throw new IOException(
-					"cannot receive if localHost is not definite");
-		}
 		int id = idIssuer.getAsInt();
 		var conn = new ProxyUDPConnection(session, null, 0, id,
 				() -> removeConnection(id), localHost);
