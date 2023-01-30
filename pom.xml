@@ -65,7 +65,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.3</jython.version>
 		<error-prone.version>2.18.0</error-prone.version>
-		<picocli.version>4.7.0</picocli.version>
+		<picocli.version>4.7.1</picocli.version>
 	</properties>
 
 	<dependencyManagement>
