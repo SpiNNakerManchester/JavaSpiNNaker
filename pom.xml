@@ -500,8 +500,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<link>https://jakarta.ee/specifications/servlet/4.0/apidocs/</link>
 							<link>https://cxf.apache.org/javadoc/latest-3.0.x/</link>
 							<link>https://errorprone.info/api/latest/</link>
-							<link>https://fasterxml.github.io/jackson-core/javadoc/${jackson.doc.version}/</link>
-							<link>https://fasterxml.github.io/jackson-databind/javadoc/${jackson.doc.version}/</link>
 							<link>https://www.slf4j.org/api/</link>
 						</links>
 						<offlineLinks>
@@ -521,6 +519,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<offlineLink>
 								<url>https://javadoc.io/doc/org.keycloak/keycloak-core/latest/</url>
 								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/org.keycloak.core</location>
+							</offlineLink>
+							<offlineLink>
+								<url>https://www.javadoc.io/doc/com.fasterxml.jackson.core/jackson-core/latest/</url>
+								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/com.fasterxml.jackson.core</location>
+							</offlineLink>
+							<offlineLink>
+								<url>https://www.javadoc.io/doc/com.fasterxml.jackson.core/jackson-databind/latest/</url>
+								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/com.fasterxml.jackson.databind</location>
 							</offlineLink>
 						</offlineLinks>
 						<doclint>all</doclint>
