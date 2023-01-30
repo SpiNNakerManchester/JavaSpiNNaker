@@ -58,7 +58,11 @@ public class ProxyCore implements AutoCloseable {
 
 	private static final int MAX_PORT = 65535;
 
-	private static final int RESPONSE_WORDS = 3;
+	private static final int RESPONSE_WORDS = 2;
+
+	private static final int ID_WORDS = 1;
+
+	private static final int IP_ADDR_AND_PORT_WORDS = 5;
 
 	private final WebSocketSession session;
 
@@ -164,8 +168,10 @@ public class ProxyCore implements AutoCloseable {
 		}
 	}
 
-	private static ByteBuffer response(ProxyOp op, int correlationId) {
-		var msg = allocate(RESPONSE_WORDS * WORD_SIZE).order(LITTLE_ENDIAN);
+	private static ByteBuffer response(ProxyOp op, int correlationId,
+			int additionalWords) {
+		int nWords = RESPONSE_WORDS + additionalWords;
+		var msg = allocate(nWords * WORD_SIZE).order(LITTLE_ENDIAN);
 		msg.putInt(op.ordinal());
 		msg.putInt(correlationId);
 		return msg;
@@ -202,7 +208,7 @@ public class ProxyCore implements AutoCloseable {
 
 		int id = openConnected(who, port);
 
-		var msg = response(ProxyOp.OPEN, corId);
+		var msg = response(ProxyOp.OPEN, corId, ID_WORDS);
 		msg.putInt(id);
 		return msg;
 	}
@@ -264,10 +270,13 @@ public class ProxyCore implements AutoCloseable {
 		var localAddress = new ValueHolder<InetAddress>();
 		var localPort = new ValueHolder<Integer>();
 		int id = openUnconnected(localAddress, localPort);
+		byte[] addr = localAddress.getValue().getAddress();
+		log.debug("Unconnected channel local address: {}", addr);
 
-		var msg = response(OPEN_UNCONNECTED, corId);
+		var msg = response(OPEN_UNCONNECTED, corId,
+				ID_WORDS + IP_ADDR_AND_PORT_WORDS);
 		msg.putInt(id);
-		msg.put(localAddress.getValue().getAddress());
+		msg.put(addr);
 		msg.putInt(localPort.getValue());
 		return msg;
 	}
@@ -309,7 +318,7 @@ public class ProxyCore implements AutoCloseable {
 			throws IOException {
 		int corId = message.getInt();
 		int id = message.getInt();
-		var msg = response(CLOSE, corId);
+		var msg = response(CLOSE, corId, ID_WORDS);
 		msg.putInt(closeChannel(id));
 		return msg;
 	}

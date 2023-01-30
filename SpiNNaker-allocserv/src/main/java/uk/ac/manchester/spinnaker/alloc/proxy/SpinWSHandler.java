@@ -188,7 +188,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	 */
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) {
-		log.debug("Websocket session {} established");
+		log.debug("Websocket session {} established", session);
 		initProxyCore(session, JOB.get(session));
 	}
 
