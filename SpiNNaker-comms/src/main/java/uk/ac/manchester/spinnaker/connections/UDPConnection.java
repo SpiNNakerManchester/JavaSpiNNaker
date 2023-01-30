@@ -600,10 +600,6 @@ public abstract class UDPConnection<T> implements Connection {
 	@Override
 	public final void sendTo(ByteBuffer data, InetAddress address, int port)
 			throws IOException {
-		if (!canSend) {
-			throw new IOException("Remote host address or port not set; "
-					+ "data cannot be sent with this connection");
-		}
 		if (isClosed()) {
 			throw new EOFException();
 		}
