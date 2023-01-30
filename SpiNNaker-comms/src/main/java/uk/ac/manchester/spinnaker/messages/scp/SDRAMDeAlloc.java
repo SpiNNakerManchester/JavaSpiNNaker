@@ -67,9 +67,12 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 		readNumFreedBlocks = false;
 	}
 
+	// @formatter:off
 	/*
-	 * [ 31-16 | 15-8 | 7-0 ] [ unused | app_id | op ]
+	 * [  31-16 |   15-8 | 7-0 ]
+	 * [ unused | app_id |  op ]
 	 */
+	// @formatter:off
 	private static int argument1(AppID appID) {
 		return (appID.appID << BYTE1) | (FREE_SDRAM_BY_APP_ID.value << BYTE0);
 	}

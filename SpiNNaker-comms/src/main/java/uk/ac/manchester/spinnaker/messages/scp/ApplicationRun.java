@@ -72,6 +72,7 @@ public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 		super(chip.getScampCore(), CMD_AR, idOpMask(appId, processors, wait));
 	}
 
+	// @formatter:off
 	/*
 	 * bits:   [  31-24 |     23-18 |           17-0 ]
 	 * labels: [ app_id | app_flags | processor_mask ]
@@ -79,6 +80,7 @@ public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 	 * It is an error to ask for this operation for the SCAMP core.
 	 * The only app_flag we use is in the lowest bit: WAIT.
 	 */
+	// @formatter:on
 	private static int idOpMask(AppID appId, Collection<Integer> processors,
 			boolean wait) {
 		int mask = 0;

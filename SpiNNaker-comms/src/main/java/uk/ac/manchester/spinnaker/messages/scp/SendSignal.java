@@ -54,10 +54,12 @@ public class SendSignal extends SCPRequest<CheckOKResponse> {
 				data(appID, signal), ALL_CORE_SIGNAL_MASK);
 	}
 
+	// @formatter:off
 	/*
 	 * [ 31-24  |  23-16 | 15-8 |    7-0 ]
 	 * [ unused | signal | mask | app_id ]
 	 */
+	// @formatter:on
 	private static int data(AppID appID, Signal signal) {
 		return (signal.value << BYTE2) | (APP_MASK << BYTE1)
 				| (appID.appID << BYTE0);

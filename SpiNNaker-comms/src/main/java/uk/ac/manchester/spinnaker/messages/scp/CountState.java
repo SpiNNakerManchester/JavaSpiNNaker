@@ -60,10 +60,12 @@ public class CountState extends SCPRequest<CountState.Response> {
 				data(appID, state), ALL_CORE_SIGNAL_MASK);
 	}
 
+	// @formatter:off
 	/*
-	 * [ 31-28 | 27-26 | 25-24 | 23-22 | 21-20 | 19-16 | 15-8 | 7-0 ] [ unused |
-	 * level | unused | op | mode | state | app_mask | app_id ]
+	 * [  31-28 | 27-26 |  25-24 | 23-22 | 21-20 | 19-16 |     15-8 |    7-0 ]
+	 * [ unused | level | unused |    op |  mode | state | app_mask | app_id ]
 	 */
+	// @formatter:on
 	private static int data(AppID appId, CPUState state) {
 		int data = (APP_MASK << BYTE1) | (appId.appID << BYTE0);
 		data |= APP_STAT << OP_SHIFT;

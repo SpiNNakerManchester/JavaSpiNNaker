@@ -80,9 +80,12 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 		}
 	}
 
+	// @formatter:off
 	/*
-	 * [ 31-24 | 23-16 | 15-8 | 7-0 ] [ unused | extra_flag | app_id | op ]
+	 * [  31-24 |      23-16 |   15-8 | 7-0 ]
+	 * [ unused | extra_flag | app_id |  op ]
 	 */
+	// @formatter:on
 	private static int argument(AppID appID) {
 		return (FLAG_TAG_RETRY << BYTE2) | (appID.appID << BYTE1)
 				| (ALLOC_SDRAM.value << BYTE0);
