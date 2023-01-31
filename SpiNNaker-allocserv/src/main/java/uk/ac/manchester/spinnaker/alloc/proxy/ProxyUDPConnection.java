@@ -222,13 +222,15 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 		try {
 			mainLoop(recvFrom);
 		} catch (IOException e) {
-			try {
-				close();
-				emergencyRemove.run();
-			} catch (IOException e1) {
-				e.addSuppressed(e1);
+			if (!isClosed()) {
+				try {
+					close();
+					emergencyRemove.run();
+				} catch (IOException e1) {
+					e.addSuppressed(e1);
+				}
+				log.warn("problem in SpiNNaker-to-client part of {}", name, e);
 			}
-			log.warn("problem in SpiNNaker-to-client part of {}", name, e);
 		} finally {
 			log.debug("shutting down eieio listener {}", name);
 			me.setName(oldThreadName);
