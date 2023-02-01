@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.spalloc;
 
 import static java.lang.Thread.currentThread;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.makeTimeout;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.timeLeft;
@@ -110,7 +111,8 @@ public abstract class SpallocConnection implements Closeable {
 	 */
 	@MustBeClosed
 	protected SpallocConnection(String hostname, int port, Integer timeout) {
-		addr = new InetSocketAddress(hostname, port);
+		addr = new InetSocketAddress(
+				requireNonNull(hostname, "hostname must not be null"), port);
 		this.dead = true;
 		this.defaultTimeout = timeout;
 	}
@@ -316,12 +318,8 @@ public abstract class SpallocConnection implements Closeable {
 		var sock = getConnection(timeout);
 
 		// Wait for some data to arrive
-		var line = readLine(sock);
-		var response = parseResponse(line);
-		if (response == null) {
-			throw new SpallocProtocolException("unexpected response: " + line);
-		}
-		return response;
+		var line = readLine(sock); // Not null; null case throws
+		return parseResponse(line);
 	}
 
 	/**
@@ -382,10 +380,12 @@ public abstract class SpallocConnection implements Closeable {
 	 * @param line
 	 *            The line to parse. Not {@code null}. Has the terminating
 	 *            newline removed.
-	 * @return The parsed response, or {@code null} for a generic "that's
-	 *         unexpected".
+	 * @return The parsed response.
 	 * @throws IOException
 	 *             If parsing completely fails.
+	 * @throws SpallocProtocolException
+	 *             If an unexpected valid JSON message is returned (e.g.,
+	 *             {@code null}).
 	 */
 	protected abstract Response parseResponse(String line) throws IOException;
 
