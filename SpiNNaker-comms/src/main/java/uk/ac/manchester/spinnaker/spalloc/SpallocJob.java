@@ -22,20 +22,19 @@ import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.interrupted;
 import static java.lang.Thread.sleep;
+import static java.util.Objects.nonNull;
+import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.RECONNECT_DELAY_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.makeTimeout;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.timeLeft;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.timedOut;
-import static uk.ac.manchester.spinnaker.spalloc.messages.State.DESTROYED;
 import static uk.ac.manchester.spinnaker.spalloc.messages.State.QUEUED;
-import static uk.ac.manchester.spinnaker.spalloc.messages.State.UNKNOWN;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 import org.slf4j.Logger;
 
@@ -149,7 +148,10 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * Cache of information about a machine. This is information which doesn't
 	 * change once it is assigned, so there is no expiry mechanism.
 	 */
-	private JobMachineInfo machineInfoCache;
+	private JobMachineInfo machine;
+
+	/** The status cache period, in ms. Non-constant for tests. */
+	int statusCachePeriod = STATUS_CACHE_PERIOD;
 
 	private int reconnectDelay = f2ms(RECONNECT_DELAY_DEFAULT);
 
@@ -263,6 +265,24 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 		this(client, f2ms(config.getTimeout()), builder);
 	}
 
+	private static void validateBuilder(CreateJob builder) {
+		if (requireNonNull(builder, "a builder must be specified")
+				.isTargetDefined()) {
+			return;
+		}
+		var machine = config.getMachine();
+		var tags = config.getTags();
+		if (nonNull(machine)) {
+			builder.machine(machine);
+		} else if (nonNull(tags)) {
+			builder.tags(tags);
+		} else {
+			throw new IllegalArgumentException(
+					"must have either machine or tags specified or able "
+							+ "to be looked up from the configuration");
+		}
+	}
+
 	/**
 	 * Create a spalloc job that requests a SpiNNaker machine.
 	 *
@@ -278,14 +298,10 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *             If the spalloc server rejects the operation request.
 	 * @throws InterruptedException
 	 *             If interrupted while waiting.
-	 * @throws IllegalArgumentException
-	 *             If a bad builder is given.
 	 */
 	public SpallocJob(SpallocClient client, Integer timeout, CreateJob builder)
 			throws IOException, SpallocServerException, InterruptedException {
-		if (builder == null) {
-			throw new IllegalArgumentException("a builder must be specified");
-		}
+		validateBuilder(builder);
 		this.client = client;
 		this.timeout = timeout;
 		client.connect();
@@ -325,22 +341,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	public SpallocJob(String hostname, Integer port, Integer timeout,
 			CreateJob builder)
 			throws IOException, SpallocServerException, InterruptedException {
-		if (Objects.isNull(builder)) {
-			throw new IllegalArgumentException("a builder must be specified");
-		}
-		if (!builder.isTargetDefined()) {
-			var machine = config.getMachine();
-			var tags = config.getTags();
-			if (Objects.nonNull(machine)) {
-				builder.machine(machine);
-			} else if (Objects.nonNull(tags)) {
-				builder.tags(tags);
-			} else {
-				throw new IllegalArgumentException(
-						"must have either machine or tags specified or able "
-								+ "to be looked up from the configuration");
-			}
-		}
+		validateBuilder(builder);
 		this.client = new SpallocClient(hostname, port, timeout);
 		this.timeout = timeout;
 		client.connect();
@@ -464,7 +465,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	public SpallocJob(String hostname, int port, Integer timeout, int id)
 			throws IOException, SpallocServerException, JobDestroyedException,
 			InterruptedException {
-		this.client = new SpallocClient(hostname, port, timeout);
+		client = new SpallocClient(hostname, port, timeout);
 		this.timeout = timeout;
 		this.id = id;
 		client.connect();
@@ -474,17 +475,20 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 		 * there's nothing to keepalive) so just bail out.
 		 */
 		var jobState = getStatus();
-		if (jobState.getState() == UNKNOWN
-				|| jobState.getState() == DESTROYED) {
-			if (jobState.getReason() != null) {
+		switch (jobState.getState()) {
+		case DESTROYED:
+			if (nonNull(jobState.getReason())) {
 				throw new JobDestroyedException(format(
 						"SpallocJob %d does not exist: %s: %s", id,
 						jobState.getState().name(), jobState.getReason()));
-			} else {
-				throw new JobDestroyedException(
-						format("SpallocJob %d does not exist: %s", id,
-								jobState.getState().name()));
 			}
+			// fall through
+		case UNKNOWN:
+			throw new JobDestroyedException(
+					format("SpallocJob %d does not exist: %s", id,
+							jobState.getState().name()));
+		default:
+			// do nothing
 		}
 		// Snag the keepalive interval from the job
 		keepaliveTime = f2ms(jobState.getKeepalive());
@@ -587,6 +591,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	public void destroy(String reason)
 			throws IOException, SpallocServerException, InterruptedException {
 		try {
+			stopping = true; // Don't need a keepalive any more
 			client.destroyJob(id, reason, timeout);
 		} finally {
 			close();
@@ -616,7 +621,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	private JobState getStatus()
 			throws IOException, SpallocServerException, InterruptedException {
 		if (statusCache == null || statusTimestamp < currentTimeMillis()
-				- STATUS_CACHE_PERIOD) {
+				- statusCachePeriod) {
 			statusCache = client.getJobState(id, timeout);
 			statusTimestamp = currentTimeMillis();
 		}
@@ -652,27 +657,39 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 		 * Check the job is still not QUEUED as then machine info is all nulls
 		 * getJobMachineInfo works if the Job is in State.POWER
 		 */
-		// TODO what about state UNKNOWN and State.DESTROYED
-		if (getState() == QUEUED) {
+		switch (getState()) {
+		case DESTROYED:
+			// Nothing to do; the job's dead
+			return;
+		case UNKNOWN: // Shouldn't be possible, but recheck...
+		case QUEUED:
 			// Double check very latest state.
 			purgeStatus();
 			if (getState() == QUEUED) {
 				throw new IllegalStateException(
 						"Job not Ready. Call waitUntilReady first.");
 			}
+			// fall through
+		default:
+			machine = client.getJobMachineInfo(id, timeout);
 		}
 
-		machineInfoCache = client.getJobMachineInfo(id, timeout);
+	}
+
+	private boolean isMachineInfoInvalid() {
+		return machine == null || machine.getWidth() == 0;
 	}
 
 	@Override
 	public List<Connection> getConnections()
 			throws IOException, SpallocServerException, InterruptedException {
-		if (machineInfoCache == null
-				|| machineInfoCache.getConnections() == null) {
+		if (isMachineInfoInvalid()) {
 			retrieveMachineInfo();
 		}
-		return machineInfoCache.getConnections();
+		if (isMachineInfoInvalid()) {
+			return null;
+		}
+		return machine.getConnections();
 	}
 
 	@Override
@@ -690,41 +707,38 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	public MachineDimensions getDimensions()
 			throws IOException, SpallocServerException,
 			InterruptedException {
-		if (machineInfoCache == null || machineInfoCache.getWidth() == 0) {
+		if (isMachineInfoInvalid()) {
 			retrieveMachineInfo();
 		}
-		if (machineInfoCache == null || machineInfoCache.getWidth() == 0) {
+		if (isMachineInfoInvalid()) {
 			return null;
 		}
-		return new MachineDimensions(
-				machineInfoCache.getWidth(),
-				machineInfoCache.getHeight());
+		return new MachineDimensions(machine.getWidth(), machine.getHeight());
 	}
 
 	@Override
 	public String getMachineName() throws IOException, SpallocServerException,
 			InterruptedException {
-		if (machineInfoCache == null
-				|| machineInfoCache.getMachineName() == null) {
+		if (isMachineInfoInvalid()) {
 			retrieveMachineInfo();
 		}
-		if (machineInfoCache == null) {
+		if (isMachineInfoInvalid()) {
 			return null;
 		}
-		return machineInfoCache.getMachineName();
+		return machine.getMachineName();
 	}
 
 	@Override
 	public List<BoardCoordinates> getBoards()
 			throws IOException, SpallocServerException, IllegalStateException,
 			InterruptedException {
-		if (machineInfoCache == null || machineInfoCache.getBoards() == null) {
+		if (isMachineInfoInvalid()) {
 			retrieveMachineInfo();
 		}
-		if (machineInfoCache == null || machineInfoCache.getBoards() == null) {
+		if (isMachineInfoInvalid()) {
 			return null;
 		}
-		return machineInfoCache.getBoards();
+		return machine.getBoards();
 	}
 
 	@Override
@@ -742,7 +756,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 				while (!timedOut(finishTime)) {
 					// Has the job changed state?
 					purgeStatus();
-					var newState = getStatus().getState();
+					var newState = getState();
 					if (newState != oldState) {
 						return newState;
 					}
@@ -863,7 +877,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 				 * Get initial state (NB: done here such that the command is
 				 * never sent if the timeout has already occurred)
 				 */
-				curState = getStatus().getState();
+				curState = getState();
 			}
 
 			// Are we ready yet?
