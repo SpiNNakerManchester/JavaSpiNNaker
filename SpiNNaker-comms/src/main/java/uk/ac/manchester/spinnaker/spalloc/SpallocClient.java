@@ -482,6 +482,10 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	 */
 	@Override
 	protected Response parseResponse(String line) throws IOException {
-		return MAPPER.readValue(line, Response.class);
+		var r = MAPPER.readValue(line, Response.class);
+		if (r == null) {
+			throw new SpallocProtocolException("unexpected response: " + line);
+		}
+		return r;
 	}
 }
