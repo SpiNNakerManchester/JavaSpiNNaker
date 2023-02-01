@@ -68,6 +68,7 @@ import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -258,7 +259,7 @@ public class Transceiver extends UDPTransceiver
 	 * A set of links to ignore in the machine. Requests for a "machine" will
 	 * have these links excluded, as if they never existed.
 	 */
-	private final Map<ChipLocation, Set<Direction>> ignoreLinks =
+	private final Map<ChipLocation, EnumSet<Direction>> ignoreLinks =
 			new HashMap<>();
 
 	/**
@@ -399,7 +400,7 @@ public class Transceiver extends UDPTransceiver
 			Collection<BMPConnectionData> bmpConnectionData,
 			Integer numberOfBoards, Set<ChipLocation> ignoredChips,
 			Map<ChipLocation, Set<Integer>> ignoredCores,
-			Map<ChipLocation, Set<Direction>> ignoredLinks,
+			Map<ChipLocation, EnumSet<Direction>> ignoredLinks,
 			boolean autodetectBMP, List<ConnectionDescriptor> scampConnections,
 			Integer bootPortNumber, Integer maxSDRAMSize)
 			throws IOException, SpinnmanException, InterruptedException {
@@ -609,7 +610,7 @@ public class Transceiver extends UDPTransceiver
 			Collection<Connection> connections,
 			Collection<ChipLocation> ignoredChips,
 			Map<ChipLocation, Set<Integer>> ignoredCores,
-			Map<ChipLocation, Set<Direction>> ignoredLinks,
+			Map<ChipLocation, EnumSet<Direction>> ignoredLinks,
 			Collection<ConnectionDescriptor> scampConnections,
 			Integer maxSDRAMSize)
 			throws IOException, SpinnmanException, InterruptedException {
@@ -2161,7 +2162,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@CheckReturnValue
-	private boolean inErrorStates(AppID appID, Set<CPUState> errorStates)
+	private boolean inErrorStates(AppID appID, EnumSet<CPUState> errorStates)
 			throws IOException, ProcessException, InterruptedException {
 		for (var state : errorStates) {
 			if (getCoreStateCount(appID, state) > 0) {
@@ -2174,8 +2175,8 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	@ParallelSafeWithCare
 	public void waitForCoresToBeInState(CoreSubsets allCoreSubsets, AppID appID,
-			Set<CPUState> cpuStates, Integer timeout, int timeBetweenPolls,
-			Set<CPUState> errorStates, int countBetweenFullChecks)
+			EnumSet<CPUState> cpuStates, Integer timeout, int timeBetweenPolls,
+			EnumSet<CPUState> errorStates, int countBetweenFullChecks)
 			throws IOException, InterruptedException, SpinnmanException {
 		// check that the right number of processors are in the states
 		int processorsReady = 0;

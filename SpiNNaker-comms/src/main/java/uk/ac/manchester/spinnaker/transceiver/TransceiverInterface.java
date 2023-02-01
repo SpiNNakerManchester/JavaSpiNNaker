@@ -43,6 +43,7 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
@@ -129,7 +130,8 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	/**
 	 * The set of states that indicate a core in a failure state.
 	 */
-	Set<CPUState> DEFAULT_ERROR_STATES = Set.of(RUN_TIME_EXCEPTION, WATCHDOG);
+	EnumSet<CPUState> DEFAULT_ERROR_STATES =
+			EnumSet.of(RUN_TIME_EXCEPTION, WATCHDOG);
 
 	/**
 	 * What proportion of checks are to be expensive full checks.
@@ -2722,7 +2724,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 */
 	@ParallelSafeWithCare
 	default void waitForCoresToBeInState(@Valid CoreSubsets coreSubsets,
-			@NotNull AppID appID, Set<@NotNull CPUState> cpuStates)
+			@NotNull AppID appID, EnumSet<@NotNull CPUState> cpuStates)
 			throws IOException, InterruptedException, SpinnmanException {
 		waitForCoresToBeInState(coreSubsets, appID, cpuStates, TIMEOUT_DISABLED,
 				DEFAULT_POLL_INTERVAL, DEFAULT_ERROR_STATES,
@@ -2765,9 +2767,9 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 */
 	@ParallelSafeWithCare
 	void waitForCoresToBeInState(@Valid CoreSubsets allCoreSubsets,
-			@NotNull AppID appID, Set<@NotNull CPUState> cpuStates,
+			@NotNull AppID appID, EnumSet<@NotNull CPUState> cpuStates,
 			@PositiveOrZero Integer timeout, @Positive int timeBetweenPolls,
-			Set<@NotNull CPUState> errorStates,
+			EnumSet<@NotNull CPUState> errorStates,
 			@Positive int countsBetweenFullCheck)
 			throws IOException, InterruptedException, SpinnmanException;
 
@@ -2795,7 +2797,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default CoreSubsets getCoresInState(@Valid CoreSubsets allCoreSubsets,
 			@NotNull CPUState state)
 			throws IOException, ProcessException, InterruptedException {
-		return getCoresInState(allCoreSubsets, Set.of(state));
+		return getCoresInState(allCoreSubsets, EnumSet.of(state));
 	}
 
 	/**
@@ -2820,7 +2822,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	default CoreSubsets getCoresInState(@Valid CoreSubsets allCoreSubsets,
-			Set<@NotNull CPUState> states)
+			EnumSet<@NotNull CPUState> states)
 			throws IOException, ProcessException, InterruptedException {
 		return new CoreSubsets(getCPUInformation(allCoreSubsets)
 				.filter(info -> states.contains(info.getState()))
@@ -2851,7 +2853,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			@Valid CoreSubsets allCoreSubsets, @NotNull CPUState state)
 			throws IOException, ProcessException, InterruptedException {
-		return getCoresNotInState(allCoreSubsets, Set.of(state));
+		return getCoresNotInState(allCoreSubsets, EnumSet.of(state));
 	}
 
 	/**
@@ -2876,7 +2878,8 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
-			@Valid CoreSubsets allCoreSubsets, Set<@NotNull CPUState> states)
+			@Valid CoreSubsets allCoreSubsets,
+			EnumSet<@NotNull CPUState> states)
 			throws IOException, ProcessException, InterruptedException {
 		return getCPUInformation(allCoreSubsets)
 				.filter(info -> !states.contains(info.getState()))

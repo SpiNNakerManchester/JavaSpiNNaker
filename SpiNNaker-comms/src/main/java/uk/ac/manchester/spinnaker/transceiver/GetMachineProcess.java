@@ -29,6 +29,7 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.range;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,7 @@ class GetMachineProcess extends TxrxProcess {
 
 	private final Map<ChipLocation, Set<Integer>> ignoreCoresMap;
 
-	private final Map<ChipLocation, Set<Direction>> ignoreLinksMap;
+	private final Map<ChipLocation, EnumSet<Direction>> ignoreLinksMap;
 
 	private final Integer maxSDRAMSize;
 
@@ -107,7 +108,7 @@ class GetMachineProcess extends TxrxProcess {
 			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			Set<ChipLocation> ignoreChips,
 			Map<ChipLocation, Set<Integer>> ignoreCoresMap,
-			Map<ChipLocation, Set<Direction>> ignoreLinksMap,
+			Map<ChipLocation, EnumSet<Direction>> ignoreLinksMap,
 			Integer maxSDRAMSize, RetryTracker retryTracker) {
 		super(connectionSelector, SCP_RETRIES, SCP_TIMEOUT, THROTTLED,
 				THROTTLED - 1, retryTracker);

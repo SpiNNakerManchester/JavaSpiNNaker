@@ -26,7 +26,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * {@link SCPCommand#CMD_XILINX}. (Unnamed in the BMP source code.)
  */
 @UsedInJavadocOnly({ FPGAResetType.class, SCPCommand.class })
-public enum XilinxCommand {
+enum XilinxCommand {
 	/** Load block of data. */
 	LoadData(0),
 	/** Start initialisation. */

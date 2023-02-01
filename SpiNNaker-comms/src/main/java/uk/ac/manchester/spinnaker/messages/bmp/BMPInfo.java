@@ -24,7 +24,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * {@link SCPCommand#CMD_BMP_INFO}.
  */
 @UsedInJavadocOnly(SCPCommand.class)
-public enum BMPInfo {
+enum BMPInfo {
 	/** Serial flash information. */
 	SERIAL(0),
 	/** Data read from EEPROM. {@code ee_data_t} contents. */
