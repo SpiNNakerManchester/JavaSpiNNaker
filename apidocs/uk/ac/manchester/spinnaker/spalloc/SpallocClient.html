@@ -1099,10 +1099,11 @@ boolean&nbsp;enable,
 <dd><code>line</code> - The line to parse. Not <code>null</code>. Has the terminating
             newline removed.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The parsed response, or <code>null</code> for a generic "that's
-         unexpected".</dd>
+<dd>The parsed response.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If parsing completely fails.</dd>
+<dd><code><a href="exceptions/SpallocProtocolException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolException</a></code> - If an unexpected valid JSON message is returned (e.g.,
+             <code>null</code>).</dd>
 </dl>
 </section>
 </li>
