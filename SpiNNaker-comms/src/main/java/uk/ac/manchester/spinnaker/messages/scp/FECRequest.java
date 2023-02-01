@@ -43,7 +43,7 @@ public abstract class FECRequest<T extends SCPResponse> extends SCPRequest<T> {
 	 */
 	FECRequest(HasCoreLocation core, boolean replyExpected,
 			RunningCommand command) {
-		super(new Header(core, replyExpected), command, 0, 0, 0, NO_DATA);
+		super(header(core, replyExpected), command, 0, 0, 0, NO_DATA);
 	}
 
 	/**
@@ -64,27 +64,23 @@ public abstract class FECRequest<T extends SCPResponse> extends SCPRequest<T> {
 	 */
 	FECRequest(HasCoreLocation core, boolean replyExpected,
 			RunningCommand command, int arg1, int arg2, int arg3, int arg4) {
-		super(new Header(core, replyExpected), command, arg1, arg2, arg3,
+		super(header(core, replyExpected), command, arg1, arg2, arg3,
 				wordAsBuffer(arg4));
 	}
 
 	/**
-	 * Variant of SCP header that is used to talk to running cores.
+	 * Make a variant of SDP header that is used to talk to running cores.
 	 *
-	 * @author Donal Fellows
+	 * @param core
+	 *            The SpiNNaker core that we want to talk to.
+	 * @param replyExpected
+	 *            Whether we expect a reply.
+	 * @return The SDP header.
 	 */
-	private static class Header extends SDPHeader {
-		/**
-		 * Make a header.
-		 *
-		 * @param core
-		 *            The SpiNNaker core that we want to talk to.
-		 * @param replyExpected
-		 *            Whether we expect a reply.
-		 */
-		Header(HasCoreLocation core, boolean replyExpected) {
-			super(replyExpected ? REPLY_EXPECTED : REPLY_NOT_EXPECTED, core,
-					RUNNING_COMMAND_SDP_PORT);
-		}
+	private static SDPHeader header(HasCoreLocation core,
+			boolean replyExpected) {
+		return new SDPHeader(
+				replyExpected ? REPLY_EXPECTED : REPLY_NOT_EXPECTED, core,
+				RUNNING_COMMAND_SDP_PORT);
 	}
 }

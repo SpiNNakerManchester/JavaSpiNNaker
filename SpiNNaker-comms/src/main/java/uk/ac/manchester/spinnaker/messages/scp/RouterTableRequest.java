@@ -41,7 +41,7 @@ public abstract class RouterTableRequest extends SCPRequest<CheckOKResponse> {
 	 *            What command we are invoking.
 	 */
 	RouterTableRequest(HasCoreLocation core, RouterTableCommand command) {
-		super(new Header(core), command, 0, 0, 0, NO_DATA);
+		super(header(core), command, 0, 0, 0, NO_DATA);
 		cmd = command;
 	}
 
@@ -61,21 +61,15 @@ public abstract class RouterTableRequest extends SCPRequest<CheckOKResponse> {
 	}
 
 	/**
-	 * Variant of SCP that talks to the packet reinjector for doing saving and
-	 * loading of multicast router tables.
+	 * Make a variant of SDP that talks to the packet reinjector for doing
+	 * saving and loading of multicast router tables.
 	 *
-	 * @author Donal Fellows
+	 * @param core
+	 *            The SpiNNaker core that we want to talk to. Should be running
+	 *            the extra monitor core.
+	 * @return The SDP header.
 	 */
-	static final class Header extends SDPHeader {
-		/**
-		 * Make a header.
-		 *
-		 * @param core
-		 *            The SpiNNaker core that we want to talk to. Should be
-		 *            running the extra monitor core.
-		 */
-		Header(HasCoreLocation core) {
-			super(REPLY_EXPECTED, core, GATHERER_DATA_SPEED_UP);
-		}
+	static final SDPHeader header(HasCoreLocation core) {
+		return new SDPHeader(REPLY_EXPECTED, core, GATHERER_DATA_SPEED_UP);
 	}
 }

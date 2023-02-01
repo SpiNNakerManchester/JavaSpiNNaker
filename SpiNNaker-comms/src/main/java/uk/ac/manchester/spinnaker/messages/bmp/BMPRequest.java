@@ -25,10 +25,12 @@ import java.util.function.Supplier;
 
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
+import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * The base class of a request following the BMP protocol.
@@ -39,18 +41,17 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
  */
 public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 		extends SCPRequest<T> {
-	private static SDPHeader bmpHeader(int board) {
+	private static SDPHeader header(int board) {
 		return new SDPHeader(REPLY_EXPECTED, new BMPLocation(board),
 				DEFAULT_PORT);
 	}
 
-	private static SDPHeader bmpHeader(BMPBoard board) {
-		return bmpHeader(board.board);
+	private static SDPHeader header(BMPBoard board) {
+		return header(board.board);
 	}
 
-	private static SDPHeader bmpHeader(Collection<BMPBoard> boards) {
-		return bmpHeader(
-				boards.stream().mapToInt(b -> b.board).min().orElse(0));
+	private static SDPHeader header(Collection<BMPBoard> boards) {
+		return header(boards.stream().mapToInt(b -> b.board).min().orElse(0));
 	}
 
 	/**
@@ -62,7 +63,7 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	 *            The command to send
 	 */
 	BMPRequest(BMPBoard board, SCPCommand command) {
-		super(bmpHeader(board), command, 0, 0, 0, NO_DATA);
+		super(header(board), command, 0, 0, 0, NO_DATA);
 	}
 
 	/**
@@ -76,7 +77,7 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	 *            The first argument
 	 */
 	BMPRequest(BMPBoard board, SCPCommand command, int argument1) {
-		super(bmpHeader(board), command, argument1, 0, 0, NO_DATA);
+		super(header(board), command, argument1, 0, 0, NO_DATA);
 	}
 
 	/**
@@ -93,7 +94,7 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	 */
 	BMPRequest(BMPBoard board, SCPCommand command, int argument1,
 			int argument2) {
-		super(bmpHeader(board), command, argument1, argument2, 0, NO_DATA);
+		super(header(board), command, argument1, argument2, 0, NO_DATA);
 	}
 
 	/**
@@ -112,8 +113,7 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	 */
 	BMPRequest(BMPBoard board, SCPCommand command, int argument1, int argument2,
 			int argument3) {
-		super(bmpHeader(board), command, argument1, argument2, argument3,
-				NO_DATA);
+		super(header(board), command, argument1, argument2, argument3, NO_DATA);
 	}
 
 	/**
@@ -134,7 +134,7 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	 */
 	BMPRequest(BMPBoard board, SCPCommand command, int argument1, int argument2,
 			int argument3, ByteBuffer data) {
-		super(bmpHeader(board), command, argument1, argument2, argument3, data);
+		super(header(board), command, argument1, argument2, argument3, data);
 	}
 
 	/**
@@ -148,7 +148,7 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	 *            The first argument
 	 */
 	BMPRequest(Collection<BMPBoard> boards, SCPCommand command, int argument1) {
-		super(bmpHeader(boards), command, argument1, 0, 0, NO_DATA);
+		super(header(boards), command, argument1, 0, 0, NO_DATA);
 	}
 
 	/**
@@ -165,14 +165,17 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	 */
 	BMPRequest(Collection<BMPBoard> boards, SCPCommand command, int argument1,
 			int argument2) {
-		super(bmpHeader(boards), command, argument1, argument2, 0, NO_DATA);
+		super(header(boards), command, argument1, argument2, 0, NO_DATA);
 	}
 
 	/**
 	 * Represents an SCP request thats tailored for the BMP connection. This
 	 * basic class handles checking that the result is OK; subclasses manage
 	 * deserializing any returned payload.
+	 *
+	 * @see CheckOKResponse
 	 */
+	@UsedInJavadocOnly(CheckOKResponse.class)
 	public static class BMPResponse extends SCPResponse {
 		/**
 		 * Make a response object.

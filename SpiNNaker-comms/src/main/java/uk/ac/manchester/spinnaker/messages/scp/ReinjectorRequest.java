@@ -41,7 +41,7 @@ public abstract class ReinjectorRequest<T extends CheckOKResponse>
 	 *            What command we are invoking.
 	 */
 	ReinjectorRequest(HasCoreLocation core, ReinjectorCommand command) {
-		super(new Header(core), command, 0, 0, 0, NO_DATA);
+		super(header(core), command, 0, 0, 0, NO_DATA);
 	}
 
 	/**
@@ -54,7 +54,7 @@ public abstract class ReinjectorRequest<T extends CheckOKResponse>
 	 */
 	ReinjectorRequest(HasCoreLocation core, ReinjectorCommand command,
 			int argument) {
-		super(new Header(core), command, argument, 0, 0, NO_DATA);
+		super(header(core), command, argument, 0, 0, NO_DATA);
 	}
 
 	/**
@@ -73,26 +73,21 @@ public abstract class ReinjectorRequest<T extends CheckOKResponse>
 	 */
 	ReinjectorRequest(HasCoreLocation core, ReinjectorCommand command,
 			int argument1, int argument2, int argument3, ByteBuffer body) {
-		super(new Header(core), command, argument1, argument2, argument3, body);
+		super(header(core), command, argument1, argument2, argument3, body);
 	}
 
 	/**
-	 * Variant of SCP that talks to the packet reinjector. It <i>always</i>
-	 * wants a reply and always talks to a particular SDP port (the port for the
-	 * reinjector).
+	 * Make a variant of SDP header that talks to the packet reinjector. It
+	 * <i>always</i> wants a reply and always talks to a particular SDP port
+	 * (the port for the reinjector).
 	 *
-	 * @author Donal Fellows
+	 * @param core
+	 *            The SpiNNaker core that we want to talk to. Should be running
+	 *            the extra monitor core (not checked).
+	 * @return The SDP header.
 	 */
-	static class Header extends SDPHeader {
-		/**
-		 * Make a header.
-		 *
-		 * @param core
-		 *            The SpiNNaker core that we want to talk to. Should be
-		 *            running the extra monitor core.
-		 */
-		Header(HasCoreLocation core) {
-			super(REPLY_EXPECTED, core, EXTRA_MONITOR_CORE_REINJECTION);
-		}
+	private static SDPHeader header(HasCoreLocation core) {
+		return new SDPHeader(REPLY_EXPECTED, core,
+				EXTRA_MONITOR_CORE_REINJECTION);
 	}
 }
