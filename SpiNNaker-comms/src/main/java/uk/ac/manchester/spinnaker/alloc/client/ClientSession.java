@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.client;
 
+import static java.lang.Thread.sleep;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -50,12 +51,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient.SpallocException;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.utils.Daemon;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -216,6 +220,8 @@ final class ClientSession implements Session {
 
 		private Exception failure;
 
+		private volatile boolean closed;
+
 		/**
 		 * @param uri
 		 *            The address of the websocket.
@@ -224,6 +230,40 @@ final class ClientSession implements Session {
 			super(uri);
 			replyHandlers = new HashMap<>();
 			channels = new HashMap<>();
+		}
+
+		/**
+		 * Arrange for a ping message to be sent regularly while the websocket
+		 * is open. <em>The websocket must be open or this method will do
+		 * nothing!</em>
+		 *
+		 * @param pingDelay
+		 *            How long between pings, in milliseconds.
+		 */
+		void scheduleRegularPing(long pingDelay) {
+			if (isOpen()) {
+				new Daemon(() -> doPing(pingDelay), "WS ping daemon").start();
+			}
+		}
+
+		private void doPing(long pingDelay) {
+			while (isOpen()) {
+				try {
+					sleep(pingDelay);
+				} catch (InterruptedException e) {
+					log.warn("ping interrupted");
+					return;
+				}
+				if (closed) {
+					return;
+				}
+				sendPing();
+			}
+		}
+
+		@Override
+		public void onWebsocketPong(WebSocket conn, Framedata f) {
+			log.debug("pong received");
 		}
 
 		private synchronized int issueCorrelationId() {
@@ -342,6 +382,7 @@ final class ClientSession implements Session {
 		@Override
 		public void onClose(int code, String reason, boolean remote) {
 			log.info("websocket connection closed: {}", reason);
+			closed = true;
 		}
 
 		@Override
@@ -515,6 +556,9 @@ final class ClientSession implements Session {
 		}
 	}
 
+	/** Time between pings of the websocket. 30s in ms. */
+	private static final int PING_DELAY = 30000;
+
 	@Override
 	public ProxyProtocolClient websocket(URI url)
 			throws InterruptedException, IOException {
@@ -541,6 +585,7 @@ final class ClientSession implements Session {
 		} catch (Exception e) {
 			throw new IOException("unexpected exception", e);
 		}
+		wsc.scheduleRegularPing(PING_DELAY);
 		return wsc;
 	}
 
