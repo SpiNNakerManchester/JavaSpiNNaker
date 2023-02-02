@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
@@ -144,6 +145,91 @@ public class TxrxProcess {
 	private final ConnectionSelector<? extends SCPConnection> selector;
 
 	private final Map<SCPConnection, RequestPipeline> requestPipelines;
+
+	/**
+	 * The API of a single request.
+	 *
+	 * @author Donal Fellows
+	 */
+	private interface Req {
+		/**
+		 * Tests whether the reasons for resending are consistently
+		 * timeouts.
+		 *
+		 * @return True if all reasons are timeouts.
+		 */
+		boolean allTimeoutFailures();
+
+		/**
+		 * Get the command being sent in the request.
+		 *
+		 * @return The request's SCP command.
+		 */
+		CommandCode getCommand();
+
+		/**
+		 * Which core is the destination of the request?
+		 *
+		 * @return The core location.
+		 */
+		HasCoreLocation getDestination();
+
+		/**
+		 * Number of retries remaining for the packet.
+		 *
+		 * @return The number of retries that may still be performed.
+		 */
+		int getRetries();
+
+		/**
+		 * Get the list of reasons why a message was retried.
+		 *
+		 * @return The retry reasons.
+		 */
+		List<String> getRetryReasons();
+
+		/**
+		 * Report a failure to the process.
+		 *
+		 * @param exception
+		 *            The problem that is being reported.
+		 */
+		void handleError(Exception exception);
+
+		/**
+		 * Handle the reception of a message.
+		 *
+		 * @param msg
+		 *            the content of the message, in a little-endian buffer.
+		 * @throws Exception
+		 *             If something goes wrong.
+		 */
+		void parseReceivedResponse(SCPResultMessage msg) throws Exception;
+
+		/**
+		 * Send the request again.
+		 *
+		 * @param reason
+		 *            Why the request is being sent again.
+		 * @throws IOException
+		 *             If the connection throws.
+		 */
+		void resend(Object reason) throws IOException;
+
+		/**
+		 * Send the request.
+		 *
+		 * @throws IOException
+		 *             If the connection throws.
+		 */
+		void send() throws IOException;
+	}
+
+	/**
+	 * The maps of outstanding requests on each connection.
+	 */
+	private static final Map<SCPConnection,
+			Map<Integer, Req>> OUTSTANDING_REQUESTS = new WeakHashMap<>();
 
 	/**
 	 * An object used to track how many retries have been done, or
@@ -375,8 +461,7 @@ public class TxrxProcess {
 
 		/** A dictionary of sequence number &rarr; requests in progress. */
 		// @GuardedBy("itself") // Not needed: synchronized map
-		private final Map<Integer, Request<?>> outstandingRequests =
-				synchronizedMap(new HashMap<>());
+		private final Map<Integer, Req> outstandingRequests;
 
 		private long nextSendTime = 0;
 
@@ -387,7 +472,7 @@ public class TxrxProcess {
 		 *            The type of response expected to the request in the
 		 *            message.
 		 */
-		private final class Request<T extends SCPResponse> {
+		private final class Request<T extends SCPResponse> implements Req {
 			/** Request in progress. */
 			private final SCPRequest<T> request;
 
@@ -419,7 +504,8 @@ public class TxrxProcess {
 				retries = numRetries;
 			}
 
-			private void send() throws IOException {
+			@Override
+			public void send() throws IOException {
 				if (waitUntil(nextSendTime)) {
 					throw new InterruptedIOException(
 							"interrupted while waiting to send");
@@ -428,15 +514,8 @@ public class TxrxProcess {
 				nextSendTime = nanoTime() + INTER_SEND_INTERVAL_NS;
 			}
 
-			/**
-			 * Send the request again.
-			 *
-			 * @param reason
-			 *            Why the request is being sent again.
-			 * @throws IOException
-			 *             If the connection throws.
-			 */
-			private void resend(Object reason) throws IOException {
+			@Override
+			public void resend(Object reason) throws IOException {
 				retries--;
 				retryReason.add(reason.toString());
 				if (retryTracker != null) {
@@ -445,23 +524,13 @@ public class TxrxProcess {
 				send();
 			}
 
-			/**
-			 * Tests whether the reasons for resending are consistently
-			 * timeouts.
-			 *
-			 * @return True if all reasons are timeouts.
-			 */
-			private boolean allTimeoutFailures() {
+			@Override
+			public boolean allTimeoutFailures() {
 				return retryReason.stream().allMatch(REASON_TIMEOUT::equals);
 			}
 
-			/**
-			 * Handle the reception of a message.
-			 *
-			 * @param msg
-			 *            the content of the message, in a little-endian buffer.
-			 */
-			private void parseReceivedResponse(SCPResultMessage msg)
+			@Override
+			public void parseReceivedResponse(SCPResultMessage msg)
 					throws Exception {
 				var response = msg.parsePayload(request);
 				if (callback != null) {
@@ -469,32 +538,29 @@ public class TxrxProcess {
 				}
 			}
 
-			/**
-			 * Which core is the destination of the request?
-			 *
-			 * @return The core location.
-			 */
-			private HasCoreLocation getDestination() {
+			@Override
+			public HasCoreLocation getDestination() {
 				return request.sdpHeader.getDestination();
 			}
 
-			/**
-			 * Report a failure to the process.
-			 *
-			 * @param exception
-			 *            The problem that is being reported.
-			 */
-			private void handleError(Exception exception) {
+			@Override
+			public void handleError(Exception exception) {
 				failure = new Failure(request, exception);
 			}
 
-			/**
-			 * Get the command being sent in the request.
-			 *
-			 * @return The request's SCP command.
-			 */
-			private CommandCode getCommand() {
+			@Override
+			public CommandCode getCommand() {
 				return request.scpRequestHeader.command;
+			}
+
+			@Override
+			public int getRetries() {
+				return retries;
+			}
+
+			@Override
+			public List<String> getRetryReasons() {
+				return retryReason;
 			}
 		}
 
@@ -507,6 +573,10 @@ public class TxrxProcess {
 		 */
 		RequestPipeline(SCPConnection connection) {
 			this.connection = connection;
+			synchronized (OUTSTANDING_REQUESTS) {
+				outstandingRequests = OUTSTANDING_REQUESTS.computeIfAbsent(
+						connection, __ -> synchronizedMap(new HashMap<>()));
+			}
 		}
 
 		/**
@@ -726,9 +796,9 @@ public class TxrxProcess {
 			}
 		}
 
-		private void resend(Request<?> req, Object reason, int seq)
+		private void resend(Req req, Object reason, int seq)
 				throws IOException, InterruptedException {
-			if (req.retries <= 0) {
+			if (req.getRetries() <= 0) {
 				// Report timeouts as timeout exception
 				if (req.allTimeoutFailures()) {
 					throw new SendTimedOutException(req, packetTimeout, seq);
@@ -767,8 +837,7 @@ public class TxrxProcess {
 		 * @param timeout
 		 *            The length of timeout, in milliseconds.
 		 */
-		SendTimedOutException(RequestPipeline.Request<?> req, int timeout,
-				int seqNum) {
+		SendTimedOutException(Req req, int timeout, int seqNum) {
 			super(format(
 					"Operation %s timed out after %f seconds with seq num %d",
 					req.getCommand(), timeout / (double) MSEC_PER_SEC, seqNum));
@@ -787,12 +856,12 @@ public class TxrxProcess {
 		 * @param numRetries
 		 *            How many attempts to send it were made.
 		 */
-		SendFailedException(RequestPipeline.Request<?> req, int numRetries) {
+		SendFailedException(Req req, int numRetries) {
 			super(format(
 					"Errors sending request %s to %d,%d,%d over %d retries: %s",
 					req.getCommand(), req.getDestination().getX(),
 					req.getDestination().getY(), req.getDestination().getP(),
-					numRetries, req.retryReason));
+					numRetries, req.getRetryReasons()));
 		}
 	}
 
