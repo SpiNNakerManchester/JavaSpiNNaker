@@ -437,7 +437,7 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		// handle the boot connection
-		connections.add(new BootConnection(host, bootPortNumber));
+		connections.add(new BootConnection(null, null, host, bootPortNumber));
 
 		this.version = version;
 		if (ignoredChips != null) {
@@ -651,7 +651,7 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public SCPConnection createScpConnection(ChipLocation chip,
 			InetAddress addr) throws IOException {
-		return new SCPConnection(chip, addr);
+		return new SCPConnection(chip, null, null, addr);
 	}
 
 	private ConnectionSelector<SCPConnection> makeConnectionSelector() {

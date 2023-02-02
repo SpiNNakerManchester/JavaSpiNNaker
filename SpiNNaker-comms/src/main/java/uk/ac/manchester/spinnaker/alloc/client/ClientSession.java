@@ -511,6 +511,11 @@ final class ClientSession implements Session {
 
 				sendPreparedMessage(b);
 			}
+
+			@Override
+			public String toString() {
+				return "Connected Channel " + id;
+			}
 		}
 
 		/**
@@ -563,6 +568,11 @@ final class ClientSession implements Session {
 				b.flip();
 
 				sendPreparedMessage(b);
+			}
+
+			@Override
+			public String toString() {
+				return "Unconnected channel " + id;
 			}
 		}
 	}

@@ -659,7 +659,7 @@ public final class CommandLineInterface {
 			// No job; must be a direct connection
 			return new Transceiver(machine);
 		}
-		return job.getTransceiver();
+		return job.getTransceiver(machine);
 	}
 }
 

@@ -63,35 +63,23 @@ public class BootConnection extends UDPConnection<BootMessage> {
 	}
 
 	/**
-	 * Creates a boot connection that binds to all local interfaces on an
-	 * arbitrary port from the range 1025 to 32767.
-	 *
+	 * Create a boot connection where the mechanism for sending and receiving
+	 * messages is being overridden by a subclass.
 	 * @param remoteHost
 	 *            The remote host to send packets to. If {@code null}, the
 	 *            socket will be available for listening only, and will throw
 	 *            and exception if used for sending
 	 * @param remotePort
-	 *            The remote port to send packets to. If {@code null}, a
-	 *            default value is used.
-	 * @throws IOException
-	 *             If there is an error setting up the communication channel
-	 */
-	public BootConnection(InetAddress remoteHost, Integer remotePort)
-			throws IOException {
-		super(null, null, remoteHost,
-				remotePort == null ? UDP_BOOT_CONNECTION_DEFAULT_PORT
-						: remotePort, IPTOS_RELIABILITY);
-	}
-
-	/**
-	 * Create a boot connection where the mechanism for sending and receiving
-	 * messages is being overridden by a subclass.
+	 *            The remote port to send packets to. If {@code null}, a default
+	 *            value is used.
 	 *
 	 * @throws IOException
 	 *             If anything goes wrong with socket manipulation.
 	 */
-	protected BootConnection() throws IOException {
-		super(true);
+	protected BootConnection(InetAddress remoteHost, Integer remotePort)
+			throws IOException {
+		super(remoteHost, remotePort == null ?
+				UDP_BOOT_CONNECTION_DEFAULT_PORT : remotePort);
 	}
 
 	@Override

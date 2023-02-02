@@ -30,7 +30,6 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.asDir;
@@ -58,12 +57,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.errorprone.annotations.MustBeClosed;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
-import uk.ac.manchester.spinnaker.alloc.client.AllocatedMachine.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient.Job;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient.Machine;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient.SpallocException;
-import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
-import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
@@ -674,35 +670,19 @@ public class SpallocClientFactory {
 		}
 
 		@Override
-		public SCPConnection getConnection(HasChipLocation chip)
-				throws IOException, InterruptedException {
-			return new ProxiedSCPConnection(chip.asChipLocation(), getProxy());
-		}
-
-		@Override
-		public EIEIOConnection getEIEIOConnection()
-				throws IOException, InterruptedException {
-			var hostToChip = machine().getConnections().stream()
-					.collect(toMap(c -> getByNameQuietly(c.getHostname()),
-							ConnectionInfo::getChip));
-			return new ProxiedEIEIOListenerConnection(hostToChip, getProxy());
-		}
-
-		@Override
-		public TransceiverInterface getTransceiver()
+		public TransceiverInterface getTransceiver(uk.ac.manchester.spinnaker.machine.Machine machine)
 				throws IOException, InterruptedException, SpinnmanException {
 			var ws = getProxy();
 			var am = machine();
 			var conns = new ArrayList<Connection>();
 			var hostToChip = new HashMap<Inet4Address, ChipLocation>();
 			for (var bc : am.getConnections()) {
+				var chipAddr = getByNameQuietly(bc.getHostname());
 				conns.add(new ProxiedSCPConnection(
-						bc.getChip().asChipLocation(), ws));
-				hostToChip.put(getByNameQuietly(bc.getHostname()),
-						bc.getChip());
+						bc.getChip().asChipLocation(), ws, chipAddr));
+				hostToChip.put(chipAddr, bc.getChip());
 			}
-			conns.add(new ProxiedBootConnection(ws));
-			return new ProxiedTransceiver(conns, hostToChip, ws);
+			return new ProxiedTransceiver(conns, hostToChip, ws, machine);
 		}
 
 		@Override

@@ -35,23 +35,6 @@ public class SDPConnection extends UDPConnection<SDPMessage> {
 	 *            Which chip are we talking to? This is not necessarily the chip
 	 *            that is connected to the Ethernet connector on the SpiNNaker
 	 *            board, or even on the same board.
-	 * @param remoteHost
-	 *            The address of the SpiNNaker board to route UDP packets to.
-	 * @param remotePort
-	 *            The UDP port on the SpiNNaker board to use.
-	 * @throws IOException
-	 *             If anything goes wrong with the setup.
-	 */
-	public SDPConnection(HasChipLocation remoteChip, InetAddress remoteHost,
-			Integer remotePort) throws IOException {
-		this(remoteChip, null, null, remoteHost, remotePort);
-	}
-
-	/**
-	 * @param remoteChip
-	 *            Which chip are we talking to? This is not necessarily the chip
-	 *            that is connected to the Ethernet connector on the SpiNNaker
-	 *            board, or even on the same board.
 	 * @param localHost
 	 *            The local host address to bind to, or {@code null} to bind to
 	 *            all relevant local addresses.
@@ -80,11 +63,19 @@ public class SDPConnection extends UDPConnection<SDPMessage> {
 	 *            Which chip are we talking to? This is not necessarily the chip
 	 *            that is connected to the Ethernet connector on the SpiNNaker
 	 *            board, or even on the same board.
-	 * @param canSend
-	 *            Whether sending on this connection is possible.
+	 * @param remoteHost
+	 *            The remote host name or IP address to send packets to. If
+	 *            {@code null}, the socket will be available for listening only,
+	 *            and will throw an exception if used for sending.
+	 * @param remotePort
+	 *            The remote port to send packets to. If {@code remoteHost} is
+	 *            {@code null}, this is ignored. If {@code remoteHost} is
+	 *            specified, this must also be specified as non-zero for the
+	 *            connection to allow sending.
 	 */
-	SDPConnection(HasChipLocation remoteChip, boolean canSend) {
-		super(canSend);
+	SDPConnection(HasChipLocation remoteChip, InetAddress remoteHost,
+			Integer remotePort) {
+		super(remoteHost, remotePort);
 		this.chip = remoteChip.asChipLocation();
 	}
 

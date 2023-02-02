@@ -62,7 +62,8 @@ public class TestUDPConnection {
 		scpReq.scpRequestHeader.issueSequenceNumber(Set.of());
 		SCPResultMessage result;
 		try (var connection =
-				new SCPConnection(BOOT_CHIP, boardConfig.remotehost)) {
+				new SCPConnection(BOOT_CHIP, null, null,
+						boardConfig.remotehost)) {
 			connection.send(scpReq);
 			result = connection.receiveSCPResponse(TIMEOUT);
 		} catch (SocketTimeoutException e) {
@@ -85,7 +86,8 @@ public class TestUDPConnection {
 		scpReq.scpRequestHeader.issueSequenceNumber(Set.of());
 		SCPResultMessage result;
 		try (var connection =
-				new SCPConnection(BOOT_CHIP, boardConfig.remotehost)) {
+				new SCPConnection(BOOT_CHIP, null, null,
+						boardConfig.remotehost)) {
 			connection.send(scpReq);
 			result = connection.receiveSCPResponse(TIMEOUT);
 		} catch (SocketTimeoutException e) {
@@ -104,7 +106,8 @@ public class TestUDPConnection {
 		scpReq.scpRequestHeader.issueSequenceNumber(Set.of());
 		SCPResultMessage result;
 		try (var connection =
-				new SCPConnection(BOOT_CHIP, boardConfig.remotehost)) {
+				new SCPConnection(BOOT_CHIP, null, null,
+						boardConfig.remotehost)) {
 			connection.send(scpReq);
 			result = connection.receiveSCPResponse(TIMEOUT);
 		} catch (SocketTimeoutException e) {
@@ -121,7 +124,8 @@ public class TestUDPConnection {
 		boardConfig.setUpNonexistentBoard();
 		assertThrows(IOException.class, () -> {
 			try (var connection =
-					new SCPConnection(BOOT_CHIP, boardConfig.remotehost)) {
+					new SCPConnection(BOOT_CHIP, null, null,
+							boardConfig.remotehost)) {
 				var scp = new ReadMemory(ZERO_CHIP, NULL, UDP_MESSAGE_MAX_SIZE);
 				scp.scpRequestHeader.issueSequenceNumber(Set.of());
 				connection.send(scp);

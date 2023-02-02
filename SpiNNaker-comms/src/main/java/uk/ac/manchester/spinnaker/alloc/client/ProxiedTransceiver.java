@@ -25,9 +25,11 @@ import java.util.Collection;
 import java.util.Map;
 
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
+import uk.ac.manchester.spinnaker.connections.MachineAware;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 
@@ -54,11 +56,15 @@ final class ProxiedTransceiver extends Transceiver {
 	 */
 	ProxiedTransceiver(Collection<Connection> connections,
 			Map<Inet4Address, ChipLocation> hostToChip,
-			ProxyProtocolClient websocket)
+			ProxyProtocolClient websocket, Machine machine)
 			throws IOException, SpinnmanException, InterruptedException {
 		// Assume unwrapped
 		super(TRIAD_NO_WRAPAROUND, connections, null, null, null, null,
 				null);
+		var scpSelector = getScampConnectionSelector();
+		if (scpSelector instanceof MachineAware) {
+			((MachineAware) scpSelector).setMachine(machine);
+		}
 		this.hostToChip = hostToChip;
 		this.websocket = websocket;
 	}
@@ -74,7 +80,7 @@ final class ProxiedTransceiver extends Transceiver {
 	public SCPConnection createScpConnection(ChipLocation chip,
 			InetAddress addr) throws IOException {
 		try {
-			return new ProxiedSCPConnection(chip, websocket);
+			return new ProxiedSCPConnection(chip, websocket, addr);
 		} catch (InterruptedException e) {
 			throw new IOException("failed to proxy connection", e);
 		}

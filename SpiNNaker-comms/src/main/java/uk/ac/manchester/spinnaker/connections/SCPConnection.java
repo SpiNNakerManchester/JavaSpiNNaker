@@ -51,14 +51,21 @@ public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 	 *
 	 * @param chip
 	 *            The location of the chip on the board with this remoteHost
+	 * @param localHost
+	 *            The optional host of the local interface to listen on; use
+	 *            {@code null} to listen on all local interfaces.
+	 * @param localPort
+	 *            The optional local port to listen on; use {@code null} to pick
+	 *            a random port.
 	 * @param remoteHost
 	 *            The remote host to send messages to.
 	 * @throws IOException
 	 *             If anything goes wrong with socket setup.
 	 */
-	public SCPConnection(HasChipLocation chip, InetAddress remoteHost)
+	public SCPConnection(HasChipLocation chip, InetAddress localHost,
+			Integer localPort, InetAddress remoteHost)
 			throws IOException {
-		this(chip, null, null, remoteHost, SCP_SCAMP_PORT);
+		this(chip, localHost, localPort, remoteHost, SCP_SCAMP_PORT);
 	}
 
 	/**
@@ -95,11 +102,22 @@ public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 	 *
 	 * @param chip
 	 *            The location of the target chip on the board.
+	 * @param remoteHost
+	 *            The remote host name or IP address to send packets to. If
+	 *            {@code null}, the socket will be available for listening only,
+	 *            and will throw an exception if used for sending.
+	 * @param remotePort
+	 *            The remote port to send packets to. If {@code remoteHost} is
+	 *            {@code null}, this is ignored. If {@code remoteHost} is
+	 *            specified, this must also be specified as non-zero for the
+	 *            connection to allow sending.
+	 *
 	 * @throws IOException
 	 *             If anything goes wrong with socket manipulation.
 	 */
-	protected SCPConnection(HasChipLocation chip) throws IOException {
-		super(chip, true);
+	protected SCPConnection(HasChipLocation chip, InetAddress remoteHost)
+			throws IOException {
+		super(chip, remoteHost, SCP_SCAMP_PORT);
 	}
 
 	@Override

@@ -153,11 +153,22 @@ public abstract class UDPConnection<T> implements Connection {
 	 * override {@link #isClosed()}, and possibly {@link #isConnected()} as
 	 * well.
 	 *
-	 * @param canSend
-	 *            Whether this is a connection that can send messages.
+	 * @param remoteHost
+	 *            The remote host name or IP address to send packets to. If
+	 *            {@code null}, the socket will be available for listening only,
+	 *            and will throw an exception if used for sending.
+	 * @param remotePort
+	 *            The remote port to send packets to. If {@code remoteHost} is
+	 *            {@code null}, this is ignored. If {@code remoteHost} is
+	 *            specified, this must also be specified as non-zero for the
+	 *            connection to allow sending.
 	 */
-	UDPConnection(boolean canSend) {
-		this.canSend = canSend;
+	UDPConnection(InetAddress remoteHost, Integer remotePort) {
+		canSend = (remoteHost != null && remotePort != null && remotePort > 0);
+		if (canSend) {
+			remoteIPAddress = (Inet4Address) remoteHost;
+			remoteAddress = new InetSocketAddress(remoteIPAddress, remotePort);
+		}
 		socket = null;
 	}
 

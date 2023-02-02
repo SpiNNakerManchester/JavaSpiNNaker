@@ -56,7 +56,7 @@ public class EIEIOConnection
 	 * listening is implemented by a subclass.
 	 */
 	protected EIEIOConnection() {
-		super(true);
+		super(null, null);
 	}
 
 	/**

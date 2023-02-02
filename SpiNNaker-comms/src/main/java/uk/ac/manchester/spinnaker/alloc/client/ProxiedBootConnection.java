@@ -46,13 +46,24 @@ final class ProxiedBootConnection extends BootConnection {
 	/**
 	 * @param ws
 	 *            The proxy handle.
+	 * @param remoteHost
+	 *            The remote host name or IP address to send packets to. If
+	 *            {@code null}, the socket will be available for listening only,
+	 *            and will throw an exception if used for sending.
+	 * @param remotePort
+	 *            The remote port to send packets to. If {@code remoteHost} is
+	 *            {@code null}, this is ignored. If {@code remoteHost} is
+	 *            specified, this must also be specified as non-zero for the
+	 *            connection to allow sending.
 	 * @throws IOException
 	 *             If we couldn't finish setting up our networking.
 	 * @throws InterruptedException
 	 *             If interrupted while things were setting up.
 	 */
-	ProxiedBootConnection(ProxyProtocolClient ws)
+	ProxiedBootConnection(ProxyProtocolClient ws, InetAddress remoteAddr,
+			Integer remotePort)
 			throws IOException, InterruptedException {
+		super(remoteAddr, remotePort);
 		this.ws = requireNonNull(ws);
 		receiveQueue = new LinkedBlockingQueue<>();
 		channel = ws.openChannel(ZERO_ZERO, BOOT_PORT, receiveQueue);
