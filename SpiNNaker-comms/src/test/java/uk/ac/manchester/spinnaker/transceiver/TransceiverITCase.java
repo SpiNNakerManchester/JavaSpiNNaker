@@ -330,6 +330,7 @@ public class TransceiverITCase {
 		}
 
 		// Send read requests
+		// TODO use one-way requests instead
 		txrx.sendSCPMessage(
 				new ReadMemory(new ChipLocation(1, 0), MEM, WORD_SIZE), null);
 		txrx.sendSCPMessage(

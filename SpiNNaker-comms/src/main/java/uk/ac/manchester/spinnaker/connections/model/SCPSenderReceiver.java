@@ -57,14 +57,24 @@ public interface SCPSenderReceiver extends Connection {
 	 * constructor will be used.
 	 * <p>
 	 * <i>sequence</i> in the message is optional; if not set, <i>(sequence
-	 * number\ last assigned + 1) % 65536</i> will be used
+	 * number last assigned + 1) % 65536</i> will be used
 	 *
-	 * @param scpRequest
+	 * @param request
 	 *            message packet to send
 	 * @throws IOException
 	 *             If there is an error sending the message
 	 */
-	void send(SCPRequest<?> scpRequest) throws IOException;
+	default void send(SCPRequest<?> request) throws IOException {
+		var msg = getSCPData(request);
+		switch (request.sdpHeader.getFlags()) {
+		case REPLY_EXPECTED:
+		case REPLY_EXPECTED_NO_P2P:
+			send(msg, request.scpRequestHeader.getSequence());
+			break;
+		default:
+			send(msg);
+		}
+	}
 
 	/**
 	 * @return The chip at which messages sent down this connection will arrive
@@ -114,4 +124,18 @@ public interface SCPSenderReceiver extends Connection {
 	 */
 	SCPResultMessage receiveSCPResponse(int timeout)
 			throws SocketTimeoutException, IOException, InterruptedException;
+
+	/**
+	 * Send a request that expects a response to be appropriately directed to
+	 * the thread that is calling this method.
+	 *
+	 * @param requestData
+	 *            The message data to send.
+	 * @param seq
+	 *            The sequence number to come in the response.
+	 * @throws IOException
+	 *             If there is an error sending the message
+	 * @see #send(ByteBuffer)
+	 */
+	void send(ByteBuffer requestData, int seq) throws IOException;
 }

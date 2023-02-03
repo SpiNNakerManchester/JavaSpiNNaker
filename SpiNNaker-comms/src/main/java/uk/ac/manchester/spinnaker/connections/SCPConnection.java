@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
+import static java.lang.Thread.currentThread;
+import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -24,13 +26,20 @@ import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.ForOverride;
+
 import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
-import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.utils.Daemon;
 
@@ -39,6 +48,12 @@ public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 	private static final Logger log = getLogger(SCPConnection.class);
 
 	private static final ScheduledExecutorService CLOSER;
+
+	private final Map<Integer, Thread> receiverMap =
+			synchronizedMap(new HashMap<>());
+
+	private final Map<Thread, Deque<SCPResultMessage>> receiverQueues =
+			synchronizedMap(new WeakHashMap<>());
 
 	static {
 		CLOSER = newSingleThreadScheduledExecutor(
@@ -101,15 +116,59 @@ public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 		super(chip, true);
 	}
 
-	@Override
-	public SCPResultMessage receiveSCPResponse(int timeout)
+	/**
+	 * Do the basic reception of a message.
+	 *
+	 * @param timeout
+	 *            The time in milliseconds to wait for the message to arrive,
+	 *            oruntil the connection is closed.
+	 * @return The SCP result, the sequence number, and the data of theresponse.
+	 *         The buffer pointer will be positioned at the pointwhere the
+	 *         payload starts.
+	 * @throws IOException If there is an error receiving the message
+	 * @throws InterruptedException If communications are interrupted.
+	 */
+	@ForOverride
+	protected SCPResultMessage receiveSCPResultMessage(int timeout)
 			throws IOException, InterruptedException {
 		return new SCPResultMessage(receive(timeout));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * This is tricky code because there can be multiple threads using a
+	 * connection at once and we need to direct responses to the threads that
+	 * originated the requests that the responses match to.
+	 */
 	@Override
-	public void send(SCPRequest<?> scpRequest) throws IOException {
-		send(getSCPData(scpRequest));
+	public final SCPResultMessage receiveSCPResponse(int timeout)
+			throws IOException, InterruptedException {
+		var currentThread = currentThread();
+		var myQueue = receiverQueues.get(currentThread);
+		while (true) {
+			// Prefer to take a queued message; it's already been received...
+			if (myQueue == null) {
+				myQueue = receiverQueues.get(currentThread);
+			}
+			if (myQueue != null) {
+				var queuedMsg = myQueue.pollFirst();
+				if (queuedMsg != null) {
+					return queuedMsg;
+				}
+			}
+			// Need to talk to the network
+			var receivedMsg = receiveSCPResultMessage(timeout);
+			var targetThread =
+					receiverMap.remove(receivedMsg.getSequenceNumber());
+			// If message is ours or unrecognized, pass to caller
+			if (targetThread == currentThread || targetThread == null) {
+				return receivedMsg;
+			}
+			// Queue for correct thread
+			receiverQueues.computeIfAbsent(targetThread,
+					__ -> new ConcurrentLinkedDeque<>()).addLast(receivedMsg);
+		}
 	}
 
 	/**
@@ -136,5 +195,11 @@ public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 		} catch (IOException e) {
 			log.warn("failed to close connection", e);
 		}
+	}
+
+	@Override
+	public void send(ByteBuffer requestData, int seq) throws IOException {
+		send(requestData);
+		receiverMap.put(seq, currentThread());
 	}
 }

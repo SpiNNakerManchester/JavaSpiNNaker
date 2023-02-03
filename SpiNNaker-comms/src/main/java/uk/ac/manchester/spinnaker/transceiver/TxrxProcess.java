@@ -479,6 +479,8 @@ public class TxrxProcess {
 			/** Payload of request in progress. */
 			private final ByteBuffer requestData;
 
+			private short seq;
+
 			/** Callback function for response. */
 			private final Consumer<T> callback;
 
@@ -499,6 +501,7 @@ public class TxrxProcess {
 			private Request(SCPRequest<T> request, Consumer<T> callback) {
 				this.request = request;
 				this.requestData = request.getMessageData(connection.getChip());
+				this.seq = request.scpRequestHeader.getSequence();
 				this.callback = callback;
 				retryReason = new ArrayList<>();
 				retries = numRetries;
@@ -510,7 +513,14 @@ public class TxrxProcess {
 					throw new InterruptedIOException(
 							"interrupted while waiting to send");
 				}
-				connection.send(requestData);
+				switch (request.sdpHeader.getFlags()) {
+				case REPLY_EXPECTED:
+				case REPLY_EXPECTED_NO_P2P:
+					connection.send(requestData, seq);
+					break;
+				default:
+					connection.send(requestData);
+				}
 				nextSendTime = nanoTime() + INTER_SEND_INTERVAL_NS;
 			}
 
@@ -521,6 +531,7 @@ public class TxrxProcess {
 				if (retryTracker != null) {
 					retryTracker.retryNeeded();
 				}
+				// TODO reissue sequence number?
 				send();
 			}
 

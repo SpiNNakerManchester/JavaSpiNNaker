@@ -888,6 +888,10 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public void sendSCPMessage(SCPRequest<?> message, SCPConnection connection)
 			throws IOException {
+		if (message instanceof BMPRequest) {
+			throw new ClassCastException(
+					"BMP messages should not be sent on SCP connections");
+		}
 		useOrRandomConnection(connection, scpConnections).send(message);
 	}
 
