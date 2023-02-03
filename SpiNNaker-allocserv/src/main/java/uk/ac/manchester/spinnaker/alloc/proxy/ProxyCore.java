@@ -157,7 +157,9 @@ public class ProxyCore implements AutoCloseable {
 			var reply = impl != null ? impl.call(message) : null;
 			if (reply != null) {
 				reply.flip();
-				session.sendMessage(new BinaryMessage(reply));
+				synchronized (session) {
+				    session.sendMessage(new BinaryMessage(reply));
+				}
 			}
 		} catch (IOException e) {
 			log.error("Closing data on server error", e);
