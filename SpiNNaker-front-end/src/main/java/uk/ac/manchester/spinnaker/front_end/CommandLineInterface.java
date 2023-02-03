@@ -159,26 +159,31 @@ public final class CommandLineInterface {
 	// Wrappers because of three configurations varying in one parameter
 	@Command(name = "dse", description = DSE_DESC)
 	private void dseAllCores(@Mixin MachineParam machine,
+			@Mixin DsFile dsFile,
 			@Mixin RunFolder runFolder)
 			throws Exception {
-		runDSEUploadingViaClassicTransfer(machine.get(), runFolder.get(), null);
+		runDSEUploadingViaClassicTransfer(machine.get(), dsFile.get(),
+				runFolder.get(), null);
 	}
 
 	@Command(name = "dse_sys", description = DSE_SYS_DESC)
 	private void dseSystemCores(
 			@Mixin MachineParam machine,
+			@Mixin DsFile dsFile,
 			@Mixin RunFolder runFolder)
 			throws Exception {
-		runDSEUploadingViaClassicTransfer(machine.get(), runFolder.get(),
-				false);
+		runDSEUploadingViaClassicTransfer(machine.get(), dsFile.get(),
+				runFolder.get(), false);
 	}
 
 	@Command(name = "dse_app", description = DSE_APP_DESC)
 	private void dseApplicationCores(
 			@Mixin MachineParam machine,
+			@Mixin DsFile dsFile,
 			@Mixin RunFolder runFolder)
 			throws Exception {
-		runDSEUploadingViaClassicTransfer(machine.get(), runFolder.get(), true);
+		runDSEUploadingViaClassicTransfer(machine.get(), runFolder.get(),
+				dsFile.get(), true);
 	}
 
 	@FunctionalInterface
@@ -214,10 +219,11 @@ public final class CommandLineInterface {
 	 * Run the data specifications in parallel.
 	 *
 	 * @param machine
-	 *            Description of overall machine.
+	 *            Description of overall machine
+	 * @paam dsFile
+	 *            Path to the dataspec database
 	 * @param runFolder
-	 *            Directory containing per-run information (i.e., the database
-	 *            that holds the data specifications to execute).
+	 *            Directory containing per-run information.
 	 * @param filterSystemCores
 	 *            If {@code true}, only run the DSE for application vertices. If
 	 *            {@code false}, only run the DSE for system vertices. If
@@ -238,12 +244,12 @@ public final class CommandLineInterface {
 	 *             If the proxy URI is provided but not valid.
 	 */
 	public void runDSEUploadingViaClassicTransfer(Machine machine,
-			File runFolder, Boolean filterSystemCores)
+			File dsFile, File runFolder, Boolean filterSystemCores)
 			throws IOException, SpinnmanException, StorageException,
 			ExecutionException, InterruptedException,
 			DataSpecificationException, URISyntaxException {
 		setLoggerDir(runFolder);
-		var db = getDataSpecDB(runFolder);
+		var db = getDataSpecDB(dsFile);
 		var job = getJob(db);
 
 		try (var txrx = getTransceiver(machine, job);
@@ -265,9 +271,10 @@ public final class CommandLineInterface {
 	 *            List of descriptions of gatherers.
 	 * @param machine
 	 *            Description of overall machine.
+	 * @param dsFile
+	 *            Path to the dataspec database
 	 * @param runFolder
-	 *            Directory containing per-run information (i.e., the database
-	 *            that holds the data specifications to execute).
+	 *            Directory containing per-run information.
 	 * @param reportFolder
 	 *            Directory containing reports. If {@link Optional#empty()}, no
 	 *            report will be written.
@@ -290,6 +297,7 @@ public final class CommandLineInterface {
 	public void runDSEForAppCoresUploadingViaMonitorStreaming(
 			@Mixin GatherersParam gatherers,
 			@Mixin MachineParam machine,
+			@Mixin DsFile dsFile,
 			@Mixin RunFolder runFolder,
 			@Parameters(description = REPORT, arity = "0..1", index = "3")
 			Optional<File> reportFolder)
@@ -297,7 +305,7 @@ public final class CommandLineInterface {
 			ExecutionException, InterruptedException,
 			DataSpecificationException, URISyntaxException {
 		setLoggerDir(runFolder.get());
-		var db = getDataSpecDB(runFolder.get());
+		var db = getDataSpecDB(dsFile.get());
 		var job = getJob(db);
 
 		try (var txrx = getTransceiver(machine.get(), job);
@@ -632,8 +640,41 @@ public final class CommandLineInterface {
 		}
 	}
 
-	private static DSEDatabaseEngine getDataSpecDB(File runFolder) {
-		return new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
+	/**
+	 * Argument handler for the {@code <dsFile>} parameter.
+	 * <p>
+	 * Do not make instances of this class yourself; leave that to picocli.
+	 *
+	 * @author Christian Brenninkmeijer
+	 * @see ArgGroup
+	 * @see Parameters
+	 */
+	public static class DsFile implements Supplier<File> {
+		@Parameters(description = RUN, converter = Converter.class, arity = "1")
+		private ValueHolder<File> dsFile = new ValueHolder<>();
+
+		/** @return The file of the dataspec database. */
+		@Override
+		public File get() {
+			return dsFile.getValue();
+		}
+
+		static class Converter implements ITypeConverter<ValueHolder<File>> {
+			@Override
+			public ValueHolder<File> convert(String filename)
+					throws IOException {
+				var f = new File(filename);
+				if (!f.isFile()) {
+					throw new TypeConversionException(
+							"<dbFile> must be a file");
+				}
+				return new ValueHolder<>(f);
+			}
+		}
+	}
+
+	private static DSEDatabaseEngine getDataSpecDB(File dsFile) {
+		return new DSEDatabaseEngine(dsFile);
 	}
 
 	private static BufferManagerStorage getBufferManagerDB(File dbFile) {
