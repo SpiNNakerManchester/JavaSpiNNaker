@@ -46,6 +46,8 @@ import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
+
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -460,7 +462,7 @@ public class TxrxProcess {
 		private int numTimeouts;
 
 		/** A dictionary of sequence number &rarr; requests in progress. */
-		// @GuardedBy("itself") // Not needed: synchronized map
+		@GuardedBy("itself")
 		private final Map<Integer, Req> outstandingRequests;
 
 		private long nextSendTime = 0;
@@ -590,6 +592,44 @@ public class TxrxProcess {
 			}
 		}
 
+		// Various accessors for outstandingRequests to handle locking right
+
+		private int numOutstandingRequests() {
+			synchronized (outstandingRequests) {
+				return outstandingRequests.size();
+			}
+		}
+
+		private Req getRequestForResult(SCPResultMessage msg) {
+			synchronized (outstandingRequests) {
+				return msg.pickRequest(outstandingRequests);
+			}
+		}
+
+		private void removeRequest(SCPResultMessage msg) {
+			synchronized (outstandingRequests) {
+				msg.removeRequest(outstandingRequests);
+			}
+		}
+
+		private Req getRequestForSeq(int seq) {
+			synchronized (outstandingRequests) {
+				return outstandingRequests.get(seq);
+			}
+		}
+
+		private List<Integer> listOutstandingSeqs() {
+			synchronized (outstandingRequests) {
+				return List.copyOf(outstandingRequests.keySet());
+			}
+		}
+
+		private void removeManySeqs(BitSet toRemove) {
+			synchronized (outstandingRequests) {
+				toRemove.stream().forEach(outstandingRequests::remove);
+			}
+		}
+
 		/**
 		 * Add an SCP request to the set to be sent. The request expects a
 		 * reply.
@@ -610,7 +650,7 @@ public class TxrxProcess {
 		<T extends CheckOKResponse> void send(SCPRequest<T> request,
 				Consumer<T> callback) throws IOException, InterruptedException {
 			// If all the channels are used, start to receive packets
-			while (outstandingRequests.size() >= numChannels) {
+			while (numOutstandingRequests() >= numChannels) {
 				multiRetrieve(numWaits);
 			}
 
@@ -694,7 +734,7 @@ public class TxrxProcess {
 		 *             If communications are interrupted.
 		 */
 		void finish() throws IOException, InterruptedException {
-			while (!outstandingRequests.isEmpty()) {
+			while (numOutstandingRequests() > 0) {
 				multiRetrieve(0);
 			}
 		}
@@ -713,7 +753,7 @@ public class TxrxProcess {
 				throws IOException, InterruptedException {
 			// While there are still more packets in progress than some
 			// threshold
-			while (outstandingRequests.size() > numPacketsOutstanding) {
+			while (numOutstandingRequests() > numPacketsOutstanding) {
 				try {
 					// Receive the next response
 					singleRetrieve();
@@ -731,18 +771,16 @@ public class TxrxProcess {
 				log.debug("received message {} with seq num {}",
 						msg.getResult(), msg.getSequenceNumber());
 			}
-			var req = msg.pickRequest(outstandingRequests);
+			var req = getRequestForResult(msg);
 
 			// Only process responses which have matching requests
 			if (req == null) {
 				log.info("discarding message with unknown sequence number: {}",
 						msg.getSequenceNumber());
 				if (log.isDebugEnabled()) {
-					synchronized (outstandingRequests) {
-						log.debug("current waiting on requests with seq's ");
-						for (int seq : outstandingRequests.keySet()) {
-							log.debug("{}", seq);
-						}
+					log.debug("current waiting on requests with seq's ");
+					for (int seq : listOutstandingSeqs()) {
+						log.debug("{}", seq);
 					}
 				}
 				return;
@@ -759,7 +797,7 @@ public class TxrxProcess {
 					log.debug("throwing away request {} coz of {}",
 							msg.getSequenceNumber(), e);
 					req.handleError(e);
-					msg.removeRequest(outstandingRequests);
+					removeRequest(msg);
 				}
 			} else {
 				// No retry is possible - try constructing the result
@@ -769,7 +807,7 @@ public class TxrxProcess {
 					req.handleError(e);
 				} finally {
 					// Remove the sequence from the outstanding responses
-					msg.removeRequest(outstandingRequests);
+					removeRequest(msg);
 				}
 			}
 		}
@@ -779,13 +817,9 @@ public class TxrxProcess {
 
 			// If there is a timeout, all packets remaining are resent
 			var toRemove = new BitSet(SEQUENCE_LENGTH);
-			List<Integer> currentSeqs;
-			synchronized (outstandingRequests) {
-				currentSeqs = List.copyOf(outstandingRequests.keySet());
-			}
-			for (int seq : currentSeqs) {
+			for (int seq : listOutstandingSeqs()) {
 				log.debug("resending seq {}", seq);
-				var req = outstandingRequests.get(seq);
+				var req = getRequestForSeq(seq);
 				if (req == null) {
 					// Shouldn't happen, but if it does we should nuke it.
 					toRemove.set(seq);
@@ -802,9 +836,7 @@ public class TxrxProcess {
 			}
 			log.debug("finish resending");
 
-			synchronized (outstandingRequests) {
-				toRemove.stream().forEach(outstandingRequests::remove);
-			}
+			removeManySeqs(toRemove);
 		}
 
 		private void resend(Req req, Object reason, int seq)
@@ -831,7 +863,7 @@ public class TxrxProcess {
 			return format(
 					"ReqPipe(req=%d,outstanding=%d,resent=%d,"
 							+ "restart=%d,timeouts=%d)",
-					numRequests, outstandingRequests.size(), numResent,
+					numRequests, numOutstandingRequests(), numResent,
 					numRetryCodeResent, numTimeouts);
 		}
 	}

@@ -28,11 +28,11 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
-import java.util.Deque;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
 import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.slf4j.Logger;
@@ -46,12 +46,30 @@ import uk.ac.manchester.spinnaker.utils.Daemon;
 public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 	private static final Logger log = getLogger(SCPConnection.class);
 
+	/**
+	 * Used to postpone actual closing of a connection, getting better
+	 * connection ID distribution.
+	 *
+	 * @see #closeEventually()
+	 */
 	private static final ScheduledExecutorService CLOSER;
 
-	private final Map<Integer, Thread> receiverMap =
-			synchronizedMap(new HashMap<>());
+	/**
+	 * Mapping from sequence numbers of requests actively in flight on this
+	 * connection to the thread that is interested in the response. One-way
+	 * requests do not get an entry in this table.
+	 */
+	private final Map<Integer, Thread> receiverMap = new ConcurrentHashMap<>();
 
-	private final Map<Thread, Deque<SCPResultMessage>> receiverQueues =
+	/**
+	 * A <em>weak map</em> holding a concurrent queue of messages for each
+	 * interested receiving thread. Only used to transfer messages from one
+	 * thread to another when a message is received by the wrong thread.
+	 * <p>
+	 * Not a {@link ThreadLocal} because we need to look up queues from other
+	 * threads too.
+	 */
+	private final Map<Thread, Queue<SCPResultMessage>> receiverQueues =
 			synchronizedMap(new WeakHashMap<>());
 
 	static {
@@ -120,15 +138,15 @@ public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 		if (myQueue == null) {
 			return null;
 		}
-		return myQueue.pollFirst();
+		return myQueue.poll();
 	}
 
 	private void putMessageOnQueue(Thread targetThread,
 			SCPResultMessage receivedMsg) {
 		receiverQueues
 				.computeIfAbsent(targetThread,
-						__ -> new ConcurrentLinkedDeque<>())
-				.addLast(receivedMsg);
+						__ -> new ConcurrentLinkedQueue<>())
+				.add(receivedMsg);
 	}
 
 	/**
@@ -206,7 +224,10 @@ public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 
 	@Override
 	public void send(ByteBuffer requestData, int seq) throws IOException {
+		var prev = receiverMap.put(seq, currentThread());
+		if (prev != currentThread()) {
+			log.warn("response for message now awaited by different thread");
+		}
 		send(requestData);
-		receiverMap.put(seq, currentThread());
 	}
 }
