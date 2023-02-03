@@ -30,6 +30,8 @@ import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.IOBUF_DES
 import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.LISTEN_DESC;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.LogControl.setLoggerDir;
+import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.DBFILE;
+import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.DSFILE;
 import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.GATHER;
 import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.MACHINE;
 import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.MAP;
@@ -182,8 +184,8 @@ public final class CommandLineInterface {
 			@Mixin DsFile dsFile,
 			@Mixin RunFolder runFolder)
 			throws Exception {
-		runDSEUploadingViaClassicTransfer(machine.get(), runFolder.get(),
-				dsFile.get(), true);
+		runDSEUploadingViaClassicTransfer(machine.get(), dsFile.get(),
+				runFolder.get(), true);
 	}
 
 	@FunctionalInterface
@@ -617,7 +619,7 @@ public final class CommandLineInterface {
 	 * @see Parameters
 	 */
 	public static class DbFile implements Supplier<File> {
-		@Parameters(description = RUN, converter = Converter.class, arity = "1")
+		@Parameters(description = DBFILE, converter = Converter.class, arity = "1")
 		private ValueHolder<File> dbFile = new ValueHolder<>();
 
 		/** @return The file of the buffer database. */
@@ -650,7 +652,7 @@ public final class CommandLineInterface {
 	 * @see Parameters
 	 */
 	public static class DsFile implements Supplier<File> {
-		@Parameters(description = RUN, converter = Converter.class, arity = "1")
+		@Parameters(description = DSFILE, converter = Converter.class, arity = "1")
 		private ValueHolder<File> dsFile = new ValueHolder<>();
 
 		/** @return The file of the dataspec database. */
@@ -769,6 +771,12 @@ interface ParamDescriptions {
 	/** Description of {@code reportFolder} parameter. */
 	String REPORT = "The name of the run's reporting folder. "
 			+ "If not provided, no report will be written.";
+
+	/** Description of {@code dbFile} parameter. */
+	String DBFILE = "The path of the buffer database.";
+
+	/** Description of {@code dsFile} parameter. */
+	String DSFILE = "The path of the dataspec database.";
 
 	/** Description of {@code runFolder} parameter. */
 	String RUN = "The name of the run data folder.";
