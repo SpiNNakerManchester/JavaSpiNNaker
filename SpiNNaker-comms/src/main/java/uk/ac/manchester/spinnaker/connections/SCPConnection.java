@@ -26,6 +26,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.Deque;
 import java.util.HashMap;
@@ -35,8 +36,6 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.slf4j.Logger;
-
-import com.google.errorprone.annotations.ForOverride;
 
 import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
@@ -116,22 +115,20 @@ public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 		super(chip, true);
 	}
 
-	/**
-	 * Do the basic reception of a message.
-	 *
-	 * @param timeout
-	 *            The time in milliseconds to wait for the message to arrive,
-	 *            oruntil the connection is closed.
-	 * @return The SCP result, the sequence number, and the data of theresponse.
-	 *         The buffer pointer will be positioned at the pointwhere the
-	 *         payload starts.
-	 * @throws IOException If there is an error receiving the message
-	 * @throws InterruptedException If communications are interrupted.
-	 */
-	@ForOverride
-	protected SCPResultMessage receiveSCPResultMessage(int timeout)
-			throws IOException, InterruptedException {
-		return new SCPResultMessage(receive(timeout));
+	private SCPResultMessage getMessageFromQueue() {
+		var myQueue = receiverQueues.get(currentThread());
+		if (myQueue == null) {
+			return null;
+		}
+		return myQueue.pollFirst();
+	}
+
+	private void putMessageOnQueue(Thread targetThread,
+			SCPResultMessage receivedMsg) {
+		receiverQueues
+				.computeIfAbsent(targetThread,
+						__ -> new ConcurrentLinkedDeque<>())
+				.addLast(receivedMsg);
 	}
 
 	/**
@@ -139,35 +136,45 @@ public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 	 * <p>
 	 * This is tricky code because there can be multiple threads using a
 	 * connection at once and we need to direct responses to the threads that
-	 * originated the requests that the responses match to.
+	 * originated the requests that the responses match to. A consequence of
+	 * this is that it is possible for the wait for a message to be longer than
+	 * the timeout given; that will occur when the current thread keeps
+	 * receiving messages for other threads.
 	 */
 	@Override
 	public final SCPResultMessage receiveSCPResponse(int timeout)
 			throws IOException, InterruptedException {
-		var currentThread = currentThread();
-		var myQueue = receiverQueues.get(currentThread);
 		while (true) {
-			// Prefer to take a queued message; it's already been received...
-			if (myQueue == null) {
-				myQueue = receiverQueues.get(currentThread);
-			}
-			if (myQueue != null) {
-				var queuedMsg = myQueue.pollFirst();
-				if (queuedMsg != null) {
-					return queuedMsg;
-				}
+			/*
+			 * Prefer to take a queued message; it's already been received...
+			 */
+			var queuedMsg = getMessageFromQueue();
+			if (queuedMsg != null) {
+				return queuedMsg;
 			}
 			// Need to talk to the network
-			var receivedMsg = receiveSCPResultMessage(timeout);
+			SCPResultMessage receivedMsg;
+			try {
+				receivedMsg = new SCPResultMessage(receive(timeout));
+			} catch (SocketTimeoutException e) {
+				/*
+				 * If we are timing out, but another thread received for us,
+				 * that's OK too
+				 */
+				var qm = getMessageFromQueue();
+				if (qm != null) {
+					return qm;
+				}
+				throw e;
+			}
 			var targetThread =
 					receiverMap.remove(receivedMsg.getSequenceNumber());
 			// If message is ours or unrecognized, pass to caller
-			if (targetThread == currentThread || targetThread == null) {
+			if (targetThread == currentThread() || targetThread == null) {
 				return receivedMsg;
 			}
 			// Queue for correct thread
-			receiverQueues.computeIfAbsent(targetThread,
-					__ -> new ConcurrentLinkedDeque<>()).addLast(receivedMsg);
+			putMessageOnQueue(targetThread, receivedMsg);
 		}
 	}
 
