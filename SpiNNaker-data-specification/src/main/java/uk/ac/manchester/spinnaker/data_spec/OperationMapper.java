@@ -26,7 +26,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -45,9 +44,14 @@ abstract class OperationMapper {
 	private static final Logger log = getLogger(OperationMapper.class);
 
 	/** Cache of what methods implement operations in a class. */
-	private static final Map<Class<? extends FunctionAPI>,
-			Map<Commands, WrappedMethod>> OPS_MAP =
-					synchronizedMap(new HashMap<>());
+	private static final ClassValue<Map<Commands, WrappedMethod>> OPS_MAP =
+			new ClassValue<>() {
+				@Override
+				protected Map<Commands, WrappedMethod> computeValue(
+						Class<?> type) {
+					return getOperations(type);
+				}
+			};
 
 	/**
 	 * Cache of callables for a particular operation on a particular executor.
@@ -85,9 +89,7 @@ abstract class OperationMapper {
 				 * the same weak reference for all the method wrappers that we
 				 * create.
 				 */
-				__ -> manufactureCallables(new WeakReference<>(funcs),
-						OPS_MAP.computeIfAbsent(funcs.getClass(),
-								OperationMapper::getOperations)));
+				__ -> manufactureCallables(new WeakReference<>(funcs)));
 		return map.get(opcode);
 	}
 
@@ -96,13 +98,11 @@ abstract class OperationMapper {
 	 *
 	 * @param objref
 	 *            The reference to the function API instance.
-	 * @param ops
-	 *            The parsed wrapped methods in the function API class.
 	 * @return The callables for the commands.
 	 */
 	private static Map<Commands, Callable> manufactureCallables(
-			WeakReference<FunctionAPI> objref,
-			Map<Commands, WrappedMethod> ops) {
+			WeakReference<FunctionAPI> objref) {
+		var ops = OPS_MAP.get(objref.get().getClass());
 		return ops.entrySet().stream().collect(toMap(Map.Entry::getKey,
 				e -> cmd -> e.getValue().call(objref, e.getKey(), cmd)));
 	}
