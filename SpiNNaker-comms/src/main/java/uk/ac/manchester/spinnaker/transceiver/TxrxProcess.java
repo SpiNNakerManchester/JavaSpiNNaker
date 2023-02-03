@@ -626,7 +626,9 @@ public class TxrxProcess {
 
 		private void removeManySeqs(BitSet toRemove) {
 			synchronized (outstandingRequests) {
-				toRemove.stream().forEach(outstandingRequests::remove);
+				for (var seq : toRemove.stream().toArray()) {
+					outstandingRequests.remove(seq);
+				}
 			}
 		}
 
