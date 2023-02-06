@@ -88,8 +88,10 @@ public @interface <span class="memberNameLabel">Operation</span></pre>
 <div class="block">This annotation is used to indicate which methods should be used to implement
  DSE operations. Methods annotated with this <em>must</em> be <code>public</code>,
  <em>must</em> take no arguments, and <em>must</em> have a return type of
- either <code>void</code> or <code>int</code>. The operation calling mechanism treats
- methods that don't return a value as if they returned zero.</div>
+ <code>void</code>, <code>int</code>, or <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink"><code>Integer</code></a>. The operation calling
+ mechanism treats methods that don't return a value as if they returned zero.
+ The only checked exception that may be thrown is a
+ <a href="DataSpecificationException.html" title="class in uk.ac.manchester.spinnaker.data_spec"><code>DataSpecificationException</code></a>.</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
 <dd>Donal Fellows</dd>
