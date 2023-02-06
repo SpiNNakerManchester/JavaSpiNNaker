@@ -14,28 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.messages.bmp;
-
-import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
-import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
+package uk.ac.manchester.spinnaker.messages.model;
 
 /**
- * The serial flash operations for argument three of
- * {@link SCPCommand#CMD_BMP_SF}.
+ * The basic router commands, handled by {@code cmd_rtr()} in
+ * {@code scamp-cmd.c}.
  */
-@UsedInJavadocOnly(SCPCommand.class)
-enum SerialFlashOp {
-	/** Read from the Serial Flash. */
-	READ(0),
-	/** write to the Serial Flash. */
-	WRITE(1),
-	/** Get the CRC of Serial Flash. */
-	CRC(2);
+public enum RouterCommand {
+	/** Initialise. */
+	ROUTER_INIT,
+	/** Clear (entry=arg2, count). */
+	ROUTER_CLEAR,
+	/** Load (addr=arg2, count, offset=arg3, app_id). */
+	ROUTER_LOAD,
+	/**
+	 * Set/get Fixed Route register (arg2 = route). if bit 31 of arg1 set then
+	 * return FR reg else set it
+	 */
+	ROUTER_FIXED;
 
-	/** The raw BMP value. */
+	/** The BMP-encoded value. */
 	public final byte value;
 
-	SerialFlashOp(int value) {
-		this.value = (byte) value;
+	RouterCommand() {
+		value = (byte) ordinal();
 	}
 }

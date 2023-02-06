@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,7 +51,7 @@ import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 public final class DirInfo extends SQLQueries {
 	private static final Logger log = getLogger(DirInfo.class);
 
-	private static final Map<Integer, Map<Direction, DirInfo>> MAP =
+	private static final Map<Integer, EnumMap<Direction, DirInfo>> MAP =
 			new HashMap<>();
 
 	/**
@@ -78,7 +79,8 @@ public final class DirInfo extends SQLQueries {
 		this.dy = dy;
 		this.dz = dz;
 
-		MAP.computeIfAbsent(z, __ -> new HashMap<>()).put(d, this);
+		MAP.computeIfAbsent(z, __ -> new EnumMap<>(Direction.class)).put(d,
+				this);
 	}
 
 	/**

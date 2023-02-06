@@ -21,7 +21,7 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMa
 import java.util.Map;
 
 /** Boot message operation codes. */
-public enum BootOpCode {
+enum BootOpCode {
 	/** Sent by SpiNNaker to announce itself ready for booting. */
 	HELLO(0x41),
 	/** Start a fill of the boot image (i.e., SCAMP). */

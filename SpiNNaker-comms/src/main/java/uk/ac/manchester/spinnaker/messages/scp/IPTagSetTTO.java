@@ -26,7 +26,14 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/** An SCP request to set the transient timeout for future SCP requests. */
+/**
+ * An SCP request to set the transient timeout for future SCP requests. The
+ * response payload is the {@linkplain IPTagGetInfo.TagInfo tag <em>system</em>
+ * information}.
+ * <p>
+ * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},
+ * if sent to a BMP).
+ */
 public class IPTagSetTTO extends SCPRequest<IPTagGetInfo.Response> {
 	/**
 	 * @param chip

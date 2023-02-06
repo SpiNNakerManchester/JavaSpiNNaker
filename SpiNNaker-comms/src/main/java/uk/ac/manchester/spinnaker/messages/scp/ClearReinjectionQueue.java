@@ -22,19 +22,23 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
-/** An SCP Request to set the dropped packet reinjected packet types. */
-public class ClearReinjectionQueue extends SCPRequest<CheckOKResponse> {
+/**
+ * An SCP Request to set the dropped packet reinjected packet types. There is no
+ * response payload.
+ * <p>
+ * Handled by {@code reinjection_clear()} in {@code extra_monitor_support.c}.
+ */
+public class ClearReinjectionQueue extends ReinjectorRequest<CheckOKResponse> {
 	/**
 	 * @param core
 	 *            The coordinates of the monitor core.
 	 */
 	public ClearReinjectionQueue(HasCoreLocation core) {
-		super(new ReinjectionSDPHeader(core), CLEAR, 0, 0, 0, null);
+		super(core, CLEAR);
 	}
 
 	@Override
 	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Set reinjected packet types", CLEAR,
-				buffer);
+		return new CheckOKResponse("Clear reinjection queue", CLEAR, buffer);
 	}
 }

@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.bmp.SerialFlashOp.CRC;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_SF;
 
@@ -26,7 +25,12 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/** An SCP request to get the CRC of serial flash memory from a BMP. */
+/**
+ * An SCP request to get the CRC of serial flash memory from a BMP. The response
+ * payload is the 32-bit CRC of the given region of flash.
+ * <p>
+ * Calls {@code sf_crc32()} in {@code bmp_ssp.c}.
+ */
 public class ReadSerialFlashCRC
 		extends BMPRequest<ReadSerialFlashCRC.Response> {
 	/**
@@ -50,14 +54,16 @@ public class ReadSerialFlashCRC
 	/**
 	 * An SCP response to a request to get the CRC of serial flash.
 	 */
-	public static class Response extends BMPRequest.BMPResponse {
-		/** The CRC. */
-		public final int crc;
-
+	public static final class Response
+			extends BMPRequest.PayloadedResponse<Integer> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("Read Serial Flash CRC", CMD_BMP_SF, buffer);
-			buffer = buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
-			crc = buffer.getInt();
+		}
+
+		/** @return The CRC. */
+		@Override
+		protected Integer parse(ByteBuffer buffer) {
+			return buffer.getInt();
 		}
 	}
 }

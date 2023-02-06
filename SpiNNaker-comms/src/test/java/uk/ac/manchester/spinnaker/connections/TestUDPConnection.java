@@ -71,7 +71,7 @@ public class TestUDPConnection {
 			throw e; // unreachable
 		}
 		var scpResponse = result.parsePayload(scpReq);
-		System.out.println(scpResponse.versionInfo);
+		System.out.println(scpResponse.get());
 		assertEquals(scpResponse.result, RC_OK);
 	}
 
