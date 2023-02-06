@@ -26,6 +26,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * Sets a fixed route entry. There is no response payload.
@@ -33,7 +34,7 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
  * Calls {@code rtr_fr_set()} in {@code sark_hw.c}, via {@code rtr_cmd()} in
  * {@code scamp-cmd.c}.
  */
-public final class FixedRouteInitialise extends SCPRequest<CheckOKResponse> {
+public final class FixedRouteInitialise extends SCPRequest<EmptyResponse> {
 	private static int argument1(AppID appID) {
 		return (appID.appID << BYTE1) | (ROUTER_FIXED.value << BYTE0);
 	}
@@ -48,6 +49,7 @@ public final class FixedRouteInitialise extends SCPRequest<CheckOKResponse> {
 	 */
 	public FixedRouteInitialise(HasChipLocation chip, int entry, AppID appID) {
 		super(chip.getScampCore(), CMD_RTR, argument1(appID), entry);
+		// The entry must not have the top bit set; normally true
 	}
 
 	/**
@@ -64,7 +66,8 @@ public final class FixedRouteInitialise extends SCPRequest<CheckOKResponse> {
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Fixed Route Initialise", CMD_RTR, buffer);
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
+		return new EmptyResponse("Fixed Route Initialise", CMD_RTR, buffer);
 	}
 }

@@ -41,6 +41,7 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 		return (appID.appID << BYTE1) | (ROUTER_FIXED.value << BYTE0);
 	}
 
+	// Top bit set = do a read
 	private static int argument2() {
 		return 1 << TOP_BIT;
 	}
@@ -56,7 +57,8 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	}
 
 	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+	public Response getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
 		return new Response(buffer);
 	}
 

@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.net.InetAddress.getByAddress;
+import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagCommand.GET;
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.COMMAND_FIELD;
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.CORE_MASK;
@@ -28,9 +29,14 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.tags.IPTag;
+import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
+import uk.ac.manchester.spinnaker.machine.tags.Tag;
 import uk.ac.manchester.spinnaker.machine.tags.TagID;
 import uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
@@ -42,7 +48,12 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},
  * if sent to a BMP).
  */
-public class IPTagGet extends SCPRequest<IPTagGet.Response> {
+public class IPTagGet extends SCPRequest<IPTagGet.Response>
+		implements ConnectionAwareMessage {
+	private final int tag;
+
+	private SCPConnection conn;
+
 	// arg1 = flags[11:8] : timeout : command : dest_port : tag
 	private static int argument1(int tagID) {
 		return (GET.value << COMMAND_FIELD) | (tagID & THREE_BITS_MASK);
@@ -57,15 +68,22 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 	public IPTagGet(HasChipLocation chip,
 			@TagID(scamp = true, ephemeral = true) int tag) {
 		super(chip.getScampCore(), CMD_IPTAG, argument1(tag), 1);
+		this.tag = tag;
 	}
 
 	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+	public void setConnection(SCPConnection connection) {
+		this.conn = connection;
+	}
+
+	@Override
+	public Response getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException, UnknownHostException {
 		return new Response(buffer);
 	}
 
 	/** Description of a tag. */
-	public static final class TagDescription {
+	public final class TagDescription {
 		/**
 		 * The count of the number of packets that have been sent with the tag.
 		 */
@@ -98,7 +116,11 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 		/** The timeout of the tag. */
 		public final IPTagTimeOutWaitTime timeout;
 
-		private TagDescription(ByteBuffer buffer) throws UnknownHostException {
+		/** Where did the message that we've parsed this from originate from? */
+		private final ChipLocation src;
+
+		private TagDescription(ByteBuffer buffer, HasChipLocation src)
+				throws UnknownHostException {
 			byte[] ipBytes = new byte[IPV4_BYTES];
 			buffer.get(ipBytes);
 			ipAddress = getByAddress(ipBytes);
@@ -116,6 +138,7 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 			int pp = Byte.toUnsignedInt(buffer.get());
 			spinCore = new CoreLocation(x, y, pp & CORE_MASK);
 			spinPort = (pp >>> PORT_SHIFT) & THREE_BITS_MASK;
+			this.src = src.asChipLocation();
 		}
 
 		private static final int IPV4_BYTES = 4;
@@ -163,10 +186,30 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 		public boolean isStrippingSDP() {
 			return bitset(STRIP_BIT);
 		}
+
+		/**
+		 * Get the standard tag descriptor. Not properly meaningful unless the
+		 * tag is {@linkplain #isInUse() in use}.
+		 *
+		 * @return The tag descriptor. May be an {@link IPTag} or a
+		 *         {@link ReverseIPTag}.
+		 */
+		public Tag getTag() {
+			var host = requireNonNull(conn,
+					"can only describe a tag fully after the message has "
+							+ "been sent on a connection")
+					.getRemoteIPAddress();
+			if (isReverse()) {
+				return new ReverseIPTag(host, tag, rxPort, spinCore, spinPort);
+			} else {
+				return new IPTag(host, src, tag, ipAddress, port,
+						isStrippingSDP());
+			}
+		}
 	}
 
 	/** An SCP response to a request for an IP tags. */
-	public static final class Response
+	public final class Response
 			extends PayloadedResponse<TagDescription, UnknownHostException> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException, UnknownHostException {
@@ -176,7 +219,7 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 		@Override
 		protected TagDescription parse(ByteBuffer buffer)
 				throws UnknownHostException {
-			return new TagDescription(buffer);
+			return new TagDescription(buffer, sdpHeader.getSource());
 		}
 	}
 }

@@ -25,6 +25,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
+import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo.TagInfo;
 
 /**
  * An SCP request to set the transient timeout for future SCP requests. The
@@ -34,7 +35,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},
  * if sent to a BMP).
  */
-public class IPTagSetTTO extends SCPRequest<IPTagGetInfo.Response> {
+public class IPTagSetTTO extends SCPRequest<IPTagSetTTO.Response> {
 	/**
 	 * @param chip
 	 *            The chip to set the tag timout on.
@@ -47,8 +48,20 @@ public class IPTagSetTTO extends SCPRequest<IPTagGetInfo.Response> {
 	}
 
 	@Override
-	public IPTagGetInfo.Response getSCPResponse(ByteBuffer buffer)
+	public IPTagSetTTO.Response getSCPResponse(ByteBuffer buffer)
 			throws UnexpectedResponseCodeException {
-		return new IPTagGetInfo.Response(buffer);
+		return new IPTagSetTTO.Response(buffer);
+	}
+
+	public final class Response
+			extends PayloadedResponse<TagInfo, RuntimeException> {
+		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+			super("Get IP Tag Info", CMD_IPTAG, buffer);
+		}
+
+		@Override
+		protected TagInfo parse(ByteBuffer buffer) throws RuntimeException {
+			return new TagInfo(buffer);
+		}
 	}
 }

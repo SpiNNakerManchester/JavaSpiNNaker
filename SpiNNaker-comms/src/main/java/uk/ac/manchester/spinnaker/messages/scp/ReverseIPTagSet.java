@@ -49,7 +49,7 @@ import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
  *
  * @see IPTagSet
  */
-public class ReverseIPTagSet extends SCPRequest<CheckOKResponse> {
+public class ReverseIPTagSet extends SCPRequest<EmptyResponse> {
 	/**
 	 * @param chip
 	 *            The chip to set the tag on.
@@ -89,8 +89,8 @@ public class ReverseIPTagSet extends SCPRequest<CheckOKResponse> {
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer)
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
 			throws UnexpectedResponseCodeException {
-		return new CheckOKResponse("Set Reverse IP Tag", CMD_IPTAG, buffer);
+		return new EmptyResponse("Set Reverse IP Tag", CMD_IPTAG, buffer);
 	}
 }

@@ -77,7 +77,8 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	}
 
 	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+	public Response getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
 		return new Response(buffer);
 	}
 

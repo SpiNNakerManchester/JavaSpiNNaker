@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
 import com.google.errorprone.annotations.ForOverride;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /**
@@ -31,7 +32,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
  * table.
  */
 //TODO Seal in 17
-public abstract class RouterTableRequest extends SCPRequest<CheckOKResponse> {
+public abstract class RouterTableRequest extends SCPRequest<EmptyResponse> {
 	private final RouterTableCommand cmd;
 
 	/**
@@ -55,9 +56,9 @@ public abstract class RouterTableRequest extends SCPRequest<CheckOKResponse> {
 	abstract String describe();
 
 	@Override
-	public final CheckOKResponse getSCPResponse(ByteBuffer buffer)
-			throws Exception {
-		return new CheckOKResponse(describe(), cmd, buffer);
+	public final EmptyResponse getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
+		return new EmptyResponse(describe(), cmd, buffer);
 	}
 
 	/**

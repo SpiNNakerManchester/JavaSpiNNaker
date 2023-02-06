@@ -28,6 +28,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * An SCP Request to free space in the SDRAM. The response payload is the number
@@ -72,20 +73,23 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 	 * [  31-16 |   15-8 | 7-0 ]
 	 * [ unused | app_id |  op ]
 	 */
-	// @formatter:off
+	// @formatter:on
 	private static int argument1(AppID appID) {
 		return (appID.appID << BYTE1) | (FREE_SDRAM_BY_APP_ID.value << BYTE0);
 	}
 
 	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+	public Response getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException,
+			MemoryAllocationFailedException {
 		return new Response(buffer);
 	}
 
 	/** An SCP response to a request to deallocate SDRAM. */
 	public final class Response extends
 			PayloadedResponse<Integer, MemoryAllocationFailedException> {
-		Response(ByteBuffer buffer) throws Exception {
+		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException,
+				MemoryAllocationFailedException {
 			super("SDRAM Deallocation", CMD_ALLOC, buffer);
 		}
 

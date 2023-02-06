@@ -61,7 +61,8 @@ public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 	}
 
 	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+	public Response getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
 		return new Response(buffer);
 	}
 

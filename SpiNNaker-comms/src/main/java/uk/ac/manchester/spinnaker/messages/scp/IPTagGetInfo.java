@@ -66,7 +66,7 @@ public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 		/** The count of the number of fixed IP tag entries. */
 		public final int fixedSize;
 
-		private TagInfo(ByteBuffer buffer) {
+		TagInfo(ByteBuffer buffer) {
 			transientTimeout = IPTagTimeOutWaitTime.get(buffer.get());
 			buffer.get(); // skip 1 (sizeof(iptag_t) isn't relevant to us)
 			poolSize = toUnsignedInt(buffer.get());
@@ -75,7 +75,7 @@ public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 	}
 
 	/** An SCP response to a request for information about IP tags. */
-	public static final class Response
+	public final class Response
 			extends PayloadedResponse<TagInfo, RuntimeException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("Get IP Tag Info", CMD_IPTAG, buffer);

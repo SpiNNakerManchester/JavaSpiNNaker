@@ -22,6 +22,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.ReinjectorCommand.SET_ROUT
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * An SCP Request to the extra monitor core to set the router timeout for
@@ -30,7 +31,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  * Handled by {@code reinjection_set_timeout_sdp()} in
  * {@code extra_monitor_support.c}.
  */
-public class SetRouterTimeout extends ReinjectorRequest<CheckOKResponse> {
+public class SetRouterTimeout extends ReinjectorRequest<EmptyResponse> {
 	/**
 	 * @param core
 	 *            The coordinates of the monitor core.
@@ -46,8 +47,9 @@ public class SetRouterTimeout extends ReinjectorRequest<CheckOKResponse> {
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Set router timeout", SET_ROUTER_TIMEOUT,
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
+		return new EmptyResponse("Set router timeout", SET_ROUTER_TIMEOUT,
 				buffer);
 	}
 }

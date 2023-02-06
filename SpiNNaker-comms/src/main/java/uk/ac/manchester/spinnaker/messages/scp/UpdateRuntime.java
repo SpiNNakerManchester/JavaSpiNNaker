@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * This calls {@code simulation_control_scp_callback()} in {@code simulation.c}.
  */
-public class UpdateRuntime extends FECRequest<CheckOKResponse> {
+public class UpdateRuntime extends FECRequest<EmptyResponse> {
 	/**
 	 * @param core
 	 *            The SpiNNaker core to update the runtime info of.
@@ -53,8 +53,8 @@ public class UpdateRuntime extends FECRequest<CheckOKResponse> {
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer)
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
 			throws UnexpectedResponseCodeException {
-		return new CheckOKResponse("update runtime", NEW_RUNTIME_ID, buffer);
+		return new EmptyResponse("update runtime", NEW_RUNTIME_ID, buffer);
 	}
 }

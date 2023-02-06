@@ -52,7 +52,7 @@ import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
  *
  * @see ReverseIPTagSet
  */
-public class IPTagSet extends SCPRequest<CheckOKResponse> {
+public class IPTagSet extends SCPRequest<EmptyResponse> {
 	private static final Logger log = getLogger(IPTagSet.class);
 
 	private static final int INADDRSZ = 4;
@@ -107,8 +107,8 @@ public class IPTagSet extends SCPRequest<CheckOKResponse> {
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer)
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
 			throws UnexpectedResponseCodeException {
-		return new CheckOKResponse("Set IP Tag", CMD_IPTAG, buffer);
+		return new EmptyResponse("Set IP Tag", CMD_IPTAG, buffer);
 	}
 }

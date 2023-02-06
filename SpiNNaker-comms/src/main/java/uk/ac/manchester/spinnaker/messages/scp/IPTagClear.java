@@ -33,7 +33,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},
  * if sent to a BMP).
  */
-public class IPTagClear extends SCPRequest<CheckOKResponse> {
+public class IPTagClear extends SCPRequest<EmptyResponse> {
 	/**
 	 * @param chip
 	 *            The chip to clear the tag on.
@@ -50,8 +50,8 @@ public class IPTagClear extends SCPRequest<CheckOKResponse> {
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer)
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
 			throws UnexpectedResponseCodeException {
-		return new CheckOKResponse("Clear IP Tag", CMD_IPTAG, buffer);
+		return new EmptyResponse("Clear IP Tag", CMD_IPTAG, buffer);
 	}
 }

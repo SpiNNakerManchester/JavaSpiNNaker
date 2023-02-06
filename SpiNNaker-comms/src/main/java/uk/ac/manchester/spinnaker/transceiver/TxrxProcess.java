@@ -51,10 +51,13 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.CommandCode;
+import uk.ac.manchester.spinnaker.messages.scp.ConnectionAwareMessage;
+import uk.ac.manchester.spinnaker.messages.scp.EmptyResponse;
 import uk.ac.manchester.spinnaker.messages.scp.NoResponse;
 import uk.ac.manchester.spinnaker.messages.scp.PayloadedResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
+import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
@@ -250,8 +253,7 @@ public class TxrxProcess {
 	/**
 	 * Send a request. The actual payload of the response to this request is to
 	 * be considered to be uninteresting provided it doesn't indicate a failure.
-	 * In particular, the response is <em>just</em> a {@link CheckOKResponse}
-	 * and not one of its subclasses.
+	 * In particular, the response is a {@link EmptyResponse}.
 	 *
 	 * @param request
 	 *            The request to send.
@@ -260,7 +262,7 @@ public class TxrxProcess {
 	 * @throws InterruptedException
 	 *             If communications are interrupted while preparing to send.
 	 */
-	protected final void sendRequest(SCPRequest<CheckOKResponse> request)
+	protected final void sendRequest(SCPRequest<EmptyResponse> request)
 			throws IOException, InterruptedException {
 		pipeline(request).send(request, null);
 	}
@@ -312,11 +314,8 @@ public class TxrxProcess {
 	 * Do a synchronous call of an SCP operation, sending the given message and
 	 * completely processing the interaction before returning its response.
 	 *
-	 * @param <Resp>
-	 *            The type of the response; implicit in the type of the request.
 	 * @param request
 	 *            The request to send
-	 * @return The successful response to the request
 	 * @throws IOException
 	 *             If the communications fail
 	 * @throws ProcessException
@@ -324,14 +323,13 @@ public class TxrxProcess {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	protected final <
-			Resp extends CheckOKResponse> Resp call(SCPRequest<Resp> request)
+	protected final void call(SCPRequest<EmptyResponse> request)
 					throws IOException, ProcessException, InterruptedException {
-		var holder = new ValueHolder<Resp>();
+		var holder = new ValueHolder<EmptyResponse>();
 		resetFailureState();
 		sendRequest(request, holder::setValue);
 		finishBatch();
-		return holder.getValue();
+		assert holder.getValue().result == SCPResult.RC_OK;
 	}
 
 	/**
@@ -607,6 +605,10 @@ public class TxrxProcess {
 		 */
 		private <T extends CheckOKResponse> Request<T> registerRequest(
 				SCPRequest<T> request, Consumer<T> callback) {
+			if (request instanceof ConnectionAwareMessage) {
+				ConnectionAwareMessage cam = (ConnectionAwareMessage) request;
+				cam.setConnection(connection);
+			}
 			synchronized (outstandingRequests) {
 				int sequence = toUnsignedInt(request.scpRequestHeader
 						.issueSequenceNumber(outstandingRequests.keySet()));

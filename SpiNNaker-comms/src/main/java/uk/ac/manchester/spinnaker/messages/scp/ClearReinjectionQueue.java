@@ -21,6 +21,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.ReinjectorCommand.CLEAR;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * An SCP Request to set the dropped packet reinjected packet types. There is no
@@ -28,7 +29,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  * <p>
  * Handled by {@code reinjection_clear()} in {@code extra_monitor_support.c}.
  */
-public class ClearReinjectionQueue extends ReinjectorRequest<CheckOKResponse> {
+public class ClearReinjectionQueue extends ReinjectorRequest<EmptyResponse> {
 	/**
 	 * @param core
 	 *            The coordinates of the monitor core.
@@ -38,7 +39,8 @@ public class ClearReinjectionQueue extends ReinjectorRequest<CheckOKResponse> {
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Clear reinjection queue", CLEAR, buffer);
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
+		return new EmptyResponse("Clear reinjection queue", CLEAR, buffer);
 	}
 }

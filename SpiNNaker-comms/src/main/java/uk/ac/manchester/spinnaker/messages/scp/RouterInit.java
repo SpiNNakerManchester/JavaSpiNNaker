@@ -27,6 +27,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * A request to initialise the router on a chip. There is no response payload.
@@ -34,7 +35,7 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
  * Ultimately handled by {@code rtr_mc_load()} in {@code sark_hw.c} (via
  * {@code cmd_rtr()} in {@code scamp-cmd.c}).
  */
-public class RouterInit extends SCPRequest<CheckOKResponse> {
+public class RouterInit extends SCPRequest<EmptyResponse> {
 	/** One reserved for SCAMP. */
 	private static final int MAX_ENTRIES = 1023;
 
@@ -55,8 +56,7 @@ public class RouterInit extends SCPRequest<CheckOKResponse> {
 	 *             If a bad address or entry count is given
 	 */
 	public RouterInit(HasChipLocation chip, int numEntries,
-			MemoryLocation tableAddress, int baseIndex,
-			AppID appID) {
+			MemoryLocation tableAddress, int baseIndex, AppID appID) {
 		super(chip.getScampCore(), CMD_RTR, argument1(numEntries, appID),
 				tableAddress.address, baseIndex);
 		if (baseIndex < 0) {
@@ -78,7 +78,8 @@ public class RouterInit extends SCPRequest<CheckOKResponse> {
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Router Init", CMD_RTR, buffer);
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
+		return new EmptyResponse("Router Init", CMD_RTR, buffer);
 	}
 }

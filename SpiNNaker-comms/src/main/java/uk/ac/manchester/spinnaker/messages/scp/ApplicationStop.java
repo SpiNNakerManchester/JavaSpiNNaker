@@ -28,6 +28,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_NNP;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.messages.model.AppID;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * An SCP Request to stop an application. There is no response payload.
@@ -36,7 +37,7 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
  * turn triggers a call to {@code proc_stop_app()} in {@code scamp-app.c} across
  * all SCAMP instances.
  */
-public final class ApplicationStop extends SCPRequest<CheckOKResponse> {
+public final class ApplicationStop extends SCPRequest<EmptyResponse> {
 	private static final int SHIFT = 28;
 
 	private static final int NN_CMD_SIG0 = 0;
@@ -77,7 +78,8 @@ public final class ApplicationStop extends SCPRequest<CheckOKResponse> {
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Send Stop", CMD_NNP, buffer);
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
+		return new EmptyResponse("Send Stop", CMD_NNP, buffer);
 	}
 }

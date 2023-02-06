@@ -67,7 +67,7 @@ class TestOKResponse {
 		bytes.putShort(result).putShort(seq).flip();
 
 		assertNotNull(
-				new CheckOKResponse("testing operation", CMD_DPRI, bytes));
+				new EmptyResponse("testing operation", CMD_DPRI, bytes));
 	}
 
 	@Test
@@ -100,7 +100,6 @@ class TestOKResponse {
 		bytes.putShort(result).putShort(seq).flip();
 
 		assertThrows(UnexpectedResponseCodeException.class,
-				() -> new CheckOKResponse("testing operation", CMD_DPRI,
-						bytes));
+				() -> new EmptyResponse("testing operation", CMD_DPRI, bytes));
 	}
 }
