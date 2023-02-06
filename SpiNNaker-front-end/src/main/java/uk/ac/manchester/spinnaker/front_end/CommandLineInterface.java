@@ -222,7 +222,7 @@ public final class CommandLineInterface {
 	 *
 	 * @param machine
 	 *            Description of overall machine
-	 * @paam dsFile
+	 * @param dsFile
 	 *            Path to the dataspec database
 	 * @param runFolder
 	 *            Directory containing per-run information.
@@ -619,7 +619,8 @@ public final class CommandLineInterface {
 	 * @see Parameters
 	 */
 	public static class DbFile implements Supplier<File> {
-		@Parameters(description = DBFILE, converter = Converter.class, arity = "1")
+		@Parameters(description = DBFILE, converter = Converter.class,
+				arity = "1")
 		private ValueHolder<File> dbFile = new ValueHolder<>();
 
 		/** @return The file of the buffer database. */
@@ -652,7 +653,8 @@ public final class CommandLineInterface {
 	 * @see Parameters
 	 */
 	public static class DsFile implements Supplier<File> {
-		@Parameters(description = DSFILE, converter = Converter.class, arity = "1")
+		@Parameters(description = DSFILE, converter = Converter.class,
+				arity = "1")
 		private ValueHolder<File> dsFile = new ValueHolder<>();
 
 		/** @return The file of the dataspec database. */
