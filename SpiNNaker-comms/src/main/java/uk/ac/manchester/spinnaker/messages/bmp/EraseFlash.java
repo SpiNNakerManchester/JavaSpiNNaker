@@ -25,7 +25,12 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/** A request to erase flash memory on a BMP. */
+/**
+ * A request to erase flash memory on a BMP. The response payload is the
+ * {@linkplain MemoryLocation location} of the flash buffer.
+ * <p>
+ * Handled by {@code cmd_flash_erase()} in {@code bmp_cmd.c}.
+ */
 public final class EraseFlash extends BMPRequest<EraseFlash.Response> {
 	private static final int LOW_BOUNDARY = 65536;
 
@@ -66,14 +71,17 @@ public final class EraseFlash extends BMPRequest<EraseFlash.Response> {
 	}
 
 	/** The response from a request to erase flash. */
-	public static final class Response extends BMPRequest.BMPResponse {
-		/** Where the buffer is located. */
-		public final MemoryLocation address;
-
+	public static final class Response
+			extends BMPRequest.PayloadedResponse<MemoryLocation> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Erase flash memory", CMD_FLASH_ERASE, buffer);
-			address = new MemoryLocation(buffer.getInt());
+		}
+
+		/** @return Where the buffer is located. */
+		@Override
+		protected MemoryLocation parse(ByteBuffer buffer) {
+			return new MemoryLocation(buffer.getInt());
 		}
 	}
 }

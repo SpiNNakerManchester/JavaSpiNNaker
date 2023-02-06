@@ -21,8 +21,7 @@ import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.variables;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.EnumMap;
 
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
@@ -38,13 +37,13 @@ public class SystemVariableBootValues implements SerializableMessage {
 	static final int BOOT_VARIABLE_SIZE = 256;
 
 	/** This <em>must</em> be mutable. */
-	private final Map<SystemVariableDefinition, Object> values;
+	private final EnumMap<SystemVariableDefinition, Object> values;
 
 	private boolean unmodifiable;
 
 	/** Create a set of boot values using all the defaults. */
 	public SystemVariableBootValues() {
-		values = new HashMap<>();
+		values = new EnumMap<>(SystemVariableDefinition.class);
 		for (var svd : SystemVariableDefinition.values()) {
 			values.put(svd, svd.getDefault());
 		}
@@ -58,7 +57,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 	 *            The set of boot values to copy from.
 	 */
 	public SystemVariableBootValues(SystemVariableBootValues original) {
-		values = new HashMap<>(original.values);
+		values = new EnumMap<>(original.values);
 	}
 
 	/**

@@ -26,7 +26,9 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 
 /**
- * A request to write to serial flash on a BMP.
+ * A request to write to serial flash on a BMP. There is no response payload.
+ * <p>
+ * Calls {@code sf_write()} in {@code bmp_ssp.c}.
  */
 public class WriteSerialFlash extends BMPRequest<BMPRequest.BMPResponse> {
 	/** The size of chunk that will be transferred. Fixed. */

@@ -22,7 +22,7 @@ import java.util.Map;
 
 /** The SCP Result codes. */
 public enum SCPResult {
-	/** SCPCommand completed OK. */
+	/** Command completed successfully. */
 	RC_OK(0x80),
 	/** Bad packet length. */
 	RC_LEN(0x81),

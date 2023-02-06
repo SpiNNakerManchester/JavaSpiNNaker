@@ -20,7 +20,10 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/** An SCP response to a request which returns nothing other than OK. */
+/**
+ * An SCP response to a request which returns nothing other than OK or an error.
+ * Subclasses add {@linkplain PayloadedResponse payload parsing}.
+ */
 public class CheckOKResponse extends SCPResponse {
 	/**
 	 * Create an instance.
