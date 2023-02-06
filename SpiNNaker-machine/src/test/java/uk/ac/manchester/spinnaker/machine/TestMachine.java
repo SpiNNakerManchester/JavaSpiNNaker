@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.machine;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -488,12 +489,12 @@ public class TestMachine {
 	@Test
 	public void testUnreachableIncomingChips() {
 		var ignoreLinks =
-				Map.of(new ChipLocation(2, 2), Set.of(NORTHEAST),
-						new ChipLocation(2, 3), Set.of(EAST),
-						new ChipLocation(3, 4), Set.of(SOUTH),
-						new ChipLocation(4, 4), Set.of(SOUTHWEST),
-						new ChipLocation(4, 3), Set.of(WEST),
-						new ChipLocation(3, 2), Set.of(NORTH));
+				Map.of(new ChipLocation(2, 2), EnumSet.of(NORTHEAST),
+						new ChipLocation(2, 3), EnumSet.of(EAST),
+						new ChipLocation(3, 4), EnumSet.of(SOUTH),
+						new ChipLocation(4, 4), EnumSet.of(SOUTHWEST),
+						new ChipLocation(4, 3), EnumSet.of(WEST),
+						new ChipLocation(3, 2), EnumSet.of(NORTH));
 
 		var instance = new VirtualMachine(new MachineDimensions(12, 12),
 				null, null, ignoreLinks);

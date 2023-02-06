@@ -70,7 +70,7 @@ class TestCountState {
 		data.flip();
 
 		var response = new CountState.Response(data);
-		assertEquals(5, response.count);
+		assertEquals(5, response.get());
 	}
 
 	@Test

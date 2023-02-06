@@ -24,7 +24,11 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 
-/** A request to write memory on a BMP. */
+/**
+ * A request to write memory on a BMP. There is no response payload.
+ * <p>
+ * Calls {@code cmd_write()} in {@code bmp_cmd.c}.
+ */
 public class BMPWriteMemory extends BMPRequest<BMPRequest.BMPResponse> {
 	/**
 	 * @param board

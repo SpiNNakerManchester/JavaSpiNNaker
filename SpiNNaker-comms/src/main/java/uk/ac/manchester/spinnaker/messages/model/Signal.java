@@ -21,6 +21,9 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMa
 
 import java.util.Map;
 
+import uk.ac.manchester.spinnaker.messages.scp.CountState;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
+
 /** SCP Signals. */
 public enum Signal {
 	/** The system is initialising after boot. */
@@ -87,7 +90,11 @@ public enum Signal {
 	public enum Type {
 		/** Signal is sent to all cores via MC packets. */
 		MULTICAST(0),
-		/** Signal is sent to all cores via P2P packets. */
+		/**
+		 * Signal is sent to all cores via P2P packets. Note that this is not
+		 * available as a general signal; use {@link CountState} instead.
+		 */
+		@UsedInJavadocOnly(CountState.class)
 		POINT_TO_POINT(1),
 		/** Signal is sent to all cores via NN packets. */
 		NEAREST_NEIGHBOUR(2);

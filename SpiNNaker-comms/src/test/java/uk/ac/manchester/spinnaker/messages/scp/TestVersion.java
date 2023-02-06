@@ -75,10 +75,10 @@ class TestVersion {
 		data.flip();
 
 		var response = new GetVersion.Response(data);
-		assertEquals("sark", response.versionInfo.name);
-		assertEquals("spinnaker", response.versionInfo.hardware);
-		assertEquals(new Version(2, 34, 0), response.versionInfo.versionNumber);
-		assertEquals(new CoreLocation(14, 31, 0), response.versionInfo.core);
+		assertEquals("sark", response.get().name);
+		assertEquals("spinnaker", response.get().hardware);
+		assertEquals(new Version(2, 34, 0), response.get().versionNumber);
+		assertEquals(new CoreLocation(14, 31, 0), response.get().core);
 	}
 
 	@Test
@@ -115,9 +115,9 @@ class TestVersion {
 		data.flip();
 
 		var response = new GetVersion.Response(data);
-		assertEquals("SC&MP", response.versionInfo.name);
-		assertEquals("SpiNNaker", response.versionInfo.hardware);
-		assertEquals(new Version(3, 2, 0), response.versionInfo.versionNumber);
-		assertEquals(new CoreLocation(14, 31, 0), response.versionInfo.core);
+		assertEquals("SC&MP", response.get().name);
+		assertEquals("SpiNNaker", response.get().hardware);
+		assertEquals(new Version(3, 2, 0), response.get().versionNumber);
+		assertEquals(new CoreLocation(14, 31, 0), response.get().core);
 	}
 }
