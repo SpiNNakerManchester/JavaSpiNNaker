@@ -21,6 +21,7 @@ import static java.util.Arrays.stream;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toUnmodifiableMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.lang.ref.WeakReference;
@@ -43,15 +44,70 @@ import com.google.errorprone.annotations.CheckReturnValue;
 abstract class OperationMapper {
 	private static final Logger log = getLogger(OperationMapper.class);
 
-	/** Cache of what methods implement operations in a class. */
-	private static final ClassValue<Map<Commands, WrappedMethod>> OPS_MAP =
-			new ClassValue<>() {
-				@Override
-				protected Map<Commands, WrappedMethod> computeValue(
-						Class<?> type) {
-					return getOperations(type);
+	/**
+	 * Disable strict validation. For testing only.
+	 */
+	static boolean looseValidation;
+
+	/** The types we allow as return values: {@code int} and {@code void}. */
+	private static final Set<Class<?>> ALLOWED_RETURN_TYPES =
+			Set.of(Void.TYPE, Integer.TYPE);
+
+	/**
+	 * Manufactures wrapped methods for a function API class. Methods are only
+	 * wrapped if they are annotated with {@code @}{@link Operation}.
+	 */
+	private static final class OpsMapMaker
+			extends ClassValue<Map<Commands, WrappedMethod>> {
+		@Override
+		protected Map<Commands, WrappedMethod> computeValue(Class<?> type) {
+			return stream(type.getMethods()).filter(this::validOperation)
+					.collect(toUnmodifiableMap(this::getCommands,
+							m -> wrapMethod(type, m)));
+		}
+
+		private boolean validOperation(Method m) {
+			if (!m.isAnnotationPresent(Operation.class)) {
+				return false;
+			}
+			// Validate the constraints imposed by Operation
+			if (m.getParameterCount() != 0 && !looseValidation) {
+				log.error("method {} must not take parameters "
+						+ "when annotated with Operation", m);
+				return false;
+			}
+			if (!ALLOWED_RETURN_TYPES.contains(m.getReturnType())
+					&& !looseValidation) {
+				log.error("method {} must return int or void "
+						+ "when annotated with Operation", m);
+				return false;
+			}
+			for (var et : m.getExceptionTypes()) {
+				if (!Exception.class.isAssignableFrom(et)) {
+					continue;
 				}
-			};
+				if (RuntimeException.class.isAssignableFrom(et)) {
+					continue;
+				}
+				if (!DataSpecificationException.class.isAssignableFrom(et)
+						&& !looseValidation) {
+					// Only complain about the first one
+					log.error("method {} throws checked exception "
+							+ "that is not a {}; may result in runtime faults",
+							m, et, DataSpecificationException.class);
+					break;
+				}
+			}
+			return true;
+		}
+
+		private Commands getCommands(Method m) {
+			return m.getAnnotation(Operation.class).value();
+		}
+	}
+
+	/** Cache of what methods implement operations in a class. */
+	private static final OpsMapMaker OPS_MAP_MAKER = new OpsMapMaker();
 
 	/**
 	 * Cache of callables for a particular operation on a particular executor.
@@ -102,29 +158,10 @@ abstract class OperationMapper {
 	 */
 	private static Map<Commands, Callable> manufactureCallables(
 			WeakReference<FunctionAPI> objref) {
-		var ops = OPS_MAP.get(objref.get().getClass());
+		var ops = OPS_MAP_MAKER.get(objref.get().getClass());
 		return ops.entrySet().stream().collect(toMap(Map.Entry::getKey,
 				e -> cmd -> e.getValue().call(objref, e.getKey(), cmd)));
 	}
-
-	/**
-	 * Manufacture wrapped methods for a function API class. Methods are only
-	 * wrapped if they are annotated with {@code @}{@link Operation}.
-	 *
-	 * @param cls
-	 *            The function API class to analyse.
-	 * @return The wrapped (and annotated) methods for the commands.
-	 */
-	private static Map<Commands, WrappedMethod> getOperations(Class<?> cls) {
-		return stream(cls.getMethods())
-				.filter(m -> m.isAnnotationPresent(Operation.class))
-				.collect(toMap(m -> m.getAnnotation(Operation.class).value(),
-						m -> wrapMethod(cls, m)));
-	}
-
-	/** The types we allow as return values: {@code int} and {@code void}. */
-	private static final Set<Class<?>> ALLOWED_RETURN_TYPES =
-			Set.of(Void.TYPE, Integer.TYPE);
 
 	/**
 	 * Check a particular method for validity and wrap it. If there are any

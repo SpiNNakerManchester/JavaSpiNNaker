@@ -24,6 +24,8 @@ import java.awt.AWTError;
 import java.io.IOException;
 import java.nio.channels.AcceptPendingException;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class TestOperationMapper {
@@ -38,6 +40,16 @@ class TestOperationMapper {
 		public void unpack(int cmd) {
 			this.cmd = cmd;
 		}
+	}
+
+	@BeforeAll
+	static void makePermissive() {
+		OperationMapper.looseValidation = true;
+	}
+
+	@AfterAll
+	static void makeStrict() {
+		OperationMapper.looseValidation = false;
 	}
 
 	@Test

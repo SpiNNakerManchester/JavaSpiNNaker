@@ -28,7 +28,8 @@ import java.lang.annotation.Target;
  * DSE operations. Methods annotated with this <em>must</em> be {@code public},
  * <em>must</em> take no arguments, and <em>must</em> have a return type of
  * either {@code void} or {@code int}. The operation calling mechanism treats
- * methods that don't return a value as if they returned zero.
+ * methods that don't return a value as if they returned zero. The only checked
+ * exception that may be thrown is a {@link DataSpecificationException}.
  *
  * @author Donal Fellows
  */
