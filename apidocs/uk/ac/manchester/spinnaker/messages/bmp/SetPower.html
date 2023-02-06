@@ -104,11 +104,15 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">SetPower</span>
 extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest</a>&lt;<a href="BMPRequest.BMPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.BMPResponse</a>&gt;</pre>
-<div class="block">An SCP request for the BMP to power on or power off a rack of boards.
+<div class="block">An SCP request for the BMP to power on or power off a rack of boards. There
+ is no response payload.
  <p>
- <b>Note:</b> There is currently a bug in the BMP that means some boards don't
- respond to power commands not sent to BMP 0. Because of this, this message
- should <i>always</i> be sent to BMP 0!</div>
+ <strong>Note:</strong> There is currently a bug in the BMP that means some
+ boards don't respond to power commands not sent to BMP 0. Because of this,
+ this message should <em>always</em> be sent to BMP 0!
+ <p>
+ Handled by <code>cmd_power()</code> in <code>bmp_cmd.c</code>, which in turn calls
+ <code>proc_power()</code> in the same file.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -122,7 +126,7 @@ extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 <h2>Nested classes/interfaces inherited from class&nbsp;uk.ac.manchester.spinnaker.messages.bmp.<a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest</a></h2>
 <a id="nested.classes.inherited.from.class.uk.ac.manchester.spinnaker.messages.bmp.BMPRequest">
 <!--   -->
-</a><code><a href="BMPRequest.BMPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.BMPResponse</a></code></div>
+</a><code><a href="BMPRequest.BMPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.BMPResponse</a>, <a href="BMPRequest.PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.PayloadedResponse</a>&lt;<a href="BMPRequest.PayloadedResponse.html" title="type parameter in BMPRequest.PayloadedResponse">T</a>&gt;</code></div>
 </section>
 </li>
 <!-- =========== FIELD SUMMARY =========== -->

@@ -19,7 +19,13 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var pathtoroot = "../../../../../../";
+<script type="text/javascript">var data = {"i0":10};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+var altColor = "altColor";
+var rowColor = "rowColor";
+var tableTab = "tableTab";
+var activeTableTab = "activeTableTab";
+var pathtoroot = "../../../../../../";
 loadScripts(document, 'script');</script>
 <noscript>
 <div>JavaScript is disabled on your browser.</div>
@@ -57,9 +63,9 @@ loadScripts(document, 'script');</script>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
-<li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
-<li>Method</li>
+<li><a href="#method.detail">Method</a></li>
 </ul>
 </div>
 <div class="navListSearch"><label for="search">SEARCH:</label>
@@ -84,18 +90,24 @@ loadScripts(document, 'script');</script>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
 <div class="inheritance"><a href="SCPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp.SCPResponse</a>
 <div class="inheritance"><a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse</a>
+<div class="inheritance"><a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp.PayloadedResponse</a>&lt;<a href="IPTagGetInfo.TagInfo.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGetInfo.TagInfo</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/RuntimeException.html?is-external=true" title="class or interface in java.lang" class="externalLink">RuntimeException</a>&gt;
 <div class="inheritance">uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo.Response</div>
+</div>
 </div>
 </div>
 </div>
 <section class="description">
 <dl>
+<dt>All Implemented Interfaces:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="IPTagGetInfo.TagInfo.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGetInfo.TagInfo</a>&gt;</code></dd>
+</dl>
+<dl>
 <dt>Enclosing class:</dt>
 <dd><a href="IPTagGetInfo.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGetInfo</a></dd>
 </dl>
 <hr>
-<pre>public static class <span class="typeNameLabel">IPTagGetInfo.Response</span>
-extends <a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a></pre>
+<pre>public static final class <span class="typeNameLabel">IPTagGetInfo.Response</span>
+extends <a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a>&lt;<a href="IPTagGetInfo.TagInfo.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGetInfo.TagInfo</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/RuntimeException.html?is-external=true" title="class or interface in java.lang" class="externalLink">RuntimeException</a>&gt;</pre>
 <div class="block">An SCP response to a request for information about IP tags.</div>
 </section>
 <section class="summary">
@@ -106,41 +118,6 @@ extends <a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnake
 <!--   -->
 </a>
 <h2>Field Summary</h2>
-<div class="memberSummary">
-<table>
-<caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Field</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#fixedSize">fixedSize</a></span></code></th>
-<td class="colLast">
-<div class="block">The count of the number of fixed IP tag entries.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#poolSize">poolSize</a></span></code></th>
-<td class="colLast">
-<div class="block">The count of the IP tag pool size.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code><a href="../model/IPTagTimeOutWaitTime.html" title="enum in uk.ac.manchester.spinnaker.messages.model">IPTagTimeOutWaitTime</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#transientTimeout">transientTimeout</a></span></code></th>
-<td class="colLast">
-<div class="block">The timeout for transient IP tags (i.e., responses to SCP commands).</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
 <div class="inheritedList">
 <h3>Fields inherited from class&nbsp;uk.ac.manchester.spinnaker.messages.scp.<a href="SCPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPResponse</a></h3>
 <a id="fields.inherited.from.class.uk.ac.manchester.spinnaker.messages.scp.SCPResponse">
@@ -154,6 +131,34 @@ extends <a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnake
 <!--   -->
 </a>
 <h2>Method Summary</h2>
+<div class="memberSummary">
+<div role="tablist" aria-orientation="horizontal"><button role="tab" aria-selected="true" aria-controls="memberSummary_tabpanel" tabindex="0" onkeydown="switchTab(event)" id="t0" class="activeTableTab">All Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t2" class="tableTab" onclick="show(2);">Instance Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t4" class="tableTab" onclick="show(8);">Concrete Methods</button></div>
+<div id="memberSummary_tabpanel" role="tabpanel">
+<table aria-labelledby="t0">
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor" id="i0">
+<td class="colFirst"><code>protected <a href="IPTagGetInfo.TagInfo.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGetInfo.TagInfo</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#parse(java.nio.ByteBuffer)">parse</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</code></th>
+<td class="colLast">
+<div class="block">Parse the payload of a response.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="inheritedList">
+<h3>Methods inherited from class&nbsp;uk.ac.manchester.spinnaker.messages.scp.<a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a></h3>
+<a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.messages.scp.PayloadedResponse">
+<!--   -->
+</a><code><a href="PayloadedResponse.html#get()">get</a></code></div>
 <div class="inheritedList">
 <h3>Methods inherited from class&nbsp;uk.ac.manchester.spinnaker.messages.scp.<a href="SCPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPResponse</a></h3>
 <a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.messages.scp.SCPResponse">
@@ -170,32 +175,31 @@ extends <a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnake
 </section>
 <section class="details">
 <ul class="blockList">
-<!-- ============ FIELD DETAIL =========== -->
+<!-- ============ METHOD DETAIL ========== -->
 <li class="blockList">
-<section class="fieldDetails"><a id="field.detail">
+<section class="methodDetails"><a id="method.detail">
 <!--   -->
 </a>
-<h2>Field Details</h2>
+<h2>Method Details</h2>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="transientTimeout">transientTimeout</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="../model/IPTagTimeOutWaitTime.html" title="enum in uk.ac.manchester.spinnaker.messages.model">IPTagTimeOutWaitTime</a></span>&nbsp;<span class="memberName">transientTimeout</span></div>
-<div class="block">The timeout for transient IP tags (i.e., responses to SCP commands).</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="poolSize">poolSize</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">poolSize</span></div>
-<div class="block">The count of the IP tag pool size.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="fixedSize">fixedSize</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">fixedSize</span></div>
-<div class="block">The count of the number of fixed IP tag entries.</div>
+<h3><a id="parse(java.nio.ByteBuffer)">parse</a></h3>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="IPTagGetInfo.TagInfo.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGetInfo.TagInfo</a></span>&nbsp;<span class="memberName">parse</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</span>
+                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/RuntimeException.html?is-external=true" title="class or interface in java.lang" class="externalLink">RuntimeException</a></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="PayloadedResponse.html#parse(java.nio.ByteBuffer)">PayloadedResponse</a></code></span></div>
+<div class="block">Parse the payload of a response. The buffer will be positioned after the
+ checked header.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="PayloadedResponse.html#parse(java.nio.ByteBuffer)">parse</a></code>&nbsp;in class&nbsp;<code><a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a>&lt;<a href="IPTagGetInfo.TagInfo.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGetInfo.TagInfo</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/RuntimeException.html?is-external=true" title="class or interface in java.lang" class="externalLink">RuntimeException</a>&gt;</code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>buffer</code> - The buffer to parse. Little-endian.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The parsed value.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/RuntimeException.html?is-external=true" title="class or interface in java.lang" class="externalLink">RuntimeException</a></code></dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -238,9 +242,9 @@ extends <a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnake
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
-<li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
-<li>Method</li>
+<li><a href="#method.detail">Method</a></li>
 </ul>
 </div>
 </div>

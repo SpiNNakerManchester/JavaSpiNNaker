@@ -150,13 +150,17 @@ implements <a href="CommandCode.html" title="interface in uk.ac.manchester.spinn
 <tr class="altColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#CMD_BMP_EE">CMD_BMP_EE</a></span></code></th>
 <td class="colLast">
-<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationComment">This message is under-documented.</div>
+</div>
 </td>
 </tr>
 <tr class="rowColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#CMD_BMP_I2C">CMD_BMP_I2C</a></span></code></th>
 <td class="colLast">
-<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationComment">This message is under-documented.</div>
+</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -174,7 +178,9 @@ implements <a href="CommandCode.html" title="interface in uk.ac.manchester.spinn
 <tr class="altColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#CMD_BMP_PWM">CMD_BMP_PWM</a></span></code></th>
 <td class="colLast">
-<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationComment">This message is under-documented.</div>
+</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -186,7 +192,9 @@ implements <a href="CommandCode.html" title="interface in uk.ac.manchester.spinn
 <tr class="altColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#CMD_BMP_TEST">CMD_BMP_TEST</a></span></code></th>
 <td class="colLast">
-<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
+<div class="block"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecationComment">Not implemented by current BMP.</div>
+</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -209,15 +217,21 @@ implements <a href="CommandCode.html" title="interface in uk.ac.manchester.spinn
 </tr>
 <tr class="altColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#CMD_FLASH_COPY">CMD_FLASH_COPY</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Copy working buffer to flash memory.</div>
+</td>
 </tr>
 <tr class="rowColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#CMD_FLASH_ERASE">CMD_FLASH_ERASE</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Erase part of flash memory.</div>
+</td>
 </tr>
 <tr class="altColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#CMD_FLASH_WRITE">CMD_FLASH_WRITE</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Write to flash memory.</div>
+</td>
 </tr>
 <tr class="rowColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#CMD_INFO">CMD_INFO</a></span></code></th>
@@ -269,7 +283,9 @@ implements <a href="CommandCode.html" title="interface in uk.ac.manchester.spinn
 </tr>
 <tr class="rowColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#CMD_RESET">CMD_RESET</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">BMP-only operation.</div>
+</td>
 </tr>
 <tr class="altColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#CMD_RTR">CMD_RTR</a></span></code></th>
@@ -300,7 +316,9 @@ implements <a href="CommandCode.html" title="interface in uk.ac.manchester.spinn
 <tr class="altColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#CMD_TUBE">CMD_TUBE</a></span></code></th>
 <td class="colLast">
-<div class="block">Tube output.</div>
+<div class="block"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecationComment">For tubotron use only.</div>
+</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -343,6 +361,20 @@ implements <a href="CommandCode.html" title="interface in uk.ac.manchester.spinn
 </tr>
 </thead>
 <tbody>
+<tr class="altColor">
+<td class="colFirst"><code>static <a href="SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#CMD_FPGA_READ">CMD_FPGA_READ</a></span></code></th>
+<td class="colLast">
+<div class="block">Read FPGA's memory/registers.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static <a href="SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#CMD_FPGA_WRITE">CMD_FPGA_WRITE</a></span></code></th>
+<td class="colLast">
+<div class="block">Write FPGA's memory/registers.</div>
+</td>
+</tr>
 <tr class="altColor">
 <td class="colFirst"><code>short</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#value">value</a></span></code></th>
@@ -595,25 +627,28 @@ the order they are declared.</div>
 <section class="detail">
 <h3><a id="CMD_FLASH_COPY">CMD_FLASH_COPY</a></h3>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></span>&nbsp;<span class="memberName">CMD_FLASH_COPY</span></div>
+<div class="block">Copy working buffer to flash memory. BMP-only operation.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="CMD_FLASH_ERASE">CMD_FLASH_ERASE</a></h3>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></span>&nbsp;<span class="memberName">CMD_FLASH_ERASE</span></div>
+<div class="block">Erase part of flash memory. BMP-only operation.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="CMD_FLASH_WRITE">CMD_FLASH_WRITE</a></h3>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></span>&nbsp;<span class="memberName">CMD_FLASH_WRITE</span></div>
+<div class="block">Write to flash memory. BMP-only operation.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="CMD_BMP_SF">CMD_BMP_SF</a></h3>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></span>&nbsp;<span class="memberName">CMD_BMP_SF</span></div>
-<div class="block">Serial flash access.</div>
+<div class="block">Serial flash access. BMP-only operation.</div>
 </section>
 </li>
 <li class="blockList">
@@ -621,14 +656,18 @@ the order they are declared.</div>
 <h3><a id="CMD_BMP_EE">CMD_BMP_EE</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html?is-external=true" title="class or interface in java.lang" class="externalLink">@Deprecated</a>
 </span><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></span>&nbsp;<span class="memberName">CMD_BMP_EE</span></div>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span></div>
-<div class="block">EEPROM access?</div>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationComment">This message is under-documented. See <code>cmd_ee()</code> in
+             <code>bmp_cmd.c</code> for what it does.</div>
+</div>
+<div class="block">EEPROM access. BMP-only operation.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="CMD_RESET">CMD_RESET</a></h3>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></span>&nbsp;<span class="memberName">CMD_RESET</span></div>
+<div class="block">BMP-only operation.</div>
 </section>
 </li>
 <li class="blockList">
@@ -650,8 +689,11 @@ the order they are declared.</div>
 <h3><a id="CMD_BMP_I2C">CMD_BMP_I2C</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html?is-external=true" title="class or interface in java.lang" class="externalLink">@Deprecated</a>
 </span><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></span>&nbsp;<span class="memberName">CMD_BMP_I2C</span></div>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span></div>
-<div class="block">Access I2C bus.</div>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationComment">This message is under-documented. See <code>cmd_i2c()</code> in
+             <code>bmp_cmd.c</code> for what it does.</div>
+</div>
+<div class="block">Access I<sup>2</sup>C bus. BMP-only operation.</div>
 </section>
 </li>
 <li class="blockList">
@@ -659,24 +701,33 @@ the order they are declared.</div>
 <h3><a id="CMD_BMP_PWM">CMD_BMP_PWM</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html?is-external=true" title="class or interface in java.lang" class="externalLink">@Deprecated</a>
 </span><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></span>&nbsp;<span class="memberName">CMD_BMP_PWM</span></div>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span></div>
-<div class="block">Configure pulse-width modulation hardware.</div>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationComment">This message is under-documented. See <code>configure_pwm()</code>
+             in <code>bmp_hw.c</code> for what it does.</div>
+</div>
+<div class="block">Configure pulse-width modulation hardware. BMP-only operation.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="CMD_BMP_TEST">CMD_BMP_TEST</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html?is-external=true" title="class or interface in java.lang" class="externalLink">@Deprecated</a>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html?is-external=true" title="class or interface in java.lang" class="externalLink">@Deprecated</a>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html?is-external=true#forRemoval()" title="class or interface in java.lang" class="externalLink">forRemoval</a>=true)
 </span><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></span>&nbsp;<span class="memberName">CMD_BMP_TEST</span></div>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span></div>
-<div class="block">Test feature control.</div>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecationComment">Not implemented by current BMP.</div>
+</div>
+<div class="block">Test feature control. BMP-only operation.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="CMD_TUBE">CMD_TUBE</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></span>&nbsp;<span class="memberName">CMD_TUBE</span></div>
-<div class="block">Tube output.</div>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html?is-external=true" title="class or interface in java.lang" class="externalLink">@Deprecated</a>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html?is-external=true#forRemoval()" title="class or interface in java.lang" class="externalLink">forRemoval</a>=true)
+</span><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></span>&nbsp;<span class="memberName">CMD_TUBE</span></div>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecationComment">For tubotron use only.</div>
+</div>
+<div class="block">Tube output. Special.</div>
 </section>
 </li>
 </ul>
@@ -689,6 +740,24 @@ the order they are declared.</div>
 </a>
 <h2>Field Details</h2>
 <ul class="blockList">
+<li class="blockList">
+<section class="detail">
+<h3><a id="CMD_FPGA_READ">CMD_FPGA_READ</a></h3>
+<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></span>&nbsp;<span class="memberName">CMD_FPGA_READ</span></div>
+<div class="block">Read FPGA's memory/registers. BMP-only operation.
+ <p>
+ Same as <a href="#CMD_LINK_READ"><code>CMD_LINK_READ</code></a> but used differently.</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="CMD_FPGA_WRITE">CMD_FPGA_WRITE</a></h3>
+<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></span>&nbsp;<span class="memberName">CMD_FPGA_WRITE</span></div>
+<div class="block">Write FPGA's memory/registers. BMP-only operation.
+ <p>
+ Same as <a href="#CMD_LINK_WRITE"><code>CMD_LINK_WRITE</code></a> but used differently.</div>
+</section>
+</li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="value">value</a></h3>

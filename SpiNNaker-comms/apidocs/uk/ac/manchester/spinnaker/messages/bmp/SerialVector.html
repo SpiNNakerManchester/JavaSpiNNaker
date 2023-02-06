@@ -19,7 +19,13 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var pathtoroot = "../../../../../../";
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+var altColor = "altColor";
+var rowColor = "rowColor";
+var tableTab = "tableTab";
+var activeTableTab = "activeTableTab";
+var pathtoroot = "../../../../../../";
 loadScripts(document, 'script');</script>
 <noscript>
 <div>JavaScript is disabled on your browser.</div>
@@ -59,7 +65,7 @@ loadScripts(document, 'script');</script>
 <li>Detail:&nbsp;</li>
 <li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
-<li>Method</li>
+<li><a href="#method.detail">Method</a></li>
 </ul>
 </div>
 <div class="navListSearch"><label for="search">SEARCH:</label>
@@ -88,9 +94,13 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">SerialVector</span>
 extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
-<div class="block">The data in the serial vector. The result of a <a href="../scp/SCPCommand.html#CMD_BMP_INFO"><code>BMP_INFO</code></a> call with argument <a href="BMPInfo.html#SERIAL"><code>SERIAL</code></a>.
+<div class="block">The data in the serial vector. The result of a <a href="../scp/SCPCommand.html#CMD_BMP_INFO"><code>BMP_INFO</code></a> call with argument <code>SERIAL</code>.
  <p>
  See <code>cmd_bmp_info()</code> in <code>bmp_cmd.c</code>.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="ReadSerialVector.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><code>ReadSerialVector</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -112,38 +122,10 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#boardStat">boardStat</a></span></code></th>
+<td class="colFirst"><code>static int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SERIAL_LENGTH">SERIAL_LENGTH</a></span></code></th>
 <td class="colLast">
-<div class="block"><code>board_stat</code> address (this board).</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#cortexBootVector">cortexBootVector</a></span></code></th>
-<td class="colLast">
-<div class="block">Cortex boot vector address.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#flashBuffer">flashBuffer</a></span></code></th>
-<td class="colLast">
-<div class="block">Flash buffer address.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#hardwareVersion">hardwareVersion</a></span></code></th>
-<td class="colLast">
-<div class="block">Hardware version.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>int[]</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#serialNumber">serialNumber</a></span></code></th>
-<td class="colLast">
-<div class="block">LPC1768 serial number.</div>
+<div class="block">The number of words in the <a href="#getSerialNumber()"><code>serial_number</code></a>.</div>
 </td>
 </tr>
 </tbody>
@@ -157,6 +139,47 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <!--   -->
 </a>
 <h2>Method Summary</h2>
+<div class="memberSummary">
+<div role="tablist" aria-orientation="horizontal"><button role="tab" aria-selected="true" aria-controls="memberSummary_tabpanel" tabindex="0" onkeydown="switchTab(event)" id="t0" class="activeTableTab">All Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t2" class="tableTab" onclick="show(2);">Instance Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t4" class="tableTab" onclick="show(8);">Concrete Methods</button></div>
+<div id="memberSummary_tabpanel" role="tabpanel">
+<table aria-labelledby="t0">
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor" id="i0">
+<td class="colFirst"><code><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardStatusLocation()">getBoardStatusLocation</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor" id="i1">
+<td class="colFirst"><code><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getCortexVector()">getCortexVector</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor" id="i2">
+<td class="colFirst"><code><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getFlashBuffer()">getFlashBuffer</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor" id="i3">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getHardwareVersion()">getHardwareVersion</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor" id="i4">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/IntBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">IntBuffer</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSerialNumber()">getSerialNumber</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="inheritedList">
 <h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
@@ -177,37 +200,75 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="hardwareVersion">hardwareVersion</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">hardwareVersion</span></div>
-<div class="block">Hardware version.</div>
+<h3><a id="SERIAL_LENGTH">SERIAL_LENGTH</a></h3>
+<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">SERIAL_LENGTH</span></div>
+<div class="block">The number of words in the <a href="#getSerialNumber()"><code>serial_number</code></a>.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.messages.bmp.SerialVector.SERIAL_LENGTH">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+</ul>
+</section>
+</li>
+<!-- ============ METHOD DETAIL ========== -->
+<li class="blockList">
+<section class="methodDetails"><a id="method.detail">
+<!--   -->
+</a>
+<h2>Method Details</h2>
+<ul class="blockList">
+<li class="blockList">
+<section class="detail">
+<h3><a id="getHardwareVersion()">getHardwareVersion</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getHardwareVersion</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The hardware version.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="serialNumber">serialNumber</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int[]</span>&nbsp;<span class="memberName">serialNumber</span></div>
-<div class="block">LPC1768 serial number.</div>
+<h3><a id="getSerialNumber()">getSerialNumber</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/IntBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">IntBuffer</a></span>&nbsp;<span class="memberName">getSerialNumber</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The device serial number, as a read-only buffer.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="flashBuffer">flashBuffer</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">flashBuffer</span></div>
-<div class="block">Flash buffer address.</div>
+<h3><a id="getFlashBuffer()">getFlashBuffer</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a></span>&nbsp;<span class="memberName">getFlashBuffer</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The location of the flash buffer.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="boardStat">boardStat</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">boardStat</span></div>
-<div class="block"><code>board_stat</code> address (this board).</div>
+<h3><a id="getBoardStatusLocation()">getBoardStatusLocation</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a></span>&nbsp;<span class="memberName">getBoardStatusLocation</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The board status block location.</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="ReadADC.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><code>ReadADC</code></a></dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="cortexBootVector">cortexBootVector</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">cortexBootVector</span></div>
-<div class="block">Cortex boot vector address.</div>
+<h3><a id="getCortexVector()">getCortexVector</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a></span>&nbsp;<span class="memberName">getCortexVector</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The location of the Cortex boot vector.</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -252,7 +313,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li>Detail:&nbsp;</li>
 <li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
-<li>Method</li>
+<li><a href="#method.detail">Method</a></li>
 </ul>
 </div>
 </div>

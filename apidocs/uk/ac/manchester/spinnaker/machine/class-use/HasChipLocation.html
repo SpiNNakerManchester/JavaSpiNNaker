@@ -1030,15 +1030,15 @@ int&nbsp;nAvailableMulticastEntries,
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/ApplicationRun.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.AppID,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Iterable)">ApplicationRun</a></span>&#8203;(<a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/ApplicationRun.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.AppID,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection)">ApplicationRun</a></span>&#8203;(<a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="../ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors)</code></th>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/ApplicationRun.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.AppID,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Iterable,boolean)">ApplicationRun</a></span>&#8203;(<a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appId,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/ApplicationRun.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.AppID,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection,boolean)">ApplicationRun</a></span>&#8203;(<a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appId,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="../ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors,
 boolean&nbsp;wait)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -1056,11 +1056,17 @@ int&nbsp;entry,
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/FixedRouteRead.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.AppID)">FixedRouteRead</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/FixedRouteInitialise.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.RoutingEntry,uk.ac.manchester.spinnaker.messages.model.AppID)">FixedRouteInitialise</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<a href="../RoutingEntry.html" title="class in uk.ac.manchester.spinnaker.machine">RoutingEntry</a>&nbsp;entry,
 <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/FixedRouteRead.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.AppID)">FixedRouteRead</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/FloodFillStart.html#%3Cinit%3E(byte,int,uk.ac.manchester.spinnaker.machine.HasChipLocation)">FloodFillStart</a></span>&#8203;(byte&nbsp;nearestNeighbourID,
 int&nbsp;numBlocks,
 <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
@@ -1068,30 +1074,30 @@ int&nbsp;numBlocks,
 <div class="block">Flood fill on a specific chip.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/GetChipInfo.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation)">GetChipInfo</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/GetChipInfo.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,boolean)">GetChipInfo</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 boolean&nbsp;withSize)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/IPTagClear.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,@uk.ac.manchester.spinnaker.machine.tags.TagIDint)">IPTagClear</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 @uk.ac.manchester.spinnaker.machine.tags.TagID int&nbsp;tag)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/IPTagGet.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,@uk.ac.manchester.spinnaker.machine.tags.TagID(scamp=true,ephemeral=true)int)">IPTagGet</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 @uk.ac.manchester.spinnaker.machine.tags.TagID(scamp=true, ephemeral=true) int&nbsp;tag)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/IPTagGetInfo.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation)">IPTagGetInfo</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/IPTagSet.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,@javax.validation.constraints.Size(min=4,max=4)byte%5B%5D,@uk.ac.manchester.spinnaker.utils.validation.UDPPortint,@uk.ac.manchester.spinnaker.machine.tags.TagIDint,boolean,boolean)">IPTagSet</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 @javax.validation.constraints.Size(min=4, max=4) byte[]&nbsp;host,
 @uk.ac.manchester.spinnaker.utils.validation.UDPPort int&nbsp;port,
@@ -1100,25 +1106,25 @@ boolean&nbsp;strip,
 boolean&nbsp;useSender)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/IPTagSetTTO.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime)">IPTagSetTTO</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="../../messages/model/IPTagTimeOutWaitTime.html" title="enum in uk.ac.manchester.spinnaker.messages.model">IPTagTimeOutWaitTime</a>&nbsp;tagTimeout)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/ReadLink.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">ReadLink</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="../Direction.html" title="enum in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;link,
 <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 int&nbsp;size)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/ReadMemory.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">ReadMemory</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;address,
 int&nbsp;size)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/ReverseIPTagSet.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.HasCoreLocation,@uk.ac.manchester.spinnaker.utils.validation.UDPPortint,@uk.ac.manchester.spinnaker.machine.tags.TagIDint,int)">ReverseIPTagSet</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;destination,
 @uk.ac.manchester.spinnaker.utils.validation.UDPPort int&nbsp;port,
@@ -1126,17 +1132,17 @@ int&nbsp;size)</code></th>
 int&nbsp;sdpPort)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/RouterAlloc.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.AppID,int)">RouterAlloc</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
 int&nbsp;numEntries)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/RouterClear.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation)">RouterClear</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/RouterInit.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.messages.model.AppID)">RouterInit</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 int&nbsp;numEntries,
 <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;tableAddress,
@@ -1144,34 +1150,34 @@ int&nbsp;baseIndex,
 <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/SDRAMAlloc.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.AppID,int)">SDRAMAlloc</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
 int&nbsp;size)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/SDRAMAlloc.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.AppID,int,int)">SDRAMAlloc</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
 int&nbsp;size,
 int&nbsp;tag)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/SDRAMDeAlloc.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation)">SDRAMDeAlloc</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress)</code></th>
 <td class="colLast">
 <div class="block">Free a block of memory of known size.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/SDRAMDeAlloc.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.AppID)">SDRAMDeAlloc</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></th>
 <td class="colLast">
 <div class="block">Free the memory associated with a given application ID.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/WriteMemory.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">WriteMemory</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>

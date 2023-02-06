@@ -102,7 +102,19 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">SendSignal</span>
 extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;</pre>
-<div class="block">An SCP Request to send a signal to cores.</div>
+<div class="block">An SCP Request to send a signal to cores. This supports any signal that uses
+ either <a href="../model/Signal.Type.html#MULTICAST">multicast</a> or
+ <a href="../model/Signal.Type.html#NEAREST_NEIGHBOUR">nearest neighbour</a> propagation
+ rules; the difference between propagation types is not normally important to
+ user code. There is no response payload.
+ <p>
+ See <code>signal_app()</code> in <code>scamp-app.c</code> for where these signals
+ handled or transferred to user code, and <code>sark_int()</code> in
+ <code>sark_base.c</code> for the normal user-code handlers.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="CountState.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><code>CountState</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -214,8 +226,9 @@ extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 <a href="../model/Signal.html" title="enum in uk.ac.manchester.spinnaker.messages.model">Signal</a>&nbsp;signal)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>appID</code> - The ID of the application to run</dd>
-<dd><code>signal</code> - The coordinates of the chip to run on</dd>
+<dd><code>appID</code> - The ID of the application to signal (only for multicast
+            signals).</dd>
+<dd><code>signal</code> - The signal to send.</dd>
 </dl>
 </section>
 </li>

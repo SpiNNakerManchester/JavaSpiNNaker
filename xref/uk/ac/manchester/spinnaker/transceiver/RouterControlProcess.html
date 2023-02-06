@@ -44,9 +44,9 @@
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.GetReinjectionStatus;
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.ResetReinjectionCounters;
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.RouterTableLoadApplicationRoutes;
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.RouterTableLoadSystemRoutes;
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.RouterTableSaveApplicationRoutes;
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.LoadApplicationRoutes;
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.LoadSystemRoutes;
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.SaveApplicationRoutes;
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.SetReinjectionPacketTypes;
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.SetRouterEmergencyTimeout;
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.SetRouterTimeout;
@@ -89,7 +89,7 @@
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>  	<strong class="jxr_keyword">void</strong> clearQueue(<a name="CoreLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreLocation.html#CoreLocation">CoreLocation</a> monitorCore)
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException {
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>  		synchronousCall(<strong class="jxr_keyword">new</strong> <a name="ClearReinjectionQueue" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/ClearReinjectionQueue.html#ClearReinjectionQueue">ClearReinjectionQueue</a>(monitorCore));
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>  		call(<strong class="jxr_keyword">new</strong> <a name="ClearReinjectionQueue" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/ClearReinjectionQueue.html#ClearReinjectionQueue">ClearReinjectionQueue</a>(monitorCore));
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  	}
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  	<em class="jxr_javadoccomment">/**</em>
@@ -126,7 +126,7 @@
 <a class="jxr_linenumber" name="L118" href="#L118">118</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L119" href="#L119">119</a> 	<strong class="jxr_keyword">void</strong> resetCounters(<a name="CoreLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreLocation.html#CoreLocation">CoreLocation</a> monitorCore)
 <a class="jxr_linenumber" name="L120" href="#L120">120</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException {
-<a class="jxr_linenumber" name="L121" href="#L121">121</a> 		synchronousCall(<strong class="jxr_keyword">new</strong> <a name="ResetReinjectionCounters" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/ResetReinjectionCounters.html#ResetReinjectionCounters">ResetReinjectionCounters</a>(monitorCore));
+<a class="jxr_linenumber" name="L121" href="#L121">121</a> 		call(<strong class="jxr_keyword">new</strong> <a name="ResetReinjectionCounters" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/ResetReinjectionCounters.html#ResetReinjectionCounters">ResetReinjectionCounters</a>(monitorCore));
 <a class="jxr_linenumber" name="L122" href="#L122">122</a> 	}
 <a class="jxr_linenumber" name="L123" href="#L123">123</a> 
 <a class="jxr_linenumber" name="L124" href="#L124">124</a> 	<em class="jxr_javadoccomment">/**</em>
@@ -172,7 +172,7 @@
 <a class="jxr_linenumber" name="L164" href="#L164">164</a> 	<strong class="jxr_keyword">void</strong> setPacketTypes(<a name="CoreLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreLocation.html#CoreLocation">CoreLocation</a> monitorCore, <strong class="jxr_keyword">boolean</strong> multicast,
 <a class="jxr_linenumber" name="L165" href="#L165">165</a> 			<strong class="jxr_keyword">boolean</strong> pointToPoint, <strong class="jxr_keyword">boolean</strong> fixedRoute, <strong class="jxr_keyword">boolean</strong> nearestNeighbour)
 <a class="jxr_linenumber" name="L166" href="#L166">166</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException {
-<a class="jxr_linenumber" name="L167" href="#L167">167</a> 		synchronousCall(<strong class="jxr_keyword">new</strong> <a name="SetReinjectionPacketTypes" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/SetReinjectionPacketTypes.html#SetReinjectionPacketTypes">SetReinjectionPacketTypes</a>(monitorCore, multicast,
+<a class="jxr_linenumber" name="L167" href="#L167">167</a> 		call(<strong class="jxr_keyword">new</strong> <a name="SetReinjectionPacketTypes" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/SetReinjectionPacketTypes.html#SetReinjectionPacketTypes">SetReinjectionPacketTypes</a>(monitorCore, multicast,
 <a class="jxr_linenumber" name="L168" href="#L168">168</a> 				pointToPoint, fixedRoute, nearestNeighbour));
 <a class="jxr_linenumber" name="L169" href="#L169">169</a> 	}
 <a class="jxr_linenumber" name="L170" href="#L170">170</a> 
@@ -225,7 +225,7 @@
 <a class="jxr_linenumber" name="L217" href="#L217">217</a> 	<strong class="jxr_keyword">void</strong> setTimeout(<a name="CoreLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreLocation.html#CoreLocation">CoreLocation</a> monitorCore, <strong class="jxr_keyword">int</strong> timeoutMantissa,
 <a class="jxr_linenumber" name="L218" href="#L218">218</a> 			<strong class="jxr_keyword">int</strong> timeoutExponent)
 <a class="jxr_linenumber" name="L219" href="#L219">219</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException {
-<a class="jxr_linenumber" name="L220" href="#L220">220</a> 		synchronousCall(<strong class="jxr_keyword">new</strong> <a name="SetRouterTimeout" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/SetRouterTimeout.html#SetRouterTimeout">SetRouterTimeout</a>(monitorCore, timeoutMantissa,
+<a class="jxr_linenumber" name="L220" href="#L220">220</a> 		call(<strong class="jxr_keyword">new</strong> <a name="SetRouterTimeout" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/SetRouterTimeout.html#SetRouterTimeout">SetRouterTimeout</a>(monitorCore, timeoutMantissa,
 <a class="jxr_linenumber" name="L221" href="#L221">221</a> 				timeoutExponent));
 <a class="jxr_linenumber" name="L222" href="#L222">222</a> 	}
 <a class="jxr_linenumber" name="L223" href="#L223">223</a> 
@@ -274,7 +274,7 @@
 <a class="jxr_linenumber" name="L266" href="#L266">266</a> 	<strong class="jxr_keyword">void</strong> setEmergencyTimeout(<a name="CoreLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreLocation.html#CoreLocation">CoreLocation</a> monitorCore, <strong class="jxr_keyword">int</strong> timeoutMantissa,
 <a class="jxr_linenumber" name="L267" href="#L267">267</a> 			<strong class="jxr_keyword">int</strong> timeoutExponent)
 <a class="jxr_linenumber" name="L268" href="#L268">268</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException {
-<a class="jxr_linenumber" name="L269" href="#L269">269</a> 		synchronousCall(<strong class="jxr_keyword">new</strong> <a name="SetRouterEmergencyTimeout" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/SetRouterEmergencyTimeout.html#SetRouterEmergencyTimeout">SetRouterEmergencyTimeout</a>(monitorCore,
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> 		call(<strong class="jxr_keyword">new</strong> <a name="SetRouterEmergencyTimeout" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/SetRouterEmergencyTimeout.html#SetRouterEmergencyTimeout">SetRouterEmergencyTimeout</a>(monitorCore,
 <a class="jxr_linenumber" name="L270" href="#L270">270</a> 				timeoutMantissa, timeoutExponent));
 <a class="jxr_linenumber" name="L271" href="#L271">271</a> 	}
 <a class="jxr_linenumber" name="L272" href="#L272">272</a> 
@@ -318,7 +318,7 @@
 <a class="jxr_linenumber" name="L310" href="#L310">310</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L311" href="#L311">311</a> 	<strong class="jxr_keyword">void</strong> saveApplicationRouterTable(<a name="CoreLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreLocation.html#CoreLocation">CoreLocation</a> monitorCore)
 <a class="jxr_linenumber" name="L312" href="#L312">312</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException {
-<a class="jxr_linenumber" name="L313" href="#L313">313</a> 		synchronousCall(<strong class="jxr_keyword">new</strong> <a name="RouterTableSaveApplicationRoutes" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/RouterTableSaveApplicationRoutes.html#RouterTableSaveApplicationRoutes">RouterTableSaveApplicationRoutes</a>(monitorCore));
+<a class="jxr_linenumber" name="L313" href="#L313">313</a> 		call(<strong class="jxr_keyword">new</strong> <a name="SaveApplicationRoutes" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/SaveApplicationRoutes.html#SaveApplicationRoutes">SaveApplicationRoutes</a>(monitorCore));
 <a class="jxr_linenumber" name="L314" href="#L314">314</a> 	}
 <a class="jxr_linenumber" name="L315" href="#L315">315</a> 
 <a class="jxr_linenumber" name="L316" href="#L316">316</a> 	<em class="jxr_javadoccomment">/**</em>
@@ -337,7 +337,7 @@
 <a class="jxr_linenumber" name="L329" href="#L329">329</a> 	<strong class="jxr_keyword">void</strong> saveApplicationRouterTable(<a name="CoreSubsets" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreSubsets.html#CoreSubsets">CoreSubsets</a> monitorCoreSubsets)
 <a class="jxr_linenumber" name="L330" href="#L330">330</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException {
 <a class="jxr_linenumber" name="L331" href="#L331">331</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> core : monitorCoreSubsets) {
-<a class="jxr_linenumber" name="L332" href="#L332">332</a> 			sendRequest(<strong class="jxr_keyword">new</strong> <a name="RouterTableSaveApplicationRoutes" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/RouterTableSaveApplicationRoutes.html#RouterTableSaveApplicationRoutes">RouterTableSaveApplicationRoutes</a>(core));
+<a class="jxr_linenumber" name="L332" href="#L332">332</a> 			sendRequest(<strong class="jxr_keyword">new</strong> <a name="SaveApplicationRoutes" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/SaveApplicationRoutes.html#SaveApplicationRoutes">SaveApplicationRoutes</a>(core));
 <a class="jxr_linenumber" name="L333" href="#L333">333</a> 		}
 <a class="jxr_linenumber" name="L334" href="#L334">334</a> 		finishBatch();
 <a class="jxr_linenumber" name="L335" href="#L335">335</a> 	}
@@ -357,7 +357,7 @@
 <a class="jxr_linenumber" name="L349" href="#L349">349</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L350" href="#L350">350</a> 	<strong class="jxr_keyword">void</strong> loadSystemRouterTable(<a name="CoreLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreLocation.html#CoreLocation">CoreLocation</a> monitorCore)
 <a class="jxr_linenumber" name="L351" href="#L351">351</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException {
-<a class="jxr_linenumber" name="L352" href="#L352">352</a> 		synchronousCall(<strong class="jxr_keyword">new</strong> <a name="RouterTableLoadSystemRoutes" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/RouterTableLoadSystemRoutes.html#RouterTableLoadSystemRoutes">RouterTableLoadSystemRoutes</a>(monitorCore));
+<a class="jxr_linenumber" name="L352" href="#L352">352</a> 		call(<strong class="jxr_keyword">new</strong> <a name="LoadSystemRoutes" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/LoadSystemRoutes.html#LoadSystemRoutes">LoadSystemRoutes</a>(monitorCore));
 <a class="jxr_linenumber" name="L353" href="#L353">353</a> 	}
 <a class="jxr_linenumber" name="L354" href="#L354">354</a> 
 <a class="jxr_linenumber" name="L355" href="#L355">355</a> 	<em class="jxr_javadoccomment">/**</em>
@@ -376,7 +376,7 @@
 <a class="jxr_linenumber" name="L368" href="#L368">368</a> 	<strong class="jxr_keyword">void</strong> loadSystemRouterTable(<a name="CoreSubsets" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreSubsets.html#CoreSubsets">CoreSubsets</a> monitorCoreSubsets)
 <a class="jxr_linenumber" name="L369" href="#L369">369</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException {
 <a class="jxr_linenumber" name="L370" href="#L370">370</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> core : monitorCoreSubsets) {
-<a class="jxr_linenumber" name="L371" href="#L371">371</a> 			sendRequest(<strong class="jxr_keyword">new</strong> <a name="RouterTableLoadSystemRoutes" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/RouterTableLoadSystemRoutes.html#RouterTableLoadSystemRoutes">RouterTableLoadSystemRoutes</a>(core));
+<a class="jxr_linenumber" name="L371" href="#L371">371</a> 			sendRequest(<strong class="jxr_keyword">new</strong> <a name="LoadSystemRoutes" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/LoadSystemRoutes.html#LoadSystemRoutes">LoadSystemRoutes</a>(core));
 <a class="jxr_linenumber" name="L372" href="#L372">372</a> 		}
 <a class="jxr_linenumber" name="L373" href="#L373">373</a> 		finishBatch();
 <a class="jxr_linenumber" name="L374" href="#L374">374</a> 	}
@@ -396,7 +396,7 @@
 <a class="jxr_linenumber" name="L388" href="#L388">388</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L389" href="#L389">389</a> 	<strong class="jxr_keyword">void</strong> loadApplicationRouterTable(<a name="CoreLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreLocation.html#CoreLocation">CoreLocation</a> monitorCore)
 <a class="jxr_linenumber" name="L390" href="#L390">390</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException {
-<a class="jxr_linenumber" name="L391" href="#L391">391</a> 		synchronousCall(<strong class="jxr_keyword">new</strong> <a name="RouterTableLoadApplicationRoutes" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/RouterTableLoadApplicationRoutes.html#RouterTableLoadApplicationRoutes">RouterTableLoadApplicationRoutes</a>(monitorCore));
+<a class="jxr_linenumber" name="L391" href="#L391">391</a> 		call(<strong class="jxr_keyword">new</strong> <a name="LoadApplicationRoutes" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/LoadApplicationRoutes.html#LoadApplicationRoutes">LoadApplicationRoutes</a>(monitorCore));
 <a class="jxr_linenumber" name="L392" href="#L392">392</a> 	}
 <a class="jxr_linenumber" name="L393" href="#L393">393</a> 
 <a class="jxr_linenumber" name="L394" href="#L394">394</a> 	<em class="jxr_javadoccomment">/**</em>
@@ -415,7 +415,7 @@
 <a class="jxr_linenumber" name="L407" href="#L407">407</a> 	<strong class="jxr_keyword">void</strong> loadApplicationRouterTable(<a name="CoreSubsets" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreSubsets.html#CoreSubsets">CoreSubsets</a> monitorCoreSubsets)
 <a class="jxr_linenumber" name="L408" href="#L408">408</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException {
 <a class="jxr_linenumber" name="L409" href="#L409">409</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> core : monitorCoreSubsets) {
-<a class="jxr_linenumber" name="L410" href="#L410">410</a> 			sendRequest(<strong class="jxr_keyword">new</strong> <a name="RouterTableLoadApplicationRoutes" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/RouterTableLoadApplicationRoutes.html#RouterTableLoadApplicationRoutes">RouterTableLoadApplicationRoutes</a>(core));
+<a class="jxr_linenumber" name="L410" href="#L410">410</a> 			sendRequest(<strong class="jxr_keyword">new</strong> <a name="LoadApplicationRoutes" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/LoadApplicationRoutes.html#LoadApplicationRoutes">LoadApplicationRoutes</a>(core));
 <a class="jxr_linenumber" name="L411" href="#L411">411</a> 		}
 <a class="jxr_linenumber" name="L412" href="#L412">412</a> 		finishBatch();
 <a class="jxr_linenumber" name="L413" href="#L413">413</a> 	}
@@ -435,69 +435,64 @@
 <a class="jxr_linenumber" name="L427" href="#L427">427</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L428" href="#L428">428</a> 	ReinjectionStatus getReinjectionStatus(<a name="CoreLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreLocation.html#CoreLocation">CoreLocation</a> monitorCore)
 <a class="jxr_linenumber" name="L429" href="#L429">429</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException {
-<a class="jxr_linenumber" name="L430" href="#L430">430</a> 		<strong class="jxr_keyword">return</strong> synchronousCall(
-<a class="jxr_linenumber" name="L431" href="#L431">431</a> 				<strong class="jxr_keyword">new</strong> <a name="GetReinjectionStatus" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/GetReinjectionStatus.html#GetReinjectionStatus">GetReinjectionStatus</a>(monitorCore)).reinjectionStatus;
-<a class="jxr_linenumber" name="L432" href="#L432">432</a> 	}
-<a class="jxr_linenumber" name="L433" href="#L433">433</a> 
-<a class="jxr_linenumber" name="L434" href="#L434">434</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L435" href="#L435">435</a> <em class="jxr_javadoccomment">	 * Get the reinjection status from a collection of monitors.</em>
-<a class="jxr_linenumber" name="L436" href="#L436">436</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L437" href="#L437">437</a> <em class="jxr_javadoccomment">	 * @param monitorCoreSubsets</em>
-<a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">	 *            What processors to get the information from</em>
-<a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">	 * @return The map from cores to their reinjection statuses.</em>
-<a class="jxr_linenumber" name="L440" href="#L440">440</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
-<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong with networking.</em>
-<a class="jxr_linenumber" name="L442" href="#L442">442</a> <em class="jxr_javadoccomment">	 * @throws ProcessException</em>
-<a class="jxr_linenumber" name="L443" href="#L443">443</a> <em class="jxr_javadoccomment">	 *             If SpiNNaker rejects a message.</em>
-<a class="jxr_linenumber" name="L444" href="#L444">444</a> <em class="jxr_javadoccomment">	 * @throws InterruptedException</em>
-<a class="jxr_linenumber" name="L445" href="#L445">445</a> <em class="jxr_javadoccomment">	 *             If the communications were interrupted.</em>
-<a class="jxr_linenumber" name="L446" href="#L446">446</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L447" href="#L447">447</a> 	Map&lt;CoreLocation, ReinjectionStatus&gt; getReinjectionStatus(
-<a class="jxr_linenumber" name="L448" href="#L448">448</a> 			CoreSubsets monitorCoreSubsets)
-<a class="jxr_linenumber" name="L449" href="#L449">449</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException {
-<a class="jxr_linenumber" name="L450" href="#L450">450</a> 		<strong class="jxr_keyword">var</strong> status = <strong class="jxr_keyword">new</strong> HashMap&lt;CoreLocation, ReinjectionStatus&gt;();
-<a class="jxr_linenumber" name="L451" href="#L451">451</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> core : monitorCoreSubsets) {
-<a class="jxr_linenumber" name="L452" href="#L452">452</a> 			sendRequest(<strong class="jxr_keyword">new</strong> <a name="GetReinjectionStatus" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/GetReinjectionStatus.html#GetReinjectionStatus">GetReinjectionStatus</a>(core),
-<a class="jxr_linenumber" name="L453" href="#L453">453</a> 					response -&gt; status.put(core, response.reinjectionStatus));
-<a class="jxr_linenumber" name="L454" href="#L454">454</a> 		}
-<a class="jxr_linenumber" name="L455" href="#L455">455</a> 		finishBatch();
-<a class="jxr_linenumber" name="L456" href="#L456">456</a> 		<strong class="jxr_keyword">return</strong> unmodifiableMap(status);
-<a class="jxr_linenumber" name="L457" href="#L457">457</a> 	}
-<a class="jxr_linenumber" name="L458" href="#L458">458</a> 
-<a class="jxr_linenumber" name="L459" href="#L459">459</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L460" href="#L460">460</a> <em class="jxr_javadoccomment">	 * Get a chip's router's diagnostics.</em>
-<a class="jxr_linenumber" name="L461" href="#L461">461</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L462" href="#L462">462</a> <em class="jxr_javadoccomment">	 * @param chip</em>
-<a class="jxr_linenumber" name="L463" href="#L463">463</a> <em class="jxr_javadoccomment">	 *            The chip.</em>
-<a class="jxr_linenumber" name="L464" href="#L464">464</a> <em class="jxr_javadoccomment">	 * @return The diagnostics from the chip's router.</em>
-<a class="jxr_linenumber" name="L465" href="#L465">465</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
-<a class="jxr_linenumber" name="L466" href="#L466">466</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong with networking.</em>
-<a class="jxr_linenumber" name="L467" href="#L467">467</a> <em class="jxr_javadoccomment">	 * @throws ProcessException</em>
-<a class="jxr_linenumber" name="L468" href="#L468">468</a> <em class="jxr_javadoccomment">	 *             If SpiNNaker rejects a message.</em>
-<a class="jxr_linenumber" name="L469" href="#L469">469</a> <em class="jxr_javadoccomment">	 * @throws InterruptedException</em>
-<a class="jxr_linenumber" name="L470" href="#L470">470</a> <em class="jxr_javadoccomment">	 *             If the communications were interrupted.</em>
-<a class="jxr_linenumber" name="L471" href="#L471">471</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L472" href="#L472">472</a> 	RouterDiagnostics getRouterDiagnostics(<a name="HasChipLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/HasChipLocation.html#HasChipLocation">HasChipLocation</a> chip)
-<a class="jxr_linenumber" name="L473" href="#L473">473</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException {
-<a class="jxr_linenumber" name="L474" href="#L474">474</a> 		<strong class="jxr_keyword">var</strong> cr = <strong class="jxr_keyword">new</strong> ValueHolder&lt;Integer&gt;();
-<a class="jxr_linenumber" name="L475" href="#L475">475</a> 		<strong class="jxr_keyword">var</strong> es = <strong class="jxr_keyword">new</strong> ValueHolder&lt;Integer&gt;();
-<a class="jxr_linenumber" name="L476" href="#L476">476</a> 		<strong class="jxr_keyword">var</strong> reg = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[NUM_REGISTERS];
-<a class="jxr_linenumber" name="L477" href="#L477">477</a> 
-<a class="jxr_linenumber" name="L478" href="#L478">478</a> 		sendRequest(
-<a class="jxr_linenumber" name="L479" href="#L479">479</a> 				<strong class="jxr_keyword">new</strong> <a name="ReadMemory" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/ReadMemory.html#ReadMemory">ReadMemory</a>(chip, ROUTER_CONTROL, REGISTER),
-<a class="jxr_linenumber" name="L480" href="#L480">480</a> 				response -&gt; cr.setValue(response.data.getInt()));
-<a class="jxr_linenumber" name="L481" href="#L481">481</a> 		sendRequest(
-<a class="jxr_linenumber" name="L482" href="#L482">482</a> 				<strong class="jxr_keyword">new</strong> <a name="ReadMemory" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/ReadMemory.html#ReadMemory">ReadMemory</a>(chip, ROUTER_ERROR, REGISTER),
-<a class="jxr_linenumber" name="L483" href="#L483">483</a> 				response -&gt; es.setValue(response.data.getInt()));
-<a class="jxr_linenumber" name="L484" href="#L484">484</a> 		sendRequest(
-<a class="jxr_linenumber" name="L485" href="#L485">485</a> 				<strong class="jxr_keyword">new</strong> <a name="ReadMemory" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/ReadMemory.html#ReadMemory">ReadMemory</a>(chip, ROUTER_DIAGNOSTICS,
-<a class="jxr_linenumber" name="L486" href="#L486">486</a> 						NUM_REGISTERS * REGISTER),
-<a class="jxr_linenumber" name="L487" href="#L487">487</a> 				response -&gt; response.data.asIntBuffer().get(reg));
-<a class="jxr_linenumber" name="L488" href="#L488">488</a> 
-<a class="jxr_linenumber" name="L489" href="#L489">489</a> 		finishBatch();
-<a class="jxr_linenumber" name="L490" href="#L490">490</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="RouterDiagnostics" href="../../../../../uk/ac/manchester/spinnaker/messages/model/RouterDiagnostics.html#RouterDiagnostics">RouterDiagnostics</a>(cr.getValue(), es.getValue(), reg);
-<a class="jxr_linenumber" name="L491" href="#L491">491</a> 	}
-<a class="jxr_linenumber" name="L492" href="#L492">492</a> }
+<a class="jxr_linenumber" name="L430" href="#L430">430</a> 		<strong class="jxr_keyword">return</strong> retrieve(<strong class="jxr_keyword">new</strong> <a name="GetReinjectionStatus" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/GetReinjectionStatus.html#GetReinjectionStatus">GetReinjectionStatus</a>(monitorCore));
+<a class="jxr_linenumber" name="L431" href="#L431">431</a> 	}
+<a class="jxr_linenumber" name="L432" href="#L432">432</a> 
+<a class="jxr_linenumber" name="L433" href="#L433">433</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L434" href="#L434">434</a> <em class="jxr_javadoccomment">	 * Get the reinjection status from a collection of monitors.</em>
+<a class="jxr_linenumber" name="L435" href="#L435">435</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L436" href="#L436">436</a> <em class="jxr_javadoccomment">	 * @param monitorCoreSubsets</em>
+<a class="jxr_linenumber" name="L437" href="#L437">437</a> <em class="jxr_javadoccomment">	 *            What processors to get the information from</em>
+<a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">	 * @return The map from cores to their reinjection statuses.</em>
+<a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
+<a class="jxr_linenumber" name="L440" href="#L440">440</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong with networking.</em>
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">	 * @throws ProcessException</em>
+<a class="jxr_linenumber" name="L442" href="#L442">442</a> <em class="jxr_javadoccomment">	 *             If SpiNNaker rejects a message.</em>
+<a class="jxr_linenumber" name="L443" href="#L443">443</a> <em class="jxr_javadoccomment">	 * @throws InterruptedException</em>
+<a class="jxr_linenumber" name="L444" href="#L444">444</a> <em class="jxr_javadoccomment">	 *             If the communications were interrupted.</em>
+<a class="jxr_linenumber" name="L445" href="#L445">445</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L446" href="#L446">446</a> 	Map&lt;CoreLocation, ReinjectionStatus&gt; getReinjectionStatus(
+<a class="jxr_linenumber" name="L447" href="#L447">447</a> 			CoreSubsets monitorCoreSubsets)
+<a class="jxr_linenumber" name="L448" href="#L448">448</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException {
+<a class="jxr_linenumber" name="L449" href="#L449">449</a> 		<strong class="jxr_keyword">var</strong> status = <strong class="jxr_keyword">new</strong> HashMap&lt;CoreLocation, ReinjectionStatus&gt;();
+<a class="jxr_linenumber" name="L450" href="#L450">450</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> core : monitorCoreSubsets) {
+<a class="jxr_linenumber" name="L451" href="#L451">451</a> 			sendGet(<strong class="jxr_keyword">new</strong> <a name="GetReinjectionStatus" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/GetReinjectionStatus.html#GetReinjectionStatus">GetReinjectionStatus</a>(core), s -&gt; status.put(core, s));
+<a class="jxr_linenumber" name="L452" href="#L452">452</a> 		}
+<a class="jxr_linenumber" name="L453" href="#L453">453</a> 		finishBatch();
+<a class="jxr_linenumber" name="L454" href="#L454">454</a> 		<strong class="jxr_keyword">return</strong> unmodifiableMap(status);
+<a class="jxr_linenumber" name="L455" href="#L455">455</a> 	}
+<a class="jxr_linenumber" name="L456" href="#L456">456</a> 
+<a class="jxr_linenumber" name="L457" href="#L457">457</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L458" href="#L458">458</a> <em class="jxr_javadoccomment">	 * Get a chip's router's diagnostics.</em>
+<a class="jxr_linenumber" name="L459" href="#L459">459</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L460" href="#L460">460</a> <em class="jxr_javadoccomment">	 * @param chip</em>
+<a class="jxr_linenumber" name="L461" href="#L461">461</a> <em class="jxr_javadoccomment">	 *            The chip.</em>
+<a class="jxr_linenumber" name="L462" href="#L462">462</a> <em class="jxr_javadoccomment">	 * @return The diagnostics from the chip's router.</em>
+<a class="jxr_linenumber" name="L463" href="#L463">463</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
+<a class="jxr_linenumber" name="L464" href="#L464">464</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong with networking.</em>
+<a class="jxr_linenumber" name="L465" href="#L465">465</a> <em class="jxr_javadoccomment">	 * @throws ProcessException</em>
+<a class="jxr_linenumber" name="L466" href="#L466">466</a> <em class="jxr_javadoccomment">	 *             If SpiNNaker rejects a message.</em>
+<a class="jxr_linenumber" name="L467" href="#L467">467</a> <em class="jxr_javadoccomment">	 * @throws InterruptedException</em>
+<a class="jxr_linenumber" name="L468" href="#L468">468</a> <em class="jxr_javadoccomment">	 *             If the communications were interrupted.</em>
+<a class="jxr_linenumber" name="L469" href="#L469">469</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L470" href="#L470">470</a> 	RouterDiagnostics getRouterDiagnostics(<a name="HasChipLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/HasChipLocation.html#HasChipLocation">HasChipLocation</a> chip)
+<a class="jxr_linenumber" name="L471" href="#L471">471</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException {
+<a class="jxr_linenumber" name="L472" href="#L472">472</a> 		<strong class="jxr_keyword">var</strong> cr = <strong class="jxr_keyword">new</strong> ValueHolder&lt;Integer&gt;();
+<a class="jxr_linenumber" name="L473" href="#L473">473</a> 		<strong class="jxr_keyword">var</strong> es = <strong class="jxr_keyword">new</strong> ValueHolder&lt;Integer&gt;();
+<a class="jxr_linenumber" name="L474" href="#L474">474</a> 		<strong class="jxr_keyword">var</strong> reg = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[NUM_REGISTERS];
+<a class="jxr_linenumber" name="L475" href="#L475">475</a> 
+<a class="jxr_linenumber" name="L476" href="#L476">476</a> 		sendGet(<strong class="jxr_keyword">new</strong> <a name="ReadMemory" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/ReadMemory.html#ReadMemory">ReadMemory</a>(chip, ROUTER_CONTROL, REGISTER),
+<a class="jxr_linenumber" name="L477" href="#L477">477</a> 				bytes -&gt; cr.setValue(bytes.getInt()));
+<a class="jxr_linenumber" name="L478" href="#L478">478</a> 		sendGet(<strong class="jxr_keyword">new</strong> <a name="ReadMemory" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/ReadMemory.html#ReadMemory">ReadMemory</a>(chip, ROUTER_ERROR, REGISTER),
+<a class="jxr_linenumber" name="L479" href="#L479">479</a> 				bytes -&gt; es.setValue(bytes.getInt()));
+<a class="jxr_linenumber" name="L480" href="#L480">480</a> 		sendGet(<strong class="jxr_keyword">new</strong> <a name="ReadMemory" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/ReadMemory.html#ReadMemory">ReadMemory</a>(chip, ROUTER_DIAGNOSTICS,
+<a class="jxr_linenumber" name="L481" href="#L481">481</a> 				NUM_REGISTERS * REGISTER),
+<a class="jxr_linenumber" name="L482" href="#L482">482</a> 				bytes -&gt; bytes.asIntBuffer().get(reg));
+<a class="jxr_linenumber" name="L483" href="#L483">483</a> 
+<a class="jxr_linenumber" name="L484" href="#L484">484</a> 		finishBatch();
+<a class="jxr_linenumber" name="L485" href="#L485">485</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="RouterDiagnostics" href="../../../../../uk/ac/manchester/spinnaker/messages/model/RouterDiagnostics.html#RouterDiagnostics">RouterDiagnostics</a>(cr.getValue(), es.getValue(), reg);
+<a class="jxr_linenumber" name="L486" href="#L486">486</a> 	}
+<a class="jxr_linenumber" name="L487" href="#L487">487</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2023 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

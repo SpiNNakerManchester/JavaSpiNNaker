@@ -104,7 +104,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">ReadIPAddress</span>
 extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest</a>&lt;<a href="ReadIPAddress.Response.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadIPAddress.Response</a>&gt;</pre>
-<div class="block">SCP Request for the IP address data from a BMP.</div>
+<div class="block">SCP Request for the IP address data from a BMP. The response payload is the
+ <a href="ReadIPAddress.Addresses.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">pair of addresses</a> that the board is configured to
+ have.
+ <p>
+ Handled by <code>cmd_bmp_info()</code> in <code>bmp_cmd.c</code>.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -127,6 +131,13 @@ extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="ReadIPAddress.Addresses.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadIPAddress.Addresses</a></span></code></th>
+<td class="colLast">
+<div class="block">The IP addresses associated with a SpiNNaker board.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="ReadIPAddress.Response.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadIPAddress.Response</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP response to a request for IP address information.</div>
@@ -139,7 +150,7 @@ extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 <h2>Nested classes/interfaces inherited from class&nbsp;uk.ac.manchester.spinnaker.messages.bmp.<a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest</a></h2>
 <a id="nested.classes.inherited.from.class.uk.ac.manchester.spinnaker.messages.bmp.BMPRequest">
 <!--   -->
-</a><code><a href="BMPRequest.BMPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.BMPResponse</a></code></div>
+</a><code><a href="BMPRequest.BMPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.BMPResponse</a>, <a href="BMPRequest.PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.PayloadedResponse</a>&lt;<a href="BMPRequest.PayloadedResponse.html" title="type parameter in BMPRequest.PayloadedResponse">T</a>&gt;</code></div>
 </section>
 </li>
 <!-- =========== FIELD SUMMARY =========== -->

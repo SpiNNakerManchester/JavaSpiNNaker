@@ -24,65 +24,72 @@
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">package</strong> uk.ac.manchester.spinnaker.messages.scp;
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.scp.Bits.HALF1;
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> java.nio.ByteBuffer;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.HasChipLocation;
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.MemoryLocation;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.model.AppID;
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_javadoccomment">/** A request to initialise the router on a chip. */</em>
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="RouterInit" href="../../../../../../uk/ac/manchester/spinnaker/messages/scp/RouterInit.html#RouterInit">RouterInit</a> <strong class="jxr_keyword">extends</strong> SCPRequest&lt;CheckOKResponse&gt; {
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  	<em class="jxr_javadoccomment">/** One reserved for SCAMP. */</em>
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> MAX_ENTRIES = 1023;
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment">	 * @param chip</em>
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment">	 *            The coordinates of the chip to clear the router of</em>
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment">	 * @param numEntries</em>
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment">	 *            The number of entries in the table (more than 0)</em>
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment">	 * @param tableAddress</em>
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment">	 *            The allocated address containing the data to init the router</em>
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment">	 *            from.</em>
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment">	 * @param baseIndex</em>
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment">	 *            The base index in the router table where the entries are to be</em>
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment">	 *            placed.</em>
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment">	 * @param appID</em>
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment">	 *            The ID of the application with which to associate the routes.</em>
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment">	 * @throws IllegalArgumentException</em>
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <em class="jxr_javadoccomment">	 *             If a bad address or entry count is given</em>
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  	<strong class="jxr_keyword">public</strong> <a name="RouterInit" href="../../../../../../uk/ac/manchester/spinnaker/messages/scp/RouterInit.html#RouterInit">RouterInit</a>(<a name="HasChipLocation" href="../../../../../../uk/ac/manchester/spinnaker/machine/HasChipLocation.html#HasChipLocation">HasChipLocation</a> chip, <strong class="jxr_keyword">int</strong> numEntries,
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  			MemoryLocation tableAddress, <strong class="jxr_keyword">int</strong> baseIndex,
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  			AppID appID) {
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  		<strong class="jxr_keyword">super</strong>(chip.getScampCore(), CMD_RTR, argument1(numEntries, appID),
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  				tableAddress.address, baseIndex);
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  		<strong class="jxr_keyword">if</strong> (baseIndex &lt; 0) {
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>  			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  					<span class="jxr_string">"baseIndex must not be negative"</span>);
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>  		}
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  	}
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>  
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> argument1(<strong class="jxr_keyword">int</strong> numEntries, <a name="AppID" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/AppID.html#AppID">AppID</a> appID) {
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  		<strong class="jxr_keyword">if</strong> (numEntries &lt; 1) {
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  					<span class="jxr_string">"numEntries must be more than 0"</span>);
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  		} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (numEntries &gt; MAX_ENTRIES) {
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>  					<span class="jxr_string">"numEntries must be no more than "</span> + MAX_ENTRIES);
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>  		}
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  		<strong class="jxr_keyword">return</strong> (numEntries &lt;&lt; HALF1) | (appID.appID &lt;&lt; BYTE1) | (2 &lt;&lt; BYTE0);
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>  	}
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>  
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>  	@Override
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>  	<strong class="jxr_keyword">public</strong> <a name="CheckOKResponse" href="../../../../../../uk/ac/manchester/spinnaker/messages/scp/CheckOKResponse.html#CheckOKResponse">CheckOKResponse</a> getSCPResponse(ByteBuffer buffer) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>  		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="CheckOKResponse" href="../../../../../../uk/ac/manchester/spinnaker/messages/scp/CheckOKResponse.html#CheckOKResponse">CheckOKResponse</a>(<span class="jxr_string">"Router Init"</span>, CMD_RTR, buffer);
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>  	}
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>  }
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.RouterCommand.ROUTER_LOAD;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.scp.Bits.HALF1;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> java.nio.ByteBuffer;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.HasChipLocation;
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.MemoryLocation;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.model.AppID;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_javadoccomment"> * A request to initialise the router on a chip. There is no response payload.</em>
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_javadoccomment"> * Ultimately handled by {@code rtr_mc_load()} in {@code sark_hw.c} (via</em>
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_javadoccomment"> * {@code cmd_rtr()} in {@code scamp-cmd.c}).</em>
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="RouterInit" href="../../../../../../uk/ac/manchester/spinnaker/messages/scp/RouterInit.html#RouterInit">RouterInit</a> <strong class="jxr_keyword">extends</strong> SCPRequest&lt;CheckOKResponse&gt; {
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  	<em class="jxr_javadoccomment">/** One reserved for SCAMP. */</em>
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> MAX_ENTRIES = 1023;
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment">	 * @param chip</em>
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment">	 *            The coordinates of the chip to clear the router of</em>
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment">	 * @param numEntries</em>
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment">	 *            The number of entries in the table (more than 0)</em>
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment">	 * @param tableAddress</em>
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment">	 *            The allocated address containing the data to init the router</em>
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment">	 *            from.</em>
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <em class="jxr_javadoccomment">	 * @param baseIndex</em>
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <em class="jxr_javadoccomment">	 *            The base index in the router table where the entries are to be</em>
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_javadoccomment">	 *            placed.</em>
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment">	 * @param appID</em>
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_javadoccomment">	 *            The ID of the application with which to associate the routes.</em>
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment">	 * @throws IllegalArgumentException</em>
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">	 *             If a bad address or entry count is given</em>
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  	<strong class="jxr_keyword">public</strong> <a name="RouterInit" href="../../../../../../uk/ac/manchester/spinnaker/messages/scp/RouterInit.html#RouterInit">RouterInit</a>(<a name="HasChipLocation" href="../../../../../../uk/ac/manchester/spinnaker/machine/HasChipLocation.html#HasChipLocation">HasChipLocation</a> chip, <strong class="jxr_keyword">int</strong> numEntries,
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  			MemoryLocation tableAddress, <strong class="jxr_keyword">int</strong> baseIndex,
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  			AppID appID) {
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  		<strong class="jxr_keyword">super</strong>(chip.getScampCore(), CMD_RTR, argument1(numEntries, appID),
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  				tableAddress.address, baseIndex);
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  		<strong class="jxr_keyword">if</strong> (baseIndex &lt; 0) {
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  					<span class="jxr_string">"baseIndex must not be negative"</span>);
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  		}
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  	}
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> argument1(<strong class="jxr_keyword">int</strong> numEntries, <a name="AppID" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/AppID.html#AppID">AppID</a> appID) {
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  		<strong class="jxr_keyword">if</strong> (numEntries &lt; 1) {
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  					<span class="jxr_string">"numEntries must be more than 0"</span>);
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  		} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (numEntries &gt; MAX_ENTRIES) {
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  					<span class="jxr_string">"numEntries must be no more than "</span> + MAX_ENTRIES);
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  		}
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  		<strong class="jxr_keyword">return</strong> (numEntries &lt;&lt; HALF1) | (appID.appID &lt;&lt; BYTE1)
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>  				| (ROUTER_LOAD.value &lt;&lt; BYTE0);
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>  	}
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>  	@Override
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>  	<strong class="jxr_keyword">public</strong> <a name="CheckOKResponse" href="../../../../../../uk/ac/manchester/spinnaker/messages/scp/CheckOKResponse.html#CheckOKResponse">CheckOKResponse</a> getSCPResponse(ByteBuffer buffer) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>  		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="CheckOKResponse" href="../../../../../../uk/ac/manchester/spinnaker/messages/scp/CheckOKResponse.html#CheckOKResponse">CheckOKResponse</a>(<span class="jxr_string">"Router Init"</span>, CMD_RTR, buffer);
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>  	}
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2023 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

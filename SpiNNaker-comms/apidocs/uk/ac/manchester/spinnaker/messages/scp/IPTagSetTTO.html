@@ -102,7 +102,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">IPTagSetTTO</span>
 extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="IPTagGetInfo.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGetInfo.Response</a>&gt;</pre>
-<div class="block">An SCP request to set the transient timeout for future SCP requests.</div>
+<div class="block">An SCP request to set the transient timeout for future SCP requests. The
+ response payload is the <a href="IPTagGetInfo.TagInfo.html" title="class in uk.ac.manchester.spinnaker.messages.scp">tag <em>system</em>information</a>.
+ <p>
+ Handled by <code>cmd_iptag()</code> in <code>scamp-cmd.c</code> (or <code>bmp_cmd.c</code>,
+ if sent to a BMP).</div>
 </section>
 <section class="summary">
 <ul class="blockList">

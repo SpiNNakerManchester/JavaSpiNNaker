@@ -104,7 +104,10 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public final class <span class="typeNameLabel">EraseFlash</span>
 extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest</a>&lt;<a href="EraseFlash.Response.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">EraseFlash.Response</a>&gt;</pre>
-<div class="block">A request to erase flash memory on a BMP.</div>
+<div class="block">A request to erase flash memory on a BMP. The response payload is the
+ <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">location</a> of the flash buffer.
+ <p>
+ Handled by <code>cmd_flash_erase()</code> in <code>bmp_cmd.c</code>.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -139,7 +142,7 @@ extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 <h2>Nested classes/interfaces inherited from class&nbsp;uk.ac.manchester.spinnaker.messages.bmp.<a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest</a></h2>
 <a id="nested.classes.inherited.from.class.uk.ac.manchester.spinnaker.messages.bmp.BMPRequest">
 <!--   -->
-</a><code><a href="BMPRequest.BMPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.BMPResponse</a></code></div>
+</a><code><a href="BMPRequest.BMPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.BMPResponse</a>, <a href="BMPRequest.PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.PayloadedResponse</a>&lt;<a href="BMPRequest.PayloadedResponse.html" title="type parameter in BMPRequest.PayloadedResponse">T</a>&gt;</code></div>
 </section>
 </li>
 <!-- =========== FIELD SUMMARY =========== -->

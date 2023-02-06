@@ -102,7 +102,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">SDRAMDeAlloc</span>
 extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="SDRAMDeAlloc.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SDRAMDeAlloc.Response</a>&gt;</pre>
-<div class="block">An SCP Request to free space in the SDRAM.</div>
+<div class="block">An SCP Request to free space in the SDRAM. The response payload is the number
+ of blocks that were deallocated.
+ <p>
+ Calls <code>cmd_alloc()</code> (and hence <code>sark_xfree()</code> or
+ <code>sark_xfree_id()</code>) in <code>scamp-cmd.c</code>.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -124,7 +128,7 @@ extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>static class&nbsp;</code></td>
+<td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="SDRAMDeAlloc.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SDRAMDeAlloc.Response</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP response to a request to deallocate SDRAM.</div>
@@ -253,8 +257,8 @@ extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 <div class="block">Free the memory associated with a given application ID.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>chip</code> - the chip to allocate on</dd>
-<dd><code>appID</code> - The ID of the application</dd>
+<dd><code>chip</code> - The chip to deallocate on.</dd>
+<dd><code>appID</code> - The ID of the application.</dd>
 </dl>
 </section>
 </li>
@@ -266,9 +270,9 @@ extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 <div class="block">Free a block of memory of known size.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>chip</code> - the chip to allocate on</dd>
-<dd><code>baseAddress</code> - The start address in SDRAM to which the block needs to be
-            deallocated</dd>
+<dd><code>chip</code> - The chip to deallocate on.</dd>
+<dd><code>baseAddress</code> - The start address in SDRAM of the block that needs to be
+            deallocated.</dd>
 </dl>
 </section>
 </li>

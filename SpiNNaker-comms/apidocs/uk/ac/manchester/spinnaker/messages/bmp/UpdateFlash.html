@@ -105,7 +105,10 @@ loadScripts(document, 'script');</script>
 <pre>public final class <span class="typeNameLabel">UpdateFlash</span>
 extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest</a>&lt;<a href="BMPRequest.BMPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.BMPResponse</a>&gt;</pre>
 <div class="block">A request to update flash memory on a BMP. Must have already been prepared
- with <a href="EraseFlash.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><code>EraseFlash</code></a> and <a href="WriteFlashBuffer.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><code>WriteFlashBuffer</code></a>.</div>
+ with <a href="EraseFlash.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><code>EraseFlash</code></a> and <a href="WriteFlashBuffer.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><code>WriteFlashBuffer</code></a>. There is no response
+ payload.
+ <p>
+ This calls <code>flash_copy()</code> in <code>bmp_boot.c</code>.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -119,7 +122,7 @@ extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 <h2>Nested classes/interfaces inherited from class&nbsp;uk.ac.manchester.spinnaker.messages.bmp.<a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest</a></h2>
 <a id="nested.classes.inherited.from.class.uk.ac.manchester.spinnaker.messages.bmp.BMPRequest">
 <!--   -->
-</a><code><a href="BMPRequest.BMPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.BMPResponse</a></code></div>
+</a><code><a href="BMPRequest.BMPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.BMPResponse</a>, <a href="BMPRequest.PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.PayloadedResponse</a>&lt;<a href="BMPRequest.PayloadedResponse.html" title="type parameter in BMPRequest.PayloadedResponse">T</a>&gt;</code></div>
 </section>
 </li>
 <!-- =========== FIELD SUMMARY =========== -->

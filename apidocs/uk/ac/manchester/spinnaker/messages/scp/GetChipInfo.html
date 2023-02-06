@@ -102,7 +102,10 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">GetChipInfo</span>
 extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="GetChipInfo.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">GetChipInfo.Response</a>&gt;</pre>
-<div class="block">An SCP request to read the chip information from a core.</div>
+<div class="block">An SCP request to read the chip information from a core. The response payload
+ is the <a href="../model/ChipSummaryInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">summary information</a> for the chip.
+ <p>
+ Calls <code>cmd_info()</code> in <code>scamp-cmd.c</code>.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -258,7 +261,8 @@ boolean&nbsp;withSize)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>chip</code> - the chip to read from</dd>
-<dd><code>withSize</code> - Whether the size should be included in the response</dd>
+<dd><code>withSize</code> - Whether the size should be included in the response. <em>Might
+            be ignored by SCAMP.</em></dd>
 </dl>
 </section>
 </li>

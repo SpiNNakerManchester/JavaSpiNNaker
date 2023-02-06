@@ -104,7 +104,13 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">ReadADC</span>
 extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest</a>&lt;<a href="ReadADC.Response.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadADC.Response</a>&gt;</pre>
-<div class="block">SCP Request for the data from the BMP including voltages and temperature.</div>
+<div class="block">SCP Request for the ADC data from the BMP including voltages and temperature.
+ The response payload is the <a href="../model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">information structure</a> from
+ the hardware.
+ <p>
+ Handled in <code>cmd_bmp_info()</code> (in <code>bmp_cmd.c</code>) by reading from the
+ right element of <code>board_stat</code>. The underlying data is synched from the
+ ADC approximately every 80ms by <code>read_adc()</code> in <code>bmp_hw.c</code>.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -139,7 +145,7 @@ extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 <h2>Nested classes/interfaces inherited from class&nbsp;uk.ac.manchester.spinnaker.messages.bmp.<a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest</a></h2>
 <a id="nested.classes.inherited.from.class.uk.ac.manchester.spinnaker.messages.bmp.BMPRequest">
 <!--   -->
-</a><code><a href="BMPRequest.BMPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.BMPResponse</a></code></div>
+</a><code><a href="BMPRequest.BMPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.BMPResponse</a>, <a href="BMPRequest.PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.PayloadedResponse</a>&lt;<a href="BMPRequest.PayloadedResponse.html" title="type parameter in BMPRequest.PayloadedResponse">T</a>&gt;</code></div>
 </section>
 </li>
 <!-- =========== FIELD SUMMARY =========== -->

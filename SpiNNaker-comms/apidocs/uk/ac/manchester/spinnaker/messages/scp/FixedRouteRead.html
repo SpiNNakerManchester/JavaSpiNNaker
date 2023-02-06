@@ -102,7 +102,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public final class <span class="typeNameLabel">FixedRouteRead</span>
 extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="FixedRouteRead.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">FixedRouteRead.Response</a>&gt;</pre>
-<div class="block">Gets a fixed route entry.</div>
+<div class="block">Gets a fixed route entry. The response payload is the
+ <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/RoutingEntry.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">routing entry</a>.
+ <p>
+ Calls <code>rtr_fr_get()</code> in <code>sark_hw.c</code>, via <code>rtr_cmd()</code> in
+ <code>scamp-cmd.c</code>.</div>
 </section>
 <section class="summary">
 <ul class="blockList">

@@ -102,7 +102,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public final class <span class="typeNameLabel">FillRequest</span>
 extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;</pre>
-<div class="block">An SCP request to fill a region of memory on a chip with repeated data.</div>
+<div class="block">An SCP request to fill a region of memory on a chip with repeated words of
+ data. There is no response payload.
+ <p>
+ Calls <code>sark_cmd_fill()</code> in <code>sark_base.c</code>, or <code>cmd_fill()</code>
+ in <code>bmp_cmd.c</code> if sent to a BMP.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -219,9 +223,11 @@ int&nbsp;size)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>chip</code> - The chip to read from</dd>
-<dd><code>baseAddress</code> - The positive base address to start the fill from</dd>
-<dd><code>data</code> - The data to fill in the space with</dd>
-<dd><code>size</code> - The number of bytes to fill in</dd>
+<dd><code>baseAddress</code> - The positive base address to start the fill from. <em>Must be
+            word-aligned.</em></dd>
+<dd><code>data</code> - The <em>word</em> of data to fill in the space with.</dd>
+<dd><code>size</code> - The number of <em>bytes</em> to fill in. <em>Must be a
+            multiple of 4.</em></dd>
 </dl>
 </section>
 </li>

@@ -155,7 +155,7 @@ extends <a href="BMPTransceiverInterface.html" title="interface in uk.ac.manches
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;</code></td>
+<td class="colFirst"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;<a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DEFAULT_ERROR_STATES">DEFAULT_ERROR_STATES</a></span></code></th>
 <td class="colLast">
 <div class="block">The set of states that indicate a core in a failure state.</div>
@@ -612,8 +612,8 @@ int&nbsp;repeatValue,
 </tr>
 <tr class="altColor" id="i46">
 <td class="colFirst"><code>default <a href="../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getCoresInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.util.Set)">getCoresInState</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;allCoreSubsets,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;states)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getCoresInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.util.EnumSet)">getCoresInState</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;allCoreSubsets,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;states)</code></th>
 <td class="colLast">
 <div class="block">Get all cores that are in a given set of states.</div>
 </td>
@@ -628,8 +628,8 @@ int&nbsp;repeatValue,
 </tr>
 <tr class="altColor" id="i48">
 <td class="colFirst"><code>default <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>,&#8203;<a href="../messages/model/CPUInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">CPUInfo</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getCoresNotInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.util.Set)">getCoresNotInState</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;allCoreSubsets,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;states)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getCoresNotInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.util.EnumSet)">getCoresNotInState</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;allCoreSubsets,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;states)</code></th>
 <td class="colLast">
 <div class="block">Get all cores that are not in a given set of states.</div>
 </td>
@@ -1365,14 +1365,18 @@ int&nbsp;watchdog)</code></th>
 </tr>
 <tr class="altColor" id="i142">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateRuntime(java.lang.Integer)">updateRuntime</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;runTimesteps)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateRuntime(java.lang.Integer,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint)">updateRuntime</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;runTimesteps,
+@javax.validation.constraints.PositiveOrZero int&nbsp;currentTime,
+@javax.validation.constraints.PositiveOrZero int&nbsp;syncTimesteps)</code></th>
 <td class="colLast">
 <div class="block">Set the running time information for all processors.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i143">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateRuntime(java.lang.Integer,uk.ac.manchester.spinnaker.machine.CoreSubsets)">updateRuntime</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;runTimesteps,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateRuntime(java.lang.Integer,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint,uk.ac.manchester.spinnaker.machine.CoreSubsets)">updateRuntime</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;runTimesteps,
+@javax.validation.constraints.PositiveOrZero int&nbsp;currentTime,
+@javax.validation.constraints.PositiveOrZero int&nbsp;syncTimesteps,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;coreSubsets)</code></th>
 <td class="colLast">
 <div class="block">Set the running time information for a collection of processors.</div>
@@ -1380,7 +1384,9 @@ int&nbsp;watchdog)</code></th>
 </tr>
 <tr class="altColor" id="i144">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateRuntime(java.lang.Integer,uk.ac.manchester.spinnaker.machine.HasCoreLocation)">updateRuntime</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;runTimesteps,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateRuntime(java.lang.Integer,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint,uk.ac.manchester.spinnaker.machine.HasCoreLocation)">updateRuntime</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;runTimesteps,
+@javax.validation.constraints.PositiveOrZero int&nbsp;currentTime,
+@javax.validation.constraints.PositiveOrZero int&nbsp;syncTimesteps,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></th>
 <td class="colLast">
 <div class="block">Set the running time information for a given core.</div>
@@ -1388,9 +1394,9 @@ int&nbsp;watchdog)</code></th>
 </tr>
 <tr class="rowColor" id="i145">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#waitForCoresToBeInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.messages.model.AppID,java.util.Set)">waitForCoresToBeInState</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;coreSubsets,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#waitForCoresToBeInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.messages.model.AppID,java.util.EnumSet)">waitForCoresToBeInState</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;coreSubsets,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;cpuStates)</code></th>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;cpuStates)</code></th>
 <td class="colLast">
 <div class="block">Waits for the specified cores running the given application to be in some
  target state or states.</div>
@@ -1398,12 +1404,12 @@ int&nbsp;watchdog)</code></th>
 </tr>
 <tr class="altColor" id="i146">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#waitForCoresToBeInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.messages.model.AppID,java.util.Set,java.lang.Integer,@javax.validation.constraints.Positiveint,java.util.Set,@javax.validation.constraints.Positiveint)">waitForCoresToBeInState</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;allCoreSubsets,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#waitForCoresToBeInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.messages.model.AppID,java.util.EnumSet,java.lang.Integer,@javax.validation.constraints.Positiveint,java.util.EnumSet,@javax.validation.constraints.Positiveint)">waitForCoresToBeInState</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;allCoreSubsets,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;cpuStates,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;cpuStates,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
 @javax.validation.constraints.Positive int&nbsp;timeBetweenPolls,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;errorStates,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;errorStates,
 @javax.validation.constraints.Positive int&nbsp;countsBetweenFullCheck)</code></th>
 <td class="colLast">
 <div class="block">Waits for the specified cores running the given application to be in some
@@ -1758,7 +1764,7 @@ int&nbsp;value)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="DEFAULT_ERROR_STATES">DEFAULT_ERROR_STATES</a></h3>
-<div class="memberSignature"><span class="modifiers">static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;</span>&nbsp;<span class="memberName">DEFAULT_ERROR_STATES</span></div>
+<div class="memberSignature"><span class="modifiers">static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;<a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;</span>&nbsp;<span class="memberName">DEFAULT_ERROR_STATES</span></div>
 <div class="block">The set of states that indicate a core in a failure state.</div>
 </section>
 </li>
@@ -3249,10 +3255,14 @@ boolean&nbsp;wait)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="updateRuntime(java.lang.Integer)">updateRuntime</a></h3>
+<h3><a id="updateRuntime(java.lang.Integer,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint)">updateRuntime</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelUnsafe.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelUnsafe</a>
 </span><span class="modifiers">default</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">updateRuntime</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>
-<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;runTimesteps)</span>
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;runTimesteps,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>
+@javax.validation.constraints.PositiveOrZero int&nbsp;currentTime,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>
+@javax.validation.constraints.PositiveOrZero int&nbsp;syncTimesteps)</span>
                     throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
@@ -3262,6 +3272,8 @@ boolean&nbsp;wait)</span>
 <dd><code>runTimesteps</code> - How many machine timesteps will the run last. <code>null</code> is
             used to indicate an infinite (unbounded until explicitly
             stopped) run.</dd>
+<dd><code>currentTime</code> - The current simulation time.</dd>
+<dd><code>syncTimesteps</code> - The number of timesteps before we pause to synchronise.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong with networking.</dd>
 <dd><code><a href="ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If SpiNNaker rejects a message.</dd>
@@ -3271,10 +3283,14 @@ boolean&nbsp;wait)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="updateRuntime(java.lang.Integer,uk.ac.manchester.spinnaker.machine.HasCoreLocation)">updateRuntime</a></h3>
+<h3><a id="updateRuntime(java.lang.Integer,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint,uk.ac.manchester.spinnaker.machine.HasCoreLocation)">updateRuntime</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafe.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafe</a>
 </span><span class="modifiers">default</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">updateRuntime</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;runTimesteps,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>
+@javax.validation.constraints.PositiveOrZero int&nbsp;currentTime,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>
+@javax.validation.constraints.PositiveOrZero int&nbsp;syncTimesteps,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</span>
                     throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -3286,6 +3302,8 @@ boolean&nbsp;wait)</span>
 <dd><code>runTimesteps</code> - How many machine timesteps will the run last. <code>null</code> is
             used to indicate an infinite (unbounded until explicitly
             stopped) run.</dd>
+<dd><code>currentTime</code> - The current simulation time.</dd>
+<dd><code>syncTimesteps</code> - The number of timesteps before we pause to synchronise.</dd>
 <dd><code>core</code> - The coordinates of the processor to clear the IOBUF on.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong with networking.</dd>
@@ -3296,10 +3314,14 @@ boolean&nbsp;wait)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="updateRuntime(java.lang.Integer,uk.ac.manchester.spinnaker.machine.CoreSubsets)">updateRuntime</a></h3>
+<h3><a id="updateRuntime(java.lang.Integer,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint,uk.ac.manchester.spinnaker.machine.CoreSubsets)">updateRuntime</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafeWithCare.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafeWithCare</a>
 </span><span class="returnType">void</span>&nbsp;<span class="memberName">updateRuntime</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;runTimesteps,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>
+@javax.validation.constraints.PositiveOrZero int&nbsp;currentTime,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>
+@javax.validation.constraints.PositiveOrZero int&nbsp;syncTimesteps,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;coreSubsets)</span>
             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -3311,6 +3333,8 @@ boolean&nbsp;wait)</span>
 <dd><code>runTimesteps</code> - How many machine timesteps will the run last. <code>null</code> is
             used to indicate an infinite (unbounded until explicitly
             stopped) run.</dd>
+<dd><code>currentTime</code> - The current simulation time.</dd>
+<dd><code>syncTimesteps</code> - The number of timesteps before we pause to synchronise.</dd>
 <dd><code>coreSubsets</code> - A set of chips and cores on which to set the running time.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong with networking.</dd>
@@ -4628,13 +4652,13 @@ int&nbsp;dataWord)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="waitForCoresToBeInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.messages.model.AppID,java.util.Set)">waitForCoresToBeInState</a></h3>
+<h3><a id="waitForCoresToBeInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.messages.model.AppID,java.util.EnumSet)">waitForCoresToBeInState</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafeWithCare.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafeWithCare</a>
 </span><span class="modifiers">default</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">waitForCoresToBeInState</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;coreSubsets,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;cpuStates)</span>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;cpuStates)</span>
                               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a>,
 <a href="SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a></span></div>
@@ -4659,18 +4683,18 @@ int&nbsp;dataWord)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="waitForCoresToBeInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.messages.model.AppID,java.util.Set,java.lang.Integer,@javax.validation.constraints.Positiveint,java.util.Set,@javax.validation.constraints.Positiveint)">waitForCoresToBeInState</a></h3>
+<h3><a id="waitForCoresToBeInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.messages.model.AppID,java.util.EnumSet,java.lang.Integer,@javax.validation.constraints.Positiveint,java.util.EnumSet,@javax.validation.constraints.Positiveint)">waitForCoresToBeInState</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafeWithCare.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafeWithCare</a>
 </span><span class="returnType">void</span>&nbsp;<span class="memberName">waitForCoresToBeInState</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;allCoreSubsets,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;cpuStates,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;cpuStates,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>
 @javax.validation.constraints.Positive int&nbsp;timeBetweenPolls,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;errorStates,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;errorStates,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>
 @javax.validation.constraints.Positive int&nbsp;countsBetweenFullCheck)</span>
                       throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -4735,12 +4759,12 @@ int&nbsp;dataWord)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="getCoresInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.util.Set)">getCoresInState</a></h3>
+<h3><a id="getCoresInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.util.EnumSet)">getCoresInState</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafeWithCare.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafeWithCare</a>
 <a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CheckReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CheckReturnValue</a>
 </span><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a></span>&nbsp;<span class="memberName">getCoresInState</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;allCoreSubsets,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;states)</span>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;states)</span>
                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
@@ -4794,12 +4818,12 @@ int&nbsp;dataWord)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="getCoresNotInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.util.Set)">getCoresNotInState</a></h3>
+<h3><a id="getCoresNotInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.util.EnumSet)">getCoresNotInState</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="ParallelSafeWithCare.html" title="annotation in uk.ac.manchester.spinnaker.transceiver">@ParallelSafeWithCare</a>
 <a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CheckReturnValue.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@CheckReturnValue</a>
 </span><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>,&#8203;<a href="../messages/model/CPUInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">CPUInfo</a>&gt;</span>&nbsp;<span class="memberName">getCoresNotInState</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;allCoreSubsets,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;states)</span>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a>&gt;&nbsp;states)</span>
                                               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>

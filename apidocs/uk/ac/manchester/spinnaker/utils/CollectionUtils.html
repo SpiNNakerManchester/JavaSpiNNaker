@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":9,"i5":9,"i6":9,"i7":9,"i8":9,"i9":9};
+<script type="text/javascript">var data = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":9,"i5":9,"i6":9,"i7":9,"i8":9,"i9":9,"i10":9,"i11":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -234,6 +234,22 @@ K&gt;<br><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/j
 </td>
 </tr>
 <tr class="rowColor" id="i9">
+<td class="colFirst"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#range(int)">range</a></span>&#8203;(int&nbsp;upTo)</code></th>
+<td class="colLast">
+<div class="block">Generate an iterable that covers a range starting at zero and counting
+ up.</div>
+</td>
+</tr>
+<tr class="altColor" id="i10">
+<td class="colFirst"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#range(int,int)">range</a></span>&#8203;(int&nbsp;startAt,
+int&nbsp;upTo)</code></th>
+<td class="colLast">
+<div class="block">Generate an iterable that covers a range.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i11">
 <td class="colFirst"><code>static &lt;E extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;E&gt;&gt;<br><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Collector.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Collector</a>&lt;E,&#8203;?,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;E&gt;&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toEnumSet(java.lang.Class)">toEnumSet</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;E&gt;&nbsp;cls)</code></th>
 <td class="colLast">
@@ -299,6 +315,36 @@ K&gt;<br><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/j
 <dd><code>cls</code> - The class of the <code>enum</code> we are collecting.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The collector.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="range(int,int)">range</a></h3>
+<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</span>&nbsp;<span class="memberName">range</span>&#8203;(<span class="arguments">int&nbsp;startAt,
+int&nbsp;upTo)</span></div>
+<div class="block">Generate an iterable that covers a range. Only expected to cover the
+ range once.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>startAt</code> - What value to start at.</dd>
+<dd><code>upTo</code> - What value to go up to (in steps of +1) but not include.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A one-shot iterable.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="range(int)">range</a></h3>
+<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</span>&nbsp;<span class="memberName">range</span>&#8203;(<span class="arguments">int&nbsp;upTo)</span></div>
+<div class="block">Generate an iterable that covers a range starting at zero and counting
+ up. Only expected to cover the range once.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>upTo</code> - What value to go up to (in steps of +1) but not include.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A one-shot iterable.</dd>
 </dl>
 </section>
 </li>

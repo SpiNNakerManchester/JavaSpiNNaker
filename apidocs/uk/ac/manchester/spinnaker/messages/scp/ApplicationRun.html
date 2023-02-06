@@ -102,7 +102,12 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">ApplicationRun</span>
 extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;</pre>
-<div class="block">A request to run an application.</div>
+<div class="block">An SCP request to run an application. The application code must have been
+ placed at the location
+ <a href="../model/SystemVariableDefinition.html#system_sdram_base_address"><code>SystemVariableDefinition.system_sdram_base_address</code></a> points at. There
+ is no response payload.
+ <p>
+ Calls <code>proc_start_app()</code> in <code>scamp-app.c</code>.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -141,15 +146,15 @@ extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.AppID,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Iterable)">ApplicationRun</a></span>&#8203;(<a href="../model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.AppID,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection)">ApplicationRun</a></span>&#8203;(<a href="../model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="../../machine/ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors)</code></th>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../machine/ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.AppID,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Iterable,boolean)">ApplicationRun</a></span>&#8203;(<a href="../model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appId,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.AppID,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection,boolean)">ApplicationRun</a></span>&#8203;(<a href="../model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appId,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="../../machine/ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../machine/ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors,
 boolean&nbsp;wait)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -217,11 +222,11 @@ boolean&nbsp;wait)</code></th>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.messages.model.AppID,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Iterable)">ApplicationRun</a></h3>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.messages.model.AppID,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection)">ApplicationRun</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">ApplicationRun</span>&#8203;(<span class="arguments"><a href="../model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="../../machine/ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors)</span></div>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../machine/ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>appID</code> - The ID of the application to run</dd>
@@ -232,11 +237,11 @@ boolean&nbsp;wait)</code></th>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.messages.model.AppID,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Iterable,boolean)">ApplicationRun</a></h3>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.messages.model.AppID,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection,boolean)">ApplicationRun</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">ApplicationRun</span>&#8203;(<span class="arguments"><a href="../model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appId,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="../../machine/ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../machine/ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors,
 boolean&nbsp;wait)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>

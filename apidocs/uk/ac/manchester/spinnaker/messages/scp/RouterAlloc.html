@@ -102,7 +102,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">RouterAlloc</span>
 extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="RouterAlloc.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">RouterAlloc.Response</a>&gt;</pre>
-<div class="block">An SCP Request to allocate space for routing entries.</div>
+<div class="block">An SCP Request to allocate space for routing entries. The response payload is
+ the base index of the allocated block of routing entries.
+ <p>
+ Calls <code>rtr_alloc_id()</code> in <code>sark_alloc.c</code> via <code>cmd_alloc()</code>
+ in <code>scamp-cmd.c</code>.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -124,7 +128,7 @@ extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>static class&nbsp;</code></td>
+<td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="RouterAlloc.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">RouterAlloc.Response</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP response to a request to allocate router entries.</div>

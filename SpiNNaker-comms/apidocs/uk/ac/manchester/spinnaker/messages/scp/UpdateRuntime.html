@@ -89,8 +89,10 @@ loadScripts(document, 'script');</script>
 <div class="contentContainer">
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
 <div class="inheritance"><a href="../sdp/SpinnakerRequest.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">uk.ac.manchester.spinnaker.messages.sdp.SpinnakerRequest</a>
-<div class="inheritance"><a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp.SCPRequest</a>&lt;<a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;
+<div class="inheritance"><a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp.SCPRequest</a>&lt;T&gt;
+<div class="inheritance"><a href="FECRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp.FECRequest</a>&lt;<a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;
 <div class="inheritance">uk.ac.manchester.spinnaker.messages.scp.UpdateRuntime</div>
+</div>
 </div>
 </div>
 </div>
@@ -101,8 +103,11 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <pre>public class <span class="typeNameLabel">UpdateRuntime</span>
-extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;</pre>
-<div class="block">An SCP Request to update the runtime info on a core.</div>
+extends <a href="FECRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">FECRequest</a>&lt;<a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;</pre>
+<div class="block">An SCP Request to update the runtime info on a core. There is no response
+ payload.
+ <p>
+ This calls <code>simulation_control_scp_callback()</code> in <code>simulation.c</code>.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -141,9 +146,11 @@ extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,boolean)">UpdateRuntime</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&nbsp;core,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,boolean,int,int)">UpdateRuntime</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&nbsp;core,
 int&nbsp;runTime,
-boolean&nbsp;infiniteRun)</code></th>
+boolean&nbsp;infiniteRun,
+int&nbsp;currentTime,
+int&nbsp;numSyncSteps)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
@@ -210,15 +217,19 @@ boolean&nbsp;infiniteRun)</code></th>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,boolean)">UpdateRuntime</a></h3>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,boolean,int,int)">UpdateRuntime</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">UpdateRuntime</span>&#8203;(<span class="arguments"><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&nbsp;core,
 int&nbsp;runTime,
-boolean&nbsp;infiniteRun)</span></div>
+boolean&nbsp;infiniteRun,
+int&nbsp;currentTime,
+int&nbsp;numSyncSteps)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>core</code> - The SpiNNaker core to update the runtime info of.</dd>
 <dd><code>runTime</code> - The number of machine timesteps.</dd>
 <dd><code>infiniteRun</code> - Whether we are doing infinite running.</dd>
+<dd><code>currentTime</code> - The current simulation time.</dd>
+<dd><code>numSyncSteps</code> - The number of timesteps before we pause to synchronise.</dd>
 </dl>
 </section>
 </li>

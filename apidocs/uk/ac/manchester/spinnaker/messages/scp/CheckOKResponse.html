@@ -89,12 +89,13 @@ loadScripts(document, 'script');</script>
 <section class="description">
 <dl>
 <dt>Direct Known Subclasses:</dt>
-<dd><code><a href="CountState.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CountState.Response</a></code>, <code><a href="FixedRouteRead.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">FixedRouteRead.Response</a></code>, <code><a href="GetChipInfo.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">GetChipInfo.Response</a></code>, <code><a href="GetReinjectionStatus.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">GetReinjectionStatus.Response</a></code>, <code><a href="GetVersion.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">GetVersion.Response</a></code>, <code><a href="IPTagGet.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet.Response</a></code>, <code><a href="IPTagGetInfo.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGetInfo.Response</a></code>, <code><a href="ReadLink.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">ReadLink.Response</a></code>, <code><a href="ReadMemory.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">ReadMemory.Response</a></code>, <code><a href="RouterAlloc.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">RouterAlloc.Response</a></code>, <code><a href="SDRAMAlloc.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SDRAMAlloc.Response</a></code>, <code><a href="SDRAMDeAlloc.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SDRAMDeAlloc.Response</a></code></dd>
+<dd><code><a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a></code></dd>
 </dl>
 <hr>
 <pre>public class <span class="typeNameLabel">CheckOKResponse</span>
 extends <a href="SCPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPResponse</a></pre>
-<div class="block">An SCP response to a request which returns nothing other than OK.</div>
+<div class="block">An SCP response to a request which returns nothing other than OK or an error.
+ Subclasses add <a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">payload parsing</a>.</div>
 </section>
 <section class="summary">
 <ul class="blockList">

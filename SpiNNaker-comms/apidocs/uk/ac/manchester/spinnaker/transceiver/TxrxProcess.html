@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -222,6 +222,14 @@ int&nbsp;intermediateChannelWaits,
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
+<td class="colFirst"><code>protected &lt;Resp extends <a href="../messages/scp/CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;<br>Resp</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#call(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">call</a></span>&#8203;(<a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;Resp&gt;&nbsp;request)</code></th>
+<td class="colLast">
+<div class="block">Do a synchronous call of an SCP operation, sending the given message and
+ completely processing the interaction before returning its response.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i1">
 <td class="colFirst"><code>protected void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#finishBatch()">finishBatch</a></span>()</code></th>
 <td class="colLast">
@@ -229,34 +237,47 @@ int&nbsp;intermediateChannelWaits,
  or time out.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i1">
+<tr class="altColor" id="i2">
+<td class="colFirst"><code>protected &lt;T,&#8203;
+R extends <a href="../messages/scp/PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a>&lt;T,&#8203;
+?&gt;&gt;<br>T</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#retrieve(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">retrieve</a></span>&#8203;(<a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;R&gt;&nbsp;request)</code></th>
+<td class="colLast">
+<div class="block">Do a synchronous call of an SCP operation, sending the given message and
+ completely processing the interaction before returning its parsed
+ payload.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i3">
+<td class="colFirst"><code>protected &lt;T,&#8203;
+R extends <a href="../messages/scp/PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a>&lt;T,&#8203;
+?&gt;&gt;<br>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#sendGet(uk.ac.manchester.spinnaker.messages.scp.SCPRequest,java.util.function.Consumer)">sendGet</a></span>&#8203;(<a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;R&gt;&nbsp;request,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;T&gt;&nbsp;callback)</code></th>
+<td class="colLast">
+<div class="block">Send a request for a response with a payload.</div>
+</td>
+</tr>
+<tr class="altColor" id="i4">
 <td class="colFirst"><code>protected void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#sendOneWayRequest(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">sendOneWayRequest</a></span>&#8203;(<a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="../messages/scp/NoResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">NoResponse</a>&gt;&nbsp;request)</code></th>
 <td class="colLast">
 <div class="block">Send a one-way request.</div>
 </td>
 </tr>
-<tr class="altColor" id="i2">
+<tr class="rowColor" id="i5">
 <td class="colFirst"><code>protected &lt;Resp extends <a href="../messages/scp/CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;<br>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#sendRequest(uk.ac.manchester.spinnaker.messages.scp.SCPRequest,java.util.function.Consumer)">sendRequest</a></span>&#8203;(<a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;Resp&gt;&nbsp;request,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;Resp&gt;&nbsp;callback)</code></th>
 <td class="colLast">
-<div class="block">Send a request.</div>
+<div class="block">Send a request and handle the response.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="altColor" id="i6">
 <td class="colFirst"><code>protected void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#sendRequest(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">sendRequest</a></span>&#8203;(<a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="../messages/scp/CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;&nbsp;request)</code></th>
 <td class="colLast">
 <div class="block">Send a request.</div>
-</td>
-</tr>
-<tr class="altColor" id="i4">
-<td class="colFirst"><code>protected &lt;Resp extends <a href="../messages/scp/CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;<br>Resp</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#synchronousCall(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">synchronousCall</a></span>&#8203;(<a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;Resp&gt;&nbsp;request)</code></th>
-<td class="colLast">
-<div class="block">Do a synchronous call of an SCP operation, sending the given message and
- completely processing the interaction before returning its response.</div>
 </td>
 </tr>
 </tbody>
@@ -445,15 +466,13 @@ int&nbsp;intermediateChannelWaits,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;Resp&gt;&nbsp;callback)</span>
                                                          throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
-<div class="block">Send a request.</div>
+<div class="block">Send a request and handle the response.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>Resp</code> - The type of response expected to the request.</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>request</code> - The request to send.</dd>
-<dd><code>callback</code> - The callback that handles the request's response. If
-            <code>null</code>, the response to the message will be constructed
-            (i.e., checked for any failures) and then discarded.</dd>
+<dd><code>callback</code> - The callback that handles the request's response.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If sending fails.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If communications are interrupted.</dd>
@@ -462,9 +481,33 @@ int&nbsp;intermediateChannelWaits,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="synchronousCall(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">synchronousCall</a></h3>
-<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="typeParameters">&lt;Resp extends <a href="../messages/scp/CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;</span>&nbsp;<span class="returnType">Resp</span>&nbsp;<span class="memberName">synchronousCall</span>&#8203;(<span class="arguments"><a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;Resp&gt;&nbsp;request)</span>
-                                                             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<h3><a id="sendGet(uk.ac.manchester.spinnaker.messages.scp.SCPRequest,java.util.function.Consumer)">sendGet</a></h3>
+<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="typeParameters">&lt;T,&#8203;
+R extends <a href="../messages/scp/PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a>&lt;T,&#8203;
+?&gt;&gt;</span>
+<span class="returnType">void</span>&nbsp;<span class="memberName">sendGet</span>&#8203;(<span class="arguments"><a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;R&gt;&nbsp;request,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;T&gt;&nbsp;callback)</span>
+      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
+<div class="block">Send a request for a response with a payload.</div>
+<dl>
+<dt><span class="paramLabel">Type Parameters:</span></dt>
+<dd><code>T</code> - The type of parsed payload expected.</dd>
+<dd><code>R</code> - The type of response expected to the request.</dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - The request to send.</dd>
+<dd><code>callback</code> - The callback that handles the parsed payload.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If sending fails.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If communications are interrupted.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="call(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">call</a></h3>
+<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="typeParameters">&lt;Resp extends <a href="../messages/scp/CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;</span>&nbsp;<span class="returnType">Resp</span>&nbsp;<span class="memberName">call</span>&#8203;(<span class="arguments"><a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;Resp&gt;&nbsp;request)</span>
+                                                  throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Do a synchronous call of an SCP operation, sending the given message and
@@ -472,6 +515,34 @@ int&nbsp;intermediateChannelWaits,
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>Resp</code> - The type of the response; implicit in the type of the request.</dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - The request to send</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The successful response to the request</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the communications fail</dd>
+<dd><code><a href="ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If the other side responds with a failure code</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If the communications were interrupted.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="retrieve(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">retrieve</a></h3>
+<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="typeParameters">&lt;T,&#8203;
+R extends <a href="../messages/scp/PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a>&lt;T,&#8203;
+?&gt;&gt;</span>
+<span class="returnType">T</span>&nbsp;<span class="memberName">retrieve</span>&#8203;(<span class="arguments"><a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;R&gt;&nbsp;request)</span>
+    throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
+<div class="block">Do a synchronous call of an SCP operation, sending the given message and
+ completely processing the interaction before returning its parsed
+ payload.</div>
+<dl>
+<dt><span class="paramLabel">Type Parameters:</span></dt>
+<dd><code>T</code> - The type of the payload of the response.</dd>
+<dd><code>R</code> - The type of the response; implicit in the type of the request.</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>request</code> - The request to send</dd>
 <dt><span class="returnLabel">Returns:</span></dt>

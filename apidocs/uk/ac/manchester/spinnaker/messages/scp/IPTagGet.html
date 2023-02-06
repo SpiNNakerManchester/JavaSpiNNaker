@@ -102,7 +102,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">IPTagGet</span>
 extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="IPTagGet.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet.Response</a>&gt;</pre>
-<div class="block">An SCP Request to get an IP tag.</div>
+<div class="block">An SCP Request to get an IP tag. The
+ response payload is the <a href="IPTagGet.TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.scp">tag description</a>.
+ <p>
+ Handled by <code>cmd_iptag()</code> in <code>scamp-cmd.c</code> (or <code>bmp_cmd.c</code>,
+ if sent to a BMP).</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -128,6 +132,13 @@ extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="IPTagGet.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet.Response</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP response to a request for an IP tags.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="IPTagGet.TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet.TagDescription</a></span></code></th>
+<td class="colLast">
+<div class="block">Description of a tag.</div>
 </td>
 </tr>
 </tbody>

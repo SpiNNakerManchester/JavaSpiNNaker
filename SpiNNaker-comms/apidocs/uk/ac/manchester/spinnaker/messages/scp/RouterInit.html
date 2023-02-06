@@ -102,7 +102,10 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">RouterInit</span>
 extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;</pre>
-<div class="block">A request to initialise the router on a chip.</div>
+<div class="block">A request to initialise the router on a chip. There is no response payload.
+ <p>
+ Ultimately handled by <code>rtr_mc_load()</code> in <code>sark_hw.c</code> (via
+ <code>cmd_rtr()</code> in <code>scamp-cmd.c</code>).</div>
 </section>
 <section class="summary">
 <ul class="blockList">

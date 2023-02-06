@@ -102,7 +102,16 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">FloodFillData</span>
 extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;</pre>
-<div class="block">A request to start a flood fill of data.</div>
+<div class="block">An SCP request to flood fill some data. There is no response payload.
+ <p>
+ Handled by <code>cmd_ffd()</code> in <code>scamp-cmd.c</code> (which sends many
+ messages to actually move the data, handled by <code>nn_cmd_fbs()</code>,
+ <code>nn_cmd_fbd()</code> and <code>nn_cmd_fbe()</code> on their receiving cores).</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="FloodFillStart.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><code>FloodFillStart</code></a>, 
+<a href="FloodFillEnd.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><code>FloodFillEnd</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="blockList">

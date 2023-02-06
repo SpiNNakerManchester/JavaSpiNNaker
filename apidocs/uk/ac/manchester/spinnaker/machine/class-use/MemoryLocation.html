@@ -386,27 +386,6 @@ int&nbsp;size,
 <h2>Uses of <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a> in <a href="../../messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></h2>
 <div class="useSummary">
 <table>
-<caption><span>Fields in <a href="../../messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a> declared as <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Field</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">EraseFlash.Response.</span><code><span class="memberNameLink"><a href="../../messages/bmp/EraseFlash.Response.html#address">address</a></span></code></th>
-<td class="colLast">
-<div class="block">Where the buffer is located.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="useSummary">
-<table>
 <caption><span>Methods in <a href="../../messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a> that return <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
 <thead>
 <tr>
@@ -418,12 +397,22 @@ int&nbsp;size,
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">ReadSerialVector.SerialVector.</span><code><span class="memberNameLink"><a href="../../messages/bmp/ReadSerialVector.SerialVector.html#getCortexVector()">getCortexVector</a></span>()</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SerialVector.</span><code><span class="memberNameLink"><a href="../../messages/bmp/SerialVector.html#getBoardStatusLocation()">getBoardStatusLocation</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">ReadSerialVector.SerialVector.</span><code><span class="memberNameLink"><a href="../../messages/bmp/ReadSerialVector.SerialVector.html#getFlashBuffer()">getFlashBuffer</a></span>()</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SerialVector.</span><code><span class="memberNameLink"><a href="../../messages/bmp/SerialVector.html#getCortexVector()">getCortexVector</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SerialVector.</span><code><span class="memberNameLink"><a href="../../messages/bmp/SerialVector.html#getFlashBuffer()">getFlashBuffer</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">EraseFlash.Response.</span><code><span class="memberNameLink"><a href="../../messages/bmp/EraseFlash.Response.html#parse(java.nio.ByteBuffer)">parse</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
@@ -702,21 +691,19 @@ int&nbsp;free)</code></th>
 <h2>Uses of <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a> in <a href="../../messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></h2>
 <div class="useSummary">
 <table>
-<caption><span>Fields in <a href="../../messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a> declared as <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
+<caption><span>Methods in <a href="../../messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a> that return <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
 <thead>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Field</th>
+<th class="colSecond" scope="col">Method</th>
 <th class="colLast" scope="col">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SDRAMAlloc.Response.</span><code><span class="memberNameLink"><a href="../../messages/scp/SDRAMAlloc.Response.html#baseAddress">baseAddress</a></span></code></th>
-<td class="colLast">
-<div class="block">The base address allocated.</div>
-</td>
+<td class="colFirst"><code>protected <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SDRAMAlloc.Response.</span><code><span class="memberNameLink"><a href="../../messages/scp/SDRAMAlloc.Response.html#parse(java.nio.ByteBuffer)">parse</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
 </table>

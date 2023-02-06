@@ -102,7 +102,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">SDRAMAlloc</span>
 extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="SDRAMAlloc.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SDRAMAlloc.Response</a>&gt;</pre>
-<div class="block">An SCP Request to allocate space in the SDRAM space.</div>
+<div class="block">An SCP Request to allocate space in the SDRAM space. The response payload is
+ the <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">location</a> of the block of allocated memory.
+ <p>
+ Calls <code>cmd_alloc()</code> (and hence <code>sark_xalloc()</code>) in
+ <code>scamp-cmd.c</code>.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -124,7 +128,7 @@ extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>static class&nbsp;</code></td>
+<td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="SDRAMAlloc.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SDRAMAlloc.Response</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP response to a request to allocate space in SDRAM.</div>

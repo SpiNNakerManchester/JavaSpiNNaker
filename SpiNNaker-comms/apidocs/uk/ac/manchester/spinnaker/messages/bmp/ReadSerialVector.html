@@ -104,7 +104,10 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">ReadSerialVector</span>
 extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest</a>&lt;<a href="ReadSerialVector.Response.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadSerialVector.Response</a>&gt;</pre>
-<div class="block">SCP Request for the serial data vector from the BMP.</div>
+<div class="block">SCP Request for the serial data vector from the BMP. The response payload is
+ the <a href="SerialVector.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">serial vector</a> from the BMP.
+ <p>
+ Handled by <code>cmd_bmp_info()</code> in <code>bmp_cmd.c</code>.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -132,13 +135,6 @@ extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 <div class="block">An SCP response to a request for serial data.</div>
 </td>
 </tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="ReadSerialVector.SerialVector.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadSerialVector.SerialVector</a></span></code></th>
-<td class="colLast">
-<div class="block">The data read from the serial vector.</div>
-</td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -146,7 +142,7 @@ extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 <h2>Nested classes/interfaces inherited from class&nbsp;uk.ac.manchester.spinnaker.messages.bmp.<a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest</a></h2>
 <a id="nested.classes.inherited.from.class.uk.ac.manchester.spinnaker.messages.bmp.BMPRequest">
 <!--   -->
-</a><code><a href="BMPRequest.BMPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.BMPResponse</a></code></div>
+</a><code><a href="BMPRequest.BMPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.BMPResponse</a>, <a href="BMPRequest.PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.PayloadedResponse</a>&lt;<a href="BMPRequest.PayloadedResponse.html" title="type parameter in BMPRequest.PayloadedResponse">T</a>&gt;</code></div>
 </section>
 </li>
 <!-- =========== FIELD SUMMARY =========== -->

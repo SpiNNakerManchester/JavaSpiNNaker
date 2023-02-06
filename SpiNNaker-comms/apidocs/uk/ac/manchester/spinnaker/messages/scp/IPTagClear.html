@@ -102,7 +102,10 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">IPTagClear</span>
 extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;</pre>
-<div class="block">An SCP Request to clear an IP Tag.</div>
+<div class="block">An SCP Request to clear an IP Tag. There is no response payload.
+ <p>
+ Handled by <code>cmd_iptag()</code> in <code>scamp-cmd.c</code> (or <code>bmp_cmd.c</code>,
+ if sent to a BMP).</div>
 </section>
 <section class="summary">
 <ul class="blockList">

@@ -102,7 +102,10 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public final class <span class="typeNameLabel">FloodFillEnd</span>
 extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;</pre>
-<div class="block">A request to start a flood fill of data.</div>
+<div class="block">An SCP request to finish a flood fill of data across all cores and launch the
+ application. There is no response payload.
+ <p>
+ Handled ultimately by <code>nn_cmd_ffe()</code> in <code>scamp-nn.c</code>.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -145,12 +148,6 @@ extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(byte,uk.ac.manchester.spinnaker.messages.model.AppID,java.lang.Iterable)">FloodFillEnd</a></span>&#8203;(byte&nbsp;nearestNeighbourID,
-<a href="../model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/ValidP.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(byte,uk.ac.manchester.spinnaker.messages.model.AppID,java.lang.Iterable,boolean)">FloodFillEnd</a></span>&#8203;(byte&nbsp;nearestNeighbourID,
 <a href="../model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/ValidP.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors,
@@ -226,21 +223,6 @@ boolean&nbsp;wait)</code></th>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>nearestNeighbourID</code> - The ID of the packet, between 0 and 127</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="&lt;init&gt;(byte,uk.ac.manchester.spinnaker.messages.model.AppID,java.lang.Iterable)">FloodFillEnd</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">FloodFillEnd</span>&#8203;(<span class="arguments">byte&nbsp;nearestNeighbourID,
-<a href="../model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/ValidP.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors)</span></div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>nearestNeighbourID</code> - The ID of the packet, between 0 and 127</dd>
-<dd><code>appID</code> - The application ID to start using the data</dd>
-<dd><code>processors</code> - A list of processors on which to start the application, each
-            between 1 and 17. If not specified, no application is started.</dd>
 </dl>
 </section>
 </li>

@@ -102,7 +102,10 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">WriteLink</span>
 extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;</pre>
-<div class="block">A request to write memory on a neighbouring chip.</div>
+<div class="block">A request to write memory on a neighbouring chip. There is no response
+ payload.
+ <p>
+ Calls <code>cmd_link_write()</code> in <code>scamp-cmd.c</code>.</div>
 </section>
 <section class="summary">
 <ul class="blockList">

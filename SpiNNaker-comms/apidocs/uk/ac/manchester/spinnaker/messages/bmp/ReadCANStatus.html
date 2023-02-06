@@ -104,7 +104,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">ReadCANStatus</span>
 extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest</a>&lt;<a href="ReadCANStatus.Response.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadCANStatus.Response</a>&gt;</pre>
-<div class="block">SCP Request for the CAN bus status data from the BMP.</div>
+<div class="block">SCP Request for the CAN bus status data from the BMP. The response payload is
+ an <a href="http://spinnakermanchester.github.io/SpiNNaker-utils/apidocs/uk/ac/manchester/spinnaker/utils/MappableIterable.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.utils" class="externalLink">iterable</a> of enabled <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">board numbers</a>.
+ <p>
+ Handled in <code>cmd_bmp_info()</code> (in <code>bmp_cmd.c</code>) by reading from
+ <code>can_status</code>.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -139,7 +143,7 @@ extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 <h2>Nested classes/interfaces inherited from class&nbsp;uk.ac.manchester.spinnaker.messages.bmp.<a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest</a></h2>
 <a id="nested.classes.inherited.from.class.uk.ac.manchester.spinnaker.messages.bmp.BMPRequest">
 <!--   -->
-</a><code><a href="BMPRequest.BMPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.BMPResponse</a></code></div>
+</a><code><a href="BMPRequest.BMPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.BMPResponse</a>, <a href="BMPRequest.PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.PayloadedResponse</a>&lt;<a href="BMPRequest.PayloadedResponse.html" title="type parameter in BMPRequest.PayloadedResponse">T</a>&gt;</code></div>
 </section>
 </li>
 <!-- =========== FIELD SUMMARY =========== -->

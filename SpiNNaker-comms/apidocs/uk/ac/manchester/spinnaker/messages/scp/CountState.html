@@ -102,7 +102,12 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">CountState</span>
 extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="CountState.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CountState.Response</a>&gt;</pre>
-<div class="block">An SCP Request to get a count of the cores in a particular state.</div>
+<div class="block">An SCP Request to get a count of the cores in a particular state. The
+ response payload is the integer count.
+ <p>
+ Actual adding up of states is in <code>proc_process()</code> and
+ <code>p2p_region()</code> in <code>scamp-cmd.c</code>. This is the main use of
+ point-to-point signals (and the only one exposed to users).</div>
 </section>
 <section class="summary">
 <ul class="blockList">

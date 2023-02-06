@@ -102,7 +102,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">ReadLink</span>
 extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="ReadLink.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">ReadLink.Response</a>&gt;</pre>
-<div class="block">An SCP request to read a region of memory via a link on a chip.</div>
+<div class="block">An SCP request to read a region of memory via a link on a chip. The response
+ payload is a read-only little-endian <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink"><code>ByteBuffer</code></a> intended to be read
+ once.
+ <p>
+ Calls <code>cmd_link_read()</code> in <code>scamp-cmd.c</code>.</div>
 </section>
 <section class="summary">
 <ul class="blockList">

@@ -103,7 +103,11 @@ loadScripts(document, 'script');</script>
 <pre>public class <span class="typeNameLabel">IPTagSet</span>
 extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;</pre>
 <div class="block">An SCP Request to set a (forward) IP Tag. Forward IP tags are tags that
- funnel packets from SpiNNaker to the outside world.</div>
+ funnel packets from SpiNNaker to the outside world. There is no response
+ payload.
+ <p>
+ Handled by <code>cmd_iptag()</code> in <code>scamp-cmd.c</code> (or <code>bmp_cmd.c</code>,
+ if sent to a BMP).</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="ReverseIPTagSet.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><code>ReverseIPTagSet</code></a></dd>

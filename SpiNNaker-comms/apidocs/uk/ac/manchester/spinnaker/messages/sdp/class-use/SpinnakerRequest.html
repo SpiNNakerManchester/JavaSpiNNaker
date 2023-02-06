@@ -173,7 +173,7 @@ loadScripts(document, 'script');</script>
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/ReadADC.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadADC</a></span></code></th>
 <td class="colLast">
-<div class="block">SCP Request for the data from the BMP including voltages and temperature.</div>
+<div class="block">SCP Request for the ADC data from the BMP including voltages and temperature.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -292,7 +292,7 @@ loadScripts(document, 'script');</script>
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/ApplicationRun.html" title="class in uk.ac.manchester.spinnaker.messages.scp">ApplicationRun</a></span></code></th>
 <td class="colLast">
-<div class="block">A request to run an application.</div>
+<div class="block">An SCP request to run an application.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -325,114 +325,148 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/FillRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">FillRequest</a></span></code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/FECRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">FECRequest</a>&lt;T extends <a href="../../scp/SCPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPResponse</a>&gt;</span></code></th>
 <td class="colLast">
-<div class="block">An SCP request to fill a region of memory on a chip with repeated data.</div>
+<div class="block">A command message to a core using FrontEndCommon lib's simulation management
+ subsystem.</div>
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/FillRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">FillRequest</a></span></code></th>
+<td class="colLast">
+<div class="block">An SCP request to fill a region of memory on a chip with repeated words of
+ data.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/FixedRouteInitialise.html" title="class in uk.ac.manchester.spinnaker.messages.scp">FixedRouteInitialise</a></span></code></th>
 <td class="colLast">
 <div class="block">Sets a fixed route entry.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/FixedRouteRead.html" title="class in uk.ac.manchester.spinnaker.messages.scp">FixedRouteRead</a></span></code></th>
 <td class="colLast">
 <div class="block">Gets a fixed route entry.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/FloodFillData.html" title="class in uk.ac.manchester.spinnaker.messages.scp">FloodFillData</a></span></code></th>
 <td class="colLast">
-<div class="block">A request to start a flood fill of data.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/FloodFillEnd.html" title="class in uk.ac.manchester.spinnaker.messages.scp">FloodFillEnd</a></span></code></th>
-<td class="colLast">
-<div class="block">A request to start a flood fill of data.</div>
+<div class="block">An SCP request to flood fill some data.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/FloodFillStart.html" title="class in uk.ac.manchester.spinnaker.messages.scp">FloodFillStart</a></span></code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/FloodFillEnd.html" title="class in uk.ac.manchester.spinnaker.messages.scp">FloodFillEnd</a></span></code></th>
 <td class="colLast">
-<div class="block">A request to start a flood fill of data.</div>
+<div class="block">An SCP request to finish a flood fill of data across all cores and launch the
+ application.</div>
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/FloodFillStart.html" title="class in uk.ac.manchester.spinnaker.messages.scp">FloodFillStart</a></span></code></th>
+<td class="colLast">
+<div class="block">An SCP request to start a flood fill of data.</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/GetChipInfo.html" title="class in uk.ac.manchester.spinnaker.messages.scp">GetChipInfo</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP request to read the chip information from a core.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/GetReinjectionStatus.html" title="class in uk.ac.manchester.spinnaker.messages.scp">GetReinjectionStatus</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP Request to get the status of the dropped packet reinjection.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/GetVersion.html" title="class in uk.ac.manchester.spinnaker.messages.scp">GetVersion</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP request to read the version of software running on a core.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/IPTagClear.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagClear</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP Request to clear an IP Tag.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/IPTagGet.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP Request to get an IP tag.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/IPTagGetInfo.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGetInfo</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP Request information about IP tags.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/IPTagSet.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagSet</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP Request to set a (forward) IP Tag.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/IPTagSetTTO.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagSetTTO</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP request to set the transient timeout for future SCP requests.</div>
 </td>
 </tr>
+<tr class="altColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/LoadApplicationRoutes.html" title="class in uk.ac.manchester.spinnaker.messages.scp">LoadApplicationRoutes</a></span></code></th>
+<td class="colLast">
+<div class="block">An SDP Request to load the previously-saved application multicast router
+ table.</div>
+</td>
+</tr>
 <tr class="rowColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/LoadSystemRoutes.html" title="class in uk.ac.manchester.spinnaker.messages.scp">LoadSystemRoutes</a></span></code></th>
+<td class="colLast">
+<div class="block">An SDP Request to load the previously-configured system multicast router
+ table.</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/ReadLink.html" title="class in uk.ac.manchester.spinnaker.messages.scp">ReadLink</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP request to read a region of memory via a link on a chip.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/ReadMemory.html" title="class in uk.ac.manchester.spinnaker.messages.scp">ReadMemory</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP request to read a region of memory.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/ReinjectorRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">ReinjectorRequest</a>&lt;T extends <a href="../../scp/CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;</span></code></th>
+<td class="colLast">
+<div class="block">A command message to an extra monitor control core to manipulate the packet
+ reinjection subsystem.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -461,7 +495,7 @@ loadScripts(document, 'script');</script>
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/RouterClear.html" title="class in uk.ac.manchester.spinnaker.messages.scp">RouterClear</a></span></code></th>
 <td class="colLast">
-<div class="block">A request to clear the router on a chip.</div>
+<div class="block">An SCP request to clear the router on a chip.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -473,71 +507,63 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/RouterTableLoadApplicationRoutes.html" title="class in uk.ac.manchester.spinnaker.messages.scp">RouterTableLoadApplicationRoutes</a></span></code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/RouterTableRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">RouterTableRequest</a></span></code></th>
 <td class="colLast">
-<div class="block">An SDP Request to load the previously-saved application multicast router
+<div class="block">A command message to an extra monitor control core to manipulate the router
  table.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/RouterTableLoadSystemRoutes.html" title="class in uk.ac.manchester.spinnaker.messages.scp">RouterTableLoadSystemRoutes</a></span></code></th>
-<td class="colLast">
-<div class="block">An SDP Request to load the previously-configured system multicast router
- table.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/RouterTableSaveApplicationRoutes.html" title="class in uk.ac.manchester.spinnaker.messages.scp">RouterTableSaveApplicationRoutes</a></span></code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/SaveApplicationRoutes.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SaveApplicationRoutes</a></span></code></th>
 <td class="colLast">
 <div class="block">An SDP Request to save the currently-installed application multicast router
  table.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;T extends <a href="../../scp/SCPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPResponse</a>&gt;</span></code></th>
 <td class="colLast">
 <div class="block">Represents an Abstract SCP Request.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/SDRAMAlloc.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SDRAMAlloc</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP Request to allocate space in the SDRAM space.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/SDRAMDeAlloc.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SDRAMDeAlloc</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP Request to free space in the SDRAM.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/SendSignal.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SendSignal</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP Request to send a signal to cores.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/SetLED.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SetLED</a></span></code></th>
 <td class="colLast">
-<div class="block">A request to change the state of an BMPSetLED.</div>
+<div class="block">An SCP request to change the state of an LED.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/SetReinjectionPacketTypes.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SetReinjectionPacketTypes</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP Request to set the dropped packet reinjected packet types.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/SetRouterEmergencyTimeout.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SetRouterEmergencyTimeout</a></span></code></th>
 <td class="colLast">
@@ -545,7 +571,7 @@ loadScripts(document, 'script');</script>
  reinjection.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/SetRouterTimeout.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SetRouterTimeout</a></span></code></th>
 <td class="colLast">
@@ -553,28 +579,28 @@ loadScripts(document, 'script');</script>
  dropped packet reinjection.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/UpdateProvenanceAndExit.html" title="class in uk.ac.manchester.spinnaker.messages.scp">UpdateProvenanceAndExit</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP Request to update the runtime info on a core.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/UpdateRuntime.html" title="class in uk.ac.manchester.spinnaker.messages.scp">UpdateRuntime</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP Request to update the runtime info on a core.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/WriteLink.html" title="class in uk.ac.manchester.spinnaker.messages.scp">WriteLink</a></span></code></th>
 <td class="colLast">
 <div class="block">A request to write memory on a neighbouring chip.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/WriteMemory.html" title="class in uk.ac.manchester.spinnaker.messages.scp">WriteMemory</a></span></code></th>
 <td class="colLast">

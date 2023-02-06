@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10};
+<script type="text/javascript">var data = {"i0":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -63,7 +63,7 @@ loadScripts(document, 'script');</script>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
-<li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method.detail">Method</a></li>
 </ul>
@@ -90,18 +90,24 @@ loadScripts(document, 'script');</script>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
 <div class="inheritance"><a href="SCPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp.SCPResponse</a>
 <div class="inheritance"><a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse</a>
+<div class="inheritance"><a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp.PayloadedResponse</a>&lt;<a href="IPTagGet.TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet.TagDescription</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a>&gt;
 <div class="inheritance">uk.ac.manchester.spinnaker.messages.scp.IPTagGet.Response</div>
 </div>
 </div>
 </div>
+</div>
 <section class="description">
+<dl>
+<dt>All Implemented Interfaces:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="IPTagGet.TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet.TagDescription</a>&gt;</code></dd>
+</dl>
 <dl>
 <dt>Enclosing class:</dt>
 <dd><a href="IPTagGet.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet</a></dd>
 </dl>
 <hr>
 <pre>public static final class <span class="typeNameLabel">IPTagGet.Response</span>
-extends <a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a></pre>
+extends <a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a>&lt;<a href="IPTagGet.TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet.TagDescription</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a>&gt;</pre>
 <div class="block">An SCP response to a request for an IP tags.</div>
 </section>
 <section class="summary">
@@ -112,84 +118,6 @@ extends <a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnake
 <!--   -->
 </a>
 <h2>Field Summary</h2>
-<div class="memberSummary">
-<table>
-<caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Field</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#count">count</a></span></code></th>
-<td class="colLast">
-<div class="block">The count of the number of packets that have been sent with the tag.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>short</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#flags">flags</a></span></code></th>
-<td class="colLast">
-<div class="block">The flags of the tag.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#ipAddress">ipAddress</a></span></code></th>
-<td class="colLast">
-<div class="block">The IP address of the tag.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>byte[]</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#macAddress">macAddress</a></span></code></th>
-<td class="colLast">
-<div class="block">The MAC address of the tag, as an array of 6 bytes.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#port">port</a></span></code></th>
-<td class="colLast">
-<div class="block">The port of the tag.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#rxPort">rxPort</a></span></code></th>
-<td class="colLast">
-<div class="block">The receive port of the tag.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code><a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#spinCore">spinCore</a></span></code></th>
-<td class="colLast">
-<div class="block">The location of the core on the chip which the tag is defined on and
- where the core that handles the tag's messages resides.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#spinPort">spinPort</a></span></code></th>
-<td class="colLast">
-<div class="block">The spin-port of the IP tag.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code><a href="../model/IPTagTimeOutWaitTime.html" title="enum in uk.ac.manchester.spinnaker.messages.model">IPTagTimeOutWaitTime</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#timeout">timeout</a></span></code></th>
-<td class="colLast">
-<div class="block">The timeout of the tag.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
 <div class="inheritedList">
 <h3>Fields inherited from class&nbsp;uk.ac.manchester.spinnaker.messages.scp.<a href="SCPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPResponse</a></h3>
 <a id="fields.inherited.from.class.uk.ac.manchester.spinnaker.messages.scp.SCPResponse">
@@ -216,34 +144,21 @@ extends <a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnake
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isARP()">isARP</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i1">
-<td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isInUse()">isInUse</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor" id="i2">
-<td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isReverse()">isReverse</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i3">
-<td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isStrippingSDP()">isStrippingSDP</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor" id="i4">
-<td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isTemporary()">isTemporary</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colFirst"><code>protected <a href="IPTagGet.TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet.TagDescription</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#parse(java.nio.ByteBuffer)">parse</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</code></th>
+<td class="colLast">
+<div class="block">Parse the payload of a response.</div>
+</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
+<div class="inheritedList">
+<h3>Methods inherited from class&nbsp;uk.ac.manchester.spinnaker.messages.scp.<a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a></h3>
+<a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.messages.scp.PayloadedResponse">
+<!--   -->
+</a><code><a href="PayloadedResponse.html#get()">get</a></code></div>
 <div class="inheritedList">
 <h3>Methods inherited from class&nbsp;uk.ac.manchester.spinnaker.messages.scp.<a href="SCPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPResponse</a></h3>
 <a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.messages.scp.SCPResponse">
@@ -260,80 +175,6 @@ extends <a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnake
 </section>
 <section class="details">
 <ul class="blockList">
-<!-- ============ FIELD DETAIL =========== -->
-<li class="blockList">
-<section class="fieldDetails"><a id="field.detail">
-<!--   -->
-</a>
-<h2>Field Details</h2>
-<ul class="blockList">
-<li class="blockList">
-<section class="detail">
-<h3><a id="count">count</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">count</span></div>
-<div class="block">The count of the number of packets that have been sent with the tag.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="flags">flags</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">short</span>&nbsp;<span class="memberName">flags</span></div>
-<div class="block">The flags of the tag.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="ipAddress">ipAddress</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a></span>&nbsp;<span class="memberName">ipAddress</span></div>
-<div class="block">The IP address of the tag.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="macAddress">macAddress</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">byte[]</span>&nbsp;<span class="memberName">macAddress</span></div>
-<div class="block">The MAC address of the tag, as an array of 6 bytes.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="port">port</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">port</span></div>
-<div class="block">The port of the tag.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="rxPort">rxPort</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">rxPort</span></div>
-<div class="block">The receive port of the tag.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="spinCore">spinCore</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></span>&nbsp;<span class="memberName">spinCore</span></div>
-<div class="block">The location of the core on the chip which the tag is defined on and
- where the core that handles the tag's messages resides.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="spinPort">spinPort</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">spinPort</span></div>
-<div class="block">The spin-port of the IP tag.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="timeout">timeout</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="../model/IPTagTimeOutWaitTime.html" title="enum in uk.ac.manchester.spinnaker.messages.model">IPTagTimeOutWaitTime</a></span>&nbsp;<span class="memberName">timeout</span></div>
-<div class="block">The timeout of the tag.</div>
-</section>
-</li>
-</ul>
-</section>
-</li>
 <!-- ============ METHOD DETAIL ========== -->
 <li class="blockList">
 <section class="methodDetails"><a id="method.detail">
@@ -343,52 +184,21 @@ extends <a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnake
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="isInUse()">isInUse</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">isInUse</span>()</div>
+<h3><a id="parse(java.nio.ByteBuffer)">parse</a></h3>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="IPTagGet.TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet.TagDescription</a></span>&nbsp;<span class="memberName">parse</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</span>
+                                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="PayloadedResponse.html#parse(java.nio.ByteBuffer)">PayloadedResponse</a></code></span></div>
+<div class="block">Parse the payload of a response. The buffer will be positioned after the
+ checked header.</div>
 <dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="PayloadedResponse.html#parse(java.nio.ByteBuffer)">parse</a></code>&nbsp;in class&nbsp;<code><a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a>&lt;<a href="IPTagGet.TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet.TagDescription</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a>&gt;</code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>buffer</code> - The buffer to parse. Little-endian.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>True if the tag is marked as being in use.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="isTemporary()">isTemporary</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">isTemporary</span>()</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>True if the tag is temporary.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="isARP()">isARP</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">isARP</span>()</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>True if the tag is in the ARP state (where the MAC address is
-         being looked up; this is a transient state so unlikely).</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="isReverse()">isReverse</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">isReverse</span>()</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>True if the tag is a reverse tag.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="isStrippingSDP()">isStrippingSDP</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">isStrippingSDP</span>()</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>True if the tag is to strip the SDP header.</dd>
+<dd>The parsed value.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a></code></dd>
 </dl>
 </section>
 </li>
@@ -432,7 +242,7 @@ extends <a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnake
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
-<li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method.detail">Method</a></li>
 </ul>

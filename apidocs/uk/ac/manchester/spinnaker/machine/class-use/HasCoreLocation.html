@@ -686,7 +686,7 @@ byte[]&nbsp;contents)</code></th>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code><a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">IPTagGet.Response.</span><code><span class="memberNameLink"><a href="../../messages/scp/IPTagGet.Response.html#spinCore">spinCore</a></span></code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">IPTagGet.TagDescription.</span><code><span class="memberNameLink"><a href="../../messages/scp/IPTagGet.TagDescription.html#spinCore">spinCore</a></span></code></th>
 <td class="colLast">
 <div class="block">The location of the core on the chip which the tag is defined on and
  where the core that handles the tag's messages resides.</div>
@@ -722,6 +722,14 @@ byte[]&nbsp;contents)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/LoadApplicationRoutes.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">LoadApplicationRoutes</a></span>&#8203;(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/LoadSystemRoutes.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">LoadSystemRoutes</a></span>&#8203;(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/ReadLink.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">ReadLink</a></span>&#8203;(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
 <a href="../Direction.html" title="enum in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;link,
 <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
@@ -747,15 +755,7 @@ int&nbsp;sdpPort)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/RouterTableLoadApplicationRoutes.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">RouterTableLoadApplicationRoutes</a></span>&#8203;(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/RouterTableLoadSystemRoutes.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">RouterTableLoadSystemRoutes</a></span>&#8203;(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/RouterTableSaveApplicationRoutes.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">RouterTableSaveApplicationRoutes</a></span>&#8203;(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/SaveApplicationRoutes.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">SaveApplicationRoutes</a></span>&#8203;(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
@@ -833,9 +833,11 @@ int&nbsp;timeoutExponent)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/UpdateRuntime.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,boolean)">UpdateRuntime</a></span>&#8203;(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/UpdateRuntime.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,boolean,int,int)">UpdateRuntime</a></span>&#8203;(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
 int&nbsp;runTime,
-boolean&nbsp;infiniteRun)</code></th>
+boolean&nbsp;infiniteRun,
+int&nbsp;currentTime,
+int&nbsp;numSyncSteps)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
@@ -1381,7 +1383,9 @@ boolean&nbsp;nearestNeighbour)</code></th>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../../transceiver/TransceiverInterface.html#updateRuntime(java.lang.Integer,uk.ac.manchester.spinnaker.machine.HasCoreLocation)">updateRuntime</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;runTimesteps,
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../../transceiver/TransceiverInterface.html#updateRuntime(java.lang.Integer,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint,uk.ac.manchester.spinnaker.machine.HasCoreLocation)">updateRuntime</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;runTimesteps,
+@javax.validation.constraints.PositiveOrZero int&nbsp;currentTime,
+@javax.validation.constraints.PositiveOrZero int&nbsp;syncTimesteps,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></th>
 <td class="colLast">
 <div class="block">Set the running time information for a given core.</div>

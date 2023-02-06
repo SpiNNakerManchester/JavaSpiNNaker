@@ -102,7 +102,10 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public final class <span class="typeNameLabel">FixedRouteInitialise</span>
 extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CheckOKResponse</a>&gt;</pre>
-<div class="block">Sets a fixed route entry.</div>
+<div class="block">Sets a fixed route entry. There is no response payload.
+ <p>
+ Calls <code>rtr_fr_set()</code> in <code>sark_hw.c</code>, via <code>rtr_cmd()</code> in
+ <code>scamp-cmd.c</code>.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -143,6 +146,12 @@ extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,int,uk.ac.manchester.spinnaker.messages.model.AppID)">FixedRouteInitialise</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
 int&nbsp;entry,
+<a href="../model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.RoutingEntry,uk.ac.manchester.spinnaker.messages.model.AppID)">FixedRouteInitialise</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/RoutingEntry.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">RoutingEntry</a>&nbsp;entry,
 <a href="../model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -217,7 +226,21 @@ int&nbsp;entry,
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>chip</code> - The chip to set the route on.</dd>
-<dd><code>entry</code> - the fixed route entry (converted for writing)</dd>
+<dd><code>entry</code> - The fixed route entry (converted for writing)</dd>
+<dd><code>appID</code> - The ID of the application</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.RoutingEntry,uk.ac.manchester.spinnaker.messages.model.AppID)">FixedRouteInitialise</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">FixedRouteInitialise</span>&#8203;(<span class="arguments"><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/RoutingEntry.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">RoutingEntry</a>&nbsp;entry,
+<a href="../model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>chip</code> - The chip to set the route on.</dd>
+<dd><code>entry</code> - The fixed route entry</dd>
 <dd><code>appID</code> - The ID of the application</dd>
 </dl>
 </section>

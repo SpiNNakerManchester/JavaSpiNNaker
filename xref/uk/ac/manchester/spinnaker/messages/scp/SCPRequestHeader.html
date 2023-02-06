@@ -37,7 +37,7 @@
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_javadoccomment"> * The sequence number, if zero, will be set by the message sending code to the</em>
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_javadoccomment"> * actual sequence number when the message is sent on a connection.</em>
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="SCPRequestHeader" href="../../../../../../uk/ac/manchester/spinnaker/messages/scp/SCPRequestHeader.html#SCPRequestHeader">SCPRequestHeader</a> <strong class="jxr_keyword">implements</strong> <a name="SerializableMessage" href="../../../../../../uk/ac/manchester/spinnaker/messages/SerializableMessage.html#SerializableMessage">SerializableMessage</a> {
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a name="SCPRequestHeader" href="../../../../../../uk/ac/manchester/spinnaker/messages/scp/SCPRequestHeader.html#SCPRequestHeader">SCPRequestHeader</a> <strong class="jxr_keyword">implements</strong> <a name="SerializableMessage" href="../../../../../../uk/ac/manchester/spinnaker/messages/SerializableMessage.html#SerializableMessage">SerializableMessage</a> {
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  	<em class="jxr_javadoccomment">/** The command of the SCP packet. */</em>
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="CommandCode" href="../../../../../../uk/ac/manchester/spinnaker/messages/scp/CommandCode.html#CommandCode">CommandCode</a> command;
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  
@@ -53,7 +53,7 @@
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment">	 *            The command to perform.</em>
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment">	 * @see #issueSequenceNumber(Set)</em>
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  	<strong class="jxr_keyword">public</strong> <a name="SCPRequestHeader" href="../../../../../../uk/ac/manchester/spinnaker/messages/scp/SCPRequestHeader.html#SCPRequestHeader">SCPRequestHeader</a>(<a name="CommandCode" href="../../../../../../uk/ac/manchester/spinnaker/messages/scp/CommandCode.html#CommandCode">CommandCode</a> command) {
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  	SCPRequestHeader(<a name="CommandCode" href="../../../../../../uk/ac/manchester/spinnaker/messages/scp/CommandCode.html#CommandCode">CommandCode</a> command) {
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  		<strong class="jxr_keyword">this</strong>.command = command;
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  	}
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  
