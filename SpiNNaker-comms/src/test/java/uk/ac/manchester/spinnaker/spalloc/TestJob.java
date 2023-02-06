@@ -16,23 +16,26 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
+import static java.lang.Math.abs;
 import static java.lang.Thread.sleep;
 import static org.junit.jupiter.api.Assertions.*;
 import static testconfig.BoardTestConfiguration.OWNER;
 import static uk.ac.manchester.spinnaker.spalloc.MockServer.STOP;
 import static uk.ac.manchester.spinnaker.spalloc.SpallocJob.DEFAULT_CONFIGURATION_SOURCE;
 import static uk.ac.manchester.spinnaker.spalloc.SpallocJob.setConfigurationSource;
-import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.withConnection;
+import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.withAdvancedConnection;
 import static uk.ac.manchester.spinnaker.spalloc.messages.State.READY;
 
 import java.util.List;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
@@ -49,19 +52,13 @@ class TestJob {
 		setConfigurationSource(DEFAULT_CONFIGURATION_SOURCE);
 	}
 
-	/*
-	 * TODO test need fixing as calls to client are time dependent so this test
-	 * sometimes fails. For example j.getState() may or may not call the client
-	 * depending on when the previous state was requested.
+	/**
+	 * What the server will send (except for keepalive responses).
+	 *
+	 * @return The sequence of messages that the mock server will send.
 	 */
-	@Test
-	@Disabled("unreliable: depends on timing")
-	void testCoreJobFlow() throws Exception {
+	private static BlockingDeque<String> mockServerMessagesToSend() {
 		var send = new LinkedBlockingDeque<String>();
-		var received = new LinkedBlockingDeque<JSONObject>();
-		var keepalives = new LinkedBlockingDeque<JSONObject>();
-
-		// Set the sequence of messages that the server will send
 		send.offer("{\"return\": 123}");
 		send.offer("{\"return\": null}");
 		send.offer("{\"return\": {\"state\": 2, \"power\": false}}");
@@ -75,46 +72,22 @@ class TestJob {
 				+ "\"height\":8}}");
 		send.offer("{\"return\": null}");
 		send.offer(STOP);
+		return send;
+	}
 
-		// Run the core of test
-		withConnection((s, c, bgAccept) -> {
-			int id;
-			List<BoardCoordinates> boards;
-			State state;
-			Boolean power;
-
-			// Get the mock server to do message interchange interception
-			s.advancedEmulationMode(send, received, keepalives, bgAccept);
-
-			// The actual flow that we'd expect from normal usage
-			try (var j = new SpallocJob("localhost",
-					new CreateJob(1, 2, 3).owner(OWNER).keepAlive(1))) {
-				id = j.getID();
-				sleep(1200);
-				j.setPower(true);
-				j.waitUntilReady(5000);
-				boards = j.getBoards();
-				state = j.getState();
-				// Check that the cache is caching
-				power = j.getPower();
-				j.destroy("abc");
-			}
-			// Make sure that the keepalive has been shut down too
-			sleep(1200);
-
-			assertEquals(123, id);
-			assertEquals(List.of(new BoardCoordinates(4, 5, 6),
-					new BoardCoordinates(7, 8, 9)), boards);
-			assertEquals(READY, state);
-			assertEquals(true, power);
-		});
-
-		// Check that the messages sent were the ones we expected
+	/**
+	 * Check that the sequence of non-keepalive messages is as expected.
+	 *
+	 * @param received
+	 *            The sequence of messages the mock server has received.
+	 */
+	private static void assertMockServerReceived(
+			BlockingDeque<JSONObject> received)
+			throws JSONException, InterruptedException {
 		JSONAssert.assertEquals("{\"command\": \"create_job\", "
 				+ "\"args\": [1, 2, 3], \"kwargs\": {"
-				+ "\"keepalive\": 1, \"max_dead_boards\": 0, "
-				+ "\"min_ratio\": 0.333, \"owner\": \"dummy\", "
-				+ "\"require_torus\": false}}", received.take(), true);
+				+ "\"keepalive\": 1, \"owner\": \"java test harness\", "
+				+ "\"tags\": [\"default\"]}}", received.take(), true);
 		JSONAssert.assertEquals(
 				"{\"command\": \"power_on_job_boards\", \"args\": [123], "
 						+ "\"kwargs\": {}}",
@@ -140,23 +113,100 @@ class TestJob {
 				received.take(), true);
 		assertTrue(received.isEmpty(),
 				"must have checked all received messages");
-		assertTrue(send.isEmpty(), "must have sent all expected responses");
+	}
 
+	/**
+	 * Check that the number of keepalives is sane, and that they're all
+	 * identical.
+	 *
+	 * @param keepalives
+	 *            The received keepalives
+	 * @param keepaliveTarget
+	 *            How many we expect
+	 */
+	private static void assertMockReceivedKeepalivesInRange(
+			BlockingDeque<JSONObject> keepalives, int keepaliveTarget)
+			throws InterruptedException {
 		// Check the number of keepalives
-		assertTrue(Math.abs(3 - keepalives.size()) <= 1, () -> {
-			return "number of keepalives needs to be close to 3, but was "
-					+ keepalives.size();
+		assertTrue(abs(keepaliveTarget - keepalives.size()) <= 1, () -> {
+			return "number of keepalives needs to be close to "
+					+ keepaliveTarget + ", but was " + keepalives.size();
 		});
 		// All should have the same message sent
 		var first = keepalives.take();
 		assertNotNull(first, "null in keepalive queue!");
-		JSONAssert.assertEquals(
-				"{\"command\": \"job_keepalive\", "
-						+ "\"args\": [123], \"kwargs\": {}}",
-				first, true);
+		JSONAssert.assertEquals("{\"command\": \"job_keepalive\", "
+				+ "\"args\": [123], \"kwargs\": {}}", first, true);
 		while (!keepalives.isEmpty()) {
 			JSONAssert.assertEquals(first, keepalives.take(), true);
 		}
+	}
+
+	@ParameterizedTest
+	//@formatter:off
+	@CsvSource({
+		"0,0,0,0,0,0,3",
+		"250,0,0,0,0,0,3",
+		"0,250,0,0,0,0,3",
+		"0,0,250,0,0,0,3",
+		"0,0,0,250,0,0,3",
+		"0,0,0,0,250,0,3",
+		"0,0,0,0,0,250,3",
+		"250,250,250,250,250,250,5"
+	})
+	//@formatter:on
+	void testCoreJobFlow(int delay1, int delay2, int delay3, int delay4,
+			int delay5, int delay6, int keepaliveTarget) throws Exception {
+		var send = mockServerMessagesToSend();
+		var received = new LinkedBlockingDeque<JSONObject>();
+		var keepalives = new LinkedBlockingDeque<JSONObject>();
+
+		// Run the core of test
+		withAdvancedConnection(send, received, keepalives, c -> {
+			final int id;
+			final List<BoardCoordinates> boards;
+			final State state;
+			final Boolean power;
+
+			// The actual flow that we'd expect from normal usage
+			try (var j = new SpallocJob(c, new CreateJob(1, 2, 3)
+					.tags("default").owner(OWNER).keepAlive(1))) {
+				/*
+				 * Only non-standard bit in this part; it makes data caches in
+				 * the job effectively never expire through timeout. The
+				 * machinery under test will purge as necessary.
+				 */
+				j.statusCachePeriod *= 100;
+				sleep(delay1);
+				id = j.getID();
+				sleep(1200);
+				j.setPower(true);
+				sleep(delay2);
+				j.waitUntilReady(5000);
+				sleep(delay3);
+				state = j.getState();
+				sleep(delay4);
+				boards = j.getBoards();
+				sleep(delay5);
+				// Check that the cache is caching
+				power = j.getPower();
+				sleep(delay6);
+				j.destroy("abc");
+			}
+			// Make sure that the keepalive has been shut down too
+			sleep(500);
+
+			assertEquals(123, id);
+			assertEquals(List.of(new BoardCoordinates(4, 5, 6),
+					new BoardCoordinates(7, 8, 9)), boards);
+			assertEquals(READY, state);
+			assertEquals(true, power);
+		});
+
+		// Check that the messages are as expected
+		assertMockServerReceived(received);
+		assertTrue(send.isEmpty(), "must have sent all expected responses");
+		assertMockReceivedKeepalivesInRange(keepalives, keepaliveTarget);
 	}
 
 }
