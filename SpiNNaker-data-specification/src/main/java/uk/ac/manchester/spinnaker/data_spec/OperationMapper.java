@@ -45,13 +45,16 @@ abstract class OperationMapper {
 	private static final Logger log = getLogger(OperationMapper.class);
 
 	/**
-	 * Disable strict validation. For testing only.
+	 * Disable strict validation if {@code true}.
+	 *
+	 * @deprecated For testing only.
 	 */
+	@Deprecated
 	static boolean looseValidation;
 
 	/** The types we allow as return values: {@code int} and {@code void}. */
 	private static final Set<Class<?>> ALLOWED_RETURN_TYPES =
-			Set.of(Void.TYPE, Integer.TYPE);
+			Set.of(Void.TYPE, Integer.TYPE, Integer.class);
 
 	/**
 	 * Manufactures wrapped methods for a function API class. Methods are only
@@ -182,15 +185,15 @@ abstract class OperationMapper {
 							m.getName(), cls));
 		}
 
-		if (m.getReturnType().equals(Void.TYPE)) {
-			// Synthesise a return value
-			return obj -> {
-				m.invoke(obj);
-				return 0;
-			};
-		} else {
+		var rt = m.getReturnType();
+		if (rt.equals(Integer.TYPE) || rt.equals(Integer.class)) {
 			return obj -> (Integer) m.invoke(obj);
 		}
+		// Synthesise a return value
+		return obj -> {
+			m.invoke(obj);
+			return 0;
+		};
 	}
 
 	/**
