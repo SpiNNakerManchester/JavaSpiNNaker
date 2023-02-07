@@ -30,6 +30,7 @@ import static uk.ac.manchester.spinnaker.machine.datalinks.FpgaId.TOP_RIGHT;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -137,9 +138,9 @@ public class TestVirtualMachine {
 	@Test
 	public void testSpinnakerLinks() {
 		var ignoreLinks = Map.of(//
-				new ChipLocation(0, 0), Set.of(SOUTHWEST),
-				new ChipLocation(8, 4), Set.of(SOUTHWEST),
-				new ChipLocation(4, 8), Set.of(SOUTHWEST));
+				new ChipLocation(0, 0), EnumSet.of(SOUTHWEST),
+				new ChipLocation(8, 4), EnumSet.of(SOUTHWEST),
+				new ChipLocation(4, 8), EnumSet.of(SOUTHWEST));
 		var instance = new VirtualMachine(new MachineDimensions(12, 12),
 				null, null, ignoreLinks);
 		assertFalse(instance.hasLinkAt(new ChipLocation(0, 0), SOUTHWEST));
@@ -178,11 +179,11 @@ public class TestVirtualMachine {
 		// Make room for fpga links with two none fpga ignores as well
 		// South is a fpg NE is not
 		var ignoreLinks = Map.of(//
-				new ChipLocation(0, 0), Set.of(SOUTH, NORTHEAST),
-				new ChipLocation(0, 3), Set.of(WEST),
-				new ChipLocation(7, 2), Set.of(NORTH),
+				new ChipLocation(0, 0), EnumSet.of(SOUTH, NORTHEAST),
+				new ChipLocation(0, 3), EnumSet.of(WEST),
+				new ChipLocation(7, 2), EnumSet.of(NORTH),
 				// Middle of board so never fpga
-				new ChipLocation(1, 1), Set.of(NORTH));
+				new ChipLocation(1, 1), EnumSet.of(NORTH));
 
 		var instance = new VirtualMachine(new MachineDimensions(12, 12),
 				null, null, ignoreLinks);

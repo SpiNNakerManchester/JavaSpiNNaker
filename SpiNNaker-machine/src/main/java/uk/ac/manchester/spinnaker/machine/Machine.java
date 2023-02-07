@@ -21,6 +21,7 @@ import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Collections.unmodifiableSortedMap;
+import static java.util.EnumSet.noneOf;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -30,6 +31,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -203,7 +205,7 @@ public class Machine implements MappableIterable<Chip> {
 	 *         bits.
 	 */
 	public Machine rebuild(Set<ChipLocation> ignoreChips,
-			Map<ChipLocation, Set<Direction>> ignoreLinks) {
+			Map<ChipLocation, EnumSet<Direction>> ignoreLinks) {
 		if (ignoreChips == null) {
 			ignoreChips = findAbnormalChips();
 		}
@@ -891,8 +893,8 @@ public class Machine implements MappableIterable<Chip> {
 	 * @return A Map of ChipLocations to Direction (hopefully empty) which
 	 *         identifies links to remove
 	 */
-	public Map<ChipLocation, Set<Direction>> findAbnormalLinks() {
-		var abnormalLinks = new HashMap<ChipLocation, Set<Direction>>();
+	public Map<ChipLocation, EnumSet<Direction>> findAbnormalLinks() {
+		var abnormalLinks = new HashMap<ChipLocation, EnumSet<Direction>>();
 		for (var chip : chips.values()) {
 			for (var link : chip.router) {
 				/*
@@ -906,7 +908,8 @@ public class Machine implements MappableIterable<Chip> {
 					continue;
 				}
 				abnormalLinks
-						.computeIfAbsent(link.source(), __ -> new HashSet<>())
+						.computeIfAbsent(link.source(),
+								__ -> noneOf(Direction.class))
 						.add(link.sourceLinkDirection());
 			}
 		}

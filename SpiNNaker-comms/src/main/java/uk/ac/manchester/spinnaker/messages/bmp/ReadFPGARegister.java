@@ -17,7 +17,7 @@
 package uk.ac.manchester.spinnaker.messages.bmp;
 
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_LINK_READ;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_FPGA_READ;
 
 import java.nio.ByteBuffer;
 
@@ -27,7 +27,10 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * Requests the data from a FPGA's register.
+ * Requests the data from a FPGA's register. The response payload is the 32-bit
+ * integer contents of the register.
+ * <p>
+ * Calls {@code cmd_fpga_read()} in {@code bmp_cmd.c}.
  */
 public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 	/**
@@ -43,7 +46,7 @@ public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 	 */
 	public ReadFPGARegister(FPGA fpga, MemoryLocation register,
 			BMPBoard board) {
-		super(board, CMD_LINK_READ, register.address(), WORD_SIZE, fpga.value);
+		super(board, CMD_FPGA_READ, register.address(), WORD_SIZE, fpga.value);
 		if (!register.isAligned()) {
 			throw new IllegalArgumentException(
 					"FPGA register addresses must be aligned");
@@ -60,14 +63,17 @@ public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 	}
 
 	/** An SCP response to a request for the contents of an FPGA register. */
-	public static final class Response extends BMPRequest.BMPResponse {
-		/** The ADC information. */
-		public final int fpgaRegister;
-
+	protected static final class Response
+			extends BMPRequest.PayloadedResponse<Integer> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
-			super("Read FPGA register", CMD_LINK_READ, buffer);
-			fpgaRegister = buffer.getInt();
+			super("Read FPGA register", CMD_FPGA_READ, buffer);
+		}
+
+		/** @return The FPGA register contents, not further interpreted. */
+		@Override
+		protected Integer parse(ByteBuffer buffer) {
+			return buffer.getInt();
 		}
 	}
 }

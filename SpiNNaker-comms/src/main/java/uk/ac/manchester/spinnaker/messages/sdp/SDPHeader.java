@@ -35,7 +35,7 @@ import uk.ac.manchester.spinnaker.messages.bmp.BMPLocation;
 /**
  * Represents the header of an SDP message.
  */
-public class SDPHeader implements SerializableMessage {
+public final class SDPHeader implements SerializableMessage {
 	private static final int MAX_PORT = 7;
 
 	// Cpu:Port packing within port/cpu byte:

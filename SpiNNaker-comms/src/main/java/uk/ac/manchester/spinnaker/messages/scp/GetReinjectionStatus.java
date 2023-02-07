@@ -24,15 +24,21 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/** An SCP Request to get the status of the dropped packet reinjection. */
+/**
+ * An SCP Request to get the status of the dropped packet reinjection. The
+ * response payload is the {@linkplain ReinjectionStatus reinjection status}.
+ * <p>
+ * Handled by {@code reinjection_get_status()} in
+ * {@code extra_monitor_support.c}.
+ */
 public class GetReinjectionStatus
-		extends SCPRequest<GetReinjectionStatus.Response> {
+		extends ReinjectorRequest<GetReinjectionStatus.Response> {
 	/**
 	 * @param core
 	 *            the monitor core to read from
 	 */
 	public GetReinjectionStatus(HasCoreLocation core) {
-		super(new ReinjectionSDPHeader(core), GET_STATUS, 0, 0, 0, null);
+		super(core, GET_STATUS);
 	}
 
 	@Override
@@ -43,14 +49,17 @@ public class GetReinjectionStatus
 	/**
 	 * An SCP response to a request for the dropped packet reinjection status.
 	 */
-	public static final class Response extends CheckOKResponse {
-		/** The chip information received. */
-		public final ReinjectionStatus reinjectionStatus;
-
+	protected static final class Response
+			extends PayloadedResponse<ReinjectionStatus, RuntimeException> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Get packet reinjection status", GET_STATUS, buffer);
-			this.reinjectionStatus = new ReinjectionStatus(buffer);
+		}
+
+		/** @return The chip information received. */
+		@Override
+		protected ReinjectionStatus parse(ByteBuffer buffer) {
+			return new ReinjectionStatus(buffer);
 		}
 	}
 }

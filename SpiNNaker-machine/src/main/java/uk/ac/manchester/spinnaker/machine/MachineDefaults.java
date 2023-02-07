@@ -22,8 +22,8 @@ import static uk.ac.manchester.spinnaker.machine.Direction.SOUTHWEST;
 import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGAHERTZ_PER_HERTZ;
 
+import java.util.EnumSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Default values for a SpiNNaker machine comprised of SpiNNaker-1 chips running
@@ -106,11 +106,12 @@ public final class MachineDefaults {
 	// (0, 0, 3), (0, 0, 4), (0, 1, 3), (0, 1, 4),
 	// (1, 0, 0), (1, 0, 1), (1, 1, 0), (1, 1, 1)
 	// }
-	public static final Map<ChipLocation, Set<Direction>> FOUR_CHIP_DOWN_LINKS =
-			Map.of(new ChipLocation(0, 0), Set.of(WEST, SOUTHWEST),
-					new ChipLocation(0, 1), Set.of(WEST, SOUTHWEST),
-					new ChipLocation(1, 0), Set.of(EAST, NORTHEAST),
-					new ChipLocation(1, 1), Set.of(EAST, NORTHEAST));
+	public static final Map<ChipLocation,
+			EnumSet<Direction>> FOUR_CHIP_DOWN_LINKS = Map.of(
+					new ChipLocation(0, 0), EnumSet.of(WEST, SOUTHWEST),
+					new ChipLocation(0, 1), EnumSet.of(WEST, SOUTHWEST),
+					new ChipLocation(1, 0), EnumSet.of(EAST, NORTHEAST),
+					new ChipLocation(1, 1), EnumSet.of(EAST, NORTHEAST));
 
 	/**
 	 * Checks the x and y parameter are legal ones regardless of the type of

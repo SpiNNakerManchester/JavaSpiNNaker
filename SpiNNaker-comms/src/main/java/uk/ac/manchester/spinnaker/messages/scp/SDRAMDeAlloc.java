@@ -29,7 +29,13 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
 
-/** An SCP Request to free space in the SDRAM. */
+/**
+ * An SCP Request to free space in the SDRAM. The response payload is the number
+ * of blocks that were deallocated.
+ * <p>
+ * Calls {@code cmd_alloc()} (and hence {@code sark_xfree()} or
+ * {@code sark_xfree_id()}) in {@code scamp-cmd.c}.
+ */
 public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 	private final boolean readNumFreedBlocks;
 
@@ -37,9 +43,9 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 	 * Free the memory associated with a given application ID.
 	 *
 	 * @param chip
-	 *            the chip to allocate on
+	 *            The chip to deallocate on.
 	 * @param appID
-	 *            The ID of the application
+	 *            The ID of the application.
 	 */
 	public SDRAMDeAlloc(HasChipLocation chip, AppID appID) {
 		super(chip.getScampCore(), CMD_ALLOC, argument1(appID));
@@ -50,10 +56,10 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 	 * Free a block of memory of known size.
 	 *
 	 * @param chip
-	 *            the chip to allocate on
+	 *            The chip to deallocate on.
 	 * @param baseAddress
-	 *            The start address in SDRAM to which the block needs to be
-	 *            deallocated
+	 *            The start address in SDRAM of the block that needs to be
+	 *            deallocated.
 	 */
 	public SDRAMDeAlloc(HasChipLocation chip, MemoryLocation baseAddress) {
 		super(chip.getScampCore(), CMD_ALLOC, FREE_SDRAM_BY_POINTER.value,
@@ -61,35 +67,45 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 		readNumFreedBlocks = false;
 	}
 
+	// @formatter:off
+	/*
+	 * [  31-16 |   15-8 | 7-0 ]
+	 * [ unused | app_id |  op ]
+	 */
+	// @formatter:off
 	private static int argument1(AppID appID) {
 		return (appID.appID() << BYTE1) | (FREE_SDRAM_BY_APP_ID.value << BYTE0);
 	}
 
 	@Override
 	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new Response(readNumFreedBlocks, buffer);
+		return new Response(buffer);
 	}
 
 	/** An SCP response to a request to deallocate SDRAM. */
-	public static class Response extends CheckOKResponse {
-		/**
-		 * The number of allocated blocks that have been freed from the appID
-		 * given, or zero for when the direct amount of space to deallocate was
-		 * given.
-		 */
-		public final int numFreedBlocks;
-
-		Response(boolean readFreedBlocks, ByteBuffer buffer) throws Exception {
+	protected final class Response extends
+			PayloadedResponse<Integer, MemoryAllocationFailedException> {
+		Response(ByteBuffer buffer) throws Exception {
 			super("SDRAM Deallocation", CMD_ALLOC, buffer);
-			if (readFreedBlocks) {
-				numFreedBlocks = buffer.getInt();
-				if (numFreedBlocks == 0) {
-					throw new MemoryAllocationFailedException(
-							"Could not deallocate SDRAM");
-				}
-			} else {
-				numFreedBlocks = 0;
+		}
+
+		/**
+		 * @return The number of allocated blocks that have been freed from the
+		 *         appID given, or one when the direct block of space to
+		 *         deallocate was given.
+		 */
+		@Override
+		protected Integer parse(ByteBuffer buffer)
+				throws MemoryAllocationFailedException {
+			if (!readNumFreedBlocks) {
+				return 1;
 			}
+			int numFreedBlocks = buffer.getInt();
+			if (numFreedBlocks == 0) {
+				throw new MemoryAllocationFailedException(
+						"Could not deallocate SDRAM");
+			}
+			return numFreedBlocks;
 		}
 	}
 }

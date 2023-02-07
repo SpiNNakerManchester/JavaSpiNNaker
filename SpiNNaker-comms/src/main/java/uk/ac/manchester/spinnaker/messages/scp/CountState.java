@@ -30,11 +30,20 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.CPUState;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/** An SCP Request to get a count of the cores in a particular state. */
+/**
+ * An SCP Request to get a count of the cores in a particular state. The
+ * response payload is the integer count.
+ * <p>
+ * Actual adding up of states is in {@code proc_process()} and
+ * {@code p2p_region()} in {@code scamp-cmd.c}. This is the main use of
+ * point-to-point signals (and the only one exposed to users).
+ */
 public class CountState extends SCPRequest<CountState.Response> {
-	private static final int COUNT_OPERATION = 1;
+	/* enum send_reg_ctrl */
+	private static final int APP_STAT = 1;
 
-	private static final int COUNT_MODE = 2;
+	/* enum state_coalesce_mode */
+	private static final int MODE_SUM = 2;
 
 	private static final int OP_SHIFT = 22;
 
@@ -48,13 +57,19 @@ public class CountState extends SCPRequest<CountState.Response> {
 	 */
 	public CountState(AppID appID, CPUState state) {
 		super(BOOT_MONITOR_CORE, CMD_SIG, POINT_TO_POINT.value,
-				argument2(appID, state), ALL_CORE_SIGNAL_MASK);
+				data(appID, state), ALL_CORE_SIGNAL_MASK);
 	}
 
-	private static int argument2(AppID appId, CPUState state) {
+	// @formatter:off
+	/*
+	 * [  31-28 | 27-26 |  25-24 | 23-22 | 21-20 | 19-16 |     15-8 |    7-0 ]
+	 * [ unused | level | unused |    op |  mode | state | app_mask | app_id ]
+	 */
+	// @formatter:on
+	private static int data(AppID appId, CPUState state) {
 		int data = (APP_MASK << BYTE1) | (appId.appID() << BYTE0);
-		data |= COUNT_OPERATION << OP_SHIFT;
-		data |= COUNT_MODE << MODE_SHIFT;
+		data |= APP_STAT << OP_SHIFT;
+		data |= MODE_SUM << MODE_SHIFT;
 		data |= state.value << BYTE2;
 		return data;
 	}
@@ -67,13 +82,15 @@ public class CountState extends SCPRequest<CountState.Response> {
 	/**
 	 * An SCP response to a request for the number of cores in a given state.
 	 */
-	public static final class Response extends CheckOKResponse {
-		/** The count of the number of cores with the requested state. */
-		public final int count;
-
+	public static final class Response
+			extends PayloadedResponse<Integer, RuntimeException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("CountState", CMD_SIG, buffer);
-			count = buffer.getInt();
+		}
+
+		@Override
+		protected Integer parse(ByteBuffer buffer) {
+			return buffer.getInt();
 		}
 	}
 }

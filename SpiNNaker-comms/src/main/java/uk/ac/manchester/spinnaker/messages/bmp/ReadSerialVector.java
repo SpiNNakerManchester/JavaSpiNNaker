@@ -20,14 +20,15 @@ import static uk.ac.manchester.spinnaker.messages.bmp.BMPInfo.SERIAL;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_INFO;
 
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 
-import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * SCP Request for the serial data vector from the BMP.
+ * SCP Request for the serial data vector from the BMP. The response payload is
+ * the {@linkplain SerialVector serial vector} from the BMP.
+ * <p>
+ * Handled by {@code cmd_bmp_info()} in {@code bmp_cmd.c}.
  */
 public class ReadSerialVector extends BMPRequest<ReadSerialVector.Response> {
 	/**
@@ -44,62 +45,17 @@ public class ReadSerialVector extends BMPRequest<ReadSerialVector.Response> {
 	}
 
 	/** An SCP response to a request for serial data. */
-	public static final class Response extends BMPRequest.BMPResponse {
-		/** The serial data. */
-		public final SerialVector vector;
-
+	protected static final class Response
+			extends BMPRequest.PayloadedResponse<SerialVector> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Read serial data vector", CMD_BMP_INFO, buffer);
-			vector = new SerialVector(buffer.asIntBuffer());
-		}
-	}
-
-	/** The data read from the serial vector. */
-	public static final class SerialVector {
-		private static final int HW_VERSION_INDEX = 0;
-
-		private static final int SERIAL_INDEX = 1;
-
-		/** The length of the serial number, in words. */
-		public static final int SERIAL_LENGTH = 4;
-
-		private static final int FLASH_BUFFER_INDEX = 5;
-
-		private static final int BOARD_STATUS_INDEX = 6;
-
-		private static final int CORTEX_VECTOR_INDEX = 7;
-
-		private final IntBuffer buffer;
-
-		private SerialVector(IntBuffer buffer) {
-			this.buffer = buffer;
 		}
 
-		/** @return The hardware version. */
-		public int getHardwareVersion() {
-			return buffer.get(HW_VERSION_INDEX);
-		}
-
-		/** @return The serial number data, as a read-only buffer. */
-		public IntBuffer getSerialNumber() {
-			return buffer.slice(SERIAL_INDEX, SERIAL_LENGTH).asReadOnlyBuffer();
-		}
-
-		/** @return The location of the flash buffer. */
-		public MemoryLocation getFlashBuffer() {
-			return new MemoryLocation(buffer.get(FLASH_BUFFER_INDEX));
-		}
-
-		/** @return The board status bit vector. */
-		public int getBoardStatus() {
-			// TODO what's the right return type?
-			return buffer.get(BOARD_STATUS_INDEX);
-		}
-
-		/** @return The location of the cortex vector. */
-		public MemoryLocation getCortexVector() {
-			return new MemoryLocation(buffer.get(CORTEX_VECTOR_INDEX));
+		/** @return The serial data. */
+		@Override
+		protected SerialVector parse(ByteBuffer buffer) {
+			return new SerialVector(buffer);
 		}
 	}
 }

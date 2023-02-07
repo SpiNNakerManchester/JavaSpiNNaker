@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
+import static java.lang.System.arraycopy;
 import static java.net.InetAddress.getByAddress;
 import static uk.ac.manchester.spinnaker.messages.bmp.BMPInfo.IP_ADDR;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_INFO;
@@ -28,7 +29,11 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * SCP Request for the IP address data from a BMP.
+ * SCP Request for the IP address data from a BMP. The response payload is the
+ * {@linkplain Addresses pair of addresses} that the board is configured to
+ * have.
+ * <p>
+ * Handled by {@code cmd_bmp_info()} in {@code bmp_cmd.c}.
  */
 public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
 	/**
@@ -44,39 +49,57 @@ public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
 		return new Response(buffer);
 	}
 
-	/** An SCP response to a request for IP address information. */
-	public static final class Response extends BMPRequest.BMPResponse {
-		/** The IP address of the BMP. */
-		public final InetAddress bmpIPAddress;
-
-		/** The IP address of the managed SpiNNaker board. */
-		public final InetAddress spinIPAddress;
-
+	/**
+	 * The IP addresses associated with a SpiNNaker board.
+	 *
+	 * @param bmpIPAddress
+	 *            The IPv4 address of the BMP.
+	 * @param spinIPAddress
+	 *            The IPv4 address of the managed SpiNNaker board.
+	 */
+	public record Addresses(InetAddress bmpIPAddress,
+			InetAddress spinIPAddress) {
 		private static final int CHUNK_LEN = 32;
 
 		private static final int IP_OFFSET = 8;
 
 		private static final int IP_LEN = 4;
 
-		private byte[] getChunk(ByteBuffer buffer) {
-			byte[] chunk = new byte[CHUNK_LEN];
+		private static InetAddress getIP(ByteBuffer buffer)
+				throws UnknownHostException {
+			/*
+			 * NB: CHUNK_LEN != IP_LEN so we *must* copy like this or otherwise
+			 * mess around with the buffer position. This is easiest.
+			 */
+			var chunk = new byte[CHUNK_LEN];
 			buffer.get(chunk);
-			return chunk;
-		}
-
-		private InetAddress getIP(byte[] chunk) throws UnknownHostException {
-			byte[] bytes = new byte[IP_LEN];
-			System.arraycopy(chunk, IP_OFFSET, bytes, 0, IP_LEN);
+			var bytes = new byte[IP_LEN];
+			arraycopy(chunk, IP_OFFSET, bytes, 0, IP_LEN);
 			return getByAddress(bytes);
 		}
 
+		private Addresses(ByteBuffer buffer) throws UnknownHostException {
+			this(getIP(buffer), getIP(buffer));
+		}
+	}
+
+	/** An SCP response to a request for IP address information. */
+	protected static final class Response
+			extends BMPRequest.PayloadedResponse<Addresses> {
 		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException, UnknownHostException {
+				throws UnexpectedResponseCodeException {
 			super("Read IP Address Data", CMD_BMP_INFO, buffer);
-			byte[] bmpChunk = getChunk(buffer);
-			byte[] spinChunk = getChunk(buffer);
-			bmpIPAddress = getIP(bmpChunk);
-			spinIPAddress = getIP(spinChunk);
+		}
+
+		/** @return The addresses of the SpiNNaker board. */
+		@Override
+		protected Addresses parse(ByteBuffer buffer) {
+			try {
+				return new Addresses(buffer);
+			} catch (UnknownHostException e) {
+				// Should be unreachable
+				return null;
+			}
 		}
 	}
 }

@@ -25,7 +25,9 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
 
 /**
- * A request to alter the LEDs on a board.
+ * A request to alter the LEDs on a board. There is no response payload.
+ * <p>
+ * Handled by {@code cmp_led()} in {@code bmp_cmd.c}.
  */
 public class BMPSetLED extends BMPRequest<BMPRequest.BMPResponse> {
 	/**

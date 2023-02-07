@@ -27,7 +27,6 @@ import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static java.util.stream.Collectors.toUnmodifiableMap;
-import static java.util.stream.IntStream.range;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,6 +44,7 @@ import java.util.function.IntBinaryOperator;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -80,6 +80,32 @@ public abstract class CollectionUtils {
 	public static <E extends Enum<E>> Collector<E, ?, EnumSet<E>> toEnumSet(
 			Class<E> cls) {
 		return toCollection(() -> noneOf(cls));
+	}
+
+	/**
+	 * Generate an iterable that covers a range. Only expected to cover the
+	 * range once.
+	 *
+	 * @param startAt
+	 *            What value to start at.
+	 * @param upTo
+	 *            What value to go up to (in steps of +1) but not include.
+	 * @return A one-shot iterable.
+	 */
+	public static Iterable<Integer> range(int startAt, int upTo) {
+		return IntStream.range(startAt, upTo)::iterator;
+	}
+
+	/**
+	 * Generate an iterable that covers a range starting at zero and counting
+	 * up. Only expected to cover the range once.
+	 *
+	 * @param upTo
+	 *            What value to go up to (in steps of +1) but not include.
+	 * @return A one-shot iterable.
+	 */
+	public static Iterable<Integer> range(int upTo) {
+		return IntStream.range(0, upTo)::iterator;
 	}
 
 	/**
@@ -121,7 +147,7 @@ public abstract class CollectionUtils {
 	 */
 	public static <T> Collection<Collection<T>> batch(int batchSize,
 			List<T> input) {
-		return range(0, (input.size() + batchSize - 1) / batchSize)
+		return IntStream.range(0, (input.size() + batchSize - 1) / batchSize)
 				.map(i -> i * batchSize)
 				.mapToObj(idx -> unmodifiableCollection(
 						input.subList(idx, min(input.size(), idx + batchSize))))

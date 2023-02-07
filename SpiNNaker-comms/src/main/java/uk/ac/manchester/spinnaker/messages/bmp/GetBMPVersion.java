@@ -25,7 +25,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 
 /**
- * An SCP request to read the version of software running on a board's BMP.
+ * An SCP request to read the version of software running on a board's BMP. The
+ * response payload is a {@linkplain VersionInfo version descriptor}.
+ * <p>
+ * Calls or {@code cmd_ver()} in {@code bmp_cmd.c}.
  */
 public class GetBMPVersion extends BMPRequest<GetBMPVersion.Response> {
 	/**
@@ -42,14 +45,17 @@ public class GetBMPVersion extends BMPRequest<GetBMPVersion.Response> {
 	}
 
 	/** An SCP response to a request for the version of software running. */
-	public static final class Response extends BMPRequest.BMPResponse {
-		/** The version information received. */
-		public final VersionInfo versionInfo;
-
+	protected static final class Response
+			extends BMPRequest.PayloadedResponse<VersionInfo> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Read Version", CMD_VER, buffer);
-			versionInfo = new VersionInfo(buffer, true);
+		}
+
+		/** @return The version information received. */
+		@Override
+		protected VersionInfo parse(ByteBuffer buffer) {
+			return new VersionInfo(buffer, true);
 		}
 	}
 }

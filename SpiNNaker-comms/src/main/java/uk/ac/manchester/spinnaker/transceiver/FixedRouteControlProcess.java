@@ -84,7 +84,7 @@ class FixedRouteControlProcess extends TxrxProcess {
 			AppID appID)
 			throws IOException, ProcessException, InterruptedException {
 		int entry = fixedRoute.encode();
-		synchronousCall(new FixedRouteInitialise(chip, entry, appID));
+		call(new FixedRouteInitialise(chip, entry, appID));
 	}
 
 	/**
@@ -122,6 +122,6 @@ class FixedRouteControlProcess extends TxrxProcess {
 	 */
 	RoutingEntry readFixedRoute(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
-		return synchronousCall(new FixedRouteRead(chip, appID)).getRoute();
+		return retrieve(new FixedRouteRead(chip, appID));
 	}
 }

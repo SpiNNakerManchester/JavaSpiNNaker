@@ -66,9 +66,10 @@ class GetTagsProcess extends TxrxProcess {
 		var tags = new TreeMap<Integer, Tag>();
 		for (var tag : range(0, getTagCount(connection)).toArray()) {
 			sendRequest(new IPTagGet(connection.getChip(), tag), response -> {
-				if (response.isInUse()) {
+				var info = response.get();
+				if (info.isInUse()) {
 					tags.put(tag, createTag(connection.getRemoteIPAddress(),
-							tag, response));
+							tag, response, info));
 				}
 			});
 		}
@@ -78,18 +79,18 @@ class GetTagsProcess extends TxrxProcess {
 
 	private int getTagCount(SCPConnection connection)
 			throws IOException, ProcessException, InterruptedException {
-		var tagInfo = synchronousCall(new IPTagGetInfo(connection.getChip()));
-		return tagInfo.poolSize + tagInfo.fixedSize;
+		var tagInfo = retrieve(new IPTagGetInfo(connection.getChip()));
+		return tagInfo.poolSize() + tagInfo.fixedSize();
 	}
 
 	private static Tag createTag(InetAddress host, int tag,
-			IPTagGet.Response res) {
-		if (res.isReverse()) {
-			return new ReverseIPTag(host, tag, res.rxPort, res.spinCore,
-					res.spinPort);
+			IPTagGet.Response res, IPTagGet.TagDescription info) {
+		if (info.isReverse()) {
+			return new ReverseIPTag(host, tag, info.rxPort, info.spinCore,
+					info.spinPort);
 		} else {
 			return new IPTag(host, res.sdpHeader.getSource().asChipLocation(),
-					tag, res.ipAddress, res.port, res.isStrippingSDP());
+					tag, info.ipAddress, info.port, info.isStrippingSDP());
 		}
 	}
 
@@ -112,9 +113,10 @@ class GetTagsProcess extends TxrxProcess {
 		var tagUsages = new TreeMap<Tag, Integer>();
 		for (var tag : range(0, getTagCount(connection)).toArray()) {
 			sendRequest(new IPTagGet(connection.getChip(), tag), response -> {
-				if (response.isInUse()) {
+				var info = response.get();
+				if (info.isInUse()) {
 					tagUsages.put(createTag(connection.getRemoteIPAddress(),
-							tag, response), response.count);
+							tag, response, info), info.count);
 				}
 			});
 		}

@@ -22,20 +22,28 @@ import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE3;
+import static uk.ac.manchester.spinnaker.messages.scp.FloodFillConstants.DATA_RESEND;
+import static uk.ac.manchester.spinnaker.messages.scp.FloodFillConstants.DELAY;
+import static uk.ac.manchester.spinnaker.messages.scp.FloodFillConstants.FORWARD_LINKS;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_FFD;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
-/** A request to start a flood fill of data. */
+/**
+ * An SCP request to flood fill some data. There is no response payload.
+ * <p>
+ * Handled by {@code cmd_ffd()} in {@code scamp-cmd.c} (which sends many
+ * messages to actually move the data, handled by {@code nn_cmd_fbs()},
+ * {@code nn_cmd_fbd()} and {@code nn_cmd_fbe()} on their receiving cores).
+ *
+ * @see FloodFillStart
+ * @see FloodFillEnd
+ */
 public class FloodFillData extends SCPRequest<CheckOKResponse> {
-	private static final int MAGIC1 = 0x3f;
-
-	private static final int MAGIC2 = 0x1A;
-
-	private static final int NNP_FORWARD_RETRY =
-			(MAGIC1 << BYTE3) | (MAGIC2 << BYTE2);
+	private static final int FFD_NNP_FORWARD_RETRY =
+			(FORWARD_LINKS << BYTE3) | ((DELAY | DATA_RESEND) << BYTE2);
 
 	/**
 	 * @param nearestNeighbourID
@@ -71,8 +79,8 @@ public class FloodFillData extends SCPRequest<CheckOKResponse> {
 	 */
 	public FloodFillData(byte nearestNeighbourID, int blockNumber,
 			MemoryLocation baseAddress, byte[] data, int offset, int length) {
-		super(BOOT_MONITOR_CORE, CMD_FFD, argument1(nearestNeighbourID),
-				argument2(blockNumber, length), baseAddress.address(),
+		super(BOOT_MONITOR_CORE, CMD_FFD, idFwdRty(nearestNeighbourID),
+				keyBase(blockNumber, length), baseAddress.address(),
 				wrap(data, offset, length));
 	}
 
@@ -91,16 +99,17 @@ public class FloodFillData extends SCPRequest<CheckOKResponse> {
 	 */
 	public FloodFillData(byte nearestNeighbourID, int blockNumber,
 			MemoryLocation baseAddress, ByteBuffer data) {
-		super(BOOT_MONITOR_CORE, CMD_FFD, argument1(nearestNeighbourID),
-				argument2(blockNumber, data.remaining()), baseAddress.address(),
+		super(BOOT_MONITOR_CORE, CMD_FFD, idFwdRty(nearestNeighbourID),
+				keyBase(blockNumber, data.remaining()), baseAddress.address(),
 				data);
 	}
 
-	private static int argument1(byte nearestNeighbourID) {
-		return NNP_FORWARD_RETRY | toUnsignedInt(nearestNeighbourID);
+	private static int idFwdRty(byte nearestNeighbourID) {
+		return FFD_NNP_FORWARD_RETRY | toUnsignedInt(nearestNeighbourID);
 	}
 
-	private static int argument2(int blockNumber, int size) {
+	private static int keyBase(int blockNumber, int size) {
+		// This is the base for NN keys used
 		return (blockNumber << BYTE2) | ((size / WORD_SIZE - 1) << BYTE1);
 	}
 

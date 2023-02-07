@@ -27,7 +27,15 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/** An SCP Request information about IP tags. */
+/**
+ * An SCP Request information about IP tags. The response payload is the
+ * {@linkplain TagInfo tag <em>system</em> information}.
+ * <p>
+ * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},
+ * if sent to a BMP).
+ *
+ * @see IPTagGet
+ */
 public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 	private static final int IPTAG_MAX = 255;
 
@@ -46,25 +54,35 @@ public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 		return new IPTagGetInfo.Response(buffer);
 	}
 
+	/**
+	 * Information about a tag pool.
+	 *
+	 * @param transientTimeout
+	 *            The timeout for transient IP tags (i.e., responses to SCP
+	 *            commands).
+	 * @param poolSize
+	 *            The count of the IP tag pool size.
+	 * @param fixedSize
+	 *            The count of the number of fixed IP tag entries.
+	 */
+	public record TagInfo(IPTagTimeOutWaitTime transientTimeout, int poolSize,
+			int fixedSize) {
+	}
+
 	/** An SCP response to a request for information about IP tags. */
-	public static class Response extends CheckOKResponse {
-		/**
-		 * The timeout for transient IP tags (i.e., responses to SCP commands).
-		 */
-		public final IPTagTimeOutWaitTime transientTimeout;
-
-		/** The count of the IP tag pool size. */
-		public final int poolSize;
-
-		/** The count of the number of fixed IP tag entries. */
-		public final int fixedSize;
-
+	protected static final class Response
+			extends PayloadedResponse<TagInfo, RuntimeException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("Get IP Tag Info", CMD_IPTAG, buffer);
-			transientTimeout = IPTagTimeOutWaitTime.get(buffer.get());
-			buffer.get(); // skip 1
-			poolSize = toUnsignedInt(buffer.get());
-			fixedSize = toUnsignedInt(buffer.get());
+		}
+
+		@Override
+		protected TagInfo parse(ByteBuffer buffer) throws RuntimeException {
+			var transientTimeout = IPTagTimeOutWaitTime.get(buffer.get());
+			buffer.get(); // skip 1 (sizeof(iptag_t) isn't relevant to us)
+			var poolSize = toUnsignedInt(buffer.get());
+			var fixedSize = toUnsignedInt(buffer.get());
+			return new TagInfo(transientTimeout, poolSize, fixedSize);
 		}
 	}
 }

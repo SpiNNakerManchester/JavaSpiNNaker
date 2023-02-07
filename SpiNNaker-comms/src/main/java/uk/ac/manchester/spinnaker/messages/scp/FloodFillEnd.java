@@ -22,23 +22,29 @@ import static uk.ac.manchester.spinnaker.messages.model.AppID.DEFAULT;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE3;
+import static uk.ac.manchester.spinnaker.messages.scp.FloodFillConstants.DELAY;
+import static uk.ac.manchester.spinnaker.messages.scp.FloodFillConstants.FORWARD_LINKS;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_NNP;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
 import uk.ac.manchester.spinnaker.machine.ValidP;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 
-/** A request to start a flood fill of data. */
+/**
+ * An SCP request to finish a flood fill of data across all cores and launch the
+ * application. There is no response payload.
+ * <p>
+ * Handled ultimately by {@code nn_cmd_ffe()} in {@code scamp-nn.c}.
+ */
 public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
-	private static final int MAGIC1 = 0x3f;
-
-	private static final int MAGIC2 = 0x18;
-
+	// Send on all links, std inter-message delay, no message resends
 	private static final int NNP_FORWARD_RETRY =
-			(MAGIC1 << BYTE1) | (MAGIC2 << BYTE0);
+			(FORWARD_LINKS << BYTE1) | (DELAY << BYTE0);
 
-	private static final int NNP_FLOOD_FILL_END = 15;
+	// See nn_rcv_pkt()
+	private static final int NN_CMD_FFE = 15;
 
 	private static final int WAIT_BIT = 18;
 
@@ -47,21 +53,7 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	 *            The ID of the packet, between 0 and 127
 	 */
 	public FloodFillEnd(byte nearestNeighbourID) {
-		this(nearestNeighbourID, DEFAULT, null, false);
-	}
-
-	/**
-	 * @param nearestNeighbourID
-	 *            The ID of the packet, between 0 and 127
-	 * @param appID
-	 *            The application ID to start using the data
-	 * @param processors
-	 *            A list of processors on which to start the application, each
-	 *            between 1 and 17. If not specified, no application is started.
-	 */
-	public FloodFillEnd(byte nearestNeighbourID, AppID appID,
-			Iterable<@ValidP Integer> processors) {
-		this(nearestNeighbourID, appID, processors, false);
+		this(nearestNeighbourID, DEFAULT, List.of(), false);
 	}
 
 	/**
@@ -78,23 +70,32 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	 */
 	public FloodFillEnd(byte nearestNeighbourID, AppID appID,
 			Iterable<@ValidP Integer> processors, boolean wait) {
-		super(BOOT_MONITOR_CORE, CMD_NNP, argument1(nearestNeighbourID),
-				argument2(appID, processors, wait), NNP_FORWARD_RETRY);
+		super(BOOT_MONITOR_CORE, CMD_NNP, key(nearestNeighbourID),
+				data(appID, processors, wait), NNP_FORWARD_RETRY);
 	}
 
-	private static int argument1(byte nearestNeighbourID) {
-		return (NNP_FLOOD_FILL_END << BYTE3)
-				| toUnsignedInt(nearestNeighbourID);
+	private static int key(byte nearestNeighbourID) {
+		return (NN_CMD_FFE << BYTE3) | toUnsignedInt(nearestNeighbourID);
 	}
 
-	private static int argument2(AppID appID, Iterable<Integer> processors,
+	/**
+	 * The value to pass to {@code proc_start_app()} to say what cores to start
+	 * on and what app ID to use.
+	 *
+	 * @param appID
+	 *            The application ID.
+	 * @param processors
+	 *            What to launch on.
+	 * @param wait
+	 *            Whether to start in the {@code wait} state.
+	 * @return The packed word.
+	 */
+	private static int data(AppID appID, Iterable<Integer> processors,
 			boolean wait) {
 		int processorMask = 0;
-		if (processors != null) {
-			for (int p : processors) {
-				if (p >= 1 && p < MAX_NUM_CORES) {
-					processorMask |= 1 << p;
-				}
+		for (int p : processors) {
+			if (p >= 1 && p < MAX_NUM_CORES) {
+				processorMask |= 1 << p;
 			}
 		}
 		processorMask |= appID.appID() << BYTE3;

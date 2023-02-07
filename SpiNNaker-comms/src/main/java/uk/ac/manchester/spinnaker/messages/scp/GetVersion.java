@@ -24,7 +24,13 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 
-/** An SCP request to read the version of software running on a core. */
+/**
+ * An SCP request to read the version of software running on a core. The
+ * response payload is the {@linkplain VersionInfo version descriptor}.
+ * <p>
+ * Calls {@code cmd_ver()} in {@code scamp-cmd.c} or {@code sark_cmd_ver()} in
+ * {@code sark_base.c}, depending on which core the message is sent to.
+ */
 public class GetVersion extends SCPRequest<GetVersion.Response> {
 	/**
 	 * @param core
@@ -40,13 +46,17 @@ public class GetVersion extends SCPRequest<GetVersion.Response> {
 	}
 
 	/** An SCP response to a request for the version of software running. */
-	public static final class Response extends CheckOKResponse {
-		/** The version information received. */
-		public final VersionInfo versionInfo;
-
+	// Used in tests
+	public static final class Response
+			extends PayloadedResponse<VersionInfo, RuntimeException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("Version", CMD_VER, buffer);
-			versionInfo = new VersionInfo(buffer, false);
+		}
+
+		/** @return The version information received. */
+		@Override
+		protected VersionInfo parse(ByteBuffer buffer) {
+			return new VersionInfo(buffer, false);
 		}
 	}
 }

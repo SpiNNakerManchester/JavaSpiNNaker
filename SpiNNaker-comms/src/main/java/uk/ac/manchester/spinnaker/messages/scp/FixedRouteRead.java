@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static uk.ac.manchester.spinnaker.messages.model.RouterCommand.ROUTER_FIXED;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.TOP_BIT;
@@ -28,12 +29,16 @@ import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/** Gets a fixed route entry. */
+/**
+ * Gets a fixed route entry. The response payload is the
+ * {@linkplain RoutingEntry routing entry}.
+ * <p>
+ * Calls {@code rtr_fr_get()} in {@code sark_hw.c}, via {@code rtr_cmd()} in
+ * {@code scamp-cmd.c}.
+ */
 public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
-	private static final int MAGIC = 3;
-
 	private static int argument1(AppID appID) {
-		return (appID.appID() << BYTE1) | (MAGIC << BYTE0);
+		return (appID.appID() << BYTE1) | (ROUTER_FIXED.value << BYTE0);
 	}
 
 	private static int argument2() {
@@ -56,18 +61,17 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	}
 
 	/** Response for the fixed route read. */
-	public static final class Response extends CheckOKResponse {
-		private final int route;
-
+	protected static final class Response
+			extends PayloadedResponse<RoutingEntry, RuntimeException> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Read Fixed RoutingEntry route", CMD_RTR, buffer);
-			route = buffer.getInt();
 		}
 
 		/** @return the fixed route router route. */
-		public RoutingEntry getRoute() {
-			return new RoutingEntry(route);
+		@Override
+		protected RoutingEntry parse(ByteBuffer buffer) {
+			return new RoutingEntry(buffer.getInt());
 		}
 	}
 }

@@ -111,7 +111,7 @@ public class EIEIOConnection
 	 * @throws IOException
 	 *             If sending fails.
 	 */
-	protected void sendCommand(EIEIOCommandID command, InetAddress ipAddress,
+	protected void sendCommand(EIEIOCommand command, InetAddress ipAddress,
 			int port) throws IOException {
 		sendEIEIOMessageTo(new EIEIOCommandMessage(command), ipAddress, port);
 	}
