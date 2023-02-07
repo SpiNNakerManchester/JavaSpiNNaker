@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":6,"i1":18,"i2":6,"i3":18,"i4":6};
+<script type="text/javascript">var data = {"i0":6,"i1":18,"i2":6,"i3":18,"i4":6,"i5":18};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],16:["t5","Default Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -154,7 +154,16 @@ extends <a href="Connection.html" title="interface in uk.ac.manchester.spinnaker
 </tr>
 <tr class="altColor" id="i4">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#send(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">send</a></span>&#8203;(<a href="../../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;?&gt;&nbsp;scpRequest)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#send(java.nio.ByteBuffer,int)">send</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;requestData,
+int&nbsp;seq)</code></th>
+<td class="colLast">
+<div class="block">Send a request that expects a response to be appropriately directed to
+ the thread that is calling this method.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i5">
+<td class="colFirst"><code>default void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#send(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">send</a></span>&#8203;(<a href="../../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;?&gt;&nbsp;request)</code></th>
 <td class="colLast">
 <div class="block">Sends an SCP request down this connection.</div>
 </td>
@@ -204,8 +213,8 @@ extends <a href="Connection.html" title="interface in uk.ac.manchester.spinnaker
 <li class="blockList">
 <section class="detail">
 <h3><a id="send(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">send</a></h3>
-<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">send</span>&#8203;(<span class="arguments"><a href="../../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;?&gt;&nbsp;scpRequest)</span>
-   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">send</span>&#8203;(<span class="arguments"><a href="../../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;?&gt;&nbsp;request)</span>
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">Sends an SCP request down this connection.
  <p>
  Messages must have the following properties:
@@ -219,10 +228,10 @@ extends <a href="Connection.html" title="interface in uk.ac.manchester.spinnaker
  constructor will be used.
  <p>
  <i>sequence</i> in the message is optional; if not set, <i>(sequence
- number\ last assigned + 1) % 65536</i> will be used</div>
+ number last assigned + 1) % 65536</i> will be used</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>scpRequest</code> - message packet to send</dd>
+<dd><code>request</code> - message packet to send</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If there is an error sending the message</dd>
 </dl>
@@ -285,6 +294,25 @@ extends <a href="Connection.html" title="interface in uk.ac.manchester.spinnaker
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If there is an error receiving the message</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/SocketTimeoutException.html?is-external=true" title="class or interface in java.net" class="externalLink">SocketTimeoutException</a></code> - If there is a timeout before a message is received</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If communications are interrupted.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="send(java.nio.ByteBuffer,int)">send</a></h3>
+<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">send</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;requestData,
+int&nbsp;seq)</span>
+   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block">Send a request that expects a response to be appropriately directed to
+ the thread that is calling this method.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>requestData</code> - The message data to send.</dd>
+<dd><code>seq</code> - The sequence number to come in the response.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If there is an error sending the message</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="Connection.html#send(java.nio.ByteBuffer)"><code>Connection.send(ByteBuffer)</code></a></dd>
 </dl>
 </section>
 </li>

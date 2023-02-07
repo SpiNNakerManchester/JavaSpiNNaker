@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -220,12 +220,21 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 </tr>
 <tr class="altColor" id="i4">
 <td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#send(java.nio.ByteBuffer,int)">send</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data,
+int&nbsp;seq)</code></th>
+<td class="colLast">
+<div class="block">Send a request that expects a response to be appropriately directed to
+ the thread that is calling this method.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i5">
+<td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#send(uk.ac.manchester.spinnaker.messages.bmp.BMPRequest)">send</a></span>&#8203;(<a href="../messages/bmp/BMPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest</a>&lt;?&gt;&nbsp;scpRequest)</code></th>
 <td class="colLast">
 <div class="block">Send a request on this connection.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i5">
+<tr class="altColor" id="i6">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#send(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">send</a></span>&#8203;(<a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;?&gt;&nbsp;scpRequest)</code></th>
 <td class="colLast">
@@ -334,7 +343,7 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
  constructor will be used.
  <p>
  <i>sequence</i> in the message is optional; if not set, <i>(sequence
- number\ last assigned + 1) % 65536</i> will be used</div>
+ number last assigned + 1) % 65536</i> will be used</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="model/SCPSenderReceiver.html#send(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">send</a></code>&nbsp;in interface&nbsp;<code><a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPSenderReceiver</a></code></dd>
@@ -342,6 +351,25 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 <dd><code>scpRequest</code> - message packet to send</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If there is an error sending the message</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="send(java.nio.ByteBuffer,int)">send</a></h3>
+<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">send</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data,
+int&nbsp;seq)</span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="model/SCPSenderReceiver.html#send(java.nio.ByteBuffer,int)">SCPSenderReceiver</a></code></span></div>
+<div class="block">Send a request that expects a response to be appropriately directed to
+ the thread that is calling this method.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="model/SCPSenderReceiver.html#send(java.nio.ByteBuffer,int)">send</a></code>&nbsp;in interface&nbsp;<code><a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPSenderReceiver</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>data</code> - The message data to send.</dd>
+<dd><code>seq</code> - The sequence number to come in the response.</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="model/Connection.html#send(java.nio.ByteBuffer)"><code>Connection.send(ByteBuffer)</code></a></dd>
 </dl>
 </section>
 </li>

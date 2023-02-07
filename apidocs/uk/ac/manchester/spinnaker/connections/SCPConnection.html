@@ -214,9 +214,11 @@ int&nbsp;remotePort)</code></th>
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#send(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">send</a></span>&#8203;(<a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;?&gt;&nbsp;scpRequest)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#send(java.nio.ByteBuffer,int)">send</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;requestData,
+int&nbsp;seq)</code></th>
 <td class="colLast">
-<div class="block">Sends an SCP request down this connection.</div>
+<div class="block">Send a request that expects a response to be appropriately directed to
+ the thread that is calling this method.</div>
 </td>
 </tr>
 </tbody>
@@ -252,7 +254,7 @@ int&nbsp;remotePort)</code></th>
 <h3>Methods inherited from interface&nbsp;uk.ac.manchester.spinnaker.connections.model.<a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPSenderReceiver</a></h3>
 <a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver">
 <!--   -->
-</a><code><a href="model/SCPSenderReceiver.html#getChip()">getChip</a>, <a href="model/SCPSenderReceiver.html#getSCPData(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">getSCPData</a>, <a href="model/SCPSenderReceiver.html#receiveSCPResponse(java.lang.Integer)">receiveSCPResponse</a></code></div>
+</a><code><a href="model/SCPSenderReceiver.html#getChip()">getChip</a>, <a href="model/SCPSenderReceiver.html#getSCPData(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">getSCPData</a>, <a href="model/SCPSenderReceiver.html#receiveSCPResponse(java.lang.Integer)">receiveSCPResponse</a>, <a href="model/SCPSenderReceiver.html#send(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">send</a></code></div>
 </section>
 </li>
 </ul>
@@ -336,12 +338,18 @@ int&nbsp;remotePort)</span>
 <li class="blockList">
 <section class="detail">
 <h3><a id="receiveSCPResponse(int)">receiveSCPResponse</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="../messages/scp/SCPResultMessage.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPResultMessage</a></span>&nbsp;<span class="memberName">receiveSCPResponse</span>&#8203;(<span class="arguments">int&nbsp;timeout)</span>
-                                    throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="../messages/scp/SCPResultMessage.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPResultMessage</a></span>&nbsp;<span class="memberName">receiveSCPResponse</span>&#8203;(<span class="arguments">int&nbsp;timeout)</span>
+                                          throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="model/SCPSenderReceiver.html#receiveSCPResponse(int)">SCPSenderReceiver</a></code></span></div>
 <div class="block">Receives an SCP response from this connection. Blocks until a message has
- been received, or a timeout occurs.</div>
+ been received, or a timeout occurs.
+ <p>
+ This is tricky code because there can be multiple threads using a
+ connection at once and we need to direct responses to the threads that
+ originated the requests that the responses match to. A consequence of
+ this is that it is possible for the wait for a message to be longer than
+ the timeout given; that will occur when the current thread keeps
+ receiving messages for other threads.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="model/SCPSenderReceiver.html#receiveSCPResponse(int)">receiveSCPResponse</a></code>&nbsp;in interface&nbsp;<code><a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPSenderReceiver</a></code></dd>
@@ -361,36 +369,6 @@ int&nbsp;remotePort)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="send(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">send</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">send</span>&#8203;(<span class="arguments"><a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;?&gt;&nbsp;scpRequest)</span>
-          throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="model/SCPSenderReceiver.html#send(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">SCPSenderReceiver</a></code></span></div>
-<div class="block">Sends an SCP request down this connection.
- <p>
- Messages must have the following properties:
- <ul>
- <li><i>sourcePort</i> is <code>null</code> or 7
- <li><i>sourceCpu</i> is <code>null</code> or 31
- <li><i>sourceChipX</i> is <code>null</code> or 0
- <li><i>sourceChipY</i> is <code>null</code> or 0
- </ul>
- <i>tag</i> in the message is optional; if not set, the default set in the
- constructor will be used.
- <p>
- <i>sequence</i> in the message is optional; if not set, <i>(sequence
- number\ last assigned + 1) % 65536</i> will be used</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="model/SCPSenderReceiver.html#send(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">send</a></code>&nbsp;in interface&nbsp;<code><a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPSenderReceiver</a></code></dd>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>scpRequest</code> - message packet to send</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If there is an error sending the message</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="closeEventually()">closeEventually</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">closeEventually</span>()</div>
 <div class="block">Close this connection eventually. The close might not happen immediately.</div>
@@ -403,6 +381,28 @@ int&nbsp;remotePort)</span>
 <div class="block">Close this connection, logging failures instead of throwing.
  <p>
  Core of implementation of <a href="#closeEventually()"><code>closeEventually()</code></a>.</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="send(java.nio.ByteBuffer,int)">send</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">send</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;requestData,
+int&nbsp;seq)</span>
+          throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="model/SCPSenderReceiver.html#send(java.nio.ByteBuffer,int)">SCPSenderReceiver</a></code></span></div>
+<div class="block">Send a request that expects a response to be appropriately directed to
+ the thread that is calling this method.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="model/SCPSenderReceiver.html#send(java.nio.ByteBuffer,int)">send</a></code>&nbsp;in interface&nbsp;<code><a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SCPSenderReceiver</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>requestData</code> - The message data to send.</dd>
+<dd><code>seq</code> - The sequence number to come in the response.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If there is an error sending the message</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="model/Connection.html#send(java.nio.ByteBuffer)"><code>Connection.send(ByteBuffer)</code></a></dd>
+</dl>
 </section>
 </li>
 </ul>
