@@ -83,7 +83,7 @@ public class CountState extends SCPRequest<CountState.Response> {
 	/**
 	 * An SCP response to a request for the number of cores in a given state.
 	 */
-	public static final class Response
+	protected static final class Response
 			extends PayloadedResponse<Integer, RuntimeException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("CountState", CMD_SIG, buffer);

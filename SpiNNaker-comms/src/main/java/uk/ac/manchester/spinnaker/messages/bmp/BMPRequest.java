@@ -23,6 +23,8 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.function.Supplier;
 
+import com.google.errorprone.annotations.ForOverride;
+
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
@@ -237,6 +239,7 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 		 *            header.
 		 * @return The parsed value.
 		 */
+		@ForOverride
 		protected abstract T parse(ByteBuffer buffer);
 	}
 }

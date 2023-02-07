@@ -86,7 +86,7 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 	}
 
 	/** An SCP response to a request to deallocate SDRAM. */
-	public final class Response extends
+	protected final class Response extends
 			PayloadedResponse<Integer, MemoryAllocationFailedException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException,
 				MemoryAllocationFailedException {

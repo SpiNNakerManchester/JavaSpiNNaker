@@ -52,7 +52,7 @@ public class ReadCANStatus extends BMPRequest<ReadCANStatus.Response> {
 	}
 
 	/** An SCP response to a request for the CAN status. */
-	public static final class Response
+	protected final class Response
 			extends BMPRequest.PayloadedResponse<MappableIterable<BMPBoard>> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {

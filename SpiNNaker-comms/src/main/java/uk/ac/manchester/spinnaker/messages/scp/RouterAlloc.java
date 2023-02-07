@@ -65,7 +65,7 @@ public class RouterAlloc extends SCPRequest<RouterAlloc.Response> {
 	}
 
 	/** An SCP response to a request to allocate router entries. */
-	public final class Response extends
+	protected final class Response extends
 			PayloadedResponse<Integer, MemoryAllocationFailedException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException,
 				MemoryAllocationFailedException {

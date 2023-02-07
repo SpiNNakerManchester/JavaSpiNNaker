@@ -85,7 +85,7 @@ public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
 	}
 
 	/** An SCP response to a request for IP address information. */
-	public static final class Response
+	protected final class Response
 			extends BMPRequest.PayloadedResponse<Addresses> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {

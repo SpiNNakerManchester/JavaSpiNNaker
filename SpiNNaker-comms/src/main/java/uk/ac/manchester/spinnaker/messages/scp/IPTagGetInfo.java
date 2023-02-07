@@ -54,6 +54,7 @@ public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 		return new IPTagGetInfo.Response(buffer);
 	}
 
+	/** Information about a tag pool on an Ethernet-connected chip. */
 	public static final class TagInfo {
 		/**
 		 * The timeout for transient IP tags (i.e., responses to SCP commands).
@@ -75,7 +76,7 @@ public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 	}
 
 	/** An SCP response to a request for information about IP tags. */
-	public final class Response
+	protected final class Response
 			extends PayloadedResponse<TagInfo, RuntimeException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("Get IP Tag Info", CMD_IPTAG, buffer);

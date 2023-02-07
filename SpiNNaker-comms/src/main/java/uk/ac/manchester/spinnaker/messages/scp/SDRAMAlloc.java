@@ -100,7 +100,7 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	}
 
 	/** An SCP response to a request to allocate space in SDRAM. */
-	public final class Response extends
+	protected final class Response extends
 			PayloadedResponse<MemoryLocation, MemoryAllocationFailedException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException,
 				MemoryAllocationFailedException {

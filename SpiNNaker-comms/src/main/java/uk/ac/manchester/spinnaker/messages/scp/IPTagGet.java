@@ -209,7 +209,7 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response>
 	}
 
 	/** An SCP response to a request for an IP tags. */
-	public final class Response
+	protected final class Response
 			extends PayloadedResponse<TagDescription, UnknownHostException> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException, UnknownHostException {

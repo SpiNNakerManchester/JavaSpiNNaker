@@ -67,13 +67,14 @@ public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 	}
 
 	/** An SCP response to a request for the version of software running. */
-	public static final class Response
+	protected final class Response
 			extends PayloadedResponse<ChipSummaryInfo, RuntimeException> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Version", CMD_INFO, buffer);
 		}
 
+		/** @return The chip summary information. */
 		@Override
 		protected ChipSummaryInfo parse(ByteBuffer buffer) {
 			return new ChipSummaryInfo(buffer, sdpHeader.getSource());

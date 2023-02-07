@@ -53,7 +53,7 @@ public class IPTagSetTTO extends SCPRequest<IPTagSetTTO.Response> {
 		return new IPTagSetTTO.Response(buffer);
 	}
 
-	public final class Response
+	protected final class Response
 			extends PayloadedResponse<TagInfo, RuntimeException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("Get IP Tag Info", CMD_IPTAG, buffer);

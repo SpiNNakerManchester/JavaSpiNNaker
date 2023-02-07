@@ -63,7 +63,7 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	}
 
 	/** Response for the fixed route read. */
-	public static final class Response
+	protected final class Response
 			extends PayloadedResponse<RoutingEntry, RuntimeException> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {

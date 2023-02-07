@@ -54,7 +54,7 @@ public class ReadSerialFlashCRC
 	/**
 	 * An SCP response to a request to get the CRC of serial flash.
 	 */
-	public static final class Response
+	protected final class Response
 			extends BMPRequest.PayloadedResponse<Integer> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("Read Serial Flash CRC", CMD_BMP_SF, buffer);

@@ -65,7 +65,7 @@ public class BMPReadMemory extends BMPRequest<BMPReadMemory.Response> {
 	 * that it is up to the caller to manage the buffer position of the returned
 	 * response if it is to be read from multiple times.
 	 */
-	public static final class Response
+	protected final class Response
 			extends BMPRequest.PayloadedResponse<ByteBuffer> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("Read", CMD_READ, buffer);

@@ -50,7 +50,7 @@ public class GetFPGAResetStatus
 	private static final int XIL_RST_BIT = 14;
 
 	/** The response to a request to get the FPGA reset status of a board. */
-	public static final class Response
+	protected final class Response
 			extends BMPRequest.PayloadedResponse<Boolean> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {

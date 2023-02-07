@@ -50,7 +50,7 @@ public class GetReinjectionStatus
 	/**
 	 * An SCP response to a request for the dropped packet reinjection status.
 	 */
-	public static final class Response
+	protected final class Response
 			extends PayloadedResponse<ReinjectionStatus, RuntimeException> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
