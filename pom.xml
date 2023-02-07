@@ -650,6 +650,9 @@ limitations under the License.
 						<licenses>
 							<license implementation="org.apache.rat.analysis.license.ApacheSoftwareLicense20" />
 						</licenses>
+						<licenseFamilies>
+							<licenseFamily implementation="org.apache.rat.license.Apache20LicenseFamily" />
+						</licenseFamilies>
 					</configuration>
 				</plugin>
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
