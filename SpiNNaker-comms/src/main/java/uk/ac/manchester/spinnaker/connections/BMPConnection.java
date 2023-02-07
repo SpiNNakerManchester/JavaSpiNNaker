@@ -21,6 +21,7 @@ import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Collection;
 
 import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
@@ -66,6 +67,11 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 	@Override
 	public final void send(SCPRequest<?> scpRequest) throws IOException {
 		send((BMPRequest<?>) scpRequest);
+	}
+
+	@Override
+	public final void send(ByteBuffer data, int seq) {
+		throw new UnsupportedOperationException("should not be called");
 	}
 
 	/**
