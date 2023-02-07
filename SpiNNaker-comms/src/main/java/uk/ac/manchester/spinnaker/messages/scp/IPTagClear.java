@@ -27,7 +27,12 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.tags.TagID;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/** An SCP Request to clear an IP Tag. */
+/**
+ * An SCP Request to clear an IP Tag. There is no response payload.
+ * <p>
+ * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},
+ * if sent to a BMP).
+ */
 public class IPTagClear extends SCPRequest<CheckOKResponse> {
 	/**
 	 * @param chip
@@ -39,6 +44,7 @@ public class IPTagClear extends SCPRequest<CheckOKResponse> {
 		super(chip.getScampCore(), CMD_IPTAG, argument1(tag));
 	}
 
+	// arg1 = flags[11:8] : timeout : command : dest_port : tag
 	private static Integer argument1(int tag) {
 		return (CLR.value << COMMAND_FIELD) | (tag & THREE_BITS_MASK);
 	}

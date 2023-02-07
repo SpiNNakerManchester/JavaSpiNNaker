@@ -27,7 +27,12 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/** An SCP request to read a region of memory from a BMP. */
+/**
+ * An SCP request to read a region of memory from a BMP. The response payload is
+ * a read-only little-endian {@link ByteBuffer} intended to be read once.
+ * <p>
+ * Calls {@code cmd_read()} in {@code bmp_cmd.c}.
+ */
 public class BMPReadMemory extends BMPRequest<BMPReadMemory.Response> {
 	private static int validate(int size) {
 		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
@@ -56,15 +61,20 @@ public class BMPReadMemory extends BMPRequest<BMPReadMemory.Response> {
 	}
 
 	/**
-	 * An SCP response to a request to read a region of memory on a chip.
+	 * An SCP response to a request to read a region of memory on a chip. Note
+	 * that it is up to the caller to manage the buffer position of the returned
+	 * response if it is to be read from multiple times.
 	 */
-	public static class Response extends BMPRequest.BMPResponse {
-		/** The data read, in a little-endian read-only buffer. */
-		public final ByteBuffer data;
-
+	public static final class Response
+			extends BMPRequest.PayloadedResponse<ByteBuffer> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("Read", CMD_READ, buffer);
-			this.data = buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		}
+
+		/** @return The data read, in a little-endian read-only buffer. */
+		@Override
+		protected ByteBuffer parse(ByteBuffer buffer) {
+			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 		}
 	}
 }

@@ -24,20 +24,23 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP Request to clear the IOBUF on a core.
+ * An SCP Request to clear the IOBUF on a core. There is no response payload.
+ * <p>
+ * This calls {@code sark_io_buf_reset()} in {@code sark_io.c} (via
+ * {@code simulation_control_scp_callback()} in {@code simulation.c}).
  */
-public class ClearIOBUF extends SCPRequest<CheckOKResponse> {
+public class ClearIOBUF extends FECRequest<CheckOKResponse> {
 	/**
 	 * @param core
 	 *            The core to clear the IOBUF of.
 	 */
 	public ClearIOBUF(HasCoreLocation core) {
-		super(new RunningSDPHeader(core, true), CLEAR_IOBUF, 0, 0, 1, null);
+		super(core, true, CLEAR_IOBUF);
 	}
 
 	@Override
 	public CheckOKResponse getSCPResponse(ByteBuffer buffer)
 			throws UnexpectedResponseCodeException {
-		return new CheckOKResponse("clear iobuf", CLEAR_IOBUF, buffer);
+		return new CheckOKResponse("clear IOBUF", CLEAR_IOBUF, buffer);
 	}
 }

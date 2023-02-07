@@ -26,11 +26,15 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 
 /**
- * An SCP request for the BMP to power on or power off a rack of boards.
+ * An SCP request for the BMP to power on or power off a rack of boards. There
+ * is no response payload.
  * <p>
- * <b>Note:</b> There is currently a bug in the BMP that means some boards don't
- * respond to power commands not sent to BMP 0. Because of this, this message
- * should <i>always</i> be sent to BMP 0!
+ * <strong>Note:</strong> There is currently a bug in the BMP that means some
+ * boards don't respond to power commands not sent to BMP 0. Because of this,
+ * this message should <em>always</em> be sent to BMP 0!
+ * <p>
+ * Handled by {@code cmd_power()} in {@code bmp_cmd.c}, which in turn calls
+ * {@code proc_power()} in the same file.
  */
 public class SetPower extends BMPRequest<BMPRequest.BMPResponse> {
 	private static final int DELAY_SHIFT = 16;
@@ -49,7 +53,7 @@ public class SetPower extends BMPRequest<BMPRequest.BMPResponse> {
 	public SetPower(PowerCommand powerCommand, Collection<BMPBoard> boards,
 			double delay) {
 		super(FRAME_ROOT, CMD_BMP_POWER, argument1(delay, powerCommand),
-				argument2(boards));
+				boardMask(boards));
 	}
 
 	private static int argument1(double delay, PowerCommand powerCommand) {
@@ -57,7 +61,7 @@ public class SetPower extends BMPRequest<BMPRequest.BMPResponse> {
 				| powerCommand.value;
 	}
 
-	private static int argument2(Collection<BMPBoard> boards) {
+	private static int boardMask(Collection<BMPBoard> boards) {
 		return boards.stream().mapToInt(board -> 1 << board.board).sum();
 	}
 

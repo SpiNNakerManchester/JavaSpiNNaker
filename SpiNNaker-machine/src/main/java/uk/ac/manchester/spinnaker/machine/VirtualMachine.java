@@ -26,6 +26,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -69,7 +70,7 @@ public class VirtualMachine extends Machine {
 	public VirtualMachine(MachineDimensions machineDimensions,
 			Set<ChipLocation> ignoreChips,
 			Map<ChipLocation, Set<Integer>> ignoreCores,
-			Map<ChipLocation, Set<Direction>> ignoreLinks) {
+			Map<ChipLocation, EnumSet<Direction>> ignoreLinks) {
 		super(machineDimensions, ZERO_ZERO);
 
 		if (ignoreChips == null) {
@@ -132,7 +133,7 @@ public class VirtualMachine extends Machine {
 	}
 
 	private void addVersionIgnores(
-			Map<ChipLocation, Set<Direction>> ignoreLinks) {
+			Map<ChipLocation, EnumSet<Direction>> ignoreLinks) {
 		if (version.isFourChip) {
 			ignoreLinks.putAll(FOUR_CHIP_DOWN_LINKS);
 		}
@@ -140,7 +141,7 @@ public class VirtualMachine extends Machine {
 
 	private Router getRouter(ChipLocation location,
 			Map<ChipLocation, ChipLocation> allChips,
-			Map<ChipLocation, Set<Direction>> ignoreLinks) {
+			Map<ChipLocation, EnumSet<Direction>> ignoreLinks) {
 		MappableIterable<Link> links;
 		if (ignoreLinks.containsKey(location)) {
 			links = getLinks(location, allChips, ignoreLinks.get(location));
@@ -164,7 +165,7 @@ public class VirtualMachine extends Machine {
 
 	private MappableIterable<Link> getLinks(ChipLocation location,
 			Map<ChipLocation, ChipLocation> allChips,
-			Set<Direction> ignoreLinks) {
+			EnumSet<Direction> ignoreLinks) {
 		var links = new ArrayList<Link>();
 		for (var direction : Direction.values()) {
 			if (!ignoreLinks.contains(direction)) {

@@ -18,28 +18,25 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.RouterTableCommand.SAVE_APPLICATION_ROUTES;
 
-import java.nio.ByteBuffer;
-
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
  * An SDP Request to save the currently-installed application multicast router
- * table.
+ * table. There is no response payload.
+ * <p>
+ * Handled by {@code data_in_save_router()} in {@code extra_monitor_support.c}.
  */
-public class RouterTableSaveApplicationRoutes
-		extends SCPRequest<CheckOKResponse> {
+public final class SaveApplicationRoutes extends RouterTableRequest {
 	/**
 	 * @param core
 	 *            The coordinates of the monitor core.
 	 */
-	public RouterTableSaveApplicationRoutes(HasCoreLocation core) {
-		super(new RouterTableSDPHeader(core), SAVE_APPLICATION_ROUTES, 0, 0, 0,
-				null);
+	public SaveApplicationRoutes(HasCoreLocation core) {
+		super(core, SAVE_APPLICATION_ROUTES);
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Save application multicast routes",
-				SAVE_APPLICATION_ROUTES, buffer);
+	String describe() {
+		return "Save application multicast routes";
 	}
 }

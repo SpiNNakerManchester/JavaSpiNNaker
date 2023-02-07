@@ -28,20 +28,39 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.Signal;
 
-/** An SCP Request to send a signal to cores. */
+/**
+ * An SCP Request to send a signal to cores. This supports any signal that uses
+ * either {@linkplain Signal.Type#MULTICAST multicast} or
+ * {@linkplain Signal.Type#NEAREST_NEIGHBOUR nearest neighbour} propagation
+ * rules; the difference between propagation types is not normally important to
+ * user code. There is no response payload.
+ * <p>
+ * See {@code signal_app()} in {@code scamp-app.c} for where these signals
+ * handled or transferred to user code, and {@code sark_int()} in
+ * {@code sark_base.c} for the normal user-code handlers.
+ *
+ * @see CountState
+ */
 public class SendSignal extends SCPRequest<CheckOKResponse> {
 	/**
 	 * @param appID
-	 *            The ID of the application to run
+	 *            The ID of the application to signal (only for multicast
+	 *            signals).
 	 * @param signal
-	 *            The coordinates of the chip to run on
+	 *            The signal to send.
 	 */
 	public SendSignal(AppID appID, Signal signal) {
 		super(BOOT_MONITOR_CORE, CMD_SIG, signal.type.value,
-				argument2(appID, signal), ALL_CORE_SIGNAL_MASK);
+				data(appID, signal), ALL_CORE_SIGNAL_MASK);
 	}
 
-	private static int argument2(AppID appID, Signal signal) {
+	// @formatter:off
+	/*
+	 * [ 31-24  |  23-16 | 15-8 |    7-0 ]
+	 * [ unused | signal | mask | app_id ]
+	 */
+	// @formatter:on
+	private static int data(AppID appID, Signal signal) {
 		return (signal.value << BYTE2) | (APP_MASK << BYTE1)
 				| (appID.appID << BYTE0);
 	}

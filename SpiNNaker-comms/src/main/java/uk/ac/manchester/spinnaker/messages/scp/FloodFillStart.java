@@ -22,24 +22,28 @@ import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE3;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.TOP_BIT;
+import static uk.ac.manchester.spinnaker.messages.scp.FloodFillConstants.ADD_ID;
+import static uk.ac.manchester.spinnaker.messages.scp.FloodFillConstants.DELAY;
+import static uk.ac.manchester.spinnaker.messages.scp.FloodFillConstants.FORWARD_LINKS;
+import static uk.ac.manchester.spinnaker.messages.scp.FloodFillConstants.INIT_LEVEL;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_NNP;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
-/** A request to start a flood fill of data. */
+/**
+ * An SCP request to start a flood fill of data. There is no response payload.
+ * <p>
+ * Calls {@code nn_cmd_ffs()} in {@code scamp-nn.c} on all cores via
+ * {@code ff_nn_send()} in {@code scamp-nn.c}.
+ */
 public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
-	private static final int MAGIC1 = 0x3F;
+	// See nn_rcv_pkt()
+	private static final int NN_CMD_FFS = 6;
 
-	private static final int MAGIC2 = 0x18;
-
-	private static final int MAGIC3 = 3;
-
-	private static final int NNP_FLOOD_FILL_START = 6;
-
-	private static final int NNP_FORWARD_RETRY =
-			(1 << TOP_BIT) | (MAGIC1 << BYTE1) | (MAGIC2 << BYTE0);
+	private static final int NNP_FORWARD_RETRY = (ADD_ID << TOP_BIT)
+			| (FORWARD_LINKS << BYTE1) | (DELAY << BYTE0);
 
 	private static final int NO_CHIP = 0xFFFF;
 
@@ -57,7 +61,8 @@ public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
 	 *            255
 	 */
 	public FloodFillStart(byte nearestNeighbourID, int numBlocks) {
-		this(nearestNeighbourID, numBlocks, null);
+		super(BOOT_MONITOR_CORE, CMD_NNP, key(nearestNeighbourID, numBlocks),
+				NO_CHIP, NNP_FORWARD_RETRY);
 	}
 
 	/**
@@ -69,36 +74,30 @@ public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
 	 *            The number of blocks of data that will be sent, between 0 and
 	 *            255
 	 * @param chip
-	 *            The chip to load the data on to, or {@code null} to load data
-	 *            onto all chips.
+	 *            The chip to load the data on to.
 	 */
 	public FloodFillStart(byte nearestNeighbourID, int numBlocks,
 			HasChipLocation chip) {
-		super(BOOT_MONITOR_CORE, CMD_NNP,
-				argument1(nearestNeighbourID, numBlocks), argument2(chip),
-				NNP_FORWARD_RETRY);
+		super(BOOT_MONITOR_CORE, CMD_NNP, key(nearestNeighbourID, numBlocks),
+				data(chip), NNP_FORWARD_RETRY);
 	}
 
-	private static int argument1(byte nearestNeighbourID, int numBlocks) {
+	private static int key(byte nearestNeighbourID, int numBlocks) {
 		if (numBlocks != toUnsignedInt((byte) numBlocks)) {
 			throw new IllegalArgumentException(
 					"number of blocks must be representable in 8 bits");
 		}
-		return (NNP_FLOOD_FILL_START << BYTE3)
+		return (NN_CMD_FFS << BYTE3)
 				| (toUnsignedInt(nearestNeighbourID) << BYTE2)
 				| (numBlocks << BYTE1);
 	}
 
-	private static int argument2(HasChipLocation chip) {
-		if (chip == null) {
-			return NO_CHIP;
-		}
-		// TODO what is this doing?
-		int m = ((chip.getY() & LOW_BITS_MASK) << 2)
-				+ (chip.getX() & LOW_BITS_MASK);
-		return (((chip.getX() & HIGH_BITS_MASK) << BYTE3)
-				+ ((chip.getY() & HIGH_BITS_MASK) << BYTE2) + (MAGIC3 << BYTE2)
-				+ (1 << m));
+	private static int data(HasChipLocation chip) {
+		int mask = 1 << (((chip.getY() & LOW_BITS_MASK) << 2)
+				+ (chip.getX() & LOW_BITS_MASK));
+		int region = ((chip.getX() & HIGH_BITS_MASK) << BYTE1)
+				+ (chip.getY() & HIGH_BITS_MASK);
+		return (region << BYTE2) + (INIT_LEVEL << BYTE2) + (mask << BYTE0);
 	}
 
 	@Override

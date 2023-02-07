@@ -24,11 +24,17 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType;
 
-/** Perform a reset of the FPGAs. */
+/**
+ * Perform a reset of the FPGAs. There is no response payload.
+ * <p>
+ * Calls {@code fpga_reset()} in {@code bmp_hw.c}.
+ */
 public class ResetFPGA extends BMPRequest<BMPRequest.BMPResponse> {
 	/**
-	 * @param board Which board to reset the FPGAs of.
-	 * @param resetType What type of reset to do.
+	 * @param board
+	 *            Which board to reset the FPGAs of.
+	 * @param resetType
+	 *            What type of reset to do.
 	 */
 	public ResetFPGA(BMPBoard board, FPGAResetType resetType) {
 		super(board, CMD_XILINX, Reset.code, resetType.ordinal());

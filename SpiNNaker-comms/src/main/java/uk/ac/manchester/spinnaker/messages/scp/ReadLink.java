@@ -28,7 +28,13 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/** An SCP request to read a region of memory via a link on a chip. */
+/**
+ * An SCP request to read a region of memory via a link on a chip. The response
+ * payload is a read-only little-endian {@link ByteBuffer} intended to be read
+ * once.
+ * <p>
+ * Calls {@code cmd_link_read()} in {@code scamp-cmd.c}.
+ */
 public class ReadLink extends SCPRequest<ReadLink.Response> {
 	private static int validate(int size) {
 		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
@@ -77,15 +83,19 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 
 	/**
 	 * An SCP response to a request to read a region of memory via a link on a
-	 * chip.
+	 * chip. Note that it is up to the caller to manage the buffer position of
+	 * the returned response if it is to be read from multiple times.
 	 */
-	public static class Response extends CheckOKResponse {
-		/** The data read. */
-		public final ByteBuffer data;
-
+	public static final class Response
+			extends PayloadedResponse<ByteBuffer, RuntimeException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("Read Link", CMD_LINK_READ, buffer);
-			this.data = buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		}
+
+		/** @return The data read, as a read-only little-endian buffer. */
+		@Override
+		protected ByteBuffer parse(ByteBuffer buffer) {
+			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 		}
 	}
 }

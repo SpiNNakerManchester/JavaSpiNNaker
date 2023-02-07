@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
-/** SDP Command codes for router table control. */
+/** SDP Command codes to the extra monitors for router table control. */
 enum RouterTableCommand implements CommandCode {
 	/**
 	 * Save the application multicast routes, which must be currently installed.

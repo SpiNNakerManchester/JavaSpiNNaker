@@ -47,6 +47,7 @@ import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.BUFFE
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -290,7 +291,7 @@ public class TransceiverITCase {
 
 	private void routes(Transceiver txrx, AppID appID) throws Exception {
 		var routes = List.of(new MulticastRoutingEntry(0x10000000, 0xFFFF7000,
-				List.of(1, 2, 3, 4, 5), List.of(EAST, NORTHEAST, NORTH),
+				List.of(1, 2, 3, 4, 5), EnumSet.of(EAST, NORTHEAST, NORTH),
 				false));
 		txrx.loadMulticastRoutes(SCAMP, routes, appID);
 

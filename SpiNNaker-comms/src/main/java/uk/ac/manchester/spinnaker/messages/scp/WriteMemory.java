@@ -25,7 +25,11 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
-/** A request to write memory on a chip. */
+/**
+ * A request to write memory on a chip. There is no response payload.
+ * <p>
+ * Calls {@code sark_cmd_write()} in {@code sark_base.c}.
+ */
 public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	/**
 	 * @param core

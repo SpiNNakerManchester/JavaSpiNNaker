@@ -16,20 +16,26 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static uk.ac.manchester.spinnaker.messages.model.RouterCommand.ROUTER_INIT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
-/** A request to clear the router on a chip. */
+/**
+ * An SCP request to clear the router on a chip. There is no response payload.
+ * <p>
+ * Calls {@code rtr_mc_init()} in {@code sark_hw.c}, via {@code rtr_cmd()} in
+ * {@code scamp-cmd.c}.
+ */
 public class RouterClear extends SCPRequest<CheckOKResponse> {
 	/**
 	 * @param chip
 	 *            The coordinates of the chip to clear the router of
 	 */
 	public RouterClear(HasChipLocation chip) {
-		super(chip.getScampCore(), CMD_RTR);
+		super(chip.getScampCore(), CMD_RTR, ROUTER_INIT.value);
 	}
 
 	@Override

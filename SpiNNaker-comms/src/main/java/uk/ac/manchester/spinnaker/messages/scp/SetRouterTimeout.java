@@ -25,9 +25,12 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
  * An SCP Request to the extra monitor core to set the router timeout for
- * dropped packet reinjection.
+ * dropped packet reinjection. There is no response payload.
+ * <p>
+ * Handled by {@code reinjection_set_timeout_sdp()} in
+ * {@code extra_monitor_support.c}.
  */
-public class SetRouterTimeout extends SCPRequest<CheckOKResponse> {
+public class SetRouterTimeout extends ReinjectorRequest<CheckOKResponse> {
 	/**
 	 * @param core
 	 *            The coordinates of the monitor core.
@@ -38,8 +41,8 @@ public class SetRouterTimeout extends SCPRequest<CheckOKResponse> {
 	 */
 	public SetRouterTimeout(HasCoreLocation core, int timeoutMantissa,
 			int timeoutExponent) {
-		super(new ReinjectionSDPHeader(core), SET_ROUTER_TIMEOUT,
-				encodeTimeout(timeoutMantissa, timeoutExponent), 0, 0, null);
+		super(core, SET_ROUTER_TIMEOUT,
+				encodeTimeout(timeoutMantissa, timeoutExponent));
 	}
 
 	@Override

@@ -23,7 +23,12 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 
-/** Start an initialisation of the FPGAs. Terminated by {@link ResetFPGA}. */
+/**
+ * Start an initialisation of the FPGAs. Terminated by {@link ResetFPGA}. There
+ * is no response payload.
+ * <p>
+ * Calls {@code fpga_init()} in {@code bmp_hw.c}.
+ */
 public class InitFPGA extends BMPRequest<BMPRequest.BMPResponse> {
 	/**
 	 * @param board

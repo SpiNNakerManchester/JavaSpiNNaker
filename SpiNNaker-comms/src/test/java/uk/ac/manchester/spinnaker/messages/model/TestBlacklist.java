@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.BufferUnderflowException;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -76,7 +77,7 @@ class TestBlacklist {
 		@Test
 		void javaForm() throws IOException, ClassNotFoundException {
 			var blIn = new Blacklist(Set.of(C11), Map.of(C00, Set.of(3)),
-					Map.of(C00, Set.of(WEST)));
+					Map.of(C00, EnumSet.of(WEST)));
 
 			var serialForm = serialize(blIn);
 
@@ -88,7 +89,7 @@ class TestBlacklist {
 		@Test
 		void spinnakerForm() {
 			var blIn = new Blacklist(Set.of(C11), Map.of(C00, Set.of(3)),
-					Map.of(C00, Set.of(SOUTHWEST)));
+					Map.of(C00, EnumSet.of(SOUTHWEST)));
 
 			var raw = blIn.getRawData();
 
@@ -108,7 +109,7 @@ class TestBlacklist {
 			assertEquals(blIn, blOut);
 			assertEquals(Set.of(C11), blOut.getChips());
 			assertEquals(Map.of(C00, Set.of(3)), blOut.getCores());
-			assertEquals(Map.of(C00, Set.of(SOUTHWEST)), blOut.getLinks());
+			assertEquals(Map.of(C00, EnumSet.of(SOUTHWEST)), blOut.getLinks());
 		}
 	}
 
@@ -144,7 +145,7 @@ class TestBlacklist {
 
 			assertEquals(Set.of(), bl.getChips());
 			assertEquals(Map.of(C00, Set.of(2)), bl.getCores());
-			assertEquals(Map.of(C00, Set.of(WEST)), bl.getLinks());
+			assertEquals(Map.of(C00, EnumSet.of(WEST)), bl.getLinks());
 		}
 
 		@Test
@@ -166,7 +167,7 @@ class TestBlacklist {
 
 			assertEquals(Set.of(), bl.getChips());
 			assertEquals(Map.of(), bl.getCores());
-			assertEquals(Map.of(C00, Set.of(NORTH, SOUTH, EAST, WEST)),
+			assertEquals(Map.of(C00, EnumSet.of(NORTH, SOUTH, EAST, WEST)),
 					bl.getLinks());
 		}
 
@@ -178,7 +179,7 @@ class TestBlacklist {
 
 			assertEquals(Set.of(), bl.getChips());
 			assertEquals(Map.of(C00, Set.of(3, 2)), bl.getCores());
-			assertEquals(Map.of(C00, Set.of(EAST, WEST)), bl.getLinks());
+			assertEquals(Map.of(C00, EnumSet.of(EAST, WEST)), bl.getLinks());
 		}
 
 		@Test
@@ -211,7 +212,7 @@ class TestBlacklist {
 
 			assertEquals(Set.of(C10), bl.getChips());
 			assertEquals(Map.of(C00, Set.of(2)), bl.getCores());
-			assertEquals(Map.of(C01, Set.of(EAST)), bl.getLinks());
+			assertEquals(Map.of(C01, EnumSet.of(EAST)), bl.getLinks());
 		}
 
 		@Test
@@ -222,7 +223,7 @@ class TestBlacklist {
 
 			assertEquals(Set.of(), bl.getChips());
 			assertEquals(Map.of(C00, Set.of(3, 2)), bl.getCores());
-			assertEquals(Map.of(C00, Set.of(EAST, WEST)), bl.getLinks());
+			assertEquals(Map.of(C00, EnumSet.of(EAST, WEST)), bl.getLinks());
 		}
 
 		@Test
@@ -331,7 +332,7 @@ class TestBlacklist {
 		void printSimpleToString() {
 			var bl = new Blacklist(Set.of(C01, C11),
 					Map.of(C10, Set.of(1, 2, 3)),
-					Map.of(C77, Set.of(NORTH, SOUTH, EAST, WEST)));
+					Map.of(C77, EnumSet.of(NORTH, SOUTH, EAST, WEST)));
 
 			var s = bl.render();
 
@@ -343,7 +344,7 @@ class TestBlacklist {
 		void printMessyToString() {
 			var bl = new Blacklist(Set.of(C01, C11),
 					Map.of(C01, Set.of(1, 2, 3)),
-					Map.of(C11, Set.of(NORTH, SOUTH, EAST, WEST)));
+					Map.of(C11, EnumSet.of(NORTH, SOUTH, EAST, WEST)));
 
 			var s = bl.render();
 
@@ -373,8 +374,8 @@ class TestBlacklist {
 			assertEquals(Set.of(C11), bl.getChips());
 			assertEquals(Map.of(C10, Set.of(2, 3), C77, Set.of(10, 17)),
 					bl.getCores());
-			assertEquals(Map.of(C10, Set.of(SOUTHWEST, SOUTH), C77,
-					Set.of(NORTHEAST, SOUTH)), bl.getLinks());
+			assertEquals(Map.of(C10, EnumSet.of(SOUTHWEST, SOUTH), C77,
+					EnumSet.of(NORTHEAST, SOUTH)), bl.getLinks());
 		}
 	}
 }
