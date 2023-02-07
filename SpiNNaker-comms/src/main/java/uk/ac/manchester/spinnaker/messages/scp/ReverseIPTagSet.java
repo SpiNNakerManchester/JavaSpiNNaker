@@ -17,15 +17,15 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.model.IPTagCommand.SET;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.COMMAND_FIELD;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.DEST_P_FIELD;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.DEST_X_FIELD;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.DEST_Y_FIELD;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.PORT_MASK;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.REVERSE_FIELD_BIT;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.SDP_PORT_FIELD;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.STRIP_FIELD_BIT;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.THREE_BITS_MASK;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.COMMAND_FIELD;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.DEST_P_FIELD;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.DEST_X_FIELD;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.DEST_Y_FIELD;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.PORT_MASK;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.REVERSE_FIELD_BIT;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.SDP_PORT_FIELD;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.STRIP_FIELD_BIT;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.THREE_BITS_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
 
 import java.nio.ByteBuffer;

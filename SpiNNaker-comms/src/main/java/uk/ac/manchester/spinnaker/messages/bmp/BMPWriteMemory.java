@@ -16,8 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
+import static uk.ac.manchester.spinnaker.messages.model.TransferUnit.efficientTransferUnit;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_WRITE;
-import static uk.ac.manchester.spinnaker.messages.scp.TransferUnit.efficientTransferUnit;
 
 import java.nio.ByteBuffer;
 

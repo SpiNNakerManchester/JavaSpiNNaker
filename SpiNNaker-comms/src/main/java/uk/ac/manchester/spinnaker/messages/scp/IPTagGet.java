@@ -18,8 +18,8 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagCommand.GET;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.COMMAND_FIELD;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.THREE_BITS_MASK;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.COMMAND_FIELD;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.THREE_BITS_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
 
 import java.net.UnknownHostException;
@@ -28,6 +28,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.tags.TagID;
+import uk.ac.manchester.spinnaker.messages.model.TagDescription;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**

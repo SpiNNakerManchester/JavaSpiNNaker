@@ -14,12 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.messages.scp;
+package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.net.InetAddress.getByAddress;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.CORE_MASK;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.PORT_SHIFT;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.THREE_BITS_MASK;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.CORE_MASK;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.PORT_SHIFT;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.THREE_BITS_MASK;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -32,7 +32,6 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
-import uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime;
 
 /** Description of a tag. */
 public final class TagDescription {
@@ -81,8 +80,21 @@ public final class TagDescription {
 	/** What tag was this info about? */
 	private final int tag;
 
-	TagDescription(ByteBuffer buffer, HasChipLocation src, InetAddress host,
-			int tag) throws UnknownHostException {
+	/**
+	 * @param buffer
+	 *            The buffer to parse.
+	 * @param src
+	 *            What chip did this come from?
+	 * @param host
+	 *            What address did that chip have? (Only for creating a
+	 *            {@link Tag}.)
+	 * @param tag
+	 *            What was the tag ID? (Only for creating a {@link Tag}.)
+	 * @throws UnknownHostException
+	 *             If we can't parse the host. Unexpected.
+	 */
+	public TagDescription(ByteBuffer buffer, HasChipLocation src,
+			InetAddress host, int tag) throws UnknownHostException {
 		byte[] ipBytes = new byte[IPV4_BYTES];
 		buffer.get(ipBytes);
 		ipAddress = getByAddress(ipBytes);

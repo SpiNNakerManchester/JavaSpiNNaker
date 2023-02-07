@@ -16,14 +16,16 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.lang.Byte.toUnsignedInt;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagCommand.TTO;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.COMMAND_FIELD;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.COMMAND_FIELD;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime;
+import uk.ac.manchester.spinnaker.messages.model.TagInfo;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
@@ -59,8 +61,12 @@ public class IPTagSetTTO extends SCPRequest<IPTagSetTTO.Response> {
 		}
 
 		@Override
-		protected TagInfo parse(ByteBuffer buffer) throws RuntimeException {
-			return new TagInfo(buffer);
+		protected TagInfo parse(ByteBuffer buffer) {
+			var transientTimeout = IPTagTimeOutWaitTime.get(buffer.get());
+			buffer.get(); // skip 1 (sizeof(iptag_t) isn't relevant to us)
+			var poolSize = toUnsignedInt(buffer.get());
+			var fixedSize = toUnsignedInt(buffer.get());
+			return new TagInfo(transientTimeout, poolSize, fixedSize);
 		}
 	}
 }

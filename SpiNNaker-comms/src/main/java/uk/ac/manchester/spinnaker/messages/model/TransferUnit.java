@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.messages.scp;
+package uk.ac.manchester.spinnaker.messages.model;
 
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 

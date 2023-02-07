@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.messages.bmp;
+package uk.ac.manchester.spinnaker.messages.model;
 
 import java.net.InetAddress;
 
@@ -27,7 +27,13 @@ public final class Addresses {
 	/** The IPv4 address of the managed SpiNNaker board. */
 	public final InetAddress spinIPAddress;
 
-	Addresses(InetAddress bmpIPAddress, InetAddress spinIPAddress) {
+	/**
+	 * @param bmpIPAddress
+	 *            The IPv4 address of the BMP.
+	 * @param spinIPAddress
+	 *            The IPv4 address of the managed SpiNNaker board.
+	 */
+	public Addresses(InetAddress bmpIPAddress, InetAddress spinIPAddress) {
 		this.bmpIPAddress = bmpIPAddress;
 		this.spinIPAddress = spinIPAddress;
 	}

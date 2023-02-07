@@ -14,15 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.messages.scp;
+package uk.ac.manchester.spinnaker.messages.model;
 
-import static java.lang.Byte.toUnsignedInt;
-
-import java.nio.ByteBuffer;
-
-import uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime;
+import com.google.errorprone.annotations.Immutable;
 
 /** Information about a tag pool on an Ethernet-connected chip. */
+@Immutable
 public final class TagInfo {
 	/**
 	 * The timeout for transient IP tags (i.e., responses to SCP commands).
@@ -35,10 +32,19 @@ public final class TagInfo {
 	/** The count of the number of fixed IP tag entries. */
 	public final int fixedSize;
 
-	TagInfo(ByteBuffer buffer) {
-		transientTimeout = IPTagTimeOutWaitTime.get(buffer.get());
-		buffer.get(); // skip 1 (sizeof(iptag_t) isn't relevant to us)
-		poolSize = toUnsignedInt(buffer.get());
-		fixedSize = toUnsignedInt(buffer.get());
+	/**
+	 * @param transientTimeout
+	 *            The timeout for transient IP tags (i.e., responses to SCP
+	 *            commands).
+	 * @param poolSize
+	 *            The count of the IP tag pool size.
+	 * @param fixedSize
+	 *            The count of the number of fixed IP tag entries.
+	 */
+	public TagInfo(IPTagTimeOutWaitTime transientTimeout, int poolSize,
+			int fixedSize) {
+		this.transientTimeout = transientTimeout;
+		this.poolSize = poolSize;
+		this.fixedSize = fixedSize;
 	}
 }

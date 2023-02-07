@@ -18,8 +18,8 @@ package uk.ac.manchester.spinnaker.messages.bmp;
 
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.model.TransferUnit.WORD;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_READ;
-import static uk.ac.manchester.spinnaker.messages.scp.TransferUnit.WORD;
 
 import java.nio.ByteBuffer;
 
