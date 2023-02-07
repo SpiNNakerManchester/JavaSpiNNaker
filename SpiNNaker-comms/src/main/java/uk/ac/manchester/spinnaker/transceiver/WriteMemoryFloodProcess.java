@@ -79,8 +79,7 @@ class WriteMemoryFloodProcess extends TxrxProcess {
 			ByteBuffer data)
 			throws IOException, ProcessException, InterruptedException {
 		int numBytes = data.remaining();
-		synchronousCall(
-				new FloodFillStart(nearestNeighbourID, numBlocks(numBytes)));
+		call(new FloodFillStart(nearestNeighbourID, numBlocks(numBytes)));
 
 		int blockID = 0;
 		for (var slice : sliceUp(data, UDP_MESSAGE_MAX_SIZE)) {
@@ -90,7 +89,7 @@ class WriteMemoryFloodProcess extends TxrxProcess {
 		}
 		finishBatch();
 
-		synchronousCall(new FloodFillEnd(nearestNeighbourID));
+		call(new FloodFillEnd(nearestNeighbourID));
 	}
 
 	/**
@@ -117,8 +116,7 @@ class WriteMemoryFloodProcess extends TxrxProcess {
 	void writeMemory(byte nearestNeighbourID, MemoryLocation baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(
-				new FloodFillStart(nearestNeighbourID, numBlocks(numBytes)));
+		call(new FloodFillStart(nearestNeighbourID, numBlocks(numBytes)));
 
 		int blockID = 0;
 		while (numBytes > 0) {
@@ -136,7 +134,7 @@ class WriteMemoryFloodProcess extends TxrxProcess {
 		}
 		finishBatch();
 
-		synchronousCall(new FloodFillEnd(nearestNeighbourID));
+		call(new FloodFillEnd(nearestNeighbourID));
 	}
 
 	/**

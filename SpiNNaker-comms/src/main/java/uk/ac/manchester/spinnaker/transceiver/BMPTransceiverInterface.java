@@ -21,6 +21,7 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.Utils.wordAsBuffer;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.BLACKLIST_BLANK;
@@ -1284,10 +1285,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	default void writeBMPMemory(@Valid BMPCoords bmp, @Valid BMPBoard board,
 			@NotNull MemoryLocation baseAddress, int dataWord)
 			throws IOException, ProcessException, InterruptedException {
-		var data = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
-		data.putInt(dataWord);
-		data.flip();
-		writeBMPMemory(bmp, board, baseAddress, data);
+		writeBMPMemory(bmp, board, baseAddress, wordAsBuffer(dataWord));
 	}
 
 	/**

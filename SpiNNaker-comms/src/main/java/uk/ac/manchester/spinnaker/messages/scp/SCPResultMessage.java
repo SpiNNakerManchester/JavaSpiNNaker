@@ -27,6 +27,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_TIMEOUT;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,7 +38,7 @@ public final class SCPResultMessage {
 	private static final int SKIP_HEADER_BYTES = 2 + SDP_HEADER_LENGTH;
 
 	private static final Set<SCPResult> RETRY_CODES =
-			Set.of(RC_TIMEOUT, RC_P2P_TIMEOUT, RC_LEN, RC_P2P_NOREPLY);
+			EnumSet.of(RC_TIMEOUT, RC_P2P_TIMEOUT, RC_LEN, RC_P2P_NOREPLY);
 
 	/** The response code. */
 	private final SCPResult result;

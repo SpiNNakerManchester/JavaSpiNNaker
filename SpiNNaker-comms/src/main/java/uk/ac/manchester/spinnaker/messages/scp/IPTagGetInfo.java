@@ -27,7 +27,15 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/** An SCP Request information about IP tags. */
+/**
+ * An SCP Request information about IP tags. The response payload is the
+ * {@linkplain TagInfo tag <em>system</em> information}.
+ * <p>
+ * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},
+ * if sent to a BMP).
+ *
+ * @see IPTagGet
+ */
 public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 	private static final int IPTAG_MAX = 255;
 
@@ -46,8 +54,7 @@ public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 		return new IPTagGetInfo.Response(buffer);
 	}
 
-	/** An SCP response to a request for information about IP tags. */
-	public static class Response extends CheckOKResponse {
+	public static final class TagInfo {
 		/**
 		 * The timeout for transient IP tags (i.e., responses to SCP commands).
 		 */
@@ -59,12 +66,24 @@ public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 		/** The count of the number of fixed IP tag entries. */
 		public final int fixedSize;
 
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
-			super("Get IP Tag Info", CMD_IPTAG, buffer);
+		private TagInfo(ByteBuffer buffer) {
 			transientTimeout = IPTagTimeOutWaitTime.get(buffer.get());
-			buffer.get(); // skip 1
+			buffer.get(); // skip 1 (sizeof(iptag_t) isn't relevant to us)
 			poolSize = toUnsignedInt(buffer.get());
 			fixedSize = toUnsignedInt(buffer.get());
+		}
+	}
+
+	/** An SCP response to a request for information about IP tags. */
+	public static final class Response
+			extends PayloadedResponse<TagInfo, RuntimeException> {
+		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+			super("Get IP Tag Info", CMD_IPTAG, buffer);
+		}
+
+		@Override
+		protected TagInfo parse(ByteBuffer buffer) throws RuntimeException {
+			return new TagInfo(buffer);
 		}
 	}
 }

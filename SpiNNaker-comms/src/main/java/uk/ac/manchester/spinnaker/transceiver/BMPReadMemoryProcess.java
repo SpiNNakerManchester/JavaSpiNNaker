@@ -73,8 +73,8 @@ class BMPReadMemoryProcess extends BMPCommandProcess {
 			throws ProcessException, IOException, InterruptedException {
 		for (int offset = 0, chunk; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
-			accum.add(offset, execute(
-					new BMPReadMemory(board, address.add(offset), chunk)).data);
+			accum.add(offset,
+					call(new BMPReadMemory(board, address.add(offset), chunk)));
 		}
 		return accum.finish();
 	}

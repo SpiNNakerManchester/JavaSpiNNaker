@@ -43,7 +43,11 @@ import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
 
 /**
  * An SCP Request to set a (forward) IP Tag. Forward IP tags are tags that
- * funnel packets from SpiNNaker to the outside world.
+ * funnel packets from SpiNNaker to the outside world. There is no response
+ * payload.
+ * <p>
+ * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},
+ * if sent to a BMP).
  *
  * @see ReverseIPTagSet
  */
@@ -80,12 +84,14 @@ public class IPTagSet extends SCPRequest<CheckOKResponse> {
 		}
 	}
 
+	// arg1 = flags[11:8] : timeout : command : dest_port : tag
 	private static int argument1(int tag, boolean strip, boolean useSender) {
 		return (strip ? 1 << STRIP_FIELD_BIT : 0)
 				| (useSender ? 1 << USE_SENDER_BIT : 0)
 				| (SET.value << COMMAND_FIELD) | (tag & THREE_BITS_MASK);
 	}
 
+	// arg2 = dest_addr : port
 	private static int argument2(int port) {
 		return port & PORT_MASK;
 	}

@@ -35,8 +35,15 @@ import uk.ac.manchester.spinnaker.machine.tags.TagID;
 import uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/** An SCP Request to get an IP tag. */
+/**
+ * An SCP Request to get an IP tag. The
+ * response payload is the {@linkplain TagDescription tag description}.
+ * <p>
+ * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},
+ * if sent to a BMP).
+ */
 public class IPTagGet extends SCPRequest<IPTagGet.Response> {
+	// arg1 = flags[11:8] : timeout : command : dest_port : tag
 	private static int argument1(int tagID) {
 		return (GET.value << COMMAND_FIELD) | (tagID & THREE_BITS_MASK);
 	}
@@ -57,8 +64,8 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 		return new Response(buffer);
 	}
 
-	/** An SCP response to a request for an IP tags. */
-	public static final class Response extends CheckOKResponse {
+	/** Description of a tag. */
+	public static final class TagDescription {
 		/**
 		 * The count of the number of packets that have been sent with the tag.
 		 */
@@ -91,10 +98,7 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 		/** The timeout of the tag. */
 		public final IPTagTimeOutWaitTime timeout;
 
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException, UnknownHostException {
-			super("Get IP Tag Info", CMD_IPTAG, buffer);
-
+		private TagDescription(ByteBuffer buffer) throws UnknownHostException {
 			byte[] ipBytes = new byte[IPV4_BYTES];
 			buffer.get(ipBytes);
 			ipAddress = getByAddress(ipBytes);
@@ -158,6 +162,21 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 		/** @return True if the tag is to strip the SDP header. */
 		public boolean isStrippingSDP() {
 			return bitset(STRIP_BIT);
+		}
+	}
+
+	/** An SCP response to a request for an IP tags. */
+	public static final class Response
+			extends PayloadedResponse<TagDescription, UnknownHostException> {
+		private Response(ByteBuffer buffer)
+				throws UnexpectedResponseCodeException, UnknownHostException {
+			super("Get IP Tag Info", CMD_IPTAG, buffer);
+		}
+
+		@Override
+		protected TagDescription parse(ByteBuffer buffer)
+				throws UnknownHostException {
+			return new TagDescription(buffer);
 		}
 	}
 }

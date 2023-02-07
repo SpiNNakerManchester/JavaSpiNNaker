@@ -24,16 +24,19 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP Request to update the runtime info on a core.
+ * An SCP Request to update the runtime info on a core. Note that <em>this
+ * request does not expect a response</em>; the response to this request is
+ * detected by the core entering a non-running state.
+ * <p>
+ * This calls {@code simulation_control_scp_callback()} in {@code simulation.c}.
  */
-public class UpdateProvenanceAndExit extends SCPRequest<NoResponse> {
+public class UpdateProvenanceAndExit extends FECRequest<NoResponse> {
 	/**
 	 * @param core
 	 *            The SpiNNaker core to update the provenance info of.
 	 */
 	public UpdateProvenanceAndExit(HasCoreLocation core) {
-		super(new RunningSDPHeader(core, false),
-				UPDATE_PROVENCE_REGION_AND_EXIT, 0, 0, 0, null);
+		super(core, false, UPDATE_PROVENCE_REGION_AND_EXIT);
 	}
 
 	@Override

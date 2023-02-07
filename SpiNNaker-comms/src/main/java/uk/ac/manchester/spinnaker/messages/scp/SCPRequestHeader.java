@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
  * The sequence number, if zero, will be set by the message sending code to the
  * actual sequence number when the message is sent on a connection.
  */
-public class SCPRequestHeader implements SerializableMessage {
+public final class SCPRequestHeader implements SerializableMessage {
 	/** The command of the SCP packet. */
 	public final CommandCode command;
 
@@ -45,7 +45,7 @@ public class SCPRequestHeader implements SerializableMessage {
 	 *            The command to perform.
 	 * @see #issueSequenceNumber(Set)
 	 */
-	public SCPRequestHeader(CommandCode command) {
+	SCPRequestHeader(CommandCode command) {
 		this.command = command;
 	}
 

@@ -17,9 +17,7 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Thread.sleep;
-import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
@@ -28,6 +26,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_1_START_ADD
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_2_START_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.NO_ROUTER_DIAGNOSTIC_FILTERS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.Utils.wordAsBuffer;
 import static uk.ac.manchester.spinnaker.messages.model.AppID.DEFAULT;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.READY;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUN_TIME_EXCEPTION;
@@ -44,6 +43,7 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
@@ -129,7 +129,8 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	/**
 	 * The set of states that indicate a core in a failure state.
 	 */
-	Set<CPUState> DEFAULT_ERROR_STATES = Set.of(RUN_TIME_EXCEPTION, WATCHDOG);
+	EnumSet<CPUState> DEFAULT_ERROR_STATES =
+			EnumSet.of(RUN_TIME_EXCEPTION, WATCHDOG);
 
 	/**
 	 * What proportion of checks are to be expensive full checks.
@@ -1451,6 +1452,10 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *            How many machine timesteps will the run last. {@code null} is
 	 *            used to indicate an infinite (unbounded until explicitly
 	 *            stopped) run.
+	 * @param currentTime
+	 *            The current simulation time.
+	 * @param syncTimesteps
+	 *            The number of timesteps before we pause to synchronise.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -1459,9 +1464,11 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If the communications were interrupted.
 	 */
 	@ParallelUnsafe
-	default void updateRuntime(@PositiveOrZero Integer runTimesteps)
+	default void updateRuntime(@PositiveOrZero Integer runTimesteps,
+			@PositiveOrZero int currentTime, @PositiveOrZero int syncTimesteps)
 			throws IOException, ProcessException, InterruptedException {
-		updateRuntime(runTimesteps, (CoreSubsets) null);
+		updateRuntime(runTimesteps, currentTime, syncTimesteps,
+				(CoreSubsets) null);
 	}
 
 	/**
@@ -1471,6 +1478,10 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *            How many machine timesteps will the run last. {@code null} is
 	 *            used to indicate an infinite (unbounded until explicitly
 	 *            stopped) run.
+	 * @param currentTime
+	 *            The current simulation time.
+	 * @param syncTimesteps
+	 *            The number of timesteps before we pause to synchronise.
 	 * @param core
 	 *            The coordinates of the processor to clear the IOBUF on.
 	 * @throws IOException
@@ -1482,9 +1493,11 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	default void updateRuntime(@PositiveOrZero Integer runTimesteps,
+			@PositiveOrZero int currentTime, @PositiveOrZero int syncTimesteps,
 			@Valid HasCoreLocation core)
 			throws IOException, ProcessException, InterruptedException {
-		updateRuntime(runTimesteps, new CoreSubsets(core));
+		updateRuntime(runTimesteps, currentTime, syncTimesteps,
+				new CoreSubsets(core));
 	}
 
 	/**
@@ -1494,6 +1507,10 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *            How many machine timesteps will the run last. {@code null} is
 	 *            used to indicate an infinite (unbounded until explicitly
 	 *            stopped) run.
+	 * @param currentTime
+	 *            The current simulation time.
+	 * @param syncTimesteps
+	 *            The number of timesteps before we pause to synchronise.
 	 * @param coreSubsets
 	 *            A set of chips and cores on which to set the running time.
 	 * @throws IOException
@@ -1505,6 +1522,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 */
 	@ParallelSafeWithCare
 	void updateRuntime(@PositiveOrZero Integer runTimesteps,
+			@PositiveOrZero int currentTime, @PositiveOrZero int syncTimesteps,
 			@Valid CoreSubsets coreSubsets)
 			throws IOException, ProcessException, InterruptedException;
 
@@ -1717,9 +1735,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void writeMemory(@Valid HasCoreLocation core,
 			@NotNull MemoryLocation baseAddress, int dataWord)
 			throws IOException, ProcessException, InterruptedException {
-		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
-		b.putInt(dataWord).flip();
-		writeMemory(core, baseAddress, b);
+		writeMemory(core, baseAddress, wordAsBuffer(dataWord));
 	}
 
 	/**
@@ -2155,9 +2171,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 			@NotNull Direction link, @NotNull MemoryLocation baseAddress,
 			int dataWord)
 			throws IOException, ProcessException, InterruptedException {
-		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
-		b.putInt(dataWord).flip();
-		writeNeighbourMemory(core, link, baseAddress, b);
+		writeNeighbourMemory(core, link, baseAddress, wordAsBuffer(dataWord));
 	}
 
 	/**
@@ -2373,9 +2387,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void writeMemoryFlood(@NotNull MemoryLocation baseAddress,
 			int dataWord)
 			throws IOException, ProcessException, InterruptedException {
-		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
-		b.putInt(dataWord).flip();
-		writeMemoryFlood(baseAddress, b);
+		writeMemoryFlood(baseAddress, wordAsBuffer(dataWord));
 	}
 
 	/**
@@ -2711,7 +2723,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 */
 	@ParallelSafeWithCare
 	default void waitForCoresToBeInState(@Valid CoreSubsets coreSubsets,
-			@NotNull AppID appID, Set<@NotNull CPUState> cpuStates)
+			@NotNull AppID appID, EnumSet<@NotNull CPUState> cpuStates)
 			throws IOException, InterruptedException, SpinnmanException {
 		waitForCoresToBeInState(coreSubsets, appID, cpuStates, TIMEOUT_DISABLED,
 				DEFAULT_POLL_INTERVAL, DEFAULT_ERROR_STATES,
@@ -2754,9 +2766,9 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 */
 	@ParallelSafeWithCare
 	void waitForCoresToBeInState(@Valid CoreSubsets allCoreSubsets,
-			@NotNull AppID appID, Set<@NotNull CPUState> cpuStates,
+			@NotNull AppID appID, EnumSet<@NotNull CPUState> cpuStates,
 			@PositiveOrZero Integer timeout, @Positive int timeBetweenPolls,
-			Set<@NotNull CPUState> errorStates,
+			EnumSet<@NotNull CPUState> errorStates,
 			@Positive int countsBetweenFullCheck)
 			throws IOException, InterruptedException, SpinnmanException;
 
@@ -2784,7 +2796,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default CoreSubsets getCoresInState(@Valid CoreSubsets allCoreSubsets,
 			@NotNull CPUState state)
 			throws IOException, ProcessException, InterruptedException {
-		return getCoresInState(allCoreSubsets, Set.of(state));
+		return getCoresInState(allCoreSubsets, EnumSet.of(state));
 	}
 
 	/**
@@ -2809,7 +2821,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	default CoreSubsets getCoresInState(@Valid CoreSubsets allCoreSubsets,
-			Set<@NotNull CPUState> states)
+			EnumSet<@NotNull CPUState> states)
 			throws IOException, ProcessException, InterruptedException {
 		return new CoreSubsets(getCPUInformation(allCoreSubsets)
 				.filter(info -> states.contains(info.getState()))
@@ -2840,7 +2852,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			@Valid CoreSubsets allCoreSubsets, @NotNull CPUState state)
 			throws IOException, ProcessException, InterruptedException {
-		return getCoresNotInState(allCoreSubsets, Set.of(state));
+		return getCoresNotInState(allCoreSubsets, EnumSet.of(state));
 	}
 
 	/**
@@ -2865,7 +2877,8 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafeWithCare
 	@CheckReturnValue
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
-			@Valid CoreSubsets allCoreSubsets, Set<@NotNull CPUState> states)
+			@Valid CoreSubsets allCoreSubsets,
+			EnumSet<@NotNull CPUState> states)
 			throws IOException, ProcessException, InterruptedException {
 		return getCPUInformation(allCoreSubsets)
 				.filter(info -> !states.contains(info.getState()))

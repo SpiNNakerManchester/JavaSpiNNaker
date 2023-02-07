@@ -17,6 +17,8 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.util.Objects.nonNull;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.DEFAULT_PORT;
 
 import java.nio.ByteBuffer;
 
@@ -72,6 +74,19 @@ public abstract class SCPRequest<T extends SCPResponse>
 	protected static final ByteBuffer NO_DATA = null;
 
 	/**
+	 * Make a header. SCP uses a limited subset of SDP. It <i>always</i> wants a
+	 * reply and always talks to a particular SDP port (the port for SCAMP).
+	 *
+	 * @param core
+	 *            The SpiNNaker core that we want to talk to. Should be running
+	 *            SCAMP.
+	 * @return The SDP header.
+	 */
+	private static SDPHeader header(HasCoreLocation core) {
+		return new SDPHeader(REPLY_EXPECTED, core, DEFAULT_PORT);
+	}
+
+	/**
 	 * Create a new request that goes to the default port and needs a reply.
 	 *
 	 * @param core
@@ -80,7 +95,7 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 *            The command ID.
 	 */
 	protected SCPRequest(HasCoreLocation core, SCPCommand command) {
-		this(new SCPSDPHeader(core), command, 0, 0, 0, NO_DATA);
+		this(header(core), command, 0, 0, 0, NO_DATA);
 	}
 
 	/**
@@ -95,7 +110,7 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 */
 	protected SCPRequest(HasCoreLocation core, SCPCommand command,
 			int argument1) {
-		this(new SCPSDPHeader(core), command, argument1, 0, 0, NO_DATA);
+		this(header(core), command, argument1, 0, 0, NO_DATA);
 	}
 
 	/**
@@ -112,8 +127,7 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 */
 	protected SCPRequest(HasCoreLocation core, SCPCommand command,
 			int argument1, int argument2) {
-		this(new SCPSDPHeader(core), command, argument1, argument2, 0,
-				NO_DATA);
+		this(header(core), command, argument1, argument2, 0, NO_DATA);
 	}
 
 	/**
@@ -132,8 +146,7 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 */
 	protected SCPRequest(HasCoreLocation core, SCPCommand command,
 			int argument1, int argument2, int argument3) {
-		this(new SCPSDPHeader(core), command, argument1, argument2, argument3,
-				NO_DATA);
+		this(header(core), command, argument1, argument2, argument3, NO_DATA);
 	}
 
 	/**
@@ -156,8 +169,7 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 */
 	protected SCPRequest(HasCoreLocation core, SCPCommand command,
 			int argument1, int argument2, int argument3, ByteBuffer data) {
-		this(new SCPSDPHeader(core), command, argument1, argument2, argument3,
-				data);
+		this(header(core), command, argument1, argument2, argument3, data);
 	}
 
 	/**
