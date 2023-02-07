@@ -48,42 +48,6 @@ public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
 		return new Response(buffer);
 	}
 
-	/** The IP addresses associated with a SpiNNaker board. */
-	// TODO convert to record in 17
-	public static final class Addresses {
-		/** The IPv4 address of the BMP. */
-		public final InetAddress bmpIPAddress;
-
-		/** The IPv4 address of the managed SpiNNaker board. */
-		public final InetAddress spinIPAddress;
-
-		private static final int CHUNK_LEN = 32;
-
-		private static final int IP_OFFSET = 8;
-
-		private static final int IP_LEN = 4;
-
-		private static byte[] getChunk(ByteBuffer buffer) {
-			byte[] chunk = new byte[CHUNK_LEN];
-			buffer.get(chunk);
-			return chunk;
-		}
-
-		private static InetAddress getIP(byte[] chunk)
-				throws UnknownHostException {
-			byte[] bytes = new byte[IP_LEN];
-			System.arraycopy(chunk, IP_OFFSET, bytes, 0, IP_LEN);
-			return getByAddress(bytes);
-		}
-
-		private Addresses(ByteBuffer buffer) throws UnknownHostException {
-			byte[] bmpChunk = getChunk(buffer);
-			byte[] spinChunk = getChunk(buffer);
-			bmpIPAddress = getIP(bmpChunk);
-			spinIPAddress = getIP(spinChunk);
-		}
-	}
-
 	/** An SCP response to a request for IP address information. */
 	protected final class Response
 			extends BMPRequest.PayloadedResponse<Addresses> {
@@ -92,11 +56,26 @@ public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
 			super("Read IP Address Data", CMD_BMP_INFO, buffer);
 		}
 
+		private static final int CHUNK_LEN = 32;
+
+		private static final int IP_OFFSET = 8;
+
+		private static final int IP_LEN = 4;
+
+		private InetAddress getIP(ByteBuffer buffer)
+				throws UnknownHostException {
+			byte[] chunk = new byte[CHUNK_LEN];
+			buffer.get(chunk);
+			byte[] bytes = new byte[IP_LEN];
+			System.arraycopy(chunk, IP_OFFSET, bytes, 0, IP_LEN);
+			return getByAddress(bytes);
+		}
+
 		/** @return The addresses of the SpiNNaker board. */
 		@Override
 		protected Addresses parse(ByteBuffer buffer) {
 			try {
-				return new Addresses(buffer);
+				return new Addresses(getIP(buffer), getIP(buffer));
 			} catch (UnknownHostException e) {
 				// Should be unreachable
 				return null;
