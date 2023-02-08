@@ -1,18 +1,17 @@
 /*
  * Copyright (c) 2018 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
@@ -30,7 +29,13 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
 
-/** An SCP Request to allocate space in the SDRAM space. */
+/**
+ * An SCP Request to allocate space in the SDRAM space. The response payload is
+ * the {@linkplain MemoryLocation location} of the block of allocated memory.
+ * <p>
+ * Calls {@code cmd_alloc()} (and hence {@code sark_xalloc()}) in
+ * {@code scamp-cmd.c}.
+ */
 public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	private static final int MAX_SDRAM_TAG = 255;
 
@@ -65,7 +70,7 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	 *             If a bad tag is given.
 	 */
 	public SDRAMAlloc(HasChipLocation chip, AppID appID, int size, int tag) {
-		super(chip.getScampCore(), CMD_ALLOC, argument1(appID), size, tag);
+		super(chip.getScampCore(), CMD_ALLOC, argument(appID), size, tag);
 		this.size = size;
 		if (tag < 0 || tag > MAX_SDRAM_TAG) {
 			throw new IllegalArgumentException(
@@ -74,28 +79,39 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 		}
 	}
 
-	private static int argument1(AppID appID) {
+	// @formatter:off
+	/*
+	 * [  31-24 |      23-16 |   15-8 | 7-0 ]
+	 * [ unused | extra_flag | app_id |  op ]
+	 */
+	// @formatter:on
+	private static int argument(AppID appID) {
 		return (FLAG_TAG_RETRY << BYTE2) | (appID.appID << BYTE1)
 				| (ALLOC_SDRAM.value << BYTE0);
 	}
 
 	@Override
 	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new Response(size, buffer);
+		return new Response(buffer);
 	}
 
 	/** An SCP response to a request to allocate space in SDRAM. */
-	public static class Response extends CheckOKResponse {
-		/** The base address allocated. */
-		public final MemoryLocation baseAddress;
-
-		Response(int size, ByteBuffer buffer) throws Exception {
+	public final class Response extends
+			PayloadedResponse<MemoryLocation, MemoryAllocationFailedException> {
+		Response(ByteBuffer buffer) throws Exception {
 			super("SDRAM Allocation", CMD_ALLOC, buffer);
-			baseAddress = new MemoryLocation(buffer.getInt());
+		}
+
+		/** @return The base address allocated. */
+		@Override
+		protected MemoryLocation parse(ByteBuffer buffer)
+				throws MemoryAllocationFailedException {
+			var baseAddress = new MemoryLocation(buffer.getInt());
 			if (baseAddress.isNull()) {
 				throw new MemoryAllocationFailedException(
 						format("Could not allocate %d bytes of SDRAM", size));
 			}
+			return baseAddress;
 		}
 	}
 }

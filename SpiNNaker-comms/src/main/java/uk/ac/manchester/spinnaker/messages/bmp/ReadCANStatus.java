@@ -1,33 +1,38 @@
 /*
  * Copyright (c) 2022 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
+import static java.util.stream.Collectors.toUnmodifiableList;
+import static java.util.stream.IntStream.range;
 import static uk.ac.manchester.spinnaker.messages.bmp.BMPInfo.CAN_STATUS;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_INFO;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
- * SCP Request for the CAN bus status data from the BMP.
+ * SCP Request for the CAN bus status data from the BMP. The response payload is
+ * an {@linkplain MappableIterable iterable} of enabled {@linkplain BMPBoard
+ * board numbers}.
+ * <p>
+ * Handled in {@code cmd_bmp_info()} (in {@code bmp_cmd.c}) by reading from
+ * {@code can_status}.
  */
 public class ReadCANStatus extends BMPRequest<ReadCANStatus.Response> {
 	private static final int MAX_BOARDS_PER_FRAME = 24;
@@ -46,33 +51,29 @@ public class ReadCANStatus extends BMPRequest<ReadCANStatus.Response> {
 	}
 
 	/** An SCP response to a request for the CAN status. */
-	public static final class Response extends BMPRequest.BMPResponse {
-		/**
-		 * The status data. The byte at {@code x} is zero if the BMP with that
-		 * index is disabled.
-		 */
-		public final byte[] statusData;
-
-		/**
-		 * What boards are available to be managed by the BMP?
-		 *
-		 * @return Ordered sequence of board numbers.
-		 */
-		public MappableIterable<Integer> availableBoards() {
-			var boards = new ArrayList<Integer>();
-			for (int i = 0; i < MAX_BOARDS_PER_FRAME; i++) {
-				if (statusData[i] != 0) {
-					boards.add(i);
-				}
-			}
-			return boards::iterator;
-		}
-
+	public static final class Response
+			extends BMPRequest.PayloadedResponse<MappableIterable<BMPBoard>> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Read CAN Status", CMD_BMP_INFO, buffer);
-			statusData = new byte[buffer.remaining()];
+		}
+
+		/**
+		 * @return Ordered sequence of board numbers available to be managed by
+		 *         the BMP.
+		 */
+		@Override
+		protected MappableIterable<BMPBoard> parse(ByteBuffer buffer) {
+			/*
+			 * The status data. The byte at {@code x} is zero if the BMP with
+			 * that index is disabled.
+			 */
+			var statusData = new byte[buffer.remaining()];
 			buffer.get(statusData);
+			var boards = range(0, MAX_BOARDS_PER_FRAME)
+					.filter(i -> statusData[i] != 0).mapToObj(BMPBoard::new)
+					.collect(toUnmodifiableList());
+			return boards::iterator;
 		}
 	}
 }

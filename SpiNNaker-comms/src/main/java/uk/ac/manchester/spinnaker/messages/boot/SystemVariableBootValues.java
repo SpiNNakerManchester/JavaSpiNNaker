@@ -1,18 +1,17 @@
 /*
  * Copyright (c) 2018 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.messages.boot;
 
@@ -21,8 +20,7 @@ import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.variables;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.EnumMap;
 
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
@@ -38,13 +36,13 @@ public class SystemVariableBootValues implements SerializableMessage {
 	static final int BOOT_VARIABLE_SIZE = 256;
 
 	/** This <em>must</em> be mutable. */
-	private final Map<SystemVariableDefinition, Object> values;
+	private final EnumMap<SystemVariableDefinition, Object> values;
 
 	private boolean unmodifiable;
 
 	/** Create a set of boot values using all the defaults. */
 	public SystemVariableBootValues() {
-		values = new HashMap<>();
+		values = new EnumMap<>(SystemVariableDefinition.class);
 		for (var svd : SystemVariableDefinition.values()) {
 			values.put(svd, svd.getDefault());
 		}
@@ -58,7 +56,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 	 *            The set of boot values to copy from.
 	 */
 	public SystemVariableBootValues(SystemVariableBootValues original) {
-		values = new HashMap<>(original.values);
+		values = new EnumMap<>(original.values);
 	}
 
 	/**

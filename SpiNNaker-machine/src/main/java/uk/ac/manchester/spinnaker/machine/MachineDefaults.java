@@ -1,18 +1,17 @@
 /*
  * Copyright (c) 2018 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.machine;
 
@@ -22,8 +21,8 @@ import static uk.ac.manchester.spinnaker.machine.Direction.SOUTHWEST;
 import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGAHERTZ_PER_HERTZ;
 
+import java.util.EnumSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Default values for a SpiNNaker machine comprised of SpiNNaker-1 chips running
@@ -106,11 +105,12 @@ public final class MachineDefaults {
 	// (0, 0, 3), (0, 0, 4), (0, 1, 3), (0, 1, 4),
 	// (1, 0, 0), (1, 0, 1), (1, 1, 0), (1, 1, 1)
 	// }
-	public static final Map<ChipLocation, Set<Direction>> FOUR_CHIP_DOWN_LINKS =
-			Map.of(new ChipLocation(0, 0), Set.of(WEST, SOUTHWEST),
-					new ChipLocation(0, 1), Set.of(WEST, SOUTHWEST),
-					new ChipLocation(1, 0), Set.of(EAST, NORTHEAST),
-					new ChipLocation(1, 1), Set.of(EAST, NORTHEAST));
+	public static final Map<ChipLocation,
+			EnumSet<Direction>> FOUR_CHIP_DOWN_LINKS = Map.of(
+					new ChipLocation(0, 0), EnumSet.of(WEST, SOUTHWEST),
+					new ChipLocation(0, 1), EnumSet.of(WEST, SOUTHWEST),
+					new ChipLocation(1, 0), EnumSet.of(EAST, NORTHEAST),
+					new ChipLocation(1, 1), EnumSet.of(EAST, NORTHEAST));
 
 	/**
 	 * Checks the x and y parameter are legal ones regardless of the type of

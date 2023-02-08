@@ -1,32 +1,34 @@
 /*
  * Copyright (c) 2018-2019 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.min;
+import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.IDLE;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTable.getColumnOffset;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTable.getNumColumnBytes;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTER_P2P;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.range;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +63,7 @@ class GetMachineProcess extends TxrxProcess {
 
 	private final Map<ChipLocation, Set<Integer>> ignoreCoresMap;
 
-	private final Map<ChipLocation, Set<Direction>> ignoreLinksMap;
+	private final Map<ChipLocation, EnumSet<Direction>> ignoreLinksMap;
 
 	private final Integer maxSDRAMSize;
 
@@ -105,7 +107,7 @@ class GetMachineProcess extends TxrxProcess {
 			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			Set<ChipLocation> ignoreChips,
 			Map<ChipLocation, Set<Integer>> ignoreCoresMap,
-			Map<ChipLocation, Set<Direction>> ignoreLinksMap,
+			Map<ChipLocation, EnumSet<Direction>> ignoreLinksMap,
 			Integer maxSDRAMSize, RetryTracker retryTracker) {
 		super(connectionSelector, SCP_RETRIES, SCP_TIMEOUT, THROTTLED,
 				THROTTLED - 1, retryTracker);
@@ -135,19 +137,19 @@ class GetMachineProcess extends TxrxProcess {
 	Machine getMachineDetails(HasChipLocation bootChip, MachineDimensions size)
 			throws IOException, ProcessException, InterruptedException {
 		// Get the P2P table; 8 entries are packed into each 32-bit word
-		var p2pColumnData = new ArrayList<ByteBuffer>();
-		for (int column = 0; column < size.width; column++) {
-			p2pColumnData.add(synchronousCall(new ReadMemory(bootChip,
-					ROUTER_P2P.add(getColumnOffset(column)),
-					getNumColumnBytes(size.height))).data);
-			// TODO work out why multiple calls at once is a problem
+		var p2pColumnData = new ByteBuffer[size.width];
+		int byteLength = getNumColumnBytes(size.height);
+		for (int col : range(0, size.width)) {
+			sendGet(new ReadMemory(bootChip,
+					ROUTER_P2P.add(getColumnOffset(col)), byteLength),
+					bytes -> p2pColumnData[col] = bytes);
 		}
-		var p2pTable = new P2PTable(size, p2pColumnData);
+		finishBatch();
+		var p2pTable = new P2PTable(size, asList(p2pColumnData));
 
 		// Get the chip information for each chip
 		for (var chip : p2pTable.getChips()) {
-			sendRequest(new GetChipInfo(chip),
-					response -> chipInfo.put(chip, response.chipInfo));
+			sendGet(new GetChipInfo(chip), info -> chipInfo.put(chip, info));
 		}
 		try {
 			finishBatch();

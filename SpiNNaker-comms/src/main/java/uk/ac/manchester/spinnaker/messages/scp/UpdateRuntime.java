@@ -1,18 +1,17 @@
 /*
  * Copyright (c) 2019 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
@@ -24,9 +23,12 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP Request to update the runtime info on a core.
+ * An SCP Request to update the runtime info on a core. There is no response
+ * payload.
+ * <p>
+ * This calls {@code simulation_control_scp_callback()} in {@code simulation.c}.
  */
-public class UpdateRuntime extends SCPRequest<CheckOKResponse> {
+public class UpdateRuntime extends FECRequest<CheckOKResponse> {
 	/**
 	 * @param core
 	 *            The SpiNNaker core to update the runtime info of.
@@ -34,11 +36,15 @@ public class UpdateRuntime extends SCPRequest<CheckOKResponse> {
 	 *            The number of machine timesteps.
 	 * @param infiniteRun
 	 *            Whether we are doing infinite running.
+	 * @param currentTime
+	 *            The current simulation time.
+	 * @param numSyncSteps
+	 *            The number of timesteps before we pause to synchronise.
 	 */
-	public UpdateRuntime(HasCoreLocation core, int runTime,
-			boolean infiniteRun) {
-		super(new RunningSDPHeader(core, true), NEW_RUNTIME_ID, runTime,
-				bool(infiniteRun), bool(true), null);
+	public UpdateRuntime(HasCoreLocation core, int runTime, boolean infiniteRun,
+			int currentTime, int numSyncSteps) {
+		super(core, true, NEW_RUNTIME_ID, runTime, bool(infiniteRun),
+				currentTime, numSyncSteps);
 	}
 
 	private static int bool(boolean value) {

@@ -1,18 +1,17 @@
 /*
  * Copyright (c) 2018 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.data_spec;
 
@@ -27,8 +26,10 @@ import java.lang.annotation.Target;
  * This annotation is used to indicate which methods should be used to implement
  * DSE operations. Methods annotated with this <em>must</em> be {@code public},
  * <em>must</em> take no arguments, and <em>must</em> have a return type of
- * either {@code void} or {@code int}. The operation calling mechanism treats
- * methods that don't return a value as if they returned zero.
+ * {@code void}, {@code int}, or {@link Integer}. The operation calling
+ * mechanism treats methods that don't return a value as if they returned zero.
+ * The only checked exception that may be thrown is a
+ * {@link DataSpecificationException}.
  *
  * @author Donal Fellows
  */

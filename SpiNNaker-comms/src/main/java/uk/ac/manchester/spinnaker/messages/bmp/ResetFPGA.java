@@ -1,18 +1,17 @@
 /*
  * Copyright (c) 2022 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
@@ -24,11 +23,17 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType;
 
-/** Perform a reset of the FPGAs. */
+/**
+ * Perform a reset of the FPGAs. There is no response payload.
+ * <p>
+ * Calls {@code fpga_reset()} in {@code bmp_hw.c}.
+ */
 public class ResetFPGA extends BMPRequest<BMPRequest.BMPResponse> {
 	/**
-	 * @param board Which board to reset the FPGAs of.
-	 * @param resetType What type of reset to do.
+	 * @param board
+	 *            Which board to reset the FPGAs of.
+	 * @param resetType
+	 *            What type of reset to do.
 	 */
 	public ResetFPGA(BMPBoard board, FPGAResetType resetType) {
 		super(board, CMD_XILINX, Reset.code, resetType.ordinal());

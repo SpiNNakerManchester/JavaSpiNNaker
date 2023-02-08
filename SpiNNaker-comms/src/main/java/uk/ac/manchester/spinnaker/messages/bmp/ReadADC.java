@@ -1,18 +1,17 @@
 /*
  * Copyright (c) 2018 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
@@ -26,7 +25,13 @@ import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * SCP Request for the data from the BMP including voltages and temperature.
+ * SCP Request for the ADC data from the BMP including voltages and temperature.
+ * The response payload is the {@linkplain ADCInfo information structure} from
+ * the hardware.
+ * <p>
+ * Handled in {@code cmd_bmp_info()} (in {@code bmp_cmd.c}) by reading from the
+ * right element of {@code board_stat}. The underlying data is synched from the
+ * ADC approximately every 80ms by {@code read_adc()} in {@code bmp_hw.c}.
  */
 public class ReadADC extends BMPRequest<ReadADC.Response> {
 	/**
@@ -43,14 +48,17 @@ public class ReadADC extends BMPRequest<ReadADC.Response> {
 	}
 
 	/** An SCP response to a request for ADC information. */
-	public static final class Response extends BMPRequest.BMPResponse {
-		/** The ADC information. */
-		public final ADCInfo adcInfo;
-
+	public static final class Response
+			extends BMPRequest.PayloadedResponse<ADCInfo> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Read ADC", CMD_BMP_INFO, buffer);
-			adcInfo = new ADCInfo(buffer);
+		}
+
+		/** @return The ADC information. */
+		@Override
+		protected ADCInfo parse(ByteBuffer buffer) {
+			return new ADCInfo(buffer);
 		}
 	}
 }

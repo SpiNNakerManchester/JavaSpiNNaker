@@ -1,23 +1,22 @@
 /*
  * Copyright (c) 2018 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_LINK_READ;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_FPGA_READ;
 
 import java.nio.ByteBuffer;
 
@@ -27,7 +26,10 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * Requests the data from a FPGA's register.
+ * Requests the data from a FPGA's register. The response payload is the 32-bit
+ * integer contents of the register.
+ * <p>
+ * Calls {@code cmd_fpga_read()} in {@code bmp_cmd.c}.
  */
 public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 	/**
@@ -43,7 +45,7 @@ public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 	 */
 	public ReadFPGARegister(FPGA fpga, MemoryLocation register,
 			BMPBoard board) {
-		super(board, CMD_LINK_READ, register.address, WORD_SIZE, fpga.value);
+		super(board, CMD_FPGA_READ, register.address, WORD_SIZE, fpga.value);
 		if (!register.isAligned()) {
 			throw new IllegalArgumentException(
 					"FPGA register addresses must be aligned");
@@ -60,14 +62,17 @@ public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 	}
 
 	/** An SCP response to a request for the contents of an FPGA register. */
-	public static final class Response extends BMPRequest.BMPResponse {
-		/** The ADC information. */
-		public final int fpgaRegister;
-
+	public static final class Response
+			extends BMPRequest.PayloadedResponse<Integer> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
-			super("Read FPGA register", CMD_LINK_READ, buffer);
-			fpgaRegister = buffer.getInt();
+			super("Read FPGA register", CMD_FPGA_READ, buffer);
+		}
+
+		/** @return The FPGA register contents, not further interpreted. */
+		@Override
+		protected Integer parse(ByteBuffer buffer) {
+			return buffer.getInt();
 		}
 	}
 }

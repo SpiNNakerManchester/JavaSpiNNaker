@@ -1,18 +1,17 @@
 /*
  * Copyright (c) 2018 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
@@ -23,17 +22,25 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
-/** An SCP request to fill a region of memory on a chip with repeated data. */
+/**
+ * An SCP request to fill a region of memory on a chip with repeated words of
+ * data. There is no response payload.
+ * <p>
+ * Calls {@code sark_cmd_fill()} in {@code sark_base.c}, or {@code cmd_fill()}
+ * in {@code bmp_cmd.c} if sent to a BMP.
+ */
 public final class FillRequest extends SCPRequest<CheckOKResponse> {
 	/**
 	 * @param chip
 	 *            The chip to read from
 	 * @param baseAddress
-	 *            The positive base address to start the fill from
+	 *            The positive base address to start the fill from. <em>Must be
+	 *            word-aligned.</em>
 	 * @param data
-	 *            The data to fill in the space with
+	 *            The <em>word</em> of data to fill in the space with.
 	 * @param size
-	 *            The number of bytes to fill in
+	 *            The number of <em>bytes</em> to fill in. <em>Must be a
+	 *            multiple of 4.</em>
 	 */
 	public FillRequest(HasChipLocation chip, MemoryLocation baseAddress,
 			int data, int size) {

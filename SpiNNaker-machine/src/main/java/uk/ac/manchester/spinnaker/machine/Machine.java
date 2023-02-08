@@ -1,18 +1,17 @@
 /*
  * Copyright (c) 2018 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.machine;
 
@@ -21,6 +20,7 @@ import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Collections.unmodifiableSortedMap;
+import static java.util.EnumSet.noneOf;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -30,6 +30,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -203,7 +204,7 @@ public class Machine implements MappableIterable<Chip> {
 	 *         bits.
 	 */
 	public Machine rebuild(Set<ChipLocation> ignoreChips,
-			Map<ChipLocation, Set<Direction>> ignoreLinks) {
+			Map<ChipLocation, EnumSet<Direction>> ignoreLinks) {
 		if (ignoreChips == null) {
 			ignoreChips = findAbnormalChips();
 		}
@@ -891,8 +892,8 @@ public class Machine implements MappableIterable<Chip> {
 	 * @return A Map of ChipLocations to Direction (hopefully empty) which
 	 *         identifies links to remove
 	 */
-	public Map<ChipLocation, Set<Direction>> findAbnormalLinks() {
-		var abnormalLinks = new HashMap<ChipLocation, Set<Direction>>();
+	public Map<ChipLocation, EnumSet<Direction>> findAbnormalLinks() {
+		var abnormalLinks = new HashMap<ChipLocation, EnumSet<Direction>>();
 		for (var chip : chips.values()) {
 			for (var link : chip.router) {
 				/*
@@ -906,7 +907,8 @@ public class Machine implements MappableIterable<Chip> {
 					continue;
 				}
 				abnormalLinks
-						.computeIfAbsent(link.source, __ -> new HashSet<>())
+						.computeIfAbsent(link.source,
+								__ -> noneOf(Direction.class))
 						.add(link.sourceLinkDirection);
 			}
 		}

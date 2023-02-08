@@ -1,35 +1,40 @@
 /*
  * Copyright (c) 2018 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static uk.ac.manchester.spinnaker.messages.model.RouterCommand.ROUTER_INIT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
-/** A request to clear the router on a chip. */
+/**
+ * An SCP request to clear the router on a chip. There is no response payload.
+ * <p>
+ * Calls {@code rtr_mc_init()} in {@code sark_hw.c}, via {@code rtr_cmd()} in
+ * {@code scamp-cmd.c}.
+ */
 public class RouterClear extends SCPRequest<CheckOKResponse> {
 	/**
 	 * @param chip
 	 *            The coordinates of the chip to clear the router of
 	 */
 	public RouterClear(HasChipLocation chip) {
-		super(chip.getScampCore(), CMD_RTR);
+		super(chip.getScampCore(), CMD_RTR, ROUTER_INIT.value);
 	}
 
 	@Override
