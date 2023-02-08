@@ -1,18 +1,17 @@
 /*
  * Copyright (c) 2018 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.connections.model;
 
@@ -57,14 +56,24 @@ public interface SCPSenderReceiver extends Connection {
 	 * constructor will be used.
 	 * <p>
 	 * <i>sequence</i> in the message is optional; if not set, <i>(sequence
-	 * number\ last assigned + 1) % 65536</i> will be used
+	 * number last assigned + 1) % 65536</i> will be used
 	 *
-	 * @param scpRequest
+	 * @param request
 	 *            message packet to send
 	 * @throws IOException
 	 *             If there is an error sending the message
 	 */
-	void send(SCPRequest<?> scpRequest) throws IOException;
+	default void send(SCPRequest<?> request) throws IOException {
+		var msg = getSCPData(request);
+		switch (request.sdpHeader.getFlags()) {
+		case REPLY_EXPECTED:
+		case REPLY_EXPECTED_NO_P2P:
+			send(msg, request.scpRequestHeader.getSequence());
+			break;
+		default:
+			send(msg);
+		}
+	}
 
 	/**
 	 * @return The chip at which messages sent down this connection will arrive
@@ -114,4 +123,18 @@ public interface SCPSenderReceiver extends Connection {
 	 */
 	SCPResultMessage receiveSCPResponse(int timeout)
 			throws SocketTimeoutException, IOException, InterruptedException;
+
+	/**
+	 * Send a request that expects a response to be appropriately directed to
+	 * the thread that is calling this method.
+	 *
+	 * @param requestData
+	 *            The message data to send.
+	 * @param seq
+	 *            The sequence number to come in the response.
+	 * @throws IOException
+	 *             If there is an error sending the message
+	 * @see #send(ByteBuffer)
+	 */
+	void send(ByteBuffer requestData, int seq) throws IOException;
 }

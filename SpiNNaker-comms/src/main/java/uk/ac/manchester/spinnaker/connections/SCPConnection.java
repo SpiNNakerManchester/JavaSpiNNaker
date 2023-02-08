@@ -1,21 +1,22 @@
 /*
  * Copyright (c) 2018 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.connections;
 
+import static java.lang.Thread.currentThread;
+import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -24,13 +25,19 @@ import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
+import java.nio.ByteBuffer;
+import java.util.Map;
+import java.util.Queue;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
-import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.utils.Daemon;
 
@@ -38,7 +45,31 @@ import uk.ac.manchester.spinnaker.utils.Daemon;
 public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 	private static final Logger log = getLogger(SCPConnection.class);
 
+	/**
+	 * Used to postpone actual closing of a connection, getting better
+	 * connection ID distribution.
+	 *
+	 * @see #closeEventually()
+	 */
 	private static final ScheduledExecutorService CLOSER;
+
+	/**
+	 * Mapping from sequence numbers of requests actively in flight on this
+	 * connection to the thread that is interested in the response. One-way
+	 * requests do not get an entry in this table.
+	 */
+	private final Map<Integer, Thread> receiverMap = new ConcurrentHashMap<>();
+
+	/**
+	 * A <em>weak map</em> holding a concurrent queue of messages for each
+	 * interested receiving thread. Only used to transfer messages from one
+	 * thread to another when a message is received by the wrong thread.
+	 * <p>
+	 * Not a {@link ThreadLocal} because we need to look up queues from other
+	 * threads too.
+	 */
+	private final Map<Thread, Queue<SCPResultMessage>> receiverQueues =
+			synchronizedMap(new WeakHashMap<>());
 
 	static {
 		CLOSER = newSingleThreadScheduledExecutor(
@@ -101,15 +132,67 @@ public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 		super(chip, true);
 	}
 
-	@Override
-	public SCPResultMessage receiveSCPResponse(int timeout)
-			throws IOException, InterruptedException {
-		return new SCPResultMessage(receive(timeout));
+	private SCPResultMessage getMessageFromQueue() {
+		var myQueue = receiverQueues.get(currentThread());
+		if (myQueue == null) {
+			return null;
+		}
+		return myQueue.poll();
 	}
 
+	private void putMessageOnQueue(Thread targetThread,
+			SCPResultMessage receivedMsg) {
+		receiverQueues
+				.computeIfAbsent(targetThread,
+						__ -> new ConcurrentLinkedQueue<>())
+				.add(receivedMsg);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * This is tricky code because there can be multiple threads using a
+	 * connection at once and we need to direct responses to the threads that
+	 * originated the requests that the responses match to. A consequence of
+	 * this is that it is possible for the wait for a message to be longer than
+	 * the timeout given; that will occur when the current thread keeps
+	 * receiving messages for other threads.
+	 */
 	@Override
-	public void send(SCPRequest<?> scpRequest) throws IOException {
-		send(getSCPData(scpRequest));
+	public final SCPResultMessage receiveSCPResponse(int timeout)
+			throws IOException, InterruptedException {
+		while (true) {
+			/*
+			 * Prefer to take a queued message; it's already been received...
+			 */
+			var queuedMsg = getMessageFromQueue();
+			if (queuedMsg != null) {
+				return queuedMsg;
+			}
+			// Need to talk to the network
+			SCPResultMessage receivedMsg;
+			try {
+				receivedMsg = new SCPResultMessage(receive(timeout));
+			} catch (SocketTimeoutException e) {
+				/*
+				 * If we are timing out, but another thread received for us,
+				 * that's OK too
+				 */
+				var qm = getMessageFromQueue();
+				if (qm != null) {
+					return qm;
+				}
+				throw e;
+			}
+			var targetThread =
+					receiverMap.remove(receivedMsg.getSequenceNumber());
+			// If message is ours or unrecognized, pass to caller
+			if (targetThread == currentThread() || targetThread == null) {
+				return receivedMsg;
+			}
+			// Queue for correct thread
+			putMessageOnQueue(targetThread, receivedMsg);
+		}
 	}
 
 	/**
@@ -136,5 +219,14 @@ public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 		} catch (IOException e) {
 			log.warn("failed to close connection", e);
 		}
+	}
+
+	@Override
+	public void send(ByteBuffer requestData, int seq) throws IOException {
+		var prev = receiverMap.put(seq, currentThread());
+		if (prev != currentThread()) {
+			log.warn("response for message now awaited by different thread");
+		}
+		send(requestData);
 	}
 }
