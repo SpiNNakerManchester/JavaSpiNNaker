@@ -24,40 +24,30 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.sql.PreparedStatement;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.Resource;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
 import org.springframework.jdbc.core.namedparam.NamedParameterUtils;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -73,10 +63,6 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 	@Value("classpath:/spalloc-mysql.sql")
 	private Resource sqlDDLFile;
 
-	/** The list of files containing schema updates. */
-	@Value("classpath*:spalloc-schema-update-*.sql")
-	private Resource[] schemaUpdates;
-
 	@Value("classpath:/spalloc-tombstone.sql")
 	private Resource tombstoneDDLFile;
 
@@ -89,19 +75,6 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 	private final TransactionTemplate transactionTemplate;
 
-	private DatabaseEngineJDBCImpl() {
-		DataSource ds = DataSourceBuilder.create()
-				.url("jdbc:sqlite:mem:data").build();
-		DataSource tombstoneDs = DataSourceBuilder.create()
-				.url("jdbc:sqlite:mem:tombstone").build();
-		PlatformTransactionManager txManager =
-				new DataSourceTransactionManager(ds);
-		jdbcTemplate = new JdbcTemplate(ds);
-		tombstoneJdbcTemplate = new JdbcTemplate(tombstoneDs);
-		transactionTemplate = new TransactionTemplate(txManager);
-		setup();
-	}
-
 	@Autowired
 	public DatabaseEngineJDBCImpl(JdbcTemplate jdbcTemplate,
 			PlatformTransactionManager transactionManager) {
@@ -112,11 +85,38 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 	@PostConstruct
 	private void setup() {
+		log.info("Running Database setup...");
 		// Skip for now - use sql directly if needed
-		/* String sql = readSQL(sqlDDLFile);
-		for (String part : sql.split(";")) {
-		    jdbcTemplate.execute(part + ";");
-		} */
+		String sql = readSQL(sqlDDLFile);
+		String[] lines = sql.split("\n");
+		int i = 0;
+		while (i < lines.length) {
+			// Find the next statement start
+			while (i < lines.length && !lines[i].startsWith("-- STMT")) {
+				log.trace("DDL non-statement line {}", lines[i]);
+				i++;
+			}
+			// Skip the STMT line
+			i++;
+
+			// Build a statement until it ends
+			StringBuilder stmt = new StringBuilder();
+			while (i < lines.length && !lines[i].startsWith("-- STMT")
+					&& !lines[i].startsWith("-- IGNORE")) {
+				String line = lines[i].trim();
+				if (!line.startsWith("--") && !line.isEmpty()) {
+					log.trace("DDL statement line {}", line);
+					stmt.append(line);
+					stmt.append('\n');
+				}
+				i++;
+			}
+			if (stmt.length() != 0) {
+				String statement = stmt.toString();
+				log.debug("Executing DDL Statement: {}", statement);
+				jdbcTemplate.execute(statement);
+			}
+		}
 	}
 
 	private final class ConnectionImpl implements Connection {
@@ -200,49 +200,6 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		}
 	}
 
-	private final class IgnorableSQLException extends SQLException {
-		private static final long serialVersionUID = 1L;
-
-		public IgnorableSQLException() {
-			super("Ignorable");
-		}
-	}
-
-	private final class PreparedStatementSaver
-			implements PreparedStatementCreator {
-
-		int parameterCount;
-
-		Set<String> rowColumnNames = new HashSet<>();
-
-		private final PreparedStatementCreator delegate;
-
-		PreparedStatementSaver(String sql, Object... arguments) {
-			List<Object> resolved = resolveArguments(arguments);
-			delegate = new PreparedStatementCreatorFactory(sql)
-					.newPreparedStatementCreator(resolved);
-		}
-
-		@Override
-		public PreparedStatement createPreparedStatement(
-				java.sql.Connection con) throws SQLException {
-			PreparedStatement stmt = delegate.createPreparedStatement(con);
-			parameterCount = stmt.getParameterMetaData().getParameterCount();
-			rowColumnNames = columnNames(stmt.getMetaData());
-			stmt.close();
-			// Throw this as we don't want to actually use anything!
-			throw new IgnorableSQLException();
-		}
-
-		Set<String> columnNames(ResultSetMetaData md) throws SQLException {
-			var names = new LinkedHashSet<String>();
-			for (int i = 1; i <= md.getColumnCount(); i++) {
-				names.add(md.getColumnName(i));
-			}
-			return names;
-		}
-	}
-
 	private final class PreparedStatementCreatorImpl
 	        implements PreparedStatementCreator {
 
@@ -283,63 +240,27 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		}
 
 		@Override
-		public MappableIterable<Row> call(Object... arguments) {
+		public <T> List<T> call(RowMapper<T> mapper, Object... arguments) {
 			List<Object> resolved = resolveArguments(arguments);
-			SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, resolved.toArray());
-
-			return () -> new Iterator<Row>() {
-				private boolean finished = false;
-				private boolean consumed = true;
-				// Share this row wrapper; underlying row changes
-				private final Row row = new RowSQLRowSetImpl(rs, sql);
-
-				@Override
-				public boolean hasNext() {
-					if (finished) {
-						return false;
-					}
-					if (!consumed) {
-						return true;
-					}
-					boolean result = rs.next();
-					if (result) {
-						consumed = false;
-					} else {
-						finished = true;
-					}
-					return result;
+			return jdbcTemplate.query(sql, (results) -> {
+				List<T> values = new ArrayList<T>();
+				while (results.next()) {
+					values.add(mapper.mapRow(new Row(results)));
 				}
-
-				@Override
-				public Row next() {
-					if (finished) {
-						throw new NoSuchElementException();
-					}
-					consumed = true;
-					return row;
-				}
-			};
+				return values;
+			}, resolved.toArray());
 		}
 
 		@Override
-		public Optional<Row> call1(Object... arguments) {
+		public <T> Optional<T> call1(RowMapper<T> mapper, Object... arguments) {
 			List<Object> resolved = resolveArguments(arguments);
-			SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, resolved.toArray());
-			if (rs.next()) {
-				return Optional.of(new RowSQLRowSetImpl(rs, sql));
-			} else {
+			return jdbcTemplate.query(sql, (results) -> {
+				if (results.next()) {
+					// Allow nullable if there is a value
+					return Optional.ofNullable(mapper.mapRow(new Row(results)));
+				}
 				return Optional.empty();
-			}
-		}
-
-		@Override
-		public int getNumArguments() {
-			return getParameterCount(sql);
-		}
-
-		@Override
-		public Set<String> getRowColumnNames() {
-			return getColumnNames(sql);
+			}, resolved.toArray());
 		}
 
 		@Override
@@ -369,17 +290,6 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		}
 
 		@Override
-		public MappableIterable<Integer> keys(Object... arguments) {
-			List<Object> resolved = resolveArguments(arguments);
-			KeyHolder keyHolder = new GeneratedKeyHolder();
-			var pss = new PreparedStatementCreatorImpl(sql, resolved);
-			jdbcTemplate.update(pss, keyHolder);
-			return () -> keyHolder.getKeyList().stream().mapToInt(
-					map -> Integer.class.cast(
-							map.values().iterator().next())).iterator();
-		}
-
-		@Override
 		public Optional<Integer> key(Object... arguments) {
 			List<Object> resolved = resolveArguments(arguments);
 			KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -393,47 +303,11 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		}
 
 		@Override
-		public int getNumArguments() {
-			return getParameterCount(sql);
-		}
-
-		@Override
-		public Set<String> getRowColumnNames() {
-			return getColumnNames(sql);
-		}
-
-		@Override
 		public List<String> explainQueryPlan() {
 			// TODO Auto-generated method stub
 			return null;
 		}
 
-	}
-
-	private int getParameterCount(String sql) {
-		var pss = new PreparedStatementSaver(sql);
-		try {
-			jdbcTemplate.query(pss, (rs) -> {});
-		} catch (DataAccessException e) {
-			if (!(e.getMostSpecificCause() instanceof
-					IgnorableSQLException)) {
-				throw e;
-			}
-		}
-		return pss.parameterCount;
-	}
-
-	private Set<String> getColumnNames(String sql) {
-		var pss = new PreparedStatementSaver(sql);
-		try {
-			jdbcTemplate.query(pss, (rs) -> {});
-		} catch (DataAccessException e) {
-			if (!(e.getMostSpecificCause() instanceof
-					IgnorableSQLException)) {
-				throw e;
-			}
-		}
-		return pss.rowColumnNames;
 	}
 
 	private List<Object> resolveArguments(Object[] arguments) {
@@ -513,11 +387,6 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 	public void restoreFromBackup(File backupFilename) {
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public DatabaseAPI getInMemoryDB() {
-		return new DatabaseEngineJDBCImpl();
 	}
 
 	static Set<String> columnNames(SqlRowSetMetaData md) throws SQLException {

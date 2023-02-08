@@ -18,8 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
-import static uk.ac.manchester.spinnaker.alloc.db.Row.enumerate;
-import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.stream;
 import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
 import static uk.ac.manchester.spinnaker.machine.Direction.NORTH;
 import static uk.ac.manchester.spinnaker.machine.Direction.NORTHEAST;
@@ -33,41 +32,26 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.TestSupport;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 
 @SpringBootTest
 @SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
-@TestPropertySource(properties = {
-	"spalloc.database-path=" + BlacklistStoreTest.DB,
-	"spalloc.historical-data.path=" + BlacklistStoreTest.HIST_DB
-})
 class BlacklistStoreTest extends TestSupport {
-	/** The DB file. */
-	static final String DB = "target/blio_test.sqlite3";
-
-	/** The DB file. */
-	static final String HIST_DB = "target/blio_test_hist.sqlite3";
 
 	private BlacklistStore.TestAPI testAPI;
-
-	@BeforeAll
-	static void clearDB() throws IOException {
-		killDB(DB);
-	}
 
 	private static final ChipLocation C01 = new ChipLocation(0, 1);
 
@@ -81,10 +65,25 @@ class BlacklistStoreTest extends TestSupport {
 		return new ChipLocation(r.getInt("x"), r.getInt("y"));
 	}
 
+	private static CoreLocation coreCoords(Row r) {
+		return new CoreLocation(r.getInt("x"), r.getInt("y"), r.getInt("p"));
+	}
+
+	private class LinkLocation {
+		ChipLocation location;
+		Direction direction;
+
+		LinkLocation(Row r) {
+			location = coords(r);
+			direction = r.getEnum("direction", Direction.class);
+		}
+	}
+
 	@BeforeEach
 	@SuppressWarnings("deprecation") // Calling internal API
-	void checkSetup(@Autowired BlacklistStore blio) {
+	void checkSetup(@Autowired BlacklistStore blio) throws IOException {
 		assumeTrue(db != null, "spring-configured DB engine absent");
+		killDB();
 		setupDB1();
 		// Get at the internal API so we can control transaction boundaries
 		testAPI = blio.getTestAPI();
@@ -225,16 +224,21 @@ class BlacklistStoreTest extends TestSupport {
 			try (var chips = c.query(GET_BLACKLISTED_CHIPS);
 					var cores = c.query(GET_BLACKLISTED_CORES);
 					var links = c.query(GET_BLACKLISTED_LINKS)) {
-				assertEquals(Set.of(C11, C01), chips.call(BOARD)
-						.map(BlacklistStoreTest::coords).toSet());
+				assertEquals(Set.of(C11, C01),
+						stream(chips.call(BlacklistStoreTest::coords, BOARD))
+						.toSet());
 				assertEquals(Map.of(C10, Set.of(3, 2, 1)),
-						cores.call(BOARD).toCollectingMap(HashMap::new,
-								HashSet::new, BlacklistStoreTest::coords,
-								integer("p")));
+						stream(cores.call(BlacklistStoreTest::coreCoords,
+								BOARD))
+						.toCollectingMap(
+								HashMap::new, HashSet::new,
+								coords -> coords.asChipLocation(),
+								coords -> coords.getP()));
 				assertEquals(Map.of(C77, Set.of(NORTH, SOUTH, EAST, WEST)),
-						links.call(BOARD).toCollectingMap(HashMap::new,
-								HashSet::new, BlacklistStoreTest::coords,
-								enumerate("direction", Direction.class)));
+						stream(links.call(LinkLocation::new, BOARD)).
+						toCollectingMap(HashMap::new,
+								HashSet::new, l -> l.location,
+								l-> l.direction));
 			}
 		});
 	}
@@ -256,16 +260,20 @@ class BlacklistStoreTest extends TestSupport {
 			try (var chips = c.query(GET_BLACKLISTED_CHIPS);
 					var cores = c.query(GET_BLACKLISTED_CORES);
 					var links = c.query(GET_BLACKLISTED_LINKS)) {
-				assertEquals(Set.of(C77, C10), chips.call(BOARD)
-						.map(BlacklistStoreTest::coords).toSet());
+				assertEquals(Set.of(C77, C10),
+						stream(chips.call(BlacklistStoreTest::coords, BOARD))
+						.toSet());
 				assertEquals(Map.of(C01, Set.of(6, 4, 5)),
-						cores.call(BOARD).toCollectingMap(HashMap::new,
-								HashSet::new, BlacklistStoreTest::coords,
-								integer("p")));
+						stream(cores.call(BlacklistStoreTest::coreCoords,
+								BOARD))
+						.toCollectingMap(HashMap::new,
+								HashSet::new, coords -> coords.asChipLocation(),
+								coords->coords.getP()));
 				assertEquals(Map.of(C11, Set.of(SOUTHWEST, NORTHEAST)),
-						links.call(BOARD).toCollectingMap(HashMap::new,
-								HashSet::new, BlacklistStoreTest::coords,
-								enumerate("direction", Direction.class)));
+						stream(links.call(LinkLocation::new, BOARD))
+						.toCollectingMap(
+								HashMap::new, HashSet::new, l -> l.location,
+								l -> l.direction));
 			}
 		});
 	}
@@ -285,16 +293,20 @@ class BlacklistStoreTest extends TestSupport {
 			try (var chips = c.query(GET_BLACKLISTED_CHIPS);
 					var cores = c.query(GET_BLACKLISTED_CORES);
 					var links = c.query(GET_BLACKLISTED_LINKS)) {
-				assertEquals(Set.of(), chips.call(BOARD)
-						.map(BlacklistStoreTest::coords).toSet());
+				assertEquals(Set.of(),
+						stream(chips.call(BlacklistStoreTest::coords, BOARD))
+						.toSet());
 				assertEquals(Map.of(),
-						cores.call(BOARD).toCollectingMap(HashMap::new,
-								HashSet::new, BlacklistStoreTest::coords,
-								integer("p")));
+						stream(cores.call(BlacklistStoreTest::coreCoords,
+								BOARD))
+						.toCollectingMap(HashMap::new, HashSet::new,
+								coords -> coords.asChipLocation(),
+								coords -> coords.getP()));
 				assertEquals(Map.of(),
-						links.call(BOARD).toCollectingMap(HashMap::new,
-								HashSet::new, BlacklistStoreTest::coords,
-								enumerate("direction", Direction.class)));
+						stream(links.call(LinkLocation::new, BOARD))
+						.toCollectingMap(HashMap::new,
+								HashSet::new, l -> l.location,
+								l -> l.direction));
 			}
 		});
 	}

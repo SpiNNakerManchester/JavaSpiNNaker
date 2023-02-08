@@ -19,6 +19,8 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 
 import java.io.IOException;
 import java.util.Set;
@@ -31,7 +33,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 
-import uk.ac.manchester.spinnaker.alloc.db.MemDBTestBase;
+import uk.ac.manchester.spinnaker.alloc.db.SimpleDBTestBase;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
@@ -48,7 +50,7 @@ import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 @SpringBootTest
 @TestInstance(PER_CLASS)
 @ActiveProfiles("unittest")
-class MDefLoaderTest extends MemDBTestBase {
+class MDefLoaderTest extends SimpleDBTestBase {
 	@ResultColumn("c")
 	@SingleRowResult
 	private static final String COUNT_LIVE_BOARDS =
@@ -113,8 +115,8 @@ class MDefLoaderTest extends MemDBTestBase {
 		c.transaction(() -> {
 			try (var q = c.query("SELECT machine_name FROM machines")) {
 				int rows = 0;
-				for (var row : q.call()) {
-					assertEquals("my-board", row.getString("machine_name"));
+				for (var row : q.call(string("machine_name"))) {
+					assertEquals("my-board", row);
 					rows++;
 				}
 				assertEquals(1, rows);
@@ -122,17 +124,17 @@ class MDefLoaderTest extends MemDBTestBase {
 
 			// Should be just one BMP
 			try (var q = c.query("SELECT COUNT(*) AS c FROM bmp")) {
-				assertEquals(1, q.call1().orElseThrow().getInt("c"));
+				assertEquals(1, q.call1(integer("c")).orElseThrow());
 			}
 
 			// Should be just one board
 			try (var q = c.query(COUNT_LIVE_BOARDS)) {
-				assertEquals(1, q.call1().orElseThrow().getInt("c"));
+				assertEquals(1, q.call1(integer("c")).orElseThrow());
 			}
 
 			// Single-board setups have no inter-board links
 			try (var q = c.query(COUNT_LIVE_LINKS)) {
-				assertEquals(0, q.call1().orElseThrow().getInt("c"));
+				assertEquals(0, q.call1(integer("c")).orElseThrow());
 			}
 		});
 	}
@@ -152,9 +154,8 @@ class MDefLoaderTest extends MemDBTestBase {
 		c.transaction(() -> {
 			try (var q = c.query("SELECT machine_name FROM machines")) {
 				int rows = 0;
-				for (var row : q.call()) {
-					assertEquals("SpiNNaker3board",
-							row.getString("machine_name"));
+				for (var row : q.call(string("machine_name"))) {
+					assertEquals("SpiNNaker3board", row);
 					rows++;
 				}
 				assertEquals(1, rows);
@@ -162,17 +163,17 @@ class MDefLoaderTest extends MemDBTestBase {
 
 			// Should be just one BMP
 			try (var q = c.query("SELECT COUNT(*) AS c FROM bmp")) {
-				assertEquals(1, q.call1().orElseThrow().getInt("c"));
+				assertEquals(1, q.call1(integer("c")).orElseThrow());
 			}
 
 			// Should be just one board
 			try (var q = c.query(COUNT_LIVE_BOARDS)) {
-				assertEquals(3, q.call1().orElseThrow().getInt("c"));
+				assertEquals(3, q.call1(integer("c")).orElseThrow());
 			}
 
 			// Single-board setups have no inter-board links
 			try (var q = c.query(COUNT_LIVE_LINKS)) {
-				assertEquals(9, q.call1().orElseThrow().getInt("c"));
+				assertEquals(9, q.call1(integer("c")).orElseThrow());
 			}
 		});
 	}

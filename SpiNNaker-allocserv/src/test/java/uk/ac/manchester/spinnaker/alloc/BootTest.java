@@ -18,14 +18,10 @@ package uk.ac.manchester.spinnaker.alloc;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.io.IOException;
-
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI;
@@ -37,16 +33,7 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 @SpringBootTest
 @SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest") // Disable booting CXF
-@TestPropertySource(properties = {
-	"spalloc.database-path=" + BootTest.DB,
-	"spalloc.historical-data.path=" + BootTest.HIST_DB
-})
 class BootTest extends TestSupport {
-	/** The DB file. */
-	static final String DB = "target/boot_test.sqlite3";
-
-	/** The DB history file. */
-	static final String HIST_DB = "target/boot_test_hist.sqlite3";
 
 	@Autowired
 	private SpallocServiceAPI service;
@@ -62,11 +49,6 @@ class BootTest extends TestSupport {
 
 	@Autowired
 	private AdminController adminUI;
-
-	@BeforeAll
-	static void clearDB() throws IOException {
-		killDB(DB);
-	}
 
 	@Test
 	void testContextBoot() throws InterruptedException {

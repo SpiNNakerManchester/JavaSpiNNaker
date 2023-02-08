@@ -168,6 +168,16 @@ public class AllocatorTask extends DatabaseAwareBean
 		}
 	}
 
+	private class Perimeter {
+		int board_id;
+		Direction direction;
+
+		Perimeter(Row row) {
+			board_id = row.getInt("board_id");
+			direction = row.getEnum("direction", Direction.class);
+		}
+	}
+
 	/** Encapsulates the queries and updates used in power control. */
 	private class PowerSQL extends AbstractSQL {
 		/** Get basic information about a specific job. */
@@ -337,6 +347,75 @@ public class AllocatorTask extends DatabaseAwareBean
 		}
 	}
 
+	private class AllocTask {
+		final int id;
+		final int importance;
+		final int jobId;
+		final int machineId;
+		final Rectangle max;
+		final int maxDeadBoards;
+		final Integer numBoards;
+		final Integer width;
+		final Integer height;
+		final Integer root;
+
+		AllocTask(Row row) {
+			id = row.getInt("req_id");
+			importance = row.getInt("importance");
+			jobId = row.getInt("job_id");
+			machineId = row.getInt("machine_id");
+			max = new Rectangle(row);
+			maxDeadBoards = row.getInt("max_dead_boards");
+			numBoards = row.getInteger("num_boards");
+			width = row.getInteger("width");
+			height = row.getInteger("height");
+			root = row.getInteger("board_id");
+		}
+
+		boolean allocate(AllocSQL sql) {
+			if (nonNull(numBoards) && numBoards > 0) {
+				// Single-board case gets its own allocator that's better at that
+				if (numBoards == 1) {
+					log.debug("Allocate one board");
+					return allocateOneBoard(sql, jobId, machineId);
+				}
+				var estimate = new DimensionEstimate(numBoards, max);
+				return allocateDimensions(sql, jobId, machineId, estimate,
+						maxDeadBoards);
+			}
+
+			if (nonNull(width) && nonNull(height) && nonNull(root)) {
+				return allocateTriadsAt(sql, jobId, machineId, root, width, height,
+						maxDeadBoards);
+			}
+
+			if (nonNull(width) && nonNull(height) && width > 0 && height > 0) {
+				// Special case; user is really just asking for one board
+				if (height == 1 && width == 1 && nonNull(maxDeadBoards)
+						&& maxDeadBoards == 2) {
+					return allocateOneBoard(sql, jobId, machineId);
+				}
+				var estimate = new DimensionEstimate(width, height, max);
+				log.debug(
+						"resolved request for {}x{} boards to {}x{} triads "
+								+ "with tolerance {}",
+						width, height, estimate.width, estimate.height,
+						estimate.tolerance);
+				return allocateDimensions(sql, jobId, machineId, estimate,
+						maxDeadBoards);
+			}
+
+			if (nonNull(root)) {
+				// Ignores maxDeadBoards; is a single-board allocate
+				return allocateBoard(sql, jobId, machineId, root);
+			}
+
+			log.warn("job {} could not be allocated; "
+					+ "bad request will be cleared from queue", jobId);
+			return true;
+		}
+	}
+
 	/**
 	 * Allocate all current requests for resources.
 	 *
@@ -348,20 +427,19 @@ public class AllocatorTask extends DatabaseAwareBean
 		try (var sql = new AllocSQL(conn)) {
 			int maxImportance = -1;
 			boolean changed = false;
-			for (var row : sql.getTasks.call(QUEUED)) {
-				int id = row.getInt("req_id");
-				int importance = row.getInt("importance");
-				if (importance > maxImportance) {
-					maxImportance = importance;
-				} else if (importance < maxImportance
+			for (AllocTask task : sql.getTasks.call(
+					(r) -> {return new AllocTask(r);}, QUEUED)) {
+				if (task.importance > maxImportance) {
+					maxImportance = task.importance;
+				} else if (task.importance < maxImportance
 						- allocProps.getImportanceSpan()) {
 					// Too much of a span
 					continue;
 				}
-				var handled = allocate(sql, row);
+				var handled = task.allocate(sql);
 				changed |= handled;
-				log.debug("allocate for {} (job {}): {}", id,
-						row.getInt("job_id"), handled);
+				log.debug("allocate for {} (job {}): {}", task.id,
+						task.jobId, handled);
 			}
 			/*
 			 * Those tasks which weren't allocated get their importance bumped
@@ -408,17 +486,18 @@ public class AllocatorTask extends DatabaseAwareBean
 		boolean changed = false;
 		long now = System.currentTimeMillis() / 1000;
 		try (var find = conn.query(FIND_EXPIRED_JOBS)) {
-			var toKill = find.call(now).map(integer("job_id")).toList();
+			var toKill = find.call(integer("job_id"), now);
 			for (var id : toKill) {
 				changed |= destroyJob(conn, id, "keepalive expired");
 			}
 		}
 		try (var find = conn.query(GET_LIVE_JOB_IDS)) {
-			var toKill = find.call(NUMBER_OF_JOBS_TO_QUOTA_CHECK, 0)
-					.map(integer("job_id")).filter(quotaManager::shouldKillJob)
-					.toList();
+			var toKill = find.call(integer("job_id"),
+					NUMBER_OF_JOBS_TO_QUOTA_CHECK, 0);
 			for (var id : toKill) {
-				changed |= destroyJob(conn, id, "quota exceeded");
+				if (quotaManager.shouldKillJob(id)) {
+				    changed |= destroyJob(conn, id, "quota exceeded");
+				}
 			}
 		}
 		return changed;
@@ -509,10 +588,8 @@ public class AllocatorTask extends DatabaseAwareBean
 			long now = System.currentTimeMillis() / 1000;
 			var grace = historyProps.getGracePeriod();
 			var copied = conn.transaction(() -> new Copied(
-					copyJobs.call(grace, now).map(
-							integer("job_id")).toList(),
-					copyAllocs.call(grace, now).map(
-							integer("alloc_id")).toList()));
+					copyJobs.call(integer("job_id"), grace, now),
+					copyAllocs.call(integer("alloc_id"), grace, now)));
 			conn.transaction(() -> {
 				copied.allocs().forEach(deleteAllocs::call);
 				copied.jobs().forEach(deleteJobs::call);
@@ -543,7 +620,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	private boolean destroyJob(Connection conn, int id, String reason) {
 		JobLifecycle.log.info("destroying job {} \"{}\"", id, reason);
 		try (var sql = new DestroySQL(conn)) {
-			if (sql.getJob.call1(id).map(enumerate("job_state", JobState.class))
+			if (sql.getJob.call1(enumerate("job_state", JobState.class), id)
 					.orElse(DESTROYED) == DESTROYED) {
 				/*
 				 * Don't do anything if the job doesn't exist or is already
@@ -555,7 +632,8 @@ public class AllocatorTask extends DatabaseAwareBean
 			// Inserts into pending_changes; these run after job is dead
 			setPower(sql, id, OFF, DESTROYED);
 			sql.killAlloc.call(id);
-			return sql.markAsDestroyed.call(reason, id) > 0;
+			long now = System.currentTimeMillis() / 1000;
+			return sql.markAsDestroyed.call(reason, now, id) > 0;
 		} finally {
 			rememberer.killProxies(id);
 		}
@@ -645,76 +723,11 @@ public class AllocatorTask extends DatabaseAwareBean
 		}
 	}
 
-	/**
-	 * Perform the allocation for a particular task. Note that allocation does
-	 * not actually send any messages to the board's BMP (though it does
-	 * schedule them). That's an entirely different thing.
-	 *
-	 * @param sql
-	 *            How to talk to the DB
-	 * @param task
-	 *            The task (as a result set).
-	 * @return {@code true} if a decision has been taken about the task, or
-	 *         {@code false} if the task is to have the allocator run again in
-	 *         the next schedule slot.
-	 */
-	private boolean allocate(AllocSQL sql, Row task) {
-		int jobId = task.getInt("job_id");
-		int machineId = task.getInt("machine_id");
-		var max = new Rectangle(task);
-		int maxDeadBoards = task.getInt("max_dead_boards");
-		var numBoards = task.getInteger("num_boards");
-		if (nonNull(numBoards) && numBoards > 0) {
-			// Single-board case gets its own allocator that's better at that
-			if (numBoards == 1) {
-				log.debug("Allocate one board");
-				return allocateOneBoard(sql, jobId, machineId);
-			}
-			var estimate = new DimensionEstimate(numBoards, max);
-			return allocateDimensions(sql, jobId, machineId, estimate,
-					maxDeadBoards);
-		}
-
-		var width = task.getInteger("width");
-		var height = task.getInteger("height");
-		var root = task.getInteger("board_id");
-
-		if (nonNull(width) && nonNull(height) && nonNull(root)) {
-			return allocateTriadsAt(sql, jobId, machineId, root, width, height,
-					maxDeadBoards);
-		}
-
-		if (nonNull(width) && nonNull(height) && width > 0 && height > 0) {
-			// Special case; user is really just asking for one board
-			if (height == 1 && width == 1 && nonNull(maxDeadBoards)
-					&& maxDeadBoards == 2) {
-				return allocateOneBoard(sql, jobId, machineId);
-			}
-			var estimate = new DimensionEstimate(width, height, max);
-			log.debug(
-					"resolved request for {}x{} boards to {}x{} triads "
-							+ "with tolerance {}",
-					width, height, estimate.width, estimate.height,
-					estimate.tolerance);
-			return allocateDimensions(sql, jobId, machineId, estimate,
-					maxDeadBoards);
-		}
-
-		if (nonNull(root)) {
-			// Ignores maxDeadBoards; is a single-board allocate
-			return allocateBoard(sql, jobId, machineId, root);
-		}
-
-		log.warn("job {} could not be allocated; "
-				+ "bad request will be cleared from queue", jobId);
-		return true;
-	}
-
 	private boolean allocateOneBoard(AllocSQL sql, int jobId, int machineId) {
 		// This is simplified; no subsidiary searching needed
 		return sql.findFreeBoard
-				.call1(machineId).map(row -> setAllocation(sql, jobId,
-						ONE_BOARD, machineId, coords(row)))
+				.call1(row -> setAllocation(sql, jobId,
+						ONE_BOARD, machineId, coords(row)), machineId)
 				.orElse(false);
 	}
 
@@ -731,8 +744,8 @@ public class AllocatorTask extends DatabaseAwareBean
 		int minArea =
 				estimate.width * estimate.height * TRIAD_DEPTH - tolerance;
 		for (var root : sql.getRectangles
-				.call(estimate.width, estimate.height, machineId, tolerance)
-				.map(AllocatorTask::coords)) {
+				.call(AllocatorTask::coords, estimate.width, estimate.height,
+						machineId, tolerance)) {
 			if (minArea > 1) {
 				/*
 				 * Check that a minimum number of boards are reachable from the
@@ -773,8 +786,8 @@ public class AllocatorTask extends DatabaseAwareBean
 	private int connectedSize(AllocSQL sql, int machineId, TriadCoords root,
 			int width, int height) {
 		return sql.countConnectedBoards
-				.call1(machineId, root.x, root.y, width, height)
-				.map(integer("connected_size")).orElse(-1);
+				.call1(integer("connected_size"), machineId, root.x, root.y,
+						width, height).orElse(-1);
 	}
 
 	/**
@@ -819,8 +832,8 @@ public class AllocatorTask extends DatabaseAwareBean
 	private boolean allocateBoard(AllocSQL sql, int jobId, int machineId,
 			int boardId) {
 		return sql.findSpecificBoard
-				.call1(machineId, boardId).map(row -> setAllocation(sql, jobId,
-						ONE_BOARD, machineId, coords(row)))
+				.call1(row -> setAllocation(sql, jobId, ONE_BOARD, machineId,
+						coords(row)), machineId, boardId)
 				.orElse(false);
 	}
 
@@ -828,8 +841,8 @@ public class AllocatorTask extends DatabaseAwareBean
 			int rootId, int width, int height, int maxDeadBoards) {
 		var rect = new Rectangle(width, height, TRIAD_DEPTH);
 		return sql.getRectangleAt
-				.call1(rootId, width, height, machineId, maxDeadBoards)
-				.map(AllocatorTask::coords)
+				.call1(AllocatorTask::coords, rootId, width, height, machineId,
+						maxDeadBoards)
 				.filter(root -> connectedSize(sql, machineId, root,
 						rect) >= rect.getArea() - maxDeadBoards)
 				.map(root -> setAllocation(sql, jobId, rect, machineId, root))
@@ -867,9 +880,8 @@ public class AllocatorTask extends DatabaseAwareBean
 		log.debug("performing allocation for {}: {}x{}x{} at {}:{}:{}", jobId,
 				rect.width, rect.height, rect.depth, root.x, root.y, root.z);
 		var boardsToAllocate = sql.getConnectedBoardIDs
-				.call(machineId, root.x, root.y, root.z, rect.width,
-						rect.height, rect.depth)
-				.map(integer("board_id")).toList();
+				.call(integer("board_id"), machineId, root.x, root.y, root.z,
+						rect.width, rect.height, rect.depth);
 		if (boardsToAllocate.isEmpty()) {
 			return false;
 		}
@@ -918,10 +930,9 @@ public class AllocatorTask extends DatabaseAwareBean
 	 */
 	private boolean setPower(PowerSQL sql, int jobId, PowerState power,
 			JobState targetState) {
-		var sourceState = sql.getJobState.call1(jobId).orElseThrow()
-				.getEnum("job_state", JobState.class);
-		var boards = sql.getJobBoards.call(jobId).map(integer("board_id"))
-				.toList();
+		var sourceState = sql.getJobState.call1(
+				enumerate("job_state", JobState.class), jobId).orElseThrow();
+		var boards = sql.getJobBoards.call(integer("board_id"), jobId);
 		if (boards.isEmpty()) {
 			if (targetState == DESTROYED) {
 				log.debug("no boards for {} in destroy", jobId);
@@ -939,9 +950,11 @@ public class AllocatorTask extends DatabaseAwareBean
 			 * switched off because they are links to boards that are not
 			 * allocated to the job. Off-board links are shut off by default.
 			 */
-			var perimeterLinks = sql.getPerimeter.call(jobId).toCollectingMap(
-					Direction.class, integer("board_id"),
-					enumerate("direction", Direction.class));
+			var perimeterLinks = Row.stream(
+					sql.getPerimeter.call(
+							(row) -> {return new Perimeter(row);}, jobId))
+					.toCollectingMap(Direction.class, (p) -> p.board_id,
+							(p) -> p.direction);
 
 			for (var boardId : boards) {
 				var toChange = perimeterLinks.getOrDefault(boardId,

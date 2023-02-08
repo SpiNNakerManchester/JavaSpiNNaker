@@ -13,11 +13,16 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+-- STMT Marks the gaps between actual statements, so these can be parsed in Java
+-- IGNORE Means this bit will be ignored until the next -- STMT
+
+-- STMT
 CREATE TABLE IF NOT EXISTS directions(
 	id INTEGER PRIMARY KEY,
 	name CHAR(50) UNIQUE NOT NULL
 );
 
+-- STMT
 CREATE TABLE IF NOT EXISTS movement_directions(
 	z INTEGER NOT NULL,
 	direction INTEGER NOT NULL,
@@ -29,20 +34,24 @@ CREATE TABLE IF NOT EXISTS movement_directions(
 	INDEX (direction)
 );
 
+-- STMT
 CREATE OR REPLACE VIEW motions AS
 SELECT z, directions.name AS dir, dx, dy, dz
 FROM movement_directions JOIN directions
 	ON movement_directions.direction = directions.id;
 
+-- STMT
 CREATE TABLE IF NOT EXISTS board_models (
 	model INTEGER PRIMARY KEY
 );
 
+-- STMT
 CREATE TABLE IF NOT EXISTS group_types (
 	id INTEGER PRIMARY KEY,
 	name CHAR(50) UNIQUE NOT NULL
 );
 
+-- STMT
 CREATE TABLE IF NOT EXISTS machines (
 	machine_id INTEGER PRIMARY KEY AUTO_INCREMENT,
 	machine_name CHAR(50) UNIQUE NOT NULL
@@ -66,6 +75,8 @@ CREATE TABLE IF NOT EXISTS machines (
 	in_service INTEGER NOT NULL DEFAULT (1)
 		CONSTRAINT in_service_check CHECK (in_service IN (0, 1))
 );
+
+-- STMT
 CREATE TABLE IF NOT EXISTS tags (
 	machine_id INTEGER NOT NULL,
 		FOREIGN KEY (machine_id)
@@ -74,6 +85,7 @@ CREATE TABLE IF NOT EXISTS tags (
 	INDEX (machine_id)
 );
 
+-- STMT
 -- These are the *DIRECTLY* addressible BMPs, one per frame
 CREATE TABLE IF NOT EXISTS bmp (
 	bmp_id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -88,6 +100,7 @@ CREATE TABLE IF NOT EXISTS bmp (
 	UNIQUE INDEX (machine_id, cabinet, frame)
 );
 
+-- STMT
 CREATE TABLE IF NOT EXISTS boards (
 	board_id INTEGER PRIMARY KEY AUTO_INCREMENT,
 	address CHAR(50) UNIQUE, -- IP address
@@ -136,19 +149,7 @@ CREATE TABLE IF NOT EXISTS boards (
     INDEX (machine_id)
 );
 
-
--- When the power is changed, update the right timestamp and deallocate if necessary
-DELIMITER $$
-CREATE TRIGGER IF NOT EXISTS boardStateTimestamping
-AFTER UPDATE ON boards
-FOR EACH ROW BEGIN
-	UPDATE boards SET power_off_timestamp = UNIX_TIMESTAMP(CURRENT_TIME)
-		WHERE board_id = NEW.board_id AND OLD.board_power != 0 AND NEW.board_power = 0;
-	UPDATE boards SET power_on_timestamp = UNIX_TIMESTAMP(CURRENT_TIME)
-		WHERE board_id = NEW.board_id AND OLD.board_power != 0 AND NEW.board_power = 1;
-END;$$
-DELIMITER ;
-
+-- STMT
 CREATE TABLE IF NOT EXISTS board_serial (
 	bs_id INTEGER PRIMARY KEY AUTO_INCREMENT,
 	board_id INTEGER UNIQUE NOT NULL,
@@ -158,6 +159,7 @@ CREATE TABLE IF NOT EXISTS board_serial (
 	physical_serial_id CHAR(50) UNIQUE
 );
 
+-- STMT
 CREATE TABLE IF NOT EXISTS links (
 	link_id INTEGER PRIMARY KEY AUTO_INCREMENT,
 	board_1 INTEGER NOT NULL,
@@ -179,6 +181,7 @@ CREATE TABLE IF NOT EXISTS links (
 	UNIQUE INDEX (board_2 ASC, dir_2 ASC)
 );
 
+-- STMT
 CREATE TABLE IF NOT EXISTS user_info (
 	user_id INTEGER PRIMARY KEY AUTO_INCREMENT,
 	user_name CHAR(50) UNIQUE NOT NULL,
@@ -200,6 +203,7 @@ CREATE TABLE IF NOT EXISTS user_info (
 		encrypted_password IS NOT NULL) VIRTUAL
 );
 
+-- STMT
 CREATE TABLE IF NOT EXISTS user_groups (
 	group_id INTEGER PRIMARY KEY AUTO_INCREMENT,
 	group_name CHAR(255) UNIQUE NOT NULL,
@@ -211,11 +215,13 @@ CREATE TABLE IF NOT EXISTS user_groups (
 		group_type = 0) VIRTUAL
 );
 
+-- STMT
 CREATE TABLE IF NOT EXISTS job_states(
 	id INTEGER PRIMARY KEY,
 	name CHAR(50) UNIQUE NOT NULL
 );
 
+-- STMT
 CREATE TABLE IF NOT EXISTS jobs (
 	job_id INTEGER PRIMARY KEY AUTO_INCREMENT,
 	machine_id INTEGER,
@@ -259,6 +265,7 @@ CREATE TABLE IF NOT EXISTS jobs (
 	INDEX (machine_id)
 );
 
+-- STMT
 -- Reports of problems with boards
 CREATE TABLE IF NOT EXISTS board_reports(
 	report_id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -276,17 +283,10 @@ CREATE TABLE IF NOT EXISTS board_reports(
 	UNIQUE INDEX (board_id ASC, job_id ASC, reporter ASC)
 );
 
--- When the issue report is created, update the right timestamp
-CREATE TRIGGER IF NOT EXISTS boardReportsTimestamping
-AFTER INSERT ON board_reports
-FOR EACH ROW
-	UPDATE board_reports
-		SET report_timestamp = UNIX_TIMESTAMP(CURRENT_TIMESTAMP)
-	WHERE report_id = NEW.report_id;
-
+-- STMT
 CREATE OR REPLACE VIEW jobs_usage(
 	machine_id, job_id, owner, group_id, quota, size, start, finish,
-	duration, `usage`, complete) AS
+	duration, quota_used, complete) AS
 SELECT
 	machine_id, job_id, owner, group_id, user_groups.quota, allocation_size,
 	allocation_timestamp, death_timestamp,
@@ -300,50 +300,7 @@ SELECT
 FROM jobs JOIN user_groups USING (group_id)
 WHERE NOT accounted_for;
 
--- When the job is created, update the right timestamp
-CREATE TRIGGER IF NOT EXISTS jobCreateTimestamping
-AFTER INSERT ON jobs
-FOR EACH ROW
-	UPDATE jobs
-		SET create_timestamp = UNIX_TIMESTAMP(CURRENT_TIMESTAMP)
-	WHERE job_id = NEW.job_id;
--- When the job is allocated, update the right timestamp
-CREATE TRIGGER IF NOT EXISTS jobAllocationTimestamping
-AFTER UPDATE ON jobs
-FOR EACH ROW
-	UPDATE jobs
-		SET allocation_timestamp = UNIX_TIMESTAMP(CURRENT_TIMESTAMP)
-	WHERE job_id = OLD.job_id
-		AND (OLD.allocation_size IS NULL OR OLD.allocation_size = 0);
--- When the job is destroyed, update the right timestamp
-CREATE TRIGGER IF NOT EXISTS jobDeathTimestamping
-AFTER UPDATE ON jobs
-FOR EACH ROW
-	UPDATE jobs
-		SET death_timestamp = UNIX_TIMESTAMP(CURRENT_TIMESTAMP)
-	WHERE job_id = NEW.job_id AND OLD.job_state != 4 -- DESTROYED
-		AND NEW.job_state = 4; -- DESTROYED
--- When a job is given a root board, remember that permanently
-CREATE TRIGGER IF NOT EXISTS jobAllocationRememberRoot
-AFTER UPDATE ON jobs
-FOR EACH ROW
-	UPDATE jobs
-		SET allocated_root = NEW.root_id
-	WHERE job_id = OLD.job_id AND NEW.root_id IS NOT NULL;
-
--- When the power is turned off on a board allocated to a job that is destroyed,
--- deallocate the board.
-CREATE TRIGGER IF NOT EXISTS boardDeallocation
-AFTER UPDATE ON boards
-FOR EACH ROW
-	UPDATE boards
-		SET allocated_job = NULL
-	WHERE board_id = NEW.board_id
-		AND OLD.board_power != 0 AND NEW.board_power = 0
-		AND EXISTS(
-			SELECT 1 FROM jobs
-			WHERE jobs.job_id = OLD.allocated_job AND jobs.job_state = 4);
-
+-- STMT
 -- Record all allocations
 CREATE TABLE IF NOT EXISTS old_board_allocations (
 	alloc_id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -356,19 +313,28 @@ CREATE TABLE IF NOT EXISTS old_board_allocations (
 	alloc_timestamp INTEGER NOT NULL
 );
 
+-- STMT
+DROP TRIGGER IF EXISTS alloc_tracking;
+
+-- IGNORE
 DELIMITER $$
-CREATE TRIGGER IF NOT EXISTS alloc_tracking
+
+-- STMT
+CREATE TRIGGER alloc_tracking
 AFTER UPDATE ON boards FOR EACH ROW
 BEGIN
-IF NEW.allocated_job IS NOT NULL THEN
+IF OLD.allocated_job IS NULL and NEW.allocated_job IS NOT NULL THEN
 	INSERT INTO old_board_allocations(
 		job_id, board_id, alloc_timestamp)
 	VALUES (NEW.allocated_job, NEW.board_id,
 		UNIX_TIMESTAMP(CURRENT_TIMESTAMP));
 END IF;
-END;$$
+END;
+-- IGNORE
+$$
 DELIMITER ;
 
+-- STMT
 CREATE TABLE IF NOT EXISTS job_request (
 	req_id INTEGER PRIMARY KEY AUTO_INCREMENT,
 	job_id INTEGER NOT NULL,
@@ -391,6 +357,7 @@ CREATE TABLE IF NOT EXISTS job_request (
 	INDEX (job_id)
 );
 
+-- STMT
 CREATE TABLE IF NOT EXISTS pending_changes (
     change_id INTEGER PRIMARY KEY AUTO_INCREMENT,
     job_id INTEGER,
@@ -424,6 +391,7 @@ CREATE TABLE IF NOT EXISTS pending_changes (
 	INDEX (job_id)
 );
 
+-- STMT
 CREATE TABLE IF NOT EXISTS blacklist_ops (
 	op_id INTEGER PRIMARY KEY AUTO_INCREMENT,
 	board_id INTEGER UNIQUE NOT NULL,
@@ -437,6 +405,7 @@ CREATE TABLE IF NOT EXISTS blacklist_ops (
 	failure BLOB				-- The serialized exception on failure; JAVA format!
 );
 
+-- STMT
 -- Coordinates of chips in a board
 CREATE TABLE IF NOT EXISTS board_model_coords(
 	coord_id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -450,6 +419,7 @@ CREATE TABLE IF NOT EXISTS board_model_coords(
 	UNIQUE INDEX (model, chip_x, chip_y)
 );
 
+-- STMT
 -- Per-chip blacklist data; may include boards not in any known machine
 CREATE TABLE IF NOT EXISTS blacklisted_chips(
 	blacklist_id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -463,6 +433,7 @@ CREATE TABLE IF NOT EXISTS blacklisted_chips(
     UNIQUE INDEX (board_id ASC, coord_id ASC)
 );
 
+-- STMT
 -- Per-physical-core blacklist data; may include boards not in any known machine
 CREATE TABLE IF NOT EXISTS blacklisted_cores(
 	blacklist_id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -478,6 +449,7 @@ CREATE TABLE IF NOT EXISTS blacklisted_cores(
 	UNIQUE INDEX (board_id ASC, coord_id ASC, physical_core ASC)
 );
 
+-- STMT
 -- Per-link blacklist data; may include boards not in any known machine
 CREATE TABLE IF NOT EXISTS blacklisted_links(
 	blacklist_id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -494,6 +466,7 @@ CREATE TABLE IF NOT EXISTS blacklisted_links(
 	UNIQUE INDEX (board_id ASC, coord_id ASC, direction ASC)
 );
 
+-- STMT
 -- Many-to-many relationship model
 CREATE TABLE IF NOT EXISTS group_memberships (
 	membership_id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -505,10 +478,17 @@ CREATE TABLE IF NOT EXISTS group_memberships (
 		REFERENCES user_groups(group_id) ON DELETE CASCADE,
 	UNIQUE INDEX (user_id, group_id)
 );
+
+-- STMT
 -- Internal users can only be in internal groups.
 -- External (OIDC) users can only be in external groups.
+DROP TRIGGER IF EXISTS userGroupSanity;
+
+-- IGNORE
 DELIMITER $$
-CREATE TRIGGER IF NOT EXISTS userGroupSanity
+
+-- STMT
+CREATE TRIGGER userGroupSanity
 AFTER INSERT ON group_memberships
 FOR EACH ROW BEGIN
 IF ((SELECT user_info.is_internal FROM user_info
@@ -517,12 +497,86 @@ IF ((SELECT user_info.is_internal FROM user_info
 		WHERE user_groups.group_id = NEW.group_id)) THEN
 	SIGNAL SQLSTATE '45000' set message_text = 'group and user type don''t match';
 END IF;
-END;$$
+END;
+-- IGNORE
+$$
 DELIMITER ;
 
+-- STMT
 -- Simulate legacy view
 CREATE OR REPLACE VIEW quotas (quota_id, user_id, quota)
 AS SELECT
 	user_groups.group_id, user_info.user_id, user_groups.quota
 FROM user_groups LEFT JOIN group_memberships USING (group_id)
 LEFT JOIN user_info USING (user_id);
+
+-- STMT
+-- Supported models of SpiNNaker board
+INSERT IGNORE INTO board_models(model) VALUES (2), (3), (4), (5);
+
+-- STMT
+-- The information about chip configuration of boards
+INSERT IGNORE INTO board_model_coords(model, chip_x, chip_y)
+VALUES
+	-- Version 3 boards
+	(3, 0, 1), (3, 1, 1),
+	(3, 0, 0), (3, 1, 0),
+	-- Version 5 boards
+	                                            (5, 4, 7), (5, 5, 7), (5, 6, 7), (5, 7, 7),
+	                                 (5, 3, 6), (5, 4, 6), (5, 5, 6), (5, 6, 6), (5, 7, 6),
+	                      (5, 2, 5), (5, 3, 5), (5, 4, 5), (5, 5, 5), (5, 6, 5), (5, 7, 5),
+	           (5, 1, 4), (5, 2, 4), (5, 3, 4), (5, 4, 4), (5, 5, 4), (5, 6, 4), (5, 7, 4),
+	(5, 0, 3), (5, 1, 3), (5, 2, 3), (5, 3, 3), (5, 4, 3), (5, 5, 3), (5, 6, 3), (5, 7, 3),
+	(5, 0, 2), (5, 1, 2), (5, 2, 2), (5, 3, 2), (5, 4, 2), (5, 5, 2), (5, 6, 2),
+	(5, 0, 1), (5, 1, 1), (5, 2, 1), (5, 3, 1), (5, 4, 1), (5, 5, 1),
+	(5, 0, 0), (5, 1, 0), (5, 2, 0), (5, 3, 0), (5, 4, 0);
+
+-- STMT
+-- Create boards rarely seen in the wild
+INSERT IGNORE INTO board_model_coords(model, chip_x, chip_y)
+	SELECT 2, chip_x, chip_y FROM board_model_coords WHERE model = 3;
+
+-- STMT
+INSERT IGNORE INTO board_model_coords(model, chip_x, chip_y)
+	SELECT 4, chip_x, chip_y FROM board_model_coords WHERE model = 5;
+
+-- STMT
+-- Standard directions between boards
+INSERT IGNORE INTO directions(id, name)
+VALUES
+	(0, 'N'), (1, 'E'), (2, 'SE'), (3, 'S'), (4, 'W'), (5, 'NW');
+
+-- STMT
+INSERT IGNORE INTO job_states(id, name)
+VALUES
+	(0, 'UNKNOWN'), (1, 'QUEUED'), (2, 'POWER'), (3, 'READY'), (4, 'DESTROYED');
+
+-- STMT
+INSERT IGNORE INTO group_types(id, name)
+VALUES
+	(0, 'INTERNAL'), (1, 'ORGANISATION'), (2, 'COLLABRATORY');
+
+-- STMT
+INSERT IGNORE INTO movement_directions(z, direction, dx, dy, dz)
+VALUES
+	-- Z = 0
+	(0, 0, 0, 0, +2),
+	(0, 1, 0, 0, +1),
+	(0, 2, 0, -1, +2),
+	(0, 3, -1, -1, +1),
+	(0, 4, -1, -1, +2),
+	(0, 5, -1, 0, +1),
+	-- Z = 1
+	(1, 0, +1, +1, -1),
+	(1, 1, +1, 0, +1),
+	(1, 2, +1, 0, -1),
+	(1, 3, 0, -1, +1),
+	(1, 4, 0, 0, -1),
+	(1, 5, 0, 0, +1),
+	-- Z = 2
+	(2, 0, 0, +1, -1),
+	(2, 1, +1, +1, -2),
+	(2, 2, 0, 0, -1),
+	(2, 3, 0, 0, -2),
+	(2, 4, -1, 0, -1),
+	(2, 5, 0, +1, -2);

@@ -35,7 +35,6 @@ import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.INTER
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.UNKNOWN;
 
 import java.time.Duration;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -56,7 +55,7 @@ import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 @SpringBootTest
 @TestInstance(PER_CLASS)
 @ActiveProfiles("unittest")
-class DMLTest extends MemDBTestBase {
+class DMLTest extends SimpleDBTestBase {
 	// Many many seconds
 	private static final int A_LONG_TIME = 1000000;
 
@@ -68,10 +67,9 @@ class DMLTest extends MemDBTestBase {
 		assumeWritable(c);
 		var d = Duration.ofSeconds(100);
 		try (var u = c.update(INSERT_JOB)) {
-			assertEquals(7, u.getNumArguments());
 			c.transaction(() -> {
 				// No such machine
-				assertThrowsFK(() -> u.keys(NO_MACHINE, NO_USER, NO_GROUP, d,
+				assertThrowsFK(() -> u.call(NO_MACHINE, NO_USER, NO_GROUP, d,
 						new byte[0], 0, 0));
 			});
 		}
@@ -81,11 +79,10 @@ class DMLTest extends MemDBTestBase {
 	void insertReqNBoards() {
 		assumeWritable(c);
 		try (var u = c.update(INSERT_REQ_N_BOARDS)) {
-			assertEquals(4, u.getNumArguments());
 			c.transaction(() -> {
 				// No such job
-				assertThrowsFK(() -> u.keys(NO_JOB, 1, 0, 0));
-				assertThrowsCheck(() -> u.keys(NO_JOB, -1, 0, 0));
+				assertThrowsFK(() -> u.call(NO_JOB, 1, 0, 0));
+				assertThrowsCheck(() -> u.call(NO_JOB, -1, 0, 0));
 			});
 		}
 	}
@@ -94,11 +91,10 @@ class DMLTest extends MemDBTestBase {
 	void insertReqSize() {
 		assumeWritable(c);
 		try (var u = c.update(INSERT_REQ_SIZE)) {
-			assertEquals(5, u.getNumArguments());
 			c.transaction(() -> {
 				// No such job
-				assertThrowsFK(() -> u.keys(NO_JOB, 1, 1, 0, 0));
-				assertThrowsCheck(() -> u.keys(NO_JOB, -1, -1, 0, 0));
+				assertThrowsFK(() -> u.call(NO_JOB, 1, 1, 0, 0));
+				assertThrowsCheck(() -> u.call(NO_JOB, -1, -1, 0, 0));
 			});
 		}
 	}
@@ -107,11 +103,10 @@ class DMLTest extends MemDBTestBase {
 	void insertReqSizeBoard() {
 		assumeWritable(c);
 		try (var u = c.update(INSERT_REQ_SIZE_BOARD)) {
-			assertEquals(6, u.getNumArguments());
 			c.transaction(() -> {
 				// No such job
-				assertThrowsFK(() -> u.keys(NO_JOB, NO_BOARD, 1, 1, 0, 0));
-				assertThrowsCheck(() -> u.keys(NO_JOB, NO_BOARD, -1, -1, 0, 0));
+				assertThrowsFK(() -> u.call(NO_JOB, NO_BOARD, 1, 1, 0, 0));
+				assertThrowsCheck(() -> u.call(NO_JOB, NO_BOARD, -1, -1, 0, 0));
 			});
 		}
 	}
@@ -121,9 +116,8 @@ class DMLTest extends MemDBTestBase {
 		assumeWritable(c);
 		try (var u = c.update(INSERT_REQ_BOARD)) {
 			c.transaction(() -> {
-				assertEquals(3, u.getNumArguments());
 				// No such job or board
-				assertThrowsFK(() -> u.keys(NO_JOB, NO_BOARD, 0));
+				assertThrowsFK(() -> u.call(NO_JOB, NO_BOARD, 0));
 			});
 		}
 	}
@@ -132,7 +126,6 @@ class DMLTest extends MemDBTestBase {
 	void updateKeepalive() {
 		assumeWritable(c);
 		try (var u = c.update(UPDATE_KEEPALIVE)) {
-			assertEquals(3, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(0, NO_NAME, NO_JOB));
 			});
@@ -143,9 +136,8 @@ class DMLTest extends MemDBTestBase {
 	void destroyJob() {
 		assumeWritable(c);
 		try (var u = c.update(DESTROY_JOB)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
-				assertEquals(0, u.call("anything", NO_JOB));
+				assertEquals(0, u.call("anything", 0, NO_JOB));
 			});
 		}
 	}
@@ -154,7 +146,6 @@ class DMLTest extends MemDBTestBase {
 	void deleteTask() {
 		assumeWritable(c);
 		try (var u = c.update(DELETE_TASK)) {
-			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_JOB));
 			});
@@ -165,7 +156,6 @@ class DMLTest extends MemDBTestBase {
 	void allocateBoardsJob() {
 		assumeWritable(c);
 		try (var u = c.update(ALLOCATE_BOARDS_JOB)) {
-			assertEquals(8, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(-1, -1, -1, NO_BOARD, 0, 0, NO_BOARD,
 						NO_JOB));
@@ -177,7 +167,6 @@ class DMLTest extends MemDBTestBase {
 	void deallocateBoardsJob() {
 		assumeWritable(c);
 		try (var u = c.update(DEALLOCATE_BOARDS_JOB)) {
-			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_JOB));
 			});
@@ -188,7 +177,6 @@ class DMLTest extends MemDBTestBase {
 	void allocateBoardsBoard() {
 		assumeWritable(c);
 		try (var u = c.update(ALLOCATE_BOARDS_BOARD)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_JOB, NO_BOARD));
 			});
@@ -199,7 +187,6 @@ class DMLTest extends MemDBTestBase {
 	void setStatePending() {
 		assumeWritable(c);
 		try (var u = c.update(SET_STATE_PENDING)) {
-			assertEquals(3, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(JobState.UNKNOWN, 0, NO_JOB));
 			});
@@ -210,7 +197,6 @@ class DMLTest extends MemDBTestBase {
 	void setStateDestroyed() {
 		assumeWritable(c);
 		try (var u = c.update(SET_STATE_DESTROYED)) {
-			assertEquals(3, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(0, 0, NO_JOB));
 			});
@@ -221,7 +207,6 @@ class DMLTest extends MemDBTestBase {
 	void bumpImportance() {
 		assumeWritable(c);
 		try (var u = c.update(BUMP_IMPORTANCE)) {
-			assertEquals(0, u.getNumArguments());
 			c.transaction(() -> {
 				// table should be empty
 				assertEquals(0, u.call());
@@ -233,7 +218,6 @@ class DMLTest extends MemDBTestBase {
 	void killJobAllocTask() {
 		assumeWritable(c);
 		try (var u = c.update(KILL_JOB_ALLOC_TASK)) {
-			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_JOB));
 			});
@@ -244,7 +228,6 @@ class DMLTest extends MemDBTestBase {
 	void killJobPending() {
 		assumeWritable(c);
 		try (var u = c.update(KILL_JOB_PENDING)) {
-			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_JOB));
 			});
@@ -255,7 +238,6 @@ class DMLTest extends MemDBTestBase {
 	void setInProgress() {
 		assumeWritable(c);
 		try (var u = c.update(SET_IN_PROGRESS)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(false, NO_JOB));
 			});
@@ -266,10 +248,9 @@ class DMLTest extends MemDBTestBase {
 	void issueChangeForJob() {
 		assumeWritable(c);
 		try (var u = c.update(issueChangeForJob)) {
-			assertEquals(11, u.getNumArguments());
 			c.transaction(() -> {
 				// No such job
-				assertThrowsFK(() -> u.keys(NO_JOB, NO_BOARD, UNKNOWN, UNKNOWN,
+				assertThrowsFK(() -> u.call(NO_JOB, NO_BOARD, UNKNOWN, UNKNOWN,
 						true, false, false, false, false, false, false));
 			});
 		}
@@ -279,7 +260,6 @@ class DMLTest extends MemDBTestBase {
 	void setBoardPowerOn() {
 		assumeWritable(c);
 		try (var u = c.update(SET_BOARD_POWER_ON)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(0, NO_BOARD));
 			});
@@ -290,7 +270,6 @@ class DMLTest extends MemDBTestBase {
 	void setBoardPowerOff() {
 		assumeWritable(c);
 		try (var u = c.update(SET_BOARD_POWER_OFF)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(0, NO_BOARD));
 			});
@@ -301,7 +280,6 @@ class DMLTest extends MemDBTestBase {
 	void finishedPending() {
 		assumeWritable(c);
 		try (var u = c.update(FINISHED_PENDING)) {
-			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_CHANGE));
 			});
@@ -312,10 +290,9 @@ class DMLTest extends MemDBTestBase {
 	void insertMachine() {
 		assumeWritable(c);
 		try (var u = c.update(INSERT_MACHINE_SPINN_5)) {
-			assertEquals(4, u.getNumArguments());
 			c.transaction(() -> {
 				// Bad depth
-				assertThrowsCheck(() -> u.keys(NO_NAME, -1, -1, -1));
+				assertThrowsCheck(() -> u.call(NO_NAME, -1, -1, -1));
 			});
 		}
 	}
@@ -324,10 +301,9 @@ class DMLTest extends MemDBTestBase {
 	void insertTag() {
 		assumeWritable(c);
 		try (var u = c.update(INSERT_TAG)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				// No machine
-				assertThrowsFK(() -> u.keys(NO_MACHINE, NO_NAME));
+				assertThrowsFK(() -> u.call(NO_MACHINE, NO_NAME));
 			});
 		}
 	}
@@ -336,7 +312,6 @@ class DMLTest extends MemDBTestBase {
 	void deleteMachineTags() {
 		assumeWritable(c);
 		try (var u = c.update(DELETE_MACHINE_TAGS)) {
-			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				// No machine, no tags for it
 				assertEquals(0, u.call(NO_MACHINE));
@@ -348,10 +323,9 @@ class DMLTest extends MemDBTestBase {
 	void insertBMP() {
 		assumeWritable(c);
 		try (var u = c.update(INSERT_BMP)) {
-			assertEquals(4, u.getNumArguments());
 			c.transaction(() -> {
 				// No machine
-				assertThrowsFK(() -> u.keys(NO_MACHINE, NO_NAME, 0, 0));
+				assertThrowsFK(() -> u.call(NO_MACHINE, NO_NAME, 0, 0));
 			});
 		}
 	}
@@ -360,10 +334,9 @@ class DMLTest extends MemDBTestBase {
 	void insertBoard() {
 		assumeWritable(c);
 		try (var u = c.update(INSERT_BOARD)) {
-			assertEquals(10, u.getNumArguments());
 			c.transaction(() -> {
 				// No machine
-				assertThrowsFK(() -> u.keys(NO_MACHINE, NO_NAME, NO_BMP, 0, 0,
+				assertThrowsFK(() -> u.call(NO_MACHINE, NO_NAME, NO_BMP, 0, 0,
 						0, 0, 0, 0, true));
 			});
 		}
@@ -373,12 +346,10 @@ class DMLTest extends MemDBTestBase {
 	void insertLink() {
 		assumeWritable(c);
 		try (var u = c.update(INSERT_LINK)) {
-			assertEquals(5, u.getNumArguments());
-			c.transaction(() -> {
-				// No board
-				assertThrowsFK(() -> u.keys(NO_BOARD, Direction.N, NO_BOARD,
+			c.transaction(() ->
+				// No board, but no failure because "IGNORE"
+				u.call(NO_BOARD, Direction.N, NO_BOARD,
 						Direction.S, false));
-			});
 		}
 	}
 
@@ -386,7 +357,6 @@ class DMLTest extends MemDBTestBase {
 	void setMaxCoords() {
 		assumeWritable(c);
 		try (var u = c.update(SET_MAX_COORDS)) {
-			assertEquals(3, u.getNumArguments());
 			c.transaction(() -> {
 				// No machine
 				assertEquals(0, u.call(0, 0, NO_MACHINE));
@@ -398,7 +368,6 @@ class DMLTest extends MemDBTestBase {
 	void setMachineState() {
 		assumeWritable(c);
 		try (var u = c.update(SET_MACHINE_STATE)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				// No machine
 				assertEquals(0, u.call(true, NO_NAME));
@@ -410,7 +379,6 @@ class DMLTest extends MemDBTestBase {
 	void setFunctioningField() {
 		assumeWritable(c);
 		try (var u = c.update(SET_FUNCTIONING_FIELD)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(false, NO_BOARD));
 			});
@@ -421,7 +389,6 @@ class DMLTest extends MemDBTestBase {
 	void decrementQuota() {
 		assumeWritable(c);
 		try (var u = c.update(DECREMENT_QUOTA)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(0, NO_USER)); // really quota_id
 			});
@@ -432,7 +399,6 @@ class DMLTest extends MemDBTestBase {
 	void markConsolidated() {
 		assumeWritable(c);
 		try (var u = c.update(MARK_CONSOLIDATED)) {
-			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_JOB));
 			});
@@ -442,12 +408,9 @@ class DMLTest extends MemDBTestBase {
 	@Test
 	void adjustQuota() {
 		assumeWritable(c);
-		try (var u = c.query(ADJUST_QUOTA)) {
-			assertEquals(2, u.getNumArguments());
-			assertEquals(Set.of("group_name", "quota"),
-					u.getRowColumnNames());
+		try (var u = c.update(ADJUST_QUOTA)) {
 			c.transaction(() -> {
-				assertFalse(u.call1(0, NO_GROUP).isPresent());
+				assertEquals(0, u.call(0, NO_GROUP));
 			});
 		}
 	}
@@ -456,7 +419,6 @@ class DMLTest extends MemDBTestBase {
 	void markLoginSuccess() {
 		assumeWritable(c);
 		try (var u = c.update(MARK_LOGIN_SUCCESS)) {
-			assertEquals(3, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(0, NO_NAME, NO_USER));
 			});
@@ -467,11 +429,9 @@ class DMLTest extends MemDBTestBase {
 	void markLoginFailure() {
 		assumeWritable(c);
 		// Tricky! Has a RETURNING clause
-		try (var u = c.query(MARK_LOGIN_FAILURE)) {
-			assertEquals(3, u.getNumArguments());
-			assertEquals(Set.of("locked"), u.getRowColumnNames());
+		try (var u = c.update(MARK_LOGIN_FAILURE)) {
 			c.transaction(() -> {
-				assertFalse(u.call1(0, 0, NO_USER).isPresent());
+				assertEquals(0, u.call(0, 0, NO_USER));
 			});
 		}
 	}
@@ -480,11 +440,9 @@ class DMLTest extends MemDBTestBase {
 	void unlockLockedUsers() {
 		assumeWritable(c);
 		// Tricky! Has a RETURNING clause
-		try (var u = c.query(UNLOCK_LOCKED_USERS)) {
-			assertEquals(2, u.getNumArguments());
-			assertEquals(Set.of("user_name"), u.getRowColumnNames());
+		try (var u = c.update(UNLOCK_LOCKED_USERS)) {
 			c.transaction(() -> {
-				assertFalse(u.call1(Duration.ofDays(1000), 0).isPresent());
+				assertEquals(0, u.call(Duration.ofDays(1000), 0));
 			});
 		}
 	}
@@ -493,7 +451,6 @@ class DMLTest extends MemDBTestBase {
 	void deleteUser() {
 		assumeWritable(c);
 		try (var u = c.update(DELETE_USER)) {
-			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_USER));
 			});
@@ -504,7 +461,6 @@ class DMLTest extends MemDBTestBase {
 	void setUserTrust() {
 		assumeWritable(c);
 		try (var u = c.update(SET_USER_TRUST)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(TrustLevel.BASIC, NO_USER));
 			});
@@ -515,7 +471,6 @@ class DMLTest extends MemDBTestBase {
 	void setUserLocked() {
 		assumeWritable(c);
 		try (var u = c.update(SET_USER_LOCKED)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(false, NO_USER));
 			});
@@ -526,7 +481,6 @@ class DMLTest extends MemDBTestBase {
 	void setUserDisabled() {
 		assumeWritable(c);
 		try (var u = c.update(SET_USER_DISABLED)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(false, NO_USER));
 			});
@@ -537,7 +491,6 @@ class DMLTest extends MemDBTestBase {
 	void setUserPass() {
 		assumeWritable(c);
 		try (var u = c.update(SET_USER_PASS)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call("*", NO_USER));
 			});
@@ -548,7 +501,6 @@ class DMLTest extends MemDBTestBase {
 	void setUserName() {
 		assumeWritable(c);
 		try (var u = c.update(SET_USER_NAME)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_NAME, NO_USER));
 			});
@@ -559,7 +511,6 @@ class DMLTest extends MemDBTestBase {
 	void createUser() {
 		assumeWritable(c);
 		try (var u = c.update(CREATE_USER)) {
-			assertEquals(5, u.getNumArguments());
 			c.transaction(() -> {
 				// DB was userless; this makes one
 				assertEquals(1,
@@ -572,7 +523,6 @@ class DMLTest extends MemDBTestBase {
 	void createGroup() {
 		assumeWritable(c);
 		try (var u = c.update(CREATE_GROUP)) {
-			assertEquals(3, u.getNumArguments());
 			c.transaction(() -> {
 				// DB was groupless; this makes one
 				assertEquals(1, u.call(NO_NAME, 0, 0));
@@ -584,7 +534,6 @@ class DMLTest extends MemDBTestBase {
 	void createGroupIfNotExists() {
 		assumeWritable(c);
 		try (var u = c.update(CREATE_GROUP_IF_NOT_EXISTS)) {
-			assertEquals(3, u.getNumArguments());
 			c.transaction(() -> {
 				// DB was groupless; this makes one
 				assertEquals(1, u.call(NO_NAME, 0, 0));
@@ -597,13 +546,9 @@ class DMLTest extends MemDBTestBase {
 	@Test
 	void updateGroup() {
 		assumeWritable(c);
-		try (var u = c.query(UPDATE_GROUP)) {
-			assertEquals(3, u.getNumArguments());
-			assertEquals(
-					Set.of("group_id", "group_name", "quota", "group_type"),
-					u.getRowColumnNames());
+		try (var u = c.update(UPDATE_GROUP)) {
 			c.transaction(() -> {
-				assertFalse(u.call1(NO_NAME, 0, NO_GROUP).isPresent());
+				assertEquals(0, u.call(NO_NAME, 0, NO_GROUP));
 			});
 		}
 	}
@@ -611,11 +556,9 @@ class DMLTest extends MemDBTestBase {
 	@Test
 	void deleteGroup() {
 		assumeWritable(c);
-		try (var u = c.query(DELETE_GROUP)) {
-			assertEquals(1, u.getNumArguments());
-			assertEquals(Set.of("group_name"), u.getRowColumnNames());
+		try (var u = c.update(DELETE_GROUP)) {
 			c.transaction(() -> {
-				assertFalse(u.call1(NO_GROUP).isPresent());
+				assertEquals(0, u.call(NO_GROUP));
 			});
 		}
 	}
@@ -624,7 +567,6 @@ class DMLTest extends MemDBTestBase {
 	void addUserToGroup() {
 		assumeWritable(c);
 		try (var u = c.update(ADD_USER_TO_GROUP)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				// Can't do this; neither exists
 				assertThrowsFK(() -> u.call(NO_USER, NO_GROUP));
@@ -636,7 +578,6 @@ class DMLTest extends MemDBTestBase {
 	void removeUserFromGroup() {
 		assumeWritable(c);
 		try (var u = c.update(REMOVE_USER_FROM_GROUP)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_USER, NO_GROUP));
 			});
@@ -649,16 +590,11 @@ class DMLTest extends MemDBTestBase {
 		assumeWritable(c);
 		try (var u1 = c.update(GROUP_SYNC_MAKE_TEMP_TABLE)) {
 			c.transaction(() -> {
-				assertEquals(0, u1.getNumArguments());
 				u1.call();
 				try (var u2 = c.update(GROUP_SYNC_INSERT_TEMP_ROW);
 						var u3 = c.update(GROUP_SYNC_ADD_GROUPS);
 						var u4 = c.update(GROUP_SYNC_REMOVE_GROUPS);
 						var u5 = c.update(GROUP_SYNC_DROP_TEMP_TABLE)) {
-					assertEquals(2, u2.getNumArguments());
-					assertEquals(1, u3.getNumArguments());
-					assertEquals(1, u4.getNumArguments());
-					assertEquals(0, u5.getNumArguments());
 					assertEquals(0, u2.call(NO_NAME, INTERNAL));
 					assertEquals(0, u3.call(NO_USER));
 					assertEquals(0, u4.call(NO_USER));
@@ -672,7 +608,6 @@ class DMLTest extends MemDBTestBase {
 	void insertBoardReport() {
 		assumeWritable(c);
 		try (var u = c.update(INSERT_BOARD_REPORT)) {
-			assertEquals(5, u.getNumArguments());
 			c.transaction(() -> {
 				assertThrowsFK(
 						() -> u.call(NO_BOARD, NO_JOB, NO_NAME, NO_USER, 0));
@@ -684,7 +619,6 @@ class DMLTest extends MemDBTestBase {
 	void deleteJobRecord() {
 		assumeWritable(c);
 		try (var u = c.update(DELETE_JOB_RECORD)) {
-			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_JOB));
 			});
@@ -695,7 +629,6 @@ class DMLTest extends MemDBTestBase {
 	void deleteAllocRecord() {
 		assumeWritable(c);
 		try (var u = c.update(DELETE_ALLOC_RECORD)) {
-			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_ALLOC));
 			});
@@ -707,10 +640,8 @@ class DMLTest extends MemDBTestBase {
 		assumeWritable(c);
 		assumeTrue(c.isHistoricalDBAvailable());
 		try (var q = c.query(copyAllocsToHistoricalData)) {
-			assertEquals(2, q.getNumArguments());
-			assertEquals(Set.of("alloc_id"), q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1(A_LONG_TIME, 0).isPresent());
+				assertFalse(q.call1((row) -> 1, A_LONG_TIME, 0).isPresent());
 			});
 		}
 	}
@@ -720,10 +651,8 @@ class DMLTest extends MemDBTestBase {
 		assumeWritable(c);
 		assumeTrue(c.isHistoricalDBAvailable());
 		try (var q = c.query(copyJobsToHistoricalData)) {
-			assertEquals(2, q.getNumArguments());
-			assertEquals(Set.of("job_id"), q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1(A_LONG_TIME, 0).isPresent());
+				assertFalse(q.call1((row) -> 1, A_LONG_TIME, 0).isPresent());
 			});
 		}
 	}
@@ -732,7 +661,6 @@ class DMLTest extends MemDBTestBase {
 	void clearStuckPending() {
 		assumeWritable(c);
 		try (var u = c.update(CLEAR_STUCK_PENDING)) {
-			assertEquals(0, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call());
 			});
@@ -743,7 +671,6 @@ class DMLTest extends MemDBTestBase {
 	void setBoardSerialIds() {
 		assumeWritable(c);
 		try (var u = c.update(SET_BOARD_SERIAL_IDS)) {
-			assertEquals(3, u.getNumArguments());
 			c.transaction(() -> {
 				assertThrowsFK(() -> u.call(NO_BOARD, "foo", "bar"));
 			});
@@ -755,7 +682,6 @@ class DMLTest extends MemDBTestBase {
 		assumeWritable(c);
 		var bl = new Blacklist("");
 		try (var u = c.update(COMPLETED_BLACKLIST_READ)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(bl, NO_BLACKLIST_OP));
 			});
@@ -766,7 +692,6 @@ class DMLTest extends MemDBTestBase {
 	void completedBlacklistWrite() {
 		assumeWritable(c);
 		try (var u = c.update(COMPLETED_BLACKLIST_WRITE)) {
-			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_BLACKLIST_OP));
 			});
@@ -777,7 +702,6 @@ class DMLTest extends MemDBTestBase {
 	void completedGetSerialReq() {
 		assumeWritable(c);
 		try (var u = c.update(COMPLETED_GET_SERIAL_REQ)) {
-			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_BLACKLIST_OP));
 			});
@@ -788,7 +712,6 @@ class DMLTest extends MemDBTestBase {
 	void failedBlacklistOp() {
 		assumeWritable(c);
 		try (var u = c.update(FAILED_BLACKLIST_OP)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(new Exception(), NO_BLACKLIST_OP));
 			});
@@ -799,7 +722,6 @@ class DMLTest extends MemDBTestBase {
 	void createBlacklistRead() {
 		assumeWritable(c);
 		try (var u = c.update(CREATE_BLACKLIST_READ)) {
-			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertThrowsFK(() -> u.call(NO_BOARD));
 			});
@@ -811,7 +733,6 @@ class DMLTest extends MemDBTestBase {
 		assumeWritable(c);
 		var bl = new Blacklist("");
 		try (var u = c.update(CREATE_BLACKLIST_WRITE)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertThrowsFK(() -> u.call(NO_BOARD, bl));
 			});
@@ -822,7 +743,6 @@ class DMLTest extends MemDBTestBase {
 	void createSerialReadReq() {
 		assumeWritable(c);
 		try (var u = c.update(CREATE_SERIAL_READ_REQ)) {
-			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertThrowsFK(() -> u.call(NO_BOARD));
 			});
@@ -833,7 +753,6 @@ class DMLTest extends MemDBTestBase {
 	void deleteBlacklistOp() {
 		assumeWritable(c);
 		try (var u = c.update(DELETE_BLACKLIST_OP)) {
-			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_BLACKLIST_OP));
 			});
@@ -844,7 +763,6 @@ class DMLTest extends MemDBTestBase {
 	void addBlacklistedChip() {
 		assumeWritable(c);
 		try (var u = c.update(ADD_BLACKLISTED_CHIP)) {
-			assertEquals(3, u.getNumArguments());
 			c.transaction(() -> {
 				// No such board, so no insert
 				assertEquals(0, u.call(NO_BOARD, -1, -1));
@@ -856,7 +774,6 @@ class DMLTest extends MemDBTestBase {
 	void addBlacklistedCore() {
 		assumeWritable(c);
 		try (var u = c.update(ADD_BLACKLISTED_CORE)) {
-			assertEquals(4, u.getNumArguments());
 			c.transaction(() -> {
 				// No such board, so no insert
 				assertEquals(0, u.call(NO_BOARD, -1, -1, -1));
@@ -868,7 +785,6 @@ class DMLTest extends MemDBTestBase {
 	void addBlacklistedLink() {
 		assumeWritable(c);
 		try (var u = c.update(ADD_BLACKLISTED_LINK)) {
-			assertEquals(4, u.getNumArguments());
 			c.transaction(() -> {
 				// No such board, so no insert
 				assertEquals(0, u.call(NO_BOARD, -1, -1, Direction.N));
@@ -880,7 +796,6 @@ class DMLTest extends MemDBTestBase {
 	void clearBlacklistedChips() {
 		assumeWritable(c);
 		try (var u = c.update(CLEAR_BLACKLISTED_CHIPS)) {
-			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				// No such board, so no delete
 				assertEquals(0, u.call(NO_BOARD));
@@ -892,7 +807,6 @@ class DMLTest extends MemDBTestBase {
 	void clearBlacklistedCores() {
 		assumeWritable(c);
 		try (var u = c.update(CLEAR_BLACKLISTED_CORES)) {
-			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				// No such board, so no delete
 				assertEquals(0, u.call(NO_BOARD));
@@ -904,7 +818,6 @@ class DMLTest extends MemDBTestBase {
 	void markBoardBlacklistChanged() {
 		assumeWritable(c);
 		try (var u = c.update(MARK_BOARD_BLACKLIST_CHANGED)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				// No such board, so no delete
 				assertEquals(0, u.call(0, NO_BOARD));
@@ -916,7 +829,6 @@ class DMLTest extends MemDBTestBase {
 	void markBoardBlacklistSynched() {
 		assumeWritable(c);
 		try (var u = c.update(MARK_BOARD_BLACKLIST_SYNCHED)) {
-			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				// No such board, so no delete
 				assertEquals(0, u.call(0, NO_BOARD));

@@ -32,7 +32,7 @@ spalloc:
   sqlite:
     performance-log: true
     performance-threshold: 1e2
+  
+spring:
   datasource:
-    uri: jdbc:mysql://localhost:3306/spalloc
-    username: spalloc
-    password: spalloc
+    url: jdbc:tc:mysql:8:///spalloc?user=root&password=test

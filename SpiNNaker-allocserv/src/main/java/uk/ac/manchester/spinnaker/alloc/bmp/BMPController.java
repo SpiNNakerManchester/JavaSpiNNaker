@@ -32,6 +32,7 @@ import static uk.ac.manchester.spinnaker.alloc.bmp.BlacklistOperation.READ;
 import static uk.ac.manchester.spinnaker.alloc.bmp.BlacklistOperation.WRITE;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.stream;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
@@ -57,6 +58,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -309,8 +311,8 @@ public class BMPController extends DatabaseAwareBean {
 	public int getPendingRequestLoading() {
 		try (var conn = getConnection();
 				var countChanges = conn.query(COUNT_PENDING_CHANGES)) {
-			return conn.transaction(false, () -> countChanges.call1()
-					.map(integer("c")).orElse(0));
+			return conn.transaction(false,
+					() -> countChanges.call1(integer("c")).orElse(0));
 		}
 	}
 
@@ -450,7 +452,7 @@ public class BMPController extends DatabaseAwareBean {
 		final boolean markBoardAsDead(AfterSQL sql, int boardId, String msg) {
 			boolean result = sql.markBoardAsDead(boardId) > 0;
 			if (result) {
-				sql.findBoardById.call1(boardId).ifPresent(row -> {
+				sql.findBoardById.call1(row -> {
 					var ser = row.getString("physical_serial_id");
 					if (ser == null) {
 						ser = "<UNKNOWN>";
@@ -463,6 +465,7 @@ public class BMPController extends DatabaseAwareBean {
 					// Postpone email sending until out of transaction
 					postCleanupTasks.add(
 							() -> emailSender.sendServiceMail(fullMessage));
+					return null;
 				});
 			}
 			return result;
@@ -551,8 +554,8 @@ public class BMPController extends DatabaseAwareBean {
 			 */
 			powerOnAddresses = sql.transaction(() -> powerOnBoards.values()
 					.stream().flatMap(Collection::stream)
-					.map(boardId -> sql.getBoardAddress.call1(boardId)
-							.map(string("address")).orElse(null))
+					.map(boardId -> sql.getBoardAddress.call1(string("address"),
+							boardId).orElse(null))
 					.collect(toList()));
 		}
 
@@ -817,21 +820,21 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		List<BlacklistRequest> getBlacklistReads(Machine machine) {
-			return getBlacklistReads.call(machine.getId())
-					.map(row -> new BlacklistRequest(machine, READ, row))
-					.toList();
+			return getBlacklistReads.call(
+					row -> new BlacklistRequest(machine, READ, row),
+					machine.getId());
 		}
 
 		List<BlacklistRequest> getBlacklistWrites(Machine machine) {
-			return getBlacklistWrites.call(machine.getId())
-					.map(row -> new BlacklistRequest(machine, WRITE, row))
-					.toList();
+			return getBlacklistWrites.call(
+					row -> new BlacklistRequest(machine, WRITE, row),
+					machine.getId());
 		}
 
 		List<BlacklistRequest> getReadSerialInfos(Machine machine) {
-			return getSerials.call(machine.getId())
-					.map(row -> new BlacklistRequest(machine, GET_SERIAL, row))
-					.toList();
+			return getSerials.call(
+					row -> new BlacklistRequest(machine, GET_SERIAL, row),
+					machine.getId());
 		}
 	}
 
@@ -1101,8 +1104,8 @@ public class BMPController extends DatabaseAwareBean {
 				// The outer loop is always over a small set, fortunately
 				for (var machine : machines) {
 					long now = System.currentTimeMillis() / 1000;
-					sql.getJobIdsWithChanges.call(machine.getId(), now)
-							.map(integer("job_id"))
+					stream(sql.getJobIdsWithChanges.call(integer("job_id"),
+							machine.getId(), now))
 							.filter(jobId -> !busyJobs.contains(jobId))
 							.forEach(jobId -> takeRequestsForJob(machine, jobId,
 									sql, requestCollector));
@@ -1127,6 +1130,32 @@ public class BMPController extends DatabaseAwareBean {
 		}
 	}
 
+	private class PowerChange {
+		final Integer changeId;
+		final int cabinet;
+		final int frame;
+		final Integer boardId;
+		final Integer boardNum;
+		final boolean power;
+		final JobState from;
+		final JobState to;
+		final List<Direction> offLinks;
+
+		PowerChange(Row row) {
+			changeId = row.getInteger("change_id");
+			cabinet = row.getInt("cabinet");
+			frame = row.getInt("frame");
+			boardId = row.getInteger("board_id");
+			boardNum = row.getInteger("board_num");
+			power = row.getBoolean("power");
+			from = row.getEnum("from_state", JobState.class);
+			to = row.getEnum("to_state", JobState.class);
+			offLinks = List.of(Direction.values()).stream().filter(
+					link -> !row.getBoolean(link.columnName)).collect(
+							Collectors.toList());
+		}
+	}
+
 	private void takeRequestsForJob(Machine machine, Integer jobId,
 			TakeReqsSQL sql, List<Request> requestCollector) {
 		var changeIds = new ArrayList<Integer>();
@@ -1139,28 +1168,25 @@ public class BMPController extends DatabaseAwareBean {
 				new DefaultMap<BMPCoords, Map<Integer, BMPBoard>>(HashMap::new);
 		busyJobs.add(jobId);
 
-		for (var row : sql.getPowerChangesToDo.call(jobId)) {
-			changeIds.add(row.getInteger("change_id"));
-			var bmp = new BMPCoords(row.getInt("cabinet"), row.getInt("frame"));
-			var board = row.getInteger("board_id");
-			idToBoard.get(bmp).put(board,
-					new BMPBoard(row.getInteger("board_num")));
-			boolean switchOn = row.getBoolean("power");
+		for (var req : sql.getPowerChangesToDo.call(PowerChange::new, jobId)) {
+			changeIds.add(req.changeId);
+			var bmp = new BMPCoords(req.cabinet, req.frame);
+			var board = req.boardId;
+			idToBoard.get(bmp).put(board, new BMPBoard(req.boardNum));
+			boolean switchOn = req.power;
 			/*
 			 * Set these multiple times; we don't care as they should be the
 			 * same for each board.
 			 */
-			from = row.getEnum("from_state", JobState.class);
-			to = row.getEnum("to_state", JobState.class);
+			from = req.from;
+			to = req.to;
 			if (switchOn) {
 				boardsOn.get(bmp).add(board);
 				/*
 				 * Decode a collection of boolean columns to say which links to
 				 * switch back off
 				 */
-				List.of(Direction.values()).stream()
-						.filter(link -> !row.getBoolean(link.columnName))
-						.forEach(link -> linksOff.get(bmp)
+				req.offLinks.stream().forEach(link -> linksOff.get(bmp)
 								.add(new Link(board, link)));
 			} else {
 				boardsOff.get(bmp).add(board);
@@ -1338,7 +1364,7 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		Optional<Integer> getUser(String userName) {
-			return getUser.call1(userName).map(integer("user_id"));
+			return getUser.call1(integer("user_id"), userName);
 		}
 	}
 

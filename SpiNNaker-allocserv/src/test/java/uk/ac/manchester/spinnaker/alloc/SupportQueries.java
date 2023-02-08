@@ -87,13 +87,13 @@ public interface SupportQueries {
 	@Parameter("user_id")
 	@ResultColumn("quota")
 	String TEST_GET_QUOTA =
-			"SELECT quota FROM quotas WHERE machine_id = ? AND user_id = ?";
+			"SELECT quota FROM quotas WHERE user_id = ?";
 
 	/** Set the quota for a group. */
 	@Parameter("quota")
 	@Parameter("group")
 	String TEST_SET_QUOTA =
-			"UPDATE groups SET quota = :quota WHERE group_id = :group";
+			"UPDATE user_groups SET quota = :quota WHERE group_id = :group";
 
 	/** Create a machine, specifying the ID. */
 	@Parameter("machine_id")
@@ -103,8 +103,8 @@ public interface SupportQueries {
 	@Parameter("depth")
 	@GeneratesID
 	String INSERT_MACHINE =
-			"INSERT OR IGNORE INTO machines(machine_id, machine_name, "
-					+ "width, height, [depth], board_model) "
+			"INSERT INTO machines(machine_id, machine_name, "
+					+ "width, height, depth, board_model) "
 					+ "VALUES (?, ?, ?, ?, ?, 5)";
 
 	/** Create a BMP, specifying the ID. */
@@ -115,7 +115,7 @@ public interface SupportQueries {
 	@Parameter("frame")
 	@GeneratesID
 	String INSERT_BMP_WITH_ID =
-			"INSERT OR IGNORE INTO bmp(bmp_id, machine_id, address, "
+			"INSERT INTO bmp(bmp_id, machine_id, address, "
 					+ "cabinet, frame) VALUES (?, ?, ?, ?, ?)";
 
 	/** Create a user, specifying the ID. */
@@ -124,7 +124,7 @@ public interface SupportQueries {
 	@Parameter("trust_level")
 	@Parameter("disabled")
 	@GeneratesID
-	String INSERT_USER = "INSERT OR IGNORE INTO user_info(user_id, user_name, "
+	String INSERT_USER = "INSERT INTO user_info(user_id, user_name, "
 			+ "trust_level, disabled, encrypted_password) "
 			+ "VALUES (?, ?, ?, ?, '*')";
 
@@ -133,8 +133,8 @@ public interface SupportQueries {
 	@Parameter("group_name")
 	@Parameter("quota")
 	@GeneratesID
-	String INSERT_GROUP = "INSERT OR IGNORE INTO "
-			+ "groups(group_id, group_name, quota, group_type) "
+	String INSERT_GROUP = "INSERT INTO "
+			+ "user_groups(group_id, group_name, quota, group_type) "
 			+ "VALUES (?, ?, ?, 0)";
 
 	/** Create a user/group association, specifying the ID. */
@@ -142,7 +142,7 @@ public interface SupportQueries {
 	@Parameter("user_id")
 	@Parameter("group_id")
 	@GeneratesID
-	String INSERT_MEMBER = "INSERT OR IGNORE INTO group_memberships("
+	String INSERT_MEMBER = "INSERT group_memberships("
 			+ "membership_id, user_id, group_id) VALUES (?, ?, ?)";
 
 	/** Create a board, specifying the ID. */
@@ -159,7 +159,7 @@ public interface SupportQueries {
 	@Parameter("board_power")
 	@GeneratesID
 	String INSERT_BOARD_WITH_ID =
-			"INSERT OR IGNORE INTO boards(board_id, address, "
+			"INSERT INTO boards(board_id, address, "
 					+ "bmp_id, board_num, machine_id, x, y, z, "
 					+ "root_x, root_y, board_power) "
 					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";

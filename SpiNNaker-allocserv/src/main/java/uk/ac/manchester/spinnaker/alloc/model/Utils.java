@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.model;
 
-import java.util.function.Function;
-
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
@@ -39,18 +37,5 @@ public abstract class Utils {
 	 */
 	public static ChipLocation chip(Row row, String x, String y) {
 		return new ChipLocation(row.getInt(x), row.getInt(y));
-	}
-
-	/**
-	 * Create a function for extracting a chip from a result set row.
-	 *
-	 * @param x
-	 *            The <em>name</em> of the column with the X coordinate.
-	 * @param y
-	 *            The <em>name</em> of the column with the Y coordinate.
-	 * @return The mapping function.
-	 */
-	public static Function<Row, ChipLocation> chip(String x, String y) {
-		return row -> new ChipLocation(row.getInt(x), row.getInt(y));
 	}
 }

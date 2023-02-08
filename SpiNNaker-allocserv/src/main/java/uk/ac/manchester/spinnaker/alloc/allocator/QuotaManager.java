@@ -79,17 +79,17 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 
 		private boolean mayCreateJob(int groupId) {
-			return getQuota.call1(groupId).map(result -> {
+			return getQuota.call1(result -> {
 				var quota = result.getInteger("quota");
 				if (isNull(quota)) {
 					return true;
 				}
 				// Quota is defined; check if current usage exceeds it
-				int usage = getCurrentUsage.call1(groupId)
-						.map(integer("current_usage")).orElse(0);
+				int usage = getCurrentUsage.call1(
+						integer("current_usage"), groupId).orElse(0);
 				// If board-seconds are left, we're good to go
 				return (quota > usage);
-			}).orElse(true);
+			}, groupId).orElse(true);
 		}
 	}
 
@@ -130,9 +130,11 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 
 		private boolean mayLetJobContinue(int jobId) {
-			return getUsageAndQuota.call1(jobId)
+			return getUsageAndQuota.call1(
 					// If we have an entry, check if usage <= quota
-					.map(row -> row.getInt("quota_used") <= row.getInt("quota"))
+					row -> row.getInt("quota_used") <= row.getInt("quota"),
+					jobId)
+
 					// Otherwise, we'll just allow it
 					.orElse(true);
 		}
@@ -150,8 +152,7 @@ public class QuotaManager extends DatabaseAwareBean {
 	 */
 	public Optional<AdjustedQuota> addQuota(int groupId, int delta) {
 		try (var sql = new AdjustQuotaSQL()) {
-			return sql.transaction(() -> sql.adjustQuota(groupId, delta)
-					.map(AdjustedQuota::new));
+			return sql.transaction(() -> sql.adjustQuota(groupId, delta));
 		}
 	}
 
@@ -193,11 +194,11 @@ public class QuotaManager extends DatabaseAwareBean {
 			super.close();
 		}
 
-		private Optional<Row> adjustQuota(int groupId, int delta) {
+		private Optional<AdjustedQuota> adjustQuota(int groupId, int delta) {
 			if (adjustQuota.call(delta, groupId) == 0) {
 				return Optional.empty();
 			}
-			return getQuota.call1(groupId);
+			return getQuota.call1(AdjustedQuota::new, groupId);
 		}
 	}
 
@@ -250,12 +251,23 @@ public class QuotaManager extends DatabaseAwareBean {
 
 		// Result is arbitrary and ignored
 		private Void consolidate() {
-			for (var row : getConsoldationTargets.call()) {
-				decrementQuota.call(row.getObject("quota_used"),
-						row.getInt("group_id"));
-				markConsolidated.call(row.getInt("job_id"));
+			for (var target : getConsoldationTargets.call(Target::new)) {
+				decrementQuota.call(target.quotaUsed, target.groupId);
+				markConsolidated.call(target.jobId);
 			}
 			return null;
+		}
+
+		private class Target {
+			Object quotaUsed;
+			int groupId;
+			int jobId;
+
+			Target(Row row) {
+				quotaUsed = row.getObject("quota_used");
+				groupId = row.getInt("group_id");
+				jobId = row.getInt("job_id");
+			}
 		}
 	}
 

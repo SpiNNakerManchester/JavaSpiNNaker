@@ -25,14 +25,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.TestSupport;
@@ -47,16 +45,7 @@ import uk.ac.manchester.spinnaker.utils.OneShotEvent;
 @SpringBootTest
 @SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
-@TestPropertySource(properties = {
-	"spalloc.database-path=" + BlacklistCommsTest.DB,
-	"spalloc.historical-data.path=" + BlacklistCommsTest.HIST_DB
-})
 class BlacklistCommsTest extends TestSupport {
-	/** The DB file. */
-	static final String DB = "target/blcomms_test.sqlite3";
-
-	/** The DB file. */
-	static final String HIST_DB = "target/blcomms_test_hist.sqlite3";
 
 	/** Timeouts on individual tests, in seconds. */
 	private static final int TEST_TIMEOUT = 15;
@@ -78,16 +67,12 @@ class BlacklistCommsTest extends TestSupport {
 
 	private ExecutorService exec;
 
-	@BeforeAll
-	static void clearDB() throws IOException {
-		killDB(DB);
-	}
-
 	@BeforeEach
 	@SuppressWarnings("deprecation")
 	void checkSetup(@Autowired BMPController bmpCtrl,
-			@Autowired TransceiverFactory txrxFactory) {
+			@Autowired TransceiverFactory txrxFactory) throws IOException {
 		assumeTrue(db != null, "spring-configured DB engine absent");
+		killDB();
 		setupDB1();
 		// Get the test stuff set up
 		this.bmpCtrl = bmpCtrl.getTestAPI();

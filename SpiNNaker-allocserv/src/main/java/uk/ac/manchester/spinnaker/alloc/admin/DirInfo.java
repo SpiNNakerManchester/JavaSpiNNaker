@@ -114,11 +114,10 @@ public final class DirInfo extends SQLQueries {
 		if (MAP.isEmpty()) {
 			conn.transaction(false, () -> {
 				try (var di = conn.query(LOAD_DIR_INFO)) {
-					di.call()
-							.forEach(row -> new DirInfo(row.getInt("z"),
-									row.getEnum("direction", Direction.class),
-									row.getInt("dx"), row.getInt("dy"),
-									row.getInt("dz")));
+					di.call(row -> new DirInfo(row.getInt("z"),
+							row.getEnum("direction", Direction.class),
+							row.getInt("dx"), row.getInt("dy"),
+							row.getInt("dz")));
 				}
 			});
 			log.debug("created {} DirInfo instances",

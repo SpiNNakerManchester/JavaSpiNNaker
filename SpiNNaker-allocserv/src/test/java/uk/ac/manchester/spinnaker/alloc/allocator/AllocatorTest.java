@@ -23,12 +23,12 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.POWER;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 
 import java.io.IOException;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,35 +48,24 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 @SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
 @TestPropertySource(properties = {
-	"spalloc.database-path=" + AllocatorTest.DB,
-	"spalloc.historical-data.path=" + AllocatorTest.HIST_DB,
 	// These tests sometimes hold transactions for a long time; this is OK
 	"spalloc.sqlite.lock-note-threshold=2200ms",
 	"spalloc.sqlite.lock-warn-threshold=3s"
 })
 class AllocatorTest extends TestSupport {
-	/** The name of the database file. */
-	static final String DB = "target/alloc_test.sqlite3";
-
-	/** The name of the database file. */
-	static final String HIST_DB = "target/alloc_test-hist.sqlite3";
 
 	@Autowired
 	private AllocatorTask alloc;
 
 	private BMPController.TestAPI bmpCtrl;
 
-	@BeforeAll
-	static void clearDB() throws IOException {
-		killDB(DB);
-	}
-
 	@BeforeEach
 	@SuppressWarnings("deprecation")
 	void checkSetup(@Autowired TransceiverFactory txrxFactory,
-			@Autowired BMPController bmpCtrl) {
+			@Autowired BMPController bmpCtrl) throws IOException {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		MockTransceiver.installIntoFactory(txrxFactory);
+		killDB();
 		setupDB3();
 		this.bmpCtrl = bmpCtrl.getTestAPI();
 		this.bmpCtrl.clearBmpException();
@@ -129,7 +118,7 @@ class AllocatorTest extends TestSupport {
 		// Table names CANNOT be parameters; they're not values
 		return conn.query(format(
 				"SELECT COUNT(*) AS c FROM %s WHERE job_id = :job", table))
-				.call1(job).orElseThrow().getInt("c");
+				.call1(integer("c"), job).orElseThrow();
 	}
 
 	// The actual tests

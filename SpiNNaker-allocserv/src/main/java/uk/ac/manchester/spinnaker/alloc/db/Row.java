@@ -16,15 +16,28 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
+import static uk.ac.manchester.spinnaker.alloc.IOUtils.deserialize;
+import static uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.TypeMismatchDataAccessException;
 
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.RowMapper;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -34,7 +47,66 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * @author Donal Fellows
  */
 @UsedInJavadocOnly(DataAccessException.class)
-public interface Row {
+public final class Row {
+	private final ResultSet rs;
+
+	private Set<String> columns;
+
+	Row(ResultSet rs) {
+		this.rs = rs;
+	}
+
+	static Set<String> columnNames(ResultSetMetaData md) throws SQLException {
+		var names = new LinkedHashSet<String>();
+		for (int i = 1; i <= md.getColumnCount(); i++) {
+			names.add(md.getColumnName(i));
+		}
+		return names;
+	}
+
+	private String getSQL() {
+		try {
+			return rs.getStatement().toString();
+		} catch (SQLException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Produce a value or throw. Only used in {@link Row}.
+	 *
+	 * @param <T>
+	 *            The type of value to produce.
+	 */
+	private interface Getter<T> {
+		/**
+		 * Produce a value or throw.
+		 *
+		 * @return The value produced.
+		 * @throws SQLException
+		 *             If things fail.
+		 */
+		T get() throws SQLException;
+	}
+
+	/**
+	 * Handles exception mapping if an exception is thrown.
+	 *
+	 * @param <T>
+	 *            The type of the result.
+	 * @param getter
+	 *            How to get the result. May throw.
+	 * @return The result.
+	 * @throws DataAccessException
+	 *             If the interior code throws an {@link SQLException}.
+	 */
+	private <T> T get(Getter<T> getter) {
+		try {
+			return getter.get();
+		} catch (SQLException e) {
+			throw mapException(e, getSQL());
+		}
+	}
 
 	/**
 	 * Get the column names from this row.
@@ -46,7 +118,15 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column names can't be retrieved.
 	 */
-	public Set<String> getColumnNames();
+	public Set<String> getColumnNames() {
+		if (columns != null) {
+			return columns;
+		}
+		return get(() -> {
+			columns = columnNames(rs.getMetaData());
+			return columns;
+		});
+	}
 
 	/**
 	 * Get the contents of the named column.
@@ -57,7 +137,9 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column's contents can't be retrieved.
 	 */
-	public String getString(String columnLabel);
+	public String getString(String columnLabel) {
+		return get(() -> rs.getString(columnLabel));
+	}
 
 	/**
 	 * Get a function to get the contents of the named column.
@@ -66,7 +148,7 @@ public interface Row {
 	 *            The name of the column.
 	 * @return A function to get the string from the column of a row.
 	 */
-	public static Function<Row, String> string(String columnLabel) {
+	public static RowMapper<String> string(String columnLabel) {
 		return r -> r.getString(columnLabel);
 	}
 
@@ -79,7 +161,9 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column's contents can't be retrieved.
 	 */
-	public boolean getBoolean(String columnLabel);
+	public boolean getBoolean(String columnLabel) {
+		return get(() -> rs.getBoolean(columnLabel));
+	}
 
 	/**
 	 * Get a function to get the contents of the named column.
@@ -88,7 +172,7 @@ public interface Row {
 	 *            The name of the column.
 	 * @return A function to get the {@code boolean} from the column of a row.
 	 */
-	public static Function<Row, Boolean> bool(String columnLabel) {
+	public static RowMapper<Boolean> bool(String columnLabel) {
 		return r -> r.getBoolean(columnLabel);
 	}
 
@@ -101,7 +185,9 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column's contents can't be retrieved.
 	 */
-	public int getInt(String columnLabel);
+	public int getInt(String columnLabel) {
+		return get(() -> rs.getInt(columnLabel));
+	}
 
 	/**
 	 * Get a function to get the contents of the named column.
@@ -123,7 +209,18 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column's contents can't be retrieved.
 	 */
-	public Integer getInteger(String columnLabel);
+	public Integer getInteger(String columnLabel) {
+		return get(() -> {
+			var obj = rs.getObject(columnLabel);
+			if (obj instanceof Long) {
+				return ((Long) obj).intValue();
+			}
+			if (obj instanceof BigDecimal) {
+				return ((BigDecimal) obj).intValue();
+			}
+			return (Integer) obj;
+		});
+	}
 
 	/**
 	 * Get a function to get the contents of the named column.
@@ -132,7 +229,7 @@ public interface Row {
 	 *            The name of the column.
 	 * @return A function to get the nullable integer from the column of a row.
 	 */
-	public static Function<Row, Integer> integer(String columnLabel) {
+	public static RowMapper<Integer> integer(String columnLabel) {
 		return r -> r.getInteger(columnLabel);
 	}
 
@@ -145,7 +242,9 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column's contents can't be retrieved.
 	 */
-	public byte[] getBytes(String columnLabel);
+	public byte[] getBytes(String columnLabel) {
+		return get(() -> rs.getBytes(columnLabel));
+	}
 
 	/**
 	 * Get a function to get the contents of the named column.
@@ -154,7 +253,7 @@ public interface Row {
 	 *            The name of the column.
 	 * @return A function to get the byte array from the column of a row.
 	 */
-	public static Function<Row, byte[]> bytes(String columnLabel) {
+	public static RowMapper<byte[]> bytes(String columnLabel) {
 		return r -> r.getBytes(columnLabel);
 	}
 
@@ -173,7 +272,18 @@ public interface Row {
 	 * @throws TypeMismatchDataAccessException
 	 *             If the object is not of the required type.
 	 */
-	public <T> T getSerial(String columnLabel, Class<T> cls);
+	public <T> T getSerial(String columnLabel, Class<T> cls) {
+		var bytes = getBytes(columnLabel);
+		if (bytes == null) {
+			return null;
+		}
+		try {
+			return deserialize(bytes, cls);
+		} catch (IOException | ClassNotFoundException | ClassCastException e) {
+			throw new TypeMismatchDataAccessException(
+					"bad data in column " + columnLabel, e);
+		}
+	}
 
 	/**
 	 * Get a function to get the contents of the named column.
@@ -187,7 +297,7 @@ public interface Row {
 	 * @return A function to get the deserialized object from the column of a
 	 *         row.
 	 */
-	public static <T> Function<Row, T> serial(String columnLabel,
+	public static <T> RowMapper<T> serial(String columnLabel,
 			Class<T> cls) {
 		return r -> r.getSerial(columnLabel, cls);
 	}
@@ -201,7 +311,15 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column's contents can't be retrieved.
 	 */
-	public Instant getInstant(String columnLabel);
+	public Instant getInstant(String columnLabel) {
+		return get(() -> {
+			long moment = rs.getLong(columnLabel);
+			if (rs.wasNull()) {
+				return null;
+			}
+			return Instant.ofEpochSecond(moment);
+		});
+	}
 
 	/**
 	 * Get a function to get the contents of the named column.
@@ -210,7 +328,7 @@ public interface Row {
 	 *            The name of the column.
 	 * @return A function to get the instant from the column of a row.
 	 */
-	public static Function<Row, Instant> instant(String columnLabel) {
+	public static RowMapper<Instant> instant(String columnLabel) {
 		return r -> r.getInstant(columnLabel);
 	}
 
@@ -223,7 +341,15 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column's contents can't be retrieved.
 	 */
-	public Duration getDuration(String columnLabel);
+	public Duration getDuration(String columnLabel) {
+		return get(() -> {
+			long span = rs.getLong(columnLabel);
+			if (rs.wasNull()) {
+				return null;
+			}
+			return Duration.ofSeconds(span);
+		});
+	}
 
 	/**
 	 * Get a function to get the contents of the named column.
@@ -232,7 +358,7 @@ public interface Row {
 	 *            The name of the column.
 	 * @return A function to get the duration from the column of a row.
 	 */
-	public static Function<Row, Duration> duration(String columnLabel) {
+	public static RowMapper<Duration> duration(String columnLabel) {
 		return r -> r.getDuration(columnLabel);
 	}
 
@@ -248,7 +374,9 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column's contents can't be retrieved.
 	 */
-	public Object getObject(String columnLabel);
+	public Object getObject(String columnLabel) {
+		return get(() -> rs.getObject(columnLabel));
+	}
 
 	/**
 	 * Get a function to get the contents of the named column.
@@ -257,7 +385,7 @@ public interface Row {
 	 *            The name of the column.
 	 * @return A function to get the object from the column of a row.
 	 */
-	public static Function<Row, Object> object(String columnLabel) {
+	public static RowMapper<Object> object(String columnLabel) {
 		return r -> r.getObject(columnLabel);
 	}
 
@@ -274,7 +402,15 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column's contents can't be retrieved.
 	 */
-	public <T extends Enum<T>> T getEnum(String columnLabel, Class<T> type);
+	public <T extends Enum<T>> T getEnum(String columnLabel, Class<T> type) {
+		return get(() -> {
+			int value = rs.getInt(columnLabel);
+			if (rs.wasNull()) {
+				return null;
+			}
+			return type.getEnumConstants()[value];
+		});
+	}
 
 	/**
 	 * Get a function to get the contents of the named column.
@@ -287,7 +423,7 @@ public interface Row {
 	 *            The enumeration type class.
 	 * @return A function to get the {@code enum} from the column of a row.
 	 */
-	public static <T extends Enum<T>> Function<Row, T>
+	public static <T extends Enum<T>> RowMapper<T>
 			enumerate(String columnLabel, Class<T> type) {
 		return r -> r.getEnum(columnLabel, type);
 	}
@@ -301,7 +437,15 @@ public interface Row {
 	 * @throws DataAccessException
 	 *             If the column's contents can't be retrieved.
 	 */
-	public Long getLong(String columnLabel);
+	public Long getLong(String columnLabel) {
+		return get(() -> {
+			var value = (Number) rs.getObject(columnLabel);
+			if (rs.wasNull()) {
+				return null;
+			}
+			return value.longValue();
+		});
+	}
 
 	/**
 	 * Get a function to get the contents of the named column.
@@ -311,7 +455,95 @@ public interface Row {
 	 * @return A function to get the nullable {@code long} from the column of a
 	 *         row.
 	 */
-	public static Function<Row, Long> int64(String columnLabel) {
+	public static RowMapper<Long> int64(String columnLabel) {
 		return r -> r.getLong(columnLabel);
+	}
+
+	@Override
+	public String toString() {
+		var sb = new StringBuilder("Row(");
+		try {
+			var md = rs.getMetaData();
+			var sep = "";
+			for (int i = 1; i <= md.getColumnCount(); i++) {
+				var col = md.getColumnName(i);
+				var val = rs.getObject(i);
+				sb.append(sep).append(col).append(":").append(val);
+				sep = ", ";
+			}
+		} catch (Exception e) {
+			// Can't get the contents of the row after all
+			sb.append("...");
+		}
+		return sb.append(")").toString();
+	}
+
+	/**
+	 * Get a chip from a result set row.
+	 *
+	 * @param x
+	 *            The <em>name</em> of the column with the X coordinate.
+	 * @param y
+	 *            The <em>name</em> of the column with the Y coordinate.
+	 * @return The chip location.
+	 */
+	public ChipLocation getChip(String x, String y) {
+		return get(() -> new ChipLocation(rs.getInt(x), rs.getInt(y)));
+	}
+
+	/**
+	 * Create a function for extracting a chip from a result set row.
+	 *
+	 * @param x
+	 *            The <em>name</em> of the column with the X coordinate.
+	 * @param y
+	 *            The <em>name</em> of the column with the Y coordinate.
+	 * @return The mapping function.
+	 */
+	public static RowMapper<ChipLocation> chip(String x, String y) {
+		return row -> new ChipLocation(row.getInt(x), row.getInt(y));
+	}
+
+	/**
+	 * Get a core from a result set row.
+	 *
+	 * @param x
+	 *            The <em>name</em> of the column with the X coordinate.
+	 * @param y
+	 *            The <em>name</em> of the column with the Y coordinate.
+	 * @param p
+	 *            The <em>name</em> of the column with the core ID.
+	 * @return The core location.
+	 */
+	public CoreLocation getCore(String x, String y, String p) {
+		return get(() -> new CoreLocation(rs.getInt(x), rs.getInt(y),
+				rs.getInt(p)));
+	}
+
+	/**
+	 * Create a function for extracting a core from a result set row.
+	 *
+	 * @param x
+	 *            The <em>name</em> of the column with the X coordinate.
+	 * @param y
+	 *            The <em>name</em> of the column with the Y coordinate.
+	 * @param p
+	 *            The <em>name</em> of the column with the core ID.
+	 * @return The mapping function.
+	 */
+	public static RowMapper<CoreLocation> core(String x, String y, String p) {
+		return row -> new CoreLocation(row.getInt(x), row.getInt(y),
+				row.getInt(p));
+	}
+
+	/**
+	 * Make a mappable iterator out of a list.
+	 *
+	 * @param <T> The type of the list.
+	 * @param lst The list to convert.
+	 * @return A mappable iterator.
+	 */
+	public static <T> MappableIterable<T> stream(List<T> lst) {
+		return () -> lst.iterator();
 	}
 }

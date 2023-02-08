@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -39,7 +38,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.TestSupport;
@@ -62,30 +60,17 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 @SpringBootTest
 @SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
-@TestPropertySource(properties = {
-	"spalloc.database-path=" + SpallocCoreTest.DB,
-	"spalloc.historical-data.path=" + SpallocCoreTest.HIST_DB
-})
 class SpallocCoreTest extends TestSupport {
-	/** The name of the database file. */
-	static final String DB = "target/spalloc_test.sqlite3";
-
-	/** The name of the database file. */
-	static final String HIST_DB = "target/spalloc_test-hist.sqlite3";
 
 	private static final String BAD_USER = "user_foo";
 
 	@Autowired
 	private SpallocAPI spalloc;
 
-	@BeforeAll
-	static void clearDB() throws IOException {
-		killDB(DB);
-	}
-
 	@BeforeEach
-	void checkSetup() {
+	void checkSetup() throws IOException {
 		assumeTrue(db != null, "spring-configured DB engine absent");
+		killDB();
 		setupDB1();
 	}
 

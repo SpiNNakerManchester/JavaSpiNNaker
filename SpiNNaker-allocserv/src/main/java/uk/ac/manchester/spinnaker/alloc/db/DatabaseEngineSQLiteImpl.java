@@ -52,6 +52,7 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.collectToArray;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_MSEC;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_USEC;
 
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -63,7 +64,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
@@ -74,7 +74,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -103,7 +102,6 @@ import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
-import org.springframework.stereotype.Service;
 import org.sqlite.Function;
 import org.sqlite.SQLiteCommitListener;
 import org.sqlite.SQLiteConfig;
@@ -384,14 +382,6 @@ public final class DatabaseEngineSQLiteImpl
 				trimSQL(sql, TRIM_PERF_LOG_LENGTH), sb);
 	}
 
-	static Set<String> columnNames(ResultSetMetaData md) throws SQLException {
-		var names = new LinkedHashSet<String>();
-		for (int i = 1; i <= md.getColumnCount(); i++) {
-			names.add(md.getColumnName(i));
-		}
-		return names;
-	}
-
 	@PostConstruct
 	private void ensureDBsetup() {
 		threadFactory.setTerminationCallback(this::optimiseDB);
@@ -400,7 +390,7 @@ public final class DatabaseEngineSQLiteImpl
 		try (var conn = getConnection();
 				var countMovements = conn.query(COUNT_MOVEMENTS)) {
 			int numMovements = conn.transaction(false,
-					() -> countMovements.call1().map(integer("c"))).orElse(-1);
+					() -> countMovements.call1(integer("c"))).orElse(-1);
 			if (numMovements != EXPECTED_NUM_MOVEMENTS) {
 				log.warn("database {} seems incomplete ({} != {})",
 						dbConnectionUrl, numMovements, EXPECTED_NUM_MOVEMENTS);
@@ -457,7 +447,7 @@ public final class DatabaseEngineSQLiteImpl
 	 *            Used to initialise fields normally set by injection. Must not
 	 *            be {@code null}.
 	 */
-	private DatabaseEngineSQLiteImpl(DatabaseEngineSQLiteImpl prototype) {
+	public DatabaseEngineSQLiteImpl(DatabaseEngineSQLiteImpl prototype) {
 		dbPath = null;
 		tombstoneFile = ":memory:";
 		dbConnectionUrl = "jdbc:sqlite::memory:";
@@ -471,11 +461,6 @@ public final class DatabaseEngineSQLiteImpl
 		executor = prototype.executor;
 		setupConfig();
 		warnOnLongTransactions = true;
-	}
-
-	@Override
-	public DatabaseEngineSQLiteImpl getInMemoryDB() {
-		return new DatabaseEngineSQLiteImpl(this);
 	}
 
 	/**
@@ -1433,24 +1418,6 @@ public final class DatabaseEngineSQLiteImpl
 		}
 
 		@Override
-		public final int getNumArguments() {
-			try {
-				return s.getParameterMetaData().getParameterCount();
-			} catch (SQLException e) {
-				throw mapException(e, s.toString());
-			}
-		}
-
-		@Override
-		public final Set<String> getRowColumnNames() {
-			try {
-				return columnNames(s.getMetaData());
-			} catch (SQLException e) {
-				throw mapException(e, s.toString());
-			}
-		}
-
-		@Override
 		public final void close() {
 			closeResults();
 			try {
@@ -1502,7 +1469,7 @@ public final class DatabaseEngineSQLiteImpl
 		private final boolean lockType;
 
 		@Override
-		public MappableIterable<Row> call(Object... arguments) {
+		public <T> List<T> call(RowMapper<T> mapper, Object... arguments) {
 			conn.checkInTransaction(lockType);
 			closeResults();
 			try {
@@ -1512,53 +1479,18 @@ public final class DatabaseEngineSQLiteImpl
 				rs = s.executeQuery();
 				long post = nanoTime();
 				statementLength(s, pre, post);
+				List<T> results = new ArrayList<T>();
+				while (rs.next()) {
+					results.add(mapper.mapRow(new Row(rs)));
+				}
+				return results;
 			} catch (SQLException e) {
 				throw mapException(e, s.toString());
 			}
-			return () -> new Iterator<Row>() {
-				private boolean finished = false;
-				private boolean consumed = true;
-				// Share this row wrapper; underlying row changes
-				private final Row row = new RowResultSetImpl(rs);
-
-				@Override
-				public boolean hasNext() {
-					if (finished) {
-						return false;
-					}
-					if (!consumed) {
-						return true;
-					}
-					conn.checkInTransaction(lockType);
-					boolean result = false;
-					try {
-						result = rs.next();
-					} catch (SQLException e) {
-						throw mapException(e, s.toString());
-					} finally {
-						if (result) {
-							consumed = false;
-						} else {
-							finished = true;
-							closeResults();
-						}
-					}
-					return result;
-				}
-
-				@Override
-				public Row next() {
-					if (finished) {
-						throw new NoSuchElementException();
-					}
-					consumed = true;
-					return row;
-				}
-			};
 		}
 
 		@Override
-		public Optional<Row> call1(Object... arguments) {
+		public <T> Optional<T> call1(RowMapper<T> mapper, Object... arguments) {
 			conn.checkInTransaction(lockType);
 			try {
 				log.debug("opening result set in {}", getDebugContext());
@@ -1569,7 +1501,7 @@ public final class DatabaseEngineSQLiteImpl
 				long post = nanoTime();
 				statementLength(s, pre, post);
 				if (rs.next()) {
-					return Optional.of(new RowResultSetImpl(rs));
+					return Optional.of(mapper.mapRow(new Row(rs)));
 				} else {
 					return Optional.empty();
 				}
@@ -1598,75 +1530,6 @@ public final class DatabaseEngineSQLiteImpl
 			} catch (SQLException e) {
 				throw mapException(e, s.toString());
 			}
-		}
-
-		@Override
-		public MappableIterable<Integer> keys(Object... arguments) {
-			conn.checkInTransaction(true);
-			/*
-			 * In theory, the statement should have been prepared with the
-			 * GET_GENERATED_KEYS flag set. In practice, the SQLite driver
-			 * ignores that flag.
-			 */
-			closeResults();
-			int numRows;
-			long pre, post;
-			try {
-				setParams(arguments);
-				log.debug("opening result set in {}", getDebugContext());
-				pre = nanoTime();
-				numRows = s.executeUpdate();
-				post = nanoTime();
-				rs = s.getGeneratedKeys();
-				statementLength(s, pre, post);
-			} catch (SQLException e) {
-				throw mapException(e, s.toString());
-			}
-			return () -> new Iterator<Integer>() {
-				private boolean finished = false;
-				private int rowCount = 0;
-				private boolean consumed = true;
-				private Integer key = null;
-
-				@Override
-				public boolean hasNext() {
-					if (finished || rowCount + 1 > numRows) {
-						return false;
-					}
-					if (!consumed) {
-						return true;
-					}
-					conn.checkInTransaction(true);
-					boolean result = false;
-					try {
-						result = rs.next();
-						rowCount++;
-						if (result) {
-							key = (Integer) rs.getObject(1);
-						}
-					} catch (SQLException e) {
-						result = false;
-					} finally {
-						if (!result) {
-							finished = true;
-							closeResults();
-						}
-					}
-					if (result) {
-						consumed = false;
-					}
-					return result;
-				}
-
-				@Override
-				public Integer next() {
-					if (finished) {
-						throw new NoSuchElementException();
-					}
-					consumed = true;
-					return key;
-				}
-			};
 		}
 
 		@Override

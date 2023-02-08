@@ -490,8 +490,9 @@ public abstract class SQLQueries {
 	@Parameter("death_reason")
 	@Parameter("job_id")
 	protected static final String DESTROY_JOB =
-			"UPDATE jobs SET job_state = 4, death_reason = :death_reason "
+			"UPDATE jobs SET job_state = 4, death_reason = :death_reason, "
 					// 4 = DESTROYED
+	                + "death_timestamp = :timestamp "
 					+ "WHERE job_id = :job_id AND job_state != 4";
 
 	/**
@@ -502,7 +503,7 @@ public abstract class SQLQueries {
 	@ResultColumn("total_on")
 	@SingleRowResult
 	protected static final String GET_SUM_BOARDS_POWERED =
-			"SELECT sum(board_power) AS total_on FROM boards "
+			"SELECT COALESCE(sum(board_power), 0) AS total_on FROM boards "
 					+ "WHERE allocated_job = :job_id";
 
 	/** Get connection info for board allocated to a job. */
@@ -1077,8 +1078,8 @@ public abstract class SQLQueries {
 	@ResultColumn("current_usage")
 	@SingleRowResult
 	protected static final String GET_CURRENT_USAGE =
-			"SELECT SUM(quota_used) AS current_usage FROM jobs_usage "
-					+ "WHERE group_id = :group_id";
+			"SELECT COALESCE(SUM(quota_used), 0) AS current_usage"
+			+ " FROM jobs_usage WHERE group_id = :group_id";
 
 	/**
 	 * Get usage of a job and the quota against which that applies.
@@ -1138,7 +1139,7 @@ public abstract class SQLQueries {
 	@ResultColumn("group_name")
 	@ResultColumn("quota")
 	protected static final String ADJUST_QUOTA =
-			"UPDATE user_groups SET quota = max(0, quota + :delta) "
+			"UPDATE user_groups SET quota = GREATEST(0, quota + :delta) "
 					+ "WHERE group_id = :group_id AND quota IS NOT NULL";
 
 	/**
@@ -1847,11 +1848,11 @@ public abstract class SQLQueries {
 	@Parameter("x")
 	@Parameter("y")
 	protected static final String ADD_BLACKLISTED_CHIP =
-			"WITH args(board_id, x, y) AS (SELECT :board_id, :x, :y),"
+			"INSERT INTO blacklisted_chips(board_id, coord_id, notes) "
+			        + "WITH args(board_id, x, y) AS (SELECT :board_id, :x, :y),"
 					+ "m(model) AS (SELECT board_model FROM machines "
 					+ "JOIN boards USING (machine_id) "
 					+ "JOIN args USING (board_id)) "
-					+ "INSERT INTO blacklisted_chips(board_id, coord_id, notes)"
 					+ "SELECT args.board_id, coord_id, NULL "
 					+ "FROM board_model_coords JOIN m USING (model) JOIN args "
 					+ "WHERE chip_x = args.x AND chip_y = args.y";
@@ -1868,12 +1869,13 @@ public abstract class SQLQueries {
 	@Parameter("y")
 	@Parameter("p")
 	protected static final String ADD_BLACKLISTED_CORE =
-			"WITH args(board_id, x, y, p) AS (SELECT :board_id, :x, :y, :p),"
+			"INSERT INTO blacklisted_cores("
+					+ "board_id, coord_id, physical_core, notes) "
+			        + "WITH args(board_id, x, y, p) AS "
+					+ "(SELECT :board_id, :x, :y, :p), "
 					+ "m(model) AS (SELECT board_model FROM machines "
 					+ "JOIN boards USING (machine_id) "
 					+ "JOIN args USING (board_id)) "
-					+ "INSERT INTO blacklisted_cores("
-					+ "board_id, coord_id, physical_core, notes)"
 					+ "SELECT args.board_id, coord_id, p, NULL "
 					+ "FROM board_model_coords JOIN m USING (model) JOIN args "
 					+ "WHERE chip_x = args.x AND chip_y = args.y";
@@ -1890,13 +1892,13 @@ public abstract class SQLQueries {
 	@Parameter("y")
 	@Parameter("direction")
 	protected static final String ADD_BLACKLISTED_LINK =
-			"WITH args(board_id, x, y, dir) AS ("
-					+ "SELECT :board_id, :x, :y, :direction),"
+			"INSERT INTO blacklisted_links("
+					+ "board_id, coord_id, direction, notes) "
+			        + "WITH args(board_id, x, y, dir) AS ("
+					+ "SELECT :board_id, :x, :y, :direction), "
 					+ "m(model) AS (SELECT board_model FROM machines "
 					+ "JOIN boards USING (machine_id) "
 					+ "JOIN args USING (board_id)) "
-					+ "INSERT INTO blacklisted_links("
-					+ "board_id, coord_id, direction, notes)"
 					+ "SELECT args.board_id, coord_id, dir, NULL "
 					+ "FROM board_model_coords JOIN m USING (model) JOIN args "
 					+ "WHERE chip_x = args.x AND chip_y = args.y";
