@@ -641,6 +641,8 @@ limitations under the License.
 							<exclude>**/.classpath</exclude>
 							<exclude>**/.project</exclude>
 							<exclude>**/package-list</exclude>
+							<exclude>**/*.aplx</exclude>
+							<exclude>**/*.dict</exclude>
 						</excludes>
 						<consoleOutput>true</consoleOutput>
 						<parseSCMIgnoresAsExcludes>true</parseSCMIgnoresAsExcludes>
