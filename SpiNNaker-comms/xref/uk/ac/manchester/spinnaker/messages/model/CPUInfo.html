@@ -9,333 +9,332 @@
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <em class="jxr_comment">/*</em>
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   <em class="jxr_comment"> * Copyright (c) 2018 The University of Manchester</em>
 <a class="jxr_linenumber" name="L3" href="#L3">3</a>   <em class="jxr_comment"> *</em>
-<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_comment"> * This program is free software: you can redistribute it and/or modify</em>
-<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment"> * it under the terms of the GNU General Public License as published by</em>
-<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment"> * the Free Software Foundation, either version 3 of the License, or</em>
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * (at your option) any later version.</em>
-<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> *</em>
-<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * This program is distributed in the hope that it will be useful,</em>
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_comment"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
-<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_comment"> * GNU General Public License for more details.</em>
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_comment"> *</em>
-<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_comment"> * You should have received a copy of the GNU General Public License</em>
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> * along with this program.  If not, see &lt;<a href="http://www.gnu.org/licenses/&gt;." target="alexandria_uri">http://www.gnu.org/licenses/&gt;.</a></em>
-<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment"> */</em>
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">package</strong> uk.ac.manchester.spinnaker.messages.model;
-<a class="jxr_linenumber" name="L18" href="#L18">18</a>  
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.lang.Byte.toUnsignedInt;
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.lang.String.format;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.nio.charset.StandardCharsets.US_ASCII;
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.CPUState.RUN_TIME_EXCEPTION;
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r0;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r1;
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r2;
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r3;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r4;
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r5;
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r6;
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r7;
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> java.nio.ByteBuffer;
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.CoreLocation;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment">/** Represents information about the state of a CPU. */</em>
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  @SARKStruct(<span class="jxr_string">"vcpu"</span>)
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="CPUInfo" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/CPUInfo.html#CPUInfo">CPUInfo</a> <strong class="jxr_keyword">implements</strong> HasCoreLocation {
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> CoreLocation core;
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  	@SARKField(<span class="jxr_string">"r"</span>)
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[] registers;
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  	@SARKField(<span class="jxr_string">"psr"</span>)
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> processorStateRegister;
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  	@SARKField(<span class="jxr_string">"sp"</span>)
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> stackPointer;
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  	@SARKField(<span class="jxr_string">"lr"</span>)
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> linkRegister;
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  	@SARKField(<span class="jxr_string">"rt_code"</span>)
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="RunTimeError" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/RunTimeError.html#RunTimeError">RunTimeError</a> runTimeError;
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>  
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  	@SARKField(<span class="jxr_string">"phys_cpu"</span>)
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> byte physicalCPUID;
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>  	@SARKField(<span class="jxr_string">"cpu_state"</span>)
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="CPUState" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/CPUState.html#CPUState">CPUState</a> state;
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  	@SARKField(<span class="jxr_string">"app_id"</span>)
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> applicationID;
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  	@SARKField(<span class="jxr_string">"mbox_ap_msg"</span>)
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> applicationMailboxDataAddress;
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>  
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  	@SARKField(<span class="jxr_string">"mbox_mp_msg"</span>)
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> monitorMailboxDataAddress;
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>  
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>  	@SARKField(<span class="jxr_string">"mbox_ap_cmd"</span>)
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="MailboxCommand" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/MailboxCommand.html#MailboxCommand">MailboxCommand</a> applicationMailboxCommand;
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>  
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>  	@SARKField(<span class="jxr_string">"mbox_mp_cmd"</span>)
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="MailboxCommand" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/MailboxCommand.html#MailboxCommand">MailboxCommand</a> monitorMailboxCommand;
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>  
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>  	@SARKField(<span class="jxr_string">"sw_count"</span>)
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">short</strong> softwareErrorCount;
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>  
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>  	@SARKField(<span class="jxr_string">"sw_file"</span>)
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> softwareSourceFilenameAddress;
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>  
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>  	@SARKField(<span class="jxr_string">"sw_line"</span>)
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> softwareSourceLineNumber;
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>  
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>  	@SARKField(<span class="jxr_string">"time"</span>)
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> time;
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>  
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>  	@SARKField(<span class="jxr_string">"app_name"</span>)
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> String applicationName;
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>  
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>  	@SARKField(<span class="jxr_string">"iobuf"</span>)
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> iobufAddress;
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>  
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>  	@SARKField(<span class="jxr_string">"sw_ver"</span>)
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> softwareVersion;
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>  
-<a class="jxr_linenumber" name="L100" href="#L100">100</a> 	@SARKField(<span class="jxr_string">"user0...user3"</span>)
-<a class="jxr_linenumber" name="L101" href="#L101">101</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[] user;
-<a class="jxr_linenumber" name="L102" href="#L102">102</a> 
-<a class="jxr_linenumber" name="L103" href="#L103">103</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> NUM_REGISTERS = 8;
-<a class="jxr_linenumber" name="L104" href="#L104">104</a> 
-<a class="jxr_linenumber" name="L105" href="#L105">105</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> APP_NAME_WIDTH = 16;
-<a class="jxr_linenumber" name="L106" href="#L106">106</a> 
-<a class="jxr_linenumber" name="L107" href="#L107">107</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> SKIP_BYTES = 16;
-<a class="jxr_linenumber" name="L108" href="#L108">108</a> 
-<a class="jxr_linenumber" name="L109" href="#L109">109</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> NUM_USER_VALUES = 4;
-<a class="jxr_linenumber" name="L110" href="#L110">110</a> 
-<a class="jxr_linenumber" name="L111" href="#L111">111</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong>[] getInts(ByteBuffer buffer, <strong class="jxr_keyword">int</strong> fieldLength) {
-<a class="jxr_linenumber" name="L112" href="#L112">112</a> 		<strong class="jxr_keyword">var</strong> data = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[fieldLength];
-<a class="jxr_linenumber" name="L113" href="#L113">113</a> 		buffer.asIntBuffer().get(data);
-<a class="jxr_linenumber" name="L114" href="#L114">114</a> 		buffer.position(buffer.position() + fieldLength * WORD_SIZE);
-<a class="jxr_linenumber" name="L115" href="#L115">115</a> 		<strong class="jxr_keyword">return</strong> data;
-<a class="jxr_linenumber" name="L116" href="#L116">116</a> 	}
-<a class="jxr_linenumber" name="L117" href="#L117">117</a> 
-<a class="jxr_linenumber" name="L118" href="#L118">118</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> String getStr(ByteBuffer buffer, <strong class="jxr_keyword">int</strong> fieldLength) {
-<a class="jxr_linenumber" name="L119" href="#L119">119</a> 		<strong class="jxr_keyword">var</strong> data = <strong class="jxr_keyword">new</strong> byte[fieldLength];
-<a class="jxr_linenumber" name="L120" href="#L120">120</a> 		buffer.get(data);
-<a class="jxr_linenumber" name="L121" href="#L121">121</a> 		<strong class="jxr_keyword">int</strong> len = 0;
-<a class="jxr_linenumber" name="L122" href="#L122">122</a> 		<em class="jxr_comment">// Trim from first trailing NUL</em>
-<a class="jxr_linenumber" name="L123" href="#L123">123</a> 		<strong class="jxr_keyword">for</strong> (byte b : data) {
-<a class="jxr_linenumber" name="L124" href="#L124">124</a> 			<strong class="jxr_keyword">if</strong> (b == 0) {
-<a class="jxr_linenumber" name="L125" href="#L125">125</a> 				<strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L126" href="#L126">126</a> 			}
-<a class="jxr_linenumber" name="L127" href="#L127">127</a> 			len++;
-<a class="jxr_linenumber" name="L128" href="#L128">128</a> 		}
-<a class="jxr_linenumber" name="L129" href="#L129">129</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> String(data, 0, len, US_ASCII);
-<a class="jxr_linenumber" name="L130" href="#L130">130</a> 	}
-<a class="jxr_linenumber" name="L131" href="#L131">131</a> 
-<a class="jxr_linenumber" name="L132" href="#L132">132</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L133" href="#L133">133</a> <em class="jxr_javadoccomment">	 * @param location</em>
-<a class="jxr_linenumber" name="L134" href="#L134">134</a> <em class="jxr_javadoccomment">	 *            Which core was queried for the information.</em>
-<a class="jxr_linenumber" name="L135" href="#L135">135</a> <em class="jxr_javadoccomment">	 * @param buffer</em>
-<a class="jxr_linenumber" name="L136" href="#L136">136</a> <em class="jxr_javadoccomment">	 *            The data received from SDRAM on the board, in a little-endian</em>
-<a class="jxr_linenumber" name="L137" href="#L137">137</a> <em class="jxr_javadoccomment">	 *            buffer.</em>
-<a class="jxr_linenumber" name="L138" href="#L138">138</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L139" href="#L139">139</a> 	<strong class="jxr_keyword">public</strong> <a name="CPUInfo" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/CPUInfo.html#CPUInfo">CPUInfo</a>(HasCoreLocation location, ByteBuffer buffer) {
-<a class="jxr_linenumber" name="L140" href="#L140">140</a> 		core = location.asCoreLocation();
-<a class="jxr_linenumber" name="L141" href="#L141">141</a> 		registers = getInts(buffer, NUM_REGISTERS);
-<a class="jxr_linenumber" name="L142" href="#L142">142</a> 		processorStateRegister = buffer.getInt();
-<a class="jxr_linenumber" name="L143" href="#L143">143</a> 		stackPointer = buffer.getInt();
-<a class="jxr_linenumber" name="L144" href="#L144">144</a> 		linkRegister = buffer.getInt();
-<a class="jxr_linenumber" name="L145" href="#L145">145</a> 		runTimeError = RunTimeError.get(toUnsignedInt(buffer.get()));
-<a class="jxr_linenumber" name="L146" href="#L146">146</a> 		physicalCPUID = buffer.get();
-<a class="jxr_linenumber" name="L147" href="#L147">147</a> 		state = CPUState.get(buffer.get());
-<a class="jxr_linenumber" name="L148" href="#L148">148</a> 		applicationID = toUnsignedInt(buffer.get());
-<a class="jxr_linenumber" name="L149" href="#L149">149</a> 		applicationMailboxDataAddress = buffer.getInt();
-<a class="jxr_linenumber" name="L150" href="#L150">150</a> 		monitorMailboxDataAddress = buffer.getInt();
-<a class="jxr_linenumber" name="L151" href="#L151">151</a> 		applicationMailboxCommand = MailboxCommand.get(buffer.get());
-<a class="jxr_linenumber" name="L152" href="#L152">152</a> 		monitorMailboxCommand = MailboxCommand.get(buffer.get());
-<a class="jxr_linenumber" name="L153" href="#L153">153</a> 		softwareErrorCount = buffer.getShort();
-<a class="jxr_linenumber" name="L154" href="#L154">154</a> 		softwareSourceFilenameAddress = buffer.getInt();
-<a class="jxr_linenumber" name="L155" href="#L155">155</a> 		softwareSourceLineNumber = buffer.getInt();
-<a class="jxr_linenumber" name="L156" href="#L156">156</a> 		time = buffer.getInt();
-<a class="jxr_linenumber" name="L157" href="#L157">157</a> 		applicationName = getStr(buffer, APP_NAME_WIDTH);
-<a class="jxr_linenumber" name="L158" href="#L158">158</a> 		iobufAddress = buffer.getInt();
-<a class="jxr_linenumber" name="L159" href="#L159">159</a> 		softwareVersion = buffer.getInt();
-<a class="jxr_linenumber" name="L160" href="#L160">160</a> 		buffer.position(buffer.position() + SKIP_BYTES);
-<a class="jxr_linenumber" name="L161" href="#L161">161</a> 		user = getInts(buffer, NUM_USER_VALUES);
-<a class="jxr_linenumber" name="L162" href="#L162">162</a> 	}
-<a class="jxr_linenumber" name="L163" href="#L163">163</a> 
-<a class="jxr_linenumber" name="L164" href="#L164">164</a> 	@Override
-<a class="jxr_linenumber" name="L165" href="#L165">165</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getX() {
-<a class="jxr_linenumber" name="L166" href="#L166">166</a> 		<strong class="jxr_keyword">return</strong> core.getX();
-<a class="jxr_linenumber" name="L167" href="#L167">167</a> 	}
-<a class="jxr_linenumber" name="L168" href="#L168">168</a> 
-<a class="jxr_linenumber" name="L169" href="#L169">169</a> 	@Override
-<a class="jxr_linenumber" name="L170" href="#L170">170</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getY() {
-<a class="jxr_linenumber" name="L171" href="#L171">171</a> 		<strong class="jxr_keyword">return</strong> core.getY();
-<a class="jxr_linenumber" name="L172" href="#L172">172</a> 	}
-<a class="jxr_linenumber" name="L173" href="#L173">173</a> 
-<a class="jxr_linenumber" name="L174" href="#L174">174</a> 	@Override
-<a class="jxr_linenumber" name="L175" href="#L175">175</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getP() {
-<a class="jxr_linenumber" name="L176" href="#L176">176</a> 		<strong class="jxr_keyword">return</strong> core.getP();
-<a class="jxr_linenumber" name="L177" href="#L177">177</a> 	}
-<a class="jxr_linenumber" name="L178" href="#L178">178</a> 
-<a class="jxr_linenumber" name="L179" href="#L179">179</a> 	<em class="jxr_javadoccomment">/** @return The current register values (r0&amp;hellip;r7). */</em>
-<a class="jxr_linenumber" name="L180" href="#L180">180</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong>[] getRegisters() {
-<a class="jxr_linenumber" name="L181" href="#L181">181</a> 		<strong class="jxr_keyword">return</strong> registers;
-<a class="jxr_linenumber" name="L182" href="#L182">182</a> 	}
-<a class="jxr_linenumber" name="L183" href="#L183">183</a> 
-<a class="jxr_linenumber" name="L184" href="#L184">184</a> 	<em class="jxr_javadoccomment">/** @return The value in the processor state register (PSR). */</em>
-<a class="jxr_linenumber" name="L185" href="#L185">185</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getProcessorStateRegister() {
-<a class="jxr_linenumber" name="L186" href="#L186">186</a> 		<strong class="jxr_keyword">return</strong> processorStateRegister;
-<a class="jxr_linenumber" name="L187" href="#L187">187</a> 	}
-<a class="jxr_linenumber" name="L188" href="#L188">188</a> 
-<a class="jxr_linenumber" name="L189" href="#L189">189</a> 	<em class="jxr_javadoccomment">/** @return The current stack pointer value (SP). */</em>
-<a class="jxr_linenumber" name="L190" href="#L190">190</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getStackPointer() {
-<a class="jxr_linenumber" name="L191" href="#L191">191</a> 		<strong class="jxr_keyword">return</strong> stackPointer;
-<a class="jxr_linenumber" name="L192" href="#L192">192</a> 	}
-<a class="jxr_linenumber" name="L193" href="#L193">193</a> 
-<a class="jxr_linenumber" name="L194" href="#L194">194</a> 	<em class="jxr_javadoccomment">/** @return The current link register value (LR). */</em>
-<a class="jxr_linenumber" name="L195" href="#L195">195</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getLinkRegister() {
-<a class="jxr_linenumber" name="L196" href="#L196">196</a> 		<strong class="jxr_keyword">return</strong> linkRegister;
-<a class="jxr_linenumber" name="L197" href="#L197">197</a> 	}
-<a class="jxr_linenumber" name="L198" href="#L198">198</a> 
-<a class="jxr_linenumber" name="L199" href="#L199">199</a> 	<em class="jxr_javadoccomment">/** @return The reason for a run time error. */</em>
-<a class="jxr_linenumber" name="L200" href="#L200">200</a> 	<strong class="jxr_keyword">public</strong> <a name="RunTimeError" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/RunTimeError.html#RunTimeError">RunTimeError</a> getRunTimeError() {
-<a class="jxr_linenumber" name="L201" href="#L201">201</a> 		<strong class="jxr_keyword">return</strong> runTimeError;
-<a class="jxr_linenumber" name="L202" href="#L202">202</a> 	}
-<a class="jxr_linenumber" name="L203" href="#L203">203</a> 
-<a class="jxr_linenumber" name="L204" href="#L204">204</a> 	<em class="jxr_javadoccomment">/** @return The physical ID of this processor. */</em>
-<a class="jxr_linenumber" name="L205" href="#L205">205</a> 	<strong class="jxr_keyword">public</strong> byte getPhysicalCPUID() {
-<a class="jxr_linenumber" name="L206" href="#L206">206</a> 		<strong class="jxr_keyword">return</strong> physicalCPUID;
-<a class="jxr_linenumber" name="L207" href="#L207">207</a> 	}
-<a class="jxr_linenumber" name="L208" href="#L208">208</a> 
-<a class="jxr_linenumber" name="L209" href="#L209">209</a> 	<em class="jxr_javadoccomment">/** @return The current state of the core. */</em>
-<a class="jxr_linenumber" name="L210" href="#L210">210</a> 	<strong class="jxr_keyword">public</strong> <a name="CPUState" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/CPUState.html#CPUState">CPUState</a> getState() {
-<a class="jxr_linenumber" name="L211" href="#L211">211</a> 		<strong class="jxr_keyword">return</strong> state;
-<a class="jxr_linenumber" name="L212" href="#L212">212</a> 	}
-<a class="jxr_linenumber" name="L213" href="#L213">213</a> 
-<a class="jxr_linenumber" name="L214" href="#L214">214</a> 	<em class="jxr_javadoccomment">/** @return The ID of the application running on the core. */</em>
-<a class="jxr_linenumber" name="L215" href="#L215">215</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getApplicationID() {
-<a class="jxr_linenumber" name="L216" href="#L216">216</a> 		<strong class="jxr_keyword">return</strong> applicationID;
-<a class="jxr_linenumber" name="L217" href="#L217">217</a> 	}
-<a class="jxr_linenumber" name="L218" href="#L218">218</a> 
-<a class="jxr_linenumber" name="L219" href="#L219">219</a> 	<em class="jxr_javadoccomment">/** @return The address of the data in SDRAM for the application mailbox. */</em>
-<a class="jxr_linenumber" name="L220" href="#L220">220</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getApplicationMailboxDataAddress() {
-<a class="jxr_linenumber" name="L221" href="#L221">221</a> 		<strong class="jxr_keyword">return</strong> applicationMailboxDataAddress;
-<a class="jxr_linenumber" name="L222" href="#L222">222</a> 	}
-<a class="jxr_linenumber" name="L223" href="#L223">223</a> 
-<a class="jxr_linenumber" name="L224" href="#L224">224</a> 	<em class="jxr_javadoccomment">/** @return The address of the data in SDRAM of the monitor mailbox. */</em>
-<a class="jxr_linenumber" name="L225" href="#L225">225</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getMonitorMailboxDataAddress() {
-<a class="jxr_linenumber" name="L226" href="#L226">226</a> 		<strong class="jxr_keyword">return</strong> monitorMailboxDataAddress;
-<a class="jxr_linenumber" name="L227" href="#L227">227</a> 	}
-<a class="jxr_linenumber" name="L228" href="#L228">228</a> 
-<a class="jxr_linenumber" name="L229" href="#L229">229</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L230" href="#L230">230</a> <em class="jxr_javadoccomment">	 * @return The command currently in the mailbox being sent from the monitor</em>
-<a class="jxr_linenumber" name="L231" href="#L231">231</a> <em class="jxr_javadoccomment">	 *         processor to the application.</em>
-<a class="jxr_linenumber" name="L232" href="#L232">232</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L233" href="#L233">233</a> 	<strong class="jxr_keyword">public</strong> <a name="MailboxCommand" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/MailboxCommand.html#MailboxCommand">MailboxCommand</a> getApplicationMailboxCommand() {
-<a class="jxr_linenumber" name="L234" href="#L234">234</a> 		<strong class="jxr_keyword">return</strong> applicationMailboxCommand;
-<a class="jxr_linenumber" name="L235" href="#L235">235</a> 	}
-<a class="jxr_linenumber" name="L236" href="#L236">236</a> 
-<a class="jxr_linenumber" name="L237" href="#L237">237</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_javadoccomment">	 * @return The command currently in the mailbox being sent from the</em>
-<a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">	 *         application to the monitor processor.</em>
-<a class="jxr_linenumber" name="L240" href="#L240">240</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L241" href="#L241">241</a> 	<strong class="jxr_keyword">public</strong> <a name="MailboxCommand" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/MailboxCommand.html#MailboxCommand">MailboxCommand</a> getMonitorMailboxCommand() {
-<a class="jxr_linenumber" name="L242" href="#L242">242</a> 		<strong class="jxr_keyword">return</strong> monitorMailboxCommand;
-<a class="jxr_linenumber" name="L243" href="#L243">243</a> 	}
-<a class="jxr_linenumber" name="L244" href="#L244">244</a> 
-<a class="jxr_linenumber" name="L245" href="#L245">245</a> 	<em class="jxr_javadoccomment">/** @return The number of software errors counted. */</em>
-<a class="jxr_linenumber" name="L246" href="#L246">246</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">short</strong> getSoftwareErrorCount() {
-<a class="jxr_linenumber" name="L247" href="#L247">247</a> 		<strong class="jxr_keyword">return</strong> softwareErrorCount;
-<a class="jxr_linenumber" name="L248" href="#L248">248</a> 	}
-<a class="jxr_linenumber" name="L249" href="#L249">249</a> 
-<a class="jxr_linenumber" name="L250" href="#L250">250</a> 	<em class="jxr_javadoccomment">/** @return The address of the filename of the software source. */</em>
-<a class="jxr_linenumber" name="L251" href="#L251">251</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getSoftwareSourceFilenameAddress() {
-<a class="jxr_linenumber" name="L252" href="#L252">252</a> 		<strong class="jxr_keyword">return</strong> softwareSourceFilenameAddress;
-<a class="jxr_linenumber" name="L253" href="#L253">253</a> 	}
-<a class="jxr_linenumber" name="L254" href="#L254">254</a> 
-<a class="jxr_linenumber" name="L255" href="#L255">255</a> 	<em class="jxr_javadoccomment">/** @return The line number of the software source. */</em>
-<a class="jxr_linenumber" name="L256" href="#L256">256</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getSoftwareSourceLineNumber() {
-<a class="jxr_linenumber" name="L257" href="#L257">257</a> 		<strong class="jxr_keyword">return</strong> softwareSourceLineNumber;
-<a class="jxr_linenumber" name="L258" href="#L258">258</a> 	}
-<a class="jxr_linenumber" name="L259" href="#L259">259</a> 
-<a class="jxr_linenumber" name="L260" href="#L260">260</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L261" href="#L261">261</a> <em class="jxr_javadoccomment">	 * @return The time at which the application started, in seconds since</em>
-<a class="jxr_linenumber" name="L262" href="#L262">262</a> <em class="jxr_javadoccomment">	 *         00:00:00 GMT on 1 January 1970.</em>
-<a class="jxr_linenumber" name="L263" href="#L263">263</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L264" href="#L264">264</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getTime() {
-<a class="jxr_linenumber" name="L265" href="#L265">265</a> 		<strong class="jxr_keyword">return</strong> time;
-<a class="jxr_linenumber" name="L266" href="#L266">266</a> 	}
-<a class="jxr_linenumber" name="L267" href="#L267">267</a> 
-<a class="jxr_linenumber" name="L268" href="#L268">268</a> 	<em class="jxr_javadoccomment">/** @return The name of the application running on the core. */</em>
-<a class="jxr_linenumber" name="L269" href="#L269">269</a> 	<strong class="jxr_keyword">public</strong> String getApplicationName() {
-<a class="jxr_linenumber" name="L270" href="#L270">270</a> 		<strong class="jxr_keyword">return</strong> applicationName;
-<a class="jxr_linenumber" name="L271" href="#L271">271</a> 	}
-<a class="jxr_linenumber" name="L272" href="#L272">272</a> 
-<a class="jxr_linenumber" name="L273" href="#L273">273</a> 	<em class="jxr_javadoccomment">/** @return The address of the IOBUF buffer in SDRAM. */</em>
-<a class="jxr_linenumber" name="L274" href="#L274">274</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getIobufAddress() {
-<a class="jxr_linenumber" name="L275" href="#L275">275</a> 		<strong class="jxr_keyword">return</strong> iobufAddress;
-<a class="jxr_linenumber" name="L276" href="#L276">276</a> 	}
-<a class="jxr_linenumber" name="L277" href="#L277">277</a> 
-<a class="jxr_linenumber" name="L278" href="#L278">278</a> 	<em class="jxr_javadoccomment">/** @return The software version. */</em>
-<a class="jxr_linenumber" name="L279" href="#L279">279</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getSoftwareVersion() {
-<a class="jxr_linenumber" name="L280" href="#L280">280</a> 		<strong class="jxr_keyword">return</strong> softwareVersion;
-<a class="jxr_linenumber" name="L281" href="#L281">281</a> 	}
-<a class="jxr_linenumber" name="L282" href="#L282">282</a> 
-<a class="jxr_linenumber" name="L283" href="#L283">283</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L284" href="#L284">284</a> <em class="jxr_javadoccomment">	 * @return The current user values</em>
-<a class="jxr_linenumber" name="L285" href="#L285">285</a> <em class="jxr_javadoccomment">	 *         (user&lt;sub&gt;0&lt;/sub&gt;&amp;hellip;user&lt;sub&gt;3&lt;/sub&gt;).</em>
-<a class="jxr_linenumber" name="L286" href="#L286">286</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L287" href="#L287">287</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong>[] getUser() {
-<a class="jxr_linenumber" name="L288" href="#L288">288</a> 		<strong class="jxr_keyword">return</strong> user;
-<a class="jxr_linenumber" name="L289" href="#L289">289</a> 	}
-<a class="jxr_linenumber" name="L290" href="#L290">290</a> 
-<a class="jxr_linenumber" name="L291" href="#L291">291</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L292" href="#L292">292</a> <em class="jxr_javadoccomment">	 * @param index</em>
-<a class="jxr_linenumber" name="L293" href="#L293">293</a> <em class="jxr_javadoccomment">	 *            Which index in the user array to read. Must be in range 0 to 3</em>
-<a class="jxr_linenumber" name="L294" href="#L294">294</a> <em class="jxr_javadoccomment">	 *            (inclusive).</em>
-<a class="jxr_linenumber" name="L295" href="#L295">295</a> <em class="jxr_javadoccomment">	 * @return The current user value (user&lt;sub&gt;index&lt;/sub&gt;).</em>
-<a class="jxr_linenumber" name="L296" href="#L296">296</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L297" href="#L297">297</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getUser(<strong class="jxr_keyword">int</strong> index) {
-<a class="jxr_linenumber" name="L298" href="#L298">298</a> 		<strong class="jxr_keyword">return</strong> user[index];
-<a class="jxr_linenumber" name="L299" href="#L299">299</a> 	}
-<a class="jxr_linenumber" name="L300" href="#L300">300</a> 
-<a class="jxr_linenumber" name="L301" href="#L301">301</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L302" href="#L302">302</a> <em class="jxr_javadoccomment">	 * @return A string representation of this CPU info.</em>
-<a class="jxr_linenumber" name="L303" href="#L303">303</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L304" href="#L304">304</a> 	@Override
-<a class="jxr_linenumber" name="L305" href="#L305">305</a> 	<strong class="jxr_keyword">public</strong> String toString() {
-<a class="jxr_linenumber" name="L306" href="#L306">306</a> 		<strong class="jxr_keyword">return</strong> getStatusDescription();
-<a class="jxr_linenumber" name="L307" href="#L307">307</a> 	}
-<a class="jxr_linenumber" name="L308" href="#L308">308</a> 
-<a class="jxr_linenumber" name="L309" href="#L309">309</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L310" href="#L310">310</a> <em class="jxr_javadoccomment">	 * @return A description of the state.</em>
-<a class="jxr_linenumber" name="L311" href="#L311">311</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L312" href="#L312">312</a> 	<strong class="jxr_keyword">public</strong> String getStatusDescription() {
-<a class="jxr_linenumber" name="L313" href="#L313">313</a> 		<strong class="jxr_keyword">if</strong> (state != RUN_TIME_EXCEPTION) {
-<a class="jxr_linenumber" name="L314" href="#L314">314</a> 			<strong class="jxr_keyword">return</strong> format(<span class="jxr_string">"    %d:%d:%d in state %s"</span>, core.getX(), core.getY(),
-<a class="jxr_linenumber" name="L315" href="#L315">315</a> 					core.getP(), state);
-<a class="jxr_linenumber" name="L316" href="#L316">316</a> 		}
-<a class="jxr_linenumber" name="L317" href="#L317">317</a> 		<strong class="jxr_keyword">var</strong> sb = <strong class="jxr_keyword">new</strong> StringBuilder();
-<a class="jxr_linenumber" name="L318" href="#L318">318</a> 		sb.append(format(<span class="jxr_string">"    %d:%d:%d in state %s:%s\n"</span>, core.getX(),
-<a class="jxr_linenumber" name="L319" href="#L319">319</a> 				core.getY(), core.getP(), state, runTimeError));
-<a class="jxr_linenumber" name="L320" href="#L320">320</a> 		sb.append(format(<span class="jxr_string">"        r0=%08x, r1=%08x, r2=%08x, r3=%08x\n"</span>,
-<a class="jxr_linenumber" name="L321" href="#L321">321</a> 				r0.get(registers), r1.get(registers), r2.get(registers),
-<a class="jxr_linenumber" name="L322" href="#L322">322</a> 				r3.get(registers)));
-<a class="jxr_linenumber" name="L323" href="#L323">323</a> 		sb.append(format(<span class="jxr_string">"        r4=%08x, r5=%08x, r6=%08x, r7=%08x\n"</span>,
-<a class="jxr_linenumber" name="L324" href="#L324">324</a> 				r4.get(registers), r5.get(registers), r6.get(registers),
-<a class="jxr_linenumber" name="L325" href="#L325">325</a> 				r7.get(registers)));
-<a class="jxr_linenumber" name="L326" href="#L326">326</a> 		sb.append(format(<span class="jxr_string">"        PSR=%08x, SP=%08x, LR=%08x"</span>,
-<a class="jxr_linenumber" name="L327" href="#L327">327</a> 				processorStateRegister, stackPointer, linkRegister));
-<a class="jxr_linenumber" name="L328" href="#L328">328</a> 		<strong class="jxr_keyword">return</strong> sb.toString();
-<a class="jxr_linenumber" name="L329" href="#L329">329</a> 	}
-<a class="jxr_linenumber" name="L330" href="#L330">330</a> }
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_comment"> * Licensed under the Apache License, Version 2.0 (the "License");</em>
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment"> * you may not use this file except in compliance with the License.</em>
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment"> * You may obtain a copy of the License at</em>
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> *     <a href="http://www.apache.org/licenses/LICENSE-2.0" target="alexandria_uri">http://www.apache.org/licenses/LICENSE-2.0</a></em>
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * Unless required by applicable law or agreed to in writing, software</em>
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_comment"> * distributed under the License is distributed on an "AS IS" BASIS,</em>
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_comment"> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</em>
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_comment"> * See the License for the specific language governing permissions and</em>
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_comment"> * limitations under the License.</em>
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> */</em>
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">package</strong> uk.ac.manchester.spinnaker.messages.model;
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.lang.Byte.toUnsignedInt;
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.lang.String.format;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.nio.charset.StandardCharsets.US_ASCII;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.CPUState.RUN_TIME_EXCEPTION;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r0;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r1;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r2;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r3;
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r4;
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r5;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r6;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r7;
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> java.nio.ByteBuffer;
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.CoreLocation;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment">/** Represents information about the state of a CPU. */</em>
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  @SARKStruct(<span class="jxr_string">"vcpu"</span>)
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="CPUInfo" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/CPUInfo.html#CPUInfo">CPUInfo</a> <strong class="jxr_keyword">implements</strong> HasCoreLocation {
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> CoreLocation core;
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  	@SARKField(<span class="jxr_string">"r"</span>)
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[] registers;
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  	@SARKField(<span class="jxr_string">"psr"</span>)
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> processorStateRegister;
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  	@SARKField(<span class="jxr_string">"sp"</span>)
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> stackPointer;
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  	@SARKField(<span class="jxr_string">"lr"</span>)
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> linkRegister;
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  	@SARKField(<span class="jxr_string">"rt_code"</span>)
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="RunTimeError" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/RunTimeError.html#RunTimeError">RunTimeError</a> runTimeError;
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  	@SARKField(<span class="jxr_string">"phys_cpu"</span>)
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> byte physicalCPUID;
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  	@SARKField(<span class="jxr_string">"cpu_state"</span>)
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="CPUState" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/CPUState.html#CPUState">CPUState</a> state;
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  	@SARKField(<span class="jxr_string">"app_id"</span>)
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> applicationID;
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  	@SARKField(<span class="jxr_string">"mbox_ap_msg"</span>)
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> applicationMailboxDataAddress;
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  	@SARKField(<span class="jxr_string">"mbox_mp_msg"</span>)
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> monitorMailboxDataAddress;
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  	@SARKField(<span class="jxr_string">"mbox_ap_cmd"</span>)
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="MailboxCommand" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/MailboxCommand.html#MailboxCommand">MailboxCommand</a> applicationMailboxCommand;
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  	@SARKField(<span class="jxr_string">"mbox_mp_cmd"</span>)
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="MailboxCommand" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/MailboxCommand.html#MailboxCommand">MailboxCommand</a> monitorMailboxCommand;
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>  
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>  	@SARKField(<span class="jxr_string">"sw_count"</span>)
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">short</strong> softwareErrorCount;
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>  
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>  	@SARKField(<span class="jxr_string">"sw_file"</span>)
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> softwareSourceFilenameAddress;
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>  
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>  	@SARKField(<span class="jxr_string">"sw_line"</span>)
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> softwareSourceLineNumber;
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>  
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  	@SARKField(<span class="jxr_string">"time"</span>)
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> time;
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>  	@SARKField(<span class="jxr_string">"app_name"</span>)
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> String applicationName;
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>  
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>  	@SARKField(<span class="jxr_string">"iobuf"</span>)
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> iobufAddress;
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>  
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>  	@SARKField(<span class="jxr_string">"sw_ver"</span>)
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> softwareVersion;
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>  
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>  	@SARKField(<span class="jxr_string">"user0...user3"</span>)
+<a class="jxr_linenumber" name="L100" href="#L100">100</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[] user;
+<a class="jxr_linenumber" name="L101" href="#L101">101</a> 
+<a class="jxr_linenumber" name="L102" href="#L102">102</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> NUM_REGISTERS = 8;
+<a class="jxr_linenumber" name="L103" href="#L103">103</a> 
+<a class="jxr_linenumber" name="L104" href="#L104">104</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> APP_NAME_WIDTH = 16;
+<a class="jxr_linenumber" name="L105" href="#L105">105</a> 
+<a class="jxr_linenumber" name="L106" href="#L106">106</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> SKIP_BYTES = 16;
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> 
+<a class="jxr_linenumber" name="L108" href="#L108">108</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> NUM_USER_VALUES = 4;
+<a class="jxr_linenumber" name="L109" href="#L109">109</a> 
+<a class="jxr_linenumber" name="L110" href="#L110">110</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong>[] getInts(ByteBuffer buffer, <strong class="jxr_keyword">int</strong> fieldLength) {
+<a class="jxr_linenumber" name="L111" href="#L111">111</a> 		<strong class="jxr_keyword">var</strong> data = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[fieldLength];
+<a class="jxr_linenumber" name="L112" href="#L112">112</a> 		buffer.asIntBuffer().get(data);
+<a class="jxr_linenumber" name="L113" href="#L113">113</a> 		buffer.position(buffer.position() + fieldLength * WORD_SIZE);
+<a class="jxr_linenumber" name="L114" href="#L114">114</a> 		<strong class="jxr_keyword">return</strong> data;
+<a class="jxr_linenumber" name="L115" href="#L115">115</a> 	}
+<a class="jxr_linenumber" name="L116" href="#L116">116</a> 
+<a class="jxr_linenumber" name="L117" href="#L117">117</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> String getStr(ByteBuffer buffer, <strong class="jxr_keyword">int</strong> fieldLength) {
+<a class="jxr_linenumber" name="L118" href="#L118">118</a> 		<strong class="jxr_keyword">var</strong> data = <strong class="jxr_keyword">new</strong> byte[fieldLength];
+<a class="jxr_linenumber" name="L119" href="#L119">119</a> 		buffer.get(data);
+<a class="jxr_linenumber" name="L120" href="#L120">120</a> 		<strong class="jxr_keyword">int</strong> len = 0;
+<a class="jxr_linenumber" name="L121" href="#L121">121</a> 		<em class="jxr_comment">// Trim from first trailing NUL</em>
+<a class="jxr_linenumber" name="L122" href="#L122">122</a> 		<strong class="jxr_keyword">for</strong> (byte b : data) {
+<a class="jxr_linenumber" name="L123" href="#L123">123</a> 			<strong class="jxr_keyword">if</strong> (b == 0) {
+<a class="jxr_linenumber" name="L124" href="#L124">124</a> 				<strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L125" href="#L125">125</a> 			}
+<a class="jxr_linenumber" name="L126" href="#L126">126</a> 			len++;
+<a class="jxr_linenumber" name="L127" href="#L127">127</a> 		}
+<a class="jxr_linenumber" name="L128" href="#L128">128</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> String(data, 0, len, US_ASCII);
+<a class="jxr_linenumber" name="L129" href="#L129">129</a> 	}
+<a class="jxr_linenumber" name="L130" href="#L130">130</a> 
+<a class="jxr_linenumber" name="L131" href="#L131">131</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L132" href="#L132">132</a> <em class="jxr_javadoccomment">	 * @param location</em>
+<a class="jxr_linenumber" name="L133" href="#L133">133</a> <em class="jxr_javadoccomment">	 *            Which core was queried for the information.</em>
+<a class="jxr_linenumber" name="L134" href="#L134">134</a> <em class="jxr_javadoccomment">	 * @param buffer</em>
+<a class="jxr_linenumber" name="L135" href="#L135">135</a> <em class="jxr_javadoccomment">	 *            The data received from SDRAM on the board, in a little-endian</em>
+<a class="jxr_linenumber" name="L136" href="#L136">136</a> <em class="jxr_javadoccomment">	 *            buffer.</em>
+<a class="jxr_linenumber" name="L137" href="#L137">137</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L138" href="#L138">138</a> 	<strong class="jxr_keyword">public</strong> <a name="CPUInfo" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/CPUInfo.html#CPUInfo">CPUInfo</a>(HasCoreLocation location, ByteBuffer buffer) {
+<a class="jxr_linenumber" name="L139" href="#L139">139</a> 		core = location.asCoreLocation();
+<a class="jxr_linenumber" name="L140" href="#L140">140</a> 		registers = getInts(buffer, NUM_REGISTERS);
+<a class="jxr_linenumber" name="L141" href="#L141">141</a> 		processorStateRegister = buffer.getInt();
+<a class="jxr_linenumber" name="L142" href="#L142">142</a> 		stackPointer = buffer.getInt();
+<a class="jxr_linenumber" name="L143" href="#L143">143</a> 		linkRegister = buffer.getInt();
+<a class="jxr_linenumber" name="L144" href="#L144">144</a> 		runTimeError = RunTimeError.get(toUnsignedInt(buffer.get()));
+<a class="jxr_linenumber" name="L145" href="#L145">145</a> 		physicalCPUID = buffer.get();
+<a class="jxr_linenumber" name="L146" href="#L146">146</a> 		state = CPUState.get(buffer.get());
+<a class="jxr_linenumber" name="L147" href="#L147">147</a> 		applicationID = toUnsignedInt(buffer.get());
+<a class="jxr_linenumber" name="L148" href="#L148">148</a> 		applicationMailboxDataAddress = buffer.getInt();
+<a class="jxr_linenumber" name="L149" href="#L149">149</a> 		monitorMailboxDataAddress = buffer.getInt();
+<a class="jxr_linenumber" name="L150" href="#L150">150</a> 		applicationMailboxCommand = MailboxCommand.get(buffer.get());
+<a class="jxr_linenumber" name="L151" href="#L151">151</a> 		monitorMailboxCommand = MailboxCommand.get(buffer.get());
+<a class="jxr_linenumber" name="L152" href="#L152">152</a> 		softwareErrorCount = buffer.getShort();
+<a class="jxr_linenumber" name="L153" href="#L153">153</a> 		softwareSourceFilenameAddress = buffer.getInt();
+<a class="jxr_linenumber" name="L154" href="#L154">154</a> 		softwareSourceLineNumber = buffer.getInt();
+<a class="jxr_linenumber" name="L155" href="#L155">155</a> 		time = buffer.getInt();
+<a class="jxr_linenumber" name="L156" href="#L156">156</a> 		applicationName = getStr(buffer, APP_NAME_WIDTH);
+<a class="jxr_linenumber" name="L157" href="#L157">157</a> 		iobufAddress = buffer.getInt();
+<a class="jxr_linenumber" name="L158" href="#L158">158</a> 		softwareVersion = buffer.getInt();
+<a class="jxr_linenumber" name="L159" href="#L159">159</a> 		buffer.position(buffer.position() + SKIP_BYTES);
+<a class="jxr_linenumber" name="L160" href="#L160">160</a> 		user = getInts(buffer, NUM_USER_VALUES);
+<a class="jxr_linenumber" name="L161" href="#L161">161</a> 	}
+<a class="jxr_linenumber" name="L162" href="#L162">162</a> 
+<a class="jxr_linenumber" name="L163" href="#L163">163</a> 	@Override
+<a class="jxr_linenumber" name="L164" href="#L164">164</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getX() {
+<a class="jxr_linenumber" name="L165" href="#L165">165</a> 		<strong class="jxr_keyword">return</strong> core.getX();
+<a class="jxr_linenumber" name="L166" href="#L166">166</a> 	}
+<a class="jxr_linenumber" name="L167" href="#L167">167</a> 
+<a class="jxr_linenumber" name="L168" href="#L168">168</a> 	@Override
+<a class="jxr_linenumber" name="L169" href="#L169">169</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getY() {
+<a class="jxr_linenumber" name="L170" href="#L170">170</a> 		<strong class="jxr_keyword">return</strong> core.getY();
+<a class="jxr_linenumber" name="L171" href="#L171">171</a> 	}
+<a class="jxr_linenumber" name="L172" href="#L172">172</a> 
+<a class="jxr_linenumber" name="L173" href="#L173">173</a> 	@Override
+<a class="jxr_linenumber" name="L174" href="#L174">174</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getP() {
+<a class="jxr_linenumber" name="L175" href="#L175">175</a> 		<strong class="jxr_keyword">return</strong> core.getP();
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> 	}
+<a class="jxr_linenumber" name="L177" href="#L177">177</a> 
+<a class="jxr_linenumber" name="L178" href="#L178">178</a> 	<em class="jxr_javadoccomment">/** @return The current register values (r0&amp;hellip;r7). */</em>
+<a class="jxr_linenumber" name="L179" href="#L179">179</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong>[] getRegisters() {
+<a class="jxr_linenumber" name="L180" href="#L180">180</a> 		<strong class="jxr_keyword">return</strong> registers;
+<a class="jxr_linenumber" name="L181" href="#L181">181</a> 	}
+<a class="jxr_linenumber" name="L182" href="#L182">182</a> 
+<a class="jxr_linenumber" name="L183" href="#L183">183</a> 	<em class="jxr_javadoccomment">/** @return The value in the processor state register (PSR). */</em>
+<a class="jxr_linenumber" name="L184" href="#L184">184</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getProcessorStateRegister() {
+<a class="jxr_linenumber" name="L185" href="#L185">185</a> 		<strong class="jxr_keyword">return</strong> processorStateRegister;
+<a class="jxr_linenumber" name="L186" href="#L186">186</a> 	}
+<a class="jxr_linenumber" name="L187" href="#L187">187</a> 
+<a class="jxr_linenumber" name="L188" href="#L188">188</a> 	<em class="jxr_javadoccomment">/** @return The current stack pointer value (SP). */</em>
+<a class="jxr_linenumber" name="L189" href="#L189">189</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getStackPointer() {
+<a class="jxr_linenumber" name="L190" href="#L190">190</a> 		<strong class="jxr_keyword">return</strong> stackPointer;
+<a class="jxr_linenumber" name="L191" href="#L191">191</a> 	}
+<a class="jxr_linenumber" name="L192" href="#L192">192</a> 
+<a class="jxr_linenumber" name="L193" href="#L193">193</a> 	<em class="jxr_javadoccomment">/** @return The current link register value (LR). */</em>
+<a class="jxr_linenumber" name="L194" href="#L194">194</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getLinkRegister() {
+<a class="jxr_linenumber" name="L195" href="#L195">195</a> 		<strong class="jxr_keyword">return</strong> linkRegister;
+<a class="jxr_linenumber" name="L196" href="#L196">196</a> 	}
+<a class="jxr_linenumber" name="L197" href="#L197">197</a> 
+<a class="jxr_linenumber" name="L198" href="#L198">198</a> 	<em class="jxr_javadoccomment">/** @return The reason for a run time error. */</em>
+<a class="jxr_linenumber" name="L199" href="#L199">199</a> 	<strong class="jxr_keyword">public</strong> <a name="RunTimeError" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/RunTimeError.html#RunTimeError">RunTimeError</a> getRunTimeError() {
+<a class="jxr_linenumber" name="L200" href="#L200">200</a> 		<strong class="jxr_keyword">return</strong> runTimeError;
+<a class="jxr_linenumber" name="L201" href="#L201">201</a> 	}
+<a class="jxr_linenumber" name="L202" href="#L202">202</a> 
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> 	<em class="jxr_javadoccomment">/** @return The physical ID of this processor. */</em>
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> 	<strong class="jxr_keyword">public</strong> byte getPhysicalCPUID() {
+<a class="jxr_linenumber" name="L205" href="#L205">205</a> 		<strong class="jxr_keyword">return</strong> physicalCPUID;
+<a class="jxr_linenumber" name="L206" href="#L206">206</a> 	}
+<a class="jxr_linenumber" name="L207" href="#L207">207</a> 
+<a class="jxr_linenumber" name="L208" href="#L208">208</a> 	<em class="jxr_javadoccomment">/** @return The current state of the core. */</em>
+<a class="jxr_linenumber" name="L209" href="#L209">209</a> 	<strong class="jxr_keyword">public</strong> <a name="CPUState" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/CPUState.html#CPUState">CPUState</a> getState() {
+<a class="jxr_linenumber" name="L210" href="#L210">210</a> 		<strong class="jxr_keyword">return</strong> state;
+<a class="jxr_linenumber" name="L211" href="#L211">211</a> 	}
+<a class="jxr_linenumber" name="L212" href="#L212">212</a> 
+<a class="jxr_linenumber" name="L213" href="#L213">213</a> 	<em class="jxr_javadoccomment">/** @return The ID of the application running on the core. */</em>
+<a class="jxr_linenumber" name="L214" href="#L214">214</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getApplicationID() {
+<a class="jxr_linenumber" name="L215" href="#L215">215</a> 		<strong class="jxr_keyword">return</strong> applicationID;
+<a class="jxr_linenumber" name="L216" href="#L216">216</a> 	}
+<a class="jxr_linenumber" name="L217" href="#L217">217</a> 
+<a class="jxr_linenumber" name="L218" href="#L218">218</a> 	<em class="jxr_javadoccomment">/** @return The address of the data in SDRAM for the application mailbox. */</em>
+<a class="jxr_linenumber" name="L219" href="#L219">219</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getApplicationMailboxDataAddress() {
+<a class="jxr_linenumber" name="L220" href="#L220">220</a> 		<strong class="jxr_keyword">return</strong> applicationMailboxDataAddress;
+<a class="jxr_linenumber" name="L221" href="#L221">221</a> 	}
+<a class="jxr_linenumber" name="L222" href="#L222">222</a> 
+<a class="jxr_linenumber" name="L223" href="#L223">223</a> 	<em class="jxr_javadoccomment">/** @return The address of the data in SDRAM of the monitor mailbox. */</em>
+<a class="jxr_linenumber" name="L224" href="#L224">224</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getMonitorMailboxDataAddress() {
+<a class="jxr_linenumber" name="L225" href="#L225">225</a> 		<strong class="jxr_keyword">return</strong> monitorMailboxDataAddress;
+<a class="jxr_linenumber" name="L226" href="#L226">226</a> 	}
+<a class="jxr_linenumber" name="L227" href="#L227">227</a> 
+<a class="jxr_linenumber" name="L228" href="#L228">228</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L229" href="#L229">229</a> <em class="jxr_javadoccomment">	 * @return The command currently in the mailbox being sent from the monitor</em>
+<a class="jxr_linenumber" name="L230" href="#L230">230</a> <em class="jxr_javadoccomment">	 *         processor to the application.</em>
+<a class="jxr_linenumber" name="L231" href="#L231">231</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L232" href="#L232">232</a> 	<strong class="jxr_keyword">public</strong> <a name="MailboxCommand" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/MailboxCommand.html#MailboxCommand">MailboxCommand</a> getApplicationMailboxCommand() {
+<a class="jxr_linenumber" name="L233" href="#L233">233</a> 		<strong class="jxr_keyword">return</strong> applicationMailboxCommand;
+<a class="jxr_linenumber" name="L234" href="#L234">234</a> 	}
+<a class="jxr_linenumber" name="L235" href="#L235">235</a> 
+<a class="jxr_linenumber" name="L236" href="#L236">236</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L237" href="#L237">237</a> <em class="jxr_javadoccomment">	 * @return The command currently in the mailbox being sent from the</em>
+<a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_javadoccomment">	 *         application to the monitor processor.</em>
+<a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L240" href="#L240">240</a> 	<strong class="jxr_keyword">public</strong> <a name="MailboxCommand" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/MailboxCommand.html#MailboxCommand">MailboxCommand</a> getMonitorMailboxCommand() {
+<a class="jxr_linenumber" name="L241" href="#L241">241</a> 		<strong class="jxr_keyword">return</strong> monitorMailboxCommand;
+<a class="jxr_linenumber" name="L242" href="#L242">242</a> 	}
+<a class="jxr_linenumber" name="L243" href="#L243">243</a> 
+<a class="jxr_linenumber" name="L244" href="#L244">244</a> 	<em class="jxr_javadoccomment">/** @return The number of software errors counted. */</em>
+<a class="jxr_linenumber" name="L245" href="#L245">245</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">short</strong> getSoftwareErrorCount() {
+<a class="jxr_linenumber" name="L246" href="#L246">246</a> 		<strong class="jxr_keyword">return</strong> softwareErrorCount;
+<a class="jxr_linenumber" name="L247" href="#L247">247</a> 	}
+<a class="jxr_linenumber" name="L248" href="#L248">248</a> 
+<a class="jxr_linenumber" name="L249" href="#L249">249</a> 	<em class="jxr_javadoccomment">/** @return The address of the filename of the software source. */</em>
+<a class="jxr_linenumber" name="L250" href="#L250">250</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getSoftwareSourceFilenameAddress() {
+<a class="jxr_linenumber" name="L251" href="#L251">251</a> 		<strong class="jxr_keyword">return</strong> softwareSourceFilenameAddress;
+<a class="jxr_linenumber" name="L252" href="#L252">252</a> 	}
+<a class="jxr_linenumber" name="L253" href="#L253">253</a> 
+<a class="jxr_linenumber" name="L254" href="#L254">254</a> 	<em class="jxr_javadoccomment">/** @return The line number of the software source. */</em>
+<a class="jxr_linenumber" name="L255" href="#L255">255</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getSoftwareSourceLineNumber() {
+<a class="jxr_linenumber" name="L256" href="#L256">256</a> 		<strong class="jxr_keyword">return</strong> softwareSourceLineNumber;
+<a class="jxr_linenumber" name="L257" href="#L257">257</a> 	}
+<a class="jxr_linenumber" name="L258" href="#L258">258</a> 
+<a class="jxr_linenumber" name="L259" href="#L259">259</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L260" href="#L260">260</a> <em class="jxr_javadoccomment">	 * @return The time at which the application started, in seconds since</em>
+<a class="jxr_linenumber" name="L261" href="#L261">261</a> <em class="jxr_javadoccomment">	 *         00:00:00 GMT on 1 January 1970.</em>
+<a class="jxr_linenumber" name="L262" href="#L262">262</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L263" href="#L263">263</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getTime() {
+<a class="jxr_linenumber" name="L264" href="#L264">264</a> 		<strong class="jxr_keyword">return</strong> time;
+<a class="jxr_linenumber" name="L265" href="#L265">265</a> 	}
+<a class="jxr_linenumber" name="L266" href="#L266">266</a> 
+<a class="jxr_linenumber" name="L267" href="#L267">267</a> 	<em class="jxr_javadoccomment">/** @return The name of the application running on the core. */</em>
+<a class="jxr_linenumber" name="L268" href="#L268">268</a> 	<strong class="jxr_keyword">public</strong> String getApplicationName() {
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> 		<strong class="jxr_keyword">return</strong> applicationName;
+<a class="jxr_linenumber" name="L270" href="#L270">270</a> 	}
+<a class="jxr_linenumber" name="L271" href="#L271">271</a> 
+<a class="jxr_linenumber" name="L272" href="#L272">272</a> 	<em class="jxr_javadoccomment">/** @return The address of the IOBUF buffer in SDRAM. */</em>
+<a class="jxr_linenumber" name="L273" href="#L273">273</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getIobufAddress() {
+<a class="jxr_linenumber" name="L274" href="#L274">274</a> 		<strong class="jxr_keyword">return</strong> iobufAddress;
+<a class="jxr_linenumber" name="L275" href="#L275">275</a> 	}
+<a class="jxr_linenumber" name="L276" href="#L276">276</a> 
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> 	<em class="jxr_javadoccomment">/** @return The software version. */</em>
+<a class="jxr_linenumber" name="L278" href="#L278">278</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getSoftwareVersion() {
+<a class="jxr_linenumber" name="L279" href="#L279">279</a> 		<strong class="jxr_keyword">return</strong> softwareVersion;
+<a class="jxr_linenumber" name="L280" href="#L280">280</a> 	}
+<a class="jxr_linenumber" name="L281" href="#L281">281</a> 
+<a class="jxr_linenumber" name="L282" href="#L282">282</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L283" href="#L283">283</a> <em class="jxr_javadoccomment">	 * @return The current user values</em>
+<a class="jxr_linenumber" name="L284" href="#L284">284</a> <em class="jxr_javadoccomment">	 *         (user&lt;sub&gt;0&lt;/sub&gt;&amp;hellip;user&lt;sub&gt;3&lt;/sub&gt;).</em>
+<a class="jxr_linenumber" name="L285" href="#L285">285</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L286" href="#L286">286</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong>[] getUser() {
+<a class="jxr_linenumber" name="L287" href="#L287">287</a> 		<strong class="jxr_keyword">return</strong> user;
+<a class="jxr_linenumber" name="L288" href="#L288">288</a> 	}
+<a class="jxr_linenumber" name="L289" href="#L289">289</a> 
+<a class="jxr_linenumber" name="L290" href="#L290">290</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L291" href="#L291">291</a> <em class="jxr_javadoccomment">	 * @param index</em>
+<a class="jxr_linenumber" name="L292" href="#L292">292</a> <em class="jxr_javadoccomment">	 *            Which index in the user array to read. Must be in range 0 to 3</em>
+<a class="jxr_linenumber" name="L293" href="#L293">293</a> <em class="jxr_javadoccomment">	 *            (inclusive).</em>
+<a class="jxr_linenumber" name="L294" href="#L294">294</a> <em class="jxr_javadoccomment">	 * @return The current user value (user&lt;sub&gt;index&lt;/sub&gt;).</em>
+<a class="jxr_linenumber" name="L295" href="#L295">295</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L296" href="#L296">296</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getUser(<strong class="jxr_keyword">int</strong> index) {
+<a class="jxr_linenumber" name="L297" href="#L297">297</a> 		<strong class="jxr_keyword">return</strong> user[index];
+<a class="jxr_linenumber" name="L298" href="#L298">298</a> 	}
+<a class="jxr_linenumber" name="L299" href="#L299">299</a> 
+<a class="jxr_linenumber" name="L300" href="#L300">300</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L301" href="#L301">301</a> <em class="jxr_javadoccomment">	 * @return A string representation of this CPU info.</em>
+<a class="jxr_linenumber" name="L302" href="#L302">302</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L303" href="#L303">303</a> 	@Override
+<a class="jxr_linenumber" name="L304" href="#L304">304</a> 	<strong class="jxr_keyword">public</strong> String toString() {
+<a class="jxr_linenumber" name="L305" href="#L305">305</a> 		<strong class="jxr_keyword">return</strong> getStatusDescription();
+<a class="jxr_linenumber" name="L306" href="#L306">306</a> 	}
+<a class="jxr_linenumber" name="L307" href="#L307">307</a> 
+<a class="jxr_linenumber" name="L308" href="#L308">308</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L309" href="#L309">309</a> <em class="jxr_javadoccomment">	 * @return A description of the state.</em>
+<a class="jxr_linenumber" name="L310" href="#L310">310</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L311" href="#L311">311</a> 	<strong class="jxr_keyword">public</strong> String getStatusDescription() {
+<a class="jxr_linenumber" name="L312" href="#L312">312</a> 		<strong class="jxr_keyword">if</strong> (state != RUN_TIME_EXCEPTION) {
+<a class="jxr_linenumber" name="L313" href="#L313">313</a> 			<strong class="jxr_keyword">return</strong> format(<span class="jxr_string">"    %d:%d:%d in state %s"</span>, core.getX(), core.getY(),
+<a class="jxr_linenumber" name="L314" href="#L314">314</a> 					core.getP(), state);
+<a class="jxr_linenumber" name="L315" href="#L315">315</a> 		}
+<a class="jxr_linenumber" name="L316" href="#L316">316</a> 		<strong class="jxr_keyword">var</strong> sb = <strong class="jxr_keyword">new</strong> StringBuilder();
+<a class="jxr_linenumber" name="L317" href="#L317">317</a> 		sb.append(format(<span class="jxr_string">"    %d:%d:%d in state %s:%s\n"</span>, core.getX(),
+<a class="jxr_linenumber" name="L318" href="#L318">318</a> 				core.getY(), core.getP(), state, runTimeError));
+<a class="jxr_linenumber" name="L319" href="#L319">319</a> 		sb.append(format(<span class="jxr_string">"        r0=%08x, r1=%08x, r2=%08x, r3=%08x\n"</span>,
+<a class="jxr_linenumber" name="L320" href="#L320">320</a> 				r0.get(registers), r1.get(registers), r2.get(registers),
+<a class="jxr_linenumber" name="L321" href="#L321">321</a> 				r3.get(registers)));
+<a class="jxr_linenumber" name="L322" href="#L322">322</a> 		sb.append(format(<span class="jxr_string">"        r4=%08x, r5=%08x, r6=%08x, r7=%08x\n"</span>,
+<a class="jxr_linenumber" name="L323" href="#L323">323</a> 				r4.get(registers), r5.get(registers), r6.get(registers),
+<a class="jxr_linenumber" name="L324" href="#L324">324</a> 				r7.get(registers)));
+<a class="jxr_linenumber" name="L325" href="#L325">325</a> 		sb.append(format(<span class="jxr_string">"        PSR=%08x, SP=%08x, LR=%08x"</span>,
+<a class="jxr_linenumber" name="L326" href="#L326">326</a> 				processorStateRegister, stackPointer, linkRegister));
+<a class="jxr_linenumber" name="L327" href="#L327">327</a> 		<strong class="jxr_keyword">return</strong> sb.toString();
+<a class="jxr_linenumber" name="L328" href="#L328">328</a> 	}
+<a class="jxr_linenumber" name="L329" href="#L329">329</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2023 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>
