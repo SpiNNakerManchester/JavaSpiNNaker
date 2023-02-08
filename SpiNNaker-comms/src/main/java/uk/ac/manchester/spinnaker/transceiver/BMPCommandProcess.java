@@ -1,18 +1,17 @@
 /*
  * Copyright (c) 2018-2022 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
@@ -139,6 +138,35 @@ class BMPCommandProcess {
 
 	/**
 	 * Do a synchronous call of a BMP operation, sending the given message and
+	 * completely processing the interaction before returning the parsed payload
+	 * of the response.
+	 *
+	 * @param <T>
+	 *            The type of the parsed payload.
+	 * @param <R>
+	 *            The type of the response message containing the payload.
+	 * @param request
+	 *            The request to send.
+	 * @return The successful response to the request.
+	 * @throws IOException
+	 *             If the communications fail
+	 * @throws ProcessException
+	 *             If the other side responds with a failure code
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
+	 */
+	<T, R extends BMPRequest.PayloadedResponse<T>> T call(BMPRequest<R> request)
+			throws IOException, ProcessException, InterruptedException {
+		var holder = new ValueHolder<R>();
+		var pipeline = new RequestPipeline<R>(
+				connectionSelector.getNextConnection(request));
+		pipeline.sendRequest(request, holder::setValue);
+		pipeline.finish();
+		return holder.getValue().get();
+	}
+
+	/**
+	 * Do a synchronous call of a BMP operation, sending the given message and
 	 * completely processing the interaction before returning its response.
 	 *
 	 * @param <T>
@@ -158,10 +186,6 @@ class BMPCommandProcess {
 	<T extends BMPResponse> T execute(BMPRequest<T> request, int retries)
 			throws IOException, ProcessException, InterruptedException {
 		var holder = new ValueHolder<T>();
-		/*
-		 * If no pipeline built yet, build one on the connection selected for
-		 * it.
-		 */
 		var pipeline = new RequestPipeline<T>(
 				connectionSelector.getNextConnection(request));
 		pipeline.sendRequest(request, retries, holder::setValue);
@@ -194,6 +218,10 @@ class BMPCommandProcess {
 		var results = new ArrayList<T>();
 		var map = new HashMap<BMPConnection, RequestPipeline<T>>();
 		for (var request : requests) {
+			/*
+			 * If no pipeline built yet, build one on the connection selected
+			 * for it.
+			 */
 			var pipeline = map.computeIfAbsent(
 					connectionSelector.getNextConnection(request),
 					RequestPipeline::new);
@@ -230,6 +258,10 @@ class BMPCommandProcess {
 		var results = new ArrayList<T>();
 		var map = new HashMap<BMPConnection, RequestPipeline<T>>();
 		for (var request : requests) {
+			/*
+			 * If no pipeline built yet, build one on the connection selected
+			 * for it.
+			 */
 			var pipeline = map.computeIfAbsent(
 					connectionSelector.getNextConnection(request),
 					RequestPipeline::new);

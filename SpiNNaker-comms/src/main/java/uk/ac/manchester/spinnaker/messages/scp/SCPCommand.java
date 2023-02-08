@@ -1,18 +1,17 @@
 /*
  * Copyright (c) 2018 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
@@ -77,34 +76,72 @@ public enum SCPCommand implements CommandCode {
 	CMD_INFO(31),
 	/** Get BMP info structures. */
 	CMD_BMP_INFO(48),
-	/** */
+	/** Copy working buffer to flash memory. BMP-only operation. */
 	CMD_FLASH_COPY(49),
-	/** */
+	/** Erase part of flash memory. BMP-only operation. */
 	CMD_FLASH_ERASE(50),
-	/** */
+	/** Write to flash memory. BMP-only operation. */
 	CMD_FLASH_WRITE(51),
-	/** Serial flash access. */
+	/** Serial flash access. BMP-only operation. */
 	CMD_BMP_SF(53),
-	/** EEPROM access? */
+	/**
+	 * EEPROM access. BMP-only operation.
+	 *
+	 * @deprecated This message is under-documented. See {@code cmd_ee()} in
+	 *             {@code bmp_cmd.c} for what it does.
+	 */
 	@Deprecated
 	CMD_BMP_EE(54),
-	/** */
+	/** BMP-only operation. */
 	CMD_RESET(55),
 	/** FPGA control. BMP-only operation. */
 	CMD_XILINX(56),
 	/** Turns on or off the machine via BMP. */
 	CMD_BMP_POWER(57),
-	/** Access I2C bus. */
+	/**
+	 * Access I<sup>2</sup>C bus. BMP-only operation.
+	 *
+	 * @deprecated This message is under-documented. See {@code cmd_i2c()} in
+	 *             {@code bmp_cmd.c} for what it does.
+	 */
 	@Deprecated
 	CMD_BMP_I2C(61),
-	/** Configure pulse-width modulation hardware. */
+	/**
+	 * Configure pulse-width modulation hardware. BMP-only operation.
+	 *
+	 * @deprecated This message is under-documented. See {@code configure_pwm()}
+	 *             in {@code bmp_hw.c} for what it does.
+	 */
 	@Deprecated
 	CMD_BMP_PWM(62),
-	/** Test feature control. */
-	@Deprecated
+	/**
+	 * Test feature control. BMP-only operation.
+	 *
+	 * @deprecated Not implemented by current BMP.
+	 */
+	@Deprecated(forRemoval = true)
 	CMD_BMP_TEST(63),
-	/** Tube output. */
+	/**
+	 * Tube output. Special.
+	 *
+	 * @deprecated For tubotron use only.
+	 */
+	@Deprecated(forRemoval = true)
 	CMD_TUBE(64);
+
+	/**
+	 * Read FPGA's memory/registers. BMP-only operation.
+	 * <p>
+	 * Same as {@link #CMD_LINK_READ} but used differently.
+	 */
+	public static final SCPCommand CMD_FPGA_READ = CMD_LINK_READ;
+
+	/**
+	 * Write FPGA's memory/registers. BMP-only operation.
+	 * <p>
+	 * Same as {@link #CMD_LINK_WRITE} but used differently.
+	 */
+	public static final SCPCommand CMD_FPGA_WRITE = CMD_LINK_WRITE;
 
 	/** The SCAMP encoding. */
 	public final short value;

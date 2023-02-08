@@ -1,18 +1,17 @@
 /*
  * Copyright (c) 2018 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
@@ -26,11 +25,15 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 
 /**
- * An SCP request for the BMP to power on or power off a rack of boards.
+ * An SCP request for the BMP to power on or power off a rack of boards. There
+ * is no response payload.
  * <p>
- * <b>Note:</b> There is currently a bug in the BMP that means some boards don't
- * respond to power commands not sent to BMP 0. Because of this, this message
- * should <i>always</i> be sent to BMP 0!
+ * <strong>Note:</strong> There is currently a bug in the BMP that means some
+ * boards don't respond to power commands not sent to BMP 0. Because of this,
+ * this message should <em>always</em> be sent to BMP 0!
+ * <p>
+ * Handled by {@code cmd_power()} in {@code bmp_cmd.c}, which in turn calls
+ * {@code proc_power()} in the same file.
  */
 public class SetPower extends BMPRequest<BMPRequest.BMPResponse> {
 	private static final int DELAY_SHIFT = 16;
@@ -49,7 +52,7 @@ public class SetPower extends BMPRequest<BMPRequest.BMPResponse> {
 	public SetPower(PowerCommand powerCommand, Collection<BMPBoard> boards,
 			double delay) {
 		super(FRAME_ROOT, CMD_BMP_POWER, argument1(delay, powerCommand),
-				argument2(boards));
+				boardMask(boards));
 	}
 
 	private static int argument1(double delay, PowerCommand powerCommand) {
@@ -57,7 +60,7 @@ public class SetPower extends BMPRequest<BMPRequest.BMPResponse> {
 				| powerCommand.value;
 	}
 
-	private static int argument2(Collection<BMPBoard> boards) {
+	private static int boardMask(Collection<BMPBoard> boards) {
 		return boards.stream().mapToInt(board -> 1 << board.board).sum();
 	}
 

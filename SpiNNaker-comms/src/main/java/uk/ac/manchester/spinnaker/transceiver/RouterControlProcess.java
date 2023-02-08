@@ -1,18 +1,17 @@
 /*
  * Copyright (c) 2019 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
@@ -36,9 +35,9 @@ import uk.ac.manchester.spinnaker.messages.scp.ClearReinjectionQueue;
 import uk.ac.manchester.spinnaker.messages.scp.GetReinjectionStatus;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.messages.scp.ResetReinjectionCounters;
-import uk.ac.manchester.spinnaker.messages.scp.RouterTableLoadApplicationRoutes;
-import uk.ac.manchester.spinnaker.messages.scp.RouterTableLoadSystemRoutes;
-import uk.ac.manchester.spinnaker.messages.scp.RouterTableSaveApplicationRoutes;
+import uk.ac.manchester.spinnaker.messages.scp.LoadApplicationRoutes;
+import uk.ac.manchester.spinnaker.messages.scp.LoadSystemRoutes;
+import uk.ac.manchester.spinnaker.messages.scp.SaveApplicationRoutes;
 import uk.ac.manchester.spinnaker.messages.scp.SetReinjectionPacketTypes;
 import uk.ac.manchester.spinnaker.messages.scp.SetRouterEmergencyTimeout;
 import uk.ac.manchester.spinnaker.messages.scp.SetRouterTimeout;
@@ -81,7 +80,7 @@ class RouterControlProcess extends TxrxProcess {
 	 */
 	void clearQueue(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(new ClearReinjectionQueue(monitorCore));
+		call(new ClearReinjectionQueue(monitorCore));
 	}
 
 	/**
@@ -118,7 +117,7 @@ class RouterControlProcess extends TxrxProcess {
 	 */
 	void resetCounters(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(new ResetReinjectionCounters(monitorCore));
+		call(new ResetReinjectionCounters(monitorCore));
 	}
 
 	/**
@@ -164,7 +163,7 @@ class RouterControlProcess extends TxrxProcess {
 	void setPacketTypes(CoreLocation monitorCore, boolean multicast,
 			boolean pointToPoint, boolean fixedRoute, boolean nearestNeighbour)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(new SetReinjectionPacketTypes(monitorCore, multicast,
+		call(new SetReinjectionPacketTypes(monitorCore, multicast,
 				pointToPoint, fixedRoute, nearestNeighbour));
 	}
 
@@ -217,7 +216,7 @@ class RouterControlProcess extends TxrxProcess {
 	void setTimeout(CoreLocation monitorCore, int timeoutMantissa,
 			int timeoutExponent)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(new SetRouterTimeout(monitorCore, timeoutMantissa,
+		call(new SetRouterTimeout(monitorCore, timeoutMantissa,
 				timeoutExponent));
 	}
 
@@ -266,7 +265,7 @@ class RouterControlProcess extends TxrxProcess {
 	void setEmergencyTimeout(CoreLocation monitorCore, int timeoutMantissa,
 			int timeoutExponent)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(new SetRouterEmergencyTimeout(monitorCore,
+		call(new SetRouterEmergencyTimeout(monitorCore,
 				timeoutMantissa, timeoutExponent));
 	}
 
@@ -310,7 +309,7 @@ class RouterControlProcess extends TxrxProcess {
 	 */
 	void saveApplicationRouterTable(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(new RouterTableSaveApplicationRoutes(monitorCore));
+		call(new SaveApplicationRoutes(monitorCore));
 	}
 
 	/**
@@ -329,7 +328,7 @@ class RouterControlProcess extends TxrxProcess {
 	void saveApplicationRouterTable(CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException, InterruptedException {
 		for (var core : monitorCoreSubsets) {
-			sendRequest(new RouterTableSaveApplicationRoutes(core));
+			sendRequest(new SaveApplicationRoutes(core));
 		}
 		finishBatch();
 	}
@@ -349,7 +348,7 @@ class RouterControlProcess extends TxrxProcess {
 	 */
 	void loadSystemRouterTable(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(new RouterTableLoadSystemRoutes(monitorCore));
+		call(new LoadSystemRoutes(monitorCore));
 	}
 
 	/**
@@ -368,7 +367,7 @@ class RouterControlProcess extends TxrxProcess {
 	void loadSystemRouterTable(CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException, InterruptedException {
 		for (var core : monitorCoreSubsets) {
-			sendRequest(new RouterTableLoadSystemRoutes(core));
+			sendRequest(new LoadSystemRoutes(core));
 		}
 		finishBatch();
 	}
@@ -388,7 +387,7 @@ class RouterControlProcess extends TxrxProcess {
 	 */
 	void loadApplicationRouterTable(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
-		synchronousCall(new RouterTableLoadApplicationRoutes(monitorCore));
+		call(new LoadApplicationRoutes(monitorCore));
 	}
 
 	/**
@@ -407,7 +406,7 @@ class RouterControlProcess extends TxrxProcess {
 	void loadApplicationRouterTable(CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException, InterruptedException {
 		for (var core : monitorCoreSubsets) {
-			sendRequest(new RouterTableLoadApplicationRoutes(core));
+			sendRequest(new LoadApplicationRoutes(core));
 		}
 		finishBatch();
 	}
@@ -427,8 +426,7 @@ class RouterControlProcess extends TxrxProcess {
 	 */
 	ReinjectionStatus getReinjectionStatus(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
-		return synchronousCall(
-				new GetReinjectionStatus(monitorCore)).reinjectionStatus;
+		return retrieve(new GetReinjectionStatus(monitorCore));
 	}
 
 	/**
@@ -449,8 +447,7 @@ class RouterControlProcess extends TxrxProcess {
 			throws IOException, ProcessException, InterruptedException {
 		var status = new HashMap<CoreLocation, ReinjectionStatus>();
 		for (var core : monitorCoreSubsets) {
-			sendRequest(new GetReinjectionStatus(core),
-					response -> status.put(core, response.reinjectionStatus));
+			sendGet(new GetReinjectionStatus(core), s -> status.put(core, s));
 		}
 		finishBatch();
 		return unmodifiableMap(status);
@@ -475,16 +472,13 @@ class RouterControlProcess extends TxrxProcess {
 		var es = new ValueHolder<Integer>();
 		var reg = new int[NUM_REGISTERS];
 
-		sendRequest(
-				new ReadMemory(chip, ROUTER_CONTROL, REGISTER),
-				response -> cr.setValue(response.data.getInt()));
-		sendRequest(
-				new ReadMemory(chip, ROUTER_ERROR, REGISTER),
-				response -> es.setValue(response.data.getInt()));
-		sendRequest(
-				new ReadMemory(chip, ROUTER_DIAGNOSTICS,
-						NUM_REGISTERS * REGISTER),
-				response -> response.data.asIntBuffer().get(reg));
+		sendGet(new ReadMemory(chip, ROUTER_CONTROL, REGISTER),
+				bytes -> cr.setValue(bytes.getInt()));
+		sendGet(new ReadMemory(chip, ROUTER_ERROR, REGISTER),
+				bytes -> es.setValue(bytes.getInt()));
+		sendGet(new ReadMemory(chip, ROUTER_DIAGNOSTICS,
+				NUM_REGISTERS * REGISTER),
+				bytes -> bytes.asIntBuffer().get(reg));
 
 		finishBatch();
 		return new RouterDiagnostics(cr.getValue(), es.getValue(), reg);

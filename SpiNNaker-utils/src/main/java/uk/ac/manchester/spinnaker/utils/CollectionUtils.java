@@ -1,18 +1,17 @@
 /*
  * Copyright (c) 2022 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.utils;
 
@@ -28,7 +27,6 @@ import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Collectors.toUnmodifiableMap;
-import static java.util.stream.IntStream.range;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,6 +44,7 @@ import java.util.function.IntBinaryOperator;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -81,6 +80,32 @@ public abstract class CollectionUtils {
 	public static <E extends Enum<E>> Collector<E, ?, EnumSet<E>> toEnumSet(
 			Class<E> cls) {
 		return toCollection(() -> noneOf(cls));
+	}
+
+	/**
+	 * Generate an iterable that covers a range. Only expected to cover the
+	 * range once.
+	 *
+	 * @param startAt
+	 *            What value to start at.
+	 * @param upTo
+	 *            What value to go up to (in steps of +1) but not include.
+	 * @return A one-shot iterable.
+	 */
+	public static Iterable<Integer> range(int startAt, int upTo) {
+		return IntStream.range(startAt, upTo)::iterator;
+	}
+
+	/**
+	 * Generate an iterable that covers a range starting at zero and counting
+	 * up. Only expected to cover the range once.
+	 *
+	 * @param upTo
+	 *            What value to go up to (in steps of +1) but not include.
+	 * @return A one-shot iterable.
+	 */
+	public static Iterable<Integer> range(int upTo) {
+		return IntStream.range(0, upTo)::iterator;
 	}
 
 	/**
@@ -122,7 +147,7 @@ public abstract class CollectionUtils {
 	 */
 	public static <T> Collection<Collection<T>> batch(int batchSize,
 			List<T> input) {
-		return unmodifiableCollection(range(0,
+		return unmodifiableCollection(IntStream.range(0,
 				(input.size() + batchSize - 1) / batchSize)
 				.map(i -> i * batchSize)
 				.mapToObj(idx -> unmodifiableCollection(

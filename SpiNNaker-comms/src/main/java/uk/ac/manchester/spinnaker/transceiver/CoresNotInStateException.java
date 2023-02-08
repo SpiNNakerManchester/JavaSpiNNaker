@@ -1,18 +1,17 @@
 /*
  * Copyright (c) 2018-2019 The University of Manchester
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
@@ -20,7 +19,7 @@ import static java.lang.Float.POSITIVE_INFINITY;
 import static java.lang.String.format;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
-import java.util.Set;
+import java.util.EnumSet;
 
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.model.CPUState;
@@ -48,7 +47,7 @@ public class CoresNotInStateException extends SpinnmanException {
 	/** Which cores have failed. */
 	private CoreSubsets failedCores;
 
-	CoresNotInStateException(Integer timeout, Set<CPUState> expectedStates,
+	CoresNotInStateException(Integer timeout, EnumSet<CPUState> expectedStates,
 			CoreSubsets failedCores) {
 		this(convertTimeout(timeout), expectedStates, failedCores);
 	}
@@ -60,7 +59,7 @@ public class CoresNotInStateException extends SpinnmanException {
 		return timeout / (float) MSEC_PER_SEC;
 	}
 
-	CoresNotInStateException(float timeout, Set<CPUState> expectedStates,
+	CoresNotInStateException(float timeout, EnumSet<CPUState> expectedStates,
 			CoreSubsets failedCores) {
 		super(format(TMPL, expectedStates, timeout));
 		this.operation = format(OP_TMPL, timeout);
