@@ -74,14 +74,15 @@ public class CountState extends SCPRequest<CountState.Response> {
 	}
 
 	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+	public Response getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
 		return new Response(buffer);
 	}
 
 	/**
 	 * An SCP response to a request for the number of cores in a given state.
 	 */
-	public static final class Response
+	protected static final class Response
 			extends PayloadedResponse<Integer, RuntimeException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("CountState", CMD_SIG, buffer);

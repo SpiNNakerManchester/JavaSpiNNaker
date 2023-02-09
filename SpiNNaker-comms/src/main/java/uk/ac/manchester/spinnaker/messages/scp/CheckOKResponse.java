@@ -23,7 +23,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * An SCP response to a request which returns nothing other than OK or an error.
  * Subclasses add {@linkplain PayloadedResponse payload parsing}.
  */
-public class CheckOKResponse extends SCPResponse {
+public abstract class CheckOKResponse extends SCPResponse {
 	/**
 	 * Create an instance.
 	 *
@@ -36,7 +36,7 @@ public class CheckOKResponse extends SCPResponse {
 	 * @throws UnexpectedResponseCodeException
 	 *             If the response wasn't OK.
 	 */
-	public CheckOKResponse(String operation, Enum<?> command,
+	CheckOKResponse(String operation, Enum<?> command,
 			ByteBuffer buffer) throws UnexpectedResponseCodeException {
 		super(buffer);
 		throwIfNotOK(operation, command);

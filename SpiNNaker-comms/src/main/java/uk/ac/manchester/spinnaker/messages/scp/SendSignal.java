@@ -26,6 +26,7 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.Signal;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * An SCP Request to send a signal to cores. This supports any signal that uses
@@ -40,7 +41,7 @@ import uk.ac.manchester.spinnaker.messages.model.Signal;
  *
  * @see CountState
  */
-public class SendSignal extends SCPRequest<CheckOKResponse> {
+public class SendSignal extends SCPRequest<EmptyResponse> {
 	/**
 	 * @param appID
 	 *            The ID of the application to signal (only for multicast
@@ -65,7 +66,8 @@ public class SendSignal extends SCPRequest<CheckOKResponse> {
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Send Signal", CMD_SIG, buffer);
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
+		return new EmptyResponse("Send Signal", CMD_SIG, buffer);
 	}
 }

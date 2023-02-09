@@ -15,9 +15,9 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static uk.ac.manchester.spinnaker.messages.model.IPTagCommand.CLR;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.COMMAND_FIELD;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.THREE_BITS_MASK;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.COMMAND_FIELD;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.THREE_BITS_MASK;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagCommand.CLR;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
 
 import java.nio.ByteBuffer;
@@ -32,7 +32,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},
  * if sent to a BMP).
  */
-public class IPTagClear extends SCPRequest<CheckOKResponse> {
+public class IPTagClear extends SCPRequest<EmptyResponse> {
 	/**
 	 * @param chip
 	 *            The chip to clear the tag on.
@@ -49,8 +49,8 @@ public class IPTagClear extends SCPRequest<CheckOKResponse> {
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer)
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
 			throws UnexpectedResponseCodeException {
-		return new CheckOKResponse("Clear IP Tag", CMD_IPTAG, buffer);
+		return new EmptyResponse("Clear IP Tag", CMD_IPTAG, buffer);
 	}
 }

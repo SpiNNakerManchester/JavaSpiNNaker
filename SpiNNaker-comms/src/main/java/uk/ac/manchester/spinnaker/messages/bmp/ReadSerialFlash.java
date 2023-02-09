@@ -64,7 +64,7 @@ public class ReadSerialFlash extends BMPRequest<ReadSerialFlash.Response> {
 	 * that it is up to the caller to manage the buffer position of the returned
 	 * response if it is to be read from multiple times.
 	 */
-	public static final class Response
+	protected final class Response
 			extends BMPRequest.PayloadedResponse<ByteBuffer> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("Read Serial Flash", CMD_BMP_SF, buffer);
