@@ -15,10 +15,10 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static uk.ac.manchester.spinnaker.messages.model.RouterCommand.ROUTER_FIXED;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.TOP_BIT;
+import static uk.ac.manchester.spinnaker.messages.scp.RouterCommand.FIXED;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
 
 import java.nio.ByteBuffer;
@@ -37,7 +37,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	private static int argument1(AppID appID) {
-		return (appID.appID << BYTE1) | (ROUTER_FIXED.value << BYTE0);
+		return (appID.appID << BYTE1) | (FIXED.value << BYTE0);
 	}
 
 	// Top bit set = do a read

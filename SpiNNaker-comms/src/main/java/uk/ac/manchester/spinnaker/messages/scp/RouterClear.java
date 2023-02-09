@@ -15,7 +15,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static uk.ac.manchester.spinnaker.messages.model.RouterCommand.ROUTER_INIT;
+import static uk.ac.manchester.spinnaker.messages.scp.RouterCommand.INIT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
 
 import java.nio.ByteBuffer;
@@ -35,7 +35,7 @@ public class RouterClear extends SCPRequest<EmptyResponse> {
 	 *            The coordinates of the chip to clear the router of
 	 */
 	public RouterClear(HasChipLocation chip) {
-		super(chip.getScampCore(), CMD_RTR, ROUTER_INIT.value);
+		super(chip.getScampCore(), CMD_RTR, INIT.value);
 	}
 
 	@Override

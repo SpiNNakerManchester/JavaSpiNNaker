@@ -16,7 +16,7 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.lang.String.format;
-import static uk.ac.manchester.spinnaker.messages.model.AllocFree.ALLOC_ROUTING;
+import static uk.ac.manchester.spinnaker.messages.scp.AllocFree.ALLOC_ROUTING;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_ALLOC;

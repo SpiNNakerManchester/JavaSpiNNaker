@@ -15,10 +15,10 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static uk.ac.manchester.spinnaker.messages.model.RouterCommand.ROUTER_LOAD;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.HALF1;
+import static uk.ac.manchester.spinnaker.messages.scp.RouterCommand.LOAD;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
 
 import java.nio.ByteBuffer;
@@ -73,7 +73,7 @@ public class RouterInit extends SCPRequest<EmptyResponse> {
 					"numEntries must be no more than " + MAX_ENTRIES);
 		}
 		return (numEntries << HALF1) | (appID.appID << BYTE1)
-				| (ROUTER_LOAD.value << BYTE0);
+				| (LOAD.value << BYTE0);
 	}
 
 	@Override

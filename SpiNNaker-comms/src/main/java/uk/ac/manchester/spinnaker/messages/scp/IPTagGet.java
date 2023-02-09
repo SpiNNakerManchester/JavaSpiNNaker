@@ -16,9 +16,9 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.util.Objects.requireNonNull;
-import static uk.ac.manchester.spinnaker.messages.model.IPTagCommand.GET;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.COMMAND_FIELD;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.THREE_BITS_MASK;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagCommand.GET;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
 
 import java.net.UnknownHostException;
