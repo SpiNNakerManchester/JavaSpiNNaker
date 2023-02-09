@@ -15,12 +15,10 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
-import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.core.io.Resource;
-import org.springframework.dao.PermissionDeniedDataAccessException;
 
 import com.google.errorprone.annotations.CompileTimeConstant;
 import com.google.errorprone.annotations.MustBeClosed;
@@ -132,26 +130,6 @@ public interface DatabaseAPI {
 	default <T> T execute(ConnectedWithResult<T> operation) {
 		return execute(true, operation);
 	}
-
-	/**
-	 * Creates a backup of the database. <em>This operation should only be
-	 * called by administrators.</em>
-	 *
-	 * @param backupFilename
-	 *            The backup file to create.
-	 */
-	void createBackup(File backupFilename);
-
-	/**
-	 * Restores the database from backup. <em>This operation should only be
-	 * called by administrators.</em>
-	 *
-	 * @param backupFilename
-	 *            The backup file to restore from.
-	 * @throws PermissionDeniedDataAccessException
-	 *             If the backup cannot be read.
-	 */
-	void restoreFromBackup(File backupFilename);
 
 	/**
 	 * Connections made by the database engine bean. Its methods do not throw
@@ -540,16 +518,6 @@ public interface DatabaseAPI {
 		 */
 		@Override
 		void close();
-
-		/**
-		 * Get the query plan explanation. Note that DML and DDL <em>may</em>
-		 * have empty query plans; that's up to the DB.
-		 *
-		 * @return A list of lines that describe the query plan.
-		 * @see <a href="https://www.sqlite.org/eqp.html">SQLite
-		 *      documentation</a>
-		 */
-		List<String> explainQueryPlan();
 	}
 
 	/**

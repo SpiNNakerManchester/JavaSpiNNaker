@@ -19,7 +19,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.IOUtils.serialize;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.sql.PreparedStatement;
@@ -62,9 +61,6 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 	@Value("classpath:/spalloc-tombstone.sql")
 	private Resource tombstoneDDLFile;
-
-	@Value("classpath:/spalloc-static-data.sql")
-	private Resource sqlInitDataFile;
 
 	private final JdbcTemplate jdbcTemplate;
 
@@ -165,7 +161,6 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		@Override
 		public <T> T transaction(boolean lockForWriting,
 				TransactedWithResult<T> operation) {
-			// TODO: Lock for writing is currently ignored
 			return transactionTemplate.execute(status -> {
 				return operation.act();
 			});
@@ -259,12 +254,6 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 				return Optional.empty();
 			}, resolved.toArray());
 		}
-
-		@Override
-		public List<String> explainQueryPlan() {
-			// TODO Auto-generated method stub
-			return null;
-		}
 	}
 
 	private final class UpdateImpl implements Update {
@@ -297,12 +286,6 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 				return Optional.empty();
 			}
 			return Optional.of(key.intValue());
-		}
-
-		@Override
-		public List<String> explainQueryPlan() {
-			// TODO Auto-generated method stub
-			return null;
 		}
 
 	}
@@ -372,18 +355,6 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		try (var conn = getConnection()) {
 			return operation.act(conn);
 		}
-	}
-
-	@Override
-	public void createBackup(File backupFilename) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void restoreFromBackup(File backupFilename) {
-		// TODO Auto-generated method stub
-
 	}
 
 	static Set<String> columnNames(SqlRowSetMetaData md) throws SQLException {

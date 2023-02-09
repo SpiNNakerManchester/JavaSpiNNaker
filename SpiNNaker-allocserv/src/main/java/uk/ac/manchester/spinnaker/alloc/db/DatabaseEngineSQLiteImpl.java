@@ -51,8 +51,6 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.collectToArray;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_MSEC;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_USEC;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.annotation.Documented;
@@ -95,7 +93,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
-import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
 import org.sqlite.Function;
@@ -126,12 +123,6 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
 public final class DatabaseEngineSQLiteImpl
         extends DatabaseCache<SQLiteConnection>	implements DatabaseAPI {
 	private static final Logger log = getLogger(DatabaseEngineSQLiteImpl.class);
-
-	/**
-	 * The name of the mounted database. Always {@code main} by SQLite
-	 * convention.
-	 */
-	private static final String MAIN_DB_NAME = "main";
 
 	/**
 	 * The prefix of bean names that may be removed to generate the SQLite
@@ -1205,42 +1196,6 @@ public final class DatabaseEngineSQLiteImpl
 		}
 	}
 
-	@Override
-	public void createBackup(File backupFilename) {
-		withDBWriteLock(() -> {
-			try (var conn = getCachedDatabaseConnection()) {
-				conn.getDatabase().backup(MAIN_DB_NAME,
-						backupFilename.getAbsolutePath(),
-						(remaining, pageCount) -> log.info(
-								"BACKUP TO {} (remaining:{}, page count:{})",
-								backupFilename, remaining, pageCount));
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		});
-	}
-
-	@Override
-	public void restoreFromBackup(File backupFilename) {
-		if (!backupFilename.isFile() || !backupFilename.canRead()) {
-			throw new PermissionDeniedDataAccessException(
-					"backup file \"" + backupFilename
-							+ "\" doesn't exist or isn't a readable file",
-					new FileNotFoundException(backupFilename.toString()));
-		}
-		withDBWriteLock(() -> {
-			try (var conn = getCachedDatabaseConnection()) {
-				conn.getDatabase().restore(MAIN_DB_NAME,
-						backupFilename.getAbsolutePath(),
-						(remaining, pageCount) -> log.info(
-								"RESTORE FROM {} (remaining:{}, page count:{})",
-								backupFilename, remaining, pageCount));
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		});
-	}
-
 	/**
 	 * Get the location of the database.
 	 *
@@ -1341,14 +1296,10 @@ public final class DatabaseEngineSQLiteImpl
 		/** The database connection. */
 		final ConnectionImpl conn;
 
-		/** The text of the query. */
-		private final String sql;
-
 		StatementWrapper(ConnectionImpl conn, String sql) {
 			this.conn = conn;
 			s = conn.prepareStatement(sql);
 			rs = null;
-			this.sql = sql;
 		}
 
 		final void closeResults() {
@@ -1425,28 +1376,6 @@ public final class DatabaseEngineSQLiteImpl
 		@Override
 		public String toString() {
 			return getClass().getSimpleName() + " : " + trimSQL(s.toString());
-		}
-
-		// NB: logStatementPerformance() doesn't use this for messy reasons
-		/**
-		 * {@inheritDoc} This is a list of rows (as strings) that form a tree;
-		 * the indentation is pre-computed.
-		 */
-		@Override
-		public List<String> explainQueryPlan() {
-			var result = new ArrayList<String>();
-			var levels = new HashMap<Integer, Integer>();
-			try (var s = conn.createStatement();
-					var r = s.executeQuery("EXPLAIN QUERY PLAN " + sql)) {
-				while (r.next()) {
-					int indent = levels.getOrDefault(r.getInt("parent"), 0);
-					levels.put(r.getInt("id"), indent + 1);
-					result.add("  ".repeat(indent) + r.getString("detail"));
-				}
-			} catch (SQLException e) {
-				throw mapException(e, s.toString());
-			}
-			return result;
 		}
 	}
 
