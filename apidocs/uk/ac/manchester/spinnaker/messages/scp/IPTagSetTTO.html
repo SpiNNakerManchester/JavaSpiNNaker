@@ -56,7 +56,7 @@ loadScripts(document, 'script');</script>
 <div>
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
-<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="#nested.class.summary">Nested</a>&nbsp;|&nbsp;</li>
 <li><a href="#field.summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
@@ -89,7 +89,7 @@ loadScripts(document, 'script');</script>
 <div class="contentContainer">
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
 <div class="inheritance"><a href="../sdp/SpinnakerRequest.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">uk.ac.manchester.spinnaker.messages.sdp.SpinnakerRequest</a>
-<div class="inheritance"><a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp.SCPRequest</a>&lt;<a href="IPTagGetInfo.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGetInfo.Response</a>&gt;
+<div class="inheritance"><a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp.SCPRequest</a>&lt;<a href="IPTagSetTTO.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagSetTTO.Response</a>&gt;
 <div class="inheritance">uk.ac.manchester.spinnaker.messages.scp.IPTagSetTTO</div>
 </div>
 </div>
@@ -101,15 +101,42 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <pre>public class <span class="typeNameLabel">IPTagSetTTO</span>
-extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="IPTagGetInfo.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGetInfo.Response</a>&gt;</pre>
+extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="IPTagSetTTO.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagSetTTO.Response</a>&gt;</pre>
 <div class="block">An SCP request to set the transient timeout for future SCP requests. The
- response payload is the <a href="IPTagGetInfo.TagInfo.html" title="class in uk.ac.manchester.spinnaker.messages.scp">tag <em>system</em>information</a>.
+ response payload is the <a href="../model/TagInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">tag <em>system</em>information</a>.
  <p>
  Handled by <code>cmd_iptag()</code> in <code>scamp-cmd.c</code> (or <code>bmp_cmd.c</code>,
  if sent to a BMP).</div>
 </section>
 <section class="summary">
 <ul class="blockList">
+<!-- ======== NESTED CLASS SUMMARY ======== -->
+<li class="blockList">
+<section class="nestedClassSummary"><a id="nested.class.summary">
+<!--   -->
+</a>
+<h2>Nested Class Summary</h2>
+<div class="memberSummary">
+<table>
+<caption><span>Nested Classes</span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>protected class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="IPTagSetTTO.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagSetTTO.Response</a></span></code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
 <!-- =========== FIELD SUMMARY =========== -->
 <li class="blockList">
 <section class="fieldSummary"><a id="field.summary">
@@ -173,7 +200,7 @@ extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code><a href="IPTagGetInfo.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGetInfo.Response</a></code></td>
+<td class="colFirst"><code><a href="IPTagSetTTO.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagSetTTO.Response</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSCPResponse(java.nio.ByteBuffer)">getSCPResponse</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</code></th>
 <td class="colLast">
 <div class="block">Parse the response to this message.</div>
@@ -236,13 +263,13 @@ extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 <li class="blockList">
 <section class="detail">
 <h3><a id="getSCPResponse(java.nio.ByteBuffer)">getSCPResponse</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="IPTagGetInfo.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGetInfo.Response</a></span>&nbsp;<span class="memberName">getSCPResponse</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</span>
-                                     throws <span class="exceptions"><a href="../model/UnexpectedResponseCodeException.html" title="class in uk.ac.manchester.spinnaker.messages.model">UnexpectedResponseCodeException</a></span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="IPTagSetTTO.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagSetTTO.Response</a></span>&nbsp;<span class="memberName">getSCPResponse</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</span>
+                                    throws <span class="exceptions"><a href="../model/UnexpectedResponseCodeException.html" title="class in uk.ac.manchester.spinnaker.messages.model">UnexpectedResponseCodeException</a></span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="SCPRequest.html#getSCPResponse(java.nio.ByteBuffer)">SCPRequest</a></code></span></div>
 <div class="block">Parse the response to this message.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="SCPRequest.html#getSCPResponse(java.nio.ByteBuffer)">getSCPResponse</a></code>&nbsp;in class&nbsp;<code><a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="IPTagGetInfo.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGetInfo.Response</a>&gt;</code></dd>
+<dd><code><a href="SCPRequest.html#getSCPResponse(java.nio.ByteBuffer)">getSCPResponse</a></code>&nbsp;in class&nbsp;<code><a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="IPTagSetTTO.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagSetTTO.Response</a>&gt;</code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>buffer</code> - The buffer to parse.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -285,7 +312,7 @@ extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 <div>
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
-<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="#nested.class.summary">Nested</a>&nbsp;|&nbsp;</li>
 <li><a href="#field.summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>

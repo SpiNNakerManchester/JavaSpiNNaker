@@ -264,18 +264,25 @@ boolean&nbsp;wait)</code></th>
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>default <a href="../../messages/model/ChipInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ChipInfo</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getFullChipInformation(uk.ac.manchester.spinnaker.machine.HasChipLocation)">getFullChipInformation</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip)</code></th>
+<td class="colLast">
+<div class="block">Get the full information about the chip.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code><a href="http://spinnakermanchester.github.io/SpiNNaker-utils/apidocs/uk/ac/manchester/spinnaker/utils/MappableIterable.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.utils" class="externalLink">MappableIterable</a>&lt;<a href="../../messages/model/IOBuffer.html" title="class in uk.ac.manchester.spinnaker.messages.model">IOBuffer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#getIobuf(uk.ac.manchester.spinnaker.machine.CoreSubsets)">getIobuf</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;coreSubsets)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="http://spinnakermanchester.github.io/SpiNNaker-utils/apidocs/uk/ac/manchester/spinnaker/utils/MappableIterable.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.utils" class="externalLink">MappableIterable</a>&lt;<a href="../../messages/model/IOBuffer.html" title="class in uk.ac.manchester.spinnaker.messages.model">IOBuffer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getIobuf(uk.ac.manchester.spinnaker.machine.CoreSubsets)">getIobuf</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;coreSubsets)</code></th>
 <td class="colLast">
 <div class="block">Get the contents of the IOBUF buffer for a collection of processors.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/Machine.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">Machine</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getMachineDetails()">getMachineDetails</a></span>()</code></th>
 <td class="colLast">
@@ -283,7 +290,7 @@ boolean&nbsp;wait)</code></th>
  are connected to each other.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MachineDimensions.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MachineDimensions</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getMachineDimensions()">getMachineDimensions</a></span>()</code></th>
 <td class="colLast">
@@ -291,14 +298,14 @@ boolean&nbsp;wait)</code></th>
  chips in the machine.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default boolean</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#getResetStatus(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">getResetStatus</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Get the FPGA reset status.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#getResetStatus(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">getResetStatus</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPCoords</a>&nbsp;bmp,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
@@ -306,14 +313,14 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Get the FPGA reset status.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#getSerialFlashBuffer(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">getSerialFlashBuffer</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Get the address of the serial flash buffer.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#getSerialFlashBuffer(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">getSerialFlashBuffer</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPCoords</a>&nbsp;bmp,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
@@ -321,69 +328,69 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Get the address of the serial flash buffer.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/tags/Tag.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.tags" class="externalLink">Tag</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#getTags(uk.ac.manchester.spinnaker.connections.SCPConnection)">getTags</a></span>&#8203;(<a href="../../connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a>&nbsp;connection)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/tags/Tag.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.tags" class="externalLink">Tag</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#getTagUsage(uk.ac.manchester.spinnaker.connections.SCPConnection)">getTagUsage</a></span>&#8203;(<a href="../../connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a>&nbsp;connection)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#loadApplicationRouterTables(uk.ac.manchester.spinnaker.machine.CoreSubsets)">loadApplicationRouterTables</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;monitorCores)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#loadApplicationRouterTables(uk.ac.manchester.spinnaker.machine.CoreSubsets)">loadApplicationRouterTables</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;monitorCores)</code></th>
 <td class="colLast">
 <div class="block">Load the (previously saved) application's multicast router tables.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#loadSystemRouterTables(uk.ac.manchester.spinnaker.machine.CoreSubsets)">loadSystemRouterTables</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;monitorCores)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#loadSystemRouterTables(uk.ac.manchester.spinnaker.machine.CoreSubsets)">loadSystemRouterTables</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;monitorCores)</code></th>
 <td class="colLast">
 <div class="block">Load the (previously configured) system multicast router tables.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#powerOff(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">powerOff</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Power off a board in the machine.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#powerOff(java.util.Collection)">powerOff</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&gt;&nbsp;boards)</code></th>
 <td class="colLast">
 <div class="block">Power off some boards in the machine.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#powerOn(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">powerOn</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Power on a board in the machine.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#powerOn(java.util.Collection)">powerOn</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&gt;&nbsp;boards)</code></th>
 <td class="colLast">
 <div class="block">Power on some boards in the machine.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default <a href="../../messages/model/FirmwareDescriptor.html" title="class in uk.ac.manchester.spinnaker.messages.model">FirmwareDescriptor</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readBMPFirmwareDescriptor(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.messages.model.FirmwareDescriptors)">readBMPFirmwareDescriptor</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board,
 <a href="../../messages/model/FirmwareDescriptors.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FirmwareDescriptors</a>&nbsp;type)</code></th>
@@ -391,7 +398,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Read the BMP firmware descriptor.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default <a href="../../messages/model/FirmwareDescriptor.html" title="class in uk.ac.manchester.spinnaker.messages.model">FirmwareDescriptor</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readBMPFirmwareDescriptor(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.messages.model.FirmwareDescriptors)">readBMPFirmwareDescriptor</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPCoords</a>&nbsp;bmp,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board,
@@ -400,7 +407,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Read the BMP firmware descriptor.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readBMPMemory(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">readBMPMemory</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;baseAddress,
@@ -409,7 +416,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Read BMP memory.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readBMPMemory(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">readBMPMemory</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPCoords</a>&nbsp;bmp,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board,
@@ -419,7 +426,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Read BMP memory.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#readBMPMemory(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">readBMPMemory</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPCoords</a>&nbsp;bmp,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board,
@@ -427,7 +434,7 @@ boolean&nbsp;wait)</code></th>
 int&nbsp;length)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default int</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readBMPMemoryWord(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">readBMPMemoryWord</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;address)</code></th>
@@ -435,7 +442,7 @@ int&nbsp;length)</code></th>
 <div class="block">Read BMP memory.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default int</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readBMPMemoryWord(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">readBMPMemoryWord</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPCoords</a>&nbsp;bmp,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board,
@@ -444,7 +451,7 @@ int&nbsp;length)</code></th>
 <div class="block">Read BMP memory.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="../../messages/model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readBMPVersion(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readBMPVersion</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPCoords</a>&nbsp;bmp,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
@@ -452,7 +459,7 @@ int&nbsp;length)</code></th>
 <div class="block">Read the BMP version.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readBoardSerialNumber(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readBoardSerialNumber</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPCoords</a>&nbsp;bmp,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board)</code></th>
@@ -460,7 +467,7 @@ int&nbsp;length)</code></th>
 <div class="block">Read the BMP serial number from a board.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#readNeighbourMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">readNeighbourMemory</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/Direction.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">Direction</a>&nbsp;link,
@@ -471,7 +478,7 @@ int&nbsp;length)</code></th>
  command.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#readNeighbourMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">readNeighbourMemory</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&nbsp;core,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/Direction.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">Direction</a>&nbsp;link,
@@ -482,7 +489,7 @@ int&nbsp;length)</code></th>
  command.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readSerialFlash(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">readSerialFlash</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;baseAddress,
@@ -491,7 +498,7 @@ int&nbsp;length)</code></th>
 <div class="block">Read BMP serial flash memory.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readSerialFlash(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">readSerialFlash</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPCoords</a>&nbsp;bmp,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board,
@@ -501,7 +508,7 @@ int&nbsp;length)</code></th>
 <div class="block">Read BMP serial flash memory.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default int</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readSerialFlashCRC(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">readSerialFlashCRC</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;baseAddress,
@@ -510,7 +517,7 @@ int&nbsp;length)</code></th>
 <div class="block">Read the CRC32 checksum of BMP serial flash memory.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readSerialFlashCRC(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.Positiveint)">readSerialFlashCRC</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPCoords</a>&nbsp;bmp,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board,
@@ -520,7 +527,7 @@ int&nbsp;length)</code></th>
 <div class="block">Read the CRC32 checksum of BMP serial flash memory.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#resetFPGA(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType)">resetFPGA</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board,
 <a href="../BMPTransceiverInterface.FPGAResetType.html" title="enum in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface.FPGAResetType</a>&nbsp;resetType)</code></th>
@@ -528,7 +535,7 @@ int&nbsp;length)</code></th>
 <div class="block">Reset the FPGAs on a board.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#resetFPGA(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType)">resetFPGA</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPCoords.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPCoords</a>&nbsp;bmp,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/board/BMPBoard.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.board" class="externalLink">BMPBoard</a>&nbsp;board,
@@ -537,49 +544,49 @@ int&nbsp;length)</code></th>
 <div class="block">Reset the FPGAs on a board.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#resetReinjectionCounters(uk.ac.manchester.spinnaker.machine.CoreSubsets)">resetReinjectionCounters</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;monitorCores)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#resetReinjectionCounters(uk.ac.manchester.spinnaker.machine.CoreSubsets)">resetReinjectionCounters</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;monitorCores)</code></th>
 <td class="colLast">
 <div class="block">Reset the packet reinjection counters of some monitor processes.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#saveApplicationRouterTables(uk.ac.manchester.spinnaker.machine.CoreSubsets)">saveApplicationRouterTables</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;monitorCores)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#saveApplicationRouterTables(uk.ac.manchester.spinnaker.machine.CoreSubsets)">saveApplicationRouterTables</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;monitorCores)</code></th>
 <td class="colLast">
 <div class="block">Save the application's multicast router tables.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#setIPTag(uk.ac.manchester.spinnaker.machine.tags.IPTag)">setIPTag</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/tags/IPTag.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.tags" class="externalLink">IPTag</a>&nbsp;tag)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#setIPTag(uk.ac.manchester.spinnaker.machine.tags.IPTag,uk.ac.manchester.spinnaker.connections.SDPConnection)">setIPTag</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/tags/IPTag.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.tags" class="externalLink">IPTag</a>&nbsp;tag,
 <a href="../../connections/SDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SDPConnection</a>&nbsp;connection)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#setIPTag(uk.ac.manchester.spinnaker.machine.tags.IPTag)">setIPTag</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/tags/IPTag.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.tags" class="externalLink">IPTag</a>&nbsp;tag)</code></th>
 <td class="colLast">
 <div class="block">Set up an IP tag.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#setIPTag(uk.ac.manchester.spinnaker.machine.tags.IPTag,uk.ac.manchester.spinnaker.connections.SDPConnection)">setIPTag</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/tags/IPTag.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.tags" class="externalLink">IPTag</a>&nbsp;tag,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../../connections/SDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SDPConnection</a>&nbsp;connection)</code></th>
@@ -587,14 +594,14 @@ int&nbsp;length)</code></th>
 <div class="block">Set up an IP tag to deliver messages to a particular connection.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#setReinjectionEmergencyTimeout(uk.ac.manchester.spinnaker.machine.CoreSubsets,int,int)">setReinjectionEmergencyTimeout</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;monitorCores,
 int&nbsp;timeoutMantissa,
 int&nbsp;timeoutExponent)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#setReinjectionEmergencyTimeout(uk.ac.manchester.spinnaker.machine.CoreSubsets,int,int)">setReinjectionEmergencyTimeout</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;monitorCores,
 int&nbsp;timeoutMantissa,
@@ -603,7 +610,7 @@ int&nbsp;timeoutExponent)</code></th>
 <div class="block">Set the emergency packet reinjection timeout.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#setReinjectionEmergencyTimeout(uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus)">setReinjectionEmergencyTimeout</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;monitorCores,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../../messages/model/ReinjectionStatus.html" title="class in uk.ac.manchester.spinnaker.messages.model">ReinjectionStatus</a>&nbsp;status)</code></th>
@@ -611,7 +618,7 @@ int&nbsp;timeoutExponent)</code></th>
 <div class="block">Set the emergency packet reinjection timeout.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#setReinjectionEmergencyTimeout(uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.messages.model.RouterTimeout)">setReinjectionEmergencyTimeout</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;monitorCores,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../../messages/model/RouterTimeout.html" title="class in uk.ac.manchester.spinnaker.messages.model">RouterTimeout</a>&nbsp;timeout)</code></th>
@@ -619,14 +626,14 @@ int&nbsp;timeoutExponent)</code></th>
 <div class="block">Set the emergency packet reinjection timeout.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#setReinjectionTimeout(uk.ac.manchester.spinnaker.machine.CoreSubsets,int,int)">setReinjectionTimeout</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;monitorCores,
 int&nbsp;timeoutMantissa,
 int&nbsp;timeoutExponent)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#setReinjectionTimeout(uk.ac.manchester.spinnaker.machine.CoreSubsets,int,int)">setReinjectionTimeout</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;monitorCores,
 int&nbsp;timeoutMantissa,
@@ -635,7 +642,7 @@ int&nbsp;timeoutExponent)</code></th>
 <div class="block">Set the packet reinjection timeout.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#setReinjectionTimeout(uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus)">setReinjectionTimeout</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;monitorCores,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../../messages/model/ReinjectionStatus.html" title="class in uk.ac.manchester.spinnaker.messages.model">ReinjectionStatus</a>&nbsp;status)</code></th>
@@ -643,7 +650,7 @@ int&nbsp;timeoutExponent)</code></th>
 <div class="block">Set the packet reinjection timeout.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#setReinjectionTimeout(uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.messages.model.RouterTimeout)">setReinjectionTimeout</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;monitorCores,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../../messages/model/RouterTimeout.html" title="class in uk.ac.manchester.spinnaker.messages.model">RouterTimeout</a>&nbsp;timeout)</code></th>
@@ -651,7 +658,7 @@ int&nbsp;timeoutExponent)</code></th>
 <div class="block">Set the packet reinjection timeout.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#setReinjectionTypes(uk.ac.manchester.spinnaker.machine.CoreSubsets,boolean,boolean,boolean,boolean)">setReinjectionTypes</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;monitorCores,
 boolean&nbsp;multicast,
@@ -660,7 +667,7 @@ boolean&nbsp;fixedRoute,
 boolean&nbsp;nearestNeighbour)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#setReinjectionTypes(uk.ac.manchester.spinnaker.machine.CoreSubsets,boolean,boolean,boolean,boolean)">setReinjectionTypes</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;monitorCores,
 boolean&nbsp;multicast,
@@ -671,17 +678,17 @@ boolean&nbsp;nearestNeighbour)</code></th>
 <div class="block">Set what types of packets are to be reinjected.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#setReverseIPTag(uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag)">setReverseIPTag</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/tags/ReverseIPTag.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.tags" class="externalLink">ReverseIPTag</a>&nbsp;tag)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#updateProvenanceAndExit(uk.ac.manchester.spinnaker.machine.CoreSubsets)">updateProvenanceAndExit</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;coreSubsets)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#updateProvenanceAndExit(uk.ac.manchester.spinnaker.machine.CoreSubsets)">updateProvenanceAndExit</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;coreSubsets)</code></th>
 <td class="colLast">
@@ -690,7 +697,7 @@ boolean&nbsp;nearestNeighbour)</code></th>
  <a href="../../messages/model/CPUState.html#FINISHED"><code>FINISHED</code></a> state.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#updateRuntime(java.lang.Integer,int,int,uk.ac.manchester.spinnaker.machine.CoreSubsets)">updateRuntime</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;runTimesteps,
 int&nbsp;currentTime,
@@ -698,7 +705,7 @@ int&nbsp;syncTimesteps,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;coreSubsets)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#updateRuntime(java.lang.Integer,@javax.validation.constraints.PositiveOrZeroint,@javax.validation.constraints.PositiveOrZeroint,uk.ac.manchester.spinnaker.machine.CoreSubsets)">updateRuntime</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;runTimesteps,
 @javax.validation.constraints.PositiveOrZero int&nbsp;currentTime,
@@ -708,7 +715,7 @@ int&nbsp;syncTimesteps,
 <div class="block">Set the running time information for a collection of processors.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#waitForCoresToBeInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.messages.model.AppID,java.util.EnumSet,java.lang.Integer,int,java.util.EnumSet,int)">waitForCoresToBeInState</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;allCoreSubsets,
 <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
@@ -719,7 +726,7 @@ int&nbsp;timeBetweenPolls,
 int&nbsp;countBetweenFullChecks)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#waitForCoresToBeInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.messages.model.AppID,java.util.EnumSet)">waitForCoresToBeInState</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;coreSubsets,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
@@ -729,7 +736,7 @@ int&nbsp;countBetweenFullChecks)</code></th>
  target state or states.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#waitForCoresToBeInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.messages.model.AppID,java.util.EnumSet,java.lang.Integer,@javax.validation.constraints.Positiveint,java.util.EnumSet,@javax.validation.constraints.Positiveint)">waitForCoresToBeInState</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;allCoreSubsets,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
@@ -743,7 +750,7 @@ int&nbsp;countBetweenFullChecks)</code></th>
  target state or states.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeNeighbourMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.NotEmptybyte%5B%5D)">writeNeighbourMemory</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/Direction.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">Direction</a>&nbsp;link,
@@ -754,7 +761,7 @@ int&nbsp;countBetweenFullChecks)</code></th>
  command.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeNeighbourMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">writeNeighbourMemory</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/Direction.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">Direction</a>&nbsp;link,
@@ -765,7 +772,7 @@ int&nbsp;dataWord)</code></th>
  command.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeNeighbourMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeNeighbourMemory</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/Direction.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">Direction</a>&nbsp;link,
@@ -776,7 +783,7 @@ int&nbsp;dataWord)</code></th>
  command.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeNeighbourMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.InputStream,@javax.validation.constraints.Positiveint)">writeNeighbourMemory</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/Direction.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">Direction</a>&nbsp;link,
@@ -788,7 +795,7 @@ int&nbsp;dataWord)</code></th>
  command.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeNeighbourMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeNeighbourMemory</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/Direction.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">Direction</a>&nbsp;link,
@@ -799,7 +806,7 @@ int&nbsp;dataWord)</code></th>
  command.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeNeighbourMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,@javax.validation.constraints.NotEmptybyte%5B%5D)">writeNeighbourMemory</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&nbsp;core,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/Direction.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">Direction</a>&nbsp;link,
@@ -810,7 +817,7 @@ int&nbsp;dataWord)</code></th>
  command.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeNeighbourMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">writeNeighbourMemory</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&nbsp;core,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/Direction.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">Direction</a>&nbsp;link,
@@ -821,7 +828,7 @@ int&nbsp;dataWord)</code></th>
  command.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeNeighbourMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeNeighbourMemory</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&nbsp;core,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/Direction.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">Direction</a>&nbsp;link,
@@ -832,7 +839,7 @@ int&nbsp;dataWord)</code></th>
  command.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeNeighbourMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.InputStream,@javax.validation.constraints.Positiveint)">writeNeighbourMemory</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&nbsp;core,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/Direction.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">Direction</a>&nbsp;link,
@@ -844,7 +851,7 @@ int&nbsp;dataWord)</code></th>
  command.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeNeighbourMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeNeighbourMemory</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&nbsp;core,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/Direction.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">Direction</a>&nbsp;link,

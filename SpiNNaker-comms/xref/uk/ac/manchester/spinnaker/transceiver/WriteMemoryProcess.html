@@ -41,7 +41,7 @@
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.Direction;
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.MemoryLocation;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.EmptyResponse;
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.WriteLink;
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
@@ -288,7 +288,7 @@
 <a class="jxr_linenumber" name="L280" href="#L280">280</a> <em class="jxr_javadoccomment">	 * @throws InterruptedException</em>
 <a class="jxr_linenumber" name="L281" href="#L281">281</a> <em class="jxr_javadoccomment">	 *             If the communications were interrupted.</em>
 <a class="jxr_linenumber" name="L282" href="#L282">282</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L283" href="#L283">283</a> 	<strong class="jxr_keyword">private</strong> &lt;T <strong class="jxr_keyword">extends</strong> SCPRequest&lt;CheckOKResponse&gt;&gt; <strong class="jxr_keyword">void</strong> writeMemoryFlow(
+<a class="jxr_linenumber" name="L283" href="#L283">283</a> 	<strong class="jxr_keyword">private</strong> &lt;T <strong class="jxr_keyword">extends</strong> SCPRequest&lt;EmptyResponse&gt;&gt; <strong class="jxr_keyword">void</strong> writeMemoryFlow(
 <a class="jxr_linenumber" name="L284" href="#L284">284</a> 			MemoryLocation baseAddress, ByteBuffer data,
 <a class="jxr_linenumber" name="L285" href="#L285">285</a> 			MessageProvider&lt;T&gt; msgProvider)
 <a class="jxr_linenumber" name="L286" href="#L286">286</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException {
@@ -320,7 +320,7 @@
 <a class="jxr_linenumber" name="L312" href="#L312">312</a> <em class="jxr_javadoccomment">	 * @throws InterruptedException</em>
 <a class="jxr_linenumber" name="L313" href="#L313">313</a> <em class="jxr_javadoccomment">	 *             If the communications were interrupted.</em>
 <a class="jxr_linenumber" name="L314" href="#L314">314</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L315" href="#L315">315</a> 	<strong class="jxr_keyword">private</strong> &lt;T <strong class="jxr_keyword">extends</strong> SCPRequest&lt;CheckOKResponse&gt;&gt; <strong class="jxr_keyword">void</strong> writeMemoryFlow(
+<a class="jxr_linenumber" name="L315" href="#L315">315</a> 	<strong class="jxr_keyword">private</strong> &lt;T <strong class="jxr_keyword">extends</strong> SCPRequest&lt;EmptyResponse&gt;&gt; <strong class="jxr_keyword">void</strong> writeMemoryFlow(
 <a class="jxr_linenumber" name="L316" href="#L316">316</a> 			MemoryLocation baseAddress, InputStream data, <strong class="jxr_keyword">int</strong> bytesToWrite,
 <a class="jxr_linenumber" name="L317" href="#L317">317</a> 			MessageProvider&lt;T&gt; msgProvider)
 <a class="jxr_linenumber" name="L318" href="#L318">318</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException {

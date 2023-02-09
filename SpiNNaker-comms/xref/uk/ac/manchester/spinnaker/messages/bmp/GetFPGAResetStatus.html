@@ -25,8 +25,8 @@
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.nio.ByteOrder.LITTLE_ENDIAN;
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_READ;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.scp.TransferUnit.WORD;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.TransferUnit.WORD;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_READ;
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> java.nio.ByteBuffer;
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  
@@ -57,7 +57,7 @@
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> XIL_RST_BIT = 14;
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  	<em class="jxr_javadoccomment">/** The response to a request to get the FPGA reset status of a board. */</em>
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> Response
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> Response
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  			<strong class="jxr_keyword">extends</strong> BMPRequest.PayloadedResponse&lt;Boolean&gt; {
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  		<strong class="jxr_keyword">private</strong> Response(ByteBuffer buffer)
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  				<strong class="jxr_keyword">throws</strong> <a name="UnexpectedResponseCodeException" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/UnexpectedResponseCodeException.html#UnexpectedResponseCodeException">UnexpectedResponseCodeException</a> {

@@ -73,13 +73,12 @@ loadScripts(document, 'script');</script>
 <ul>
 <li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink"><span class="typeNameLink">Object</span></a>
 <ul>
-<li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="IPTagGet.TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">IPTagGet.TagDescription</span></a></li>
-<li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="IPTagGetInfo.TagInfo.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">IPTagGetInfo.TagInfo</span></a></li>
 <li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="SCPRequestHeader.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">SCPRequestHeader</span></a> (implements uk.ac.manchester.spinnaker.messages.<a href="../SerializableMessage.html" title="interface in uk.ac.manchester.spinnaker.messages">SerializableMessage</a>)</li>
 <li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="SCPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">SCPResponse</span></a>
 <ul>
 <li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">CheckOKResponse</span></a>
 <ul>
+<li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="EmptyResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">EmptyResponse</span></a></li>
 <li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">PayloadedResponse</span></a>&lt;T,&#8203;E&gt; (implements java.util.function.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;T&gt;)
 <ul>
 <li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="CountState.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">CountState.Response</span></a></li>
@@ -89,6 +88,7 @@ loadScripts(document, 'script');</script>
 <li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="GetVersion.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">GetVersion.Response</span></a></li>
 <li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="IPTagGet.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">IPTagGet.Response</span></a></li>
 <li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="IPTagGetInfo.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">IPTagGetInfo.Response</span></a></li>
+<li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="IPTagSetTTO.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">IPTagSetTTO.Response</span></a></li>
 <li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="ReadLink.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">ReadLink.Response</span></a></li>
 <li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="ReadMemory.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">ReadMemory.Response</span></a></li>
 <li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="RouterAlloc.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">RouterAlloc.Response</span></a></li>
@@ -126,7 +126,7 @@ loadScripts(document, 'script');</script>
 <li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="GetChipInfo.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">GetChipInfo</span></a></li>
 <li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="GetVersion.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">GetVersion</span></a></li>
 <li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="IPTagClear.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">IPTagClear</span></a></li>
-<li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="IPTagGet.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">IPTagGet</span></a></li>
+<li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="IPTagGet.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">IPTagGet</span></a> (implements uk.ac.manchester.spinnaker.messages.scp.<a href="ConnectionAwareMessage.html" title="interface in uk.ac.manchester.spinnaker.messages.scp">ConnectionAwareMessage</a>)</li>
 <li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="IPTagGetInfo.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">IPTagGetInfo</span></a></li>
 <li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="IPTagSet.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">IPTagSet</span></a></li>
 <li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="IPTagSetTTO.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">IPTagSetTTO</span></a></li>
@@ -171,6 +171,11 @@ loadScripts(document, 'script');</script>
 <h2 title="Interface Hierarchy">Interface Hierarchy</h2>
 <ul>
 <li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="CommandCode.html" title="interface in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">CommandCode</span></a></li>
+<li class="circle">uk.ac.manchester.spinnaker.messages.<a href="../SerializableMessage.html" title="interface in uk.ac.manchester.spinnaker.messages"><span class="typeNameLink">SerializableMessage</span></a>
+<ul>
+<li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="ConnectionAwareMessage.html" title="interface in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">ConnectionAwareMessage</span></a></li>
+</ul>
+</li>
 </ul>
 </section>
 <section class="hierarchy">
@@ -182,7 +187,6 @@ loadScripts(document, 'script');</script>
 <ul>
 <li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">SCPCommand</span></a> (implements uk.ac.manchester.spinnaker.messages.scp.<a href="CommandCode.html" title="interface in uk.ac.manchester.spinnaker.messages.scp">CommandCode</a>)</li>
 <li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="SCPResult.html" title="enum in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">SCPResult</span></a></li>
-<li class="circle">uk.ac.manchester.spinnaker.messages.scp.<a href="TransferUnit.html" title="enum in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">TransferUnit</span></a></li>
 </ul>
 </li>
 </ul>

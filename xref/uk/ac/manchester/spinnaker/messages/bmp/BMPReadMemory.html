@@ -25,8 +25,8 @@
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.nio.ByteOrder.LITTLE_ENDIAN;
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_READ;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.scp.TransferUnit.efficientTransferUnit;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.TransferUnit.efficientTransferUnit;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_READ;
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> java.nio.ByteBuffer;
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  
@@ -72,7 +72,7 @@
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment">	 * that it is up to the caller to manage the buffer position of the returned</em>
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment">	 * response if it is to be read from multiple times.</em>
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> Response
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> Response
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>  			<strong class="jxr_keyword">extends</strong> BMPRequest.PayloadedResponse&lt;ByteBuffer&gt; {
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>  		Response(ByteBuffer buffer) <strong class="jxr_keyword">throws</strong> <a name="UnexpectedResponseCodeException" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/UnexpectedResponseCodeException.html#UnexpectedResponseCodeException">UnexpectedResponseCodeException</a> {
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  			<strong class="jxr_keyword">super</strong>(<span class="jxr_string">"Read"</span>, CMD_READ, buffer);

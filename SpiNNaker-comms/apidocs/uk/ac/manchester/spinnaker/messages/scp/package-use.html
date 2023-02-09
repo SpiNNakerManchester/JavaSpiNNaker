@@ -266,9 +266,22 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/ConnectionAwareMessage.html#uk.ac.manchester.spinnaker.messages.scp">ConnectionAwareMessage</a></th>
+<td class="colLast">
+<div class="block">An interface that is applied to a message when it wants to be told what
+ connection it is being sent down prior to it being sent.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/CountState.Response.html#uk.ac.manchester.spinnaker.messages.scp">CountState.Response</a></th>
 <td class="colLast">
 <div class="block">An SCP response to a request for the number of cores in a given state.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/EmptyResponse.html#uk.ac.manchester.spinnaker.messages.scp">EmptyResponse</a></th>
+<td class="colLast">
+<div class="block">An SCP response to a request which has an empty payload.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -309,113 +322,101 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colFirst" scope="row"><a href="class-use/IPTagGet.TagDescription.html#uk.ac.manchester.spinnaker.messages.scp">IPTagGet.TagDescription</a></th>
-<td class="colLast">
-<div class="block">Description of a tag.</div>
-</td>
-</tr>
-<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/IPTagGetInfo.Response.html#uk.ac.manchester.spinnaker.messages.scp">IPTagGetInfo.Response</a></th>
 <td class="colLast">
 <div class="block">An SCP response to a request for information about IP tags.</div>
 </td>
 </tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="class-use/IPTagGetInfo.TagInfo.html#uk.ac.manchester.spinnaker.messages.scp">IPTagGetInfo.TagInfo</a></th>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/IPTagSetTTO.Response.html#uk.ac.manchester.spinnaker.messages.scp">IPTagSetTTO.Response</a></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/NoResponse.html#uk.ac.manchester.spinnaker.messages.scp">NoResponse</a></th>
 <td class="colLast">
 <div class="block">An SCP response that should never be received because its request is
  guaranteed to be a one-way request.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/PayloadedResponse.html#uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a></th>
 <td class="colLast">
 <div class="block">A response that holds a payload.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/ReadLink.Response.html#uk.ac.manchester.spinnaker.messages.scp">ReadLink.Response</a></th>
 <td class="colLast">
 <div class="block">An SCP response to a request to read a region of memory via a link on a
  chip.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/ReadMemory.Response.html#uk.ac.manchester.spinnaker.messages.scp">ReadMemory.Response</a></th>
 <td class="colLast">
 <div class="block">An SCP response to a request to read a region of memory on a chip.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/ReinjectorRequest.html#uk.ac.manchester.spinnaker.messages.scp">ReinjectorRequest</a></th>
 <td class="colLast">
 <div class="block">A command message to an extra monitor control core to manipulate the packet
  reinjection subsystem.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/RouterAlloc.Response.html#uk.ac.manchester.spinnaker.messages.scp">RouterAlloc.Response</a></th>
 <td class="colLast">
 <div class="block">An SCP response to a request to allocate router entries.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/RouterTableRequest.html#uk.ac.manchester.spinnaker.messages.scp">RouterTableRequest</a></th>
 <td class="colLast">
 <div class="block">A command message to an extra monitor control core to manipulate the router
  table.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/SCPCommand.html#uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></th>
 <td class="colLast">
 <div class="block">The SCP Command codes.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/SCPRequest.html#uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a></th>
 <td class="colLast">
 <div class="block">Represents an Abstract SCP Request.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/SCPRequestHeader.html#uk.ac.manchester.spinnaker.messages.scp">SCPRequestHeader</a></th>
 <td class="colLast">
 <div class="block">Represents the header of an SCP Request.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/SCPResponse.html#uk.ac.manchester.spinnaker.messages.scp">SCPResponse</a></th>
 <td class="colLast">
 <div class="block">Represents an abstract SCP response.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/SCPResult.html#uk.ac.manchester.spinnaker.messages.scp">SCPResult</a></th>
 <td class="colLast">
 <div class="block">The SCP Result codes.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/SDRAMAlloc.Response.html#uk.ac.manchester.spinnaker.messages.scp">SDRAMAlloc.Response</a></th>
 <td class="colLast">
 <div class="block">An SCP response to a request to allocate space in SDRAM.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/SDRAMDeAlloc.Response.html#uk.ac.manchester.spinnaker.messages.scp">SDRAMDeAlloc.Response</a></th>
 <td class="colLast">
 <div class="block">An SCP response to a request to deallocate SDRAM.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colFirst" scope="row"><a href="class-use/TransferUnit.html#uk.ac.manchester.spinnaker.messages.scp">TransferUnit</a></th>
-<td class="colLast">
-<div class="block">What to move data in units of.</div>
 </td>
 </tr>
 </tbody>
@@ -444,25 +445,31 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/EmptyResponse.html#uk.ac.manchester.spinnaker.transceiver">EmptyResponse</a></th>
+<td class="colLast">
+<div class="block">An SCP response to a request which has an empty payload.</div>
+</td>
+</tr>
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/NoResponse.html#uk.ac.manchester.spinnaker.transceiver">NoResponse</a></th>
 <td class="colLast">
 <div class="block">An SCP response that should never be received because its request is
  guaranteed to be a one-way request.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/PayloadedResponse.html#uk.ac.manchester.spinnaker.transceiver">PayloadedResponse</a></th>
 <td class="colLast">
 <div class="block">A response that holds a payload.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/SCPRequest.html#uk.ac.manchester.spinnaker.transceiver">SCPRequest</a></th>
 <td class="colLast">
 <div class="block">Represents an Abstract SCP Request.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/SCPResult.html#uk.ac.manchester.spinnaker.transceiver">SCPResult</a></th>
 <td class="colLast">
 <div class="block">The SCP Result codes.</div>

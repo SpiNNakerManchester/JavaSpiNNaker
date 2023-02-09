@@ -128,7 +128,7 @@ extends <a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>class&nbsp;</code></td>
+<td class="colFirst"><code>protected class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="SDRAMAlloc.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SDRAMAlloc.Response</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP response to a request to allocate space in SDRAM.</div>
@@ -296,7 +296,8 @@ int&nbsp;tag)</span></div>
 <section class="detail">
 <h3><a id="getSCPResponse(java.nio.ByteBuffer)">getSCPResponse</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="SDRAMAlloc.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SDRAMAlloc.Response</a></span>&nbsp;<span class="memberName">getSCPResponse</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</span>
-                                   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a></span></div>
+                                   throws <span class="exceptions"><a href="../model/UnexpectedResponseCodeException.html" title="class in uk.ac.manchester.spinnaker.messages.model">UnexpectedResponseCodeException</a>,
+<a href="../model/MemoryAllocationFailedException.html" title="class in uk.ac.manchester.spinnaker.messages.model">MemoryAllocationFailedException</a></span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="SCPRequest.html#getSCPResponse(java.nio.ByteBuffer)">SCPRequest</a></code></span></div>
 <div class="block">Parse the response to this message.</div>
 <dl>
@@ -307,7 +308,8 @@ int&nbsp;tag)</span></div>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The message response.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a></code> - If anything goes wrong with parsing.</dd>
+<dd><code><a href="../model/UnexpectedResponseCodeException.html" title="class in uk.ac.manchester.spinnaker.messages.model">UnexpectedResponseCodeException</a></code></dd>
+<dd><code><a href="../model/MemoryAllocationFailedException.html" title="class in uk.ac.manchester.spinnaker.messages.model">MemoryAllocationFailedException</a></code></dd>
 </dl>
 </section>
 </li>

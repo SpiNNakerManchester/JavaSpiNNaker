@@ -52,13 +52,13 @@ loadScripts(document, 'script');</script>
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
 <li><a href="#field.summary">Field</a>&nbsp;|&nbsp;</li>
-<li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
+<li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
 <li>Field&nbsp;|&nbsp;</li>
-<li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
+<li>Constr&nbsp;|&nbsp;</li>
 <li>Method</li>
 </ul>
 </div>
@@ -89,10 +89,10 @@ loadScripts(document, 'script');</script>
 <section class="description">
 <dl>
 <dt>Direct Known Subclasses:</dt>
-<dd><code><a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a></code></dd>
+<dd><code><a href="EmptyResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">EmptyResponse</a></code>, <code><a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a></code></dd>
 </dl>
 <hr>
-<pre>public class <span class="typeNameLabel">CheckOKResponse</span>
+<pre>public abstract class <span class="typeNameLabel">CheckOKResponse</span>
 extends <a href="SCPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPResponse</a></pre>
 <div class="block">An SCP response to a request which returns nothing other than OK or an error.
  Subclasses add <a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">payload parsing</a>.</div>
@@ -112,35 +112,6 @@ extends <a href="SCPResponse.html" title="class in uk.ac.manchester.spinnaker.me
 </a><code><a href="SCPResponse.html#result">result</a>, <a href="SCPResponse.html#sdpHeader">sdpHeader</a>, <a href="SCPResponse.html#sequence">sequence</a></code></div>
 </section>
 </li>
-<!-- ======== CONSTRUCTOR SUMMARY ======== -->
-<li class="blockList">
-<section class="constructorSummary"><a id="constructor.summary">
-<!--   -->
-</a>
-<h2>Constructor Summary</h2>
-<div class="memberSummary">
-<table>
-<caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Constructor</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,java.lang.Enum,java.nio.ByteBuffer)">CheckOKResponse</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;?&gt;&nbsp;command,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</code></th>
-<td class="colLast">
-<div class="block">Create an instance.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
 <!-- ========== METHOD SUMMARY =========== -->
 <li class="blockList">
 <section class="methodSummary"><a id="method.summary">
@@ -157,38 +128,6 @@ extends <a href="SCPResponse.html" title="class in uk.ac.manchester.spinnaker.me
 <a id="methods.inherited.from.class.java.lang.Object">
 <!--   -->
 </a><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang" class="externalLink">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang" class="externalLink">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang" class="externalLink">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang" class="externalLink">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang" class="externalLink">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang" class="externalLink">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait(long,int)" title="class or interface in java.lang" class="externalLink">wait</a></code></div>
-</section>
-</li>
-</ul>
-</section>
-<section class="details">
-<ul class="blockList">
-<!-- ========= CONSTRUCTOR DETAIL ======== -->
-<li class="blockList">
-<section class="constructorDetails"><a id="constructor.detail">
-<!--   -->
-</a>
-<h2>Constructor Details</h2>
-<ul class="blockList">
-<li class="blockList">
-<section class="detail">
-<h3><a id="&lt;init&gt;(java.lang.String,java.lang.Enum,java.nio.ByteBuffer)">CheckOKResponse</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">CheckOKResponse</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;?&gt;&nbsp;command,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</span>
-                throws <span class="exceptions"><a href="../model/UnexpectedResponseCodeException.html" title="class in uk.ac.manchester.spinnaker.messages.model">UnexpectedResponseCodeException</a></span></div>
-<div class="block">Create an instance.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>operation</code> - The overall operation that we are doing.</dd>
-<dd><code>command</code> - The command that we are handling a response to.</dd>
-<dd><code>buffer</code> - The buffer holding the response data.</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="../model/UnexpectedResponseCodeException.html" title="class in uk.ac.manchester.spinnaker.messages.model">UnexpectedResponseCodeException</a></code> - If the response wasn't OK.</dd>
-</dl>
-</section>
-</li>
-</ul>
 </section>
 </li>
 </ul>
@@ -223,13 +162,13 @@ extends <a href="SCPResponse.html" title="class in uk.ac.manchester.spinnaker.me
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
 <li><a href="#field.summary">Field</a>&nbsp;|&nbsp;</li>
-<li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
+<li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
 <li>Field&nbsp;|&nbsp;</li>
-<li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
+<li>Constr&nbsp;|&nbsp;</li>
 <li>Method</li>
 </ul>
 </div>

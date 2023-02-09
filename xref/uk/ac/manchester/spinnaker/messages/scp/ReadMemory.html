@@ -25,8 +25,8 @@
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.nio.ByteOrder.LITTLE_ENDIAN;
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_READ;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.scp.TransferUnit.efficientTransferUnit;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.model.TransferUnit.efficientTransferUnit;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_READ;
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> java.nio.ByteBuffer;
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  
@@ -77,28 +77,29 @@
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>  	}
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>  	@Override
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>  	<strong class="jxr_keyword">public</strong> Response getSCPResponse(ByteBuffer buffer) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>  		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Response(buffer);
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>  	}
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>  
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>  	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>  <em class="jxr_javadoccomment">	 * An SCP response to a request to read a region of memory on a chip. Note</em>
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>  <em class="jxr_javadoccomment">	 * that it is up to the caller to manage the buffer position of the returned</em>
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>  <em class="jxr_javadoccomment">	 * response if it is to be read from multiple times.</em>
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> Response
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>  			<strong class="jxr_keyword">extends</strong> PayloadedResponse&lt;ByteBuffer, RuntimeException&gt; {
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>  		Response(ByteBuffer buffer) <strong class="jxr_keyword">throws</strong> <a name="UnexpectedResponseCodeException" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/UnexpectedResponseCodeException.html#UnexpectedResponseCodeException">UnexpectedResponseCodeException</a> {
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>  			<strong class="jxr_keyword">super</strong>(<span class="jxr_string">"Read"</span>, CMD_READ, buffer);
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>  		}
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>  
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>  		<em class="jxr_javadoccomment">/** @return The data read, in a little-endian read-only buffer. */</em>
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>  		@Override
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>  		<strong class="jxr_keyword">protected</strong> ByteBuffer parse(ByteBuffer buffer) {
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>  			<strong class="jxr_keyword">return</strong> buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>  		}
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>  	}
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>  }
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  	<strong class="jxr_keyword">public</strong> Response getSCPResponse(ByteBuffer buffer)
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  			<strong class="jxr_keyword">throws</strong> <a name="UnexpectedResponseCodeException" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/UnexpectedResponseCodeException.html#UnexpectedResponseCodeException">UnexpectedResponseCodeException</a> {
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Response(buffer);
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  	}
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>  <em class="jxr_javadoccomment">	 * An SCP response to a request to read a region of memory on a chip. Note</em>
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  <em class="jxr_javadoccomment">	 * that it is up to the caller to manage the buffer position of the returned</em>
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>  <em class="jxr_javadoccomment">	 * response if it is to be read from multiple times.</em>
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>  	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> Response
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>  			<strong class="jxr_keyword">extends</strong> PayloadedResponse&lt;ByteBuffer, RuntimeException&gt; {
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>  		Response(ByteBuffer buffer) <strong class="jxr_keyword">throws</strong> <a name="UnexpectedResponseCodeException" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/UnexpectedResponseCodeException.html#UnexpectedResponseCodeException">UnexpectedResponseCodeException</a> {
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>  			<strong class="jxr_keyword">super</strong>(<span class="jxr_string">"Read"</span>, CMD_READ, buffer);
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>  		}
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>  		<em class="jxr_javadoccomment">/** @return The data read, in a little-endian read-only buffer. */</em>
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  		@Override
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>  		<strong class="jxr_keyword">protected</strong> ByteBuffer parse(ByteBuffer buffer) {
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>  			<strong class="jxr_keyword">return</strong> buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>  		}
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>  	}
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2023 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

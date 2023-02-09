@@ -90,7 +90,7 @@ loadScripts(document, 'script');</script>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
 <div class="inheritance"><a href="../scp/SCPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp.SCPResponse</a>
 <div class="inheritance"><a href="BMPRequest.BMPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse</a>
-<div class="inheritance"><a href="BMPRequest.PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.PayloadedResponse</a>&lt;<a href="ReadIPAddress.Addresses.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadIPAddress.Addresses</a>&gt;
+<div class="inheritance"><a href="BMPRequest.PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.PayloadedResponse</a>&lt;<a href="../model/Addresses.html" title="class in uk.ac.manchester.spinnaker.messages.model">Addresses</a>&gt;
 <div class="inheritance">uk.ac.manchester.spinnaker.messages.bmp.ReadIPAddress.Response</div>
 </div>
 </div>
@@ -99,15 +99,15 @@ loadScripts(document, 'script');</script>
 <section class="description">
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="ReadIPAddress.Addresses.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadIPAddress.Addresses</a>&gt;</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="../model/Addresses.html" title="class in uk.ac.manchester.spinnaker.messages.model">Addresses</a>&gt;</code></dd>
 </dl>
 <dl>
 <dt>Enclosing class:</dt>
 <dd><a href="ReadIPAddress.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadIPAddress</a></dd>
 </dl>
 <hr>
-<pre>public static final class <span class="typeNameLabel">ReadIPAddress.Response</span>
-extends <a href="BMPRequest.PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.PayloadedResponse</a>&lt;<a href="ReadIPAddress.Addresses.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadIPAddress.Addresses</a>&gt;</pre>
+<pre>protected final class <span class="typeNameLabel">ReadIPAddress.Response</span>
+extends <a href="BMPRequest.PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.PayloadedResponse</a>&lt;<a href="../model/Addresses.html" title="class in uk.ac.manchester.spinnaker.messages.model">Addresses</a>&gt;</pre>
 <div class="block">An SCP response to a request for IP address information.</div>
 </section>
 <section class="summary">
@@ -144,7 +144,7 @@ extends <a href="BMPRequest.PayloadedResponse.html" title="class in uk.ac.manche
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code>protected <a href="ReadIPAddress.Addresses.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadIPAddress.Addresses</a></code></td>
+<td class="colFirst"><code>protected <a href="../model/Addresses.html" title="class in uk.ac.manchester.spinnaker.messages.model">Addresses</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#parse(java.nio.ByteBuffer)">parse</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</code></th>
 <td class="colLast">
 <div class="block">Parse the buffer.</div>
@@ -185,12 +185,12 @@ extends <a href="BMPRequest.PayloadedResponse.html" title="class in uk.ac.manche
 <li class="blockList">
 <section class="detail">
 <h3><a id="parse(java.nio.ByteBuffer)">parse</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="ReadIPAddress.Addresses.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadIPAddress.Addresses</a></span>&nbsp;<span class="memberName">parse</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</span></div>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="../model/Addresses.html" title="class in uk.ac.manchester.spinnaker.messages.model">Addresses</a></span>&nbsp;<span class="memberName">parse</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="BMPRequest.PayloadedResponse.html#parse(java.nio.ByteBuffer)">BMPRequest.PayloadedResponse</a></code></span></div>
 <div class="block">Parse the buffer.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="BMPRequest.PayloadedResponse.html#parse(java.nio.ByteBuffer)">parse</a></code>&nbsp;in class&nbsp;<code><a href="BMPRequest.PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.PayloadedResponse</a>&lt;<a href="ReadIPAddress.Addresses.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadIPAddress.Addresses</a>&gt;</code></dd>
+<dd><code><a href="BMPRequest.PayloadedResponse.html#parse(java.nio.ByteBuffer)">parse</a></code>&nbsp;in class&nbsp;<code><a href="BMPRequest.PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.PayloadedResponse</a>&lt;<a href="../model/Addresses.html" title="class in uk.ac.manchester.spinnaker.messages.model">Addresses</a>&gt;</code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>buffer</code> - The buffer to parse. Will be positioned after the message
             header.</dd>

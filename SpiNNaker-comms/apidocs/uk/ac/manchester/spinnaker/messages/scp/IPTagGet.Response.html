@@ -90,7 +90,7 @@ loadScripts(document, 'script');</script>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
 <div class="inheritance"><a href="SCPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp.SCPResponse</a>
 <div class="inheritance"><a href="CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse</a>
-<div class="inheritance"><a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp.PayloadedResponse</a>&lt;<a href="IPTagGet.TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet.TagDescription</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a>&gt;
+<div class="inheritance"><a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp.PayloadedResponse</a>&lt;<a href="../model/TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.model">TagDescription</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a>&gt;
 <div class="inheritance">uk.ac.manchester.spinnaker.messages.scp.IPTagGet.Response</div>
 </div>
 </div>
@@ -99,15 +99,15 @@ loadScripts(document, 'script');</script>
 <section class="description">
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="IPTagGet.TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet.TagDescription</a>&gt;</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="../model/TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.model">TagDescription</a>&gt;</code></dd>
 </dl>
 <dl>
 <dt>Enclosing class:</dt>
 <dd><a href="IPTagGet.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet</a></dd>
 </dl>
 <hr>
-<pre>public static final class <span class="typeNameLabel">IPTagGet.Response</span>
-extends <a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a>&lt;<a href="IPTagGet.TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet.TagDescription</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a>&gt;</pre>
+<pre>protected final class <span class="typeNameLabel">IPTagGet.Response</span>
+extends <a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a>&lt;<a href="../model/TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.model">TagDescription</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a>&gt;</pre>
 <div class="block">An SCP response to a request for an IP tags.</div>
 </section>
 <section class="summary">
@@ -144,7 +144,7 @@ extends <a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinna
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code>protected <a href="IPTagGet.TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet.TagDescription</a></code></td>
+<td class="colFirst"><code>protected <a href="../model/TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.model">TagDescription</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#parse(java.nio.ByteBuffer)">parse</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</code></th>
 <td class="colLast">
 <div class="block">Parse the payload of a response.</div>
@@ -185,14 +185,14 @@ extends <a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinna
 <li class="blockList">
 <section class="detail">
 <h3><a id="parse(java.nio.ByteBuffer)">parse</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="IPTagGet.TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet.TagDescription</a></span>&nbsp;<span class="memberName">parse</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</span>
-                                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a></span></div>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="../model/TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.model">TagDescription</a></span>&nbsp;<span class="memberName">parse</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</span>
+                        throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a></span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="PayloadedResponse.html#parse(java.nio.ByteBuffer)">PayloadedResponse</a></code></span></div>
 <div class="block">Parse the payload of a response. The buffer will be positioned after the
  checked header.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="PayloadedResponse.html#parse(java.nio.ByteBuffer)">parse</a></code>&nbsp;in class&nbsp;<code><a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a>&lt;<a href="IPTagGet.TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet.TagDescription</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a>&gt;</code></dd>
+<dd><code><a href="PayloadedResponse.html#parse(java.nio.ByteBuffer)">parse</a></code>&nbsp;in class&nbsp;<code><a href="PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a>&lt;<a href="../model/TagDescription.html" title="class in uk.ac.manchester.spinnaker.messages.model">TagDescription</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a>&gt;</code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>buffer</code> - The buffer to parse. Little-endian.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
