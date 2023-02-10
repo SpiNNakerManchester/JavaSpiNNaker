@@ -238,7 +238,7 @@ public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 	@Override
 	public void send(ByteBuffer requestData, int seq) throws IOException {
 		var prev = receiverMap.put(seq, currentThread());
-		if (prev != currentThread()) {
+		if (prev != null && prev != currentThread()) {
 			log.warn("response for message now awaited by different thread");
 		}
 		send(requestData);
