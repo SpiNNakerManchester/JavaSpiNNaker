@@ -116,7 +116,7 @@ class AllocatorTest extends TestSupport {
 	@SuppressWarnings("CompileTimeConstant")
 	private int countJobInTable(Connection c, int job) {
 		// Table names CANNOT be parameters; they're not values
-		return conn.query(
+		return c.query(
 				"SELECT COUNT(*) AS c FROM jobs WHERE job_id = :job")
 				.call1(integer("c"), job).orElseThrow();
 	}
