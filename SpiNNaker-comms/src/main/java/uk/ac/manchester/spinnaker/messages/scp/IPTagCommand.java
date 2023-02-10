@@ -13,27 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.manchester.spinnaker.messages.model;
+package uk.ac.manchester.spinnaker.messages.scp;
 
-/** The SCP Allocation and Free codes. */
-public enum AllocFree {
-	/** Allocate SDRAM. */
-	ALLOC_SDRAM(0),
-	/** Free SDRAM using a Pointer. */
-	FREE_SDRAM_BY_POINTER(1),
-	/** Free SDRAM using an APP ID. */
-	FREE_SDRAM_BY_APP_ID(2),
-	/** Allocate Routing Entries. */
-	ALLOC_ROUTING(3),
-	/** Free Routing Entries by Pointer. */
-	FREE_ROUTING_BY_POINTER(4),
-	/** Free Routing Entries by APP ID. */
-	FREE_ROUTING_BY_APP_ID(5);
+/** SCP IP tag Commands. For {@code cmd_iptag()} in {@code scamp-cmd.c}. */
+enum IPTagCommand {
+	/** Create. */
+	NEW(0),
+	/** Update. */
+	SET(1),
+	/** Fetch. */
+	GET(2),
+	/** Delete. */
+	CLR(3),
+	/** Update Meta. */
+	TTO(4);
 
-	/** The SARK operation value. */
+	/** The SCAMP-encoded value. */
 	public final byte value;
 
-	AllocFree(int value) {
+	IPTagCommand(int value) {
 		this.value = (byte) value;
 	}
 }

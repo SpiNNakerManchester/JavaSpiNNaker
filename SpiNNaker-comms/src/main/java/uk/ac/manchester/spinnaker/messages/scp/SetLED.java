@@ -22,13 +22,14 @@ import java.util.Map;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * An SCP request to change the state of an LED. There is no response payload.
  * <p>
  * Handled by {@code sark_led_set()} in {@code sark_hw.c}.
  */
-public class SetLED extends SCPRequest<CheckOKResponse> {
+public class SetLED extends SCPRequest<EmptyResponse> {
 	/**
 	 * @param core
 	 *            The SpiNNaker core that will set the BMPSetLED
@@ -48,7 +49,8 @@ public class SetLED extends SCPRequest<CheckOKResponse> {
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Set LED", CMD_LED, buffer);
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
+		return new EmptyResponse("Set LED", CMD_LED, buffer);
 	}
 }

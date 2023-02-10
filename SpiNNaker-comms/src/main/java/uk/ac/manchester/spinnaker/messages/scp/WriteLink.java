@@ -22,6 +22,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * A request to write memory on a neighbouring chip. There is no response
@@ -29,7 +30,7 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
  * <p>
  * Calls {@code cmd_link_write()} in {@code scamp-cmd.c}.
  */
-public class WriteLink extends SCPRequest<CheckOKResponse> {
+public class WriteLink extends SCPRequest<EmptyResponse> {
 	/**
 	 * @param core
 	 *            the core to write via
@@ -50,7 +51,8 @@ public class WriteLink extends SCPRequest<CheckOKResponse> {
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Write Memory", CMD_LINK_WRITE, buffer);
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
+		return new EmptyResponse("Write Memory", CMD_LINK_WRITE, buffer);
 	}
 }

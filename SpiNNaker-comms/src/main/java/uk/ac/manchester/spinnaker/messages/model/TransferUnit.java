@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.manchester.spinnaker.messages.scp;
+package uk.ac.manchester.spinnaker.messages.model;
 
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 

@@ -62,7 +62,7 @@ public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 	}
 
 	/** An SCP response to a request for the contents of an FPGA register. */
-	public static final class Response
+	protected final class Response
 			extends BMPRequest.PayloadedResponse<Integer> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {

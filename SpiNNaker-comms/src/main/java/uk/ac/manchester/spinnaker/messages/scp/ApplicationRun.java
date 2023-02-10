@@ -28,6 +28,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.ValidP;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -39,7 +40,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * Calls {@code proc_start_app()} in {@code scamp-app.c}.
  */
 @UsedInJavadocOnly(SystemVariableDefinition.class)
-public class ApplicationRun extends SCPRequest<CheckOKResponse> {
+public class ApplicationRun extends SCPRequest<EmptyResponse> {
 	private static final int WAIT_BIT = 18;
 
 	/**
@@ -96,7 +97,8 @@ public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Run Application", CMD_AR, buffer);
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
+		return new EmptyResponse("Run Application", CMD_AR, buffer);
 	}
 }

@@ -17,8 +17,8 @@ package uk.ac.manchester.spinnaker.messages.bmp;
 
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.model.TransferUnit.WORD;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_READ;
-import static uk.ac.manchester.spinnaker.messages.scp.TransferUnit.WORD;
 
 import java.nio.ByteBuffer;
 
@@ -49,7 +49,7 @@ public class GetFPGAResetStatus
 	private static final int XIL_RST_BIT = 14;
 
 	/** The response to a request to get the FPGA reset status of a board. */
-	public static final class Response
+	protected final class Response
 			extends BMPRequest.PayloadedResponse<Boolean> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {

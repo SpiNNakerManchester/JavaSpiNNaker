@@ -30,6 +30,7 @@ import java.util.List;
 
 import uk.ac.manchester.spinnaker.machine.ValidP;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * An SCP request to finish a flood fill of data across all cores and launch the
@@ -37,7 +38,7 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
  * <p>
  * Handled ultimately by {@code nn_cmd_ffe()} in {@code scamp-nn.c}.
  */
-public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
+public final class FloodFillEnd extends SCPRequest<EmptyResponse> {
 	// Send on all links, std inter-message delay, no message resends
 	private static final int NNP_FORWARD_RETRY =
 			(FORWARD_LINKS << BYTE1) | (DELAY << BYTE0);
@@ -105,7 +106,8 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Flood Fill", CMD_NNP, buffer);
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
+		return new EmptyResponse("Flood Fill", CMD_NNP, buffer);
 	}
 }

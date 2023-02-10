@@ -18,13 +18,13 @@ package uk.ac.manchester.spinnaker.messages.scp;
 import static java.lang.Byte.toUnsignedInt;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.messages.model.IPTagCommand.SET;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.BYTE_SHIFT;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.COMMAND_FIELD;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.PORT_MASK;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.STRIP_FIELD_BIT;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.THREE_BITS_MASK;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.USE_SENDER_BIT;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.BYTE_SHIFT;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.COMMAND_FIELD;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.PORT_MASK;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.STRIP_FIELD_BIT;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.THREE_BITS_MASK;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.USE_SENDER_BIT;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagCommand.SET;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
 
 import java.nio.ByteBuffer;
@@ -50,7 +50,7 @@ import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
  *
  * @see ReverseIPTagSet
  */
-public class IPTagSet extends SCPRequest<CheckOKResponse> {
+public class IPTagSet extends SCPRequest<EmptyResponse> {
 	private static final Logger log = getLogger(IPTagSet.class);
 
 	private static final int INADDRSZ = 4;
@@ -105,8 +105,8 @@ public class IPTagSet extends SCPRequest<CheckOKResponse> {
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer)
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
 			throws UnexpectedResponseCodeException {
-		return new CheckOKResponse("Set IP Tag", CMD_IPTAG, buffer);
+		return new EmptyResponse("Set IP Tag", CMD_IPTAG, buffer);
 	}
 }
