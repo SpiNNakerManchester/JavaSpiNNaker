@@ -37,6 +37,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.TestSupport;
+import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask.HistTestAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask.TestAPI;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
 import uk.ac.manchester.spinnaker.alloc.bmp.MockTransceiver;
@@ -110,7 +111,12 @@ class AllocatorTest extends TestSupport {
 
 	@SuppressWarnings("deprecation")
 	private TestAPI getAllocTester() {
-		return alloc.getTestAPI(conn, db.getHistoricalConnection());
+		return alloc.getTestAPI(conn);
+	}
+
+	@SuppressWarnings("deprecation")
+	private HistTestAPI getHistAllocTester(Connection histConn) {
+		return alloc.getHistTestAPI(conn, histConn);
 	}
 
 	@SuppressWarnings("CompileTimeConstant")
@@ -406,7 +412,7 @@ class AllocatorTest extends TestSupport {
 						() -> "must have created a job we can tombstone");
 				int preTomb = countJobInTable(histConn, job);
 
-				var moved = getAllocTester().tombstone();
+				var moved = getHistAllocTester(histConn).tombstone();
 
 				assertEquals(1, moved.numJobs());
 				// No resources were ever allocated, so no moves to do

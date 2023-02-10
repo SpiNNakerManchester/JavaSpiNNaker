@@ -41,6 +41,7 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.curry;
 
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
@@ -1102,9 +1103,8 @@ public class BMPController extends DatabaseAwareBean {
 				var requestCollector = new ArrayList<Request>();
 				// The outer loop is always over a small set, fortunately
 				for (var machine : machines) {
-					long now = System.currentTimeMillis() / 1000;
 					stream(sql.getJobIdsWithChanges.call(integer("job_id"),
-							machine.getId(), now))
+							machine.getId(), Instant.now()))
 							.filter(jobId -> !busyJobs.contains(jobId))
 							.forEach(jobId -> takeRequestsForJob(machine, jobId,
 									sql, requestCollector));
@@ -1112,16 +1112,16 @@ public class BMPController extends DatabaseAwareBean {
 					// Avoid doing these in the case that anything else is
 					// being done with the board
 					if (requestCollector.isEmpty()) {
-					    requestCollector.addAll(
-					    		sql.getBlacklistReads(machine));
+						requestCollector.addAll(
+								sql.getBlacklistReads(machine));
 					}
 					if (requestCollector.isEmpty()) {
-					    requestCollector.addAll(
-					    		sql.getBlacklistWrites(machine));
+						requestCollector.addAll(
+								sql.getBlacklistWrites(machine));
 					}
 					if (requestCollector.isEmpty()) {
-					    requestCollector.addAll(
-					    		sql.getReadSerialInfos(machine));
+						requestCollector.addAll(
+								sql.getReadSerialInfos(machine));
 					}
 				}
 				return requestCollector;
@@ -1131,13 +1131,21 @@ public class BMPController extends DatabaseAwareBean {
 
 	private class PowerChange {
 		final Integer changeId;
+
 		final int cabinet;
+
 		final int frame;
+
 		final Integer boardId;
+
 		final Integer boardNum;
+
 		final boolean power;
+
 		final JobState from;
+
 		final JobState to;
+
 		final List<Direction> offLinks;
 
 		PowerChange(Row row) {
@@ -1296,19 +1304,16 @@ public class BMPController extends DatabaseAwareBean {
 		// What follows are type-safe wrappers
 
 		int setBoardPowerOn(Integer boardId) {
-			long now = System.currentTimeMillis() / 1000;
-			return setBoardPowerOn.call(now, boardId);
+			return setBoardPowerOn.call(Instant.now(), boardId);
 		}
 
 		int setBoardPowerOff(Integer boardId) {
-			long now = System.currentTimeMillis() / 1000;
-			return setBoardPowerOff.call(now, boardId);
+			return setBoardPowerOff.call(Instant.now(), boardId);
 		}
 
 		int setJobState(JobState state, int pending, Integer jobId) {
 			if (state == JobState.DESTROYED) {
-				long now = System.currentTimeMillis() / 1000;
-				return setJobDestroyed.call(pending, now, jobId);
+				return setJobDestroyed.call(pending, Instant.now(), jobId);
 			}
 			return setJobState.call(state, pending, jobId);
 		}
@@ -1353,9 +1358,8 @@ public class BMPController extends DatabaseAwareBean {
 
 		int insertBoardReport(
 				int boardId, Integer jobId, String issue, int userId) {
-			long now = System.currentTimeMillis() / 1000;
-			return insertBoardReport.key(boardId, jobId, issue, userId, now)
-					.orElseThrow();
+			return insertBoardReport.key(boardId, jobId, issue, userId,
+					Instant.now()).orElseThrow();
 		}
 
 		int markBoardAsDead(Integer boardId) {
@@ -1447,7 +1451,8 @@ public class BMPController extends DatabaseAwareBean {
 		void launchThreadIfNecessary() throws InterruptedException {
 			synchronized (state) {
 				if (isNull(workerThread)) {
-					log.debug("Starting background thread for machine {}", machine);
+					log.debug("Starting background thread for machine {}",
+							machine);
 					executor.execute(this::backgroundThread);
 					while (isNull(workerThread)) {
 						state.wait();
@@ -1705,8 +1710,16 @@ public class BMPController extends DatabaseAwareBean {
 		void processRequests(long millis)
 				throws IOException, SpinnmanException, InterruptedException;
 
+		/**
+		 * Get the last BMP exception.
+		 *
+		 * @return The exception.
+		 */
 		Throwable getBmpException();
 
+		/**
+		 * Clear the last BMP exception.
+		 */
 		void clearBmpException();
 	}
 

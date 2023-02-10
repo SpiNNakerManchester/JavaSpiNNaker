@@ -738,7 +738,8 @@ public class TxrxProcess {
 						.issueSequenceNumber(outstandingRequests.keySet()));
 
 				var req = new Request<>(request, callback);
-				log.debug("{}: sending message with sequence {}", this, sequence);
+				log.debug("{}: sending message with sequence {}", this,
+						sequence);
 				if (outstandingRequests.put(sequence, req) != null) {
 					throw new DuplicateSequenceNumberException();
 				}
@@ -828,7 +829,8 @@ public class TxrxProcess {
 					this, connection, packetTimeout);
 			var msg = connection.receiveSCPResponse(packetTimeout);
 			if (log.isDebugEnabled()) {
-				log.debug("{}, Connection {} received message {} with seq num {}",
+				log.debug(
+						"{}, Connection {} received message {} with seq num {}",
 						this, connection, msg.getResult(),
 						msg.getSequenceNumber());
 			}
@@ -921,11 +923,14 @@ public class TxrxProcess {
 
 		@Override
 		public String toString() {
-			return format(
-					"%s(req=%d,outstanding=%d,resent=%d,"
-							+ "restart=%d,timeouts=%d)",
-					super.toString(), numRequests, outstandingRequests.size(), numResent,
-					numRetryCodeResent, numTimeouts);
+			synchronized (outstandingRequests) {
+				return format(
+						"%s(req=%d,outstanding=%d,resent=%d,"
+								+ "restart=%d,timeouts=%d)",
+						super.toString(), numRequests,
+						outstandingRequests.size(),
+						numResent, numRetryCodeResent, numTimeouts);
+			}
 		}
 	}
 

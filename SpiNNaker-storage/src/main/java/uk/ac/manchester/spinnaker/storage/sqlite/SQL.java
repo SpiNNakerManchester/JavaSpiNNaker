@@ -245,7 +245,7 @@ abstract class SQL {
 	static final String HEADER = "HEADER";
 
 	/**
-	 * The kind of the result containing a spalloc information;
+	 * The kind of the result containing a spalloc information.
 	 */
 	static final String SPALLOC = "SPALLOC";
 

@@ -93,7 +93,7 @@ abstract class SQLiteProxyStorage<T extends DatabaseAPI>
 					break;
 				default:
 					throw new IllegalStateException("unreachable reached");
-			    }
+				}
 			}
 		}
 		// If we don't have all pieces of info, we can't talk to the proxy

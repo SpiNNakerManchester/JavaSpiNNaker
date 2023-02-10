@@ -41,7 +41,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * {@link LocalAuthenticationProvider}. Relies on the session ID being updated
  * to ensure that stale login information is not retained.
  *
- * @see LocalAuthenticationProvider#updateAuthentication(SecurityContext)
+ * @see LocalAuthenticationProvider#updateAuthentication(HttpServletRequest,
+ * SecurityContext)
  */
 @Component
 public class AppAuthTransformationFilter extends OncePerRequestFilter {

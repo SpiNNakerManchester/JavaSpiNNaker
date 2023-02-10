@@ -161,14 +161,16 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			var rec = new MachineListEntryRecord();
 			rec.setId(id);
 			rec.setName(row.getString("machine_name"));
-			countMachineThings.call1((m) -> {
+			if (!countMachineThings.call1((m) -> {
 				rec.setNumBoards(m.getInt("board_count"));
 				rec.setNumInUse(m.getInt("in_use"));
 				rec.setNumJobs(m.getInt("num_jobs"));
 				rec.setTags(getTags.call(string("tag"), id));
 				// We have to return something but don't read the result
 				return true;
-			}, id).orElseThrow();
+			}, id).isPresent()) {
+				throw new AssertionError("No result from count machine things");
+			}
 			return rec;
 		}
 	}
@@ -343,8 +345,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		rec.setState(row.getEnum("job_state", JobState.class));
 		var numBoards = row.getInteger("allocation_size");
 		rec.setNumBoards(numBoards);
-		rec.setPowered(nonNull(numBoards) && numBoards == countPoweredBoards
-				.call1(integer("c"), id).orElseThrow());
+		rec.setPowered(nonNull(numBoards) && numBoards.equals(countPoweredBoards
+				.call1(integer("c"), id).orElseThrow()));
 		rec.setMachineId(row.getInt("machine_id"));
 		rec.setMachineName(row.getString("machine_name"));
 		rec.setCreationTimestamp(row.getInstant("create_timestamp"));
@@ -514,6 +516,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	private class UserQuota {
 		Long quota;
+
 		int groupId;
 
 		UserQuota(Row row) {
@@ -568,6 +571,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	private class BoardLocated {
 		int boardId;
+
 		int z;
 
 		BoardLocated(Row row) {
@@ -625,9 +629,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	private static Optional<Integer> insertJob(Connection conn, MachineImpl m,
 			int owner, int group, Duration keepaliveInterval, byte[] req) {
 		try (var makeJob = conn.update(INSERT_JOB)) {
-			long now = System.currentTimeMillis() / 1000;
 			return makeJob.key(m.id, owner, group, keepaliveInterval, req,
-					now, now);
+					Instant.now(), Instant.now());
 		}
 	}
 
@@ -677,12 +680,13 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	private class Problem {
 		int boardId;
+
 		Integer jobId;
 
-	    Problem(Row row) {
-	    	boardId = row.getInt("board_id");
-	    	jobId = row.getInt("job_id");
-	    }
+		Problem(Row row) {
+			boardId = row.getInt("board_id");
+			jobId = row.getInt("job_id");
+		}
 	}
 
 	@Override
@@ -716,9 +720,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		email.header(description, 1, permit.name);
 		int userId = getUser(sql.getConnection(), permit.name).orElseThrow(
 				() -> new ReportRollbackExn("no such user: %s", permit.name));
-		long now = System.currentTimeMillis() / 1000;
 		sql.insertReport.key(problem.boardId, problem.jobId,
-				description, userId, now).ifPresent(email::issue);
+				description, userId, Instant.now()).ifPresent(email::issue);
 		return takeBoardsOutOfService(sql, email).map(acted -> {
 			email.footer(acted);
 			return email;
@@ -727,10 +730,15 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	private class Reported {
 		int boardId;
+
 		int x;
+
 		int y;
+
 		int z;
+
 		String address;
+
 		int numReports;
 
 		Reported(Row row) {
@@ -869,8 +877,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (var conn = getConnection();
 					var findBoard = conn.query(findBoardByIPAddress)) {
 				return conn.transaction(false,
-						() -> findBoard.call1
-						(row -> new BoardLocationImpl(row, this), id, address));
+						() -> findBoard.call1(
+								row -> new BoardLocationImpl(row, this), id,
+								address));
 			}
 		}
 
@@ -1250,9 +1259,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			}
 			try (var conn = getConnection();
 					var keepAlive = conn.update(UPDATE_KEEPALIVE)) {
-				long now = System.currentTimeMillis() / 1000;
-				conn.transaction(() -> keepAlive.call(now, keepaliveAddress,
-						id));
+				conn.transaction(() -> keepAlive.call(Instant.now(),
+						keepaliveAddress, id));
 			}
 		}
 
@@ -1477,8 +1485,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		 */
 		private void addIssueReport(BoardReportSQL u, int boardId, String issue,
 				int userId, EmailBuilder email) {
-			long now = System.currentTimeMillis() / 1000;
-			u.insertReport.key(boardId, id, issue, userId, now)
+			u.insertReport.key(boardId, id, issue, userId, Instant.now())
 					.ifPresent(email::issue);
 		}
 

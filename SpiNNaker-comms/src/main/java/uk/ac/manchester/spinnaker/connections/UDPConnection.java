@@ -276,10 +276,7 @@ public abstract class UDPConnection<T> implements Connection {
 	 * {@link DelegatingSCPConnection}.
 	 *
 	 * @return The socket's remote address
-	 * @throws IOException
-	 *             If the socket is closed.
 	 */
-	@ForOverride
 	protected InetSocketAddress getRemoteAddress() {
 		return remoteAddress;
 	}

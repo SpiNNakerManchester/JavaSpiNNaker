@@ -63,6 +63,7 @@ public class BlacklistStore extends DatabaseAwareBean {
 
 	private class DeadLink {
 		ChipLocation location;
+
 		Direction direction;
 
 		DeadLink(Row row) {
@@ -91,13 +92,13 @@ public class BlacklistStore extends DatabaseAwareBean {
 			var blacklistedCores =
 					stream(blCores.call(core("x", "y", "p"), boardId))
 					.toCollectingMap(
-						    HashSet::new, c -> c.asChipLocation(),
-						    c -> c.getP());
+							HashSet::new, c -> c.asChipLocation(),
+							c -> c.getP());
 			var blacklistedLinks =
 					stream(blLinks.call(DeadLink::new, boardId))
 					.toCollectingMap(
-					        () -> noneOf(Direction.class), d -> d.location,
-					        d -> d.direction);
+							() -> noneOf(Direction.class), d -> d.location,
+							d -> d.direction);
 
 			if (blacklistedChips.isEmpty() && blacklistedCores.isEmpty()
 					&& blacklistedLinks.isEmpty()) {

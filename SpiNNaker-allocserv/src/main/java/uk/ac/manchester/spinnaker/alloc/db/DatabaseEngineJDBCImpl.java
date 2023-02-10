@@ -52,6 +52,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
+/**
+ * Implementation of the DatabaseAPI that uses JDBC.
+ */
 @Service
 @Primary
 public class DatabaseEngineJDBCImpl implements DatabaseAPI {
@@ -69,6 +72,13 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 	private final TransactionTemplate transactionTemplate;
 
+	/**
+	 * Create a new JDBC Database API.
+	 *
+	 * @param jdbcTemplate The connection to the main database.
+	 * @param tombstoneJdbcTemplate The connection to the historical database.
+	 * @param transactionManager The transaction manager.
+	 */
 	@Autowired
 	public DatabaseEngineJDBCImpl(
 			@Qualifier("mainDatabase") JdbcTemplate jdbcTemplate,
@@ -128,7 +138,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		/** Whether a rollback has been requested on a transaction. */
 		private boolean doRollback = false;
 
-		/** The JdbcTemplate to use */
+		/** The JdbcTemplate to use. */
 		private final JdbcTemplate connectionJdbcTemplate;
 
 		ConnectionImpl(JdbcTemplate connectionJdbcTemplate) {
@@ -184,7 +194,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 				TransactedWithResult<T> operation) {
 			return transactionTemplate.execute(status -> {
 				try {
-				    return operation.act();
+					return operation.act();
 				} finally {
 					if (doRollback) {
 						status.setRollbackOnly();
@@ -216,7 +226,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 	}
 
 	private final class PreparedStatementCreatorImpl
-	        implements PreparedStatementCreator {
+			implements PreparedStatementCreator {
 
 		private final String query;
 
@@ -231,12 +241,12 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		@Override
 		public PreparedStatement createPreparedStatement(
 				java.sql.Connection con) throws SQLException {
-		    var stmt = con.prepareStatement(query,
-		    		Statement.RETURN_GENERATED_KEYS);
-		    for (int i = 0; i < values.size(); i++) {
-		    	stmt.setObject(i + 1, values.get(i));
-		    }
-		    return stmt;
+			var stmt = con.prepareStatement(query,
+					Statement.RETURN_GENERATED_KEYS);
+			for (int i = 0; i < values.size(); i++) {
+				stmt.setObject(i + 1, values.get(i));
+			}
+			return stmt;
 		}
 
 	}
@@ -352,10 +362,10 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 	 * Simple reader that loads a complex SQL query from a file.
 	 *
 	 * @param resource
-	 *            The resource to load from
+	 *			The resource to load from
 	 * @return The content of the resource
 	 * @throws UncategorizedScriptException
-	 *             If the resource can't be loaded.
+	 *			 If the resource can't be loaded.
 	 */
 	private String readSQL(Resource resource) {
 		try (var is = resource.getInputStream()) {

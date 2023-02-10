@@ -76,9 +76,9 @@ import uk.ac.manchester.spinnaker.utils.Daemon;
  * <strong>Implementation Note:</strong> Neither this class nor the client
  * classes it creates maintain state that needs to be closed explicitly
  * <em>except</em> for
- * {@linkplain SpallocClient.Job#getConnection(HasChipLocation) proxied
- * connections} and {@linkplain SpallocClient.Job#getTransceiver()
- * transceivers}, as connections and transceivers usually need to be closed.
+ * {@linkplain SpallocClient.Job#getTransceiver(
+ * uk.ac.manchester.spinnaker.machine.Machine) transceivers}, as transceivers
+ * usually need to be closed.
  *
  * @author Donal Fellows
  */
@@ -282,8 +282,10 @@ public class SpallocClientFactory {
 	 *
 	 * @param uri
 	 *            The URI of the job
-	 * @param bearerToken
-	 *            The bearer token to authenticate with
+	 * @param headers
+	 *            The headers to read authentication from.
+	 * @param cookies
+	 *            The cookies to read authentication from.
 	 * @return A job.
 	 * @throws IOException
 	 *             If there is an error communicating with the server.
@@ -669,7 +671,8 @@ public class SpallocClientFactory {
 		}
 
 		@Override
-		public TransceiverInterface getTransceiver(uk.ac.manchester.spinnaker.machine.Machine machine)
+		public TransceiverInterface getTransceiver(
+				uk.ac.manchester.spinnaker.machine.Machine machine)
 				throws IOException, InterruptedException, SpinnmanException {
 			var ws = getProxy();
 			var am = machine();

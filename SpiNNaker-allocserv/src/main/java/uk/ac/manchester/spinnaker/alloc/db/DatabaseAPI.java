@@ -39,18 +39,6 @@ public interface DatabaseAPI {
 	 * connections instead. The connection has auto-commit disabled; use the
 	 * {@link Connection#transaction(DatabaseEngine.TransactedWithResult)
 	 * transaction()} method instead.
-	 * <p>
-	 * Note that if an in-memory database is used (see
-	 * {@link #getInMemoryDB()}), that DB can <em>only</em> be accessed from the
-	 * connection returned from this method; the next call to this method
-	 * (whether from the current thread or another one) will get an independent
-	 * database. Such in-memory databases are not subject to thread-bound
-	 * cleanup actions; they're simply deleted from memory when no longer used
-	 * (but the connection should be {@code close()}d after use for efficiency
-	 * nonetheless).
-	 * <p>
-	 * This would be marked with {@link MustBeClosed} except that causes a mess
-	 * elsewhere.
 	 *
 	 * @return A configured initialised connection to the database.
 	 */
@@ -557,7 +545,7 @@ public interface DatabaseAPI {
 		 *            Positional argument to the query.
 		 * @return The resulting object.
 		 */
-		public <T> Optional<T> call1(RowMapper<T> mapper, Object... arguments);
+		<T> Optional<T> call1(RowMapper<T> mapper, Object... arguments);
 	}
 
 	/**
@@ -589,7 +577,7 @@ public interface DatabaseAPI {
 	}
 
 	/**
-	 * Maps database Row to an object
+	 * Maps database Row to an object.
 	 *
 	 * @param <T> The type of object returned
 	 */

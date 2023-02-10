@@ -120,31 +120,31 @@ public class ServiceConfig extends Application {
 
 	private static final Logger log = getLogger(ServiceConfig.class);
 
-	@Bean(name="mainDatasource")
-	@ConfigurationProperties(prefix="spalloc.datasource")
+	@Bean(name = "mainDatasource")
+	@ConfigurationProperties(prefix = "spalloc.datasource")
 	public DataSource mainDatasource() {
 		return DataSourceBuilder.create().build();
 	}
 
-	@Bean(name="historicalDatasource")
-	@ConfigurationProperties(prefix="spalloc.historical-data.datasource")
+	@Bean(name = "historicalDatasource")
+	@ConfigurationProperties(prefix = "spalloc.historical-data.datasource")
 	public DataSource historicalDatasource() {
 		return DataSourceBuilder.create().build();
 	}
 
-	@Bean(name="mainDatabase")
+	@Bean(name = "mainDatabase")
 	public JdbcTemplate mainDatabase(
 			@Qualifier("mainDatasource") DataSource ds) {
 		return new JdbcTemplate(ds);
 	}
 
-	@Bean(name="historicalDatabase")
+	@Bean(name = "historicalDatabase")
 	public JdbcTemplate historicalDatabase(
 			@Qualifier("historicalDatasource") DataSource ds) {
 		return new JdbcTemplate(ds);
 	}
 
-	@Bean(name="mainTransactionManager")
+	@Bean(name = "mainTransactionManager")
 	public PlatformTransactionManager mainTransactionManager(
 			@Qualifier("mainDatasource") DataSource ds) {
 		return new JdbcTransactionManager(ds);

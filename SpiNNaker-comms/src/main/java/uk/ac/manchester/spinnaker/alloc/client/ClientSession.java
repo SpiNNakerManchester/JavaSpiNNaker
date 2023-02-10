@@ -163,8 +163,8 @@ final class ClientSession implements Session {
 			this.csrfHeader = CSRF_HEADER_NAME;
 		}
 		if (session == null) {
-		    // This does the actual logging in process
-		    renew(false);
+			// This does the actual logging in process
+			renew(false);
 		}
 	}
 

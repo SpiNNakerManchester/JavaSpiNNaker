@@ -32,6 +32,7 @@ import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 import static uk.ac.manchester.spinnaker.utils.OptionalUtils.ifElse;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -567,8 +568,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 *            Who logged in?
 		 */
 		void noteLoginSuccessForUser(int userId) {
-			long now = System.currentTimeMillis() / 1000;
-			if (loginSuccess.call(now, null, userId) != 1) {
+			if (loginSuccess.call(Instant.now(), null, userId) != 1) {
 				log.warn("failed to note success for user {}", userId);
 			}
 		}
@@ -583,8 +583,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 *            What is their OpenID {@code sub} (subject) claim?
 		 */
 		void noteLoginSuccessForUser(int userId, String subject) {
-			long now = System.currentTimeMillis() / 1000;
-			if (loginSuccess.call(now, subject, userId) != 1) {
+			if (loginSuccess.call(Instant.now(), subject, userId) != 1) {
 				log.warn("failed to note success for user {}", userId);
 			}
 		}
@@ -600,13 +599,12 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 *            gets a temporary lock applied.
 		 */
 		void noteLoginFailureForUser(int userId, String username) {
-			long now = System.currentTimeMillis() / 1000;
-			loginFailure.call(now, authProps.getMaxLoginFailures(), userId);
+			loginFailure.call(Instant.now(), authProps.getMaxLoginFailures(),
+					userId);
 		}
 
 		void unlock() {
-			long now = System.currentTimeMillis() / 1000;
-			unlock.call(authProps.getAccountLockDuration(), now);
+			unlock.call(authProps.getAccountLockDuration(), Instant.now());
 		}
 	}
 
@@ -636,7 +634,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				if (!e.getMessage().contains("already exists")) {
 					throw e;
 				}
-				log.warn("Group temp table already exists (" + e.getMessage() + ")");
+				log.warn("Group temp table already exists ("
+						+ e.getMessage() + ")");
 			}
 			insert = conn.update(GROUP_SYNC_INSERT_TEMP_ROW);
 			add = conn.update(GROUP_SYNC_ADD_GROUPS);
@@ -904,8 +903,11 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	private static class AuthInfo {
+
 		final String encryptedPassword;
+
 		final TrustLevel trustLevel;
+
 		final String openIdSubject;
 
 		AuthInfo(Row row) {

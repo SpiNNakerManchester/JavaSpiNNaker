@@ -201,7 +201,7 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 		outgoing.put(msg);
 		outgoing.flip();
 		synchronized (session) {
-		    session.sendMessage(new BinaryMessage(outgoing));
+			session.sendMessage(new BinaryMessage(outgoing));
 		}
 	}
 

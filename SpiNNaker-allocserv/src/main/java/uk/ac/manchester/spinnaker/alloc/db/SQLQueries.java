@@ -245,7 +245,7 @@ public abstract class SQLQueries {
 			+ "job_state) "
 			+ "VALUES(:machine_id, :user_id, :group_id, :keepalive_interval, "
 			+ ":original_request, :keepalive_timestamp, :create_timestamp, "
-		    + /* QUEUED */ "1)";
+			+ /* QUEUED */ "1)";
 
 	/** Create a request to allocate a number of boards. */
 	@Parameter("job_id")
@@ -491,7 +491,7 @@ public abstract class SQLQueries {
 	protected static final String DESTROY_JOB =
 			"UPDATE jobs SET job_state = 4, death_reason = :death_reason, "
 					// 4 = DESTROYED
-	                + "death_timestamp = :timestamp "
+					+ "death_timestamp = :timestamp "
 					+ "WHERE job_id = :job_id AND job_state != 4";
 
 	/**
@@ -666,7 +666,7 @@ public abstract class SQLQueries {
 	@Parameter("board_id")
 	protected static final String SET_BOARD_POWER_ON =
 			"UPDATE boards SET board_power = 1, "
-	                + "power_on_timestamp = :time_now "
+					+ "power_on_timestamp = :time_now "
 					+ "WHERE board_id = :board_id";
 
 	/**
@@ -1281,7 +1281,7 @@ public abstract class SQLQueries {
 	@ResultColumn("user_name")
 	protected static final String GET_USERS_OF_GROUP =
 			"SELECT membership_id, user_groups.group_id, "
-	                + "user_groups.group_name, "
+					+ "user_groups.group_name, "
 					+ "user_info.user_id, user_info.user_name "
 					+ "FROM group_memberships JOIN user_info USING (user_id) "
 					+ "JOIN user_groups USING (group_id) "
@@ -1848,7 +1848,7 @@ public abstract class SQLQueries {
 	@Parameter("y")
 	protected static final String ADD_BLACKLISTED_CHIP =
 			"INSERT INTO blacklisted_chips(board_id, coord_id, notes) "
-			        + "WITH args(board_id, x, y) AS (SELECT :board_id, :x, :y),"
+					+ "WITH args(board_id, x, y) AS (SELECT :board_id, :x, :y),"
 					+ "m(model) AS (SELECT board_model FROM machines "
 					+ "JOIN boards USING (machine_id) "
 					+ "JOIN args USING (board_id)) "
@@ -1870,7 +1870,7 @@ public abstract class SQLQueries {
 	protected static final String ADD_BLACKLISTED_CORE =
 			"INSERT INTO blacklisted_cores("
 					+ "board_id, coord_id, physical_core, notes) "
-			        + "WITH args(board_id, x, y, p) AS "
+					+ "WITH args(board_id, x, y, p) AS "
 					+ "(SELECT :board_id, :x, :y, :p), "
 					+ "m(model) AS (SELECT board_model FROM machines "
 					+ "JOIN boards USING (machine_id) "
@@ -1893,7 +1893,7 @@ public abstract class SQLQueries {
 	protected static final String ADD_BLACKLISTED_LINK =
 			"INSERT INTO blacklisted_links("
 					+ "board_id, coord_id, direction, notes) "
-			        + "WITH args(board_id, x, y, dir) AS ("
+					+ "WITH args(board_id, x, y, dir) AS ("
 					+ "SELECT :board_id, :x, :y, :direction), "
 					+ "m(model) AS (SELECT board_model FROM machines "
 					+ "JOIN boards USING (machine_id) "
@@ -2165,6 +2165,9 @@ public abstract class SQLQueries {
 			+ "JOIN user_info ON jobs.owner = user_info.user_id "
 			+ "WHERE death_timestamp + :grace_period < :time_now";
 
+	/**
+	 * Write to the historical allocations database.
+	 */
 	@Parameter("alloc_id")
 	@Parameter("job_id")
 	@Parameter("board_id")
@@ -2174,6 +2177,9 @@ public abstract class SQLQueries {
 			+ "alloc_id, job_id, board_id, allocation_timestamp) "
 			+ "VALUES(:alloc_id, :job_id, :board_id, :allocation_timestamp)";
 
+	/**
+	 * Write to the historical jobs database.
+	 */
 	@Parameter("job_id")
 	@Parameter("machine_id")
 	@Parameter("owner")

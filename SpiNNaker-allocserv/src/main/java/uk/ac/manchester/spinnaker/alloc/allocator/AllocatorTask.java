@@ -169,11 +169,12 @@ public class AllocatorTask extends DatabaseAwareBean
 	}
 
 	private class Perimeter {
-		int board_id;
+		int boardId;
+
 		Direction direction;
 
 		Perimeter(Row row) {
-			board_id = row.getInt("board_id");
+			boardId = row.getInt("board_id");
 			direction = row.getEnum("direction", Direction.class);
 		}
 	}
@@ -349,14 +350,23 @@ public class AllocatorTask extends DatabaseAwareBean
 
 	private class AllocTask {
 		final int id;
+
 		final int importance;
+
 		final int jobId;
+
 		final int machineId;
+
 		final Rectangle max;
+
 		final int maxDeadBoards;
+
 		final Integer numBoards;
+
 		final Integer width;
+
 		final Integer height;
+
 		final Integer root;
 
 		AllocTask(Row row) {
@@ -374,7 +384,8 @@ public class AllocatorTask extends DatabaseAwareBean
 
 		boolean allocate(AllocSQL sql) {
 			if (nonNull(numBoards) && numBoards > 0) {
-				// Single-board case gets its own allocator that's better at that
+				// Single-board case gets its own allocator that's better at
+				// that
 				if (numBoards == 1) {
 					log.debug("Allocate one board");
 					return allocateOneBoard(sql, jobId, machineId);
@@ -385,8 +396,8 @@ public class AllocatorTask extends DatabaseAwareBean
 			}
 
 			if (nonNull(width) && nonNull(height) && nonNull(root)) {
-				return allocateTriadsAt(sql, jobId, machineId, root, width, height,
-						maxDeadBoards);
+				return allocateTriadsAt(sql, jobId, machineId, root, width,
+						height,	maxDeadBoards);
 			}
 
 			if (nonNull(width) && nonNull(height) && width > 0 && height > 0) {
@@ -427,8 +438,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		try (var sql = new AllocSQL(conn)) {
 			int maxImportance = -1;
 			boolean changed = false;
-			for (AllocTask task : sql.getTasks.call(
-					(r) -> {return new AllocTask(r);}, QUEUED)) {
+			for (AllocTask task : sql.getTasks.call(AllocTask::new, QUEUED)) {
 				if (task.importance > maxImportance) {
 					maxImportance = task.importance;
 				} else if (task.importance < maxImportance
@@ -484,9 +494,8 @@ public class AllocatorTask extends DatabaseAwareBean
 	 */
 	private boolean expireJobs(Connection conn) {
 		boolean changed = false;
-		long now = System.currentTimeMillis() / 1000;
 		try (var find = conn.query(FIND_EXPIRED_JOBS)) {
-			var toKill = find.call(integer("job_id"), now);
+			var toKill = find.call(integer("job_id"), Instant.now());
 			for (var id : toKill) {
 				changed |= destroyJob(conn, id, "keepalive expired");
 			}
@@ -496,7 +505,7 @@ public class AllocatorTask extends DatabaseAwareBean
 					NUMBER_OF_JOBS_TO_QUOTA_CHECK, 0);
 			for (var id : toKill) {
 				if (quotaManager.shouldKillJob(id)) {
-				    changed |= destroyJob(conn, id, "quota exceeded");
+					changed |= destroyJob(conn, id, "quota exceeded");
 				}
 			}
 		}
@@ -568,8 +577,11 @@ public class AllocatorTask extends DatabaseAwareBean
 
 	private class HistoricalAlloc {
 		int allocId;
+
 		int jobId;
+
 		int boardId;
+
 		Instant allocTimestamp;
 
 		HistoricalAlloc(Row row) {
@@ -580,29 +592,49 @@ public class AllocatorTask extends DatabaseAwareBean
 		}
 
 		Object[] args() {
-			return new Object[] {allocId, jobId, boardId, allocTimestamp};
+			return new Object[] {
+				allocId, jobId, boardId, allocTimestamp
+			};
 		}
 	}
 
 	private class HistoricalJob {
 		int jobId;
+
 		int machineId;
+
 		String owner;
+
 		Instant createTimestamp;
+
 		int width;
+
 		int height;
+
 		int depth;
+
 		int allocatedRoot;
+
 		Instant keepaliveInterval;
+
 		String keepaliveHost;
+
 		String deathReason;
+
 		Instant deathTimestamp;
+
 		byte[] originalRequest;
+
 		Instant allocationTimestamp;
+
 		int allocationSize;
+
 		String machineName;
+
 		String userName;
+
 		int groupId;
+
 		String groupName;
 
 		HistoricalJob(Row row) {
@@ -628,11 +660,13 @@ public class AllocatorTask extends DatabaseAwareBean
 		}
 
 		Object[] args() {
-			return new Object[] {jobId, machineId, owner, createTimestamp,
-					width, height, depth, allocatedRoot, keepaliveInterval,
-					keepaliveHost, deathReason, deathTimestamp, originalRequest,
-					allocationTimestamp, allocationSize, machineName, userName,
-					groupId, groupName};
+			return new Object[] {
+				jobId, machineId, owner, createTimestamp,
+				width, height, depth, allocatedRoot, keepaliveInterval,
+				keepaliveHost, deathReason, deathTimestamp, originalRequest,
+				allocationTimestamp, allocationSize, machineName, userName,
+				groupId, groupName
+			};
 		}
 	}
 
@@ -658,11 +692,11 @@ public class AllocatorTask extends DatabaseAwareBean
 				var deleteAllocs = conn.update(DELETE_ALLOC_RECORD);
 				var writeJobs = histConn.update(WRITE_HISTORICAL_JOBS);
 				var writeAllocs = histConn.update(WRITE_HISTORICAL_ALLOCS)) {
-			long now = System.currentTimeMillis() / 1000;
 			var grace = historyProps.getGracePeriod();
 			var copied = conn.transaction(() -> new Copied(
-					readJobs.call(HistoricalJob::new, grace, now),
-					readAllocs.call(HistoricalAlloc::new, grace, now)));
+					readJobs.call(HistoricalJob::new, grace, Instant.now()),
+					readAllocs.call(
+							HistoricalAlloc::new, grace, Instant.now())));
 			histConn.transaction(() -> {
 				copied.allocs().forEach((a) -> writeAllocs.call(a.args()));
 				copied.jobs().forEach((j) -> writeJobs.call(j.args()));
@@ -709,8 +743,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			// Inserts into pending_changes; these run after job is dead
 			setPower(sql, id, OFF, DESTROYED);
 			sql.killAlloc.call(id);
-			long now = System.currentTimeMillis() / 1000;
-			return sql.markAsDestroyed.call(reason, now, id) > 0;
+			return sql.markAsDestroyed.call(reason, Instant.now(), id) > 0;
 		} finally {
 			rememberer.killProxies(id);
 		}
@@ -966,10 +999,9 @@ public class AllocatorTask extends DatabaseAwareBean
 			sql.allocBoard.call(jobId, boardId);
 		}
 
-		long now = System.currentTimeMillis() / 1000;
 		var board = boardsToAllocate.get(0);
 		sql.allocJob.call(rect.width, rect.height, rect.depth,
-				board, boardsToAllocate.size(), now, board, jobId);
+				board, boardsToAllocate.size(), Instant.now(), board, jobId);
 		log.debug("allocated {} boards to {}; issuing power up commands",
 				boardsToAllocate.size(), jobId);
 		// Any proxies that existed are now defunct; user must make anew
@@ -1028,9 +1060,8 @@ public class AllocatorTask extends DatabaseAwareBean
 			 * allocated to the job. Off-board links are shut off by default.
 			 */
 			var perimeterLinks = Row.stream(
-					sql.getPerimeter.call(
-							(row) -> {return new Perimeter(row);}, jobId))
-					.toCollectingMap(Direction.class, (p) -> p.board_id,
+					sql.getPerimeter.call(Perimeter::new, jobId))
+					.toCollectingMap(Direction.class, (p) -> p.boardId,
 							(p) -> p.direction);
 
 			for (var boardId : boards) {
@@ -1056,10 +1087,9 @@ public class AllocatorTask extends DatabaseAwareBean
 
 		if (targetState == DESTROYED) {
 			log.debug("num changes for {} in destroy: {}", jobId, numPending);
-			long now = System.currentTimeMillis() / 1000;
-			sql.setStateDestroyed.call(numPending, now, jobId);
+			sql.setStateDestroyed.call(numPending, Instant.now(), jobId);
 		} else {
-		    sql.setStatePending.call(
+			sql.setStatePending.call(
 				numPending > 0 ? POWER : targetState,
 				numPending, jobId);
 		}
@@ -1094,6 +1124,12 @@ public class AllocatorTask extends DatabaseAwareBean
 		 * @return Whether any jobs have been expired.
 		 */
 		boolean expireJobs();
+	}
+
+	/** Operations for testing historical database only. */
+	@ForTestingOnly
+	interface HistTestAPI {
+
 
 		/**
 		 * Implementation of {@link AllocatorTask#tombstone()}.
@@ -1113,7 +1149,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	@RestrictedApi(explanation = "just for testing", link = "index.html",
 			allowedOnPath = ".*/src/test/java/.*")
 	@Deprecated
-	TestAPI getTestAPI(Connection conn, Connection histConn) {
+	TestAPI getTestAPI(Connection conn) {
 		ForTestingOnly.Utils.checkForTestClassOnStack();
 		return new TestAPI() {
 			@Override
@@ -1130,7 +1166,24 @@ public class AllocatorTask extends DatabaseAwareBean
 			public boolean expireJobs() {
 				return AllocatorTask.this.expireJobs(conn);
 			}
+		};
+	}
 
+	/**
+	 * @param conn
+	 *            The DB connection
+	 * @param histConn
+	 *            The historical DB connection
+	 * @return The test interface.
+	 * @deprecated This interface is just for testing.
+	 */
+	@ForTestingOnly
+	@RestrictedApi(explanation = "just for testing", link = "index.html",
+			allowedOnPath = ".*/src/test/java/.*")
+	@Deprecated
+	HistTestAPI getHistTestAPI(Connection conn, Connection histConn) {
+		ForTestingOnly.Utils.checkForTestClassOnStack();
+		return new HistTestAPI() {
 			@Override
 			public Copied tombstone() {
 				return AllocatorTask.this.tombstone(conn, histConn);

@@ -157,7 +157,7 @@ public class ProxyCore implements AutoCloseable {
 			if (reply != null) {
 				reply.flip();
 				synchronized (session) {
-				    session.sendMessage(new BinaryMessage(reply));
+					session.sendMessage(new BinaryMessage(reply));
 				}
 			}
 		} catch (IOException e) {

@@ -143,6 +143,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	private class MachineName {
 		String name;
+
 		boolean inService;
 
 		MachineName(Row row) {

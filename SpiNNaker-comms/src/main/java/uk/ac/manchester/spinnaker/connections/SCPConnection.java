@@ -137,11 +137,6 @@ public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 	 *            The remote host name or IP address to send packets to. If
 	 *            {@code null}, the socket will be available for listening only,
 	 *            and will throw an exception if used for sending.
-	 * @param remotePort
-	 *            The remote port to send packets to. If {@code remoteHost} is
-	 *            {@code null}, this is ignored. If {@code remoteHost} is
-	 *            specified, this must also be specified as non-zero for the
-	 *            connection to allow sending.
 	 *
 	 * @throws IOException
 	 *             If anything goes wrong with socket manipulation.

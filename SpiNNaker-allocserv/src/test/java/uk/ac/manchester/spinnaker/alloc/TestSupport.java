@@ -105,6 +105,16 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 	/** Initial quota. */
 	protected static final long INITIAL_QUOTA = 1024;
 
+	/**
+	 * Main database name for tests.
+	 */
+	private static final String MAIN_DB_NAME = "spalloc";
+
+	/**
+	 * Historical database name for tests.
+	 */
+	private static final String HIST_DB_NAME = "spallochistory";
+
 	/** The DB. */
 	@Autowired
 	protected DatabaseAPI db;
@@ -117,6 +127,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 			"movement_directions", "group_types", "job_states", "directions",
 			"board_model_coords", "board_models");
 
+	@SuppressWarnings("CompileTimeConstant")
 	private void clearDB(Connection c, String databaseName) {
 		try (var fq_checks = c.update("SET FOREIGN_KEY_CHECKS=:on");
 			    var all_tables = c.query(
@@ -148,12 +159,12 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 	 */
 	protected void killDB() throws IOException {
 		db.executeVoid(c -> {
-			clearDB(c, "spalloc");
+			clearDB(c, MAIN_DB_NAME);
 		});
 
 		if (db.isHistoricalDBAvailable()) {
 		    try (var histConn = db.getHistoricalConnection()) {
-		    	clearDB(histConn, "spallochistory");
+		    	clearDB(histConn, HIST_DB_NAME);
 		    }
 		}
 	}

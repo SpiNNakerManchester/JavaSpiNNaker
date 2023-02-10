@@ -368,6 +368,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 
 	private class MachineNameId {
 		int id;
+
 		String name;
 
 		MachineNameId(Row row) {
@@ -502,15 +503,13 @@ public class MachineStateControl extends DatabaseAwareBean {
 
 	private boolean changed(Connection conn, int boardId) {
 		try (var synched = conn.update(MARK_BOARD_BLACKLIST_CHANGED)) {
-			long now = System.currentTimeMillis() / 1000;
-			return synched.call(now, boardId) > 0;
+			return synched.call(Instant.now(), boardId) > 0;
 		}
 	}
 
 	private boolean synched(Connection conn, int boardId) {
 		try (var synched = conn.update(MARK_BOARD_BLACKLIST_SYNCHED)) {
-			long now = System.currentTimeMillis() / 1000;
-			return synched.call(now, boardId) > 0;
+			return synched.call(Instant.now(), boardId) > 0;
 		}
 	}
 

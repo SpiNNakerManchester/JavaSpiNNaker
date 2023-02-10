@@ -259,7 +259,9 @@ public class QuotaManager extends DatabaseAwareBean {
 
 		private class Target {
 			Object quotaUsed;
+
 			int groupId;
+
 			int jobId;
 
 			Target(Row row) {
