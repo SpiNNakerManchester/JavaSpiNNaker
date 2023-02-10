@@ -23,7 +23,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP Request to set the dropped packet reinjected packet types. There is no
+ * A request to set the dropped packet reinjected packet types. There is no
  * response payload.
  * <p>
  * Handled by {@code reinjection_clear()} in {@code extra_monitor_support.c}.

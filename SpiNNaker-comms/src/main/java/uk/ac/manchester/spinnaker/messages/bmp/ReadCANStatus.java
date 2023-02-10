@@ -27,7 +27,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
- * SCP Request for the CAN bus status data from the BMP. The response payload is
+ * A request for the CAN bus status data from the BMP. The response payload is
  * an {@linkplain MappableIterable iterable} of enabled {@linkplain BMPBoard
  * board numbers}.
  * <p>

@@ -24,7 +24,7 @@ import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP Request to get the status of the dropped packet reinjection. The
+ * A request to get the status of the dropped packet reinjection. The
  * response payload is the {@linkplain ReinjectionStatus reinjection status}.
  * <p>
  * Handled by {@code reinjection_get_status()} in
