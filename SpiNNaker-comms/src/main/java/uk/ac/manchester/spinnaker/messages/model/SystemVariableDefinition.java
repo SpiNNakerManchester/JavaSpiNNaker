@@ -265,19 +265,16 @@ public enum SystemVariableDefinition {
 		this.type = type;
 		this.offset = offset;
 		hasDefinedDefault = true;
-		switch (type) {
-		case ADDRESS:
-			this.defAddr = new MemoryLocation(((Number) def).intValue());
-			this.def = 0;
-			break;
-		case BYTE_ARRAY:
-			this.defAddr = NULL;
-			this.def = 0;
-			break;
-		default:
-			this.defAddr = NULL;
-			this.def = ((Number) def).intValue();
-		}
+
+		this.def = switch (type) {
+		case ADDRESS, BYTE_ARRAY -> 0;
+		default -> ((Number) def).intValue();
+		};
+
+		defAddr = switch (type) {
+		case ADDRESS -> new MemoryLocation(((Number) def).intValue());
+		default -> NULL;
+		};
 	}
 
 	/**

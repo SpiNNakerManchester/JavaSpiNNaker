@@ -20,6 +20,7 @@ import static java.lang.Math.floorDiv;
 import static java.lang.Short.toUnsignedInt;
 import static java.lang.String.format;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Collections.emptyIterator;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOPrefix.LOWER_HALF_WORD;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
@@ -36,7 +37,8 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * @author Sergio Davies
  * @author Donal Fellows
  */
-public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
+public final class EIEIODataMessage
+		implements EIEIOMessage<EIEIODataMessage.Header>,
 		MappableIterable<AbstractDataElement> {
 	private final Header header;
 
@@ -198,19 +200,22 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 
 	@Override
 	public Iterator<AbstractDataElement> iterator() {
-		final var d =
-				data == null ? null : data.duplicate().order(LITTLE_ENDIAN);
+		if (data == null) {
+			return emptyIterator();
+		}
+
+		final var d = data.duplicate().order(LITTLE_ENDIAN);
 		return new Iterator<AbstractDataElement>() {
 			private int elementsRead = 0;
 
 			@Override
 			public boolean hasNext() {
-				return d != null && elementsRead < header.getCount();
+				return elementsRead < header.getCount();
 			}
 
 			@Override
 			public AbstractDataElement next() {
-				if (d == null || !hasNext()) {
+				if (!hasNext()) {
 					throw new NoSuchElementException("read all elements");
 				}
 				elementsRead++;

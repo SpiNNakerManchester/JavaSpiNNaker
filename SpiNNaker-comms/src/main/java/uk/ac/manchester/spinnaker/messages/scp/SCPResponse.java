@@ -71,8 +71,7 @@ public abstract class SCPResponse {
 		case RC_OK:
 			return;
 		case RC_ROUTE:
-			throw new UnroutableMessageException(operation, command,
-					sdpHeader);
+			throw new UnroutableMessageException(operation, command, sdpHeader);
 		default:
 			throw new UnexpectedResponseCodeException(operation, command,
 					result);

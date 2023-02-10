@@ -70,6 +70,7 @@ import javax.validation.constraints.PositiveOrZero;
  * <td colspan=8>...
  * </table>
  */
+@JavaBean
 public class JobListEntryRecord {
 	private int id;
 

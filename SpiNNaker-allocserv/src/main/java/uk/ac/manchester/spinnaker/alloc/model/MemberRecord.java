@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @see GroupRecord
  * @author Donal Fellows
  */
+@JavaBean
 @JsonInclude(NON_NULL)
 public class MemberRecord {
 	private int id;

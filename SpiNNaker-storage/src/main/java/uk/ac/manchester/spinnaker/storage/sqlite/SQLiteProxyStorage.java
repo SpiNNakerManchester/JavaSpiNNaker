@@ -68,20 +68,20 @@ abstract class SQLiteProxyStorage<T extends DatabaseAPI>
 					continue;
 				}
 				switch (name) {
-				case SPALLOC_URI:
+				case SPALLOC_URI -> {
 					spallocUri = value;
-					break;
-				case PROXY_URI:
+				}
+				case PROXY_URI -> {
 					jobUri = value;
-					break;
-				case PROXY_AUTH:
+				}
+				case PROXY_AUTH -> {
 					if (!value.startsWith(PREFIX)) {
 						throw new SQLException(
 								"Unexpected proxy authentication: " + value);
 					}
 					bearerToken = value.substring(PREFIX.length());
-					break;
-				default:
+				}
+				default ->
 					throw new IllegalStateException("unreachable reached");
 				}
 			}

@@ -556,12 +556,9 @@ public class TxrxProcess {
 							"interrupted while waiting to send");
 				}
 				switch (request.sdpHeader.getFlags()) {
-				case REPLY_EXPECTED:
-				case REPLY_EXPECTED_NO_P2P:
+				case REPLY_EXPECTED, REPLY_EXPECTED_NO_P2P ->
 					connection.send(requestData, seq);
-					break;
-				default:
-					connection.send(requestData);
+				default -> connection.send(requestData);
 				}
 				nextSendTime = nanoTime() + INTER_SEND_INTERVAL_NS;
 			}

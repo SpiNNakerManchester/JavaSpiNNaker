@@ -110,17 +110,16 @@ public record TriadCoords(//
 		int rootX = x * TRIAD_CHIP_SIZE;
 		int rootY = y * TRIAD_CHIP_SIZE;
 		switch (z) {
-		case 1:
+		case 1 -> {
 			rootX += TRIAD_MAJOR_OFFSET;
 			rootY += TRIAD_MINOR_OFFSET;
-			break;
-		case 2:
+		}
+		case 2 -> {
 			rootX += TRIAD_MINOR_OFFSET;
 			rootY += TRIAD_MAJOR_OFFSET;
-			break;
-		case 0:
-		default:
-			break;
+		}
+		default -> {
+		}
 		}
 		return new ChipLocation(rootX, rootY);
 	}

@@ -46,6 +46,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * this class</em> but the service itself will not respect being asked to change
  * them.
  */
+@JavaBean
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public final class UserRecord {
 	private Integer userId;

@@ -58,6 +58,7 @@ import javax.validation.constraints.PositiveOrZero;
  * <td colspan=5>...
  * </table>
  */
+@JavaBean
 public class MachineListEntryRecord {
 	private int id;
 

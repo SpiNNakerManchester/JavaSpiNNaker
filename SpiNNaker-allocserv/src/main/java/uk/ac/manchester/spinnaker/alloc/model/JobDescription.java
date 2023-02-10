@@ -54,6 +54,7 @@ Board power: on
  *
  * (That's actually slightly edited output from {@code spalloc-job -info})
  */
+@JavaBean
 public class JobDescription {
 	private int id;
 

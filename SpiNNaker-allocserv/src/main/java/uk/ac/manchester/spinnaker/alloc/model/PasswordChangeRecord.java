@@ -27,6 +27,7 @@ import javax.validation.constraints.NotBlank;
  *
  * @author Donal Fellows
  */
+@JavaBean
 public class PasswordChangeRecord {
 	private int userId;
 

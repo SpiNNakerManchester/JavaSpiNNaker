@@ -883,7 +883,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 			switch (curState) {
 			case READY:
 				log.info("job:{} is now ready", id);
-				// Now in the ready state!
+				// Now in the ready state! Done successfully.
 				return;
 			case QUEUED:
 				log.info("job:{} has been queued by the spalloc server", id);

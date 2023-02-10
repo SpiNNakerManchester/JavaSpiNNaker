@@ -36,6 +36,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  *
  * @author Donal Fellows
  */
+@JavaBean
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class MachineTagging {
 	@NotBlank

@@ -35,6 +35,7 @@ import uk.ac.manchester.spinnaker.alloc.db.Row;
  * The description and model of a group. POJO class; changes not automatically
  * reflected in the DB.
  */
+@JavaBean
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public final class GroupRecord {
 	/** The type of a group. */

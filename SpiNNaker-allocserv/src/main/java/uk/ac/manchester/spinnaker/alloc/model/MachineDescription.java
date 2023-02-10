@@ -32,6 +32,7 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
 /**
  * Descriptive detail for a machine. Used for HTML generation.
  */
+@JavaBean
 public class MachineDescription {
 	private int id;
 
