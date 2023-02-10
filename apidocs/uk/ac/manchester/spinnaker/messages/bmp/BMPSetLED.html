@@ -104,7 +104,9 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">BMPSetLED</span>
 extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest</a>&lt;<a href="BMPRequest.BMPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.BMPResponse</a>&gt;</pre>
-<div class="block">A request to alter the LEDs on a board. There is no response payload.
+<div class="block">A request to alter the LEDs on a board managed by a BMP. There is no response
+ payload. Note that these LEDs are different to those managed by sending
+ <a href="../scp/SetLED.html" title="class in uk.ac.manchester.spinnaker.messages.scp">a request to SCAMP</a>.
  <p>
  Handled by <code>cmp_led()</code> in <code>bmp_cmd.c</code>.</div>
 </section>

@@ -101,7 +101,8 @@ loadScripts(document, 'script');</script>
 <pre>public class <span class="typeNameLabel">Transceiver</span>
 extends <a href="UDPTransceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver">UDPTransceiver</a>
 implements <a href="TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>, <a href="RetryTracker.html" title="interface in uk.ac.manchester.spinnaker.transceiver">RetryTracker</a></pre>
-<div class="block">An encapsulation of various communications with the SpiNNaker board.
+<div class="block">An encapsulation of various communications with the SpiNNaker board. Acts as
+ a Fa&ccedil;ade for most of the rest of this package.
  <p>
  The methods of this class are designed to be thread-safe; thus you can make
  multiple calls to the same (or different) methods from multiple threads and
@@ -113,9 +114,11 @@ implements <a href="TransceiverInterface.html" title="interface in uk.ac.manches
  <p>
  For details of thread safety, see the methods annotated with
  <a href="ParallelSafe.html" title="annotation in uk.ac.manchester.spinnaker.transceiver"><code>ParallelSafe</code></a>, <a href="ParallelSafeWithCare.html" title="annotation in uk.ac.manchester.spinnaker.transceiver"><code>ParallelSafeWithCare</code></a> and <a href="ParallelUnsafe.html" title="annotation in uk.ac.manchester.spinnaker.transceiver"><code>ParallelUnsafe</code></a>
- in <a href="TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver"><code>TransceiverInterface</code></a>. <em>Note that operations on a BMP are
- <strong>always</strong> parallel-unsafe, other documentation in this class
- notwithstanding.</em></div>
+ in <a href="TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver"><code>TransceiverInterface</code></a>. <em>Note that operations on an individual
+ BMP are <strong>always</strong> parallel-unsafe, other documentation in this
+ class notwithstanding; BMPs must only ever have one outstanding call made to
+ them as they do not handle asynchronous calls at all well due to known
+ firmware bugs.</em></div>
 </section>
 <section class="summary">
 <ul class="blockList">

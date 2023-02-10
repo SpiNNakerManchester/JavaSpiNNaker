@@ -100,8 +100,9 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">DatabaseConfirmation</span>
 extends <a href="AbstractNotificationMessage.html" title="class in uk.ac.manchester.spinnaker.messages.notification">AbstractNotificationMessage</a></pre>
-<div class="block">Packet which contains the path to the database created by the toolchain which
- is to be used by any software which interfaces with SpiNNaker.</div>
+<div class="block">Message which contains the path to the job description database created by
+ the toolchain which is to be used by any software which interfaces with
+ SpiNNaker.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -126,7 +127,7 @@ extends <a href="AbstractNotificationMessage.html" title="class in uk.ac.manches
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#databasePath">databasePath</a></span></code></th>
 <td class="colLast">
-<div class="block">The path to the database.</div>
+<div class="block">The path to the database, as seen by the sender's filesystem.</div>
 </td>
 </tr>
 </tbody>
@@ -223,8 +224,8 @@ extends <a href="AbstractNotificationMessage.html" title="class in uk.ac.manches
 <section class="detail">
 <h3><a id="databasePath">databasePath</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">databasePath</span></div>
-<div class="block">The path to the database. Note that there is a length limit; the overall
- message must fit in a SpiNNaker UDP message.</div>
+<div class="block">The path to the database, as seen by the sender's filesystem. Note that
+ there is a length limit; the overall message must fit in a UDP message.</div>
 </section>
 </li>
 </ul>
@@ -241,7 +242,9 @@ extends <a href="AbstractNotificationMessage.html" title="class in uk.ac.manches
 <section class="detail">
 <h3><a id="&lt;init&gt;()">DatabaseConfirmation</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">DatabaseConfirmation</span>()</div>
-<div class="block">Create a message without a database path in it.</div>
+<div class="block">Create a message without a database path in it. This is used to
+ acknowledge that the job database has been read and say that the
+ listening software is ready for the simulation to start.</div>
 </section>
 </li>
 <li class="blockList">

@@ -34,7 +34,7 @@
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.boot.BootMessage;
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_javadoccomment">/** A connection to the SpiNNaker board that uses UDP to for booting. */</em>
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_javadoccomment">/** A connection to the SpiNNaker board that uses UDP for booting. */</em>
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="BootConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/BootConnection.html#BootConnection">BootConnection</a> <strong class="jxr_keyword">extends</strong> UDPConnection&lt;BootMessage&gt; {
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  	<em class="jxr_comment">// Determined by Ethernet MTU, not by SDP buffer size</em>
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> BOOT_MESSAGE_SIZE = 1500;

@@ -169,7 +169,7 @@
 <a class="jxr_linenumber" name="L161" href="#L161">161</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L162" href="#L162">162</a> 	@ParallelSafe
 <a class="jxr_linenumber" name="L163" href="#L163">163</a> 	<strong class="jxr_keyword">void</strong> sendSCPMessage(@NotNull SCPRequest&lt;?&gt; message,
-<a class="jxr_linenumber" name="L164" href="#L164">164</a> 			@NotNull <a name="SCPConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/SCPConnection.html#SCPConnection">SCPConnection</a> connection) <strong class="jxr_keyword">throws</strong> IOException;
+<a class="jxr_linenumber" name="L164" href="#L164">164</a> 			@NotNull SCPConnection connection) <strong class="jxr_keyword">throws</strong> IOException;
 <a class="jxr_linenumber" name="L165" href="#L165">165</a> 
 <a class="jxr_linenumber" name="L166" href="#L166">166</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L167" href="#L167">167</a> <em class="jxr_javadoccomment">	 * Sends an SDP message using one of the connections.</em>
@@ -196,7 +196,7 @@
 <a class="jxr_linenumber" name="L188" href="#L188">188</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong with networking.</em>
 <a class="jxr_linenumber" name="L189" href="#L189">189</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L190" href="#L190">190</a> 	@ParallelSafe
-<a class="jxr_linenumber" name="L191" href="#L191">191</a> 	<strong class="jxr_keyword">void</strong> sendSDPMessage(@NotNull <a name="SDPMessage" href="../../../../../uk/ac/manchester/spinnaker/messages/sdp/SDPMessage.html#SDPMessage">SDPMessage</a> message, <a name="SDPConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/SDPConnection.html#SDPConnection">SDPConnection</a> connection)
+<a class="jxr_linenumber" name="L191" href="#L191">191</a> 	<strong class="jxr_keyword">void</strong> sendSDPMessage(@NotNull <a name="SDPMessage" href="../../../../../uk/ac/manchester/spinnaker/messages/sdp/SDPMessage.html#SDPMessage">SDPMessage</a> message, SDPConnection connection)
 <a class="jxr_linenumber" name="L192" href="#L192">192</a> 			<strong class="jxr_keyword">throws</strong> IOException;
 <a class="jxr_linenumber" name="L193" href="#L193">193</a> 
 <a class="jxr_linenumber" name="L194" href="#L194">194</a> 	<em class="jxr_javadoccomment">/**</em>
@@ -3027,7 +3027,7 @@
 <a class="jxr_linenumber" name="L3019" href="#L3019">3019</a> <em class="jxr_javadoccomment">	 *             If the communications were interrupted.</em>
 <a class="jxr_linenumber" name="L3020" href="#L3020">3020</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L3021" href="#L3021">3021</a> 	@ParallelSafeWithCare
-<a class="jxr_linenumber" name="L3022" href="#L3022">3022</a> 	<strong class="jxr_keyword">void</strong> setIPTag(@Valid IPTag tag, @NotNull <a name="SDPConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/SDPConnection.html#SDPConnection">SDPConnection</a> connection)
+<a class="jxr_linenumber" name="L3022" href="#L3022">3022</a> 	<strong class="jxr_keyword">void</strong> setIPTag(@Valid IPTag tag, @NotNull SDPConnection connection)
 <a class="jxr_linenumber" name="L3023" href="#L3023">3023</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException;
 <a class="jxr_linenumber" name="L3024" href="#L3024">3024</a> 
 <a class="jxr_linenumber" name="L3025" href="#L3025">3025</a> 	<em class="jxr_javadoccomment">/**</em>
@@ -3144,7 +3144,7 @@
 <a class="jxr_linenumber" name="L3136" href="#L3136">3136</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L3137" href="#L3137">3137</a> 	@ParallelSafe
 <a class="jxr_linenumber" name="L3138" href="#L3138">3138</a> 	@CheckReturnValue
-<a class="jxr_linenumber" name="L3139" href="#L3139">3139</a> 	List&lt;Tag&gt; getTags(<a name="SCPConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/SCPConnection.html#SCPConnection">SCPConnection</a> connection)
+<a class="jxr_linenumber" name="L3139" href="#L3139">3139</a> 	List&lt;Tag&gt; getTags(SCPConnection connection)
 <a class="jxr_linenumber" name="L3140" href="#L3140">3140</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException;
 <a class="jxr_linenumber" name="L3141" href="#L3141">3141</a> 
 <a class="jxr_linenumber" name="L3142" href="#L3142">3142</a> 	<em class="jxr_javadoccomment">/**</em>
@@ -3185,7 +3185,7 @@
 <a class="jxr_linenumber" name="L3177" href="#L3177">3177</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L3178" href="#L3178">3178</a> 	@ParallelSafe
 <a class="jxr_linenumber" name="L3179" href="#L3179">3179</a> 	@CheckReturnValue
-<a class="jxr_linenumber" name="L3180" href="#L3180">3180</a> 	Map&lt;Tag, Integer&gt; getTagUsage(@NotNull <a name="SCPConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/SCPConnection.html#SCPConnection">SCPConnection</a> connection)
+<a class="jxr_linenumber" name="L3180" href="#L3180">3180</a> 	Map&lt;Tag, Integer&gt; getTagUsage(@NotNull SCPConnection connection)
 <a class="jxr_linenumber" name="L3181" href="#L3181">3181</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, InterruptedException;
 <a class="jxr_linenumber" name="L3182" href="#L3182">3182</a> 
 <a class="jxr_linenumber" name="L3183" href="#L3183">3183</a> 	<em class="jxr_javadoccomment">/**</em>

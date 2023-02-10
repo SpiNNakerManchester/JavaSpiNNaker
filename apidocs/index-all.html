@@ -84,7 +84,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/notification/AbstractNotificationMessage.html" title="class in uk.ac.manchester.spinnaker.messages.notification"><span class="typeNameLink">AbstractNotificationMessage</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/notification/package-summary.html">uk.ac.manchester.spinnaker.messages.notification</a></dt>
 <dd>
-<div class="block">An notification message.</div>
+<div class="block">A base class for concrete notification messages.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/notification/AbstractNotificationMessage.html#%3Cinit%3E(java.nio.ByteBuffer)">AbstractNotificationMessage(ByteBuffer)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.notification.<a href="uk/ac/manchester/spinnaker/messages/notification/AbstractNotificationMessage.html" title="class in uk.ac.manchester.spinnaker.messages.notification">AbstractNotificationMessage</a></dt>
 <dd>&nbsp;</dd>
@@ -627,7 +627,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/ApplicationRun.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">ApplicationRun</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP request to run an application.</div>
+<div class="block">A request to run an application.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/ApplicationRun.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.AppID,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection)">ApplicationRun(AppID, HasChipLocation, Collection&lt;Integer&gt;)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/ApplicationRun.html" title="class in uk.ac.manchester.spinnaker.messages.scp">ApplicationRun</a></dt>
 <dd>&nbsp;</dd>
@@ -635,7 +635,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/ApplicationStop.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">ApplicationStop</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP Request to stop an application.</div>
+<div class="block">A request to stop an application.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/ApplicationStop.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.AppID)">ApplicationStop(AppID)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/ApplicationStop.html" title="class in uk.ac.manchester.spinnaker.messages.scp">ApplicationStop</a></dt>
 <dd>&nbsp;</dd>
@@ -1058,7 +1058,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/bmp/BMPReadMemory.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><span class="typeNameLink">BMPReadMemory</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></dt>
 <dd>
-<div class="block">An SCP request to read a region of memory from a BMP.</div>
+<div class="block">A request to read a region of memory from a BMP.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/bmp/BMPReadMemory.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">BMPReadMemory(BMPBoard, MemoryLocation, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.bmp.<a href="uk/ac/manchester/spinnaker/messages/bmp/BMPReadMemory.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPReadMemory</a></dt>
 <dd>&nbsp;</dd>
@@ -1096,7 +1096,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/bmp/BMPSetLED.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><span class="typeNameLink">BMPSetLED</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></dt>
 <dd>
-<div class="block">A request to alter the LEDs on a board.</div>
+<div class="block">A request to alter the LEDs on a board managed by a BMP.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/bmp/BMPSetLED.html#%3Cinit%3E(java.util.Collection,uk.ac.manchester.spinnaker.messages.model.LEDAction,java.util.Collection)">BMPSetLED(Collection&lt;Integer&gt;, LEDAction, Collection&lt;BMPBoard&gt;)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.bmp.<a href="uk/ac/manchester/spinnaker/messages/bmp/BMPSetLED.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPSetLED</a></dt>
 <dd>
@@ -1112,7 +1112,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/bmp/BMPWriteMemory.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><span class="typeNameLink">BMPWriteMemory</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></dt>
 <dd>
-<div class="block">A request to write memory on a BMP.</div>
+<div class="block">A request to write to memory on a BMP.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/bmp/BMPWriteMemory.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">BMPWriteMemory(BMPBoard, MemoryLocation, ByteBuffer)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.bmp.<a href="uk/ac/manchester/spinnaker/messages/bmp/BMPWriteMemory.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPWriteMemory</a></dt>
 <dd>&nbsp;</dd>
@@ -1325,7 +1325,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/connections/BootConnection.html" title="class in uk.ac.manchester.spinnaker.connections"><span class="typeNameLink">BootConnection</span></a> - Class in <a href="uk/ac/manchester/spinnaker/connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a></dt>
 <dd>
-<div class="block">A connection to the SpiNNaker board that uses UDP to for booting.</div>
+<div class="block">A connection to the SpiNNaker board that uses UDP for booting.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/BootConnection.html#%3Cinit%3E()">BootConnection()</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/BootConnection.html" title="class in uk.ac.manchester.spinnaker.connections">BootConnection</a></dt>
 <dd>
@@ -1752,7 +1752,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/ClearIOBUF.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">ClearIOBUF</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP Request to clear the IOBUF on a core.</div>
+<div class="block">A request to clear the IOBUF on a core.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/ClearIOBUF.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">ClearIOBUF(HasCoreLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/ClearIOBUF.html" title="class in uk.ac.manchester.spinnaker.messages.scp">ClearIOBUF</a></dt>
 <dd>&nbsp;</dd>
@@ -1782,7 +1782,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/ClearReinjectionQueue.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">ClearReinjectionQueue</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP Request to set the dropped packet reinjected packet types.</div>
+<div class="block">A request to set the dropped packet reinjected packet types.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/ClearReinjectionQueue.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">ClearReinjectionQueue(HasCoreLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/ClearReinjectionQueue.html" title="class in uk.ac.manchester.spinnaker.messages.scp">ClearReinjectionQueue</a></dt>
 <dd>&nbsp;</dd>
@@ -2546,7 +2546,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/CountState.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">CountState</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP Request to get a count of the cores in a particular state.</div>
+<div class="block">A request to get a count of the cores in a particular state.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/CountState.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.AppID,uk.ac.manchester.spinnaker.messages.model.CPUState)">CountState(AppID, CPUState)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/CountState.html" title="class in uk.ac.manchester.spinnaker.messages.scp">CountState</a></dt>
 <dd>&nbsp;</dd>
@@ -3062,8 +3062,9 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/notification/DatabaseConfirmation.html" title="class in uk.ac.manchester.spinnaker.messages.notification"><span class="typeNameLink">DatabaseConfirmation</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/notification/package-summary.html">uk.ac.manchester.spinnaker.messages.notification</a></dt>
 <dd>
-<div class="block">Packet which contains the path to the database created by the toolchain which
- is to be used by any software which interfaces with SpiNNaker.</div>
+<div class="block">Message which contains the path to the job description database created by
+ the toolchain which is to be used by any software which interfaces with
+ SpiNNaker.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/notification/DatabaseConfirmation.html#%3Cinit%3E()">DatabaseConfirmation()</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.notification.<a href="uk/ac/manchester/spinnaker/messages/notification/DatabaseConfirmation.html" title="class in uk.ac.manchester.spinnaker.messages.notification">DatabaseConfirmation</a></dt>
 <dd>
@@ -3114,7 +3115,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/notification/DatabaseConfirmation.html#databasePath">databasePath</a></span> - Variable in class uk.ac.manchester.spinnaker.messages.notification.<a href="uk/ac/manchester/spinnaker/messages/notification/DatabaseConfirmation.html" title="class in uk.ac.manchester.spinnaker.messages.notification">DatabaseConfirmation</a></dt>
 <dd>
-<div class="block">The path to the database.</div>
+<div class="block">The path to the database, as seen by the sender's filesystem.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download"><span class="typeNameLink">DataGatherer</span></a> - Class in <a href="uk/ac/manchester/spinnaker/front_end/download/package-summary.html">uk.ac.manchester.spinnaker.front_end.download</a></dt>
 <dd>
@@ -4504,7 +4505,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/FillRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">FillRequest</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP request to fill a region of memory on a chip with repeated words of
+<div class="block">A request to fill a region of memory on a chip with repeated words of
  data.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/FillRequest.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,int)">FillRequest(HasChipLocation, MemoryLocation, int, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/FillRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">FillRequest</a></dt>
@@ -4724,7 +4725,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/FixedRouteInitialise.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">FixedRouteInitialise</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">Sets a fixed route entry.</div>
+<div class="block">A request to set a fixed route entry.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/FixedRouteInitialise.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,int,uk.ac.manchester.spinnaker.messages.model.AppID)">FixedRouteInitialise(HasChipLocation, int, AppID)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/FixedRouteInitialise.html" title="class in uk.ac.manchester.spinnaker.messages.scp">FixedRouteInitialise</a></dt>
 <dd>&nbsp;</dd>
@@ -4732,7 +4733,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/FixedRouteRead.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">FixedRouteRead</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">Gets a fixed route entry.</div>
+<div class="block">A request to read a fixed route entry.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/FixedRouteRead.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.AppID)">FixedRouteRead(HasChipLocation, AppID)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/FixedRouteRead.html" title="class in uk.ac.manchester.spinnaker.messages.scp">FixedRouteRead</a></dt>
 <dd>&nbsp;</dd>
@@ -4762,7 +4763,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/FloodFillData.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">FloodFillData</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP request to flood fill some data.</div>
+<div class="block">A request to flood fill some data.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/FloodFillData.html#%3Cinit%3E(byte,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,byte%5B%5D)">FloodFillData(byte, int, MemoryLocation, byte[])</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/FloodFillData.html" title="class in uk.ac.manchester.spinnaker.messages.scp">FloodFillData</a></dt>
 <dd>&nbsp;</dd>
@@ -4772,7 +4773,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/FloodFillEnd.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">FloodFillEnd</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP request to finish a flood fill of data across all cores and launch the
+<div class="block">A request to finish a flood fill of data across all cores and launch the
  application.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/FloodFillEnd.html#%3Cinit%3E(byte)">FloodFillEnd(byte)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/FloodFillEnd.html" title="class in uk.ac.manchester.spinnaker.messages.scp">FloodFillEnd</a></dt>
@@ -4781,7 +4782,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/FloodFillStart.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">FloodFillStart</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP request to start a flood fill of data.</div>
+<div class="block">A request to start a flood fill of data.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/FloodFillStart.html#%3Cinit%3E(byte,int)">FloodFillStart(byte, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/FloodFillStart.html" title="class in uk.ac.manchester.spinnaker.messages.scp">FloodFillStart</a></dt>
 <dd>
@@ -5476,7 +5477,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/bmp/GetBMPVersion.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><span class="typeNameLink">GetBMPVersion</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></dt>
 <dd>
-<div class="block">An SCP request to read the version of software running on a board's BMP.</div>
+<div class="block">A request to read the version of software running on a board's BMP.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/bmp/GetBMPVersion.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">GetBMPVersion(BMPBoard)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.bmp.<a href="uk/ac/manchester/spinnaker/messages/bmp/GetBMPVersion.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">GetBMPVersion</a></dt>
 <dd>&nbsp;</dd>
@@ -5791,7 +5792,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/GetChipInfo.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">GetChipInfo</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP request to read the chip information from a core.</div>
+<div class="block">A request to read the chip information from a core.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/GetChipInfo.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation)">GetChipInfo(HasChipLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/GetChipInfo.html" title="class in uk.ac.manchester.spinnaker.messages.scp">GetChipInfo</a></dt>
 <dd>&nbsp;</dd>
@@ -6183,7 +6184,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/bmp/GetFPGAResetStatus.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><span class="typeNameLink">GetFPGAResetStatus</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></dt>
 <dd>
-<div class="block">Get the reset status of a board's FPGAs.</div>
+<div class="block">Get the reset status of the FPGAs managed by a BMP.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/bmp/GetFPGAResetStatus.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">GetFPGAResetStatus(BMPBoard)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.bmp.<a href="uk/ac/manchester/spinnaker/messages/bmp/GetFPGAResetStatus.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">GetFPGAResetStatus</a></dt>
 <dd>&nbsp;</dd>
@@ -7302,7 +7303,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/GetReinjectionStatus.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">GetReinjectionStatus</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP Request to get the status of the dropped packet reinjection.</div>
+<div class="block">A request to get the status of the dropped packet reinjection.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/GetReinjectionStatus.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">GetReinjectionStatus(HasCoreLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/GetReinjectionStatus.html" title="class in uk.ac.manchester.spinnaker.messages.scp">GetReinjectionStatus</a></dt>
 <dd>&nbsp;</dd>
@@ -8096,7 +8097,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/GetVersion.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">GetVersion</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP request to read the version of software running on a core.</div>
+<div class="block">A request to read the version of software running on a core.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/GetVersion.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">GetVersion(HasCoreLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/GetVersion.html" title="class in uk.ac.manchester.spinnaker.messages.scp">GetVersion</a></dt>
 <dd>&nbsp;</dd>
@@ -8872,7 +8873,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/bmp/InitFPGA.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><span class="typeNameLink">InitFPGA</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></dt>
 <dd>
-<div class="block">Start an initialisation of the FPGAs.</div>
+<div class="block">A request to start an initialisation of the FPGAs.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/bmp/InitFPGA.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,int)">InitFPGA(BMPBoard, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.bmp.<a href="uk/ac/manchester/spinnaker/messages/bmp/InitFPGA.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">InitFPGA</a></dt>
 <dd>&nbsp;</dd>
@@ -9105,7 +9106,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/IPTagClear.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">IPTagClear</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP Request to clear an IP Tag.</div>
+<div class="block">A request to clear an IP Tag.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/IPTagClear.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,@uk.ac.manchester.spinnaker.machine.tags.TagIDint)">IPTagClear(HasChipLocation, @uk.ac.manchester.spinnaker.machine.tags.TagID int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/IPTagClear.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagClear</a></dt>
 <dd>&nbsp;</dd>
@@ -9115,7 +9116,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/IPTagGet.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">IPTagGet</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP Request to get an IP tag.</div>
+<div class="block">A request to get an IP tag.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/IPTagGet.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,@uk.ac.manchester.spinnaker.machine.tags.TagID(scamp=true,ephemeral=true)int)">IPTagGet(HasChipLocation, @uk.ac.manchester.spinnaker.machine.tags.TagID(scamp=true, ephemeral=true) int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/IPTagGet.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGet</a></dt>
 <dd>&nbsp;</dd>
@@ -9125,7 +9126,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/IPTagGetInfo.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">IPTagGetInfo</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP Request information about IP tags.</div>
+<div class="block">A request information about IP tags.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/IPTagGetInfo.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation)">IPTagGetInfo(HasChipLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/IPTagGetInfo.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagGetInfo</a></dt>
 <dd>&nbsp;</dd>
@@ -9135,13 +9136,13 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/IPTagSet.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">IPTagSet</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP Request to set a (forward) IP Tag.</div>
+<div class="block">A request to set a (forward) IP Tag.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/IPTagSet.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,@javax.validation.constraints.Size(min=4,max=4)byte%5B%5D,@uk.ac.manchester.spinnaker.utils.validation.UDPPortint,@uk.ac.manchester.spinnaker.machine.tags.TagIDint,boolean,boolean)">IPTagSet(HasChipLocation, @javax.validation.constraints.Size(min=4, max=4) byte[], @uk.ac.manchester.spinnaker.utils.validation.UDPPort int, @uk.ac.manchester.spinnaker.machine.tags.TagID int, boolean, boolean)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/IPTagSet.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagSet</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/IPTagSetTTO.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">IPTagSetTTO</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP request to set the transient timeout for future SCP requests.</div>
+<div class="block">A request to set the transient timeout for future SCP requests.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/IPTagSetTTO.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime)">IPTagSetTTO(HasChipLocation, IPTagTimeOutWaitTime)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/IPTagSetTTO.html" title="class in uk.ac.manchester.spinnaker.messages.scp">IPTagSetTTO</a></dt>
 <dd>&nbsp;</dd>
@@ -10156,7 +10157,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/LoadApplicationRoutes.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">LoadApplicationRoutes</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SDP Request to load the previously-saved application multicast router
+<div class="block">A request to load the previously-saved application multicast router
  table.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/LoadApplicationRoutes.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">LoadApplicationRoutes(HasCoreLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/LoadApplicationRoutes.html" title="class in uk.ac.manchester.spinnaker.messages.scp">LoadApplicationRoutes</a></dt>
@@ -10222,7 +10223,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/LoadSystemRoutes.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">LoadSystemRoutes</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SDP Request to load the previously-configured system multicast router
+<div class="block">A request to load the previously-configured system multicast router
  table.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/LoadSystemRoutes.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">LoadSystemRoutes(HasCoreLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/LoadSystemRoutes.html" title="class in uk.ac.manchester.spinnaker.messages.scp">LoadSystemRoutes</a></dt>
@@ -12047,7 +12048,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/notification/PauseStop.html" title="class in uk.ac.manchester.spinnaker.messages.notification"><span class="typeNameLink">PauseStop</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/notification/package-summary.html">uk.ac.manchester.spinnaker.messages.notification</a></dt>
 <dd>
-<div class="block">Packet which indicates that the toolchain has paused or stopped.</div>
+<div class="block">Message which indicates that the toolchain has paused or stopped.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/notification/PauseStop.html#%3Cinit%3E()">PauseStop()</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.notification.<a href="uk/ac/manchester/spinnaker/messages/notification/PauseStop.html" title="class in uk.ac.manchester.spinnaker.messages.notification">PauseStop</a></dt>
 <dd>
@@ -12918,7 +12919,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/bmp/ReadADC.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><span class="typeNameLink">ReadADC</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></dt>
 <dd>
-<div class="block">SCP Request for the ADC data from the BMP including voltages and temperature.</div>
+<div class="block">A request for the ADC data from the BMP including voltages and temperature.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/bmp/ReadADC.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">ReadADC(BMPBoard)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.bmp.<a href="uk/ac/manchester/spinnaker/messages/bmp/ReadADC.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadADC</a></dt>
 <dd>&nbsp;</dd>
@@ -13029,7 +13030,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/bmp/ReadCANStatus.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><span class="typeNameLink">ReadCANStatus</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></dt>
 <dd>
-<div class="block">SCP Request for the CAN bus status data from the BMP.</div>
+<div class="block">A request for the CAN bus status data from the BMP.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/bmp/ReadCANStatus.html#%3Cinit%3E()">ReadCANStatus()</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.bmp.<a href="uk/ac/manchester/spinnaker/messages/bmp/ReadCANStatus.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadCANStatus</a></dt>
 <dd>
@@ -13130,7 +13131,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/bmp/ReadFPGARegister.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><span class="typeNameLink">ReadFPGARegister</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></dt>
 <dd>
-<div class="block">Requests the data from a FPGA's register.</div>
+<div class="block">A request for the data from a FPGA's register.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/bmp/ReadFPGARegister.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">ReadFPGARegister(FPGA, MemoryLocation, BMPBoard)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.bmp.<a href="uk/ac/manchester/spinnaker/messages/bmp/ReadFPGARegister.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadFPGARegister</a></dt>
 <dd>&nbsp;</dd>
@@ -13140,7 +13141,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/bmp/ReadIPAddress.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><span class="typeNameLink">ReadIPAddress</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></dt>
 <dd>
-<div class="block">SCP Request for the IP address data from a BMP.</div>
+<div class="block">A request for the IP address data from a BMP.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/bmp/ReadIPAddress.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">ReadIPAddress(BMPBoard)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.bmp.<a href="uk/ac/manchester/spinnaker/messages/bmp/ReadIPAddress.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadIPAddress</a></dt>
 <dd>&nbsp;</dd>
@@ -13150,7 +13151,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/ReadLink.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">ReadLink</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP request to read a region of memory via a link on a chip.</div>
+<div class="block">A request to read a region of memory via a link on a chip.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/ReadLink.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">ReadLink(HasChipLocation, Direction, MemoryLocation, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/ReadLink.html" title="class in uk.ac.manchester.spinnaker.messages.scp">ReadLink</a></dt>
 <dd>&nbsp;</dd>
@@ -13187,7 +13188,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/ReadMemory.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">ReadMemory</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP request to read a region of memory.</div>
+<div class="block">A request to read a region of memory.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/ReadMemory.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">ReadMemory(HasChipLocation, MemoryLocation, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/ReadMemory.html" title="class in uk.ac.manchester.spinnaker.messages.scp">ReadMemory</a></dt>
 <dd>&nbsp;</dd>
@@ -13234,7 +13235,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/bmp/ReadSerialFlash.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><span class="typeNameLink">ReadSerialFlash</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></dt>
 <dd>
-<div class="block">An SCP request to read a region of serial flash from a BMP.</div>
+<div class="block">A request to read a region of serial flash from a BMP.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/bmp/ReadSerialFlash.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">ReadSerialFlash(BMPBoard, MemoryLocation, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.bmp.<a href="uk/ac/manchester/spinnaker/messages/bmp/ReadSerialFlash.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadSerialFlash</a></dt>
 <dd>&nbsp;</dd>
@@ -13256,7 +13257,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/bmp/ReadSerialFlashCRC.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><span class="typeNameLink">ReadSerialFlashCRC</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></dt>
 <dd>
-<div class="block">An SCP request to get the CRC of serial flash memory from a BMP.</div>
+<div class="block">A request to get the CRC of serial flash memory from a BMP.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/bmp/ReadSerialFlashCRC.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">ReadSerialFlashCRC(BMPBoard, MemoryLocation, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.bmp.<a href="uk/ac/manchester/spinnaker/messages/bmp/ReadSerialFlashCRC.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadSerialFlashCRC</a></dt>
 <dd>&nbsp;</dd>
@@ -13266,7 +13267,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/bmp/ReadSerialVector.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><span class="typeNameLink">ReadSerialVector</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></dt>
 <dd>
-<div class="block">SCP Request for the serial data vector from the BMP.</div>
+<div class="block">A request for the serial data vector from the BMP.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/bmp/ReadSerialVector.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">ReadSerialVector(BMPBoard)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.bmp.<a href="uk/ac/manchester/spinnaker/messages/bmp/ReadSerialVector.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadSerialVector</a></dt>
 <dd>&nbsp;</dd>
@@ -13721,7 +13722,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/bmp/ResetFPGA.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><span class="typeNameLink">ResetFPGA</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></dt>
 <dd>
-<div class="block">Perform a reset of the FPGAs.</div>
+<div class="block">A request to perform a reset of the FPGAs managed by a BMP.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/bmp/ResetFPGA.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType)">ResetFPGA(BMPBoard, BMPTransceiverInterface.FPGAResetType)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.bmp.<a href="uk/ac/manchester/spinnaker/messages/bmp/ResetFPGA.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ResetFPGA</a></dt>
 <dd>&nbsp;</dd>
@@ -13739,7 +13740,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/ResetReinjectionCounters.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">ResetReinjectionCounters</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP Request to reset the statistics counters of the dropped packet
+<div class="block">A request to reset the statistics counters of the dropped packet
  reinjection.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/ResetReinjectionCounters.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">ResetReinjectionCounters(HasCoreLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/ResetReinjectionCounters.html" title="class in uk.ac.manchester.spinnaker.messages.scp">ResetReinjectionCounters</a></dt>
@@ -13851,7 +13852,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/ReverseIPTagSet.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">ReverseIPTagSet</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP Request to set a Reverse IP Tag.</div>
+<div class="block">A request to set a Reverse IP Tag.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/ReverseIPTagSet.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.HasCoreLocation,@uk.ac.manchester.spinnaker.utils.validation.UDPPortint,@uk.ac.manchester.spinnaker.machine.tags.TagIDint,int)">ReverseIPTagSet(HasChipLocation, HasCoreLocation, @uk.ac.manchester.spinnaker.utils.validation.UDPPort int, @uk.ac.manchester.spinnaker.machine.tags.TagID int, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/ReverseIPTagSet.html" title="class in uk.ac.manchester.spinnaker.messages.scp">ReverseIPTagSet</a></dt>
 <dd>&nbsp;</dd>
@@ -13994,7 +13995,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/RouterAlloc.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">RouterAlloc</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP Request to allocate space for routing entries.</div>
+<div class="block">A request to allocate space for routing entries.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/RouterAlloc.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.AppID,int)">RouterAlloc(HasChipLocation, AppID, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/RouterAlloc.html" title="class in uk.ac.manchester.spinnaker.messages.scp">RouterAlloc</a></dt>
 <dd>&nbsp;</dd>
@@ -14004,7 +14005,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/RouterClear.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">RouterClear</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP request to clear the router on a chip.</div>
+<div class="block">A request to clear the router on a chip.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/RouterClear.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation)">RouterClear(HasChipLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/RouterClear.html" title="class in uk.ac.manchester.spinnaker.messages.scp">RouterClear</a></dt>
 <dd>&nbsp;</dd>
@@ -14148,7 +14149,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/SaveApplicationRoutes.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">SaveApplicationRoutes</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SDP Request to save the currently-installed application multicast router
+<div class="block">A request to save the currently-installed application multicast router
  table.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/SaveApplicationRoutes.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">SaveApplicationRoutes(HasCoreLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/SaveApplicationRoutes.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SaveApplicationRoutes</a></dt>
@@ -14194,7 +14195,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections"><span class="typeNameLink">SCPConnection</span></a> - Class in <a href="uk/ac/manchester/spinnaker/connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a></dt>
 <dd>
-<div class="block">A UDP connection to SC&amp;MP on the board.</div>
+<div class="block">An SDP connection to talk SCP (SpiNNaker Control Protocol) to SC&amp;MP on a
+ SpiNNaker system, and to the cores managed by it.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation)">SCPConnection(HasChipLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
 <dd>
@@ -14281,7 +14283,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/connections/SDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections"><span class="typeNameLink">SDPConnection</span></a> - Class in <a href="uk/ac/manchester/spinnaker/connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a></dt>
 <dd>
-<div class="block">A UDP socket connection that talks SDP to SpiNNaker.</div>
+<div class="block">A UDP socket connection that talks SDP (SpiNNaker Datagram Protocol) to
+ SpiNNaker.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SDPConnection.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress,java.lang.Integer)">SDPConnection(HasChipLocation, InetAddress, Integer)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SDPConnection</a></dt>
 <dd>&nbsp;</dd>
@@ -14373,7 +14376,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/SDRAMAlloc.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">SDRAMAlloc</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP Request to allocate space in the SDRAM space.</div>
+<div class="block">A request to allocate space in the SDRAM space.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/SDRAMAlloc.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.AppID,int)">SDRAMAlloc(HasChipLocation, AppID, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/SDRAMAlloc.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SDRAMAlloc</a></dt>
 <dd>&nbsp;</dd>
@@ -14385,7 +14388,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/SDRAMDeAlloc.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">SDRAMDeAlloc</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP Request to free space in the SDRAM.</div>
+<div class="block">A request to free space in the SDRAM.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/SDRAMDeAlloc.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation)">SDRAMDeAlloc(HasChipLocation, MemoryLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/SDRAMDeAlloc.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SDRAMDeAlloc</a></dt>
 <dd>
@@ -14582,7 +14585,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/SendSignal.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">SendSignal</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP Request to send a signal to cores.</div>
+<div class="block">A request to send a signal to cores.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/SendSignal.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.AppID,uk.ac.manchester.spinnaker.messages.model.Signal)">SendSignal(AppID, Signal)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/SendSignal.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SendSignal</a></dt>
 <dd>&nbsp;</dd>
@@ -14963,7 +14966,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/SetLED.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">SetLED</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP request to change the state of an LED.</div>
+<div class="block">A request to change the state of an LED.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/SetLED.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,java.util.Map)">SetLED(HasCoreLocation, Map&lt;Integer, LEDAction&gt;)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/SetLED.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SetLED</a></dt>
 <dd>&nbsp;</dd>
@@ -15103,7 +15106,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/bmp/SetPower.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><span class="typeNameLink">SetPower</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></dt>
 <dd>
-<div class="block">An SCP request for the BMP to power on or power off a rack of boards.</div>
+<div class="block">A request for the BMP to power on or power off some boards.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/bmp/SetPower.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.PowerCommand,java.util.Collection,double)">SetPower(PowerCommand, Collection&lt;BMPBoard&gt;, double)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.bmp.<a href="uk/ac/manchester/spinnaker/messages/bmp/SetPower.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">SetPower</a></dt>
 <dd>&nbsp;</dd>
@@ -15179,7 +15182,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/SetReinjectionPacketTypes.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">SetReinjectionPacketTypes</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP Request to set the dropped packet reinjected packet types.</div>
+<div class="block">A request to set the dropped packet reinjected packet types.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/SetReinjectionPacketTypes.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,boolean,boolean,boolean,boolean)">SetReinjectionPacketTypes(HasCoreLocation, boolean, boolean, boolean, boolean)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/SetReinjectionPacketTypes.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SetReinjectionPacketTypes</a></dt>
 <dd>&nbsp;</dd>
@@ -15239,14 +15242,14 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/SetRouterEmergencyTimeout.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">SetRouterEmergencyTimeout</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP Request to set the router emergency timeout for dropped packet
+<div class="block">A request to set the router emergency timeout for dropped packet
  reinjection.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/SetRouterEmergencyTimeout.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,int)">SetRouterEmergencyTimeout(HasCoreLocation, int, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/SetRouterEmergencyTimeout.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SetRouterEmergencyTimeout</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/SetRouterTimeout.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">SetRouterTimeout</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP Request to the extra monitor core to set the router timeout for
+<div class="block">A request to the extra monitor core to set the router timeout for
  dropped packet reinjection.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/SetRouterTimeout.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,int)">SetRouterTimeout(HasCoreLocation, int, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/SetRouterTimeout.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SetRouterTimeout</a></dt>
@@ -16144,7 +16147,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/notification/StartResume.html" title="class in uk.ac.manchester.spinnaker.messages.notification"><span class="typeNameLink">StartResume</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/notification/package-summary.html">uk.ac.manchester.spinnaker.messages.notification</a></dt>
 <dd>
-<div class="block">Packet which indicates that the toolchain has started or resumed.</div>
+<div class="block">Message which indicates that the toolchain has started or resumed.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/notification/StartResume.html#%3Cinit%3E()">StartResume()</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.notification.<a href="uk/ac/manchester/spinnaker/messages/notification/StartResume.html" title="class in uk.ac.manchester.spinnaker.messages.notification">StartResume</a></dt>
 <dd>
@@ -17502,7 +17505,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/UpdateProvenanceAndExit.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">UpdateProvenanceAndExit</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP Request to update the runtime info on a core.</div>
+<div class="block">A request to update the runtime info on a core.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/UpdateProvenanceAndExit.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">UpdateProvenanceAndExit(HasCoreLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/UpdateProvenanceAndExit.html" title="class in uk.ac.manchester.spinnaker.messages.scp">UpdateProvenanceAndExit</a></dt>
 <dd>&nbsp;</dd>
@@ -17522,7 +17525,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/UpdateRuntime.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">UpdateRuntime</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
-<div class="block">An SCP Request to update the runtime info on a core.</div>
+<div class="block">A request to update the runtime info on a core.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/UpdateRuntime.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,boolean,int,int)">UpdateRuntime(HasCoreLocation, int, boolean, int, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/UpdateRuntime.html" title="class in uk.ac.manchester.spinnaker.messages.scp">UpdateRuntime</a></dt>
 <dd>&nbsp;</dd>
@@ -19058,7 +19061,7 @@ the order they are declared.</div>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/bmp/WriteFPGAData.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><span class="typeNameLink">WriteFPGAData</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></dt>
 <dd>
-<div class="block">Upload a chunk of FPGA initialisation data.</div>
+<div class="block">A request to upload a chunk of FPGA initialisation data.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/bmp/WriteFPGAData.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,byte%5B%5D)">WriteFPGAData(BMPBoard, byte[])</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.bmp.<a href="uk/ac/manchester/spinnaker/messages/bmp/WriteFPGAData.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">WriteFPGAData</a></dt>
 <dd>&nbsp;</dd>
@@ -19098,7 +19101,7 @@ the order they are declared.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/bmp/WriteFPGARegister.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><span class="typeNameLink">WriteFPGARegister</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></dt>
 <dd>
-<div class="block">A request for writing data to a FPGA register.</div>
+<div class="block">A request to write data to an FPGA register managed by a BMP.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/bmp/WriteFPGARegister.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.machine.board.BMPBoard)">WriteFPGARegister(FPGA, MemoryLocation, int, BMPBoard)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.bmp.<a href="uk/ac/manchester/spinnaker/messages/bmp/WriteFPGARegister.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">WriteFPGARegister</a></dt>
 <dd>&nbsp;</dd>

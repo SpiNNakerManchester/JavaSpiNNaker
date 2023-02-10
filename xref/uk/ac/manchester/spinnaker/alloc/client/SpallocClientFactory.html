@@ -695,7 +695,7 @@
 <a class="jxr_linenumber" name="L687" href="#L687">687</a> 		}
 <a class="jxr_linenumber" name="L688" href="#L688">688</a> 
 <a class="jxr_linenumber" name="L689" href="#L689">689</a> 		@Override
-<a class="jxr_linenumber" name="L690" href="#L690">690</a> 		<strong class="jxr_keyword">public</strong> <a name="SCPConnection" href="../../../../../../uk/ac/manchester/spinnaker/connections/SCPConnection.html#SCPConnection">SCPConnection</a> getConnection(<a name="HasChipLocation" href="../../../../../../uk/ac/manchester/spinnaker/machine/HasChipLocation.html#HasChipLocation">HasChipLocation</a> chip)
+<a class="jxr_linenumber" name="L690" href="#L690">690</a> 		<strong class="jxr_keyword">public</strong> SCPConnection getConnection(<a name="HasChipLocation" href="../../../../../../uk/ac/manchester/spinnaker/machine/HasChipLocation.html#HasChipLocation">HasChipLocation</a> chip)
 <a class="jxr_linenumber" name="L691" href="#L691">691</a> 				<strong class="jxr_keyword">throws</strong> IOException, InterruptedException {
 <a class="jxr_linenumber" name="L692" href="#L692">692</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="ProxiedSCPConnection" href="../../../../../../uk/ac/manchester/spinnaker/alloc/client/ProxiedSCPConnection.html#ProxiedSCPConnection">ProxiedSCPConnection</a>(chip.asChipLocation(), getProxy());
 <a class="jxr_linenumber" name="L693" href="#L693">693</a> 		}

@@ -26,10 +26,12 @@
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.SerializableMessage;
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_javadoccomment"> * A notification message.</em>
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">interface</strong> <a name="NotificationMessage" href="../../../../../../uk/ac/manchester/spinnaker/messages/notification/NotificationMessage.html#NotificationMessage">NotificationMessage</a> <strong class="jxr_keyword">extends</strong> <a name="SerializableMessage" href="../../../../../../uk/ac/manchester/spinnaker/messages/SerializableMessage.html#SerializableMessage">SerializableMessage</a> {
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  }
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_javadoccomment"> * A notification message. Note that the general constraint on the length of</em>
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_javadoccomment"> * these messages is set by UDP and, possibly, Ethernet, not SpiNNaker; these</em>
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_javadoccomment"> * messages are not routed via a SpiNNaker board.</em>
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">interface</strong> <a name="NotificationMessage" href="../../../../../../uk/ac/manchester/spinnaker/messages/notification/NotificationMessage.html#NotificationMessage">NotificationMessage</a> <strong class="jxr_keyword">extends</strong> <a name="SerializableMessage" href="../../../../../../uk/ac/manchester/spinnaker/messages/SerializableMessage.html#SerializableMessage">SerializableMessage</a> {
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2023 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

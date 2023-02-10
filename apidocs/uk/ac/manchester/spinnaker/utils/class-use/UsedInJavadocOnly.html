@@ -111,48 +111,54 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.connections">uk.ac.manchester.spinnaker.connections</a></th>
+<td class="colLast">
+<div class="block">Classes used to model types of connections that talk to SpiNNaker.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.download">uk.ac.manchester.spinnaker.front_end.download</a></th>
 <td class="colLast">
 <div class="block">The buffer manager and support classes.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.machine.bean">uk.ac.manchester.spinnaker.machine.bean</a></th>
 <td class="colLast">
 <div class="block">Beans to describes a SpiNNaker machine.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.bmp">uk.ac.manchester.spinnaker.messages.bmp</a></th>
 <td class="colLast">
 <div class="block">Messages that talk to the BMP.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.model">uk.ac.manchester.spinnaker.messages.model</a></th>
 <td class="colLast">
 <div class="block">Model support classes for the communication messages.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp</a></th>
 <td class="colLast">
 <div class="block">The messages of SpiNNaker Control Protocol (SCP).</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.spalloc">uk.ac.manchester.spinnaker.spalloc</a></th>
 <td class="colLast">
 <div class="block">SpiNNaker old-style machine allocation client.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver</a></th>
 <td class="colLast">
 <div class="block">How to actually talk to a SpiNNaker machine.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.utils">uk.ac.manchester.spinnaker.utils</a></th>
 <td class="colLast">
 <div class="block">General utilities for the SpiNNaker runtime.</div>
@@ -489,6 +495,43 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.connections">
+<!--   -->
+</a>
+<h2>Uses of <a href="../UsedInJavadocOnly.html" title="annotation in uk.ac.manchester.spinnaker.utils">UsedInJavadocOnly</a> in <a href="../../connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="../../connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a> with annotations of type <a href="../UsedInJavadocOnly.html" title="annotation in uk.ac.manchester.spinnaker.utils">UsedInJavadocOnly</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></span></code></th>
+<td class="colLast">
+<div class="block">An SDP connection to talk SCP (SpiNNaker Control Protocol) to SC&amp;MP on a
+ SpiNNaker system, and to the cores managed by it.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../connections/SDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SDPConnection</a></span></code></th>
+<td class="colLast">
+<div class="block">A UDP socket connection that talks SDP (SpiNNaker Datagram Protocol) to
+ SpiNNaker.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.front_end.download">
 <!--   -->
 </a>
@@ -598,6 +641,13 @@ int&nbsp;regionID)</code></th>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/bmp/BMPSetLED.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPSetLED</a></span></code></th>
+<td class="colLast">
+<div class="block">A request to alter the LEDs on a board managed by a BMP.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/bmp/SerialVector.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">SerialVector</a></span></code></th>
 <td class="colLast">
 <div class="block">The data in the serial vector.</div>
@@ -656,7 +706,7 @@ int&nbsp;regionID)</code></th>
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/scp/ApplicationRun.html" title="class in uk.ac.manchester.spinnaker.messages.scp">ApplicationRun</a></span></code></th>
 <td class="colLast">
-<div class="block">An SCP request to run an application.</div>
+<div class="block">A request to run an application.</div>
 </td>
 </tr>
 </tbody>

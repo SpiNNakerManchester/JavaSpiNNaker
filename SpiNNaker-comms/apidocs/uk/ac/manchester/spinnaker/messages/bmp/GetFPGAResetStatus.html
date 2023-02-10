@@ -104,8 +104,8 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">GetFPGAResetStatus</span>
 extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest</a>&lt;<a href="GetFPGAResetStatus.Response.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">GetFPGAResetStatus.Response</a>&gt;</pre>
-<div class="block">Get the reset status of a board's FPGAs. The response payload is a boolean,
- <code>true</code> if the reset bit is asserted for the given FPGA.
+<div class="block">Get the reset status of the FPGAs managed by a BMP. The response payload is a
+ boolean, <code>true</code> if the reset bit is asserted for the given FPGAs.
  <p>
  Calls <code>cmd_read()</code> in <code>bmp_cmd.c</code> with special parameters and
  parses the result.</div>

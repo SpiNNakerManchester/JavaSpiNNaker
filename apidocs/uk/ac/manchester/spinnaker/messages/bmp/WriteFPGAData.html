@@ -104,9 +104,9 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">WriteFPGAData</span>
 extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest</a>&lt;<a href="BMPRequest.BMPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.BMPResponse</a>&gt;</pre>
-<div class="block">Upload a chunk of FPGA initialisation data. Must have been set up by
- <a href="InitFPGA.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><code>InitFPGA</code></a>. Upload process will be terminated by <a href="ResetFPGA.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><code>ResetFPGA</code></a>.
- There is no response payload.
+<div class="block">A request to upload a chunk of FPGA initialisation data. Must have been set
+ up by <a href="InitFPGA.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><code>InitFPGA</code></a>. The upload process will be terminated by
+ <a href="ResetFPGA.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><code>ResetFPGA</code></a>. There is no response payload.
  <p>
  Calls <code>ssp1_copy()</code> in <code>bmp_ssp.c</code>.</div>
 </section>

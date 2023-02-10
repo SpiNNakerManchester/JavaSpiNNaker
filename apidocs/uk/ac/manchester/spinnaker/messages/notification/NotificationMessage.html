@@ -93,7 +93,9 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public interface <span class="typeNameLabel">NotificationMessage</span>
 extends <a href="../SerializableMessage.html" title="interface in uk.ac.manchester.spinnaker.messages">SerializableMessage</a></pre>
-<div class="block">A notification message.</div>
+<div class="block">A notification message. Note that the general constraint on the length of
+ these messages is set by UDP and, possibly, Ethernet, not SpiNNaker; these
+ messages are not routed via a SpiNNaker board.</div>
 </section>
 <section class="summary">
 <ul class="blockList">

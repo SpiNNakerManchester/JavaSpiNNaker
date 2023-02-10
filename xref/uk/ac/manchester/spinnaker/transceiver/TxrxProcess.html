@@ -504,7 +504,7 @@
 <a class="jxr_linenumber" name="L496" href="#L496">496</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L497" href="#L497">497</a> 	<strong class="jxr_keyword">class</strong> RequestPipeline {
 <a class="jxr_linenumber" name="L498" href="#L498">498</a> 		<em class="jxr_javadoccomment">/** The connection over which the communication is to take place. */</em>
-<a class="jxr_linenumber" name="L499" href="#L499">499</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="SCPConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/SCPConnection.html#SCPConnection">SCPConnection</a> connection;
+<a class="jxr_linenumber" name="L499" href="#L499">499</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> SCPConnection connection;
 <a class="jxr_linenumber" name="L500" href="#L500">500</a> 
 <a class="jxr_linenumber" name="L501" href="#L501">501</a> 		<em class="jxr_javadoccomment">/** The number of requests issued to this pipeline. */</em>
 <a class="jxr_linenumber" name="L502" href="#L502">502</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> numRequests;
@@ -641,7 +641,7 @@
 <a class="jxr_linenumber" name="L633" href="#L633">633</a> <em class="jxr_javadoccomment">		 *            The connection over which the communication is to take</em>
 <a class="jxr_linenumber" name="L634" href="#L634">634</a> <em class="jxr_javadoccomment">		 *            place</em>
 <a class="jxr_linenumber" name="L635" href="#L635">635</a> <em class="jxr_javadoccomment">		 */</em>
-<a class="jxr_linenumber" name="L636" href="#L636">636</a> 		RequestPipeline(<a name="SCPConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/SCPConnection.html#SCPConnection">SCPConnection</a> connection) {
+<a class="jxr_linenumber" name="L636" href="#L636">636</a> 		RequestPipeline(SCPConnection connection) {
 <a class="jxr_linenumber" name="L637" href="#L637">637</a> 			<strong class="jxr_keyword">this</strong>.connection = connection;
 <a class="jxr_linenumber" name="L638" href="#L638">638</a> 			<strong class="jxr_keyword">synchronized</strong> (OUTSTANDING_REQUESTS) {
 <a class="jxr_linenumber" name="L639" href="#L639">639</a> 				outstandingRequests = OUTSTANDING_REQUESTS.computeIfAbsent(

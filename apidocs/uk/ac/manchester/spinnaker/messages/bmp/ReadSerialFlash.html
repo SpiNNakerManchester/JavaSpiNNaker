@@ -104,9 +104,8 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">ReadSerialFlash</span>
 extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest</a>&lt;<a href="ReadSerialFlash.Response.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadSerialFlash.Response</a>&gt;</pre>
-<div class="block">An SCP request to read a region of serial flash from a BMP. The response
- payload is a read-only little-endian <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink"><code>ByteBuffer</code></a> intended to be read
- once.
+<div class="block">A request to read a region of serial flash from a BMP. The response payload
+ is a read-only little-endian <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink"><code>ByteBuffer</code></a> intended to be read once.
  <p>
  Calls <code>sf_read()</code> in <code>bmp_ssp.c</code>.</div>
 </section>

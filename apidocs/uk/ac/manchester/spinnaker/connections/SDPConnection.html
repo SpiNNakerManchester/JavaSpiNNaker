@@ -104,7 +104,17 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">SDPConnection</span>
 extends <a href="UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;<a href="../messages/sdp/SDPMessage.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPMessage</a>&gt;</pre>
-<div class="block">A UDP socket connection that talks SDP to SpiNNaker.</div>
+<div class="block">A UDP socket connection that talks SDP (SpiNNaker Datagram Protocol) to
+ SpiNNaker. An inbound SDP packet can be routed from the initially receiving
+ SC&amp;MP core to any core, and an outbound SDP packet can be routed from any
+ core to the outside world (provided an <a href="../machine/tags/IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags"><code>IPTag</code></a> or <a href="../machine/tags/ReverseIPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags"><code>ReverseIPTag</code></a>
+ is configured to handle routing of the message on an Ethernet-equipped chip).
+ <p>
+ Note that, unlike with an <a href="SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections"><code>SCPConnection</code></a>, SDP is essentially a
+ collection of one-way messages, though replies might be expected to some of
+ them. As such, this class makes no attempt to handle demultiplexing of
+ messages received on multiple threads; great care must be taken when using
+ this class from more than one thread at a time.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
