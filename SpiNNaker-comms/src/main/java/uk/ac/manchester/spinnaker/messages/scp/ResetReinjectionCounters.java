@@ -20,6 +20,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.ReinjectorCommand.RESET_CO
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * An SCP Request to reset the statistics counters of the dropped packet
@@ -28,8 +29,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  * Handled by {@code reinjection_reset_counters()} in
  * {@code extra_monitor_support.c}.
  */
-public class ResetReinjectionCounters
-		extends ReinjectorRequest<CheckOKResponse> {
+public class ResetReinjectionCounters extends ReinjectorRequest<EmptyResponse> {
 	/**
 	 * @param core
 	 *            The coordinates of the monitor core.
@@ -39,8 +39,9 @@ public class ResetReinjectionCounters
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Reset dropped packet reinjection counters",
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
+		return new EmptyResponse("Reset dropped packet reinjection counters",
 				RESET_COUNTERS, buffer);
 	}
 }

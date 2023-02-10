@@ -33,7 +33,7 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
-import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
+import uk.ac.manchester.spinnaker.messages.scp.EmptyResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.WriteLink;
 import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
@@ -280,7 +280,7 @@ class WriteMemoryProcess extends TxrxProcess {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	private <T extends SCPRequest<CheckOKResponse>> void writeMemoryFlow(
+	private <T extends SCPRequest<EmptyResponse>> void writeMemoryFlow(
 			MemoryLocation baseAddress, ByteBuffer data,
 			MessageProvider<T> msgProvider)
 			throws IOException, ProcessException, InterruptedException {
@@ -312,7 +312,7 @@ class WriteMemoryProcess extends TxrxProcess {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	private <T extends SCPRequest<CheckOKResponse>> void writeMemoryFlow(
+	private <T extends SCPRequest<EmptyResponse>> void writeMemoryFlow(
 			MemoryLocation baseAddress, InputStream data, int bytesToWrite,
 			MessageProvider<T> msgProvider)
 			throws IOException, ProcessException, InterruptedException {

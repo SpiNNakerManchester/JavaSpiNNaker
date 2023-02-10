@@ -16,14 +16,15 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.lang.Byte.toUnsignedInt;
-import static uk.ac.manchester.spinnaker.messages.model.IPTagCommand.TTO;
-import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.COMMAND_FIELD;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.COMMAND_FIELD;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagCommand.TTO;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime;
+import uk.ac.manchester.spinnaker.messages.model.TagInfo;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
@@ -53,36 +54,20 @@ public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 		return new IPTagGetInfo.Response(buffer);
 	}
 
-	public static final class TagInfo {
-		/**
-		 * The timeout for transient IP tags (i.e., responses to SCP commands).
-		 */
-		public final IPTagTimeOutWaitTime transientTimeout;
-
-		/** The count of the IP tag pool size. */
-		public final int poolSize;
-
-		/** The count of the number of fixed IP tag entries. */
-		public final int fixedSize;
-
-		private TagInfo(ByteBuffer buffer) {
-			transientTimeout = IPTagTimeOutWaitTime.get(buffer.get());
-			buffer.get(); // skip 1 (sizeof(iptag_t) isn't relevant to us)
-			poolSize = toUnsignedInt(buffer.get());
-			fixedSize = toUnsignedInt(buffer.get());
-		}
-	}
-
 	/** An SCP response to a request for information about IP tags. */
-	public static final class Response
+	protected final class Response
 			extends PayloadedResponse<TagInfo, RuntimeException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
-			super("Get IP Tag Info", CMD_IPTAG, buffer);
+			super("Get IP Tag Table Info", CMD_IPTAG, buffer);
 		}
 
 		@Override
-		protected TagInfo parse(ByteBuffer buffer) throws RuntimeException {
-			return new TagInfo(buffer);
+		protected TagInfo parse(ByteBuffer buffer) {
+			var transientTimeout = IPTagTimeOutWaitTime.get(buffer.get());
+			buffer.get(); // skip 1 (sizeof(iptag_t) isn't relevant to us)
+			var poolSize = toUnsignedInt(buffer.get());
+			var fixedSize = toUnsignedInt(buffer.get());
+			return new TagInfo(transientTimeout, poolSize, fixedSize);
 		}
 	}
 }

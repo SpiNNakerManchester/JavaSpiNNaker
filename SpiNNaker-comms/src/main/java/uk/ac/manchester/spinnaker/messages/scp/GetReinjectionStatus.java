@@ -41,14 +41,15 @@ public class GetReinjectionStatus
 	}
 
 	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+	public Response getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
 		return new Response(buffer);
 	}
 
 	/**
 	 * An SCP response to a request for the dropped packet reinjection status.
 	 */
-	public static final class Response
+	protected final class Response
 			extends PayloadedResponse<ReinjectionStatus, RuntimeException> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
