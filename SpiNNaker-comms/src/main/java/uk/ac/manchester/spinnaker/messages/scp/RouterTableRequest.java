@@ -30,8 +30,9 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
  * A command message to an extra monitor control core to manipulate the router
  * table.
  */
-//TODO Seal in 17
-public abstract class RouterTableRequest extends SCPRequest<EmptyResponse> {
+public abstract sealed class RouterTableRequest
+		extends SCPRequest<EmptyResponse>
+		permits LoadApplicationRoutes, LoadSystemRoutes, SaveApplicationRoutes {
 	private final RouterTableCommand cmd;
 
 	/**

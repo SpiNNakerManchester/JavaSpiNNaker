@@ -28,7 +28,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * This calls {@code sark_io_buf_reset()} in {@code sark_io.c} (via
  * {@code simulation_control_scp_callback()} in {@code simulation.c}).
  */
-public class ClearIOBUF extends FECRequest<EmptyResponse> {
+public final class ClearIOBUF extends FECRequest<EmptyResponse> {
 	/**
 	 * @param core
 	 *            The core to clear the IOBUF of.

@@ -28,7 +28,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * This calls {@code simulation_control_scp_callback()} in {@code simulation.c}.
  */
-public class UpdateRuntime extends FECRequest<EmptyResponse> {
+public final class UpdateRuntime extends FECRequest<EmptyResponse> {
 	/**
 	 * @param core
 	 *            The SpiNNaker core to update the runtime info of.

@@ -718,8 +718,7 @@ public class TxrxProcess {
 		 */
 		private <T extends CheckOKResponse> Request<T> registerRequest(
 				SCPRequest<T> request, Consumer<T> callback) {
-			if (request instanceof ConnectionAwareMessage) {
-				ConnectionAwareMessage cam = (ConnectionAwareMessage) request;
+			if (request instanceof ConnectionAwareMessage cam) {
 				cam.setConnection(connection);
 			}
 			synchronized (outstandingRequests) {

@@ -30,8 +30,9 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
  * @param <T>
  *            The type of response expected.
  */
-// TODO Seal in 17
-public abstract class FECRequest<T extends SCPResponse> extends SCPRequest<T> {
+public abstract sealed class FECRequest<T extends SCPResponse>
+		extends SCPRequest<
+				T> permits ClearIOBUF, UpdateProvenanceAndExit, UpdateRuntime {
 	/**
 	 * @param core
 	 *            Where to send the request.

@@ -30,9 +30,11 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
  * @param <T>
  *            The type of response.
  */
-//TODO Seal in 17
-public abstract class ReinjectorRequest<T extends CheckOKResponse>
-		extends SCPRequest<T> {
+public abstract sealed class ReinjectorRequest<T extends CheckOKResponse>
+		extends SCPRequest<T>
+		permits ClearReinjectionQueue, GetReinjectionStatus,
+			ResetReinjectionCounters, SetReinjectionPacketTypes,
+			SetRouterEmergencyTimeout, SetRouterTimeout {
 	/**
 	 * @param core
 	 *            Where to send the request.

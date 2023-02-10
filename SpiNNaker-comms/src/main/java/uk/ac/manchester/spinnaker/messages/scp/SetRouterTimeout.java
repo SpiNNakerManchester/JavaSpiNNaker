@@ -30,7 +30,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Handled by {@code reinjection_set_timeout_sdp()} in
  * {@code extra_monitor_support.c}.
  */
-public class SetRouterTimeout extends ReinjectorRequest<EmptyResponse> {
+public final class SetRouterTimeout extends ReinjectorRequest<EmptyResponse> {
 	/**
 	 * @param core
 	 *            The coordinates of the monitor core.

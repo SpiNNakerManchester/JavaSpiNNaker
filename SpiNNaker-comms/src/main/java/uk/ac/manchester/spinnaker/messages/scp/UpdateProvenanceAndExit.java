@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * This calls {@code simulation_control_scp_callback()} in {@code simulation.c}.
  */
-public class UpdateProvenanceAndExit extends FECRequest<NoResponse> {
+public final class UpdateProvenanceAndExit extends FECRequest<NoResponse> {
 	/**
 	 * @param core
 	 *            The SpiNNaker core to update the provenance info of.
