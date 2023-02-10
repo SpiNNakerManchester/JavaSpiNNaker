@@ -58,6 +58,23 @@ public interface DatabaseAPI {
 	Connection getConnection();
 
 	/**
+	 * Whether the historical data DB is available. If it isn't, you can't
+	 * move any data to longer-term storage, but ordinary operations should
+	 * be fine.
+	 *
+	 * @return Whether the historical data DB is available.
+	 */
+	boolean isHistoricalDBAvailable();
+
+	/**
+	 * Get a connection to the historical database, similar to the above.
+	 *
+	 * @return A configured initialised connection to the historical database.
+	 */
+	@MustBeClosed
+	Connection getHistoricalConnection();
+
+	/**
 	 * A connection manager and transaction runner. If the {@code operation}
 	 * completes normally (and this isn't a nested use), the transaction
 	 * commits. If an exception is thrown, the transaction is rolled back. The
@@ -170,15 +187,6 @@ public interface DatabaseAPI {
 		 * @see java.sql.Connection#isReadOnly()
 		 */
 		boolean isReadOnly();
-
-		/**
-		 * Whether the historical data DB is available. If it isn't, you can't
-		 * move any data to longer-term storage, but ordinary operations should
-		 * be fine.
-		 *
-		 * @return Whether the historical data DB is available.
-		 */
-		boolean isHistoricalDBAvailable();
 
 		/**
 		 * A nestable transaction runner. If the {@code operation} completes

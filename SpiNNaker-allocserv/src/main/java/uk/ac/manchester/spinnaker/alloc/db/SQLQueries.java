@@ -2108,6 +2108,106 @@ public abstract class SQLQueries {
 			"INSERT INTO blacklist_ops(board_id, op, completed) "
 					+ "VALUES(:board_id, 2, 0)";
 
+
+
+	/**
+	 * Read historical allocations to be written to the historical data DB.
+	 * Only allocations that are already completed will ever get read here.
+	 *
+	 * @see AllocatorTask#tombstone()
+	 */
+	@Parameter("grace_period")
+	@Parameter("time_now")
+	@ResultColumn("alloc_id")
+	@ResultColumn("job_id")
+	@ResultColumn("board_id")
+	@ResultColumn("alloc_timestamp")
+	protected static final String READ_HISTORICAL_ALLOCS =
+			"SELECT	alloc_id, job_id, board_id, alloc_timestamp "
+			+ "FROM old_board_allocations JOIN jobs USING (job_id) "
+			+ "WHERE jobs.death_timestamp + :grace_period < :time_now";
+
+	/**
+	 * Read historical jobs to be written to the historical data DB.
+	 * Only jobs that are already completed will ever get read here.
+	 */
+	@Parameter("grace_period")
+	@Parameter("time_now")
+	@ResultColumn("job_id")
+	@ResultColumn("machine_id")
+	@ResultColumn("owner")
+	@ResultColumn("create_timestamp")
+	@ResultColumn("width")
+	@ResultColumn("height")
+	@ResultColumn("depth")
+	@ResultColumn("allocated_root")
+	@ResultColumn("keepalive_interval")
+	@ResultColumn("keepalive_host")
+	@ResultColumn("death_reason")
+	@ResultColumn("death_timestamp")
+	@ResultColumn("original_request")
+	@ResultColumn("allocation_timestamp")
+	@ResultColumn("allocation_size")
+	@ResultColumn("machine_name")
+	@ResultColumn("user_name")
+	@ResultColumn("group_id")
+	@ResultColumn("group_name")
+	protected static final String READ_HISTORICAL_JOBS =
+			"SELECT job_id, machine_id, owner, create_timestamp, "
+			+ "jobs.width as width, jobs.height as height, jobs.depth as depth,"
+			+ "allocated_root, keepalive_interval, keepalive_host, "
+			+ "death_reason, death_timestamp, original_request, "
+			+ "allocation_timestamp, allocation_size, "
+			+ "machine_name, user_name, group_id, group_name "
+			+ "FROM jobs "
+			+ "JOIN user_groups USING (group_id) "
+			+ "JOIN machines USING (machine_id) "
+			+ "JOIN user_info ON jobs.owner = user_info.user_id "
+			+ "WHERE death_timestamp + :grace_period < :time_now";
+
+	@Parameter("alloc_id")
+	@Parameter("job_id")
+	@Parameter("board_id")
+	@Parameter("alloc_timestamp")
+	protected static final String WRITE_HISTORICAL_ALLOCS =
+			"INSERT IGNORE INTO board_allocations( "
+			+ "alloc_id, job_id, board_id, allocation_timestamp) "
+			+ "VALUES(:alloc_id, :job_id, :board_id, :allocation_timestamp)";
+
+	@Parameter("job_id")
+	@Parameter("machine_id")
+	@Parameter("owner")
+	@Parameter("create_timestamp")
+	@Parameter("width")
+	@Parameter("height")
+	@Parameter("depth")
+	@Parameter("allocated_root")
+	@Parameter("keepalive_interval")
+	@Parameter("keepalive_host")
+	@Parameter("death_reason")
+	@Parameter("death_timestamp")
+	@Parameter("original_request")
+	@Parameter("allocation_timestamp")
+	@Parameter("allocation_size")
+	@Parameter("machine_name")
+	@Parameter("user_name")
+	@Parameter("group_id")
+	@Parameter("group_name")
+	protected static final String WRITE_HISTORICAL_JOBS =
+			"INSERT IGNORE INTO jobs( "
+			+ "job_id, machine_id, owner, create_timestamp, "
+			+ "width, height, depth, root_id, "
+			+ "keepalive_interval, keepalive_host, "
+			+ "death_reason, death_timestamp, "
+			+ "original_request, allocation_timestamp, allocation_size, "
+			+ "machine_name, owner_name, group_id, group_name) "
+			+ "VALUES(:job_id, :machine_id, :owner, :create_timestamp, "
+			+ ":width, :height, :depth, :root_id, "
+			+ ":keepalive_interval, :keepalive_host, "
+			+ ":death_reason, :death_timestamp, "
+			+ ":original_request, :allocation_timestamp, :allocation_size, "
+			+ ":machine_name, :owner_name, :group_id, :group_name)";
+
 	// SQL loaded from files because it is too complicated otherwise!
 
 	/**
@@ -2438,30 +2538,4 @@ public abstract class SQLQueries {
 	@ResultColumn("address")
 	@Value("classpath:queries/get_reported_boards.sql")
 	protected Resource getReportedBoards;
-
-	/**
-	 * Copy jobs to the historical data DB, and return the IDs of the jobs that
-	 * were copied (which will now be safe to delete). Only jobs that are
-	 * already completed will ever get copied.
-	 *
-	 * @see AllocatorTask#tombstone()
-	 */
-	@Parameter("grace_period")
-	@Parameter("time_now")
-	@ResultColumn("job_id")
-	@Value("classpath:queries/copy-jobs-to-historical-data.sql")
-	protected Resource copyJobsToHistoricalData;
-
-	/**
-	 * Copy board allocation data to the historical data DB, and return the IDs
-	 * of the allocation records that were copied (which will now be safe to
-	 * delete). Only jobs that are already completed will ever get copied.
-	 *
-	 * @see AllocatorTask#tombstone()
-	 */
-	@Parameter("grace_period")
-	@Parameter("time_now")
-	@ResultColumn("alloc_id")
-	@Value("classpath:queries/copy-allocs-to-historical-data.sql")
-	protected Resource copyAllocsToHistoricalData;
 }

@@ -53,6 +53,26 @@ public abstract class DatabaseAwareBean extends SQLQueries {
 	}
 
 	/**
+	 * Get a connection to the historical database. Connections <em>may</em> be
+	 * shared, but might not be (especially in the case of testing databases).
+	 *
+	 * @return Database connection. Requires closing.
+	 */
+	@MustBeClosed
+	protected final Connection getHistoricalConnection() {
+		return db.getHistoricalConnection();
+	}
+
+	/**
+	 * Determine if the historical database can be used.
+	 *
+	 * @return Whether the historical database can be used.
+	 */
+	protected final boolean isHistoricalDBAvailable() {
+		return db.isHistoricalDBAvailable();
+	}
+
+	/**
 	 * A connection manager and nestable transaction runner. If the
 	 * {@code operation} completes normally (and this isn't a nested use), the
 	 * transaction commits. If an exception is thrown, the transaction is rolled

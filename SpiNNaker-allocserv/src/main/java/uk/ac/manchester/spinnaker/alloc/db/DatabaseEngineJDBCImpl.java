@@ -37,6 +37,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.Resource;
@@ -59,7 +60,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 	@Value("classpath:/spalloc-mysql.sql")
 	private Resource sqlDDLFile;
 
-	@Value("classpath:/spalloc-tombstone.sql")
+	@Value("classpath:/spalloc-tombstone-mysql.sql")
 	private Resource tombstoneDDLFile;
 
 	private final JdbcTemplate jdbcTemplate;
@@ -69,18 +70,28 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 	private final TransactionTemplate transactionTemplate;
 
 	@Autowired
-	public DatabaseEngineJDBCImpl(JdbcTemplate jdbcTemplate,
-			PlatformTransactionManager transactionManager) {
+	public DatabaseEngineJDBCImpl(
+			@Qualifier("mainDatabase") JdbcTemplate jdbcTemplate,
+			@Qualifier("historicalDatabase") JdbcTemplate tombstoneJdbcTemplate,
+			@Qualifier("mainTransactionManager")
+				PlatformTransactionManager transactionManager) {
 		this.jdbcTemplate = jdbcTemplate;
-		this.tombstoneJdbcTemplate = null;
+		this.tombstoneJdbcTemplate = tombstoneJdbcTemplate;
 		this.transactionTemplate = new TransactionTemplate(transactionManager);
 	}
 
 	@PostConstruct
 	private void setup() {
 		log.info("Running Database setup...");
-		// Skip for now - use sql directly if needed
-		String sql = readSQL(sqlDDLFile);
+		runSQLFile(sqlDDLFile, jdbcTemplate);
+		if (tombstoneJdbcTemplate != null) {
+			log.info("Running tombstone setup");
+			runSQLFile(tombstoneDDLFile, tombstoneJdbcTemplate);
+		}
+	}
+
+	private void runSQLFile(Resource sqlFile, JdbcTemplate template) {
+		String sql = readSQL(sqlFile);
 		String[] lines = sql.split("\n");
 		int i = 0;
 		while (i < lines.length) {
@@ -107,12 +118,22 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 			if (stmt.length() != 0) {
 				String statement = stmt.toString();
 				log.debug("Executing DDL Statement: {}", statement);
-				jdbcTemplate.execute(statement);
+				template.execute(statement);
 			}
 		}
 	}
 
 	private final class ConnectionImpl implements Connection {
+
+		/** Whether a rollback has been requested on a transaction. */
+		private boolean doRollback = false;
+
+		/** The JdbcTemplate to use */
+		private final JdbcTemplate connectionJdbcTemplate;
+
+		ConnectionImpl(JdbcTemplate connectionJdbcTemplate) {
+			this.connectionJdbcTemplate = connectionJdbcTemplate;
+		}
 
 		@Override
 		public void close() {
@@ -121,22 +142,22 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 		@Override
 		public Query query(String sql) {
-			return new QueryImpl(sql);
+			return new QueryImpl(sql, connectionJdbcTemplate);
 		}
 
 		@Override
 		public Query query(Resource sqlResource) {
-			return new QueryImpl(readSQL(sqlResource));
+			return new QueryImpl(readSQL(sqlResource), connectionJdbcTemplate);
 		}
 
 		@Override
 		public Update update(String sql) {
-			return new UpdateImpl(sql);
+			return new UpdateImpl(sql, connectionJdbcTemplate);
 		}
 
 		@Override
 		public Update update(Resource sqlResource) {
-			return new UpdateImpl(readSQL(sqlResource));
+			return new UpdateImpl(readSQL(sqlResource), connectionJdbcTemplate);
 		}
 
 		@Override
@@ -159,16 +180,18 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		}
 
 		@Override
-		public <T> T transaction(boolean lockForWriting,
+		public synchronized <T> T transaction(boolean lockForWriting,
 				TransactedWithResult<T> operation) {
 			return transactionTemplate.execute(status -> {
-				return operation.act();
+				try {
+				    return operation.act();
+				} finally {
+					if (doRollback) {
+						status.setRollbackOnly();
+						doRollback = false;
+					}
+				}
 			});
-		}
-
-		@Override
-		public boolean isHistoricalDBAvailable() {
-			return tombstoneJdbcTemplate != null;
 		}
 
 		@Override
@@ -178,7 +201,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 		@Override
 		public void rollback() {
-			// Does nothing
+			doRollback = true;
 		}
 
 		@Override
@@ -222,8 +245,11 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 		private final String sql;
 
-		QueryImpl(String sql) {
+		private final JdbcTemplate queryJdbcTemplate;
+
+		QueryImpl(String sql, JdbcTemplate queryJdbcTemplate) {
 			this.sql = NamedParameterUtils.parseSqlStatementIntoString(sql);
+			this.queryJdbcTemplate = queryJdbcTemplate;
 		}
 
 		@Override
@@ -234,7 +260,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		@Override
 		public <T> List<T> call(RowMapper<T> mapper, Object... arguments) {
 			List<Object> resolved = resolveArguments(arguments);
-			return jdbcTemplate.query(sql, (results) -> {
+			return queryJdbcTemplate.query(sql, (results) -> {
 				List<T> values = new ArrayList<T>();
 				while (results.next()) {
 					values.add(mapper.mapRow(new Row(results)));
@@ -246,7 +272,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		@Override
 		public <T> Optional<T> call1(RowMapper<T> mapper, Object... arguments) {
 			List<Object> resolved = resolveArguments(arguments);
-			return jdbcTemplate.query(sql, (results) -> {
+			return queryJdbcTemplate.query(sql, (results) -> {
 				if (results.next()) {
 					// Allow nullable if there is a value
 					return Optional.ofNullable(mapper.mapRow(new Row(results)));
@@ -260,8 +286,11 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 		private String sql;
 
-		UpdateImpl(String sql) {
+		private final JdbcTemplate updateJdbcTemplate;
+
+		UpdateImpl(String sql, JdbcTemplate updateJdbcTemplate) {
 			this.sql = NamedParameterUtils.parseSqlStatementIntoString(sql);
+			this.updateJdbcTemplate = updateJdbcTemplate;
 		}
 
 		@Override
@@ -272,7 +301,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		@Override
 		public int call(Object... arguments) {
 			List<Object> resolved = resolveArguments(arguments);
-			return jdbcTemplate.update(sql, resolved.toArray());
+			return updateJdbcTemplate.update(sql, resolved.toArray());
 		}
 
 		@Override
@@ -280,7 +309,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 			List<Object> resolved = resolveArguments(arguments);
 			KeyHolder keyHolder = new GeneratedKeyHolder();
 			var pss = new PreparedStatementCreatorImpl(sql, resolved);
-			jdbcTemplate.update(pss, keyHolder);
+			updateJdbcTemplate.update(pss, keyHolder);
 			Number key = keyHolder.getKey();
 			if (key == null) {
 				return Optional.empty();
@@ -340,20 +369,34 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 	@Override
 	public Connection getConnection() {
-		return new ConnectionImpl();
+		return new ConnectionImpl(jdbcTemplate);
+	}
+
+	@Override
+	public boolean isHistoricalDBAvailable() {
+		return tombstoneJdbcTemplate != null;
+	}
+
+	@Override
+	public Connection getHistoricalConnection() {
+		return new ConnectionImpl(tombstoneJdbcTemplate);
 	}
 
 	@Override
 	public void executeVoid(boolean lockForWriting, Connected operation) {
 		try (var conn = getConnection()) {
-			operation.act(conn);
+			conn.transaction(lockForWriting, () -> {
+				operation.act(conn);
+				return this;
+			});
 		}
 	}
 
 	@Override
-	public <T> T execute(boolean lockForWriting, ConnectedWithResult<T> operation) {
+	public <T> T execute(boolean lockForWriting,
+			ConnectedWithResult<T> operation) {
 		try (var conn = getConnection()) {
-			return operation.act(conn);
+			return conn.transaction(lockForWriting, () -> operation.act(conn));
 		}
 	}
 

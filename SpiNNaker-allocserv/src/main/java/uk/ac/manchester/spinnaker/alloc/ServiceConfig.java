@@ -56,6 +56,7 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -70,9 +71,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Role;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -116,6 +119,36 @@ public class ServiceConfig extends Application {
 	}
 
 	private static final Logger log = getLogger(ServiceConfig.class);
+
+	@Bean(name="mainDatasource")
+	@ConfigurationProperties(prefix="spalloc.datasource")
+	public DataSource mainDatasource() {
+		return DataSourceBuilder.create().build();
+	}
+
+	@Bean(name="historicalDatasource")
+	@ConfigurationProperties(prefix="spalloc.historical-data.datasource")
+	public DataSource historicalDatasource() {
+		return DataSourceBuilder.create().build();
+	}
+
+	@Bean(name="mainDatabase")
+	public JdbcTemplate mainDatabase(
+			@Qualifier("mainDatasource") DataSource ds) {
+		return new JdbcTemplate(ds);
+	}
+
+	@Bean(name="historicalDatabase")
+	public JdbcTemplate historicalDatabase(
+			@Qualifier("historicalDatasource") DataSource ds) {
+		return new JdbcTemplate(ds);
+	}
+
+	@Bean(name="mainTransactionManager")
+	public PlatformTransactionManager mainTransactionManager(
+			@Qualifier("mainDatasource") DataSource ds) {
+		return new JdbcTransactionManager(ds);
+	}
 
 	/**
 	 * The thread pool. The rest of the application expects there to be a single

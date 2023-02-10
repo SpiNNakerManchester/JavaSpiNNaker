@@ -635,10 +635,9 @@ class DMLTest extends SimpleDBTestBase {
 	}
 
 	@Test
-	void copyAllocsToHistoricalData() {
-		assumeWritable(c);
-		assumeTrue(c.isHistoricalDBAvailable());
-		try (var q = c.query(copyAllocsToHistoricalData)) {
+	void readAllocsFromHistoricalData() {
+		assumeTrue(db.isHistoricalDBAvailable());
+		try (var q = c.query(READ_HISTORICAL_ALLOCS)) {
 			c.transaction(() -> {
 				assertFalse(q.call1((row) -> 1, A_LONG_TIME, 0).isPresent());
 			});
@@ -646,12 +645,35 @@ class DMLTest extends SimpleDBTestBase {
 	}
 
 	@Test
-	void copyJobsToHistoricalData() {
-		assumeWritable(c);
-		assumeTrue(c.isHistoricalDBAvailable());
-		try (var q = c.query(copyJobsToHistoricalData)) {
+	void readJobsFromHistoricalData() {
+		assumeTrue(db.isHistoricalDBAvailable());
+		try (var q = c.query(READ_HISTORICAL_JOBS)) {
 			c.transaction(() -> {
 				assertFalse(q.call1((row) -> 1, A_LONG_TIME, 0).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void writeAllocsToHistoricalData() {
+		assumeTrue(db.isHistoricalDBAvailable());
+		try (var conn = db.getHistoricalConnection();
+				var q = conn.update(WRITE_HISTORICAL_ALLOCS)) {
+			conn.transaction(() -> {
+				assertEquals(1, q.call(0, 0, 0, A_LONG_TIME));
+			});
+		}
+	}
+
+	@Test
+	void writeJopsToHistoricalData() {
+		assumeTrue(db.isHistoricalDBAvailable());
+		try (var conn = db.getHistoricalConnection();
+				var q = conn.update(WRITE_HISTORICAL_JOBS)) {
+			conn.transaction(() -> {
+				assertEquals(1, q.call(0, 0, "", A_LONG_TIME, 0, 0, 0, 0,
+						A_LONG_TIME, "", "", A_LONG_TIME, new byte[] {},
+						A_LONG_TIME, 0, "", "", 0, ""));
 			});
 		}
 	}

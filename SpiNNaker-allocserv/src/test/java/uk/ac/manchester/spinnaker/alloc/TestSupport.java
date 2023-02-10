@@ -117,6 +117,27 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 			"movement_directions", "group_types", "job_states", "directions",
 			"board_model_coords", "board_models");
 
+	private void clearDB(Connection c, String databaseName) {
+		try (var fq_checks = c.update("SET FOREIGN_KEY_CHECKS=:on");
+			    var all_tables = c.query(
+			    	"SELECT table_name FROM information_schema.tables "
+			    		+ "WHERE table_schema='" + databaseName + "' "
+			    		+ "AND table_type='BASE TABLE'");
+				) {
+			c.transaction(() -> {
+				fq_checks.call(0);
+				for (var table : all_tables.call(string("table_name"))) {
+					if (!SAVED_TABLES.contains(table)) {
+					    try (var clear = c.update("DELETE FROM " + table)) {
+							clear.call();
+    					}
+					}
+				}
+				fq_checks.call(1);
+			});
+		}
+	}
+
 	/**
 	 * Delete a DB file. It must not be open!
 	 *
@@ -127,25 +148,14 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 	 */
 	protected void killDB() throws IOException {
 		db.executeVoid(c -> {
-			try (var fq_checks = c.update("SET FOREIGN_KEY_CHECKS=:on");
-				    var all_tables = c.query(
-				    	"SELECT table_name FROM information_schema.tables "
-				    		+ "WHERE table_schema='test' "
-				    		+ "AND table_type='BASE TABLE'");
-					) {
-				c.transaction(() -> {
-					fq_checks.call(0);
-					for (var table : all_tables.call(string("table_name"))) {
-						if (!SAVED_TABLES.contains(table)) {
-						    try (var clear = c.update("DELETE FROM " + table)) {
-    							clear.call();
-	    					}
-						}
-					}
-					fq_checks.call(1);
-				});
-			}
+			clearDB(c, "spalloc");
 		});
+
+		if (db.isHistoricalDBAvailable()) {
+		    try (var histConn = db.getHistoricalConnection()) {
+		    	clearDB(histConn, "spallochistory");
+		    }
+		}
 	}
 
 	private static void makeMachine(Connection c, int width, int height,

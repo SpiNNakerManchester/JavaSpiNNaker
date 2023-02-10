@@ -41,6 +41,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask.TestAPI;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
 import uk.ac.manchester.spinnaker.alloc.bmp.MockTransceiver;
 import uk.ac.manchester.spinnaker.alloc.bmp.TransceiverFactory;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 
 @SpringBootTest
@@ -109,14 +110,14 @@ class AllocatorTest extends TestSupport {
 
 	@SuppressWarnings("deprecation")
 	private TestAPI getAllocTester() {
-		return alloc.getTestAPI(conn);
+		return alloc.getTestAPI(conn, db.getHistoricalConnection());
 	}
 
 	@SuppressWarnings("CompileTimeConstant")
-	private int countJobInTable(int job, String table) {
+	private int countJobInTable(Connection c, int job) {
 		// Table names CANNOT be parameters; they're not values
-		return conn.query(format(
-				"SELECT COUNT(*) AS c FROM %s WHERE job_id = :job", table))
+		return conn.query(
+				"SELECT COUNT(*) AS c FROM jobs WHERE job_id = :job")
 				.call1(integer("c"), job).orElseThrow();
 	}
 
@@ -393,23 +394,26 @@ class AllocatorTest extends TestSupport {
 	@Test
 	public void tombstone() throws Exception {
 		doTransactionalTest(() -> {
-			assumeTrue(conn.isHistoricalDBAvailable());
+			assumeTrue(db.isHistoricalDBAvailable());
 
-			int job = makeQueuedJob(1);
-			conn.update(TEST_SET_JOB_STATE).call(DESTROYED, job);
-			conn.update(TEST_SET_JOB_DEATH_TIME).call(0, job);
-			int preMain = countJobInTable(job, "jobs");
-			assertTrue(preMain == 1,
-					() -> "must have created a job we can tombstone");
-			int preTomb = countJobInTable(job, "tombstone.jobs");
+			try (Connection histConn = db.getHistoricalConnection()) {
 
-			var moved = getAllocTester().tombstone();
+				int job = makeQueuedJob(1);
+				conn.update(TEST_SET_JOB_STATE).call(DESTROYED, job);
+				conn.update(TEST_SET_JOB_DEATH_TIME).call(0, job);
+				int preMain = countJobInTable(conn, job);
+				assertTrue(preMain == 1,
+						() -> "must have created a job we can tombstone");
+				int preTomb = countJobInTable(histConn, job);
 
-			assertEquals(1, moved.numJobs());
-			// No resources were ever allocated, so no moves to do
-			assertEquals(0, moved.numAllocs());
-			assertEquals(preMain - 1, countJobInTable(job, "jobs"));
-			assertEquals(preTomb + 1, countJobInTable(job, "tombstone.jobs"));
+				var moved = getAllocTester().tombstone();
+
+				assertEquals(1, moved.numJobs());
+				// No resources were ever allocated, so no moves to do
+				assertEquals(0, moved.numAllocs());
+				assertEquals(preMain - 1, countJobInTable(conn, job));
+				assertEquals(preTomb + 1, countJobInTable(conn, job));
+			}
 		});
 	}
 }

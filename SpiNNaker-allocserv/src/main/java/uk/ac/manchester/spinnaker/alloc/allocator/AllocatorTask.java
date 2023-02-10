@@ -34,6 +34,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
+import java.time.Instant;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
@@ -511,8 +512,9 @@ public class AllocatorTask extends DatabaseAwareBean
 			return;
 		}
 
-		try (var conn = getConnection()) {
-			var c = tombstone(conn);
+		try (var conn = getConnection();
+				var histConn = getHistoricalConnection()) {
+			var c = tombstone(conn, histConn);
 			log.info("tombstoning completed: "
 					+ "moved {} job records and {} allocation records",
 					c.numJobs(), c.numAllocs());
@@ -530,37 +532,107 @@ public class AllocatorTask extends DatabaseAwareBean
 	 * Describes what the first stage of the tombstoner has copied.
 	 */
 	static final class Copied {
-		private final List<Integer> jobIds;
+		private final List<HistoricalJob> jobs;
 
-		private final List<Integer> allocIds;
+		private final List<HistoricalAlloc> allocs;
 
-		private Copied(List<Integer> jobIds, List<Integer> allocIds) {
-			this.jobIds = jobIds;
-			this.allocIds = allocIds;
+		private Copied(List<HistoricalJob> jobs, List<HistoricalAlloc> allocs) {
+			this.jobs = jobs;
+			this.allocs = allocs;
 		}
 
-		private Stream<Integer> allocs() {
-			return allocIds.stream().filter(Objects::nonNull);
+		private Stream<HistoricalAlloc> allocs() {
+			return allocs.stream().filter(Objects::nonNull);
 		}
 
-		private Stream<Integer> jobs() {
-			return jobIds.stream().filter(Objects::nonNull);
+		private Stream<HistoricalJob> jobs() {
+			return jobs.stream().filter(Objects::nonNull);
 		}
 
 		/**
-		 * @return The number of job records copied over to the historical
+		 * @return The number of job records to copy over to the historical
 		 *         database.
 		 */
 		int numJobs() {
-			return jobIds.size();
+			return jobs.size();
 		}
 
 		/**
-		 * @return The number of board allocation records copied over to the
+		 * @return The number of board allocation records to copy over to the
 		 *         historical database.
 		 */
 		int numAllocs() {
-			return allocIds.size();
+			return allocs.size();
+		}
+	}
+
+	private class HistoricalAlloc {
+		int allocId;
+		int jobId;
+		int boardId;
+		Instant allocTimestamp;
+
+		HistoricalAlloc(Row row) {
+			allocId = row.getInt("alloc_id");
+			jobId = row.getInt("job_id");
+			boardId = row.getInt("board_id");
+			allocTimestamp = row.getInstant("alloc_timestamp");
+		}
+
+		Object[] args() {
+			return new Object[] {allocId, jobId, boardId, allocTimestamp};
+		}
+	}
+
+	private class HistoricalJob {
+		int jobId;
+		int machineId;
+		String owner;
+		Instant createTimestamp;
+		int width;
+		int height;
+		int depth;
+		int allocatedRoot;
+		Instant keepaliveInterval;
+		String keepaliveHost;
+		String deathReason;
+		Instant deathTimestamp;
+		byte[] originalRequest;
+		Instant allocationTimestamp;
+		int allocationSize;
+		String machineName;
+		String userName;
+		int groupId;
+		String groupName;
+
+		HistoricalJob(Row row) {
+			jobId = row.getInt("job_id");
+			machineId = row.getInt("machine_id");
+			owner = row.getString("owner");
+			createTimestamp = row.getInstant("create_timestamp");
+			width = row.getInt("width");
+			height = row.getInt("height");
+			depth = row.getInt("depth");
+			allocatedRoot = row.getInt("allocated_root");
+			keepaliveInterval = row.getInstant("keepalive_interval");
+			keepaliveHost = row.getString("keepalive_host");
+			deathReason = row.getString("death_reason");
+			deathTimestamp = row.getInstant("death_timestamp");
+			originalRequest = row.getBytes("original_request");
+			allocationTimestamp = row.getInstant("allocation_timestamp");
+			allocationSize = row.getInt("allocation_size");
+			machineName = row.getString("machine_name");
+			userName = row.getString("user_name");
+			groupId = row.getInt("group_id");
+			groupName = row.getString("group_name");
+		}
+
+		Object[] args() {
+			return new Object[] {jobId, machineId, owner, createTimestamp,
+					width, height, depth, allocatedRoot, keepaliveInterval,
+					keepaliveHost, deathReason, deathTimestamp, originalRequest,
+					allocationTimestamp, allocationSize, machineName, userName,
+					groupId, groupName};
 		}
 	}
 
@@ -574,24 +646,30 @@ public class AllocatorTask extends DatabaseAwareBean
 	 *            The DB connection
 	 * @return Description of the tombstoned IDs
 	 */
-	private Copied tombstone(Connection conn) {
+	private Copied tombstone(Connection conn, Connection histConn) {
 		// No tombstoning without the target DB!
-		if (!conn.isHistoricalDBAvailable()) {
+		if (!isHistoricalDBAvailable()) {
 			return new Copied(List.of(), List.of());
 		}
 
-		try (var copyJobs = conn.query(copyJobsToHistoricalData);
-				var copyAllocs = conn.query(copyAllocsToHistoricalData);
+		try (var readJobs = conn.query(READ_HISTORICAL_JOBS);
+				var readAllocs = conn.query(READ_HISTORICAL_ALLOCS);
 				var deleteJobs = conn.update(DELETE_JOB_RECORD);
-				var deleteAllocs = conn.update(DELETE_ALLOC_RECORD)) {
+				var deleteAllocs = conn.update(DELETE_ALLOC_RECORD);
+				var writeJobs = histConn.update(WRITE_HISTORICAL_JOBS);
+				var writeAllocs = histConn.update(WRITE_HISTORICAL_ALLOCS)) {
 			long now = System.currentTimeMillis() / 1000;
 			var grace = historyProps.getGracePeriod();
 			var copied = conn.transaction(() -> new Copied(
-					copyJobs.call(integer("job_id"), grace, now),
-					copyAllocs.call(integer("alloc_id"), grace, now)));
+					readJobs.call(HistoricalJob::new, grace, now),
+					readAllocs.call(HistoricalAlloc::new, grace, now)));
+			histConn.transaction(() -> {
+				copied.allocs().forEach((a) -> writeAllocs.call(a.args()));
+				copied.jobs().forEach((j) -> writeJobs.call(j.args()));
+			});
 			conn.transaction(() -> {
-				copied.allocs().forEach(deleteAllocs::call);
-				copied.jobs().forEach(deleteJobs::call);
+				copied.allocs().forEach((a) -> deleteAllocs.call(a.allocId));
+				copied.jobs().forEach((j) -> deleteJobs.call(j.jobId));
 			});
 			return copied;
 		}
@@ -1035,7 +1113,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	@RestrictedApi(explanation = "just for testing", link = "index.html",
 			allowedOnPath = ".*/src/test/java/.*")
 	@Deprecated
-	TestAPI getTestAPI(Connection conn) {
+	TestAPI getTestAPI(Connection conn, Connection histConn) {
 		ForTestingOnly.Utils.checkForTestClassOnStack();
 		return new TestAPI() {
 			@Override
@@ -1055,7 +1133,7 @@ public class AllocatorTask extends DatabaseAwareBean
 
 			@Override
 			public Copied tombstone() {
-				return AllocatorTask.this.tombstone(conn);
+				return AllocatorTask.this.tombstone(conn, histConn);
 			}
 		};
 	}

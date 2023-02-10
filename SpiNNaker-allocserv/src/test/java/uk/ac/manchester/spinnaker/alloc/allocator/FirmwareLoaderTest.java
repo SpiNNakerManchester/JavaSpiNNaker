@@ -98,7 +98,7 @@ class FirmwareLoaderTest extends TestSupport {
 
 	@SuppressWarnings("deprecation")
 	private TestAPI getAllocTester() {
-		return alloc.getTestAPI(conn);
+		return alloc.getTestAPI(conn, db.getHistoricalConnection());
 	}
 
 	private void assertState(int jobId, JobState state, int requestCount,
