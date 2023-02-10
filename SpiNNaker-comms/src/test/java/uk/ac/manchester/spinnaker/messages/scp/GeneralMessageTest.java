@@ -39,9 +39,9 @@ import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPReadMemory;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPSetLED;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPWriteMemory;
+import uk.ac.manchester.spinnaker.messages.bmp.ReadBMPMemory;
+import uk.ac.manchester.spinnaker.messages.bmp.SetBoardLEDs;
+import uk.ac.manchester.spinnaker.messages.bmp.WriteBMPMemory;
 import uk.ac.manchester.spinnaker.messages.bmp.EraseFlash;
 import uk.ac.manchester.spinnaker.messages.bmp.GetBMPVersion;
 import uk.ac.manchester.spinnaker.messages.bmp.GetFPGAResetStatus;
@@ -369,19 +369,19 @@ class GeneralMessageTest {
 	class Bmp {
 		@Test
 		void readMemory() {
-			assertEquals(NO_PAYLOAD, length(new BMPReadMemory(BOARD, NULL, 4)));
+			assertEquals(NO_PAYLOAD, length(new ReadBMPMemory(BOARD, NULL, 4)));
 		}
 
 		@Test
-		void setLed() {
+		void setBoardLeds() {
 			assertEquals(NO_PAYLOAD,
-					length(new BMPSetLED(asList(0), TOGGLE, asList(BOARD))));
+					length(new SetBoardLEDs(asList(0), TOGGLE, asList(BOARD))));
 		}
 
 		@Test
 		void writeMemory() {
 			var b = allocate(128);
-			assertEquals(152, length(new BMPWriteMemory(BOARD, NULL, b)));
+			assertEquals(152, length(new WriteBMPMemory(BOARD, NULL, b)));
 		}
 
 		@Test

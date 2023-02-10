@@ -31,7 +31,7 @@ import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.Constants;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPWriteMemory;
+import uk.ac.manchester.spinnaker.messages.bmp.WriteBMPMemory;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
@@ -137,7 +137,7 @@ class BMPWriteMemoryProcess extends BMPCommandProcess {
  *
  * @author Donal Fellows
  */
-abstract class BMPWriteIterator implements Iterable<BMPWriteMemory> {
+abstract class BMPWriteIterator implements Iterable<WriteBMPMemory> {
 	private final BMPBoard board;
 
 	private int sizeRemaining;
@@ -172,7 +172,7 @@ abstract class BMPWriteIterator implements Iterable<BMPWriteMemory> {
 	abstract ByteBuffer prepareSendBuffer(int plannedSize);
 
 	@Override
-	public Iterator<BMPWriteMemory> iterator() {
+	public Iterator<WriteBMPMemory> iterator() {
 		return new Iterator<>() {
 			@Override
 			public boolean hasNext() {
@@ -185,10 +185,10 @@ abstract class BMPWriteIterator implements Iterable<BMPWriteMemory> {
 			}
 
 			@Override
-			public BMPWriteMemory next() {
+			public WriteBMPMemory next() {
 				int chunkSize = sendBuffer.remaining();
 				try {
-					return new BMPWriteMemory(board, address, sendBuffer);
+					return new WriteBMPMemory(board, address, sendBuffer);
 				} finally {
 					address = address.add(chunkSize);
 					sizeRemaining -= chunkSize;

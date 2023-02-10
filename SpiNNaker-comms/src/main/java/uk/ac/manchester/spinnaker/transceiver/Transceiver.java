@@ -113,7 +113,7 @@ import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPSetLED;
+import uk.ac.manchester.spinnaker.messages.bmp.SetBoardLEDs;
 import uk.ac.manchester.spinnaker.messages.bmp.EraseFlash;
 import uk.ac.manchester.spinnaker.messages.bmp.GetBMPVersion;
 import uk.ac.manchester.spinnaker.messages.bmp.GetFPGAResetStatus;
@@ -1808,7 +1808,7 @@ public class Transceiver extends UDPTransceiver
 	public void setLED(Collection<Integer> leds, LEDAction action,
 			BMPCoords bmp, Collection<BMPBoard> board)
 			throws IOException, ProcessException, InterruptedException {
-		call(bmp, new BMPSetLED(leds, action, board));
+		call(bmp, new SetBoardLEDs(leds, action, board));
 	}
 
 	@Override

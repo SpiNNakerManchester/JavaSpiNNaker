@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.manchester.spinnaker.messages.bmp;
+package uk.ac.manchester.spinnaker.messages.model;
 
 import java.nio.IntBuffer;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
-import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
-import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
+import uk.ac.manchester.spinnaker.messages.bmp.ReadADC;
+import uk.ac.manchester.spinnaker.messages.bmp.ReadSerialVector;
 
 /**
- * The data in the serial vector. The result of a {@link SCPCommand#CMD_BMP_INFO
- * BMP_INFO} call with argument {@link BMPInfo#SERIAL SERIAL}.
+ * The data in the BMP serial vector.
  * <p>
  * See {@code cmd_bmp_info()} in {@code bmp_cmd.c}.
  *
@@ -41,7 +40,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  *            the BMP code was successfully booted from.
  * @see ReadSerialVector
  */
-@UsedInJavadocOnly(SCPCommand.class)
 public record SerialVector(int hardwareVersion, IntBuffer serialNumber,
 		MemoryLocation flashBuffer, MemoryLocation boardStat,
 		MemoryLocation cortexBoot) {
