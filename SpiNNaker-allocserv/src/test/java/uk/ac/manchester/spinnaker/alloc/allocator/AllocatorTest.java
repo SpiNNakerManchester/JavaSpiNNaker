@@ -412,7 +412,7 @@ class AllocatorTest extends TestSupport {
 				// No resources were ever allocated, so no moves to do
 				assertEquals(0, moved.numAllocs());
 				assertEquals(preMain - 1, countJobInTable(conn, job));
-				assertEquals(preTomb + 1, countJobInTable(conn, job));
+				assertEquals(preTomb + 1, countJobInTable(histConn, job));
 			}
 		});
 	}
