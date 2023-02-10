@@ -16,10 +16,13 @@
 package uk.ac.manchester.spinnaker.messages.bmp;
 
 import static uk.ac.manchester.spinnaker.messages.bmp.BMPInfo.SERIAL;
+import static uk.ac.manchester.spinnaker.messages.bmp.SerialVector.SERIAL_LENGTH;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_INFO;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
@@ -54,7 +57,16 @@ public class ReadSerialVector extends BMPRequest<ReadSerialVector.Response> {
 		/** @return The serial data. */
 		@Override
 		protected SerialVector parse(ByteBuffer buffer) {
-			return new SerialVector(buffer);
+			var b = buffer.asIntBuffer();
+			var hardwareVersion = b.get();
+			var sn = new int[SERIAL_LENGTH];
+			b.get(sn);
+			var serialNumber = IntBuffer.wrap(sn);
+			var flashBuffer = new MemoryLocation(b.get());
+			var boardStat = new MemoryLocation(b.get());
+			var cortexBoot = new MemoryLocation(b.get());
+			return new SerialVector(hardwareVersion, serialNumber, flashBuffer,
+					boardStat, cortexBoot);
 		}
 	}
 }

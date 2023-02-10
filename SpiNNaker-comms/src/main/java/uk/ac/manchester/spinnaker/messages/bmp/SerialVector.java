@@ -15,7 +15,6 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
@@ -28,50 +27,30 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * <p>
  * See {@code cmd_bmp_info()} in {@code bmp_cmd.c}.
  *
+ * @param hardwareVersion
+ *            Hardware version.
+ * @param serialNumber
+ *            LPC1768 serial number. Length {@value #SERIAL_LENGTH}.
+ * @param flashBuffer
+ *            Flash buffer address.
+ * @param boardStat
+ *            {@code board_stat} address for the board. See {@link ReadADC} for
+ *            an operation that reads this.
+ * @param cortexBoot
+ *            Cortex boot vector address. Can be used to determine which copy of
+ *            the BMP code was successfully booted from.
  * @see ReadSerialVector
  */
 @UsedInJavadocOnly(SCPCommand.class)
-public class SerialVector {
+public record SerialVector(int hardwareVersion, IntBuffer serialNumber,
+		MemoryLocation flashBuffer, MemoryLocation boardStat,
+		MemoryLocation cortexBoot) {
 	/** The number of words in the {@link #getSerialNumber() serial_number}. */
 	public static final int SERIAL_LENGTH = 4;
 
-	/** Hardware version. */
-	private final int hardwareVersion;
-
-	/** LPC1768 serial number. Length 4. */
-	private final IntBuffer serialNumber;
-
-	/** Flash buffer address. */
-	private final MemoryLocation flashBuffer;
-
-	/** {@code board_stat} address for the board. */
-	private final MemoryLocation boardStat;
-
-	/** Cortex boot vector address. */
-	private final MemoryLocation cortexBoot;
-
 	/**
-	 * @param buffer
-	 *            Where to deserialize the vector from.
-	 */
-	SerialVector(ByteBuffer buffer) {
-		var b = buffer.asIntBuffer();
-		hardwareVersion = b.get();
-		var sn = new int[SERIAL_LENGTH];
-		b.get(sn);
-		serialNumber = IntBuffer.wrap(sn);
-		flashBuffer = new MemoryLocation(b.get());
-		boardStat = new MemoryLocation(b.get());
-		cortexBoot = new MemoryLocation(b.get());
-	}
-
-	/** @return The hardware version. */
-	public int getHardwareVersion() {
-		return hardwareVersion;
-	}
-
-	/**
-	 * @return The device serial number, as a read-only buffer.
+	 * @return The device serial number, as a read-only buffer. Length
+	 *         {@value #SERIAL_LENGTH}.
 	 */
 	// @formatter:off
 	/* Obtained from LPC17xx In Application Programming function 58. The API
@@ -94,26 +73,8 @@ public class SerialVector {
 	 * The four words of the result form the four words provided below, in the
 	 * order described above (not that that typically matters). */
 	// @formatter:on
-	public IntBuffer getSerialNumber() {
+	public IntBuffer serialNumber() {
 		// Make a new instance so positions aren't shared
 		return serialNumber.asReadOnlyBuffer();
-	}
-
-	/** @return The location of the flash buffer. */
-	public MemoryLocation getFlashBuffer() {
-		return flashBuffer;
-	}
-
-	/**
-	 * @return The board status block location.
-	 * @see ReadADC
-	 */
-	public MemoryLocation getBoardStatusLocation() {
-		return boardStat;
-	}
-
-	/** @return The location of the Cortex boot vector. */
-	public MemoryLocation getCortexVector() {
-		return cortexBoot;
 	}
 }

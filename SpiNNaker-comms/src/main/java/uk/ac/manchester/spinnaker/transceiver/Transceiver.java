@@ -38,7 +38,6 @@ import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_DIAGNOSTIC_FI
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_DEFAULT_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-import static uk.ac.manchester.spinnaker.messages.bmp.SerialVector.SERIAL_LENGTH;
 import static uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer.FLASH_CHUNK_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime.TIMEOUT_2560_ms;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
@@ -1877,17 +1876,15 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public MemoryLocation getSerialFlashBuffer(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException, InterruptedException {
-		return get(bmp, new ReadSerialVector(board)).getFlashBuffer();
+		return get(bmp, new ReadSerialVector(board)).flashBuffer();
 	}
 
 	@Override
 	public String readBoardSerialNumber(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException, InterruptedException {
-		var serialNumber = new int[SERIAL_LENGTH];
-		get(bmp, new ReadSerialVector(board)).getSerialNumber()
-				.get(serialNumber);
-		return format("%08x-%08x-%08x-%08x",
-				stream(serialNumber).mapToObj(Integer::valueOf).toArray());
+		var sn = get(bmp, new ReadSerialVector(board)).serialNumber();
+		return format("%08x-%08x-%08x-%08x", //
+				sn.get(), sn.get(), sn.get(), sn.get());
 	}
 
 	@Override
