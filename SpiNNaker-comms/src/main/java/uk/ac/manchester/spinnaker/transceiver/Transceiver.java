@@ -169,7 +169,8 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
- * An encapsulation of various communications with the SpiNNaker board.
+ * An encapsulation of various communications with the SpiNNaker board. Acts as
+ * a Fa&ccedil;ade for most of the rest of this package.
  * <p>
  * The methods of this class are designed to be thread-safe; thus you can make
  * multiple calls to the same (or different) methods from multiple threads and
@@ -181,9 +182,11 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * <p>
  * For details of thread safety, see the methods annotated with
  * {@link ParallelSafe}, {@link ParallelSafeWithCare} and {@link ParallelUnsafe}
- * in {@link TransceiverInterface}. <em>Note that operations on a BMP are
- * <strong>always</strong> parallel-unsafe, other documentation in this class
- * notwithstanding.</em>
+ * in {@link TransceiverInterface}. <em>Note that operations on an individual
+ * BMP are <strong>always</strong> parallel-unsafe, other documentation in this
+ * class notwithstanding; BMPs must only ever have one outstanding call made to
+ * them as they do not handle asynchronous calls at all well due to known
+ * firmware bugs.</em>
  */
 public class Transceiver extends UDPTransceiver
 		implements TransceiverInterface, RetryTracker {
@@ -197,9 +200,7 @@ public class Transceiver extends UDPTransceiver
 
 	private static final Set<Integer> BMP_MAJOR_VERSIONS = Set.of(1, 2);
 
-	/**
-	 * How many times do we try to find SCAMP?
-	 */
+	/** How many times do we try to find SCAMP? */
 	private static final int INITIAL_FIND_SCAMP_RETRIES_COUNT = 3;
 
 	private static final int CONNECTION_CHECK_RETRY_COUNT = 3;
@@ -2692,16 +2693,14 @@ public class Transceiver extends UDPTransceiver
 		log.info("total retries used: {}", retryCount);
 	}
 
-	/**
-	 * @return The connection selectors used for BMP connections.
-	 */
+	/** @return The connection selectors used for BMP connections. */
 	public Map<BMPCoords,
 			ConnectionSelector<BMPConnection>> getBMPConnection() {
 		return bmpSelectors;
 	}
 
 	/**
-	 * A simple description of a connnection to create.
+	 * A simple description of a connection to create.
 	 *
 	 * @param hostname
 	 *            What host to talk to.

@@ -42,7 +42,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
 
 /**
- * An SCP Request to set a (forward) IP Tag. Forward IP tags are tags that
+ * A request to set a (forward) IP Tag. Forward IP tags are tags that
  * funnel packets from SpiNNaker to the outside world. There is no response
  * payload.
  * <p>

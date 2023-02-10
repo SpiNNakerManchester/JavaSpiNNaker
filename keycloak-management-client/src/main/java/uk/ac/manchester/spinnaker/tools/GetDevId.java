@@ -88,6 +88,16 @@ public class GetDevId extends CredentialDB {
 
 	private Auth nextAuth;
 
+	/**
+	 * Create an instance.
+	 *
+	 * @param databaseFile
+	 *            The database to store tokens and credentials in.
+	 * @throws SQLException
+	 *             If database operations fail.
+	 * @throws IOException
+	 *             If I/O operations fail.
+	 */
 	public GetDevId(File databaseFile) throws SQLException, IOException {
 		super(databaseFile);
 	}

@@ -28,7 +28,7 @@ import uk.ac.manchester.spinnaker.messages.model.TagInfo;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP Request information about IP tags. The response payload is the
+ * A request information about IP tags. The response payload is the
  * {@linkplain TagInfo tag <em>system</em> information}.
  * <p>
  * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},

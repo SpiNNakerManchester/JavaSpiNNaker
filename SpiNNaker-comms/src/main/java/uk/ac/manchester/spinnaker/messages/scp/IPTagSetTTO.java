@@ -28,7 +28,7 @@ import uk.ac.manchester.spinnaker.messages.model.TagInfo;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP request to set the transient timeout for future SCP requests. The
+ * A request to set the transient timeout for future SCP requests. The
  * response payload is the {@linkplain TagInfo tag <em>system</em>
  * information}.
  * <p>
@@ -53,6 +53,7 @@ public class IPTagSetTTO extends SCPRequest<IPTagSetTTO.Response> {
 		return new Response(buffer);
 	}
 
+	/** Response to {@link IPTagSetTTO}. */
 	protected final class Response
 			extends PayloadedResponse<TagInfo, RuntimeException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {

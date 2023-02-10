@@ -1645,8 +1645,14 @@ public class BMPController extends DatabaseAwareBean {
 		void processRequests(long millis)
 				throws IOException, SpinnmanException, InterruptedException;
 
+		/**
+		 * Get the current processing exception.
+		 *
+		 * @return Current processing exception.
+		 */
 		Throwable getBmpException();
 
+		/** Clear the current processing exception. */
 		void clearBmpException();
 	}
 

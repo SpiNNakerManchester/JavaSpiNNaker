@@ -25,7 +25,7 @@ import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * SCP Request for the ADC data from the BMP including voltages and temperature.
+ * A request for the ADC data from the BMP including voltages and temperature.
  * The response payload is the {@linkplain ADCInfo information structure} from
  * the hardware.
  * <p>

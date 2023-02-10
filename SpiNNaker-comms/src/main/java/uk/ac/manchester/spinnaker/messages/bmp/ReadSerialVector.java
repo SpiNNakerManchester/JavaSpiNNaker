@@ -28,7 +28,7 @@ import uk.ac.manchester.spinnaker.messages.model.SerialVector;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * SCP Request for the serial data vector from the BMP. The response payload is
+ * A request for the serial data vector from the BMP. The response payload is
  * the {@linkplain SerialVector serial vector} from the BMP.
  * <p>
  * Handled by {@code cmd_bmp_info()} in {@code bmp_cmd.c}.

@@ -43,7 +43,7 @@ import uk.ac.manchester.spinnaker.messages.bmp.ReadSerialVector;
 public record SerialVector(int hardwareVersion, IntBuffer serialNumber,
 		MemoryLocation flashBuffer, MemoryLocation boardStat,
 		MemoryLocation cortexBoot) {
-	/** The number of words in the {@link #getSerialNumber() serial_number}. */
+	/** The number of words in the {@link #serialNumber() serial_number}. */
 	public static final int SERIAL_LENGTH = 4;
 
 	/**

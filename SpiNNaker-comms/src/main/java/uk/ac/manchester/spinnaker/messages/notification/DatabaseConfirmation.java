@@ -23,23 +23,24 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 /**
- * Packet which contains the path to the database created by the toolchain which
- * is to be used by any software which interfaces with SpiNNaker.
+ * Message which contains the path to the job description database created by
+ * the toolchain which is to be used by any software which interfaces with
+ * SpiNNaker.
  */
 public final class DatabaseConfirmation extends NotificationMessage {
 	/**
-	 * The path to the database. Note that there is a length limit; the overall
-	 * message must fit in a SpiNNaker UDP message.
+	 * The path to the database, as seen by the sender's filesystem. Note that
+	 * there is a length limit; the overall message must fit in a UDP message.
 	 */
 	public final String databasePath;
 
-	/**
-	 * The encoding of the database path into bytes.
-	 */
+	/** The encoding of the database path into bytes. */
 	private static final Charset CHARSET = defaultCharset();
 
 	/**
-	 * Create a message without a database path in it.
+	 * Create a message without a database path in it. This is used to
+	 * acknowledge that the job database has been read and say that the
+	 * listening software is ready for the simulation to start.
 	 */
 	public DatabaseConfirmation() {
 		super(DATABASE_CONFIRMATION);

@@ -23,7 +23,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP Request to reset the statistics counters of the dropped packet
+ * A request to reset the statistics counters of the dropped packet
  * reinjection. There is no response payload.
  * <p>
  * Handled by {@code reinjection_reset_counters()} in

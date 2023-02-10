@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.messages.model.Addresses;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * SCP Request for the IP address data from a BMP. The response payload is the
+ * A request for the IP address data from a BMP. The response payload is the
  * {@linkplain Addresses pair of addresses} that the board is configured to
  * have.
  * <p>

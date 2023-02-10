@@ -34,6 +34,7 @@ public record AppID(int appID) {
 	 */
 	public static final AppID DEFAULT = new AppID(0);
 
+	/** Make an instance. */
 	public AppID {
 		if (appID < 0 || appID > MAX_APP_ID) {
 			throw new IllegalArgumentException(

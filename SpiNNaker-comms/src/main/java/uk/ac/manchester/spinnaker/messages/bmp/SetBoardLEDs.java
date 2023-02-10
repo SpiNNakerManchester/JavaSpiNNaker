@@ -22,12 +22,17 @@ import java.util.Collection;
 
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
+import uk.ac.manchester.spinnaker.messages.scp.SetLED;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
- * A request to alter the LEDs on a board. There is no response payload.
+ * A request to alter the LEDs on a board managed by a BMP. There is no response
+ * payload. Note that these LEDs are different to those managed by sending
+ * {@linkplain SetLED a request to SCAMP}.
  * <p>
  * Handled by {@code cmp_led()} in {@code bmp_cmd.c}.
  */
+@UsedInJavadocOnly(SetLED.class)
 public class SetBoardLEDs extends BMPRequest<BMPRequest.BMPResponse> {
 	/**
 	 * Make a request.

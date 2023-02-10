@@ -23,7 +23,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP Request to clear the IOBUF on a core. There is no response payload.
+ * A request to clear the IOBUF on a core. There is no response payload.
  * <p>
  * This calls {@code sark_io_buf_reset()} in {@code sark_io.c} (via
  * {@code simulation_control_scp_callback()} in {@code simulation.c}).

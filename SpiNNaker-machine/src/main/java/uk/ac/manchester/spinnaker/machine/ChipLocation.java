@@ -58,16 +58,7 @@ public record ChipLocation(
 	 */
 	public static final ChipLocation ONE_ZERO = new ChipLocation(1, 0);
 
-	/**
-	 * Create the location of a chip on a SpiNNaker machine.
-	 *
-	 * @param x
-	 *            The X coordinate
-	 * @param y
-	 *            The Y coordinate
-	 * @throws IllegalArgumentException
-	 *             Thrown is either x or y is negative or too big.
-	 */
+	/** Create the location of a chip on a SpiNNaker machine. */
 	@JsonCreator
 	public ChipLocation {
 		validateChipLocation(x, y);

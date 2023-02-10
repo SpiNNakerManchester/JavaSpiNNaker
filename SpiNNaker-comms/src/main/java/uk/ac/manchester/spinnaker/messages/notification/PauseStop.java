@@ -20,7 +20,7 @@ import static uk.ac.manchester.spinnaker.messages.notification.NotificationMessa
 import java.nio.ByteBuffer;
 
 /**
- * Packet which indicates that the toolchain has paused or stopped.
+ * Message which indicates that the toolchain has paused or stopped.
  */
 public final class PauseStop extends NotificationMessage {
 	/** Create an instance. */

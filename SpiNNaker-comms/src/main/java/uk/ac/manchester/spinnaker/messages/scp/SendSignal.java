@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.messages.model.Signal;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP Request to send a signal to cores. This supports any signal that uses
+ * A request to send a signal to cores. This supports any signal that uses
  * either {@linkplain Signal.Type#MULTICAST multicast} or
  * {@linkplain Signal.Type#NEAREST_NEIGHBOUR nearest neighbour} propagation
  * rules; the difference between propagation types is not normally important to

@@ -24,7 +24,7 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP request to fill a region of memory on a chip with repeated words of
+ * A request to fill a region of memory on a chip with repeated words of
  * data. There is no response payload.
  * <p>
  * Calls {@code sark_cmd_fill()} in {@code sark_base.c}, or {@code cmd_fill()}

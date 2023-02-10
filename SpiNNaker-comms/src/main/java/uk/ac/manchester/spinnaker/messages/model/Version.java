@@ -79,6 +79,7 @@ public record Version(@JsonProperty("major-version") int majorVersion,
 	 * @param threePartVersion
 	 *            the version identifier, as {@code X} or {@code X.Y} or
 	 *            {@code X.Y.Z}.
+	 * @return The deserialised value.
 	 * @throws IllegalArgumentException
 	 *             If the version string doesn't match one of the supported
 	 *             patterns.

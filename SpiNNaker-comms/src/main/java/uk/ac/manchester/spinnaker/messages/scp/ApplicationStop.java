@@ -30,7 +30,7 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP Request to stop an application. There is no response payload.
+ * A request to stop an application. There is no response payload.
  * <p>
  * This maps to a call to {@code ff_nn_send()} in {@code scamp-nn.c}, which in
  * turn triggers a call to {@code proc_stop_app()} in {@code scamp-app.c} across

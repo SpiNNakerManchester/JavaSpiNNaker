@@ -103,7 +103,7 @@ public record TagDescription(int count, short flags, InetAddress ipAddress,
 
 	/**
 	 * Get the standard tag descriptor. Not properly meaningful unless the tag
-	 * is {@linkplain #isInUse() in use}.
+	 * is {@linkplain #inUse() in use}.
 	 *
 	 * @return The tag descriptor. May be an {@link IPTag} or a
 	 *         {@link ReverseIPTag}.

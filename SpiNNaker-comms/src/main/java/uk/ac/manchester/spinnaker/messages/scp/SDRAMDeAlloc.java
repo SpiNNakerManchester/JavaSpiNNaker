@@ -30,7 +30,7 @@ import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP Request to free space in the SDRAM. The response payload is the number
+ * A request to free space in the SDRAM. The response payload is the number
  * of blocks that were deallocated.
  * <p>
  * Calls {@code cmd_alloc()} (and hence {@code sark_xfree()} or

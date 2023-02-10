@@ -37,6 +37,7 @@ import com.google.errorprone.annotations.Immutable;
 @Immutable
 public record CoreLocation(@ValidX int x, @ValidY int y, @ValidP int p)
 		implements HasCoreLocation, Comparable<CoreLocation>, Serializable {
+	/** Create an instance. */
 	public CoreLocation {
 		validateCoreLocation(x, y, p);
 	}

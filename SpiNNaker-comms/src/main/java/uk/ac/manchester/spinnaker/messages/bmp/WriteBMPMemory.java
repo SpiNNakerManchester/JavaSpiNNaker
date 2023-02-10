@@ -24,7 +24,7 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 
 /**
- * A request to write memory on a BMP. There is no response payload.
+ * A request to write to memory on a BMP. There is no response payload.
  * <p>
  * Calls {@code cmd_write()} in {@code bmp_cmd.c}.
  */

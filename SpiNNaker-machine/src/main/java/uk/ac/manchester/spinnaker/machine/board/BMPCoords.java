@@ -74,6 +74,7 @@ public record BMPCoords(@ValidCabinetNumber int cabinet,
 	 *
 	 * @param serialForm
 	 *            The form to deserialise.
+	 * @return The deserialised value.
 	 * @throws IllegalArgumentException
 	 *             If the string is not in the right form.
 	 */
