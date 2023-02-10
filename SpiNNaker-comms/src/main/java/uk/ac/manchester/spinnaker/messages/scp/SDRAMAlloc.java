@@ -16,7 +16,7 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.lang.String.format;
-import static uk.ac.manchester.spinnaker.messages.model.AllocFree.ALLOC_SDRAM;
+import static uk.ac.manchester.spinnaker.messages.scp.AllocFree.ALLOC_SDRAM;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
@@ -28,6 +28,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * An SCP Request to allocate space in the SDRAM space. The response payload is
@@ -91,14 +92,17 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	}
 
 	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+	public Response getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException,
+			MemoryAllocationFailedException {
 		return new Response(buffer);
 	}
 
 	/** An SCP response to a request to allocate space in SDRAM. */
 	protected final class Response extends
 			PayloadedResponse<MemoryLocation, MemoryAllocationFailedException> {
-		Response(ByteBuffer buffer) throws Exception {
+		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException,
+				MemoryAllocationFailedException {
 			super("SDRAM Allocation", CMD_ALLOC, buffer);
 		}
 

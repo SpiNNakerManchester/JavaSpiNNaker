@@ -148,8 +148,8 @@ import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ApplicationRun;
 import uk.ac.manchester.spinnaker.messages.scp.ApplicationStop;
-import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.CountState;
+import uk.ac.manchester.spinnaker.messages.scp.EmptyResponse;
 import uk.ac.manchester.spinnaker.messages.scp.GetChipInfo;
 import uk.ac.manchester.spinnaker.messages.scp.GetVersion;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagClear;
@@ -1181,12 +1181,10 @@ public class Transceiver extends UDPTransceiver
 	/**
 	 * Do a synchronous call of an SCP operation using the default connection
 	 * for a request, sending the given message and completely processing the
-	 * interaction before returning its response. This can only properly handle
-	 * those calls that involve a single request and a single reply;
-	 * fortunately, that's many of them!
+	 * interaction. There is no payload in the response, and no result from this
+	 * method. This can only properly handle those calls that involve a single
+	 * request and a single reply; fortunately, that's many of them!
 	 *
-	 * @param <T>
-	 *            The type of the response.
 	 * @param request
 	 *            The request to make.
 	 * @return The successful response to the request.
@@ -1197,9 +1195,9 @@ public class Transceiver extends UDPTransceiver
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	private <T extends CheckOKResponse> T call(SCPRequest<T> request)
+	private void call(SCPRequest<EmptyResponse> request)
 			throws ProcessException, IOException, InterruptedException {
-		return new TxrxProcess(scpSelector, this).call(request);
+		new TxrxProcess(scpSelector, this).call(request);
 	}
 
 	/**
@@ -1279,7 +1277,8 @@ public class Transceiver extends UDPTransceiver
 		 */
 		var process = simpleProcess();
 		for (var connection : scpConnections) {
-			process.call(
+			// we apparently don't save the timeout...
+			process.retrieve(
 					new IPTagSetTTO(connection.getChip(), TIMEOUT_2560_ms));
 		}
 
@@ -2367,7 +2366,8 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafe
 	public void freeSDRAM(HasChipLocation chip, MemoryLocation baseAddress)
 			throws IOException, ProcessException, InterruptedException {
-		call(new SDRAMDeAlloc(chip, baseAddress));
+		// Ignore the result of this
+		get(new SDRAMDeAlloc(chip, baseAddress));
 	}
 
 	@Override

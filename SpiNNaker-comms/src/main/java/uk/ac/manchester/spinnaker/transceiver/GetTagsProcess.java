@@ -18,15 +18,12 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.util.stream.IntStream.range;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
-import uk.ac.manchester.spinnaker.machine.tags.IPTag;
-import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGet;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo;
@@ -63,12 +60,10 @@ class GetTagsProcess extends TxrxProcess {
 	Collection<Tag> getTags(SCPConnection connection)
 			throws IOException, ProcessException, InterruptedException {
 		var tags = new TreeMap<Integer, Tag>();
-		for (var tag : range(0, getTagCount(connection)).toArray()) {
-			sendRequest(new IPTagGet(connection.getChip(), tag), response -> {
-				var info = response.get();
-				if (info.isInUse()) {
-					tags.put(tag, createTag(connection.getRemoteIPAddress(),
-							tag, response, info));
+		for (var tagId : range(0, getTagCount(connection)).toArray()) {
+			sendGet(new IPTagGet(connection.getChip(), tagId), info -> {
+				if (info.inUse()) {
+					tags.put(tagId, info.tag());
 				}
 			});
 		}
@@ -80,17 +75,6 @@ class GetTagsProcess extends TxrxProcess {
 			throws IOException, ProcessException, InterruptedException {
 		var tagInfo = retrieve(new IPTagGetInfo(connection.getChip()));
 		return tagInfo.poolSize() + tagInfo.fixedSize();
-	}
-
-	private static Tag createTag(InetAddress host, int tag,
-			IPTagGet.Response res, IPTagGet.TagDescription info) {
-		if (info.isReverse()) {
-			return new ReverseIPTag(host, tag, info.rxPort, info.spinCore,
-					info.spinPort);
-		} else {
-			return new IPTag(host, res.sdpHeader.getSource().asChipLocation(),
-					tag, info.ipAddress, info.port, info.isStrippingSDP());
-		}
 	}
 
 	/**
@@ -110,12 +94,10 @@ class GetTagsProcess extends TxrxProcess {
 	Map<Tag, Integer> getTagUsage(SCPConnection connection)
 			throws IOException, ProcessException, InterruptedException {
 		var tagUsages = new TreeMap<Tag, Integer>();
-		for (var tag : range(0, getTagCount(connection)).toArray()) {
-			sendRequest(new IPTagGet(connection.getChip(), tag), response -> {
-				var info = response.get();
-				if (info.isInUse()) {
-					tagUsages.put(createTag(connection.getRemoteIPAddress(),
-							tag, response, info), info.count);
+		for (var tagId : range(0, getTagCount(connection)).toArray()) {
+			sendGet(new IPTagGet(connection.getChip(), tagId), info -> {
+				if (info.inUse()) {
+					tagUsages.put(info.tag(), info.count());
 				}
 			});
 		}

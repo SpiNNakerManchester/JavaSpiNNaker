@@ -13,25 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.manchester.spinnaker.messages.model;
+package uk.ac.manchester.spinnaker.messages.scp;
 
-/** SCP IP tag Commands. */
-public enum IPTagCommand {
-	/** Create. */
-	NEW(0),
-	/** Update. */
-	SET(1),
-	/** Fetch. */
-	GET(2),
-	/** Delete. */
-	CLR(3),
-	/** Update Meta. */
-	TTO(4);
+/**
+ * The basic router commands, handled by {@code cmd_rtr()} in
+ * {@code scamp-cmd.c}.
+ */
+enum RouterCommand {
+	/** Initialise. */
+	INIT,
+	/** Clear (entry=arg2, count). */
+	CLEAR,
+	/** Load (addr=arg2, count, offset=arg3, app_id). */
+	LOAD,
+	/**
+	 * Set/get Fixed Route register (arg2 = route). if bit 31 of arg1 set then
+	 * return FR reg else set it
+	 */
+	FIXED;
 
 	/** The SCAMP-encoded value. */
 	public final byte value;
 
-	IPTagCommand(int value) {
-		this.value = (byte) value;
+	RouterCommand() {
+		value = (byte) ordinal();
 	}
 }

@@ -74,10 +74,11 @@ class TestVersion {
 		data.flip();
 
 		var response = new GetVersion.Response(data);
-		assertEquals("sark", response.get().name);
-		assertEquals("spinnaker", response.get().hardware);
-		assertEquals(new Version(2, 34, 0), response.get().versionNumber);
-		assertEquals(new CoreLocation(14, 31, 0), response.get().core);
+		var ver = response.get();
+		assertEquals("sark", ver.name);
+		assertEquals("spinnaker", ver.hardware);
+		assertEquals(new Version(2, 34, 0), ver.versionNumber);
+		assertEquals(new CoreLocation(14, 31, 0), ver.core);
 	}
 
 	@Test

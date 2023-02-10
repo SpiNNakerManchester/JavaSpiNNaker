@@ -70,7 +70,7 @@ public final class EraseFlash extends BMPRequest<EraseFlash.Response> {
 	}
 
 	/** The response from a request to erase flash. */
-	protected static final class Response
+	protected final class Response
 			extends BMPRequest.PayloadedResponse<MemoryLocation> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {

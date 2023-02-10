@@ -30,6 +30,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_NNP;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * An SCP request to start a flood fill of data. There is no response payload.
@@ -37,12 +38,12 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  * Calls {@code nn_cmd_ffs()} in {@code scamp-nn.c} on all cores via
  * {@code ff_nn_send()} in {@code scamp-nn.c}.
  */
-public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
+public final class FloodFillStart extends SCPRequest<EmptyResponse> {
 	// See nn_rcv_pkt()
 	private static final int NN_CMD_FFS = 6;
 
-	private static final int NNP_FORWARD_RETRY = (ADD_ID << TOP_BIT)
-			| (FORWARD_LINKS << BYTE1) | (DELAY << BYTE0);
+	private static final int NNP_FORWARD_RETRY =
+			(ADD_ID << TOP_BIT) | (FORWARD_LINKS << BYTE1) | (DELAY << BYTE0);
 
 	private static final int NO_CHIP = 0xFFFF;
 
@@ -100,7 +101,8 @@ public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Flood Fill", CMD_NNP, buffer);
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
+		return new EmptyResponse("Flood Fill", CMD_NNP, buffer);
 	}
 }

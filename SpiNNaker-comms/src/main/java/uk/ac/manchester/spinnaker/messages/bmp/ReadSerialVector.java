@@ -44,7 +44,7 @@ public class ReadSerialVector extends BMPRequest<ReadSerialVector.Response> {
 	}
 
 	/** An SCP response to a request for serial data. */
-	protected static final class Response
+	protected final class Response
 			extends BMPRequest.PayloadedResponse<SerialVector> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {

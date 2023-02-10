@@ -21,6 +21,7 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * An SCP request to fill a region of memory on a chip with repeated words of
@@ -29,7 +30,7 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
  * Calls {@code sark_cmd_fill()} in {@code sark_base.c}, or {@code cmd_fill()}
  * in {@code bmp_cmd.c} if sent to a BMP.
  */
-public final class FillRequest extends SCPRequest<CheckOKResponse> {
+public final class FillRequest extends SCPRequest<EmptyResponse> {
 	/**
 	 * @param chip
 	 *            The chip to read from
@@ -48,7 +49,8 @@ public final class FillRequest extends SCPRequest<CheckOKResponse> {
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Fill", CMD_FILL, buffer);
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
+		return new EmptyResponse("Fill", CMD_FILL, buffer);
 	}
 }

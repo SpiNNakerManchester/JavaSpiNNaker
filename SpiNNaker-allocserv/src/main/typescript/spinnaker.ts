@@ -21,6 +21,10 @@ const mapMargin = 5;
 type BoardTriad = readonly [number, number, number];
 /** The list of canvas coordinates of a hexagon representing a board. */
 type HexCoords = readonly [number, number][];
+/** The type of a function to generate a key for a board. */
+type BoardKeyGen = (key: BoardTriad) => string;
+/** The type of a function to find the coordinates of a hex. */
+type LocMapper = (t: BoardTriad) => HexCoords | undefined;
 
 /** The various forms of board locations spat out by the server. */
 interface BoardLocator {
@@ -120,6 +124,11 @@ interface JobDescriptor {
 	triad_height: number;
 };
 
+/** Type of a function for looking up the location descriptor for a board. */
+type GetBoardInfo = (board: BoardTriad) => BoardLocator | undefined;
+/** Type of a function for looking up the job descriptor for a board. */
+type GetJobInfo = (board: BoardTriad) => MachineJobDescriptor | undefined;
+
 /**
  * Draw a single board cell, identified in machine coordinates. This is a
  * distorted hexagon. Caller must configure colours prior to calling.
@@ -146,7 +155,7 @@ function drawTriadBoard(
 		rootX: number, rootY: number, scale: number,
 		triadCoords: BoardTriad,
 		fill: boolean = false,
-		labeller: (key: BoardTriad) => string = undefined) : HexCoords {
+		labeller: BoardKeyGen | undefined = undefined) : HexCoords {
 	const [tx, ty, tz] = triadCoords;
 	var bx : number = rootX + tx * 3 * scale;
 	var by : number = rootY - ty * 3 * scale;
@@ -157,10 +166,7 @@ function drawTriadBoard(
 		bx += scale;
 		by -= 2 * scale;
 	}
-	var label : string = undefined;
-	if (labeller !== undefined) {
-		label = labeller(triadCoords);
-	}
+	const label = labeller?.(triadCoords);
 
 	/** The coordinate list. */
 	const coords: [number, number][] = [];
@@ -233,17 +239,17 @@ function drawLayout(
 		ctx: CanvasRenderingContext2D,
 		rootX: number, rootY: number, scale: number,
 		width: number, height: number, depth: number = 3,
-		colourer: string | ((key: BoardTriad) => string) = undefined,
-		labeller: (key: BoardTriad) => string = undefined) :
+		colourer: string | BoardKeyGen | undefined = undefined,
+		labeller: BoardKeyGen | undefined = undefined) :
 			Map<string,[BoardTriad,HexCoords]> {
-	var tloc : Map<string,[BoardTriad,HexCoords]> = new Map();
+	const tloc : Map<string,[BoardTriad,HexCoords]> = new Map();
 	for (var y : number = 0; y < height; y++) {
 		for (var x : number = 0; x < width; x++) {
 			for (var z : number = 0; z < depth; z++) {
 				const key = [x, y, z] as const;
 				if (typeof colourer === 'string') {
 					ctx.fillStyle = colourer;
-				} else {
+				} else if (colourer !== undefined) {
 					ctx.fillStyle = colourer(key);
 				}
 				tloc.set(tuplekey(key),[key, drawTriadBoard(
@@ -269,7 +275,7 @@ function drawLayout(
 // https://stackoverflow.com/a/29915728/301832
 function inside(
 		x: number, y: number,
-		tloc: Map<string,[BoardTriad,HexCoords]>) : BoardTriad {
+		tloc: Map<string,[BoardTriad,HexCoords]>) : BoardTriad | undefined {
     // ray-casting algorithm based on
     // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
 
@@ -381,41 +387,45 @@ function mapOfJobs(jobs: readonly MachineJobDescriptor[]) :
  */
 function setTooltipCore(
 		canv: HTMLCanvasElement, tooltip: HTMLCanvasElement,
-		tooltipCtx: CanvasRenderingContext2D,
-		locmapper: ((t: BoardTriad) => HexCoords),
+		tooltipCtx: CanvasRenderingContext2D, locmapper: LocMapper,
 		scale: number, triad?: BoardTriad, message?: string) {
 	if (triad === undefined || message === undefined) {
 		tooltip.style.left = "-2000px";
-	} else {
-		const rect = canv.getBoundingClientRect();
-		const [x, y] = locmapper(triad)[0];
-		tooltip.style.top = (rect.top + y + scale + 10) + "px";
-        tooltip.style.left = (rect.left + x - scale + 10) + "px";
-        tooltipCtx.clearRect(0, 0, tooltip.width, tooltip.height);
-        tooltipCtx.textAlign = "center";
-		const tx = tooltip.getBoundingClientRect().width / 2;
-		var ty = 15;
-		for (const line of message.split("\n")) {
-            tooltipCtx.fillText(line, tx, ty,
-				tooltip.getBoundingClientRect().width - 5);
-			const tm = tooltipCtx.measureText(line);
-			ty += tm.actualBoundingBoxAscent + tm.actualBoundingBoxDescent;
-		}
+		return;
+	}
+	const rect = canv.getBoundingClientRect();
+	const hc = locmapper(triad);
+	if (hc === undefined) {
+		tooltip.style.left = "-2000px";
+		return;
+	}
+	const [x, y] = hc[0];
+	tooltip.style.top = (rect.top + y + scale + 10) + "px";
+    tooltip.style.left = (rect.left + x - scale + 10) + "px";
+    tooltipCtx.clearRect(0, 0, tooltip.width, tooltip.height);
+    tooltipCtx.textAlign = "center";
+	const tx = tooltip.getBoundingClientRect().width / 2;
+	var ty = 15;
+	for (const line of message.split("\n")) {
+        tooltipCtx.fillText(line, tx, ty,
+			tooltip.getBoundingClientRect().width - 5);
+		const tm = tooltipCtx.measureText(line);
+		ty += tm.actualBoundingBoxAscent + tm.actualBoundingBoxDescent;
 	}
 }
 
 function setupCallbacks(
 		canv: HTMLCanvasElement,
-		getBoardInfo: ((board: BoardTriad) => BoardLocator),
-		getJobInfo: ((board: BoardTriad) => MachineJobDescriptor) | undefined,
+		getBoardInfo: GetBoardInfo,
+		getJobInfo: GetJobInfo | undefined,
 		tloc: Map<string, [BoardTriad, HexCoords]>,
-		setCurrent: ((newTriad: BoardTriad) => void),
-		clearCurrent: ((oldTriad: BoardTriad) => void)) {
-	var current : BoardTriad = undefined;
-	function geturl() : string {
-		if (getJobInfo !== undefined) {
-			const job = getJobInfo(current);
-			if (job !== undefined && job.hasOwnProperty("url")) {
+		setCurrent: (newTriad: BoardTriad) => void,
+		clearCurrent: (oldTriad: BoardTriad) => void) {
+	var current : BoardTriad | undefined = undefined;
+	function geturl() : string | undefined {
+		if (current !== undefined) {
+			const job = getJobInfo?.(current);
+			if (job?.hasOwnProperty("url")) {
 				return job.url;
 			}
 		}
@@ -476,14 +486,8 @@ function setupCallbacks(
 	canv.addEventListener("click", (e: MouseEvent) => {
 		if (current !== undefined) {
 			const board = getBoardInfo(current);
-			var job: MachineJobDescriptor = undefined;
-			var url = undefined;
-			if (getJobInfo !== undefined) {
-				job = getJobInfo(current);
-				if (job !== undefined && job.hasOwnProperty("url")) {
-					url = job.url;
-				}
-			}
+			const job = getJobInfo?.(current);
+			const url = job?.hasOwnProperty("url") ? job.url : undefined;
 			if (url !== undefined) {
 				// If we have a URL, go there now
 				window.location.assign(url);
@@ -542,14 +546,19 @@ function initCanvasSize(
 function drawMachine(
 		canvasId: string, tooltipId: string,
 		descriptor: MachineDescriptor) {
+	// Get the canvases and drawing contexts
 	const canv = <HTMLCanvasElement> document.getElementById(canvasId);
+	const n_ctx = canv.getContext("2d");
+	const tooltip = <HTMLCanvasElement> document.getElementById(tooltipId);
+	const n_tooltipCtx = tooltip?.getContext("2d");
+	if (n_ctx === null || n_tooltipCtx === null) {
+		return;
+	}
+	const ctx = n_ctx, tooltipCtx = n_tooltipCtx;
+
 	const [rootX, rootY, scaleX, scaleY] = initCanvasSize(
 			canv, descriptor.width, descriptor.height);
-	const tooltip = <HTMLCanvasElement> document.getElementById(tooltipId);
 	const scale = (scaleX < scaleY) ? scaleX : scaleY;
-	const ctx = canv.getContext("2d");
-	const tooltipCtx = tooltip.getContext("2d");
-
 	const live = boardMap(descriptor.live_boards);
 	const dead = boardMap(descriptor.dead_boards);
 	const [jobIdMap, jobMap, colourMap] = mapOfJobs(descriptor.jobs);
@@ -564,9 +573,15 @@ function drawMachine(
 				const k = tuplekey(key);
 				if (dead.has(k)) {
 					return "#444";
-				} else if (jobIdMap.has(k)) {
-					return colourMap.get(jobIdMap.get(k));
-				} else if (live.has(k)) {
+				}
+				const j = jobIdMap.get(k);
+				if (j !== undefined) {
+					const c = colourMap.get(j);
+					if (c !== undefined) {
+						return c;
+					}
+				}
+				if (live.has(k)) {
 					return "white";
 				} else {
 					return "black";
@@ -580,6 +595,7 @@ function drawMachine(
 					return `(${x},${y},${z})`;
 				}
 			});
+
 	/**
 	 * Get the canvas coordinates of a board's hexagon. Wrapper around `tloc`.
 	 *
@@ -588,9 +604,8 @@ function drawMachine(
 	 * @return
 	 *		The hex coordinates, or `undefined` if the board isn't known.
 	 */
-	function location(triad: BoardTriad) : HexCoords {
-		const t = tloc.get(tuplekey(triad));
-		return t == undefined ? undefined : t[1];
+	function location(triad: BoardTriad) : HexCoords | undefined {
+		return tloc.get(tuplekey(triad))?.[1];
 	}
 
 	/**
@@ -618,23 +633,24 @@ function drawMachine(
 		const [x, y, z] = triad;
 		const key = tuplekey(triad);
 		var s = `Triad: (X: ${x}, Y: ${y}, Z: ${z})`;
-		var board : BoardLocator = undefined;
-		if (live.has(key)) {
-			board = live.get(key);
-		} else if (dead.has(key)) {
-			board = dead.get(key);
-		}
-		if (jobIdMap.has(key)) {
-			const job = jobMap.get(jobIdMap.get(key));
-			s += `\nJob ID: ${job.id}`;
-			if (job.hasOwnProperty("owner")) {
-				s += `\nOwner: ${job.owner}`;
+		const board = live.get(key) ?? dead.get(key);
+		const id = jobIdMap.get(key);
+		if (id !== undefined) {
+			const job = jobMap.get(id);
+			if (job !== undefined) {
+				s += `\nJob ID: ${job.id}`;
+				if (job.hasOwnProperty("owner")) {
+					s += `\nOwner: ${job.owner}`;
+				}
 			}
 		}
 		if (board !== undefined) {
 			s += `\nPhysical: [C: ${board.physical.cabinet}, F: ${board.physical.frame}, B: ${board.physical.board}]`;
 			if (board.hasOwnProperty("network")) {
-				s += "\nIP Address: " + board.network.address;
+				const net = board.network;
+				if (net != undefined) {
+					s += "\nIP Address: " + net.address;
+				}
 			}
 		} else {
 			s += "\nBoard not present or\nnot managed by Spalloc."
@@ -664,20 +680,13 @@ function drawMachine(
 		drawTriadBoard(ctx, rootX, rootY, scale, triad);
 		setTooltip(triad, triadDescription(triad));
 	}
-	function getBoardInfo(triad: BoardTriad): BoardLocator {
+	function getBoardInfo(triad: BoardTriad): BoardLocator | undefined {
 		const key = tuplekey(triad);
-		if (live.has(key)) {
-			return live.get(key);
-		}
-		if (dead.has(key)) {
-			return dead.get(key);
-		}
-		return undefined;
+		return live.get(key) ?? dead.get(key);
 	}
-	function getJobInfo(triad: BoardTriad): MachineJobDescriptor {
-		const key = tuplekey(triad);
-		if (jobIdMap.has(key)) {
-			const id = jobIdMap.get(key);
+	function getJobInfo(triad: BoardTriad): MachineJobDescriptor | undefined {
+		const id = jobIdMap.get(tuplekey(triad));
+		if (id !== undefined) {
 			return jobMap.get(id);
 		}
 		return undefined;
@@ -697,14 +706,19 @@ function drawMachine(
 function drawJob(
 		canvasId: string, tooltipId: string,
 		descriptor: JobDescriptor) {
+	// Get the canvases and drawing contexts
 	const canv = <HTMLCanvasElement> document.getElementById(canvasId);
+	const n_ctx = canv.getContext("2d");
+	const tooltip = <HTMLCanvasElement> document.getElementById(tooltipId);
+	const n_tooltipCtx = tooltip?.getContext("2d");
+	if (n_ctx === null || n_tooltipCtx === null) {
+		return;
+	}
+	const ctx = n_ctx, tooltipCtx = n_tooltipCtx;
+
 	const [rootX, rootY, scaleX, scaleY] = initCanvasSize(
 			canv, descriptor.triad_width, descriptor.triad_height);
-	const tooltip = <HTMLCanvasElement> document.getElementById(tooltipId);
 	const scale = (scaleX < scaleY) ? scaleX : scaleY;
-	const ctx = canv.getContext("2d");
-	const tooltipCtx = tooltip.getContext("2d");
-
 	/** Information about boards. Coordinates are machine-global. */
 	const allocated = boardMap(descriptor.boards);
 
@@ -733,9 +747,8 @@ function drawJob(
 	 * @return
 	 *		The hex coordinates, or `undefined` if the board isn't known.
 	 */
-	function location(triad: BoardTriad) : HexCoords {
-		const t = tloc.get(tuplekey(triad));
-		return t == undefined ? undefined : t[1];
+	function location(triad: BoardTriad) : HexCoords | undefined {
+		return tloc.get(tuplekey(triad))?.[1];
 	}
 
 	/**
@@ -748,12 +761,7 @@ function drawJob(
 	 */
 	function Board(triad: BoardTriad) : BoardLocator | undefined {
 		const [x, y, z] = triad;
-		const key = tuplekey([rx+x, ry+y, z]);
-		var board : BoardLocator = undefined;
-		if (allocated.has(key)) {
-			board = allocated.get(key);
-		}
-		return board
+		return allocated.get(tuplekey([rx+x, ry+y, z]));
 	}
 
 	/**
@@ -782,8 +790,11 @@ function drawJob(
 		const board = Board(triad);
 		const [x, y, z] = triad;
 		var s = `Board: (X: ${x}, Y: ${y}, Z: ${z})`;
-		if (board !== undefined && board.hasOwnProperty("network")) {
-			s += `\nIP: ${board.network.address}`;
+		if (board?.hasOwnProperty("network")) {
+			const net = board.network;
+			if (net !== undefined) {
+				s += `\nIP: ${net.address}`;
+			}
 		}
 		return s;
 	}
@@ -810,12 +821,8 @@ function drawJob(
 		drawTriadBoard(ctx, rootX, rootY, scale, triad);
 		setTooltip(triad, triadDescription(triad));
 	}
-	function getBoardInfo(triad: BoardTriad): BoardLocator {
-		const key = tuplekey(triad);
-		if (allocated.has(key)) {
-			return allocated.get(key);
-		}
-		return undefined;
+	function getBoardInfo(triad: BoardTriad): BoardLocator | undefined {
+		return allocated.get(tuplekey(triad));
 	}
 	setupCallbacks(canv, getBoardInfo, undefined, tloc, setCurrent, clearCurrent);
 }
@@ -828,8 +835,12 @@ function drawJob(
  */
 function prettyJson(elementId: string) {
 	const element = document.getElementById(elementId);
-	const pretty = JSON.stringify(JSON.parse(element.textContent), null, 2);
-	element.textContent = pretty;
+	const content = element?.textContent;
+	if (content === null || content == undefined) {
+		return;
+	}
+	const pretty = JSON.stringify(JSON.parse(content), null, 2);
+	element!.textContent = pretty;
 }
 
 /**
@@ -840,7 +851,11 @@ function prettyJson(elementId: string) {
  */
 function prettyTimestamp(elementId: string) {
 	const element = document.getElementById(elementId);
-	const timestamp = new Date(element.textContent);
+	const content = element?.textContent;
+	if (content === null || content === undefined) {
+		return;
+	}
+	const timestamp = new Date(content);
 	const dtf = new Intl.DateTimeFormat([], {
 		year: 'numeric',
 		month: 'long',
@@ -848,8 +863,7 @@ function prettyTimestamp(elementId: string) {
 		hour: 'numeric',
 		minute: 'numeric'
 	});
-	const pretty = dtf.format(timestamp);
-	element.textContent = pretty;
+	element!.textContent = dtf.format(timestamp);
 }
 
 /**
@@ -860,10 +874,13 @@ function prettyTimestamp(elementId: string) {
  */
 function prettyDuration(elementId: string) {
 	const element = document.getElementById(elementId);
-	var content: string = element.textContent;
+	var content = element?.textContent;
+	if (content === null || content === undefined) {
+		return;
+	}
 	content = content.replace(/^PT/, "").replace("H", " hours ").replace(
 		"M", " minutes ").replace("S", " seconds ");
 	content = content.replace(new RegExp(/\b1 (\w+)s/, "g"), "1 $1");
 	content = content.replace(new RegExp(/\b( \d)/, "g"), ",$1");
-	element.textContent = content;
+	element!.textContent = content;
 }

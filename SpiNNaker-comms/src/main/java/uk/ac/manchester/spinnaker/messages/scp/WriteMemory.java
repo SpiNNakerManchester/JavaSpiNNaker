@@ -15,21 +15,22 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static uk.ac.manchester.spinnaker.messages.model.TransferUnit.efficientTransferUnit;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_WRITE;
-import static uk.ac.manchester.spinnaker.messages.scp.TransferUnit.efficientTransferUnit;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * A request to write memory on a chip. There is no response payload.
  * <p>
  * Calls {@code sark_cmd_write()} in {@code sark_base.c}.
  */
-public class WriteMemory extends SCPRequest<CheckOKResponse> {
+public class WriteMemory extends SCPRequest<EmptyResponse> {
 	/**
 	 * @param core
 	 *            the core to write via
@@ -68,7 +69,8 @@ public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Write", CMD_WRITE, buffer);
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
+		return new EmptyResponse("Write", CMD_WRITE, buffer);
 	}
 }

@@ -13,29 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.manchester.spinnaker.messages.model;
+package uk.ac.manchester.spinnaker.messages.scp;
 
 /**
- * The basic router commands, handled by {@code cmd_rtr()} in
+ * The SCP Allocation and Free codes. For {@code cmd_alloc()} in
  * {@code scamp-cmd.c}.
  */
-public enum RouterCommand {
-	/** Initialise. */
-	ROUTER_INIT,
-	/** Clear (entry=arg2, count). */
-	ROUTER_CLEAR,
-	/** Load (addr=arg2, count, offset=arg3, app_id). */
-	ROUTER_LOAD,
-	/**
-	 * Set/get Fixed Route register (arg2 = route). if bit 31 of arg1 set then
-	 * return FR reg else set it
-	 */
-	ROUTER_FIXED;
+enum AllocFree {
+	/** Allocate SDRAM. */
+	ALLOC_SDRAM(0),
+	/** Free SDRAM using a Pointer. */
+	FREE_SDRAM_BY_POINTER(1),
+	/** Free SDRAM using an APP ID. */
+	FREE_SDRAM_BY_APP_ID(2),
+	/** Allocate Routing Entries. */
+	ALLOC_ROUTING(3),
+	/** Free Routing Entries by Pointer. */
+	FREE_ROUTING_BY_POINTER(4),
+	/** Free Routing Entries by APP ID. */
+	FREE_ROUTING_BY_APP_ID(5);
 
-	/** The BMP-encoded value. */
+	/** The SARK operation value. */
 	public final byte value;
 
-	RouterCommand() {
-		value = (byte) ordinal();
+	AllocFree(int value) {
+		this.value = (byte) value;
 	}
 }

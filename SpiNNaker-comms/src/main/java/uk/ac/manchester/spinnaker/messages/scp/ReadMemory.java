@@ -17,8 +17,8 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
+import static uk.ac.manchester.spinnaker.messages.model.TransferUnit.efficientTransferUnit;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_READ;
-import static uk.ac.manchester.spinnaker.messages.scp.TransferUnit.efficientTransferUnit;
 
 import java.nio.ByteBuffer;
 
@@ -69,7 +69,8 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	}
 
 	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+	public Response getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
 		return new Response(buffer);
 	}
 
@@ -78,7 +79,7 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	 * that it is up to the caller to manage the buffer position of the returned
 	 * response if it is to be read from multiple times.
 	 */
-	protected static final class Response
+	protected final class Response
 			extends PayloadedResponse<ByteBuffer, RuntimeException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("Read", CMD_READ, buffer);

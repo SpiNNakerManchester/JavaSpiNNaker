@@ -29,6 +29,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_FFD;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * An SCP request to flood fill some data. There is no response payload.
@@ -40,7 +41,7 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
  * @see FloodFillStart
  * @see FloodFillEnd
  */
-public class FloodFillData extends SCPRequest<CheckOKResponse> {
+public class FloodFillData extends SCPRequest<EmptyResponse> {
 	private static final int FFD_NNP_FORWARD_RETRY =
 			(FORWARD_LINKS << BYTE3) | ((DELAY | DATA_RESEND) << BYTE2);
 
@@ -113,7 +114,8 @@ public class FloodFillData extends SCPRequest<CheckOKResponse> {
 	}
 
 	@Override
-	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Flood Fill", CMD_FFD, buffer);
+	public EmptyResponse getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
+		return new EmptyResponse("Flood Fill", CMD_FFD, buffer);
 	}
 }

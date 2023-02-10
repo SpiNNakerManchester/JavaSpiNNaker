@@ -16,7 +16,7 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.lang.String.format;
-import static uk.ac.manchester.spinnaker.messages.model.AllocFree.ALLOC_ROUTING;
+import static uk.ac.manchester.spinnaker.messages.scp.AllocFree.ALLOC_ROUTING;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_ALLOC;
@@ -26,6 +26,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * An SCP Request to allocate space for routing entries. The response payload is
@@ -56,14 +57,17 @@ public class RouterAlloc extends SCPRequest<RouterAlloc.Response> {
 	}
 
 	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+	public Response getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException,
+			MemoryAllocationFailedException {
 		return new Response(buffer);
 	}
 
 	/** An SCP response to a request to allocate router entries. */
 	protected final class Response extends
 			PayloadedResponse<Integer, MemoryAllocationFailedException> {
-		Response(ByteBuffer buffer) throws Exception {
+		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException,
+				MemoryAllocationFailedException {
 			super("Router Allocation", CMD_ALLOC, buffer);
 		}
 

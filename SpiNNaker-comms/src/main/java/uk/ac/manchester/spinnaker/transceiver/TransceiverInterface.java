@@ -24,6 +24,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_0_START_ADD
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_1_START_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_2_START_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.NO_ROUTER_DIAGNOSTIC_FILTERS;
+import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.Utils.wordAsBuffer;
 import static uk.ac.manchester.spinnaker.messages.model.AppID.DEFAULT;
@@ -33,6 +34,7 @@ import static uk.ac.manchester.spinnaker.messages.model.CPUState.WATCHDOG;
 import static uk.ac.manchester.spinnaker.messages.model.Signal.START;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.sdram_heap_address;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.BOOT_CHIP;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.SYS_VARS;
 import static uk.ac.manchester.spinnaker.transceiver.FillDataType.WORD;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
 
@@ -83,6 +85,7 @@ import uk.ac.manchester.spinnaker.messages.Constants;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.model.CPUState;
+import uk.ac.manchester.spinnaker.messages.model.ChipInfo;
 import uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter;
 import uk.ac.manchester.spinnaker.messages.model.ExecutableTargets;
 import uk.ac.manchester.spinnaker.messages.model.HeapElement;
@@ -532,6 +535,31 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@CheckReturnValue
 	MappableIterable<CPUInfo> getCPUInformation(@Valid CoreSubsets coreSubsets)
 			throws IOException, ProcessException, InterruptedException;
+
+	/**
+	 * Get the full information about the chip. This is obtained by reading the
+	 * full system variable block for the chip. <em>This is an operation that
+	 * takes a bit of time; the view is not guaranteed to be internally
+	 * consistent though most values are very unlikely to change during the
+	 * read.</em>
+	 *
+	 * @param chip
+	 *            Which chip are we getting information about?
+	 * @return A full description of the chip.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
+	 */
+	@ParallelSafeWithCare
+	@CheckReturnValue
+	default ChipInfo getFullChipInformation(HasChipLocation chip)
+			throws IOException, ProcessException, InterruptedException {
+		var buffer = readMemory(chip, SYS_VARS, UDP_MESSAGE_MAX_SIZE);
+		return new ChipInfo(buffer);
+	}
 
 	/**
 	 * Get the address of user<sub>0</sub> for a given processor on the board.

@@ -76,7 +76,8 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	}
 
 	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+	public Response getSCPResponse(ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
 		return new Response(buffer);
 	}
 
@@ -85,7 +86,7 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	 * chip. Note that it is up to the caller to manage the buffer position of
 	 * the returned response if it is to be read from multiple times.
 	 */
-	protected static final class Response
+	protected final class Response
 			extends PayloadedResponse<ByteBuffer, RuntimeException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("Read Link", CMD_LINK_READ, buffer);

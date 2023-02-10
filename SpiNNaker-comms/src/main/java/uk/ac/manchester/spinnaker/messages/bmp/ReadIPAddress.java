@@ -25,6 +25,7 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
+import uk.ac.manchester.spinnaker.messages.model.Addresses;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
@@ -48,42 +49,36 @@ public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
 		return new Response(buffer);
 	}
 
+	private static final int CHUNK_LEN = 32;
+
+	private static final int IP_OFFSET = 8;
+
+	private static final int IP_LEN = 4;
+
 	/**
-	 * The IP addresses associated with a SpiNNaker board.
+	 * Get a slice out of the result buffer and pick the IP address out of that.
 	 *
-	 * @param bmpIPAddress
-	 *            The IPv4 address of the BMP.
-	 * @param spinIPAddress
-	 *            The IPv4 address of the managed SpiNNaker board.
+	 * @param buffer
+	 *            The result buffer. Position will be updated.
+	 * @return The parsed IP address.
+	 * @throws UnknownHostException
+	 *             Unexpected; we are presenting the right number of bytes.
 	 */
-	public record Addresses(InetAddress bmpIPAddress,
-			InetAddress spinIPAddress) {
-		private static final int CHUNK_LEN = 32;
-
-		private static final int IP_OFFSET = 8;
-
-		private static final int IP_LEN = 4;
-
-		private static InetAddress getIP(ByteBuffer buffer)
-				throws UnknownHostException {
-			/*
-			 * NB: CHUNK_LEN != IP_LEN so we *must* copy like this or otherwise
-			 * mess around with the buffer position. This is easiest.
-			 */
-			var chunk = new byte[CHUNK_LEN];
-			buffer.get(chunk);
-			var bytes = new byte[IP_LEN];
-			arraycopy(chunk, IP_OFFSET, bytes, 0, IP_LEN);
-			return getByAddress(bytes);
-		}
-
-		private Addresses(ByteBuffer buffer) throws UnknownHostException {
-			this(getIP(buffer), getIP(buffer));
-		}
+	private static InetAddress getIP(ByteBuffer buffer)
+			throws UnknownHostException {
+		/*
+		 * NB: CHUNK_LEN != IP_LEN so we *must* copy like this or otherwise
+		 * mess around with the buffer position. This is easiest.
+		 */
+		var chunk = new byte[CHUNK_LEN];
+		buffer.get(chunk);
+		var bytes = new byte[IP_LEN];
+		arraycopy(chunk, IP_OFFSET, bytes, 0, IP_LEN);
+		return getByAddress(bytes);
 	}
 
 	/** An SCP response to a request for IP address information. */
-	protected static final class Response
+	protected final class Response
 			extends BMPRequest.PayloadedResponse<Addresses> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
@@ -94,7 +89,8 @@ public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
 		@Override
 		protected Addresses parse(ByteBuffer buffer) {
 			try {
-				return new Addresses(buffer);
+				// Tricky point: order of evaluation matters
+				return new Addresses(getIP(buffer), getIP(buffer));
 			} catch (UnknownHostException e) {
 				// Should be unreachable
 				return null;
