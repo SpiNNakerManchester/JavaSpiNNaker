@@ -39,7 +39,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
 
 /**
- * An SCP Request to set a Reverse IP Tag. Reverse IP tags are tags that funnel
+ * A request to set a Reverse IP Tag. Reverse IP tags are tags that funnel
  * packets from the outside world to a particular SpiNNaker core. There is no
  * response payload.
  * <p>

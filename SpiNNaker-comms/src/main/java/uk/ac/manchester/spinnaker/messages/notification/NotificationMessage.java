@@ -18,7 +18,9 @@ package uk.ac.manchester.spinnaker.messages.notification;
 import uk.ac.manchester.spinnaker.messages.SerializableMessage;
 
 /**
- * A notification message.
+ * A notification message. Note that the general constraint on the length of
+ * these messages is set by UDP and, possibly, Ethernet, not SpiNNaker; these
+ * messages are not routed via a SpiNNaker board.
  */
 public interface NotificationMessage extends SerializableMessage {
 }

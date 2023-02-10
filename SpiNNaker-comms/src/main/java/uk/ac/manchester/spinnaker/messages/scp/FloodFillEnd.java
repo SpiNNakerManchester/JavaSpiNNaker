@@ -33,7 +33,7 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP request to finish a flood fill of data across all cores and launch the
+ * A request to finish a flood fill of data across all cores and launch the
  * application. There is no response payload.
  * <p>
  * Handled ultimately by {@code nn_cmd_ffe()} in {@code scamp-nn.c}.

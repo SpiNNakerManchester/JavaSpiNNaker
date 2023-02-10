@@ -38,10 +38,21 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.messages.scp.FloodFillStart;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
+import uk.ac.manchester.spinnaker.transceiver.TxrxProcess;
 import uk.ac.manchester.spinnaker.utils.Daemon;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
-/** A UDP connection to SC&amp;MP on the board. */
+/**
+ * An SDP connection to talk SCP (SpiNNaker Control Protocol) to SC&amp;MP on a
+ * SpiNNaker system, and to the cores managed by it. In general, an
+ * {@code SCPConnection} is thread safe when used via a {@link TxrxProcess}, but
+ * not all operations that can be invoked that way are;
+ * {@linkplain FloodFillStart flood-fills of binaries} are particularly known to
+ * be only safe to do strictly one at a time and with no other traffic.
+ */
+@UsedInJavadocOnly({ TxrxProcess.class, FloodFillStart.class })
 public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 	private static final Logger log = getLogger(SCPConnection.class);
 

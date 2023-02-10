@@ -20,7 +20,7 @@ import static uk.ac.manchester.spinnaker.messages.notification.NotificationMessa
 import java.nio.ByteBuffer;
 
 /**
- * Packet which indicates that the toolchain has started or resumed.
+ * Message which indicates that the toolchain has started or resumed.
  */
 public class StartResume extends AbstractNotificationMessage {
 	/** Create an instance. */

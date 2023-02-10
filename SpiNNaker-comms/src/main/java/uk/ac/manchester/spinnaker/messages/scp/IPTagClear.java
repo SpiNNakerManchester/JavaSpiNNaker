@@ -27,7 +27,7 @@ import uk.ac.manchester.spinnaker.machine.tags.TagID;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP Request to clear an IP Tag. There is no response payload.
+ * A request to clear an IP Tag. There is no response payload.
  * <p>
  * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},
  * if sent to a BMP).

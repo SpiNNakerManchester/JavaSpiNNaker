@@ -32,7 +32,7 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP request to flood fill some data. There is no response payload.
+ * A request to flood fill some data. There is no response payload.
  * <p>
  * Handled by {@code cmd_ffd()} in {@code scamp-cmd.c} (which sends many
  * messages to actually move the data, handled by {@code nn_cmd_fbs()},
