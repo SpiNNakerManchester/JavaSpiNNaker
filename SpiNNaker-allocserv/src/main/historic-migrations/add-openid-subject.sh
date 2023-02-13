@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2022 The University of Manchester
+# Copyright (c) 2018-2023 The University of Manchester
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
