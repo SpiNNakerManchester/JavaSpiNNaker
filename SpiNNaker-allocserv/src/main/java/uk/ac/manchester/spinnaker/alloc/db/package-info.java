@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * SQLite database support.
+ * Database support for Spalloc server. Based on SQLite.
  */
 package uk.ac.manchester.spinnaker.alloc.db;

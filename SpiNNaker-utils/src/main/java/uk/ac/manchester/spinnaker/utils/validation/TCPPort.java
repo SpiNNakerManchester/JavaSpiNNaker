@@ -82,6 +82,7 @@ public @interface TCPPort {
 	 * Group of constraints. Required by validation spec.
 	 *
 	 * @return Constraint groups, if any
+	 * @hidden
 	 */
 	Class<?>[] groups() default {};
 
@@ -89,11 +90,14 @@ public @interface TCPPort {
 	 * Payload info. Required by validation spec.
 	 *
 	 * @return Payloads, if any.
+	 * @hidden
 	 */
 	Class<? extends Payload>[] payload() default {};
 
 	/**
 	 * Validator for {@link TCPPort} constraints. Not intended for direct use.
+	 *
+	 * @hidden
 	 */
 	class Validator implements ConstraintValidator<TCPPort, Integer> {
 		private static final int MAX_STD_PORT = 32767;

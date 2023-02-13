@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.pacman;
  * This class exists to stop Javadoc complaining. Delete it once there is real
  * code in this Java package.
  *
+ * @hidden
  * @deprecated Do not use. Will be eventually deleted without specific
  *             announcement.
  */

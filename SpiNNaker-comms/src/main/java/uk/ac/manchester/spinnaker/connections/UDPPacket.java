@@ -32,13 +32,13 @@ public class UDPPacket {
 	 * @param byteBuffer The buffer
 	 * @param address The address
 	 */
-	public UDPPacket(ByteBuffer byteBuffer, InetSocketAddress address) {
+	UDPPacket(ByteBuffer byteBuffer, InetSocketAddress address) {
 		this.byteBuffer = byteBuffer;
 		this.address = address;
 	}
 
 	/**
-	 * Get the buffer.
+	 * Get the buffer with the content of the packet.
 	 * @return The buffer
 	 */
 	public ByteBuffer getByteBuffer() {
