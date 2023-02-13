@@ -30,7 +30,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * Calls {@code sf_crc32()} in {@code bmp_ssp.c}.
  */
-public class ReadSerialFlashCRC
+public final class ReadSerialFlashCRC
 		extends BMPRequest<ReadSerialFlashCRC.Response> {
 	/**
 	 * @param board

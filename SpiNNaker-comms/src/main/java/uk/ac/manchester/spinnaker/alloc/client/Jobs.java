@@ -20,7 +20,7 @@ import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.readOnlyCopy;
 import java.net.URI;
 import java.util.List;
 
-class Jobs {
+final class Jobs {
 	/** The jobs of the machine. */
 	List<URI> jobs;
 

@@ -35,7 +35,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * Handled by {@code cmd_bmp_info()} in {@code bmp_cmd.c}.
  */
-public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
+public final class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
 	/**
 	 * @param board
 	 *            which board to request the IP address data from

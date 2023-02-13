@@ -32,7 +32,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * Calls {@code sf_read()} in {@code bmp_ssp.c}.
  */
-public class ReadSerialFlash extends BMPRequest<ReadSerialFlash.Response> {
+public final class ReadSerialFlash
+		extends BMPRequest<ReadSerialFlash.Response> {
 	private static int validate(int size) {
 		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
 			throw new IllegalArgumentException(

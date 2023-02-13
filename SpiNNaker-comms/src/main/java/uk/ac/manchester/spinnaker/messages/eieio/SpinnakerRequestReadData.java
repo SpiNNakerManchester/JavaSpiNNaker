@@ -28,7 +28,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  * from the SpiNNaker system to the host computer to signal that some data is
  * available to be read.
  */
-public class SpinnakerRequestReadData extends EIEIOCommandMessage
+public final class SpinnakerRequestReadData extends EIEIOCommandMessage
 		implements HasCoreLocation {
 	private final int numRequests;
 

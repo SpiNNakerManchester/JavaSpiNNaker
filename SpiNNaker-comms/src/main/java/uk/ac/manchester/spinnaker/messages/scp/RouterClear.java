@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Calls {@code rtr_mc_init()} in {@code sark_hw.c}, via {@code rtr_cmd()} in
  * {@code scamp-cmd.c}.
  */
-public class RouterClear extends SCPRequest<EmptyResponse> {
+public final class RouterClear extends SCPRequest<EmptyResponse> {
 	/**
 	 * @param chip
 	 *            The coordinates of the chip to clear the router of

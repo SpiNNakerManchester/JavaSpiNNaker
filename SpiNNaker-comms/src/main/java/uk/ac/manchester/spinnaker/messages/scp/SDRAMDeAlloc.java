@@ -36,7 +36,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Calls {@code cmd_alloc()} (and hence {@code sark_xfree()} or
  * {@code sark_xfree_id()}) in {@code scamp-cmd.c}.
  */
-public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
+public final class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 	private final boolean readNumFreedBlocks;
 
 	/**

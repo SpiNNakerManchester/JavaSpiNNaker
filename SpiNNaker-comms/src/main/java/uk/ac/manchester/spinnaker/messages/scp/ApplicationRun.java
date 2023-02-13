@@ -41,7 +41,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * Calls {@code proc_start_app()} in {@code scamp-app.c}.
  */
 @UsedInJavadocOnly(SystemVariableDefinition.class)
-public class ApplicationRun extends SCPRequest<EmptyResponse> {
+public final class ApplicationRun extends SCPRequest<EmptyResponse> {
 	private static final int WAIT_BIT = 18;
 
 	/**

@@ -33,7 +33,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * right element of {@code board_stat}. The underlying data is synched from the
  * ADC approximately every 80ms by {@code read_adc()} in {@code bmp_hw.c}.
  */
-public class ReadADC extends BMPRequest<ReadADC.Response> {
+public final class ReadADC extends BMPRequest<ReadADC.Response> {
 	/**
 	 * @param board
 	 *            which board to request the ADC register from

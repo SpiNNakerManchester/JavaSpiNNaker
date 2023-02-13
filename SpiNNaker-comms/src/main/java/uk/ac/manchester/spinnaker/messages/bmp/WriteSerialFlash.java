@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
  * <p>
  * Calls {@code sf_write()} in {@code bmp_ssp.c}.
  */
-public class WriteSerialFlash extends BMPRequest<BMPRequest.BMPResponse> {
+public final class WriteSerialFlash extends BMPRequest<BMPRequest.BMPResponse> {
 	/** The size of chunk that will be transferred. Fixed. */
 	public static final int FLASH_CHUNK_SIZE = 256;
 

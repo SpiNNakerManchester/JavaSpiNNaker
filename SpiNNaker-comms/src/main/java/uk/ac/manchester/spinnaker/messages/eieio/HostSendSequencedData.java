@@ -26,7 +26,7 @@ import java.nio.ByteBuffer;
  * input mechanism to identify packet which needs to be stored in memory for
  * future use.
  */
-public class HostSendSequencedData extends EIEIOCommandMessage {
+public final class HostSendSequencedData extends EIEIOCommandMessage {
 	/** What region will be moved. */
 	public final int regionID;
 

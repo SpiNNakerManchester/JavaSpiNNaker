@@ -22,7 +22,7 @@ import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandID.STOP_SEND
  * to the SpiNNaker system that to stop sending "SpinnakerRequestBuffers"
  * packet.
  */
-public class StopRequests extends EIEIOCommandMessage {
+public final class StopRequests extends EIEIOCommandMessage {
 	/** Make an instance. */
 	public StopRequests() {
 		super(STOP_SENDING_REQUESTS);

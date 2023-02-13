@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.messages.eieio;
 import java.nio.ByteBuffer;
 
 /** A data element that contains a key and a payload. */
-public class KeyPayloadDataElement implements AbstractDataElement {
+public final class KeyPayloadDataElement implements AbstractDataElement {
 	private final int key;
 
 	private final int payload;
@@ -47,7 +47,7 @@ public class KeyPayloadDataElement implements AbstractDataElement {
 	}
 
 	@Override
-	public final void addToBuffer(ByteBuffer buffer, EIEIOType eieioType) {
+	public void addToBuffer(ByteBuffer buffer, EIEIOType eieioType) {
 		if (eieioType.payloadBytes == 0) {
 			throw new IllegalArgumentException(
 					"The type specifies no payload, but this element has a"

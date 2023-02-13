@@ -33,7 +33,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * Calls {@code sark_cmd_read()} in {@code sark_base.c}.
  */
-public class ReadMemory extends SCPRequest<ReadMemory.Response> {
+public final class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	private static int validate(int size) {
 		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
 			throw new IllegalArgumentException(

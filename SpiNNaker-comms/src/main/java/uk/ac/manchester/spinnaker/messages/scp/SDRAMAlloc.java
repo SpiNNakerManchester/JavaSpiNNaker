@@ -37,7 +37,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Calls {@code cmd_alloc()} (and hence {@code sark_xalloc()}) in
  * {@code scamp-cmd.c}.
  */
-public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
+public final class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	private static final int MAX_SDRAM_TAG = 255;
 
 	private static final int FLAG_TAG_RETRY = 4;

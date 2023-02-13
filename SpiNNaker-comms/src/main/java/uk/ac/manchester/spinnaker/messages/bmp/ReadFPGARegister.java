@@ -31,7 +31,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * Calls {@code cmd_fpga_read()} in {@code bmp_cmd.c}.
  */
-public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
+public final class ReadFPGARegister
+		extends BMPRequest<ReadFPGARegister.Response> {
 	/**
 	 * @param fpga
 	 *            FPGA (0, 1 or 2 on SpiNN-5 board) to communicate with.

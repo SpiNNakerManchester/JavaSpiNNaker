@@ -32,7 +32,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},
  * if sent to a BMP).
  */
-public class IPTagClear extends SCPRequest<EmptyResponse> {
+public final class IPTagClear extends SCPRequest<EmptyResponse> {
 	/**
 	 * @param chip
 	 *            The chip to clear the tag on.

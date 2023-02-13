@@ -37,7 +37,8 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
  * @see <a href="https://github.com/SpiNNakerManchester/spio/">The SpI/O project
  *      on GitHub</a>
  */
-public class WriteFPGARegister extends BMPRequest<BMPRequest.BMPResponse> {
+public final class WriteFPGARegister
+		extends BMPRequest<BMPRequest.BMPResponse> {
 	/**
 	 * @param fpga
 	 *            FPGA (0, 1 or 2 on SpiNN-5 board) to communicate with.

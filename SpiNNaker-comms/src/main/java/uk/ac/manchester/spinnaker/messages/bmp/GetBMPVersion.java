@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
  * <p>
  * Calls or {@code cmd_ver()} in {@code bmp_cmd.c}.
  */
-public class GetBMPVersion extends BMPRequest<GetBMPVersion.Response> {
+public final class GetBMPVersion extends BMPRequest<GetBMPVersion.Response> {
 	/**
 	 * @param board
 	 *            The board to get the version from

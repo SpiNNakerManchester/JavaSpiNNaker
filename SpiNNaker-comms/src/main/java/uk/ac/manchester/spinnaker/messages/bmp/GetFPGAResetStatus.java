@@ -32,7 +32,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Calls {@code cmd_read()} in {@code bmp_cmd.c} with special parameters and
  * parses the result.
  */
-public class GetFPGAResetStatus
+public final class GetFPGAResetStatus
 		extends BMPRequest<GetFPGAResetStatus.Response> {
 	/** @param board Which board to get the FPGA reset status of. */
 	public GetFPGAResetStatus(BMPBoard board) {

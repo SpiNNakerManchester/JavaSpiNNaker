@@ -37,7 +37,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * {@code p2p_region()} in {@code scamp-cmd.c}. This is the main use of
  * point-to-point signals (and the only one exposed to users).
  */
-public class CountState extends SCPRequest<CountState.Response> {
+public final class CountState extends SCPRequest<CountState.Response> {
 	/* enum send_reg_ctrl */
 	private static final int APP_STAT = 1;
 

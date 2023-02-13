@@ -42,7 +42,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},
  * if sent to a BMP).
  */
-public class IPTagGet extends SCPRequest<IPTagGet.Response>
+public final class IPTagGet extends SCPRequest<IPTagGet.Response>
 		implements ConnectionAwareMessage {
 	private final int tag;
 

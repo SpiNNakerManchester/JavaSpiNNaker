@@ -36,7 +36,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  *
  * @see IPTagGet
  */
-public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
+public final class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 	private static final int IPTAG_MAX = 255;
 
 	/**

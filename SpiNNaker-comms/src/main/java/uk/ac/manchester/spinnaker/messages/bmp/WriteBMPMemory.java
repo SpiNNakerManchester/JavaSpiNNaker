@@ -28,7 +28,7 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
  * <p>
  * Calls {@code cmd_write()} in {@code bmp_cmd.c}.
  */
-public class WriteBMPMemory extends BMPRequest<BMPRequest.BMPResponse> {
+public final class WriteBMPMemory extends BMPRequest<BMPRequest.BMPResponse> {
 	/**
 	 * @param board
 	 *            the board with the BMP to write the memory of

@@ -35,7 +35,7 @@ import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
  * Handled by {@code cmd_power()} in {@code bmp_cmd.c}, which in turn calls
  * {@code proc_power()} in the same file.
  */
-public class SetPower extends BMPRequest<BMPRequest.BMPResponse> {
+public final class SetPower extends BMPRequest<BMPRequest.BMPResponse> {
 	private static final int DELAY_SHIFT = 16;
 
 	private static final BMPBoard FRAME_ROOT = new BMPBoard(0);

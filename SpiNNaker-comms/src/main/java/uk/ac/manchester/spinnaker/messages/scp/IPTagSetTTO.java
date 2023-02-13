@@ -35,7 +35,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},
  * if sent to a BMP).
  */
-public class IPTagSetTTO extends SCPRequest<IPTagSetTTO.Response> {
+public final class IPTagSetTTO extends SCPRequest<IPTagSetTTO.Response> {
 	/**
 	 * @param chip
 	 *            The chip to set the tag timout on.

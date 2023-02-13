@@ -33,7 +33,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * Handled by {@code cmd_bmp_info()} in {@code bmp_cmd.c}.
  */
-public class ReadSerialVector extends BMPRequest<ReadSerialVector.Response> {
+public final class ReadSerialVector
+		extends BMPRequest<ReadSerialVector.Response> {
 	/**
 	 * @param board
 	 *            which board to request the serial data from

@@ -28,7 +28,7 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
  * <p>
  * Calls {@code cmd_flash_write()} in {@code bmp_cmd.c}.
  */
-public class WriteFlashBuffer extends BMPRequest<BMPRequest.BMPResponse> {
+public final class WriteFlashBuffer extends BMPRequest<BMPRequest.BMPResponse> {
 	/** The size of chunk that will be transferred. Fixed. */
 	public static final int FLASH_CHUNK_SIZE = 4096;
 

@@ -51,7 +51,7 @@ import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
  *
  * @see ReverseIPTagSet
  */
-public class IPTagSet extends SCPRequest<EmptyResponse> {
+public final class IPTagSet extends SCPRequest<EmptyResponse> {
 	private static final Logger log = getLogger(IPTagSet.class);
 
 	private static final int INADDRSZ = 4;

@@ -33,7 +33,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * Handled by {@code cmp_led()} in {@code bmp_cmd.c}.
  */
 @UsedInJavadocOnly(SetLED.class)
-public class SetBoardLEDs extends BMPRequest<BMPRequest.BMPResponse> {
+public final class SetBoardLEDs extends BMPRequest<BMPRequest.BMPResponse> {
 	/**
 	 * Make a request.
 	 *

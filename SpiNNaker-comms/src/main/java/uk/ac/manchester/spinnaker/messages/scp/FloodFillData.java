@@ -41,7 +41,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * @see FloodFillStart
  * @see FloodFillEnd
  */
-public class FloodFillData extends SCPRequest<EmptyResponse> {
+public final class FloodFillData extends SCPRequest<EmptyResponse> {
 	private static final int FFD_NNP_FORWARD_RETRY =
 			(FORWARD_LINKS << BYTE3) | ((DELAY | DATA_RESEND) << BYTE2);
 

@@ -30,7 +30,7 @@ import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
  * Calls {@code cmd_ver()} in {@code scamp-cmd.c} or {@code sark_cmd_ver()} in
  * {@code sark_base.c}, depending on which core the message is sent to.
  */
-public class GetVersion extends SCPRequest<GetVersion.Response> {
+public final class GetVersion extends SCPRequest<GetVersion.Response> {
 	/**
 	 * @param core
 	 *            The location of the core to read from.
@@ -46,7 +46,7 @@ public class GetVersion extends SCPRequest<GetVersion.Response> {
 	}
 
 	/** An SCP response to a request for the version of software running. */
-	// Used in tests
+	// Used in TestUDPConnection
 	public static final class Response
 			extends PayloadedResponse<VersionInfo, RuntimeException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {

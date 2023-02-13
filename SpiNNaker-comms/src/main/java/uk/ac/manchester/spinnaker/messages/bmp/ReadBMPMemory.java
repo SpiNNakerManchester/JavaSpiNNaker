@@ -32,7 +32,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * Calls {@code cmd_read()} in {@code bmp_cmd.c}.
  */
-public class ReadBMPMemory extends BMPRequest<ReadBMPMemory.Response> {
+public final class ReadBMPMemory extends BMPRequest<ReadBMPMemory.Response> {
 	private static int validate(int size) {
 		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
 			throw new IllegalArgumentException(

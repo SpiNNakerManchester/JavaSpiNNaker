@@ -23,7 +23,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 
-class BriefMachineDescription {
+final class BriefMachineDescription {
 	/** The machine name. */
 	String name;
 

@@ -34,7 +34,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Ultimately handled by {@code rtr_mc_load()} in {@code sark_hw.c} (via
  * {@code cmd_rtr()} in {@code scamp-cmd.c}).
  */
-public class RouterInit extends SCPRequest<EmptyResponse> {
+public final class RouterInit extends SCPRequest<EmptyResponse> {
 	/** One reserved for SCAMP. */
 	private static final int MAX_ENTRIES = 1023;
 

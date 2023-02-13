@@ -28,7 +28,7 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
  * <p>
  * Calls {@code fpga_init()} in {@code bmp_hw.c}.
  */
-public class InitFPGA extends BMPRequest<BMPRequest.BMPResponse> {
+public final class InitFPGA extends BMPRequest<BMPRequest.BMPResponse> {
 	/**
 	 * @param board
 	 *            Which board's FPGA to initialise.

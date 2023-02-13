@@ -30,7 +30,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * Calls {@code sark_cmd_write()} in {@code sark_base.c}.
  */
-public class WriteMemory extends SCPRequest<EmptyResponse> {
+public final class WriteMemory extends SCPRequest<EmptyResponse> {
 	/**
 	 * @param core
 	 *            the core to write via

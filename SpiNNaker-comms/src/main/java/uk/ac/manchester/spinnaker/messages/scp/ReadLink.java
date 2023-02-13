@@ -34,7 +34,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * Calls {@code cmd_link_read()} in {@code scamp-cmd.c}.
  */
-public class ReadLink extends SCPRequest<ReadLink.Response> {
+public final class ReadLink extends SCPRequest<ReadLink.Response> {
 	private static int validate(int size) {
 		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
 			throw new IllegalArgumentException(

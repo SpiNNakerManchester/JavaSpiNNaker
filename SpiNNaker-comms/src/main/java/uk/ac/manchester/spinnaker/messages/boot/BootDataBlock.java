@@ -27,7 +27,7 @@ import java.nio.ByteBuffer;
  *
  * @author Donal Fellows
  */
-class BootDataBlock extends BootMessage {
+final class BootDataBlock extends BootMessage {
 	private static final int BOOT_DATA_OPERAND_1 =
 			(BOOT_MESSAGE_DATA_WORDS - 1) << NBBY;
 

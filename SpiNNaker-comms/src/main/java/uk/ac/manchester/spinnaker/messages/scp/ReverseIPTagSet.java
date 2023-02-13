@@ -48,7 +48,7 @@ import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
  *
  * @see IPTagSet
  */
-public class ReverseIPTagSet extends SCPRequest<EmptyResponse> {
+public final class ReverseIPTagSet extends SCPRequest<EmptyResponse> {
 	/**
 	 * @param chip
 	 *            The chip to set the tag on.
