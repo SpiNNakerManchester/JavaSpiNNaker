@@ -86,7 +86,7 @@ public class BootMessages {
 		}
 		bootData = readBootImage(getClass().getResource(BOOT_IMAGE));
 		injectBootVariableBlock(bootVariables);
-		numDataPackets = ceildiv(bootData.limit(), BOOT_IMAGE_MAX_BYTES);
+		numDataPackets = ceildiv(bootData.limit(), BOOT_MESSAGE_DATA_BYTES);
 	}
 
 	private void injectBootVariableBlock(
