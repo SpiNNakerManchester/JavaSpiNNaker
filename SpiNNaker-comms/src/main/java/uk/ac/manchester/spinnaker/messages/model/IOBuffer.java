@@ -32,7 +32,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  *
  * @author Donal Fellows
  */
-public class IOBuffer implements HasCoreLocation {
+public final class IOBuffer implements HasCoreLocation {
 	private final HasCoreLocation core;
 
 	private final byte[] iobuf;

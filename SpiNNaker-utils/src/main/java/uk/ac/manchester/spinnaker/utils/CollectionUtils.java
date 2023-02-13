@@ -26,6 +26,7 @@ import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static java.util.stream.Collectors.toUnmodifiableMap;
+import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -146,7 +147,7 @@ public abstract class CollectionUtils {
 	 */
 	public static <T> Collection<Collection<T>> batch(int batchSize,
 			List<T> input) {
-		return IntStream.range(0, (input.size() + batchSize - 1) / batchSize)
+		return IntStream.range(0, ceildiv(input.size(), batchSize))
 				.map(i -> i * batchSize)
 				.mapToObj(idx -> unmodifiableCollection(
 						input.subList(idx, min(input.size(), idx + batchSize))))

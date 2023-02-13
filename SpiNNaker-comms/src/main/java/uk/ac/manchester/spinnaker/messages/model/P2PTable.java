@@ -20,6 +20,7 @@ import static java.util.stream.IntStream.range;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTableRoute.NONE;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
+import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.nio.ByteBuffer;
 import java.util.Collection;
@@ -34,7 +35,7 @@ import uk.ac.manchester.spinnaker.machine.ValidMachineHeight;
 import uk.ac.manchester.spinnaker.machine.ValidMachineWidth;
 
 /** Represents a P2P routing table read from the machine. */
-public class P2PTable {
+public final class P2PTable {
 	private final Map<ChipLocation, P2PTableRoute> routes;
 
 	/** The width of the machine that this table represents. */
@@ -101,7 +102,7 @@ public class P2PTable {
 	 * @return The number of bytes for the column
 	 */
 	public static int getNumColumnBytes(int height) {
-		return ((height + NBBY - 1) / NBBY) * WORD_SIZE;
+		return ceildiv(height, NBBY) * WORD_SIZE;
 	}
 
 	/**

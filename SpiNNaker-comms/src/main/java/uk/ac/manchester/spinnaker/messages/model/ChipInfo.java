@@ -117,7 +117,7 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 /**
  * Represents the system variables for a chip, received from the chip SDRAM.
  */
-public class ChipInfo implements HasChipLocation {
+public final class ChipInfo implements HasChipLocation {
 	private static final byte[] NO_IP = {
 		0, 0, 0, 0
 	};

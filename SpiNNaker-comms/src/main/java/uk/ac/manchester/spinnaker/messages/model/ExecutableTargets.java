@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 
 /** Encapsulate the binaries and cores on which to execute them. */
-public class ExecutableTargets {
+public final class ExecutableTargets {
 	private final Map<@NotBlank String, @Valid CoreSubsets> targets;
 
 	@PositiveOrZero

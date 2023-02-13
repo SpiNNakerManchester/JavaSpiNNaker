@@ -16,7 +16,6 @@
 package uk.ac.manchester.spinnaker.messages.boot;
 
 import static java.lang.Integer.reverseBytes;
-import static java.lang.Math.ceil;
 import static java.lang.Math.min;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
@@ -30,6 +29,7 @@ import static uk.ac.manchester.spinnaker.messages.boot.SystemVariableBootValues.
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.boot_signature;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.is_root_chip;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.unix_timestamp;
+import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.DataInputStream;
@@ -86,8 +86,7 @@ public class BootMessages {
 		}
 		bootData = readBootImage(getClass().getResource(BOOT_IMAGE));
 		injectBootVariableBlock(bootVariables);
-		numDataPackets =
-				(int) ceil(bootData.limit() / (float) BOOT_MESSAGE_DATA_BYTES);
+		numDataPackets = ceildiv(bootData.limit(), BOOT_IMAGE_MAX_BYTES);
 	}
 
 	private void injectBootVariableBlock(

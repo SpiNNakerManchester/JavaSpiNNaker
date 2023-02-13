@@ -30,7 +30,7 @@ import java.util.stream.Stream;
  * of the destinations, sources, payload statuses, default routing statuses,
  * emergency routing statuses, and packet types.
  */
-public class DiagnosticFilter {
+public final class DiagnosticFilter {
 	private static final int PACKET_TYPE_OFFSET = 0;
 
 	private static final int EMERGENCY_ROUTE_OFFSET = 4;

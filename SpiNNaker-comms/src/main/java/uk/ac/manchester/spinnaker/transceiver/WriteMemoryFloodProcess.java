@@ -15,12 +15,12 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
-import static java.lang.Math.ceil;
 import static java.nio.ByteBuffer.allocate;
 import static org.apache.commons.io.IOUtils.buffer;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.read;
 import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
+import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -51,10 +51,8 @@ class WriteMemoryFloodProcess extends TxrxProcess {
 		super(connectionSelector, retryTracker);
 	}
 
-	private static final float BPW = 4.0F;
-
 	private static int numBlocks(int numBytes) {
-		return (int) ceil(ceil(numBytes / BPW) / UDP_MESSAGE_MAX_SIZE);
+		return ceildiv(numBytes, UDP_MESSAGE_MAX_SIZE);
 	}
 
 	/**
