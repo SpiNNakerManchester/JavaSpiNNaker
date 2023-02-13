@@ -20,7 +20,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.RouterTableCommand.LOAD_AP
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
- * An SDP Request to load the previously-saved application multicast router
+ * A request to load the previously-saved application multicast router
  * table. There is no response payload.
  * <p>
  * Handled by {@code data_in_speed_up_load_in_application_routes()} in

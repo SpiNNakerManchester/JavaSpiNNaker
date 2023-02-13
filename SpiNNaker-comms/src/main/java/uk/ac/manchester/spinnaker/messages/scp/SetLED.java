@@ -25,7 +25,7 @@ import uk.ac.manchester.spinnaker.messages.model.LEDAction;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP request to change the state of an LED. There is no response payload.
+ * A request to change the state of an LED. There is no response payload.
  * <p>
  * Handled by {@code sark_led_set()} in {@code sark_hw.c}.
  */

@@ -28,7 +28,7 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * Sets a fixed route entry. There is no response payload.
+ * A request to set a fixed route entry. There is no response payload.
  * <p>
  * Calls {@code rtr_fr_set()} in {@code sark_hw.c}, via {@code rtr_cmd()} in
  * {@code scamp-cmd.c}.

@@ -24,7 +24,7 @@ import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP request to read the chip information from a core. The response payload
+ * A request to read the chip information from a core. The response payload
  * is the {@linkplain ChipSummaryInfo summary information} for the chip.
  * <p>
  * Calls {@code cmd_info()} in {@code scamp-cmd.c}.

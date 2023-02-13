@@ -20,7 +20,7 @@ import java.nio.ByteBuffer;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 
 /**
- * An notification message.
+ * A base class for concrete notification messages.
  *
  * @author Donal Fellows
  */

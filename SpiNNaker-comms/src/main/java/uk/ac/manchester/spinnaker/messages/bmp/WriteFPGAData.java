@@ -23,9 +23,9 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 
 /**
- * Upload a chunk of FPGA initialisation data. Must have been set up by
- * {@link InitFPGA}. Upload process will be terminated by {@link ResetFPGA}.
- * There is no response payload.
+ * A request to upload a chunk of FPGA initialisation data. Must have been set
+ * up by {@link InitFPGA}. The upload process will be terminated by
+ * {@link ResetFPGA}. There is no response payload.
  * <p>
  * Calls {@code ssp1_copy()} in {@code bmp_ssp.c}.
  */

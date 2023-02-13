@@ -24,7 +24,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP request to clear the router on a chip. There is no response payload.
+ * A request to clear the router on a chip. There is no response payload.
  * <p>
  * Calls {@code rtr_mc_init()} in {@code sark_hw.c}, via {@code rtr_cmd()} in
  * {@code scamp-cmd.c}.

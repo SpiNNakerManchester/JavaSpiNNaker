@@ -33,7 +33,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP request to start a flood fill of data. There is no response payload.
+ * A request to start a flood fill of data. There is no response payload.
  * <p>
  * Calls {@code nn_cmd_ffs()} in {@code scamp-nn.c} on all cores via
  * {@code ff_nn_send()} in {@code scamp-nn.c}.

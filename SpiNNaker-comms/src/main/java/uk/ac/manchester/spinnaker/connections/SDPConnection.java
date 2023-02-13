@@ -23,9 +23,25 @@ import java.net.InetAddress;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.tags.IPTag;
+import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
-/** A UDP socket connection that talks SDP to SpiNNaker. */
+/**
+ * A UDP socket connection that talks SDP (SpiNNaker Datagram Protocol) to
+ * SpiNNaker. An inbound SDP packet can be routed from the initially receiving
+ * SC&amp;MP core to any core, and an outbound SDP packet can be routed from any
+ * core to the outside world (provided an {@link IPTag} or {@link ReverseIPTag}
+ * is configured to handle routing of the message on an Ethernet-equipped chip).
+ * <p>
+ * Note that, unlike with an {@link SCPConnection}, SDP is essentially a
+ * collection of one-way messages, though replies might be expected to some of
+ * them. As such, this class makes no attempt to handle demultiplexing of
+ * messages received on multiple threads; great care must be taken when using
+ * this class from more than one thread at a time.
+ */
+@UsedInJavadocOnly({ IPTag.class, ReverseIPTag.class })
 public class SDPConnection extends UDPConnection<SDPMessage> {
 	private ChipLocation chip;
 

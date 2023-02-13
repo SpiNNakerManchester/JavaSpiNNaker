@@ -26,8 +26,8 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * Requests the data from a FPGA's register. The response payload is the 32-bit
- * integer contents of the register.
+ * A request for the data from a FPGA's register. The response payload is the
+ * 32-bit integer contents of the register.
  * <p>
  * Calls {@code cmd_fpga_read()} in {@code bmp_cmd.c}.
  */
