@@ -32,7 +32,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
- * An SCP request to run an application. The application code must have been
+ * A request to run an application. The application code must have been
  * placed at the location
  * {@link SystemVariableDefinition#system_sdram_base_address} points at. There
  * is no response payload.

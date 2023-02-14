@@ -24,7 +24,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 
 /**
- * An SCP request to read the version of software running on a core. The
+ * A request to read the version of software running on a core. The
  * response payload is the {@linkplain VersionInfo version descriptor}.
  * <p>
  * Calls {@code cmd_ver()} in {@code scamp-cmd.c} or {@code sark_cmd_ver()} in

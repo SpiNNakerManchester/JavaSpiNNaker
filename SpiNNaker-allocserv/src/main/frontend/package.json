@@ -2,7 +2,7 @@
 	"name": "spalloc-support",
 	"version": "0.0.1",
 	"description": "Support code for JavaSpiNNaker's Spalloc Service implementation",
-	"license": "GPL-3.0",
+	"license": "ASL-2.0",
 	"repository": "github:SpiNNakerManchester/JavaSpiNNaker",
 	"author": "Donal K. Fellows",
 	"dependencies": {

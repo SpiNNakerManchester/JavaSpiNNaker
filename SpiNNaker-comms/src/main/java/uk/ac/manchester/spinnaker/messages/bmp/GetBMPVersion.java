@@ -24,7 +24,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 
 /**
- * An SCP request to read the version of software running on a board's BMP. The
+ * A request to read the version of software running on a board's BMP. The
  * response payload is a {@linkplain VersionInfo version descriptor}.
  * <p>
  * Calls or {@code cmd_ver()} in {@code bmp_cmd.c}.

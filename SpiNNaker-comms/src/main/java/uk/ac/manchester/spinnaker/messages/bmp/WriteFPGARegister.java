@@ -26,7 +26,8 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.FPGA;
 
 /**
- * A request for writing data to a FPGA register. There is no response payload.
+ * A request to write data to an FPGA register managed by a BMP. There is no
+ * response payload.
  * <p>
  * Calls {@code cmd_fpga_write()} in {@code bmp_cmd.c}.
  *

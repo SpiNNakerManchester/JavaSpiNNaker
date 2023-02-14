@@ -806,8 +806,8 @@ limitations under the License.
 	</organization>
 	<licenses>
 		<license>
-			<url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
-			<name>GNU General Public License, version 3</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+			<name>Apache License, Version 2.0</name>
 			<distribution>manual</distribution>
 		</license>
 	</licenses>
