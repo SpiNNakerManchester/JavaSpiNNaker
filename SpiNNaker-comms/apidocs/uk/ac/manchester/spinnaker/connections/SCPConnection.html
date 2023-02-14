@@ -147,14 +147,6 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>protected </code></td>
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation)">SCPConnection</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip)</code></th>
-<td class="colLast">
-<div class="block">Create a connection where the mechanism for sending and receiving
- messages is being overridden by a subclass.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><code>&nbsp;</code></td>
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress)">SCPConnection</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;remoteHost)</code></th>
@@ -162,7 +154,7 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 <div class="block">Create a connection to a particular instance of SCAMP.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected </code></td>
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress,java.lang.Integer,java.net.InetAddress,int)">SCPConnection</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost,
@@ -312,21 +304,6 @@ int&nbsp;remotePort)</span>
             <code>null</code>, the default remote port is used.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong with socket setup.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.HasChipLocation)">SCPConnection</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="memberName">SCPConnection</span>&#8203;(<span class="arguments"><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip)</span>
-                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
-<div class="block">Create a connection where the mechanism for sending and receiving
- messages is being overridden by a subclass.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>chip</code> - The location of the target chip on the board.</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong with socket manipulation.</dd>
 </dl>
 </section>
 </li>

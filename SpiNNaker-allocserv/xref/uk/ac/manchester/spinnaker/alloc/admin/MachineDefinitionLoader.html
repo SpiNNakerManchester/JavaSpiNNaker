@@ -828,44 +828,49 @@
 <a class="jxr_linenumber" name="L820" href="#L820">820</a> 		}
 <a class="jxr_linenumber" name="L821" href="#L821">821</a> 	}
 <a class="jxr_linenumber" name="L822" href="#L822">822</a> 
-<a class="jxr_linenumber" name="L823" href="#L823">823</a> 	<em class="jxr_javadoccomment">/** Operations for testing only. */</em>
-<a class="jxr_linenumber" name="L824" href="#L824">824</a> 	@ForTestingOnly
-<a class="jxr_linenumber" name="L825" href="#L825">825</a> 	<strong class="jxr_keyword">interface</strong> TestAPI {
-<a class="jxr_linenumber" name="L826" href="#L826">826</a> 		<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L827" href="#L827">827</a> <em class="jxr_javadoccomment">		 * Add a machine definition using the SQL update profile.</em>
-<a class="jxr_linenumber" name="L828" href="#L828">828</a> <em class="jxr_javadoccomment">		 *</em>
-<a class="jxr_linenumber" name="L829" href="#L829">829</a> <em class="jxr_javadoccomment">		 * @param machine</em>
-<a class="jxr_linenumber" name="L830" href="#L830">830</a> <em class="jxr_javadoccomment">		 *            The description of the machine to add.</em>
-<a class="jxr_linenumber" name="L831" href="#L831">831</a> <em class="jxr_javadoccomment">		 * @return The ID of the created machine.</em>
-<a class="jxr_linenumber" name="L832" href="#L832">832</a> <em class="jxr_javadoccomment">		 * @throws InsertFailedException</em>
-<a class="jxr_linenumber" name="L833" href="#L833">833</a> <em class="jxr_javadoccomment">		 *             If the machine couldn't be created.</em>
-<a class="jxr_linenumber" name="L834" href="#L834">834</a> <em class="jxr_javadoccomment">		 */</em>
-<a class="jxr_linenumber" name="L835" href="#L835">835</a> 		Integer loadMachineDefinition(Machine machine);
-<a class="jxr_linenumber" name="L836" href="#L836">836</a> 	}
-<a class="jxr_linenumber" name="L837" href="#L837">837</a> 
-<a class="jxr_linenumber" name="L838" href="#L838">838</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L839" href="#L839">839</a> <em class="jxr_javadoccomment">	 * @param c</em>
-<a class="jxr_linenumber" name="L840" href="#L840">840</a> <em class="jxr_javadoccomment">	 *            How to talk to the DB.</em>
-<a class="jxr_linenumber" name="L841" href="#L841">841</a> <em class="jxr_javadoccomment">	 * @return The test interface.</em>
-<a class="jxr_linenumber" name="L842" href="#L842">842</a> <em class="jxr_javadoccomment">	 * @deprecated This interface is just for testing.</em>
-<a class="jxr_linenumber" name="L843" href="#L843">843</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L844" href="#L844">844</a> 	@RestrictedApi(explanation = <span class="jxr_string">"just for testing"</span>, link = <span class="jxr_string">"index.html"</span>,
-<a class="jxr_linenumber" name="L845" href="#L845">845</a> 			allowedOnPath = <span class="jxr_string">".*/src/test/java/.*"</span>)
-<a class="jxr_linenumber" name="L846" href="#L846">846</a> 	@Deprecated
-<a class="jxr_linenumber" name="L847" href="#L847">847</a> 	@ForTestingOnly
-<a class="jxr_linenumber" name="L848" href="#L848">848</a> 	TestAPI getTestAPI(Connection c) {
-<a class="jxr_linenumber" name="L849" href="#L849">849</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
-<a class="jxr_linenumber" name="L850" href="#L850">850</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TestAPI() {
-<a class="jxr_linenumber" name="L851" href="#L851">851</a> 			@Override
-<a class="jxr_linenumber" name="L852" href="#L852">852</a> 			<strong class="jxr_keyword">public</strong> Integer loadMachineDefinition(Machine machine) {
-<a class="jxr_linenumber" name="L853" href="#L853">853</a> 				<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> updates = <strong class="jxr_keyword">new</strong> Updates(c)) {
-<a class="jxr_linenumber" name="L854" href="#L854">854</a> 					<strong class="jxr_keyword">return</strong> MachineDefinitionLoader.<strong class="jxr_keyword">this</strong>
-<a class="jxr_linenumber" name="L855" href="#L855">855</a> 							.loadMachineDefinition(updates, machine);
-<a class="jxr_linenumber" name="L856" href="#L856">856</a> 				}
-<a class="jxr_linenumber" name="L857" href="#L857">857</a> 			}
-<a class="jxr_linenumber" name="L858" href="#L858">858</a> 		};
-<a class="jxr_linenumber" name="L859" href="#L859">859</a> 	}
-<a class="jxr_linenumber" name="L860" href="#L860">860</a> }
+<a class="jxr_linenumber" name="L823" href="#L823">823</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L824" href="#L824">824</a> <em class="jxr_javadoccomment">	 * Operations for testing only.</em>
+<a class="jxr_linenumber" name="L825" href="#L825">825</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L826" href="#L826">826</a> <em class="jxr_javadoccomment">	 * @hidden</em>
+<a class="jxr_linenumber" name="L827" href="#L827">827</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L828" href="#L828">828</a> 	@ForTestingOnly
+<a class="jxr_linenumber" name="L829" href="#L829">829</a> 	<strong class="jxr_keyword">interface</strong> TestAPI {
+<a class="jxr_linenumber" name="L830" href="#L830">830</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L831" href="#L831">831</a> <em class="jxr_javadoccomment">		 * Add a machine definition using the SQL update profile.</em>
+<a class="jxr_linenumber" name="L832" href="#L832">832</a> <em class="jxr_javadoccomment">		 *</em>
+<a class="jxr_linenumber" name="L833" href="#L833">833</a> <em class="jxr_javadoccomment">		 * @param machine</em>
+<a class="jxr_linenumber" name="L834" href="#L834">834</a> <em class="jxr_javadoccomment">		 *            The description of the machine to add.</em>
+<a class="jxr_linenumber" name="L835" href="#L835">835</a> <em class="jxr_javadoccomment">		 * @return The ID of the created machine.</em>
+<a class="jxr_linenumber" name="L836" href="#L836">836</a> <em class="jxr_javadoccomment">		 * @throws InsertFailedException</em>
+<a class="jxr_linenumber" name="L837" href="#L837">837</a> <em class="jxr_javadoccomment">		 *             If the machine couldn't be created.</em>
+<a class="jxr_linenumber" name="L838" href="#L838">838</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L839" href="#L839">839</a> 		Integer loadMachineDefinition(Machine machine);
+<a class="jxr_linenumber" name="L840" href="#L840">840</a> 	}
+<a class="jxr_linenumber" name="L841" href="#L841">841</a> 
+<a class="jxr_linenumber" name="L842" href="#L842">842</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L843" href="#L843">843</a> <em class="jxr_javadoccomment">	 * @param c</em>
+<a class="jxr_linenumber" name="L844" href="#L844">844</a> <em class="jxr_javadoccomment">	 *            How to talk to the DB.</em>
+<a class="jxr_linenumber" name="L845" href="#L845">845</a> <em class="jxr_javadoccomment">	 * @return The test interface.</em>
+<a class="jxr_linenumber" name="L846" href="#L846">846</a> <em class="jxr_javadoccomment">	 * @deprecated This interface is just for testing.</em>
+<a class="jxr_linenumber" name="L847" href="#L847">847</a> <em class="jxr_javadoccomment">	 * @hidden</em>
+<a class="jxr_linenumber" name="L848" href="#L848">848</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L849" href="#L849">849</a> 	@RestrictedApi(explanation = <span class="jxr_string">"just for testing"</span>, link = <span class="jxr_string">"index.html"</span>,
+<a class="jxr_linenumber" name="L850" href="#L850">850</a> 			allowedOnPath = <span class="jxr_string">".*/src/test/java/.*"</span>)
+<a class="jxr_linenumber" name="L851" href="#L851">851</a> 	@Deprecated
+<a class="jxr_linenumber" name="L852" href="#L852">852</a> 	@ForTestingOnly
+<a class="jxr_linenumber" name="L853" href="#L853">853</a> 	TestAPI getTestAPI(Connection c) {
+<a class="jxr_linenumber" name="L854" href="#L854">854</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
+<a class="jxr_linenumber" name="L855" href="#L855">855</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TestAPI() {
+<a class="jxr_linenumber" name="L856" href="#L856">856</a> 			@Override
+<a class="jxr_linenumber" name="L857" href="#L857">857</a> 			<strong class="jxr_keyword">public</strong> Integer loadMachineDefinition(Machine machine) {
+<a class="jxr_linenumber" name="L858" href="#L858">858</a> 				<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> updates = <strong class="jxr_keyword">new</strong> Updates(c)) {
+<a class="jxr_linenumber" name="L859" href="#L859">859</a> 					<strong class="jxr_keyword">return</strong> MachineDefinitionLoader.<strong class="jxr_keyword">this</strong>
+<a class="jxr_linenumber" name="L860" href="#L860">860</a> 							.loadMachineDefinition(updates, machine);
+<a class="jxr_linenumber" name="L861" href="#L861">861</a> 				}
+<a class="jxr_linenumber" name="L862" href="#L862">862</a> 			}
+<a class="jxr_linenumber" name="L863" href="#L863">863</a> 		};
+<a class="jxr_linenumber" name="L864" href="#L864">864</a> 	}
+<a class="jxr_linenumber" name="L865" href="#L865">865</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2023 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

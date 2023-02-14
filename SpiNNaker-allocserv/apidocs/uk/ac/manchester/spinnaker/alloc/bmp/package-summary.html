@@ -67,7 +67,11 @@ loadScripts(document, 'script');</script>
 <section class="packageDescription"><a id="package.description">
 <!--   -->
 </a>
-<div class="block">The BMP control subsystem.</div>
+<div class="block">The BMP control subsystem. This (mainly <a href="BMPController.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp"><code>BMPController</code></a> is responsible
+ for booting boards and obtaining system information about them (such as the
+ serial version number). It is the <em>only</em> part of the server which
+ talks to any BMP; it takes great care to ensure that only one task is ever
+ given to one BMP at a time.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -83,12 +87,6 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colFirst" scope="row"><a href="BMPController.TestAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.bmp">BMPController.TestAPI</a></th>
-<td class="colLast">
-<div class="block">The testing interface.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="SpiNNakerControl.html" title="interface in uk.ac.manchester.spinnaker.alloc.bmp">SpiNNakerControl</a></th>
 <td class="colLast">
 <div class="block">How to tell a SpiNNaker BMP (specifically one that manages a frame) to turn
@@ -96,25 +94,13 @@ loadScripts(document, 'script');</script>
  allocation.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="SpiNNakerControl.Factory.html" title="interface in uk.ac.manchester.spinnaker.alloc.bmp">SpiNNakerControl.Factory</a></th>
 <td class="colLast">
 <div class="block">A guide for how to make a BMP controller.</div>
 </td>
 </tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="TransceiverFactory.TestAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.bmp">TransceiverFactory.TestAPI</a></th>
-<td class="colLast">
-<div class="block">Not a public API! Operations for testing only.</div>
-</td>
-</tr>
 <tr class="altColor">
-<th class="colFirst" scope="row"><a href="TransceiverFactory.TestAPI.TestTransceiverFactory.html" title="interface in uk.ac.manchester.spinnaker.alloc.bmp">TransceiverFactory.TestAPI.TestTransceiverFactory</a></th>
-<td class="colLast">
-<div class="block">Not a public API! A factory for transceivers.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="TransceiverFactoryAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.bmp">TransceiverFactoryAPI</a>&lt;T extends <a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/BMPTransceiverInterface.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">BMPTransceiverInterface</a>&gt;</th>
 <td class="colLast">
 <div class="block">Creates transceivers for talking to the BMPs of machines.</div>

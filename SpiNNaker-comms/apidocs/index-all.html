@@ -655,11 +655,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">A connection to the SpiNNaker board that uses UDP for booting.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/BootConnection.html#%3Cinit%3E()">BootConnection()</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/BootConnection.html" title="class in uk.ac.manchester.spinnaker.connections">BootConnection</a></dt>
-<dd>
-<div class="block">Create a boot connection where the mechanism for sending and receiving
- messages is being overridden by a subclass.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/BootConnection.html#%3Cinit%3E(java.net.InetAddress,java.lang.Integer)">BootConnection(InetAddress, Integer)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/BootConnection.html" title="class in uk.ac.manchester.spinnaker.connections">BootConnection</a></dt>
 <dd>
 <div class="block">Creates a boot connection that binds to all local interfaces on an
@@ -994,12 +989,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Serial flash access.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_BMP_TEST">CMD_BMP_TEST</a></span> - uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></dt>
-<dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
-<div class="deprecationComment">Not implemented by current BMP.</div>
-</div>
-</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_DPRI">CMD_DPRI</a></span> - uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></dt>
 <dd>
 <div class="block">Dropped Packet Reinjection setup.</div>
@@ -1085,12 +1074,6 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_SROM">CMD_SROM</a></span> - uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></dt>
 <dd>
 <div class="block">Read/write/erase serial ROM.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_TUBE">CMD_TUBE</a></span> - uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></dt>
-<dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
-<div class="deprecationComment">For tubotron use only.</div>
-</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_VER">CMD_VER</a></span> - uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></dt>
 <dd>
@@ -1199,8 +1182,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Miscellaneous SpiNNaker constants.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/Constants.html#%3Cinit%3E()">Constants()</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.<a href="uk/ac/manchester/spinnaker/messages/Constants.html" title="class in uk.ac.manchester.spinnaker.messages">Constants</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/Signal.html#CONTINUE">CONTINUE</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/Signal.html" title="enum in uk.ac.manchester.spinnaker.messages.model">Signal</a></dt>
 <dd>
 <div class="block">Tells apps to continue from pause.</div>
@@ -1270,27 +1251,6 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/Constants.html#CPU_IOBUF_ADDRESS_OFFSET">CPU_IOBUF_ADDRESS_OFFSET</a></span> - Static variable in class uk.ac.manchester.spinnaker.messages.<a href="uk/ac/manchester/spinnaker/messages/Constants.html" title="class in uk.ac.manchester.spinnaker.messages">Constants</a></dt>
 <dd>
 <div class="block">The address at which the iobuf address starts.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#CPU_STATE_12">CPU_STATE_12</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
-<dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
-<div class="deprecationComment">Should be unused. Might be changed to another meaning by a
-             future version of SCAMP.</div>
-</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#CPU_STATE_13">CPU_STATE_13</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
-<dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
-<div class="deprecationComment">Should be unused. Might be changed to another meaning by a
-             future version of SCAMP.</div>
-</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#CPU_STATE_14">CPU_STATE_14</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
-<dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
-<div class="deprecationComment">Should be unused. Might be changed to another meaning by a
-             future version of SCAMP.</div>
-</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/Constants.html#CPU_USER_0_START_ADDRESS">CPU_USER_0_START_ADDRESS</a></span> - Static variable in class uk.ac.manchester.spinnaker.messages.<a href="uk/ac/manchester/spinnaker/messages/Constants.html" title="class in uk.ac.manchester.spinnaker.messages">Constants</a></dt>
 <dd>
@@ -1771,11 +1731,6 @@ loadScripts(document, 'script');</script>
 <dt><a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html" title="class in uk.ac.manchester.spinnaker.connections"><span class="typeNameLink">EIEIOConnection</span></a> - Class in <a href="uk/ac/manchester/spinnaker/connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a></dt>
 <dd>
 <div class="block">A UDP connection for sending and receiving raw EIEIO messages.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#%3Cinit%3E()">EIEIOConnection()</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html" title="class in uk.ac.manchester.spinnaker.connections">EIEIOConnection</a></dt>
-<dd>
-<div class="block">Create an EIEIO connection where the mechanism for the sending and
- listening is implemented by a subclass.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#%3Cinit%3E(java.net.InetAddress,java.lang.Integer)">EIEIOConnection(InetAddress, Integer)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html" title="class in uk.ac.manchester.spinnaker.connections">EIEIOConnection</a></dt>
 <dd>
@@ -2543,7 +2498,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/UDPPacket.html#getByteBuffer()">getByteBuffer()</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/UDPPacket.html" title="class in uk.ac.manchester.spinnaker.connections">UDPPacket</a></dt>
 <dd>
-<div class="block">Get the buffer.</div>
+<div class="block">Get the buffer with the content of the packet.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/eieio/EIEIOPrefix.html#getByValue(int)">getByValue(int)</a></span> - Static method in enum uk.ac.manchester.spinnaker.messages.eieio.<a href="uk/ac/manchester/spinnaker/messages/eieio/EIEIOPrefix.html" title="enum in uk.ac.manchester.spinnaker.messages.eieio">EIEIOPrefix</a></dt>
 <dd>
@@ -5152,22 +5107,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Prefetch abort.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html#padding_1">padding_1</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html" title="enum in uk.ac.manchester.spinnaker.messages.model">SystemVariableDefinition</a></dt>
-<dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span></div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html#padding_2">padding_2</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html" title="enum in uk.ac.manchester.spinnaker.messages.model">SystemVariableDefinition</a></dt>
-<dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span></div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html#padding_3">padding_3</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html" title="enum in uk.ac.manchester.spinnaker.messages.model">SystemVariableDefinition</a></dt>
-<dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span></div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html#padding_4">padding_4</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html" title="enum in uk.ac.manchester.spinnaker.messages.model">SystemVariableDefinition</a></dt>
-<dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span></div>
-</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/eieio/PaddingRequest.html" title="class in uk.ac.manchester.spinnaker.messages.eieio"><span class="typeNameLink">PaddingRequest</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/eieio/package-summary.html">uk.ac.manchester.spinnaker.messages.eieio</a></dt>
 <dd>
 <div class="block">Packet used to pad space in the buffering area, if needed.</div>
@@ -6500,11 +6439,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">An SDP connection to talk SCP (SpiNNaker Control Protocol) to SC&amp;MP on a
  SpiNNaker system, and to the cores managed by it.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation)">SCPConnection(HasChipLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
-<dd>
-<div class="block">Create a connection where the mechanism for sending and receiving
- messages is being overridden by a subclass.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress)">SCPConnection(HasChipLocation, InetAddress)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
 <dd>
@@ -7944,10 +7878,6 @@ loadScripts(document, 'script');</script>
 <dt><a href="uk/ac/manchester/spinnaker/connections/UDPPacket.html" title="class in uk.ac.manchester.spinnaker.connections"><span class="typeNameLink">UDPPacket</span></a> - Class in <a href="uk/ac/manchester/spinnaker/connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a></dt>
 <dd>
 <div class="block">A packet with an address.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/UDPPacket.html#%3Cinit%3E(java.nio.ByteBuffer,java.net.InetSocketAddress)">UDPPacket(ByteBuffer, InetSocketAddress)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/UDPPacket.html" title="class in uk.ac.manchester.spinnaker.connections">UDPPacket</a></dt>
-<dd>
-<div class="block">Create a buffer with an address.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/transceiver/UDPTransceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver"><span class="typeNameLink">UDPTransceiver</span></a> - Class in <a href="uk/ac/manchester/spinnaker/transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></dt>
 <dd>

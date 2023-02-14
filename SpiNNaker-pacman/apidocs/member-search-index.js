@@ -1,1 +1,0 @@
-memberSearchIndex = [{"p":"uk.ac.manchester.spinnaker.pacman","c":"RemoveMe","l":"RemoveMe()","url":"%3Cinit%3E()"}]

@@ -19,8 +19,8 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":6,"i1":38,"i2":6,"i3":6,"i4":6};
-var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],32:["t6","Deprecated Methods"]};
+<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":6,"i3":6};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
@@ -120,7 +120,7 @@ extends <a href="https://docs.spring.io/spring-security/site/docs/current/api/or
 </a>
 <h2>Method Summary</h2>
 <div class="memberSummary">
-<div role="tablist" aria-orientation="horizontal"><button role="tab" aria-selected="true" aria-controls="memberSummary_tabpanel" tabindex="0" onkeydown="switchTab(event)" id="t0" class="activeTableTab">All Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t2" class="tableTab" onclick="show(2);">Instance Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t3" class="tableTab" onclick="show(4);">Abstract Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t6" class="tableTab" onclick="show(32);">Deprecated Methods</button></div>
+<div role="tablist" aria-orientation="horizontal"><button role="tab" aria-selected="true" aria-controls="memberSummary_tabpanel" tabindex="0" onkeydown="switchTab(event)" id="t0" class="activeTableTab">All Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t2" class="tableTab" onclick="show(2);">Instance Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t3" class="tableTab" onclick="show(4);">Abstract Methods</button></div>
 <div id="memberSummary_tabpanel" role="tabpanel">
 <table aria-labelledby="t0">
 <thead>
@@ -141,15 +141,6 @@ extends <a href="https://docs.spring.io/spring-security/site/docs/current/api/or
 </td>
 </tr>
 <tr class="rowColor" id="i1">
-<td class="colFirst"><code><a href="LocalAuthenticationProvider.html" title="type parameter in LocalAuthenticationProvider">TestAPI</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getTestAPI()">getTestAPI</a></span>()</code></th>
-<td class="colLast">
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>
-<div class="deprecationComment">This interface is just for testing.</div>
-</div>
-</td>
-</tr>
-<tr class="altColor" id="i2">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#mapAuthorities(org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority,java.util.Collection)">mapAuthorities</a></span>&#8203;(<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/core/oidc/user/OidcUserAuthority.html?is-external=true" title="class or interface in org.springframework.security.oauth2.core.oidc.user" class="externalLink">OidcUserAuthority</a>&nbsp;authority,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/GrantedAuthority.html?is-external=true" title="class or interface in org.springframework.security.core" class="externalLink">GrantedAuthority</a>&gt;&nbsp;resultCollection)</code></th>
@@ -157,14 +148,14 @@ extends <a href="https://docs.spring.io/spring-security/site/docs/current/api/or
 <div class="block">Map the authorities, adding them to the result.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="altColor" id="i2">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#unlockLockedUsers()">unlockLockedUsers</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Unlock any locked users whose lock period has expired.</div>
 </td>
 </tr>
-<tr class="altColor" id="i4">
+<tr class="rowColor" id="i3">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/Authentication.html?is-external=true" title="class or interface in org.springframework.security.core" class="externalLink">Authentication</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateAuthentication(org.springframework.security.core.context.SecurityContext)">updateAuthentication</a></span>&#8203;(<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/context/SecurityContext.html?is-external=true" title="class or interface in org.springframework.security.core.context" class="externalLink">SecurityContext</a>&nbsp;ctx)</code></th>
 <td class="colLast">
@@ -243,21 +234,6 @@ extends <a href="https://docs.spring.io/spring-security/site/docs/current/api/or
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>authority</code> - The overall authority to map.</dd>
 <dd><code>resultCollection</code> - Where to add the authorities.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="getTestAPI()">getTestAPI</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="../ForTestingOnly.html" title="annotation in uk.ac.manchester.spinnaker.alloc">@ForTestingOnly</a>
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html?is-external=true" title="class or interface in java.lang" class="externalLink">@Deprecated</a>
-</span><span class="returnType"><a href="LocalAuthenticationProvider.html" title="type parameter in LocalAuthenticationProvider">TestAPI</a></span>&nbsp;<span class="memberName">getTestAPI</span>()</div>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span>
-<div class="deprecationComment">This interface is just for testing.</div>
-</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The test interface.</dd>
 </dl>
 </section>
 </li>

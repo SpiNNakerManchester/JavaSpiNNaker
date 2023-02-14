@@ -67,7 +67,19 @@ loadScripts(document, 'script');</script>
 <section class="packageDescription"><a id="package.description">
 <!--   -->
 </a>
-<div class="block">The core allocation system.</div>
+<div class="block">The core allocation system.
+ <p>
+ There are two key classes in this package, <a href="Spalloc.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator"><code>Spalloc</code></a> and
+ <a href="AllocatorTask.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator"><code>AllocatorTask</code></a>. <code>Spalloc</code> provides the main model
+ implementations of <a href="SpallocAPI.Machine.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator"><code>SpallocAPI.Machine</code></a> and <a href="SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator"><code>SpallocAPI.Job</code></a>;
+ when a job is submitted, it is responsible for assigning the job to a machine
+ and asking the allocator to choose which boards. The allocator
+ (<code>AllocatorTask</code>) runs periodically and will choose which boards are
+ assigned to a job, as well as checking for whether a job has exceeded its
+ keep-alive time limit.
+ <p>
+ Actual control over individual boards is done in the
+ <a href="../bmp/BMPController.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp"><code>BMPController</code></a>.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
