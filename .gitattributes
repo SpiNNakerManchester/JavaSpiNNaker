@@ -1,3 +1,4 @@
+* text
 *.sql linguist-language=SQL linguist-detectable
 *.cff linguist-language=YAML
 *.json linguist-detectable
@@ -5,8 +6,12 @@
 *.yml linguist-detectable
 *.cfg linguist-language=INI linguist-detectable
 *.properties linguist-language=Java-Properties linguist-detectable
-*.bin -linguist-generated
-*.boot -linguist-generated
-*.aplx -linguist-generated
+*.bin binary -linguist-generated
+*.boot binary -linguist-generated
+*.aplx binary -linguist-generated
 *.fig linguist-documentation
 SpiNNaker-py2json/src/main/python/enum.py linguist-vendored
+*.bit binary -linguist-generated
+*.png binary
+*.jpg binary
+*/package-list linguist-generated
