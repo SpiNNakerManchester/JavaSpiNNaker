@@ -138,6 +138,7 @@ public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 	 *            The location of the target chip on the board.
 	 * @throws IOException
 	 *             If anything goes wrong with socket manipulation.
+	 * @hidden
 	 */
 	protected SCPConnection(HasChipLocation chip) throws IOException {
 		super(chip, true);

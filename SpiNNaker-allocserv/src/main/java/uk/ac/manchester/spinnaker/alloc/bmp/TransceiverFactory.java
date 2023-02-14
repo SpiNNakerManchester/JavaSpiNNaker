@@ -231,7 +231,11 @@ public class TransceiverFactory
 		}
 	}
 
-	/** Not a public API! Operations for testing only. */
+	/**
+	 * Not a public API! Operations for testing only.
+	 *
+	 * @hidden
+	 */
 	@ForTestingOnly
 	public interface TestAPI {
 		/** @return The current blacklist. */
@@ -246,6 +250,8 @@ public class TransceiverFactory
 		/**
 		 * Not a public API! A factory for transceivers. Use to install a
 		 * suitable mock.
+		 *
+		 * @hidden
 		 */
 		interface TestTransceiverFactory {
 			/**
@@ -267,8 +273,10 @@ public class TransceiverFactory
 
 	/**
 	 * Not a public API! Do not call outside of test code!
+	 *
 	 * @return The test interface.
 	 * @deprecated This interface is just for testing.
+	 * @hidden
 	 */
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",

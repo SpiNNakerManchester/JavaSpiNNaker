@@ -81,6 +81,7 @@ public @interface UDPPort {
 	 * Group of constraints. Required by validation spec.
 	 *
 	 * @return Constraint groups, if any
+	 * @hidden
 	 */
 	Class<?>[] groups() default {};
 
@@ -88,11 +89,14 @@ public @interface UDPPort {
 	 * Payload info. Required by validation spec.
 	 *
 	 * @return Payloads, if any.
+	 * @hidden
 	 */
 	Class<? extends Payload>[] payload() default {};
 
 	/**
 	 * Validator for {@link UDPPort} constraints. Not intended for direct use.
+	 *
+	 * @hidden
 	 */
 	class Validator implements ConstraintValidator<UDPPort, Integer> {
 		private static final int MAX_STD_PORT = 32767;
