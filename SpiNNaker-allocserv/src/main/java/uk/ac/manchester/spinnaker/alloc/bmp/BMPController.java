@@ -1086,6 +1086,26 @@ public class BMPController extends DatabaseAwareBean {
 		}
 	}
 
+	private final class TempRequest extends Request {
+		private final BMPCoords bmp;
+
+		private final BMPBoard board;
+
+		private int boardId;
+
+		private TempRequest(Machine machine, int boardId) {
+			super(machine);
+			bmp = new BMPCoords(boardId, boardId); // FIXME
+			board = new BMPBoard(boardId); // FIXME
+		}
+
+		@Override
+		public String toString() {
+			return "TempRequest(for=" + machine.getName() + ";bmp=" + bmp
+					+ ";board=" + board.board + ")";
+		}
+	}
+
 	/**
 	 * Copies out the requests for board power changes, marking them so that we
 	 * remember they are being worked on.
