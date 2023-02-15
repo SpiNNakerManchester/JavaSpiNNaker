@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * The web interface to the service. Connected quite deeply with both Apache CXF
- * and Spring MVC.
+ * The user-facing web interface to the new spalloc service. Connected quite
+ * deeply with both Apache CXF and Spring MVC.
  */
 package uk.ac.manchester.spinnaker.alloc.web;

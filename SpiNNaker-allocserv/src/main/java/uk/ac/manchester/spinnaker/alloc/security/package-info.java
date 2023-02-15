@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 /**
- * Application security services. Connected very deeply with Spring Security.
+ * Application security services for new Spalloc. Connected very deeply with
+ * Spring Security.
  */
 package uk.ac.manchester.spinnaker.alloc.security;

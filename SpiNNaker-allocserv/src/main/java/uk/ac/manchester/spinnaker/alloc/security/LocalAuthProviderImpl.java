@@ -1201,6 +1201,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	/**
 	 * @return The test interface.
 	 * @deprecated This interface is just for testing.
+	 * @hidden
 	 */
 	@Override
 	@ForTestingOnly
