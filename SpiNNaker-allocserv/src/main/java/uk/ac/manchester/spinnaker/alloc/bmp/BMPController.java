@@ -1626,6 +1626,8 @@ public class BMPController extends DatabaseAwareBean {
 
 	/**
 	 * The testing interface.
+	 *
+	 * @hidden
 	 */
 	@ForTestingOnly
 	public interface TestAPI {
@@ -1653,6 +1655,7 @@ public class BMPController extends DatabaseAwareBean {
 	/**
 	 * @return The test interface.
 	 * @deprecated This interface is just for testing.
+	 * @hidden
 	 */
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",

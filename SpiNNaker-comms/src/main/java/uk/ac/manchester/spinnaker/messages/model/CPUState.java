@@ -55,6 +55,7 @@ public enum CPUState {
 	 *
 	 * @deprecated Should be unused. Might be changed to another meaning by a
 	 *             future version of SCAMP.
+	 * @hidden
 	 */
 	@Deprecated(forRemoval = true)
 	CPU_STATE_12,
@@ -63,6 +64,7 @@ public enum CPUState {
 	 *
 	 * @deprecated Should be unused. Might be changed to another meaning by a
 	 *             future version of SCAMP.
+	 * @hidden
 	 */
 	@Deprecated(forRemoval = true)
 	CPU_STATE_13,
@@ -71,6 +73,7 @@ public enum CPUState {
 	 *
 	 * @deprecated Should be unused. Might be changed to another meaning by a
 	 *             future version of SCAMP.
+	 * @hidden
 	 */
 	@Deprecated(forRemoval = true)
 	CPU_STATE_14,

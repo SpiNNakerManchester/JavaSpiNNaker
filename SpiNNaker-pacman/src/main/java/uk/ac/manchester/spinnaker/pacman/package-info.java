@@ -15,5 +15,7 @@
  */
 /**
  * Implementation of the Partitioning and Configuration Manager (PACMAN).
+ * @hidden
  */
+@java.lang.Deprecated
 package uk.ac.manchester.spinnaker.pacman;

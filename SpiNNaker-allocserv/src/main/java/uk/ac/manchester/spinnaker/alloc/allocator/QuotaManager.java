@@ -253,7 +253,11 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 	}
 
-	/** Operations for testing only. */
+	/**
+	 * Operations for testing only.
+	 *
+	 * @hidden
+	 */
 	@ForTestingOnly
 	interface TestAPI {
 		/**
@@ -268,6 +272,7 @@ public class QuotaManager extends DatabaseAwareBean {
 	/**
 	 * @return The test interface.
 	 * @deprecated This interface is just for testing.
+	 * @hidden
 	 */
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",

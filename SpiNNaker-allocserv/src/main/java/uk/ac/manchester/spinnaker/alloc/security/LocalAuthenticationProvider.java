@@ -85,6 +85,7 @@ public interface LocalAuthenticationProvider<TestAPI>
 	/**
 	 * @return The test interface.
 	 * @deprecated This interface is just for testing.
+	 * @hidden
 	 */
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",

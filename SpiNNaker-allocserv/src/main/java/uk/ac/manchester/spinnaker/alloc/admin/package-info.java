@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 /**
- * Administrative interfaces. Connected quite deeply with Spring MVC.
+ * Administrative interfaces for spalloc server. Connected quite deeply with
+ * Spring MVC.
  */
 package uk.ac.manchester.spinnaker.alloc.admin;

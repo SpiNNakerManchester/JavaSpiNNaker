@@ -88,6 +88,7 @@ public class BootConnection extends UDPConnection<BootMessage> {
 	 *
 	 * @throws IOException
 	 *             If anything goes wrong with socket manipulation.
+	 * @hidden
 	 */
 	protected BootConnection() throws IOException {
 		super(true);
