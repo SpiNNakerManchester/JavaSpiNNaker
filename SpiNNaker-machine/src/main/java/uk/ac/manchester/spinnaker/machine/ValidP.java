@@ -56,6 +56,7 @@ public @interface ValidP {
 	 * Group of constraints. Required by validation spec.
 	 *
 	 * @return Constraint groups, if any
+	 * @hidden
 	 */
 	Class<?>[] groups() default {};
 
@@ -63,6 +64,7 @@ public @interface ValidP {
 	 * Payload info. Required by validation spec.
 	 *
 	 * @return Payloads, if any.
+	 * @hidden
 	 */
 	Class<? extends Payload>[] payload() default {};
 }

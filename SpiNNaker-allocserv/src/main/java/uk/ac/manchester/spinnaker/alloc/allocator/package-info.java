@@ -15,5 +15,17 @@
  */
 /**
  * The core allocation system.
+ * <p>
+ * There are two key classes in this package, {@link Spalloc} and
+ * {@link AllocatorTask}. {@code Spalloc} provides the main model
+ * implementations of {@link SpallocAPI.Machine} and {@link SpallocAPI.Job};
+ * when a job is submitted, it is responsible for assigning the job to a machine
+ * and asking the allocator to choose which boards. The allocator
+ * ({@code AllocatorTask}) runs periodically and will choose which boards are
+ * assigned to a job, as well as checking for whether a job has exceeded its
+ * keep-alive time limit.
+ * <p>
+ * Actual control over individual boards is done in the
+ * {@link uk.ac.manchester.spinnaker.alloc.bmp.BMPController BMPController}.
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;

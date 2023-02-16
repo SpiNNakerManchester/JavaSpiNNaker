@@ -72,6 +72,7 @@ public @interface IPAddress {
 	 * Group of constraints. Required by validation spec.
 	 *
 	 * @return Constraint groups, if any
+	 * @hidden
 	 */
 	Class<?>[] groups() default {};
 
@@ -79,11 +80,14 @@ public @interface IPAddress {
 	 * Payload info. Required by validation spec.
 	 *
 	 * @return Payloads, if any.
+	 * @hidden
 	 */
 	Class<? extends Payload>[] payload() default {};
 
 	/**
 	 * Validator for {@link IPAddress} constraints. Not intended for direct use.
+	 *
+	 * @hidden
 	 */
 	class Validator implements ConstraintValidator<IPAddress, String> {
 		private Pattern pattern;

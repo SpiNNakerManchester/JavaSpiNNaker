@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 The University of Manchester
+ * Copyright (c) 2021 The University of Manchester
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -253,7 +253,11 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 	}
 
-	/** Operations for testing only. */
+	/**
+	 * Operations for testing only.
+	 *
+	 * @hidden
+	 */
 	@ForTestingOnly
 	interface TestAPI {
 		/**
@@ -268,6 +272,7 @@ public class QuotaManager extends DatabaseAwareBean {
 	/**
 	 * @return The test interface.
 	 * @deprecated This interface is just for testing.
+	 * @hidden
 	 */
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",

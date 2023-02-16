@@ -819,7 +819,11 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		}
 	}
 
-	/** Operations for testing only. */
+	/**
+	 * Operations for testing only.
+	 *
+	 * @hidden
+	 */
 	@ForTestingOnly
 	interface TestAPI {
 		/**
@@ -839,6 +843,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 *            How to talk to the DB.
 	 * @return The test interface.
 	 * @deprecated This interface is just for testing.
+	 * @hidden
 	 */
 	@RestrictedApi(explanation = "just for testing", link = "index.html",
 			allowedOnPath = ".*/src/test/java/.*")
