@@ -128,33 +128,40 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="CommandLineInterface.DsFile.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.DsFile</a></span></code></th>
+<td class="colLast">
+<div class="block">Argument handler for the <code>&lt;dsFile&gt;</code> parameter.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="CommandLineInterface.GatherersParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.GatherersParam</a></span></code></th>
 <td class="colLast">
 <div class="block">Argument handler for the <code>&lt;gatherFile&gt;</code> parameter.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="CommandLineInterface.IobufMapParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.IobufMapParam</a></span></code></th>
 <td class="colLast">
 <div class="block">Argument handler for the <code>&lt;iobufMapFile&gt;</code> parameter.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a></span></code></th>
 <td class="colLast">
 <div class="block">Argument handler for the <code>&lt;machineFile&gt;</code> parameter.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="CommandLineInterface.PlacementsParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.PlacementsParam</a></span></code></th>
 <td class="colLast">
 <div class="block">Argument handler for the <code>&lt;placementFile&gt;</code> parameter.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="CommandLineInterface.RunFolder.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.RunFolder</a></span></code></th>
 <td class="colLast">
@@ -223,8 +230,9 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="altColor" id="i4">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runDSEForAppCoresUploadingViaMonitorStreaming(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.GatherersParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.RunFolder,java.util.Optional)">runDSEForAppCoresUploadingViaMonitorStreaming</a></span>&#8203;(<a href="CommandLineInterface.GatherersParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.GatherersParam</a>&nbsp;gatherers,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runDSEForAppCoresUploadingViaMonitorStreaming(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.GatherersParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.DsFile,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.RunFolder,java.util.Optional)">runDSEForAppCoresUploadingViaMonitorStreaming</a></span>&#8203;(<a href="CommandLineInterface.GatherersParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.GatherersParam</a>&nbsp;gatherers,
 <a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
+<a href="CommandLineInterface.DsFile.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.DsFile</a>&nbsp;dsFile,
 <a href="CommandLineInterface.RunFolder.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.RunFolder</a>&nbsp;runFolder,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&gt;&nbsp;reportFolder)</code></th>
 <td class="colLast">
@@ -233,7 +241,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor" id="i5">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runDSEUploadingViaClassicTransfer(uk.ac.manchester.spinnaker.machine.Machine,java.io.File,java.lang.Boolean)">runDSEUploadingViaClassicTransfer</a></span>&#8203;(uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runDSEUploadingViaClassicTransfer(uk.ac.manchester.spinnaker.machine.Machine,java.io.File,java.io.File,java.lang.Boolean)">runDSEUploadingViaClassicTransfer</a></span>&#8203;(uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;dsFile,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;runFolder,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a>&nbsp;filterSystemCores)</code></th>
 <td class="colLast">
@@ -276,8 +285,9 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="runDSEUploadingViaClassicTransfer(uk.ac.manchester.spinnaker.machine.Machine,java.io.File,java.lang.Boolean)">runDSEUploadingViaClassicTransfer</a></h3>
+<h3><a id="runDSEUploadingViaClassicTransfer(uk.ac.manchester.spinnaker.machine.Machine,java.io.File,java.io.File,java.lang.Boolean)">runDSEUploadingViaClassicTransfer</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">runDSEUploadingViaClassicTransfer</span>&#8203;(<span class="arguments">uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;dsFile,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;runFolder,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a>&nbsp;filterSystemCores)</span>
                                        throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -290,9 +300,9 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="block">Run the data specifications in parallel.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>machine</code> - Description of overall machine.</dd>
-<dd><code>runFolder</code> - Directory containing per-run information (i.e., the database
-            that holds the data specifications to execute).</dd>
+<dd><code>machine</code> - Description of overall machine</dd>
+<dd><code>dsFile</code> - Path to the dataspec database</dd>
+<dd><code>runFolder</code> - Directory containing per-run information.</dd>
 <dd><code>filterSystemCores</code> - If <code>true</code>, only run the DSE for application vertices. If
             <code>false</code>, only run the DSE for system vertices. If
             <code>null</code>, run the DSE for all vertices.</dd>
@@ -309,9 +319,10 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="runDSEForAppCoresUploadingViaMonitorStreaming(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.GatherersParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.RunFolder,java.util.Optional)">runDSEForAppCoresUploadingViaMonitorStreaming</a></h3>
+<h3><a id="runDSEForAppCoresUploadingViaMonitorStreaming(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.GatherersParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.DsFile,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.RunFolder,java.util.Optional)">runDSEForAppCoresUploadingViaMonitorStreaming</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">runDSEForAppCoresUploadingViaMonitorStreaming</span>&#8203;(<span class="arguments"><a href="CommandLineInterface.GatherersParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.GatherersParam</a>&nbsp;gatherers,
 <a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
+<a href="CommandLineInterface.DsFile.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.DsFile</a>&nbsp;dsFile,
 <a href="CommandLineInterface.RunFolder.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.RunFolder</a>&nbsp;runFolder,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&gt;&nbsp;reportFolder)</span>
                                                    throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -326,8 +337,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>gatherers</code> - List of descriptions of gatherers.</dd>
 <dd><code>machine</code> - Description of overall machine.</dd>
-<dd><code>runFolder</code> - Directory containing per-run information (i.e., the database
-            that holds the data specifications to execute).</dd>
+<dd><code>dsFile</code> - Path to the dataspec database</dd>
+<dd><code>runFolder</code> - Directory containing per-run information.</dd>
 <dd><code>reportFolder</code> - Directory containing reports. If <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true#empty()" title="class or interface in java.util" class="externalLink"><code>Optional.empty()</code></a>, no
             report will be written.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
