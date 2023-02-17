@@ -118,6 +118,7 @@ public enum SCPCommand implements CommandCode {
 	 * Test feature control. BMP-only operation.
 	 *
 	 * @deprecated Not implemented by current BMP.
+	 * @hidden
 	 */
 	@Deprecated(forRemoval = true)
 	CMD_BMP_TEST(63),
@@ -125,6 +126,7 @@ public enum SCPCommand implements CommandCode {
 	 * Tube output. Special.
 	 *
 	 * @deprecated For tubotron use only.
+	 * @hidden
 	 */
 	@Deprecated(forRemoval = true)
 	CMD_TUBE(64);

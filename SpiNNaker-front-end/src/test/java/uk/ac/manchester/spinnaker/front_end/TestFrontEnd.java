@@ -124,6 +124,7 @@ class TestFrontEnd {
 	@SuppressWarnings("MustBeClosed")
 	void testSimpleDSE(String cmd) throws Exception {
 		var machineFile = getClass().getResource("/machine.json").getFile();
+		var dsFile = getClass().getResource("/ds.sqlite3").getFile();
 		var runFolder = "target/test/SimpleDSE";
 		new File(runFolder).mkdirs();
 
@@ -158,11 +159,11 @@ class TestFrontEnd {
 			});
 
 			tapSystemErrNormalized(() -> {
-				runMainExpecting(2, cmd, machineFile, runFolder, "gorp");
+				runMainExpecting(2, cmd, machineFile, dsFile, runFolder, "gorp");
 			});
 
 			assertEquals("none", called.getValue());
-			runMainExpecting(0, cmd, machineFile, runFolder);
+			runMainExpecting(0, cmd, machineFile, dsFile, runFolder);
 			assertEquals(cmd, called.getValue());
 		} finally {
 			CommandLineInterface.hostFactory = saved;
@@ -175,6 +176,7 @@ class TestFrontEnd {
 		var cls = getClass();
 		var gatherFile = cls.getResource("/gather.json").getFile();
 		var machineFile = cls.getResource("/machine.json").getFile();
+		var dsFile = getClass().getResource("/ds.sqlite3").getFile();
 		var runFolder = "target/test/AdvancedDSE";
 		new File(runFolder).mkdirs();
 
@@ -202,7 +204,7 @@ class TestFrontEnd {
 
 			assertEquals("none", called.getValue());
 			runMainExpecting(0, "dse_app_mon", gatherFile, machineFile,
-					runFolder);
+					 dsFile, runFolder);
 			assertEquals("mon", called.getValue());
 		} finally {
 			CommandLineInterface.fastFactory = saved;

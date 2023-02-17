@@ -28,7 +28,7 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
  * <p>
  * Calls {@code cmd_write()} in {@code bmp_cmd.c}.
  */
-public final class WriteBMPMemory extends BMPRequest<BMPRequest.BMPResponse> {
+public class BMPWriteMemory extends BMPRequest<BMPRequest.BMPResponse> {
 	/**
 	 * @param board
 	 *            the board with the BMP to write the memory of
@@ -40,9 +40,9 @@ public final class WriteBMPMemory extends BMPRequest<BMPRequest.BMPResponse> {
 	 *            must extend up to the <i>limit</i>. The position and limit of
 	 *            the buffer will not be updated by this constructor.
 	 */
-	public WriteBMPMemory(BMPBoard board, MemoryLocation baseAddress,
+	public BMPWriteMemory(BMPBoard board, MemoryLocation baseAddress,
 			ByteBuffer data) {
-		super(board, CMD_WRITE, baseAddress.address(), data.remaining(),
+		super(board, CMD_WRITE, baseAddress.address, data.remaining(),
 				efficientTransferUnit(baseAddress, data.remaining()).value,
 				data);
 	}

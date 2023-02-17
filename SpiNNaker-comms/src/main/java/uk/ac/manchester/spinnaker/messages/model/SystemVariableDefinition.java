@@ -109,7 +109,11 @@ public enum SystemVariableDefinition {
 	led_0(INT, 0x30, 0x1),
 	/** The last part of the LED definitions. */
 	led_1(INT, 0x34),
-	/** A word of padding. */
+	/**
+	 * A word of padding.
+	 *
+	 * @hidden
+	 */
 	@Deprecated(forRemoval = true)
 	padding_1(INT, 0x38),
 	/** The random seed. */
@@ -122,7 +126,11 @@ public enum SystemVariableDefinition {
 	nearest_neighbour_delay_us(BYTE, 0x42, 20),
 	/** The number of watch dog timeouts before an error is raised. */
 	software_watchdog_count(BYTE, 0x43),
-	/** A word of padding. */
+	/**
+	 * A word of padding.
+	 *
+	 * @hidden
+	 */
 	@Deprecated(forRemoval = true)
 	padding_2(INT, 0x44),
 	/** The base address of the system SDRAM heap. */
@@ -186,7 +194,11 @@ public enum SystemVariableDefinition {
 	n_working_cores(BYTE, 0xbc),
 	/** The number of SCAMP working cores. */
 	n_scamp_working_cores(BYTE, 0xbd),
-	/** A short of padding. */
+	/**
+	 * A short of padding.
+	 *
+	 * @hidden
+	 */
 	@Deprecated(forRemoval = true)
 	padding_3(SHORT, 0xbe),
 	/** The base address of SDRAM. */
@@ -226,7 +238,11 @@ public enum SystemVariableDefinition {
 	fixed_route_copy(INT, 0xf4),
 	/** A pointer to the board information structure. */
 	board_info(ADDRESS, 0xf8),
-	/** A word of padding. */
+	/**
+	 * A word of padding.
+	 *
+	 * @hidden
+	 */
 	@Deprecated(forRemoval = true)
 	padding_4(INT, 0xfc);
 

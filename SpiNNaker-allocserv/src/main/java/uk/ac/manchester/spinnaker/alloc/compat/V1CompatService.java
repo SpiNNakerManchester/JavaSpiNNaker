@@ -242,7 +242,11 @@ public class V1CompatService {
 		return !interrupted();
 	}
 
-	/** Not a public API! Operations for testing only. */
+	/**
+	 * Not a public API! Operations for testing only.
+	 *
+	 * @hidden
+	 */
 	@ForTestingOnly
 	public interface TestAPI {
 		/**
@@ -267,6 +271,7 @@ public class V1CompatService {
 	 *
 	 * @return Test interface.
 	 * @deprecated Only for testing.
+	 * @hidden
 	 */
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",

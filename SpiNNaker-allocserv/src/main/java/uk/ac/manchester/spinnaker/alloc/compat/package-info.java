@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 /**
- * Spalloc v1 compatibility interface.
+ * Spalloc v1 compatibility interface. Allows the new Spalloc service to emulate
+ * the old service; the main implementation is in the {@link V1CompatService}
+ * class.
  */
 package uk.ac.manchester.spinnaker.alloc.compat;
