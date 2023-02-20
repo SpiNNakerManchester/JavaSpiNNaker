@@ -76,7 +76,7 @@ public class BootConnection extends UDPConnection<BootMessage> {
 	 *             If anything goes wrong with socket manipulation.
 	 * @hidden
 	 */
-	protected BootConnection(InetAddress remoteHost, Integer remotePort)
+	public BootConnection(InetAddress remoteHost, Integer remotePort)
 			throws IOException {
 		super(remoteHost, remotePort == null
 				? UDP_BOOT_CONNECTION_DEFAULT_PORT : remotePort);

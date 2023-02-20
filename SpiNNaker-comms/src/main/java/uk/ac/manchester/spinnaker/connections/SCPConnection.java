@@ -153,7 +153,7 @@ public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 	 *             If anything goes wrong with socket manipulation.
 	 * @hidden
 	 */
-	protected SCPConnection(HasChipLocation chip, InetAddress remoteHost)
+	public SCPConnection(HasChipLocation chip, InetAddress remoteHost)
 			throws IOException {
 		super(chip, remoteHost, SCP_SCAMP_PORT);
 	}
