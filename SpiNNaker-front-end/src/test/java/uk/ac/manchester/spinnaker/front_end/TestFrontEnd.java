@@ -159,7 +159,8 @@ class TestFrontEnd {
 			});
 
 			tapSystemErrNormalized(() -> {
-				runMainExpecting(2, cmd, machineFile, dsFile, runFolder, "gorp");
+				runMainExpecting(2, cmd, machineFile, dsFile, runFolder,
+						"gorp");
 			});
 
 			assertEquals("none", called.getValue());
@@ -203,8 +204,8 @@ class TestFrontEnd {
 					"<runFolder>", "[<reportFolder>]");
 
 			assertEquals("none", called.getValue());
-			runMainExpecting(0, "dse_app_mon", gatherFile, machineFile,
-					 dsFile, runFolder);
+			runMainExpecting(0, "dse_app_mon", gatherFile, machineFile, dsFile,
+					runFolder);
 			assertEquals("mon", called.getValue());
 		} finally {
 			CommandLineInterface.fastFactory = saved;
