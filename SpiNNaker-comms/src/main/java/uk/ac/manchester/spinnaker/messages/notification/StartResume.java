@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2022 The University of Manchester
+ * Copyright (c) 2018 The University of Manchester
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import static uk.ac.manchester.spinnaker.messages.notification.NotificationMessa
 import java.nio.ByteBuffer;
 
 /**
- * Packet which indicates that the toolchain has started or resumed.
+ * Message which indicates that the toolchain has started or resumed.
  */
 public class StartResume extends AbstractNotificationMessage {
 	/** Create an instance. */

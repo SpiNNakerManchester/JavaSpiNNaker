@@ -26,7 +26,7 @@ import java.net.InetAddress;
 
 import uk.ac.manchester.spinnaker.messages.boot.BootMessage;
 
-/** A connection to the SpiNNaker board that uses UDP to for booting. */
+/** A connection to the SpiNNaker board that uses UDP for booting. */
 public class BootConnection extends UDPConnection<BootMessage> {
 	// Determined by Ethernet MTU, not by SDP buffer size
 	private static final int BOOT_MESSAGE_SIZE = 1500;
@@ -74,6 +74,7 @@ public class BootConnection extends UDPConnection<BootMessage> {
 	 *
 	 * @throws IOException
 	 *             If anything goes wrong with socket manipulation.
+	 * @hidden
 	 */
 	protected BootConnection(InetAddress remoteHost, Integer remotePort)
 			throws IOException {

@@ -15,11 +15,20 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
+import static java.net.InetAddress.getByName;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
+import uk.ac.manchester.spinnaker.connections.BootConnection;
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
+import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.JobDestroyedException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocStateChangeTimeoutException;
@@ -27,6 +36,9 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 import uk.ac.manchester.spinnaker.spalloc.messages.State;
+import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /** The interface supported by a {@linkplain SpallocJob spalloc job}. */
 public interface SpallocJobAPI {
@@ -159,6 +171,53 @@ public interface SpallocJobAPI {
 	 */
 	List<Connection> getConnections() throws IOException,
 			SpallocServerException, IllegalStateException, InterruptedException;
+
+	/**
+	 * Construct a transceiver for talking to this job.
+	 *
+	 * @return A transceiver (or {@code null} if the job is in a state where it
+	 *         can't be talked to at the moment). Uses direct connections. Will
+	 *         be able to boot the allocated boards and talk SCP to them. BMP
+	 *         access will be disabled.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
+	 * @throws IllegalStateException
+	 *             If the spalloc job is not Ready.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
+	 * @throws SpinnmanException
+	 *             If the transceiver creation itself fails.
+	 */
+	@MustBeClosed
+	default TransceiverInterface getTransceiver()
+			throws IOException, SpallocServerException, IllegalStateException,
+			InterruptedException, SpinnmanException {
+		var ver = MachineVersion.bySize(getDimensions());
+		var connInfo = getConnections();
+		if (connInfo == null) {
+			return null;
+		}
+		String bootHost = null;
+		for (var c : connInfo) {
+			if (c.getChip().equals(ZERO_ZERO)) {
+				bootHost = c.getHostname();
+			}
+		}
+		if (bootHost == null) {
+			return null;
+		}
+		var connections = new ArrayList<
+				uk.ac.manchester.spinnaker.connections.model.Connection>();
+		connections.add(new BootConnection(getByName(bootHost), null));
+		for (var c : connInfo) {
+			connections.add(
+					new SCPConnection(c.getChip(), getByName(c.getHostname())));
+		}
+
+		return new Transceiver(ver, connections);
+	}
 
 	/**
 	 * @return The name of the host that is the root chip of the whole

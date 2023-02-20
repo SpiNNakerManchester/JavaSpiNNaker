@@ -24,7 +24,8 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType;
 
 /**
- * Perform a reset of the FPGAs. There is no response payload.
+ * A request to perform a reset of the FPGAs managed by a BMP. There is no
+ * response payload.
  * <p>
  * Calls {@code fpga_reset()} in {@code bmp_hw.c}.
  */

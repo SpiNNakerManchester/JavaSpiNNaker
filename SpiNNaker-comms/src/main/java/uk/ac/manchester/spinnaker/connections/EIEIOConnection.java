@@ -53,6 +53,8 @@ public class EIEIOConnection
 	/**
 	 * Create an EIEIO connection where the mechanism for the sending and
 	 * listening is implemented by a subclass.
+	 *
+	 * @hidden
 	 */
 	protected EIEIOConnection() {
 		super(null, null);

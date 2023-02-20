@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 /**
- * Model classes.
+ * Miscellaneous model classes for spalloc. Note that many of these are used to
+ * drive the creation of Spring MVC-based pages, and so need to be Java Beans.
  */
 package uk.ac.manchester.spinnaker.alloc.model;

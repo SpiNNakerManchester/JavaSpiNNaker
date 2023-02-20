@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2022 The University of Manchester
+ * Copyright (c) 2018 The University of Manchester
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP request to get the CRC of serial flash memory from a BMP. The response
+ * A request to get the CRC of serial flash memory from a BMP. The response
  * payload is the 32-bit CRC of the given region of flash.
  * <p>
  * Calls {@code sf_crc32()} in {@code bmp_ssp.c}.

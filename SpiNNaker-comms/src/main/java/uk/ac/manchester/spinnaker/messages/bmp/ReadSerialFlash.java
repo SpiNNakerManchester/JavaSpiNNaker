@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2022 The University of Manchester
+ * Copyright (c) 2018 The University of Manchester
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,8 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP request to read a region of serial flash from a BMP. The response
- * payload is a read-only little-endian {@link ByteBuffer} intended to be read
- * once.
+ * A request to read a region of serial flash from a BMP. The response payload
+ * is a read-only little-endian {@link ByteBuffer} intended to be read once.
  * <p>
  * Calls {@code sf_read()} in {@code bmp_ssp.c}.
  */

@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 /**
- * The BMP control subsystem.
+ * The BMP control subsystem. This (mainly {@link BMPController} is responsible
+ * for booting boards and obtaining system information about them (such as the
+ * serial version number). It is the <em>only</em> part of the server which
+ * talks to any BMP; it takes great care to ensure that only one task is ever
+ * given to one BMP at a time.
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;

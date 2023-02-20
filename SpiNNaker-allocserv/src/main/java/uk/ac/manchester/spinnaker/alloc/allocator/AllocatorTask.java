@@ -1097,7 +1097,11 @@ public class AllocatorTask extends DatabaseAwareBean
 		return numPending > 0;
 	}
 
-	/** Operations for testing only. */
+	/**
+	 * Operations for testing only.
+	 *
+	 * @hidden
+	 */
 	@ForTestingOnly
 	interface TestAPI {
 		/**
@@ -1144,6 +1148,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	 *            The DB connection
 	 * @return The test interface.
 	 * @deprecated This interface is just for testing.
+	 * @hidden
 	 */
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",
