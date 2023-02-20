@@ -20,7 +20,7 @@ limitations under the License.
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.ac.manchester.spinnaker</groupId>
 	<artifactId>SpiNNaker</artifactId>
-	<version>6.0.1-SNAPSHOT</version>
+	<version>7.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -32,7 +32,7 @@ limitations under the License.
 		<!-- What does the CheckForFIXME profile look for? -->
 		<forbidden.keywords.re>FIXME|Auto-generated method stub</forbidden.keywords.re>
 
-		<spinnaker.version>6.0.1-SNAPSHOT</spinnaker.version>
+		<spinnaker.version>7.0.0-SNAPSHOT</spinnaker.version>
 
 		<junit.version>5.9.2</junit.version>
 		<checkstyle.version>10.3.3</checkstyle.version>
