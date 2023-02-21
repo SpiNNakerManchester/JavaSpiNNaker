@@ -230,10 +230,10 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 		private final String query;
 
-		private final List<Object> values;
+		private final Object[] values;
 
 		private PreparedStatementCreatorImpl(String query,
-				List<Object> values) {
+				Object[] values) {
 			this.query = query;
 			this.values = values;
 		}
@@ -243,8 +243,8 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 				java.sql.Connection con) throws SQLException {
 			var stmt = con.prepareStatement(query,
 					Statement.RETURN_GENERATED_KEYS);
-			for (int i = 0; i < values.size(); i++) {
-				stmt.setObject(i + 1, values.get(i));
+			for (int i = 0; i < values.length; i++) {
+				stmt.setObject(i + 1, values[i]);
 			}
 			return stmt;
 		}
@@ -269,26 +269,26 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 		@Override
 		public <T> List<T> call(RowMapper<T> mapper, Object... arguments) {
-			List<Object> resolved = resolveArguments(arguments);
+			var resolved = resolveArguments(arguments);
 			return queryJdbcTemplate.query(sql, (results) -> {
 				List<T> values = new ArrayList<T>();
 				while (results.next()) {
 					values.add(mapper.mapRow(new Row(results)));
 				}
 				return values;
-			}, resolved.toArray());
+			}, resolved);
 		}
 
 		@Override
 		public <T> Optional<T> call1(RowMapper<T> mapper, Object... arguments) {
-			List<Object> resolved = resolveArguments(arguments);
+			var resolved = resolveArguments(arguments);
 			return queryJdbcTemplate.query(sql, (results) -> {
 				if (results.next()) {
 					// Allow nullable if there is a value
 					return Optional.ofNullable(mapper.mapRow(new Row(results)));
 				}
 				return Optional.empty();
-			}, resolved.toArray());
+			}, resolved);
 		}
 	}
 
@@ -310,13 +310,13 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 		@Override
 		public int call(Object... arguments) {
-			List<Object> resolved = resolveArguments(arguments);
-			return updateJdbcTemplate.update(sql, resolved.toArray());
+			var resolved = resolveArguments(arguments);
+			return updateJdbcTemplate.update(sql, resolved);
 		}
 
 		@Override
 		public Optional<Integer> key(Object... arguments) {
-			List<Object> resolved = resolveArguments(arguments);
+			var resolved = resolveArguments(arguments);
 			KeyHolder keyHolder = new GeneratedKeyHolder();
 			var pss = new PreparedStatementCreatorImpl(sql, resolved);
 			updateJdbcTemplate.update(pss, keyHolder);
@@ -329,9 +329,10 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 	}
 
-	private List<Object> resolveArguments(Object[] arguments) {
-		List<Object> resolved = new ArrayList<Object>();
-		for (var arg : arguments) {
+	private Object[] resolveArguments(Object[] arguments) {
+		Object[] resolved = new Object[arguments.length];
+		for (int i = 0; i < arguments.length; i++) {
+			Object arg = arguments[i];
 			// The classes we augment the DB driver with
 			if (arg instanceof Optional) {
 				// Unpack one layer of Optional only; absent = NULL
@@ -353,7 +354,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 					arg = null;
 				}
 			}
-			resolved.add(arg);
+			resolved[i] = arg;
 		}
 		return resolved;
 	}
