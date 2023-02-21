@@ -400,8 +400,7 @@ CREATE TABLE IF NOT EXISTS blacklist_ops (
 	board_id INTEGER UNIQUE NOT NULL
 		CONSTRAINT "blacklist_ops.board_id -> boards.board_id"
 		REFERENCES boards(board_id) ON DELETE RESTRICT,
-	op INTEGER NOT NULL			-- What we plan to do (BlacklistOperations ID)
-		CONSTRAINT "blacklist_ops.op supported" CHECK (op IN (0, 1, 2)),
+	op INTEGER NOT NULL,		-- What we plan to do (NonBootOperations ID)
 	"data" BLOB,				-- The serialized blacklist info; JAVA format!
 	completed INTEGER NOT NULL DEFAULT (0)
 		CONSTRAINT "blacklist_ops.completed bool" CHECK (completed IN (0, 1)),
