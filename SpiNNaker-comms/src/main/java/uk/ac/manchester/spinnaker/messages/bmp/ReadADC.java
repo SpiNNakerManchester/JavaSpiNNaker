@@ -15,7 +15,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-import static uk.ac.manchester.spinnaker.messages.bmp.BMPInfo.ADC;
+import static uk.ac.manchester.spinnaker.messages.bmp.BMPInfo.BOARD_STATUS;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_INFO;
 
 import java.nio.ByteBuffer;
@@ -25,13 +25,17 @@ import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * A request for the ADC data from the BMP including voltages and temperature.
- * The response payload is the {@linkplain ADCInfo information structure} from
- * the hardware.
+ * A request for the board status data from the BMP including voltages,
+ * temperatures and fan speeds. The response payload is the {@linkplain ADCInfo
+ * board information structure} from the hardware.
  * <p>
  * Handled in {@code cmd_bmp_info()} (in {@code bmp_cmd.c}) by reading from the
  * right element of {@code board_stat}. The underlying data is synched from the
- * ADC approximately every 80ms by {@code read_adc()} in {@code bmp_hw.c}.
+ * ADC approximately every 80ms by {@code read_adc()} in {@code bmp_hw.c}, and
+ * from the on-board thermometers (LM75B chips) every second by
+ * {@code read_temp()} in {@code bmp_hw.c} (which calls {@code read_ts()} in
+ * {@code bmp_i2c.c}); fan speeds are monitored by counting rotations, under the
+ * assumption they significantly less than 60k rpm.
  */
 public class ReadADC extends BMPRequest<ReadADC.Response> {
 	/**
@@ -39,7 +43,7 @@ public class ReadADC extends BMPRequest<ReadADC.Response> {
 	 *            which board to request the ADC register from
 	 */
 	public ReadADC(BMPBoard board) {
-		super(board, CMD_BMP_INFO, ADC.value);
+		super(board, CMD_BMP_INFO, BOARD_STATUS.value);
 	}
 
 	@Override
