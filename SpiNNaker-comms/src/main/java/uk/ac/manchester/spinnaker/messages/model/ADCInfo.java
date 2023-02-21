@@ -15,9 +15,9 @@
  */
 package uk.ac.manchester.spinnaker.messages.model;
 
+import static java.lang.Short.toUnsignedInt;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_MISSING_FAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_MISSING_TEMP;
-import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TEMP_SCALE;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_V_SCALE_12;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_V_SCALE_2_5;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_V_SCALE_3_3;
@@ -38,19 +38,25 @@ public final class ADCInfo implements Serializable {
 	@SARKField("fan_1")
 	public final Double fan1;
 
-	/** temperature bottom. */
+	/** Temperature bottom, in &deg;C. */
 	@SARKField("temp_btm")
 	public final double tempBottom;
 
-	/** temperature external<sub>0</sub>. */
+	/**
+	 * Temperature external<sub>0</sub>, in &deg;C. Only meaningful when data
+	 * was obtained from a BMP that manages a frame.
+	 */
 	@SARKField("temp_ext_0")
 	public final Double tempExt0;
 
-	/** temperature external<sub>1</sub>. */
+	/**
+	 * Temperature external<sub>1</sub>, in &deg;C. Only meaningful when data
+	 * was obtained from a BMP that manages a frame.
+	 */
 	@SARKField("temp_ext_1")
 	public final Double tempExt1;
 
-	/** temperature top. */
+	/** Temperature top, in &deg;C. */
 	@SARKField("temp_top")
 	public final double tempTop;
 
@@ -127,12 +133,12 @@ public final class ADCInfo implements Serializable {
 		sb.get(tExt);
 		sb.get(fan);
 
-		voltage12c = adc[V_1_2C] * BMP_V_SCALE_2_5;
-		voltage12b = adc[V_1_2B] * BMP_V_SCALE_2_5;
-		voltage12a = adc[V_1_2A] * BMP_V_SCALE_2_5;
-		voltage18 = adc[V_1_8] * BMP_V_SCALE_2_5;
-		voltage33 = adc[V_3_3] * BMP_V_SCALE_3_3;
-		voltageSupply = adc[VS] * BMP_V_SCALE_12;
+		voltage12c = toUnsignedInt(adc[V_1_2C]) * BMP_V_SCALE_2_5;
+		voltage12b = toUnsignedInt(adc[V_1_2B]) * BMP_V_SCALE_2_5;
+		voltage12a = toUnsignedInt(adc[V_1_2A]) * BMP_V_SCALE_2_5;
+		voltage18 = toUnsignedInt(adc[V_1_8]) * BMP_V_SCALE_2_5;
+		voltage33 = toUnsignedInt(adc[V_3_3]) * BMP_V_SCALE_3_3;
+		voltageSupply = toUnsignedInt(adc[VS]) * BMP_V_SCALE_12;
 		tempTop = tempScale(tInt[T_TOP]);
 		tempBottom = tempScale(tInt[T_BTM]);
 		tempExt0 = tempScale(tExt[T_X0]);
@@ -141,17 +147,25 @@ public final class ADCInfo implements Serializable {
 		fan1 = fanScale(fan[FAN1]);
 	}
 
+	// Bottom 5 bits are meaningless
+	private static final int TEMP_MASK = 0b00011111;
+
+	// Upper byte is whole number of degrees C
+	private static final double TEMP_FACTOR = 256;
+
 	private static Double tempScale(int rawValue) {
 		if (rawValue == BMP_MISSING_TEMP) {
 			return null;
 		}
-		return rawValue * BMP_TEMP_SCALE;
+		// See https://www.nxp.com/docs/en/data-sheet/LM75B.pdf Sec 7.4.3
+		int masked = rawValue & ~TEMP_MASK;
+		return masked / TEMP_FACTOR;
 	}
 
-	private static Double fanScale(int rawValue) {
+	private static Double fanScale(short rawValue) {
 		if (rawValue == BMP_MISSING_FAN) {
 			return null;
 		}
-		return (double) rawValue;
+		return (double) toUnsignedInt(rawValue);
 	}
 }

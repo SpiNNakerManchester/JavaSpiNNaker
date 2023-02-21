@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("ClassCanBeStatic")
 class TestADCInfo {
-	private static final int SIZE = 80;
+	private static final int SIZE = 48;
 
 	@Test
 	void zeroSer() throws IOException, ClassNotFoundException {
