@@ -67,6 +67,7 @@ import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
 import uk.ac.manchester.spinnaker.alloc.model.MachineTagging;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
+import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
@@ -730,6 +731,26 @@ public class MachineStateControl extends DatabaseAwareBean {
 		}
 		// Can now read out of the DB normally
 		return findId(board.id).map(b -> b.bmpSerial).orElse(null);
+	}
+
+	/**
+	 * Given a board, read its temperature data off the machine.
+	 *
+	 * @param board
+	 *            Which board to read the temperature data of.
+	 * @return The board's temperature data.
+	 * @throws DataAccessException
+	 *             If access to the DB fails.
+	 * @throws BlacklistException
+	 *             If the read fails.
+	 * @throws InterruptedException
+	 *             If interrupted.
+	 */
+	public Optional<ADCInfo> readTemperatureFromMachine(BoardState board)
+			throws InterruptedException {
+		try (var op = new Op(CREATE_TEMP_READ_REQ, board.id)) {
+			return op.getResult(serial("data", ADCInfo.class));
+		}
 	}
 
 	/**
