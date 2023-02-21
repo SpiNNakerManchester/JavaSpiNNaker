@@ -1142,6 +1142,18 @@ class DQLTest extends MemDBTestBase {
 	}
 
 	@Test
+	void getTempInfoReqs() {
+		try (var q = c.query(GET_TEMP_INFO_REQS)) {
+			assertEquals(1, q.getNumArguments());
+			assertEquals(Set.of("board_id", "board_num", "cabinet", "frame",
+					"op_id", "bmp_serial_id"), q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE).isPresent());
+			});
+		}
+	}
+
+	@Test
 	void getCompletedBlacklistOp() {
 		try (var q = c.query(GET_COMPLETED_BLACKLIST_OP)) {
 			assertEquals(1, q.getNumArguments());

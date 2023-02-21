@@ -1976,7 +1976,6 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("cabinet")
 	@ResultColumn("frame")
-	// FIXME test
 	protected static final String GET_TEMP_INFO_REQS =
 			"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, "
 					+ "cabinet, frame FROM blacklist_ops "
@@ -2112,7 +2111,6 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("board_id")
 	@GeneratesID
-	// FIXME test
 	protected static final String CREATE_TEMP_READ_REQ =
 			"INSERT INTO blacklist_ops(board_id, op, completed) "
 					+ "VALUES(:board_id, 3, 0)";

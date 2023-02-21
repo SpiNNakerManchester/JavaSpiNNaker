@@ -806,6 +806,17 @@ class DMLTest extends MemDBTestBase {
 	}
 
 	@Test
+	void createTempReadReq() {
+		assumeWritable(c);
+		try (var u = c.update(CREATE_TEMP_READ_REQ)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				assertThrowsFK(() -> u.call(NO_BOARD));
+			});
+		}
+	}
+
+	@Test
 	void deleteBlacklistOp() {
 		assumeWritable(c);
 		try (var u = c.update(DELETE_BLACKLIST_OP)) {
