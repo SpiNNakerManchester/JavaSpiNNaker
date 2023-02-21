@@ -22,6 +22,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_READER;
+import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.error;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.errorMessage;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.uri;
@@ -289,7 +290,7 @@ public class SystemControllerImpl implements SystemController {
 	}
 
 	@Override
-	@PreAuthorize(IS_READER)
+	@PreAuthorize(MAY_SEE_JOB_DETAILS)
 	@Action("deleting job")
 	public ModelAndView destroyJob(int id, String reason) {
 		var permit = new Permit(getContext());
