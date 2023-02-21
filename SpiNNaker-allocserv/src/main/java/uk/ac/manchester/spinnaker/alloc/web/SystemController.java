@@ -16,6 +16,7 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_READER;
+import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
 
 import java.security.Principal;
 
@@ -126,7 +127,7 @@ public interface SystemController {
 	 *         {@link JobDescription})
 	 */
 	@PostMapping("/delete_job/{id}")
-	@PreAuthorize(IS_READER)
+	@PreAuthorize(MAY_SEE_JOB_DETAILS)
 	@UsedInJavadocOnly(JobDescription.class)
 	ModelAndView destroyJob(@PathVariable("id") int id,
 			@RequestParam("reason") String reason);
