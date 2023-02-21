@@ -22,11 +22,14 @@ import static uk.ac.manchester.spinnaker.messages.Constants.BMP_V_SCALE_12;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_V_SCALE_2_5;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_V_SCALE_3_3;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 
-/** Container for the ADC data thats been retrieved from an FPGA. */
+/** Container for the ADC data thats been retrieved from a BMP. */
 @SARKStruct(value = "board_stat_t", api = SARKStruct.API.BMP)
-public final class ADCInfo {
+public final class ADCInfo implements Serializable {
+	private static final long serialVersionUID = 8245655123474028462L;
+
 	/** fan<sub>0</sub> rotation rate. */
 	@SARKField("fan_0")
 	public final Double fan0;

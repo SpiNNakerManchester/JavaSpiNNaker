@@ -26,9 +26,9 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.slf4j.MDC.putCloseable;
-import static uk.ac.manchester.spinnaker.alloc.bmp.BlacklistOperation.GET_SERIAL;
-import static uk.ac.manchester.spinnaker.alloc.bmp.BlacklistOperation.READ;
-import static uk.ac.manchester.spinnaker.alloc.bmp.BlacklistOperation.WRITE;
+import static uk.ac.manchester.spinnaker.alloc.bmp.NonBootOperation.GET_SERIAL;
+import static uk.ac.manchester.spinnaker.alloc.bmp.NonBootOperation.READ_BL;
+import static uk.ac.manchester.spinnaker.alloc.bmp.NonBootOperation.WRITE_BL;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
@@ -817,13 +817,13 @@ public class BMPController extends DatabaseAwareBean {
 
 		List<BlacklistRequest> getBlacklistReads(Machine machine) {
 			return getBlacklistReads.call(machine.getId())
-					.map(row -> new BlacklistRequest(machine, READ, row))
+					.map(row -> new BlacklistRequest(machine, READ_BL, row))
 					.toList();
 		}
 
 		List<BlacklistRequest> getBlacklistWrites(Machine machine) {
 			return getBlacklistWrites.call(machine.getId())
-					.map(row -> new BlacklistRequest(machine, WRITE, row))
+					.map(row -> new BlacklistRequest(machine, WRITE_BL, row))
 					.toList();
 		}
 
@@ -840,7 +840,7 @@ public class BMPController extends DatabaseAwareBean {
 	 * @author Donal Fellows
 	 */
 	private final class BlacklistRequest extends Request {
-		private final BlacklistOperation op;
+		private final NonBootOperation op;
 
 		private final int opId;
 
@@ -854,7 +854,7 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final Blacklist blacklist;
 
-		private BlacklistRequest(Machine machine, BlacklistOperation op,
+		private BlacklistRequest(Machine machine, NonBootOperation op,
 				Row row) {
 			super(machine);
 			this.op = op;
@@ -862,7 +862,7 @@ public class BMPController extends DatabaseAwareBean {
 			boardId = row.getInt("board_id");
 			bmp = new BMPCoords(row.getInt("cabinet"), row.getInt("frame"));
 			board = new BMPBoard(row.getInt("board_num"));
-			if (op == WRITE) {
+			if (op == WRITE_BL) {
 				blacklist = row.getSerial("data", Blacklist.class);
 			} else {
 				blacklist = null;
@@ -978,10 +978,10 @@ public class BMPController extends DatabaseAwareBean {
 				throws InterruptedException {
 			return bmpAction(() -> {
 				switch (op) {
-				case WRITE:
+				case WRITE_BL:
 					writeBlacklist(controller);
 					break;
-				case READ:
+				case READ_BL:
 					readBlacklist(controller);
 					break;
 				case GET_SERIAL:
