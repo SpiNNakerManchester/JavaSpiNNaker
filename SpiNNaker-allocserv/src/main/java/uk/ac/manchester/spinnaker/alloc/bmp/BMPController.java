@@ -28,6 +28,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.slf4j.MDC.putCloseable;
 import static uk.ac.manchester.spinnaker.alloc.bmp.NonBootOperation.GET_SERIAL;
 import static uk.ac.manchester.spinnaker.alloc.bmp.NonBootOperation.READ_BL;
+import static uk.ac.manchester.spinnaker.alloc.bmp.NonBootOperation.READ_TEMP;
 import static uk.ac.manchester.spinnaker.alloc.bmp.NonBootOperation.WRITE_BL;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
@@ -39,6 +40,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.UNKNOWN;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.curry;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -93,6 +95,7 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
+import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException.CallerProcessException;
@@ -802,6 +805,8 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final Query getSerials = conn.query(GET_SERIAL_INFO_REQS);
 
+		private final Query getTemps = conn.query(GET_TEMP_INFO_REQS);
+
 		@Override
 		public void close() {
 			getJobIdsWithChanges.close();
@@ -812,34 +817,42 @@ public class BMPController extends DatabaseAwareBean {
 			getBlacklistReads.close();
 			getBlacklistWrites.close();
 			getSerials.close();
+			getTemps.close();
 			super.close();
 		}
 
-		List<BlacklistRequest> getBlacklistReads(Machine machine) {
+		List<InfoRequest> getBlacklistReads(Machine machine) {
 			return getBlacklistReads.call(machine.getId())
-					.map(row -> new BlacklistRequest(machine, READ_BL, row))
+					.map(row -> new InfoRequest(machine, READ_BL, row))
 					.toList();
 		}
 
-		List<BlacklistRequest> getBlacklistWrites(Machine machine) {
+		List<InfoRequest> getBlacklistWrites(Machine machine) {
 			return getBlacklistWrites.call(machine.getId())
-					.map(row -> new BlacklistRequest(machine, WRITE_BL, row))
+					.map(row -> new InfoRequest(machine, WRITE_BL, row))
 					.toList();
 		}
 
-		List<BlacklistRequest> getReadSerialInfos(Machine machine) {
+		List<InfoRequest> getReadSerialInfos(Machine machine) {
 			return getSerials.call(machine.getId())
-					.map(row -> new BlacklistRequest(machine, GET_SERIAL, row))
+					.map(row -> new InfoRequest(machine, GET_SERIAL, row))
+					.toList();
+		}
+
+		List<InfoRequest> getReadTemps(Machine machine) {
+			return getTemps.call(machine.getId())
+					.map(row -> new InfoRequest(machine, READ_TEMP, row))
 					.toList();
 		}
 	}
 
 	/**
-	 * A request to read or write a blacklist.
+	 * A request to read or write information on a BMP. Includes blacklists,
+	 * temperature data, etc.
 	 *
 	 * @author Donal Fellows
 	 */
-	private final class BlacklistRequest extends Request {
+	private final class InfoRequest extends Request {
 		private final NonBootOperation op;
 
 		private final int opId;
@@ -854,7 +867,7 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final Blacklist blacklist;
 
-		private BlacklistRequest(Machine machine, NonBootOperation op,
+		private InfoRequest(Machine machine, NonBootOperation op,
 				Row row) {
 			super(machine);
 			this.op = op;
@@ -874,6 +887,8 @@ public class BMPController extends DatabaseAwareBean {
 		private String readSerial;
 
 		private Blacklist readBlacklist;
+
+		private ADCInfo adcInfo;
 
 		/**
 		 * Access the DB to store the serial number information that we
@@ -898,9 +913,9 @@ public class BMPController extends DatabaseAwareBean {
 		 *            How to access the DB
 		 * @return Whether we've changed anything
 		 */
-		private boolean doneRead(AfterSQL sql) {
+		private boolean doneReadBlacklist(AfterSQL sql) {
 			doneBlacklist.set(true);
-			return sql.completedBlacklistRead(opId, readBlacklist) > 0;
+			return sql.completedInfoRead(opId, readBlacklist) > 0;
 		}
 
 		/**
@@ -911,7 +926,7 @@ public class BMPController extends DatabaseAwareBean {
 		 *            How to access the DB
 		 * @return Whether we've changed anything
 		 */
-		private boolean doneWrite(AfterSQL sql) {
+		private boolean doneWriteBlacklist(AfterSQL sql) {
 			doneBlacklist.set(true);
 			return sql.completedBlacklistWrite(opId) > 0;
 		}
@@ -927,6 +942,20 @@ public class BMPController extends DatabaseAwareBean {
 		private boolean doneReadSerial(AfterSQL sql) {
 			doneBlacklist.set(true);
 			return sql.completedGetSerialReq(opId) > 0;
+		}
+
+		/**
+		 * Access the DB to mark the read request as successful and store the
+		 * ADC info that was read. Runs on a thread that may touch the
+		 * database, but may not touch any BMP.
+		 *
+		 * @param sql
+		 *            How to access the DB
+		 * @return Whether we've changed anything
+		 */
+		private boolean doneReadTemp(AfterSQL sql) {
+			doneBlacklist.set(true);
+			return sql.completedInfoRead(opId, adcInfo) > 0;
 		}
 
 		/**
@@ -987,6 +1016,9 @@ public class BMPController extends DatabaseAwareBean {
 				case GET_SERIAL:
 					readSerial(controller);
 					break;
+				case READ_TEMP:
+					readTemp(controller);
+					break;
 				default:
 					throw new IllegalArgumentException();
 				}
@@ -1024,7 +1056,7 @@ public class BMPController extends DatabaseAwareBean {
 			}
 			readBlacklist = controller.readBlacklist(board);
 			cleanupTasks.add(this::recordSerialIds);
-			cleanupTasks.add(this::doneRead);
+			cleanupTasks.add(this::doneReadBlacklist);
 		}
 
 		/**
@@ -1053,7 +1085,7 @@ public class BMPController extends DatabaseAwareBean {
 						bmpSerialId, readSerial));
 			}
 			controller.writeBlacklist(board, requireNonNull(blacklist));
-			cleanupTasks.add(this::doneWrite);
+			cleanupTasks.add(this::doneWriteBlacklist);
 		}
 
 		/**
@@ -1075,34 +1107,32 @@ public class BMPController extends DatabaseAwareBean {
 			cleanupTasks.add(this::doneReadSerial);
 		}
 
+		/**
+		 * Process an action to read temperature data.
+		 *
+		 * @param controller
+		 *            How to actually reach the BMP.
+		 * @throws InterruptedException
+		 *             If interrupted.
+		 * @throws IOException
+		 *             If the network is unhappy.
+		 * @throws ProcessException
+		 *             If the BMP rejects a message.
+		 */
+		private void readTemp(SpiNNakerControl controller)
+				throws InterruptedException, ProcessException, IOException {
+			adcInfo = controller.readTemp(board);
+			cleanupTasks.add(this::doneReadTemp);
+		}
+
 		@Override
 		public String toString() {
-			var sb = new StringBuilder("BlacklistRequest(for=")
+			var sb = new StringBuilder("InfoRequest(for=")
 					.append(machine.getName());
 			sb.append(";bmp=").append(bmp);
 			sb.append(",board=").append(boardId);
 			sb.append(",op=").append(op);
 			return sb.append(")").toString();
-		}
-	}
-
-	private final class TempRequest extends Request {
-		private final BMPCoords bmp;
-
-		private final BMPBoard board;
-
-		private int boardId;
-
-		private TempRequest(Machine machine, int boardId) {
-			super(machine);
-			bmp = new BMPCoords(boardId, boardId); // FIXME
-			board = new BMPBoard(boardId); // FIXME
-		}
-
-		@Override
-		public String toString() {
-			return "TempRequest(for=" + machine.getName() + ";bmp=" + bmp
-					+ ";board=" + board.board + ")";
 		}
 	}
 
@@ -1127,6 +1157,7 @@ public class BMPController extends DatabaseAwareBean {
 					requestCollector.addAll(sql.getBlacklistReads(machine));
 					requestCollector.addAll(sql.getBlacklistWrites(machine));
 					requestCollector.addAll(sql.getReadSerialInfos(machine));
+					requestCollector.addAll(sql.getReadTemps(machine));
 				}
 				return requestCollector;
 			});
@@ -1207,7 +1238,7 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final Update deleteChange;
 
-		private final Update completedBlacklistRead;
+		private final Update completedInfoRead;
 
 		private final Update completedBlacklistWrite;
 
@@ -1234,7 +1265,7 @@ public class BMPController extends DatabaseAwareBean {
 			setInProgress = conn.update(SET_IN_PROGRESS);
 			deallocateBoards = conn.update(DEALLOCATE_BOARDS_JOB);
 			deleteChange = conn.update(FINISHED_PENDING);
-			completedBlacklistRead = conn.update(COMPLETED_BLACKLIST_READ);
+			completedInfoRead = conn.update(COMPLETED_BLACKLIST_READ);
 			completedBlacklistWrite = conn.update(COMPLETED_BLACKLIST_WRITE);
 			completedGetSerialReq = conn.update(COMPLETED_GET_SERIAL_REQ);
 			failedBlacklistOp = conn.update(FAILED_BLACKLIST_OP);
@@ -1257,7 +1288,7 @@ public class BMPController extends DatabaseAwareBean {
 			failedBlacklistOp.close();
 			completedGetSerialReq.close();
 			completedBlacklistWrite.close();
-			completedBlacklistRead.close();
+			completedInfoRead.close();
 			deleteChange.close();
 			deallocateBoards.close();
 			setInProgress.close();
@@ -1288,8 +1319,8 @@ public class BMPController extends DatabaseAwareBean {
 			return deleteChange.call(changeId);
 		}
 
-		int completedBlacklistRead(Integer opId, Blacklist blacklist) {
-			return completedBlacklistRead.call(blacklist, opId);
+		int completedInfoRead(Integer opId, Serializable payload) {
+			return completedInfoRead.call(payload, opId);
 		}
 
 		int completedBlacklistWrite(Integer opId) {
@@ -1450,8 +1481,8 @@ public class BMPController extends DatabaseAwareBean {
 					var r = requests.poll();
 					if (r instanceof PowerRequest) {
 						processRequest((PowerRequest) r);
-					} else if (r instanceof BlacklistRequest) {
-						processRequest((BlacklistRequest) r);
+					} else if (r instanceof InfoRequest) {
+						processRequest((InfoRequest) r);
 					}
 
 					/*
@@ -1531,7 +1562,7 @@ public class BMPController extends DatabaseAwareBean {
 		notifyAll();
 	}
 
-	private void processRequest(BlacklistRequest request)
+	private void processRequest(InfoRequest request)
 			throws InterruptedException {
 		SpiNNakerControl controller;
 		try {
@@ -1597,7 +1628,7 @@ public class BMPController extends DatabaseAwareBean {
 				return getControllersForPower((PowerRequest) request);
 			} else {
 				return getControllersForBlacklisting(
-						(BlacklistRequest) request);
+						(InfoRequest) request);
 			}
 		} catch (BeanInitializationException | BeanCreationException e) {
 			// Smuggle the exception out from the @PostConstruct method
@@ -1639,7 +1670,7 @@ public class BMPController extends DatabaseAwareBean {
 	 *         can be safely communicated with in parallel.
 	 */
 	private Map<BMPCoords, SpiNNakerControl> getControllersForBlacklisting(
-			BlacklistRequest request) {
+			InfoRequest request) {
 		return Map.of(request.bmp,
 				controllerFactory.create(request.machine, request.bmp));
 	}

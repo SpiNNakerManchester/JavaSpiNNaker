@@ -39,6 +39,7 @@ import uk.ac.manchester.spinnaker.alloc.bmp.FirmwareLoader.FirmwareLoaderExcepti
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
+import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
@@ -340,5 +341,11 @@ class SpiNNaker1 implements SpiNNakerControl {
 	public void writeBlacklist(BMPBoard board, Blacklist blacklist)
 			throws ProcessException, InterruptedException, IOException {
 		txrx.writeBlacklist(board, blacklist);
+	}
+
+	@Override
+	public ADCInfo readTemp(BMPBoard board)
+			throws ProcessException, IOException, InterruptedException {
+		return txrx.readADCData(board);
 	}
 }

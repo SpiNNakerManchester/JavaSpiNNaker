@@ -1965,6 +1965,27 @@ public abstract class SQLQueries {
 					+ "AND boards.machine_id = :machine_id";
 
 	/**
+	 * Get the list of reads (from the machine) of temperature data to perform.
+	 *
+	 * @see BMPController
+	 */
+	@Parameter("machine_id")
+	@ResultColumn("op_id")
+	@ResultColumn("board_id")
+	@ResultColumn("bmp_serial_id")
+	@ResultColumn("board_num")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	// FIXME test
+	protected static final String GET_TEMP_INFO_REQS =
+			"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, "
+					+ "cabinet, frame FROM blacklist_ops "
+					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
+					+ "LEFT JOIN board_serial USING (board_id) "
+					+ "WHERE op = 3 AND NOT completed "
+					+ "AND boards.machine_id = :machine_id";
+
+	/**
 	 * Set the BMP and physical serial IDs based on the information actually
 	 * read off the machine. A bit of care is needed because we might not yet
 	 * have a row for that board.
@@ -2024,7 +2045,8 @@ public abstract class SQLQueries {
 			+ "SET failure = :failure, completed = 1 WHERE op_id = :op_id";
 
 	/**
-	 * Retrieve a completed request to read or write a blacklist for a board.
+	 * Retrieve a completed request to read or write a BMP-related data for a
+	 * board.
 	 *
 	 * @see MachineStateControl
 	 */
@@ -2082,6 +2104,18 @@ public abstract class SQLQueries {
 	protected static final String CREATE_SERIAL_READ_REQ =
 			"INSERT INTO blacklist_ops(board_id, op, completed) "
 					+ "VALUES(:board_id, 2, 0)";
+
+	/**
+	 * Insert a request to read a board's temperature data.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("board_id")
+	@GeneratesID
+	// FIXME test
+	protected static final String CREATE_TEMP_READ_REQ =
+			"INSERT INTO blacklist_ops(board_id, op, completed) "
+					+ "VALUES(:board_id, 3, 0)";
 
 	// SQL loaded from files because it is too complicated otherwise!
 

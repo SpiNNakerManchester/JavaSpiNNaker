@@ -22,6 +22,7 @@ import java.util.Map;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
+import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 
@@ -115,6 +116,22 @@ public interface SpiNNakerControl {
 	 */
 	String readSerial(BMPBoard board)
 			throws ProcessException, InterruptedException, IOException;
+
+	/**
+	 * Read the temperature data from the given board.
+	 *
+	 * @param board
+	 *            The board to read from.
+	 * @return The temperature (and fan speed and voltage) data.
+	 * @throws ProcessException
+	 *             If a BMP sends a failure message.
+	 * @throws IOException
+	 *             If network I/O fails or we reach the limit on retries.
+	 * @throws InterruptedException
+	 *             If we're interrupted.
+	 */
+	ADCInfo readTemp(BMPBoard board)
+			throws ProcessException, IOException, InterruptedException;
 
 	/**
 	 * Read a blacklist from the given board.
