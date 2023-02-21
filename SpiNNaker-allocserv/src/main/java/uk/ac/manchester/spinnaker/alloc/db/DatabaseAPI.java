@@ -581,6 +581,7 @@ public interface DatabaseAPI {
 	 *
 	 * @param <T> The type of object returned
 	 */
+	@FunctionalInterface
 	interface RowMapper<T> {
 
 		/**
