@@ -25,10 +25,15 @@ import static uk.ac.manchester.spinnaker.messages.Constants.BMP_V_SCALE_3_3;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
-/** Container for the ADC data thats been retrieved from a BMP. */
+/** Container for the board status data thats been retrieved from a BMP. */
 @SARKStruct(value = "board_stat_t", api = SARKStruct.API.BMP)
 public final class ADCInfo implements Serializable {
 	private static final long serialVersionUID = 8245655123474028462L;
+
+	/**
+	 * The number of bytes the board status structure is encoded as in the BMP.
+	 */
+	public static final int SIZE = 48;
 
 	/** fan<sub>0</sub> rotation rate. */
 	@SARKField("fan_0")
@@ -37,6 +42,10 @@ public final class ADCInfo implements Serializable {
 	/** fan<sub>1</sub> rotation rate. */
 	@SARKField("fan_1")
 	public final Double fan1;
+
+	/** fan<sub>2</sub> rotation rate. */
+	@SARKField("fan_2")
+	public final Double fan2;
 
 	/** Temperature bottom, in &deg;C. */
 	@SARKField("temp_btm")
@@ -84,6 +93,18 @@ public final class ADCInfo implements Serializable {
 	@SARKField("voltage_supply")
 	public final double voltageSupply;
 
+	/** Warning flags. See {@code check_status()} in {@code bmp_main.c}. */
+	@SARKField("warning")
+	public final int warningFlags;
+
+	/**
+	 * Shutdown flags. See {@code check_status()} in {@code bmp_main.c}. If
+	 * non-zero, the board is very unhappy with its status, and will be flashing
+	 * an LED rapidly.
+	 */
+	@SARKField("shutdown")
+	public final int shutdownFlags;
+
 	// Sizes of arrays
 	private static final int ADC_SIZE = 8;
 
@@ -118,6 +139,12 @@ public final class ADCInfo implements Serializable {
 
 	private static final int FAN1 = 1;
 
+	private static final int FAN2 = 2;
+
+	private static final int WARNING_OFFSET = 40;
+
+	private static final int SHUTDOWN_OFFSET = 44;
+
 	/**
 	 * @param buffer
 	 *            bytes from an SCP packet containing ADC information
@@ -132,6 +159,8 @@ public final class ADCInfo implements Serializable {
 		sb.get(tInt);
 		sb.get(tExt);
 		sb.get(fan);
+		warningFlags = buffer.get(WARNING_OFFSET);
+		shutdownFlags = buffer.get(SHUTDOWN_OFFSET);
 
 		voltage12c = toUnsignedInt(adc[V_1_2C]) * BMP_V_SCALE_2_5;
 		voltage12b = toUnsignedInt(adc[V_1_2B]) * BMP_V_SCALE_2_5;
@@ -145,6 +174,7 @@ public final class ADCInfo implements Serializable {
 		tempExt1 = tempScale(tExt[T_X1]);
 		fan0 = fanScale(fan[FAN0]);
 		fan1 = fanScale(fan[FAN1]);
+		fan2 = fanScale(fan[FAN2]);
 	}
 
 	// Bottom 5 bits are meaningless

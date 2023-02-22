@@ -27,7 +27,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 /**
  * A request for the board status data from the BMP including voltages,
  * temperatures and fan speeds. The response payload is the {@linkplain ADCInfo
- * board information structure} from the hardware.
+ * board status information structure} from the hardware.
  * <p>
  * Handled in {@code cmd_bmp_info()} (in {@code bmp_cmd.c}) by reading from the
  * right element of {@code board_stat}. The underlying data is synched from the
@@ -35,7 +35,9 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * from the on-board thermometers (LM75B chips) every second by
  * {@code read_temp()} in {@code bmp_hw.c} (which calls {@code read_ts()} in
  * {@code bmp_i2c.c}); fan speeds are monitored by counting rotations, under the
- * assumption they significantly less than 60k rpm.
+ * assumption they significantly less than 60k rpm. The BMP's internal
+ * monitoring of these values is done in {@code check_status()} in
+ * {@code bmp_main.c}.
  */
 public class ReadADC extends BMPRequest<ReadADC.Response> {
 	/**
@@ -56,7 +58,7 @@ public class ReadADC extends BMPRequest<ReadADC.Response> {
 			extends BMPRequest.PayloadedResponse<ADCInfo> {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
-			super("Read ADC", CMD_BMP_INFO, buffer);
+			super("Read Board Status", CMD_BMP_INFO, buffer);
 		}
 
 		/** @return The ADC information. */

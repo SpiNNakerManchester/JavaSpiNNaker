@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.messages.model;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static uk.ac.manchester.spinnaker.messages.model.ADCInfo.SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.SerSupport.deserialize;
 import static uk.ac.manchester.spinnaker.messages.model.SerSupport.serialize;
 
@@ -28,8 +29,6 @@ import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("ClassCanBeStatic")
 class TestADCInfo {
-	private static final int SIZE = 48;
-
 	@Test
 	void zeroSer() throws IOException, ClassNotFoundException {
 		var bytes = new byte[SIZE];
