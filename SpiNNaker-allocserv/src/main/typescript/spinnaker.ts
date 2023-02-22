@@ -884,3 +884,30 @@ function prettyDuration(elementId: string) {
 	content = content.replace(new RegExp(/\b( \d)/, "g"), ",$1");
 	element!.textContent = content;
 }
+
+/**
+ * Load temperature data from a URL.
+ *
+ * @param sourceUri
+ * 		The URL to load the data from.
+ * @param boardId
+ * 		Which board this is about.
+ * @param elementId
+ * 		Which element to replace the contents of with with the rendered result.
+ */
+function loadTemperature(sourceUri: string, boardId: number, elementId: string) {
+	const element = document.getElementById(elementId);
+	if (element == null) {
+		return;
+	}
+	const r = new XMLHttpRequest();
+	r.addEventListener("load", () => {
+		const result = JSON.parse(r.responseText) as object;
+		if (result?.hasOwnProperty("result.board_temperature")) {
+			const t = result["board_temperature"];
+			element.innerHTML = t + "&deg;C";
+		}
+	});
+	r.open("GET", sourceUri);
+	r.send();
+}

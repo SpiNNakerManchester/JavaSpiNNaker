@@ -71,6 +71,11 @@ limitations under the License.
 			</c:if>
 			<p>
 			<h2>Current State (read only)</h2>
+			Temperature: <span id="temperatureDisplay">...</span>
+			<script defer="defer">
+				loadTemperature("${ tempDataUri }", ${board.id}, "temperatureDisplay");
+			</script>
+			<p>
 			Current job:
 			<c:choose>
 				<c:when test="${ board.jobAllocated }">
