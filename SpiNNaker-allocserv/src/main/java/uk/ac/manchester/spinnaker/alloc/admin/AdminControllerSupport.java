@@ -35,6 +35,7 @@ import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.ViewFactory;
+import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -66,6 +67,9 @@ interface AdminControllerSupport {
 
 	/** View: {@code admin/board.jsp}. */
 	ViewFactory BOARD_VIEW = new ViewFactory("admin/board");
+
+	/** View: {@code admin/temperature.jsp}. */
+	ViewFactory TEMP_VIEW = new ViewFactory("admin/temperature");
 
 	/** View: {@code admin/machine.jsp}. */
 	ViewFactory MACHINE_VIEW = new ViewFactory("admin/machine");
@@ -113,6 +117,12 @@ interface AdminControllerSupport {
 	 * Blacklist data in {@link #BOARD_VIEW}. {@link BlacklistData}.
 	 */
 	String BLACKLIST_DATA_OBJ = "bldata";
+
+	/**
+	 * Temperature data. {@link ADCInfo}.
+	 */
+	@UsedInJavadocOnly(ADCInfo.class)
+	String TEMP_DATA_OBJ = "tempdata";
 
 	/**
 	 * Mapping from machine names to whether they're in service, in
@@ -192,6 +202,13 @@ interface AdminControllerSupport {
 	 * blacklistFetch()}. In {@link #BOARD_VIEW}.
 	 */
 	String BLACKLIST_URI = "blacklistControlUri";
+
+	/**
+	 * How to call
+	 * {@link AdminController#getTemperatures(BoardRecord, ModelMap)}. In
+	 * {@link #BOARD_VIEW}.
+	 */
+	String TEMP_URI = "tempDataUri";
 
 	/**
 	 * How to call {@link AdminController#machineManagement()
@@ -401,6 +418,18 @@ interface AdminControllerSupport {
 	static void addMachineReports(ModelAndView mav,
 			Map<String, List<BoardIssueReport>> reports) {
 		mav.addObject(MACHINE_REPORTS_OBJ, reports);
+	}
+
+	/**
+	 * Add temperature data to model.
+	 *
+	 * @param model
+	 *            The model
+	 * @param temps
+	 *            The temp data to add.
+	 */
+	static void addTemperatureData(ModelMap model, ADCInfo temps) {
+		model.addAttribute(TEMP_DATA_OBJ, temps);
 	}
 
 	/**

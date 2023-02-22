@@ -101,6 +101,9 @@ public interface AdminController {
 	/** Path to blacklist operations. */
 	String BLACKLIST_PATH = "/boards/blacklist";
 
+	/** Path to temperature operations. */
+	String TEMPERATURE_PATH = "/boards/temperature";
+
 	/** Path to machine-instantiation operations. */
 	String MACHINE_PATH = "/machine";
 
@@ -433,6 +436,20 @@ public interface AdminController {
 	CompletableFuture<ModelAndView> blacklistPush(
 			@Valid @ModelAttribute("bldata") BlacklistData bldata,
 			ModelMap model);
+
+	/**
+	 * Get the temperature data for a board.
+	 *
+	 * @param board
+	 *            What board to get the data for.
+	 * @param model
+	 *            Overall model
+	 * @return the model and view in a future
+	 */
+	@Async
+	@GetMapping(value = TEMPERATURE_PATH)
+	CompletableFuture<ModelAndView> getTemperatures(
+			@Valid @ModelAttribute("board") BoardRecord board, ModelMap model);
 
 	/**
 	 * Provide the form for uploading a machine definition.

@@ -19,6 +19,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.Objects.nonNull;
 import static java.util.concurrent.CompletableFuture.completedFuture;
+import static java.util.concurrent.CompletableFuture.failedFuture;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.io.IOUtils.buffer;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -42,6 +43,8 @@ import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.GROU
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.MACHINE_URI;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.MACHINE_VIEW;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.MAIN_VIEW;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.TEMP_URI;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.TEMP_VIEW;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.TRUST_LEVELS;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.USERS_URI;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.USER_DETAILS_VIEW;
@@ -59,6 +62,7 @@ import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addM
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addNotice;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addOrganisationList;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addRemoteUserList;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addTemperatureData;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addUrl;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addUser;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addUserList;
@@ -660,6 +664,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		inflateBoardRecord(board, bs);
 		addBoard(model, board);
 		addMachineList(model, getMachineNames(true));
+		addUrl(model, TEMP_URI, uri(admin().getTemperatures(board, model)));
 		return addStandardContext(BOARD_VIEW.view(model));
 	}
 
@@ -706,6 +711,22 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 		addMachineList(model, getMachineNames(true));
 		return completedFuture(addStandardContext(BOARD_VIEW.view(model)));
+	}
+
+	@Override
+	@Async
+	@Action("getting board temperature data from the machine")
+	public CompletableFuture<ModelAndView> getTemperatures(
+			BoardRecord board, ModelMap model) {
+		var bs = getBoardState(board).orElseThrow(NoBoard::new);
+		try {
+			var temps = machineController.readTemperatureFromMachine(bs)
+					.orElse(null);
+			addTemperatureData(model, temps);
+			return completedFuture(addStandardContext(TEMP_VIEW.view(model)));
+		} catch (InterruptedException e) {
+			return failedFuture(e);
+		}
 	}
 
 	/**

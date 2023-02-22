@@ -430,19 +430,20 @@ public class MachineStateControl extends DatabaseAwareBean {
 	}
 
 	/**
-	 * Exception thrown when blacklists can't be read from or written to the
-	 * machine.
+	 * Exception thrown when the machine state can't be read from or written to
+	 * a BMP. This includes when a blacklist can't be accessed or when the
+	 * machine state structure can't be read.
 	 *
 	 * @author Donal Fellows
 	 */
-	public static final class BlacklistException extends RuntimeException {
+	public static final class MachineStateException extends RuntimeException {
 		private static final long serialVersionUID = -6450838951059318431L;
 
-		private BlacklistException(String msg, Exception exn) {
+		private MachineStateException(String msg, Exception exn) {
 			super(msg, exn);
 		}
 
-		private BlacklistException(String msg) {
+		private MachineStateException(String msg) {
 			super(msg);
 		}
 	}
@@ -677,7 +678,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @return The board's blacklist.
 	 * @throws DataAccessException
 	 *             If access to the DB fails.
-	 * @throws BlacklistException
+	 * @throws MachineStateException
 	 *             If the read fails.
 	 * @throws InterruptedException
 	 *             If interrupted.
@@ -698,7 +699,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *            The blacklist to write.
 	 * @throws DataAccessException
 	 *             If access to the DB fails.
-	 * @throws BlacklistException
+	 * @throws MachineStateException
 	 *             If the write fails.
 	 * @throws InterruptedException
 	 *             If interrupted. Note that interrupting the thread does
@@ -719,7 +720,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @return The serial number.
 	 * @throws DataAccessException
 	 *             If access to the DB fails.
-	 * @throws BlacklistException
+	 * @throws MachineStateException
 	 *             If the write fails.
 	 * @throws InterruptedException
 	 *             If interrupted.
@@ -741,7 +742,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @return The board's temperature data.
 	 * @throws DataAccessException
 	 *             If access to the DB fails.
-	 * @throws BlacklistException
+	 * @throws MachineStateException
 	 *             If the read fails.
 	 * @throws InterruptedException
 	 *             If interrupted.
@@ -800,8 +801,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 				try (var readReq = conn.update(operation)) {
 					return readReq.key(args);
 				}
-			}).orElseThrow(() -> new BlacklistException(
-					"could not create blacklist request"));
+			}).orElseThrow(() -> new MachineStateException(
+					"could not create machine state request"));
 		}
 
 		/**
@@ -815,13 +816,13 @@ public class MachineStateControl extends DatabaseAwareBean {
 		 * @return The wrapped result, or empty if the operation times out.
 		 * @throws InterruptedException
 		 *             If the thread is interrupted.
-		 * @throws BlacklistException
+		 * @throws MachineStateException
 		 *             If the BMP throws an exception.
 		 * @throws DataAccessException
 		 *             If there is a problem accessing the database.
 		 */
 		<T> Optional<T> getResult(Function<Row, T> retriever)
-				throws InterruptedException, BlacklistException,
+				throws InterruptedException, MachineStateException,
 				DataAccessException {
 			var end = now().plus(props.getBlacklistTimeout());
 			while (end.isAfter(now())) {
@@ -847,12 +848,12 @@ public class MachineStateControl extends DatabaseAwareBean {
 		 *
 		 * @throws InterruptedException
 		 *             If the thread is interrupted.
-		 * @throws BlacklistException
+		 * @throws MachineStateException
 		 *             If the BMP throws an exception.
 		 * @throws DataAccessException
 		 *             If there is a problem accessing the database.
 		 */
-		void completed() throws DataAccessException, BlacklistException,
+		void completed() throws DataAccessException, MachineStateException,
 				InterruptedException {
 			getResult(__ -> this);
 		}
@@ -864,13 +865,13 @@ public class MachineStateControl extends DatabaseAwareBean {
 		 * @param row
 		 *            The row to examine.
 		 * @return The row, which is now guaranteed to not be a failure.
-		 * @throws BlacklistException
+		 * @throws MachineStateException
 		 *             If the row encodes a failure.
 		 */
-		private Row throwIfFailed(Row row) throws BlacklistException {
+		private Row throwIfFailed(Row row) throws MachineStateException {
 			if (row.getBoolean("failed")) {
-				throw new BlacklistException(
-						"failed to access hardware blacklist",
+				throw new MachineStateException(
+						"failed to access hardware state",
 						row.getSerial("failure", Exception.class));
 			}
 			return row;
