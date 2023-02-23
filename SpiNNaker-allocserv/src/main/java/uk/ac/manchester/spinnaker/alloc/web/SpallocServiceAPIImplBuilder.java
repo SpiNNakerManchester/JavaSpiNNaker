@@ -24,7 +24,6 @@ import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPO
 
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -167,8 +166,7 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 	@Bean
 	@Prototype
 	@Role(ROLE_APPLICATION)
-	public JobAPI job(Job j, String caller, Permit permit, UriInfo ui,
-			HttpServletRequest request) {
+	public JobAPI job(Job j, String caller, Permit permit, UriInfo ui) {
 		var sp = props.getProxy().isEnable() ? servletPath : null;
 		return new JobAPI() {
 			@Override
@@ -187,22 +185,11 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 						// Refresh the handle
 						var nj = core.getJob(permit, j.getId())
 								.orElseThrow(() -> new ItsGone("no such job"));
-						var jsr = new JobStateResponse(nj, ui, request, mapper,
-								sp);
-						if (jsr.proxyRef.getScheme().equals("ws")) {
-							log.warn("Proxy will be insecure!");
-						}
-						return jsr;
+						return new JobStateResponse(nj, ui, mapper, sp);
 					});
 				} else {
-					fgAction(response, () -> {
-						var jsr = new JobStateResponse(j, ui,
-							request, mapper, sp);
-						if (jsr.proxyRef.getScheme().equals("ws")) {
-							log.warn("Proxy will be insecure!");
-						}
-						return jsr;
-					});
+					fgAction(response, () -> new JobStateResponse(j, ui, mapper,
+							sp));
 				}
 			}
 
