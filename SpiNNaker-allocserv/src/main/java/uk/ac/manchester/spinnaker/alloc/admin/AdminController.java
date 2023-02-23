@@ -440,7 +440,7 @@ public interface AdminController {
 	/**
 	 * Get the temperature data for a board.
 	 *
-	 * @param board
+	 * @param boardId
 	 *            What board to get the data for.
 	 * @param model
 	 *            Overall model
@@ -449,7 +449,7 @@ public interface AdminController {
 	@Async
 	@GetMapping(value = TEMPERATURE_PATH)
 	CompletableFuture<ModelAndView> getTemperatures(
-			@Valid @ModelAttribute("board") BoardRecord board, ModelMap model);
+			@Valid @ModelAttribute("board_id") int boardId, ModelMap model);
 
 	/**
 	 * Provide the form for uploading a machine definition.

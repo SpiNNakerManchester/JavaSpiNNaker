@@ -737,7 +737,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	/**
 	 * Given a board, read its temperature data off the machine.
 	 *
-	 * @param board
+	 * @param boardId
 	 *            Which board to read the temperature data of.
 	 * @return The board's temperature data.
 	 * @throws DataAccessException
@@ -747,9 +747,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @throws InterruptedException
 	 *             If interrupted.
 	 */
-	public Optional<ADCInfo> readTemperatureFromMachine(BoardState board)
+	public Optional<ADCInfo> readTemperatureFromMachine(int boardId)
 			throws InterruptedException {
-		try (var op = new Op(CREATE_TEMP_READ_REQ, board.id)) {
+		try (var op = new Op(CREATE_TEMP_READ_REQ, boardId)) {
 			return op.getResult(serial("data", ADCInfo.class));
 		}
 	}

@@ -895,19 +895,20 @@ function prettyDuration(elementId: string) {
  * @param elementId
  * 		Which element to replace the contents of with with the rendered result.
  */
+// TODO Do we need an explicit boardId? Is the value in the URI already?
 function loadTemperature(sourceUri: string, boardId: number, elementId: string) {
 	const element = document.getElementById(elementId);
 	if (element == null) {
 		return;
 	}
 	const r = new XMLHttpRequest();
-	r.addEventListener("load", () => {
-		const result = JSON.parse(r.responseText) as object;
+	r.open("GET", sourceUri);
+	r.onload = () => {
+		const result = JSON.parse(r.response) as object;
 		if (result?.hasOwnProperty("result.board_temperature")) {
-			const t = result["board_temperature"];
+			const t = result["board_temperature"] as number;
 			element.innerHTML = t + "&deg;C";
 		}
-	});
-	r.open("GET", sourceUri);
+	};
 	r.send();
 }

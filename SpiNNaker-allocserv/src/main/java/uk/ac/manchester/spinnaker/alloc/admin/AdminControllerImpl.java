@@ -664,7 +664,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		inflateBoardRecord(board, bs);
 		addBoard(model, board);
 		addMachineList(model, getMachineNames(true));
-		addUrl(model, TEMP_URI, uri(admin().getTemperatures(board, model)));
+		addUrl(model, TEMP_URI,
+				uri(admin().getTemperatures(board.getId(), model)));
 		return addStandardContext(BOARD_VIEW.view(model));
 	}
 
@@ -717,10 +718,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Async
 	@Action("getting board temperature data from the machine")
 	public CompletableFuture<ModelAndView> getTemperatures(
-			BoardRecord board, ModelMap model) {
-		var bs = getBoardState(board).orElseThrow(NoBoard::new);
+			int boardId, ModelMap model) {
 		try {
-			var temps = machineController.readTemperatureFromMachine(bs)
+			var temps = machineController.readTemperatureFromMachine(boardId)
 					.orElse(null);
 			addTemperatureData(model, temps);
 			return completedFuture(addStandardContext(TEMP_VIEW.view(model)));
