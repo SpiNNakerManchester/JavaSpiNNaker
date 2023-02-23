@@ -34,6 +34,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.asDir;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByNameQuietly;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,6 +42,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -678,11 +680,18 @@ public class SpallocClientFactory {
 			var am = machine();
 			var conns = new ArrayList<Connection>();
 			var hostToChip = new HashMap<Inet4Address, ChipLocation>();
+			InetAddress bootChipAddress = null;
 			for (var bc : am.getConnections()) {
 				var chipAddr = getByNameQuietly(bc.getHostname());
-				conns.add(new ProxiedSCPConnection(
-						bc.getChip().asChipLocation(), ws, chipAddr));
+				var chipLoc = bc.getChip().asChipLocation();
+				conns.add(new ProxiedSCPConnection(chipLoc, ws, chipAddr));
 				hostToChip.put(chipAddr, bc.getChip());
+				if (chipLoc.equals(ZERO_ZERO)) {
+					bootChipAddress = chipAddr;
+				}
+			}
+			if (bootChipAddress != null) {
+			    conns.add(new ProxiedBootConnection(ws, bootChipAddress));
 			}
 			return new ProxiedTransceiver(conns, hostToChip, ws, machine);
 		}

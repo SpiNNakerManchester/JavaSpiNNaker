@@ -59,10 +59,9 @@ final class ProxiedBootConnection extends BootConnection {
 	 * @throws InterruptedException
 	 *             If interrupted while things were setting up.
 	 */
-	ProxiedBootConnection(ProxyProtocolClient ws, InetAddress remoteAddr,
-			Integer remotePort)
+	ProxiedBootConnection(ProxyProtocolClient ws, InetAddress remoteAddr)
 			throws IOException, InterruptedException {
-		super(remoteAddr, remotePort);
+		super(remoteAddr, BOOT_PORT);
 		this.ws = requireNonNull(ws);
 		receiveQueue = new LinkedBlockingQueue<>();
 		channel = ws.openChannel(ZERO_ZERO, BOOT_PORT, receiveQueue);
