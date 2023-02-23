@@ -134,7 +134,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 		var j = core.getJob(permit, id)
 				.orElseThrow(() -> new NotFound("no such job"));
 		// Wrap so we can use security annotations
-		return jobFactory.getObject(j, req.getRemoteHost(), permit, ui, req);
+		return jobFactory.getObject(j, req.getRemoteHost(), permit, ui);
 	}
 
 	// Could be configurable, but no real point
