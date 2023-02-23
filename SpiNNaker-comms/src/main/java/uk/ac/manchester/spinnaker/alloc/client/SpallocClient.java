@@ -402,6 +402,19 @@ public interface SpallocClient {
 		@MustBeClosed
 		EIEIOConnection getEIEIOConnection()
 				throws IOException, InterruptedException;
+
+		/**
+		 * Wait until the job's boards are powered on or the job is destroyed.
+		 *
+		 * @throws IOException
+		 *             If communication fails.
+		 */
+		default void waitForPower() throws IOException {
+			var state = describe().getState();
+			while (state == State.QUEUED || state == State.POWER) {
+				state = describe(true).getState();
+			}
+		}
 	}
 
 	/**
