@@ -27,6 +27,7 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriInfo;
 
 import org.springframework.dao.DataAccessException;
@@ -108,8 +109,8 @@ public class JobStateResponse {
 		}
 	}
 
-	JobStateResponse(Job job, UriInfo ui, JsonMapper mapper,
-			String servletPath) {
+	JobStateResponse(Job job, UriInfo ui, HttpServletRequest request,
+			JsonMapper mapper, String servletPath) {
 		state = job.getState();
 		startTime = job.getStartTime();
 		reason = job.getReason().orElse(null);
@@ -129,16 +130,22 @@ public class JobStateResponse {
 
 		if ((state == JobState.POWER || state == JobState.READY)
 				&& (servletPath != null)) {
-			proxyRef = makeProxyURI(job, ui, servletPath);
+			proxyRef = makeProxyURI(job, ui, request, servletPath);
 		} else {
 			proxyRef = null;
 		}
 	}
 
-	private static URI makeProxyURI(Job job, UriInfo ui, String servletPath) {
+	private static URI makeProxyURI(Job job, UriInfo ui,
+			HttpServletRequest request, String servletPath) {
 		// Try to match the secure / insecure nature of the original request
 		String scheme = "wss";
-		if (ui.getBaseUri().getScheme().equals("http")) {
+		String proxyHeader = request.getHeader("X-Forwarded-Proto");
+		if (proxyHeader != null) {
+			if (proxyHeader.equals("http")) {
+				scheme = "ws";
+			}
+		} else if (ui.getBaseUri().getScheme().equals("http")) {
 			scheme = "ws";
 		}
 		// Messy; needs to refer to the other half of the application
