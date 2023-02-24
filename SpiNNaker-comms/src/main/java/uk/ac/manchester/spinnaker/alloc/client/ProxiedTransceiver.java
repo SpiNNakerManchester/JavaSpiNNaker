@@ -15,8 +15,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.client;
 
-import static uk.ac.manchester.spinnaker.machine.MachineVersion.TRIAD_NO_WRAPAROUND;
-
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -24,11 +22,10 @@ import java.util.Collection;
 import java.util.Map;
 
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
-import uk.ac.manchester.spinnaker.connections.MachineAware;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.machine.Machine;
+import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 
@@ -39,6 +36,8 @@ final class ProxiedTransceiver extends Transceiver {
 	private final Map<Inet4Address, ChipLocation> hostToChip;
 
 	/**
+	 * @param version
+	 *            The version of the machine connected to.
 	 * @param connections
 	 *            The proxied connections we will use.
 	 * @param hostToChip
@@ -54,43 +53,13 @@ final class ProxiedTransceiver extends Transceiver {
 	 * @throws SpinnmanExcception
 	 *             If SpiNNaker rejects a message.
 	 */
-	ProxiedTransceiver(Collection<Connection> connections,
+	ProxiedTransceiver(MachineVersion version,
+			Collection<Connection> connections,
 			Map<Inet4Address, ChipLocation> hostToChip,
 			ProxyProtocolClient websocket)
 			throws IOException, SpinnmanException, InterruptedException {
-		this(connections, hostToChip, websocket, null);
-	}
-
-	/**
-	 * @param connections
-	 *            The proxied connections we will use.
-	 * @param hostToChip
-	 *            The mapping from addresses to chip locations, to enable
-	 *            manufacturing of proxied {@link EIEIOConnection}s.
-	 * @param websocket
-	 *            The proxy handle.
-	 * @param machine
-	 *            A machine already read, to avoid needing to do it again.
-	 * @throws IOException
-	 *             If we couldn't finish setting up our networking.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 * @throws SpinnmanExcception
-	 *             If SpiNNaker rejects a message.
-	 */
-	ProxiedTransceiver(Collection<Connection> connections,
-			Map<Inet4Address, ChipLocation> hostToChip,
-			ProxyProtocolClient websocket, Machine machine)
-			throws IOException, SpinnmanException, InterruptedException {
 		// Assume unwrapped
-		super(TRIAD_NO_WRAPAROUND, connections, null, null, null, null,
-				null);
-		if (machine != null) {
-			var scpSelector = getScampConnectionSelector();
-			if (scpSelector instanceof MachineAware) {
-				((MachineAware) scpSelector).setMachine(machine);
-			}
-		}
+		super(version, connections);
 		this.hostToChip = hostToChip;
 		this.websocket = websocket;
 	}

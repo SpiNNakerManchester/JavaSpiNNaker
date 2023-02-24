@@ -356,8 +356,6 @@ public interface SpallocClient {
 		 * boards of the job and nothing else; the BMP(s) will <em>not</em> be
 		 * accessible by this transceiver.
 		 *
-		 * @param machine The machine the transceiver is being created for.
-		 *
 		 * @return The transceiver. It is the caller's responsibility to close
 		 *         this transceiver at the right time.
 		 * @throws IOException
@@ -368,8 +366,7 @@ public interface SpallocClient {
 		 *             If transceiver construction fails.
 		 */
 		@MustBeClosed
-		TransceiverInterface getTransceiver(
-				uk.ac.manchester.spinnaker.machine.Machine machine)
+		TransceiverInterface getTransceiver()
 				throws IOException, InterruptedException, SpinnmanException;
 	}
 

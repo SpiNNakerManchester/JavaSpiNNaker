@@ -64,6 +64,7 @@ import uk.ac.manchester.spinnaker.alloc.client.SpallocClient.SpallocException;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.messages.model.Version;
@@ -673,11 +674,12 @@ public class SpallocClientFactory {
 		}
 
 		@Override
-		public TransceiverInterface getTransceiver(
-				uk.ac.manchester.spinnaker.machine.Machine machine)
+		public TransceiverInterface getTransceiver()
 				throws IOException, InterruptedException, SpinnmanException {
 			var ws = getProxy();
 			var am = machine();
+			// TODO: We should know if the machine wraps around or not here...
+			var version = MachineVersion.TRIAD_NO_WRAPAROUND;
 			var conns = new ArrayList<Connection>();
 			var hostToChip = new HashMap<Inet4Address, ChipLocation>();
 			InetAddress bootChipAddress = null;
@@ -693,7 +695,7 @@ public class SpallocClientFactory {
 			if (bootChipAddress != null) {
 			    conns.add(new ProxiedBootConnection(ws, bootChipAddress));
 			}
-			return new ProxiedTransceiver(conns, hostToChip, ws, machine);
+			return new ProxiedTransceiver(version, conns, hostToChip, ws);
 		}
 
 		@Override

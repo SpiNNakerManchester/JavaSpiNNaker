@@ -16,6 +16,7 @@
 package uk.ac.manchester.spinnaker.front_end;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static picocli.CommandLine.ExitCode.USAGE;
 import static uk.ac.manchester.spinnaker.alloc.client.SpallocClientFactory.getJobFromProxyInfo;
@@ -38,6 +39,7 @@ import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.PLACEMENT;
 import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.REPORT;
 import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.RUN;
 import static uk.ac.manchester.spinnaker.machine.bean.MapperFactory.createMapper;
+import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 
 import java.io.File;
 import java.io.FileReader;
@@ -63,6 +65,7 @@ import picocli.CommandLine.Parameters;
 import picocli.CommandLine.TypeConversionException;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
 import uk.ac.manchester.spinnaker.connections.LocateConnectedMachineIPAddress;
+import uk.ac.manchester.spinnaker.connections.MachineAware;
 import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.front_end.download.DataReceiver;
 import uk.ac.manchester.spinnaker.front_end.download.RecordingRegionDataGatherer;
@@ -83,6 +86,7 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
+import uk.ac.manchester.spinnaker.transceiver.Transceiver.ConnectionDescriptor;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
@@ -98,10 +102,6 @@ public final class CommandLineInterface {
 	}
 
 	private static final ObjectMapper MAPPER = createMapper();
-
-	private static final String BUFFER_DB_FILE = "buffer.sqlite3";
-
-	private static final String DSE_DB_FILE = "ds.sqlite3";
 
 	private static final String PROPS = "command-line.properties";
 
@@ -699,11 +699,27 @@ public final class CommandLineInterface {
 	private static TransceiverInterface getTransceiver(Machine machine,
 			SpallocClient.Job job)
 			throws IOException, SpinnmanException, InterruptedException {
+		final TransceiverInterface txrx;
 		if (job == null) {
 			// No job; must be a direct connection
-			return new Transceiver(machine);
+			txrx = Transceiver.makeWithDescriptors(
+					machine.version, generateScampConnections(machine));
+		} else {
+		    txrx = job.getTransceiver();
 		}
-		return job.getTransceiver(machine);
+		var scpSelector = txrx.getScampConnectionSelector();
+		if (scpSelector instanceof MachineAware) {
+			((MachineAware) scpSelector).setMachine(machine);
+		}
+		return txrx;
+	}
+
+	private static List<ConnectionDescriptor> generateScampConnections(
+			Machine machine) {
+		return machine.ethernetConnectedChips().stream()
+				.map(chip -> new ConnectionDescriptor(chip.ipAddress,
+						SCP_SCAMP_PORT, chip.asChipLocation()))
+				.collect(toList());
 	}
 }
 
