@@ -93,7 +93,7 @@ class DbBasicTest extends SimpleDBTestBase {
 			}
 
 			// No column in query definition
-		    assertThrows(BadSqlGrammarException.class,
+			assertThrows(BadSqlGrammarException.class,
 					() -> c.query(COUNT + "WHERE job_id = ?").call(r -> 1));
 		});
 
