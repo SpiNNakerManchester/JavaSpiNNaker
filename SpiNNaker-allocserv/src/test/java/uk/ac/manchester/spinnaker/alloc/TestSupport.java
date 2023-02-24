@@ -129,31 +129,28 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 
 	@SuppressWarnings("CompileTimeConstant")
 	private void clearDB(Connection c, String databaseName) {
-		try (var fq_checks = c.update("SET FOREIGN_KEY_CHECKS=:on");
-			    var all_tables = c.query(
-			    	"SELECT table_name FROM information_schema.tables "
-			    		+ "WHERE table_schema='" + databaseName + "' "
-			    		+ "AND table_type='BASE TABLE'");
-				) {
+		try (var fqChecks = c.update("SET FOREIGN_KEY_CHECKS=:on");
+				var allTables = c.query(
+						"SELECT table_name FROM information_schema.tables "
+								+ "WHERE table_schema='" + databaseName + "' "
+								+ "AND table_type='BASE TABLE'");) {
 			c.transaction(() -> {
-				fq_checks.call(0);
-				for (var table : all_tables.call(string("table_name"))) {
+				fqChecks.call(0);
+				for (var table : allTables.call(string("table_name"))) {
 					if (!SAVED_TABLES.contains(table)) {
-					    try (var clear = c.update("DELETE FROM " + table)) {
+						try (var clear = c.update("DELETE FROM " + table)) {
 							clear.call();
-    					}
+						}
 					}
 				}
-				fq_checks.call(1);
+				fqChecks.call(1);
 			});
 		}
 	}
 
 	/**
-	 * Delete a DB file. It must not be open!
+	 * Reset the DB to the state where it has no content.
 	 *
-	 * @param dbPath
-	 *            Where the DB is.
 	 * @throws IOException
 	 *             On failure.
 	 */
@@ -163,9 +160,9 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 		});
 
 		if (db.isHistoricalDBAvailable()) {
-		    try (var histConn = db.getHistoricalConnection()) {
-		    	clearDB(histConn, HIST_DB_NAME);
-		    }
+			try (var histConn = db.getHistoricalConnection()) {
+				clearDB(histConn, HIST_DB_NAME);
+			}
 		}
 	}
 
@@ -205,7 +202,8 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 		makeMachine(c, 1, 1, 1);
 		// Add one board to the machine
 		try (var u = c.update(INSERT_BOARD_WITH_ID)) {
-			assertEquals(1, u.call(BOARD, BOARD_ADDR, BMP, 0, MACHINE, 0, 0, 0, 0, 0, false));
+			assertEquals(1, u.call(BOARD, BOARD_ADDR, BMP, 0, MACHINE, 0, 0, 0,
+					0, 0, false));
 		}
 		// A disabled permission-less user with a quota
 		makeUser(c);

@@ -70,6 +70,7 @@ class BlacklistStoreTest extends TestSupport {
 
 	private class LinkLocation {
 		ChipLocation location;
+
 		Direction direction;
 
 		LinkLocation(Row r) {
@@ -237,7 +238,7 @@ class BlacklistStoreTest extends TestSupport {
 						stream(links.call(LinkLocation::new, BOARD)).
 						toCollectingMap(HashMap::new,
 								HashSet::new, l -> l.location,
-								l-> l.direction));
+								l -> l.direction));
 			}
 		});
 	}
@@ -267,7 +268,7 @@ class BlacklistStoreTest extends TestSupport {
 								BOARD))
 						.toCollectingMap(HashMap::new,
 								HashSet::new, coords -> coords.asChipLocation(),
-								coords->coords.getP()));
+								coords -> coords.getP()));
 				assertEquals(Map.of(C11, Set.of(SOUTHWEST, NORTHEAST)),
 						stream(links.call(LinkLocation::new, BOARD))
 						.toCollectingMap(
