@@ -5,3 +5,4 @@
 *.bak
 node
 /.factorypath
+/.apt_generated/

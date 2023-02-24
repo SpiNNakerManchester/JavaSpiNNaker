@@ -18,20 +18,18 @@ package uk.ac.manchester.spinnaker.alloc.db;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
-import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_CHECK;
-import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_FOREIGNKEY;
 
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Set;
 
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.dao.DataAccessException;
-import org.sqlite.SQLiteException;
 
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Query;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.MemberRecord;
@@ -127,33 +125,17 @@ abstract class DBTestingUtils {
 	private DBTestingUtils() {
 	}
 
-	/**
-	 * {@linkplain org.junit.jupiter.api.Assertions Assert} that the result
-	 * columns of the query are adequate for making a {@link BoardLocation}
-	 * instance.
-	 *
-	 * @param q
-	 *            The query that feeds the creation.
-	 */
-	static void assertCanMakeBoardLocation(Query q) {
-		assertTrue(
-				q.getRowColumnNames()
-						.containsAll(BOARD_LOCATION_REQUIRED_COLUMNS),
-				() -> "board location creation using " + q
-						+ " will fail; required columns missing");
-	}
-
-	private static SQLiteException causedBySQLite(DataAccessException e) {
+	private static SQLException causedBySQL(DataAccessException e) {
 		var t = e.getMostSpecificCause();
-		assertEquals(SQLiteException.class, t.getClass());
-		return (SQLiteException) t;
+		assertTrue(t instanceof SQLException);
+		return (SQLException) t;
 	}
 
 	private static String generateMessage(String expected,
-			SQLiteException got) {
-		// Extract the real error message out of SQLite itself
-		return format("expected %s failure but got %s", expected,
-				got.getMessage().replaceFirst(".*\\((.+)\\)$", "$1"));
+			SQLException got) {
+		// Extract the real error message out of real exception itself
+		return format("expected %s failure but got %s (%s)", expected,
+				got, got.getMessage().replaceFirst(".*\\((.+)\\)$", "$1"));
 	}
 
 	/**
@@ -166,8 +148,8 @@ abstract class DBTestingUtils {
 	 */
 	static void assertThrowsFK(Executable op) {
 		var e = assertThrows(DataAccessException.class, op);
-		var exn = causedBySQLite(e);
-		assertEquals(SQLITE_CONSTRAINT_FOREIGNKEY, exn.getResultCode(),
+		var exn = causedBySQL(e);
+		assertTrue(exn instanceof SQLIntegrityConstraintViolationException,
 				() -> generateMessage("FK", exn));
 	}
 
@@ -181,9 +163,7 @@ abstract class DBTestingUtils {
 	 */
 	static void assertThrowsCheck(Executable op) {
 		var e = assertThrows(DataAccessException.class, op);
-		var exn = causedBySQLite(e);
-		assertEquals(SQLITE_CONSTRAINT_CHECK, exn.getResultCode(),
-				() -> generateMessage("CHECK", exn));
+		causedBySQL(e);
 	}
 
 	/**

@@ -15,27 +15,29 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
-import static java.nio.file.Files.delete;
-import static java.nio.file.Files.exists;
 import static java.time.Duration.ofSeconds;
 import static java.time.Instant.now;
 import static java.time.Instant.ofEpochMilli;
 import static java.time.Instant.ofEpochSecond;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.enumerate;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.BASIC;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.function.IntConsumer;
 import java.util.function.ObjIntConsumer;
+
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +49,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connected;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Transacted;
@@ -103,12 +105,49 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 	/** Initial quota. */
 	protected static final long INITIAL_QUOTA = 1024;
 
+	/**
+	 * Main database name for tests.
+	 */
+	private static final String MAIN_DB_NAME = "spalloc";
+
+	/**
+	 * Historical database name for tests.
+	 */
+	private static final String HIST_DB_NAME = "spallochistory";
+
 	/** The DB. */
 	@Autowired
-	protected DatabaseEngine db;
+	protected DatabaseAPI db;
 
 	/** The context connection to the DB. */
 	protected Connection conn;
+
+	/** Tables that should be kept when clearing the DB. */
+	private static final Set<String> SAVED_TABLES = Set.of(
+			"movement_directions", "group_types", "job_states", "directions",
+			"board_model_coords", "board_models");
+
+	@SuppressWarnings("CompileTimeConstant")
+	private void clearDB(Connection c, String databaseName) {
+		try (var fq_checks = c.update("SET FOREIGN_KEY_CHECKS=:on");
+			    var all_tables = c.query(
+			    	"SELECT table_name FROM information_schema.tables "
+			    		+ "WHERE table_schema='" + databaseName + "' "
+			    		+ "AND table_type='BASE TABLE'");
+				) {
+			c.transaction(() -> {
+				fq_checks.call(0);
+				for (var table : all_tables.call(string("table_name"))) {
+					if (!SAVED_TABLES.contains(table)) {
+					    try (var clear = c.update("DELETE FROM " + table)) {
+							clear.call();
+    					}
+					}
+				}
+				fq_checks.call(1);
+			});
+		}
+	}
 
 	/**
 	 * Delete a DB file. It must not be open!
@@ -118,11 +157,15 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 	 * @throws IOException
 	 *             On failure.
 	 */
-	protected static void killDB(String dbPath) throws IOException {
-		var dbp = Paths.get(dbPath);
-		if (exists(dbp)) {
-			log.info("deleting old database: {}", dbp);
-			delete(dbp);
+	protected void killDB() throws IOException {
+		db.executeVoid(c -> {
+			clearDB(c, MAIN_DB_NAME);
+		});
+
+		if (db.isHistoricalDBAvailable()) {
+		    try (var histConn = db.getHistoricalConnection()) {
+		    	clearDB(histConn, HIST_DB_NAME);
+		    }
 		}
 	}
 
@@ -162,7 +205,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 		makeMachine(c, 1, 1, 1);
 		// Add one board to the machine
 		try (var u = c.update(INSERT_BOARD_WITH_ID)) {
-			u.call(BOARD, BOARD_ADDR, BMP, 0, MACHINE, 0, 0, 0, 0, 0, false);
+			assertEquals(1, u.call(BOARD, BOARD_ADDR, BMP, 0, MACHINE, 0, 0, 0, 0, 0, false));
 		}
 		// A disabled permission-less user with a quota
 		makeUser(c);
@@ -288,7 +331,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 	protected List<String> getReports() {
 		return db.execute(c -> {
 			try (var q = c.query("SELECT reported_issue FROM board_reports")) {
-				return q.call().map(string("reported_issue")).toList();
+				return q.call(string("reported_issue"));
 			}
 		});
 	}
@@ -363,22 +406,22 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 
 	protected JobState getJobState(int job) {
 		try (var q = conn.query(GET_JOB)) {
-			return conn.transaction(() -> q.call1(job).orElseThrow()
-					.getEnum("job_state", JobState.class));
+			return conn.transaction(() -> q.call1(
+					enumerate("job_state", JobState.class), job).orElseThrow());
 		}
 	}
 
 	protected int getJobRequestCount() {
 		try (var q = conn.query(TEST_COUNT_REQUESTS)) {
 			return conn.transaction(
-					() -> q.call1(QUEUED).orElseThrow().getInt("cnt"));
+					() -> q.call1(integer("cnt"), QUEUED).orElseThrow());
 		}
 	}
 
 	protected int getPendingPowerChanges() {
 		try (var q = conn.query(TEST_COUNT_POWER_CHANGES)) {
 			return conn
-					.transaction(() -> q.call1().orElseThrow().getInt("cnt"));
+					.transaction(() -> q.call1(integer("cnt")).orElseThrow());
 		}
 	}
 
@@ -386,7 +429,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 
 	protected int makeJob() {
 		return db.execute(c -> makeJob(c, null, QUEUED, null,
-				ofEpochMilli(0), null, null, ofSeconds(0), now()));
+				now(), null, null, ofSeconds(0), now()));
 	}
 
 	protected void withJob(IntConsumer act) {

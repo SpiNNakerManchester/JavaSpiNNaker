@@ -16,6 +16,7 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_READER;
+import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
 
 import java.security.Principal;
 
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.ac.manchester.spinnaker.alloc.model.JobDescription;
@@ -113,6 +115,22 @@ public interface SystemController {
 	@PreAuthorize(IS_READER)
 	@UsedInJavadocOnly(JobDescription.class)
 	ModelAndView getJobInfo(@PathVariable("id") int id);
+
+	/**
+	 * Delete a job.
+	 *
+	 * @param id
+	 *            Which job is being deleted
+	 * @param reason
+	 *            Why the job is being deleted
+	 * @return View ({@code jobdetails.jsp}) and model (based on
+	 *         {@link JobDescription})
+	 */
+	@PostMapping("/delete_job/{id}")
+	@PreAuthorize(MAY_SEE_JOB_DETAILS)
+	@UsedInJavadocOnly(JobDescription.class)
+	ModelAndView destroyJob(@PathVariable("id") int id,
+			@RequestParam("reason") String reason);
 
 	/**
 	 * Get the view and model for the password change form.

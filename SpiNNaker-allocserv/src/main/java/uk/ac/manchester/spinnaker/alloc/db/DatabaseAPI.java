@@ -15,20 +15,15 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
-import java.io.File;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.core.io.Resource;
-import org.springframework.dao.PermissionDeniedDataAccessException;
 
 import com.google.errorprone.annotations.CompileTimeConstant;
 import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.storage.GeneratesID;
-import uk.ac.manchester.spinnaker.storage.SingleRowResult;
-import uk.ac.manchester.spinnaker.utils.MappableIterable;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -44,18 +39,6 @@ public interface DatabaseAPI {
 	 * connections instead. The connection has auto-commit disabled; use the
 	 * {@link Connection#transaction(DatabaseEngine.TransactedWithResult)
 	 * transaction()} method instead.
-	 * <p>
-	 * Note that if an in-memory database is used (see
-	 * {@link #getInMemoryDB()}), that DB can <em>only</em> be accessed from the
-	 * connection returned from this method; the next call to this method
-	 * (whether from the current thread or another one) will get an independent
-	 * database. Such in-memory databases are not subject to thread-bound
-	 * cleanup actions; they're simply deleted from memory when no longer used
-	 * (but the connection should be {@code close()}d after use for efficiency
-	 * nonetheless).
-	 * <p>
-	 * This would be marked with {@link MustBeClosed} except that causes a mess
-	 * elsewhere.
 	 *
 	 * @return A configured initialised connection to the database.
 	 */
@@ -63,13 +46,21 @@ public interface DatabaseAPI {
 	Connection getConnection();
 
 	/**
-	 * Create an engine interface for an in-memory database. This is intended
-	 * mainly for testing purposes. Note that various coupled automatic services
-	 * are disabled, in particular connections are not closed automatically.
+	 * Whether the historical data DB is available. If it isn't, you can't
+	 * move any data to longer-term storage, but ordinary operations should
+	 * be fine.
 	 *
-	 * @return The in-memory database interface.
+	 * @return Whether the historical data DB is available.
 	 */
-	DatabaseAPI getInMemoryDB();
+	boolean isHistoricalDBAvailable();
+
+	/**
+	 * Get a connection to the historical database, similar to the above.
+	 *
+	 * @return A configured initialised connection to the historical database.
+	 */
+	@MustBeClosed
+	Connection getHistoricalConnection();
 
 	/**
 	 * A connection manager and transaction runner. If the {@code operation}
@@ -146,26 +137,6 @@ public interface DatabaseAPI {
 	}
 
 	/**
-	 * Creates a backup of the database. <em>This operation should only be
-	 * called by administrators.</em>
-	 *
-	 * @param backupFilename
-	 *            The backup file to create.
-	 */
-	void createBackup(File backupFilename);
-
-	/**
-	 * Restores the database from backup. <em>This operation should only be
-	 * called by administrators.</em>
-	 *
-	 * @param backupFilename
-	 *            The backup file to restore from.
-	 * @throws PermissionDeniedDataAccessException
-	 *             If the backup cannot be read.
-	 */
-	void restoreFromBackup(File backupFilename);
-
-	/**
 	 * Connections made by the database engine bean. Its methods do not throw
 	 * checked exceptions. The connection is thread-bound, and will be cleaned
 	 * up correctly when the thread exits (ideal for thread pools).
@@ -204,15 +175,6 @@ public interface DatabaseAPI {
 		 * @see java.sql.Connection#isReadOnly()
 		 */
 		boolean isReadOnly();
-
-		/**
-		 * Whether the historical data DB is available. If it isn't, you can't
-		 * move any data to longer-term storage, but ordinary operations should
-		 * be fine.
-		 *
-		 * @return Whether the historical data DB is available.
-		 */
-		boolean isHistoricalDBAvailable();
 
 		/**
 		 * A nestable transaction runner. If the {@code operation} completes
@@ -546,36 +508,12 @@ public interface DatabaseAPI {
 	 * @author Donal Fellows
 	 */
 	interface StatementCommon extends AutoCloseable {
-		/**
-		 * Get the number of arguments expected when calling this statement.
-		 *
-		 * @return The number of arguments. Types are arbitrary (because SQLite)
-		 */
-		int getNumArguments();
-
-		/**
-		 * Get the set of names of columns produced when calling this statement.
-		 *
-		 * @return A set of names. The order is the order in the SQL producing
-		 *         the result set, but this should normally be insignificant.
-		 */
-		Set<String> getRowColumnNames();
 
 		/**
 		 * Close this statement. This never throws a checked exception.
 		 */
 		@Override
 		void close();
-
-		/**
-		 * Get the query plan explanation. Note that DML and DDL <em>may</em>
-		 * have empty query plans; that's up to the DB.
-		 *
-		 * @return A list of lines that describe the query plan.
-		 * @see <a href="https://www.sqlite.org/eqp.html">SQLite
-		 *      documentation</a>
-		 */
-		List<String> explainQueryPlan();
 	}
 
 	/**
@@ -584,29 +522,30 @@ public interface DatabaseAPI {
 	 * @author Donal Fellows
 	 */
 	interface Query extends StatementCommon {
-		/**
-		 * Run the query on the given arguments.
-		 *
-		 * @param arguments
-		 *            Positional argument to the query
-		 * @return The results, wrapped as a one-shot iterable. The
-		 *         {@linkplain Row rows} in the iterable <em>must not</em> be
-		 *         retained by callers; they may share state and might not
-		 *         outlive the iteration.
-		 */
-		MappableIterable<Row> call(Object... arguments);
 
 		/**
-		 * Run the query on the given arguments. The query must be one that only
-		 * produces a single row result.
+		 * Run the query on the given arguments to read a list of objects.
 		 *
+		 * @param <T> The type of the result.
+		 * @param mapper
+		 *            Mapper that gets an object from a row set.
 		 * @param arguments
 		 *            Positional argument to the query
-		 * @return The single row with the results, or empty if there is no such
-		 *         row.
-		 * @see SingleRowResult
+		 * @return The resulting list of objects.
 		 */
-		Optional<Row> call1(Object... arguments);
+		<T> List<T> call(RowMapper<T> mapper, Object... arguments);
+
+		/**
+		 * Run the query on the given arguments to read a single object.
+		 *
+		 * @param <T> The type of the result.
+		 * @param mapper
+		 *            Mapper that gets an object from a row set.
+		 * @param arguments
+		 *            Positional argument to the query.
+		 * @return The resulting object.
+		 */
+		<T> Optional<T> call1(RowMapper<T> mapper, Object... arguments);
 	}
 
 	/**
@@ -626,16 +565,6 @@ public interface DatabaseAPI {
 		int call(Object... arguments);
 
 		/**
-		 * Run the update on the given arguments.
-		 *
-		 * @param arguments
-		 *            Positional arguments to the query
-		 * @return The integer primary keys generated by the update.
-		 * @see GeneratesID
-		 */
-		MappableIterable<Integer> keys(Object... arguments);
-
-		/**
 		 * Run the update on the given arguments. This is expected to generate a
 		 * single integer primary key (common with {@code INSERT}).
 		 *
@@ -645,5 +574,23 @@ public interface DatabaseAPI {
 		 * @see GeneratesID
 		 */
 		Optional<Integer> key(Object... arguments);
+	}
+
+	/**
+	 * Maps database Row to an object.
+	 *
+	 * @param <T> The type of object returned
+	 */
+	@FunctionalInterface
+	interface RowMapper<T> {
+
+		/**
+		 * Map a row to an object.
+		 *
+		 * @param row The row to map.
+		 *
+		 * @return The object created from the row.
+		 */
+		T mapRow(Row row);
 	}
 }

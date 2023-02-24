@@ -17,16 +17,15 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.int64;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.TestSupport;
@@ -35,36 +34,23 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
 @SpringBootTest
 @SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
-@TestPropertySource(properties = {
-	"spalloc.database-path=" + QuotaManagerTest.DB,
-	"spalloc.historical-data.path=" + QuotaManagerTest.HIST_DB
-})
 class QuotaManagerTest extends TestSupport {
-	/** The DB file. */
-	static final String DB = "target/qm_test.sqlite3";
-
-	/** The DB file. */
-	static final String HIST_DB = "target/qm_test_hist.sqlite3";
 
 	/** Because the regular scheduled actions are not running. */
 	private QuotaManager.TestAPI qm;
 
-	@BeforeAll
-	static void clearDB() throws IOException {
-		killDB(DB);
-	}
-
 	@BeforeEach
 	@SuppressWarnings("deprecation")
-	void checkSetup(@Autowired QuotaManager qm) {
+	void checkSetup(@Autowired QuotaManager qm) throws IOException {
 		assumeTrue(db != null, "spring-configured DB engine absent");
+		killDB();
 		setupDB1();
 		this.qm = qm.getTestAPI();
 	}
 
 	private Long getQuota(Connection c) {
 		try (var q = c.query(TEST_GET_QUOTA)) {
-			return q.call1(MACHINE, USER).orElseThrow().getLong("quota");
+			return q.call1(int64("quota"), USER).orElse(null);
 		}
 	}
 

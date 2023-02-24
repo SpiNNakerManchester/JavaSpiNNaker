@@ -16,6 +16,7 @@
 package uk.ac.manchester.spinnaker.connections;
 
 import static java.lang.Thread.currentThread;
+import static java.lang.String.format;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
@@ -92,14 +93,21 @@ public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 	 *
 	 * @param chip
 	 *            The location of the chip on the board with this remoteHost
+	 * @param localHost
+	 *            The optional host of the local interface to listen on; use
+	 *            {@code null} to listen on all local interfaces.
+	 * @param localPort
+	 *            The optional local port to listen on; use {@code null} to pick
+	 *            a random port.
 	 * @param remoteHost
 	 *            The remote host to send messages to.
 	 * @throws IOException
 	 *             If anything goes wrong with socket setup.
 	 */
-	public SCPConnection(HasChipLocation chip, InetAddress remoteHost)
+	public SCPConnection(HasChipLocation chip, InetAddress localHost,
+			Integer localPort, InetAddress remoteHost)
 			throws IOException {
-		this(chip, null, null, remoteHost, SCP_SCAMP_PORT);
+		this(chip, localHost, localPort, remoteHost, SCP_SCAMP_PORT);
 	}
 
 	/**
@@ -136,12 +144,18 @@ public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 	 *
 	 * @param chip
 	 *            The location of the target chip on the board.
+	 * @param remoteHost
+	 *            The remote host name or IP address to send packets to. If
+	 *            {@code null}, the socket will be available for listening only,
+	 *            and will throw an exception if used for sending.
+	 *
 	 * @throws IOException
 	 *             If anything goes wrong with socket manipulation.
 	 * @hidden
 	 */
-	protected SCPConnection(HasChipLocation chip) throws IOException {
-		super(chip, true);
+	public SCPConnection(HasChipLocation chip, InetAddress remoteHost)
+			throws IOException {
+		super(chip, remoteHost, SCP_SCAMP_PORT);
 	}
 
 	private SCPResultMessage getMessageFromQueue() {
@@ -240,5 +254,12 @@ public class SCPConnection extends SDPConnection implements SCPSenderReceiver {
 			log.warn("response for message now awaited by different thread");
 		}
 		send(requestData);
+	}
+
+	@Override
+	public String toString() {
+		return format("%s(%s <-%s-> %s)",
+				getClass().getSimpleName().replaceAll("^.*\\.", ""),
+				getChip(), isClosed() ? "|" : "", getRemoteAddress());
 	}
 }

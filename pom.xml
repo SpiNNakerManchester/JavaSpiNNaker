@@ -65,6 +65,8 @@ limitations under the License.
 		<jython.version>2.7.3</jython.version>
 		<error-prone.version>2.18.0</error-prone.version>
 		<picocli.version>4.7.1</picocli.version>
+		<mysql.version>8.0.32</mysql.version>
+		<testcontainers.version>1.17.6</testcontainers.version>
 	</properties>
 
 	<dependencyManagement>

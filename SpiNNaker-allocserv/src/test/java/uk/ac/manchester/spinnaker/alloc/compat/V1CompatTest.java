@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.function.BiConsumer;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -66,15 +67,11 @@ class V1CompatTest extends TestSupport {
 
 	private V1CompatService.TestAPI testAPI;
 
-	@BeforeAll
-	static void clearDB() throws IOException {
-		killDB(DB);
-	}
-
 	@BeforeEach
 	@SuppressWarnings("deprecation")
-	void checkSetup(@Autowired V1CompatService compat) {
+	void checkSetup(@Autowired V1CompatService compat) throws IOException {
 		assumeTrue(db != null, "spring-configured DB engine absent");
+		killDB();
 		setupDB1();
 		testAPI = compat.getTestApi();
 	}
@@ -307,7 +304,7 @@ class V1CompatTest extends TestSupport {
 		private String expectedNotification;
 
 		// Make an allocated job for us to work with
-		@BeforeAll
+		@BeforeEach
 		void setupJob() {
 			jobId = makeJob();
 			expectedNotification = "{\"jobs_changed\":[" + jobId + "]}";
@@ -318,7 +315,7 @@ class V1CompatTest extends TestSupport {
 		}
 
 		// Get rid of the allocated job
-		@AfterAll
+		@AfterEach
 		void teardownJob() {
 			db.executeVoid(c -> {
 				allocateBoardToJob(c, BOARD, null);

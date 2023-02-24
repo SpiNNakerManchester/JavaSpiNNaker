@@ -13,24 +13,24 @@
 -- limitations under the License.
 
 WITH RECURSIVE
-	args(machine_id, x, y, z, width, height, "depth") AS (
-		VALUES (:machine_id, :x, :y, :z, :width, :height, :depth)),
+	args(machine_id, x, y, z, width, height, depth) AS (
+		SELECT :machine_id, :x, :y, :z, :width, :height, :depth),
 	-- The logical rectangle of interest
-	rect(x, y, z) AS MATERIALIZED (
-		WITH
+	rect(x, y, z) AS (
+		WITH RECURSIVE
 			m(w, h, d) AS (
-				SELECT machines.width, machines.height, machines."depth"
+				SELECT machines.width, machines.height, machines.depth
 				FROM machines JOIN args USING (machine_id)
 				LIMIT 1),
 			xrange(n) AS (
-				SELECT 0 UNION ALL SELECT n+1 FROM xrange
-				LIMIT (SELECT width FROM args)),
+				SELECT 0 UNION ALL SELECT n+1 FROM xrange, args 
+				WHERE n < args.width - 1),
 			yrange(n) AS (
-				SELECT 0 UNION ALL SELECT n+1 FROM yrange
-				LIMIT (SELECT height FROM args)),
+				SELECT 0 UNION ALL SELECT n+1 FROM yrange, args
+				WHERE n < args.height - 1),
 			zrange(n) AS (
-				SELECT 0 UNION ALL SELECT n+1 FROM zrange
-				LIMIT (SELECT "depth" FROM args))
+				SELECT 0 UNION ALL SELECT n+1 FROM zrange, args
+				WHERE n < args.depth - 1)
 		SELECT (args.x + xrange.n) % m.w, (args.y + yrange.n) % m.h,
 			(args.z + zrange.n) % m.d
 		FROM args, xrange, yrange, zrange, m
@@ -39,7 +39,7 @@ WITH RECURSIVE
 	bs(board_id, x, y, z) AS (
 		SELECT boards.board_id, boards.x, boards.y, boards.z FROM boards
 		JOIN args USING (machine_id)
-		JOIN rect USING (x, y, z)
+		JOIN rect ON boards.x = rect.x AND boards.y = rect.y and boards.z = rect.z
 		WHERE may_be_allocated
 		ORDER BY 2, 3, 4),
 	-- Links between boards of interest
@@ -53,10 +53,9 @@ WITH RECURSIVE
 		SELECT board_id FROM boards JOIN args USING (machine_id, x, y, z)
 			WHERE may_be_allocated
 		UNION
-		SELECT ls.b2 FROM connected JOIN ls ON b1 == b
+		SELECT ls.b2 FROM connected JOIN ls ON b1 = b
 		UNION
-		SELECT ls.b1 FROM connected JOIN ls ON b2 == b
-		ORDER BY 1)
+		SELECT ls.b1 FROM connected JOIN ls ON b2 = b)
 SELECT
 	bs.board_id
 FROM bs JOIN connected ON bs.board_id = connected.b

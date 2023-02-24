@@ -196,11 +196,13 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	 *             If the message can't be sent.
 	 */
 	private void handleReceivedMessage(ByteBuffer msg) throws IOException {
-		log.debug("{} received message {}", name, msg);
+		log.trace("{} received message {}", name, msg);
 		var outgoing = workingBuffer.duplicate();
 		outgoing.put(msg);
 		outgoing.flip();
-		session.sendMessage(new BinaryMessage(outgoing));
+		synchronized (session) {
+			session.sendMessage(new BinaryMessage(outgoing));
+		}
 	}
 
 	/**
@@ -221,13 +223,15 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 		try {
 			mainLoop(recvFrom);
 		} catch (IOException e) {
-			try {
-				close();
-				emergencyRemove.run();
-			} catch (IOException e1) {
-				e.addSuppressed(e1);
+			if (!isClosed()) {
+				try {
+					close();
+					emergencyRemove.run();
+				} catch (IOException e1) {
+					e.addSuppressed(e1);
+				}
+				log.warn("problem in SpiNNaker-to-client part of {}", name, e);
 			}
-			log.warn("problem in SpiNNaker-to-client part of {}", name, e);
 		} finally {
 			log.debug("shutting down eieio listener {}", name);
 			me.setName(oldThreadName);

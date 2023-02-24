@@ -31,6 +31,7 @@ import static uk.ac.manchester.spinnaker.alloc.bmp.BlacklistOperation.READ;
 import static uk.ac.manchester.spinnaker.alloc.bmp.BlacklistOperation.WRITE;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.stream;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
@@ -40,6 +41,7 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.curry;
 
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
@@ -56,6 +58,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -308,8 +311,8 @@ public class BMPController extends DatabaseAwareBean {
 	public int getPendingRequestLoading() {
 		try (var conn = getConnection();
 				var countChanges = conn.query(COUNT_PENDING_CHANGES)) {
-			return conn.transaction(false, () -> countChanges.call1()
-					.map(integer("c")).orElse(0));
+			return conn.transaction(false,
+					() -> countChanges.call1(integer("c")).orElse(0));
 		}
 	}
 
@@ -449,7 +452,7 @@ public class BMPController extends DatabaseAwareBean {
 		final boolean markBoardAsDead(AfterSQL sql, int boardId, String msg) {
 			boolean result = sql.markBoardAsDead(boardId) > 0;
 			if (result) {
-				sql.findBoardById.call1(boardId).ifPresent(row -> {
+				sql.findBoardById.call1(row -> {
 					var ser = row.getString("physical_serial_id");
 					if (ser == null) {
 						ser = "<UNKNOWN>";
@@ -462,6 +465,7 @@ public class BMPController extends DatabaseAwareBean {
 					// Postpone email sending until out of transaction
 					postCleanupTasks.add(
 							() -> emailSender.sendServiceMail(fullMessage));
+					return null;
 				});
 			}
 			return result;
@@ -550,8 +554,8 @@ public class BMPController extends DatabaseAwareBean {
 			 */
 			powerOnAddresses = sql.transaction(() -> powerOnBoards.values()
 					.stream().flatMap(Collection::stream)
-					.map(boardId -> sql.getBoardAddress.call1(boardId)
-							.map(string("address")).orElse(null))
+					.map(boardId -> sql.getBoardAddress.call1(string("address"),
+							boardId).orElse(null))
 					.collect(toList()));
 		}
 
@@ -607,11 +611,11 @@ public class BMPController extends DatabaseAwareBean {
 		private boolean done(AfterSQL sql) {
 			int turnedOn = powerOnBoards.values().stream()
 					.flatMap(Collection::stream)
-					.mapToInt(board -> sql.setBoardState(true, board)).sum();
+					.mapToInt(board -> sql.setBoardPowerOn(board)).sum();
 			int jobChange = sql.setJobState(to, 0, jobId);
 			int turnedOff = powerOffBoards.values().stream()
 					.flatMap(Collection::stream)
-					.mapToInt(board -> sql.setBoardState(false, board)).sum();
+					.mapToInt(board -> sql.setBoardPowerOff(board)).sum();
 			int deallocated = 0;
 			if (to == DESTROYED) {
 				/*
@@ -816,21 +820,21 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		List<BlacklistRequest> getBlacklistReads(Machine machine) {
-			return getBlacklistReads.call(machine.getId())
-					.map(row -> new BlacklistRequest(machine, READ, row))
-					.toList();
+			return getBlacklistReads.call(
+					row -> new BlacklistRequest(machine, READ, row),
+					machine.getId());
 		}
 
 		List<BlacklistRequest> getBlacklistWrites(Machine machine) {
-			return getBlacklistWrites.call(machine.getId())
-					.map(row -> new BlacklistRequest(machine, WRITE, row))
-					.toList();
+			return getBlacklistWrites.call(
+					row -> new BlacklistRequest(machine, WRITE, row),
+					machine.getId());
 		}
 
 		List<BlacklistRequest> getReadSerialInfos(Machine machine) {
-			return getSerials.call(machine.getId())
-					.map(row -> new BlacklistRequest(machine, GET_SERIAL, row))
-					.toList();
+			return getSerials.call(
+					row -> new BlacklistRequest(machine, GET_SERIAL, row),
+					machine.getId());
 		}
 	}
 
@@ -1099,17 +1103,63 @@ public class BMPController extends DatabaseAwareBean {
 				var requestCollector = new ArrayList<Request>();
 				// The outer loop is always over a small set, fortunately
 				for (var machine : machines) {
-					sql.getJobIdsWithChanges.call(machine.getId())
-							.map(integer("job_id"))
+					stream(sql.getJobIdsWithChanges.call(integer("job_id"),
+							machine.getId(), Instant.now()))
 							.filter(jobId -> !busyJobs.contains(jobId))
 							.forEach(jobId -> takeRequestsForJob(machine, jobId,
 									sql, requestCollector));
-					requestCollector.addAll(sql.getBlacklistReads(machine));
-					requestCollector.addAll(sql.getBlacklistWrites(machine));
-					requestCollector.addAll(sql.getReadSerialInfos(machine));
+
+					// Avoid doing these in the case that anything else is
+					// being done with the board
+					if (requestCollector.isEmpty()) {
+						requestCollector.addAll(
+								sql.getBlacklistReads(machine));
+					}
+					if (requestCollector.isEmpty()) {
+						requestCollector.addAll(
+								sql.getBlacklistWrites(machine));
+					}
+					if (requestCollector.isEmpty()) {
+						requestCollector.addAll(
+								sql.getReadSerialInfos(machine));
+					}
 				}
 				return requestCollector;
 			});
+		}
+	}
+
+	private class PowerChange {
+		final Integer changeId;
+
+		final int cabinet;
+
+		final int frame;
+
+		final Integer boardId;
+
+		final Integer boardNum;
+
+		final boolean power;
+
+		final JobState from;
+
+		final JobState to;
+
+		final List<Direction> offLinks;
+
+		PowerChange(Row row) {
+			changeId = row.getInteger("change_id");
+			cabinet = row.getInt("cabinet");
+			frame = row.getInt("frame");
+			boardId = row.getInteger("board_id");
+			boardNum = row.getInteger("board_num");
+			power = row.getBoolean("power");
+			from = row.getEnum("from_state", JobState.class);
+			to = row.getEnum("to_state", JobState.class);
+			offLinks = List.of(Direction.values()).stream().filter(
+					link -> !row.getBoolean(link.columnName)).collect(
+							Collectors.toList());
 		}
 	}
 
@@ -1125,28 +1175,25 @@ public class BMPController extends DatabaseAwareBean {
 				new DefaultMap<BMPCoords, Map<Integer, BMPBoard>>(HashMap::new);
 		busyJobs.add(jobId);
 
-		for (var row : sql.getPowerChangesToDo.call(jobId)) {
-			changeIds.add(row.getInteger("change_id"));
-			var bmp = new BMPCoords(row.getInt("cabinet"), row.getInt("frame"));
-			var board = row.getInteger("board_id");
-			idToBoard.get(bmp).put(board,
-					new BMPBoard(row.getInteger("board_num")));
-			boolean switchOn = row.getBoolean("power");
+		for (var req : sql.getPowerChangesToDo.call(PowerChange::new, jobId)) {
+			changeIds.add(req.changeId);
+			var bmp = new BMPCoords(req.cabinet, req.frame);
+			var board = req.boardId;
+			idToBoard.get(bmp).put(board, new BMPBoard(req.boardNum));
+			boolean switchOn = req.power;
 			/*
 			 * Set these multiple times; we don't care as they should be the
 			 * same for each board.
 			 */
-			from = row.getEnum("from_state", JobState.class);
-			to = row.getEnum("to_state", JobState.class);
+			from = req.from;
+			to = req.to;
 			if (switchOn) {
 				boardsOn.get(bmp).add(board);
 				/*
 				 * Decode a collection of boolean columns to say which links to
 				 * switch back off
 				 */
-				List.of(Direction.values()).stream()
-						.filter(link -> !row.getBoolean(link.columnName))
-						.forEach(link -> linksOff.get(bmp)
+				req.offLinks.stream().forEach(link -> linksOff.get(bmp)
 								.add(new Link(board, link)));
 			} else {
 				boardsOff.get(bmp).add(board);
@@ -1177,9 +1224,13 @@ public class BMPController extends DatabaseAwareBean {
 	 * {@code processAfterChange()}.
 	 */
 	private final class AfterSQL extends AbstractSQL {
-		private final Update setBoardState;
+		private final Update setBoardPowerOn;
+
+		private final Update setBoardPowerOff;
 
 		private final Update setJobState;
+
+		private final Update setJobDestroyed;
 
 		private final Update setInProgress;
 
@@ -1209,8 +1260,10 @@ public class BMPController extends DatabaseAwareBean {
 
 		AfterSQL(Connection conn) {
 			super(conn);
-			setBoardState = conn.update(SET_BOARD_POWER);
+			setBoardPowerOn = conn.update(SET_BOARD_POWER_ON);
+			setBoardPowerOff = conn.update(SET_BOARD_POWER_OFF);
 			setJobState = conn.update(SET_STATE_PENDING);
+			setJobDestroyed = conn.update(SET_STATE_DESTROYED);
 			setInProgress = conn.update(SET_IN_PROGRESS);
 			deallocateBoards = conn.update(DEALLOCATE_BOARDS_JOB);
 			deleteChange = conn.update(FINISHED_PENDING);
@@ -1242,17 +1295,26 @@ public class BMPController extends DatabaseAwareBean {
 			deallocateBoards.close();
 			setInProgress.close();
 			setJobState.close();
-			setBoardState.close();
+			setJobDestroyed.close();
+			setBoardPowerOn.close();
+			setBoardPowerOff.close();
 			super.close();
 		}
 
 		// What follows are type-safe wrappers
 
-		int setBoardState(boolean state, Integer boardId) {
-			return setBoardState.call(state, boardId);
+		int setBoardPowerOn(Integer boardId) {
+			return setBoardPowerOn.call(Instant.now(), boardId);
+		}
+
+		int setBoardPowerOff(Integer boardId) {
+			return setBoardPowerOff.call(Instant.now(), boardId);
 		}
 
 		int setJobState(JobState state, int pending, Integer jobId) {
+			if (state == JobState.DESTROYED) {
+				return setJobDestroyed.call(pending, Instant.now(), jobId);
+			}
 			return setJobState.call(state, pending, jobId);
 		}
 
@@ -1296,8 +1358,8 @@ public class BMPController extends DatabaseAwareBean {
 
 		int insertBoardReport(
 				int boardId, Integer jobId, String issue, int userId) {
-			return insertBoardReport.key(boardId, jobId, issue, userId)
-					.orElseThrow();
+			return insertBoardReport.key(boardId, jobId, issue, userId,
+					Instant.now()).orElseThrow();
 		}
 
 		int markBoardAsDead(Integer boardId) {
@@ -1305,7 +1367,7 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		Optional<Integer> getUser(String userName) {
-			return getUser.call1(userName).map(integer("user_id"));
+			return getUser.call1(integer("user_id"), userName);
 		}
 	}
 
@@ -1374,6 +1436,7 @@ public class BMPController extends DatabaseAwareBean {
 
 		WorkerState(Machine machine) {
 			this.machine = machine;
+			log.debug("Created worker thread for machine {}", machine);
 		}
 
 		void interrupt() {
@@ -1388,6 +1451,8 @@ public class BMPController extends DatabaseAwareBean {
 		void launchThreadIfNecessary() throws InterruptedException {
 			synchronized (state) {
 				if (isNull(workerThread)) {
+					log.debug("Starting background thread for machine {}",
+							machine);
 					executor.execute(this::backgroundThread);
 					while (isNull(workerThread)) {
 						state.wait();
@@ -1647,8 +1712,16 @@ public class BMPController extends DatabaseAwareBean {
 		void processRequests(long millis)
 				throws IOException, SpinnmanException, InterruptedException;
 
+		/**
+		 * Get the last BMP exception.
+		 *
+		 * @return The exception.
+		 */
 		Throwable getBmpException();
 
+		/**
+		 * Clear the last BMP exception.
+		 */
 		void clearBmpException();
 	}
 
