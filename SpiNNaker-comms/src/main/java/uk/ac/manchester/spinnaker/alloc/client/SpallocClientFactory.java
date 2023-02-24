@@ -693,7 +693,7 @@ public class SpallocClientFactory {
 				}
 			}
 			if (bootChipAddress != null) {
-			    conns.add(new ProxiedBootConnection(ws, bootChipAddress));
+				conns.add(new ProxiedBootConnection(ws, bootChipAddress));
 			}
 			return new ProxiedTransceiver(version, conns, hostToChip, ws);
 		}
