@@ -696,6 +696,7 @@ public final class CommandLineInterface {
 	}
 
 	@MustBeClosed
+	@SuppressWarnings("MustBeClosed")
 	private static TransceiverInterface getTransceiver(Machine machine,
 			SpallocClient.Job job)
 			throws IOException, SpinnmanException, InterruptedException {

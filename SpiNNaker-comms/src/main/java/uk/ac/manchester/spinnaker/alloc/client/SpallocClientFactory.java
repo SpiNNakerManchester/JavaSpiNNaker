@@ -673,6 +673,7 @@ public class SpallocClientFactory {
 			}
 		}
 
+		@MustBeClosed
 		@Override
 		public TransceiverInterface getTransceiver()
 				throws IOException, InterruptedException, SpinnmanException {
