@@ -79,8 +79,7 @@ import uk.ac.manchester.spinnaker.utils.Daemon;
  * <strong>Implementation Note:</strong> Neither this class nor the client
  * classes it creates maintain state that needs to be closed explicitly
  * <em>except</em> for
- * {@linkplain SpallocClient.Job#getTransceiver(
- * uk.ac.manchester.spinnaker.machine.Machine) transceivers}, as transceivers
+ * {@linkplain SpallocClient.Job#getTransceiver() transceivers}, as transceivers
  * usually need to be closed.
  *
  * @author Donal Fellows
