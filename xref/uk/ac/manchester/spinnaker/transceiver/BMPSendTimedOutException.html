@@ -28,7 +28,7 @@
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> java.net.SocketTimeoutException;
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.SCPRequestHeader;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment"> * Indicates that message sending to a BMP timed out.</em>
@@ -37,11 +37,12 @@
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  		<strong class="jxr_keyword">extends</strong> SocketTimeoutException {
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> serialVersionUID = 1660563278795501381L;
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  	BMPSendTimedOutException(<a name="SCPRequestHeader" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/SCPRequestHeader.html#SCPRequestHeader">SCPRequestHeader</a> hdr, <strong class="jxr_keyword">int</strong> timeout) {
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  		<strong class="jxr_keyword">super</strong>(format(<span class="jxr_string">"Operation %s timed out after %f seconds"</span>, hdr.command,
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  				timeout / (<strong class="jxr_keyword">double</strong>) MSEC_PER_SEC));
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  	}
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  }
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  	BMPSendTimedOutException(SCPRequest&lt;?&gt; req, <strong class="jxr_keyword">int</strong> timeout) {
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  		<strong class="jxr_keyword">super</strong>(format(<span class="jxr_string">"Operation %s (%s) timed out after %f seconds"</span>,
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  				req.scpRequestHeader.command, req,
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  				timeout / (<strong class="jxr_keyword">double</strong>) MSEC_PER_SEC));
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  	}
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2023 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

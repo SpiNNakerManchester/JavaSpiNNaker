@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -207,13 +207,20 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i2">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#transaction(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Transacted)">transaction</a></span>&#8203;(<a href="DatabaseAPI.Transacted.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Transacted</a>&nbsp;action)</code></th>
+<td class="colLast">
+<div class="block">A nestable transaction runner.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i3">
 <td class="colFirst"><code>&lt;T&gt;&nbsp;T</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#transaction(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)">transaction</a></span>&#8203;(<a href="DatabaseAPI.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.TransactedWithResult</a>&lt;T&gt;&nbsp;action)</code></th>
 <td class="colLast">
 <div class="block">A nestable transaction runner.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="altColor" id="i4">
 <td class="colFirst"><code>&lt;T&gt;&nbsp;T</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#transactionRead(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)">transactionRead</a></span>&#8203;(<a href="DatabaseAPI.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.TransactedWithResult</a>&lt;T&gt;&nbsp;action)</code></th>
 <td class="colLast">
@@ -322,6 +329,20 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <dd><code>action</code> - The code to run inside the transaction.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Whatever the <code>action</code> returns.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="transaction(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Transacted)">transaction</a></h3>
+<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">transaction</span>&#8203;(<span class="arguments"><a href="DatabaseAPI.Transacted.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Transacted</a>&nbsp;action)</span></div>
+<div class="block">A nestable transaction runner. If the <code>action</code> completes
+ normally (and this isn't a nested use), the transaction commits. If a
+ runtime exception is thrown, the transaction is rolled back (and the
+ exception flows through). A write lock is used.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>action</code> - The code to run inside the transaction.</dd>
 </dl>
 </section>
 </li>

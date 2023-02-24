@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":18,"i3":6,"i4":18,"i5":6,"i6":6,"i7":6};
+<script type="text/javascript">var data = {"i0":6,"i1":18,"i2":6,"i3":18,"i4":6,"i5":6,"i6":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],16:["t5","Default Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -90,7 +90,7 @@ loadScripts(document, 'script');</script>
 <section class="description">
 <dl>
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="DatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine</a></code></dd>
+<dd><code><a href="DatabaseEngineJDBCImpl.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngineJDBCImpl</a></code></dd>
 </dl>
 <hr>
 <pre>public interface <span class="typeNameLabel">DatabaseAPI</span></pre>
@@ -152,26 +152,33 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>static interface&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="DatabaseAPI.RowMapper.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.RowMapper</a>&lt;<a href="DatabaseAPI.RowMapper.html" title="type parameter in DatabaseAPI.RowMapper">T</a>&gt;</span></code></th>
+<td class="colLast">
+<div class="block">Maps database Row to an object.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static interface&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="DatabaseAPI.StatementCommon.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.StatementCommon</a></span></code></th>
 <td class="colLast">
 <div class="block">Common shared API between <a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><code>DatabaseAPI.Query</code></a> and <a href="DatabaseAPI.Update.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><code>DatabaseAPI.Update</code></a>.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>static interface&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="DatabaseAPI.Transacted.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Transacted</a></span></code></th>
 <td class="colLast">
 <div class="block">Some code that may be run within a transaction.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>static interface&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="DatabaseAPI.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.TransactedWithResult</a>&lt;<a href="DatabaseAPI.TransactedWithResult.html" title="type parameter in DatabaseAPI.TransactedWithResult">T</a>&gt;</span></code></th>
 <td class="colLast">
 <div class="block">Some code that may be run within a transaction that returns a result.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>static interface&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="DatabaseAPI.Update.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Update</a></span></code></th>
 <td class="colLast">
@@ -202,13 +209,6 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createBackup(java.io.File)">createBackup</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;backupFilename)</code></th>
-<td class="colLast">
-<div class="block">Creates a backup of the database.</div>
-</td>
-</tr>
-<tr class="rowColor" id="i1">
 <td class="colFirst"><code>&lt;T&gt;&nbsp;T</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#execute(boolean,uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.ConnectedWithResult)">execute</a></span>&#8203;(boolean&nbsp;lockForWriting,
 <a href="DatabaseAPI.ConnectedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.ConnectedWithResult</a>&lt;T&gt;&nbsp;operation)</code></th>
@@ -216,14 +216,14 @@ loadScripts(document, 'script');</script>
 <div class="block">A connection manager and transaction runner.</div>
 </td>
 </tr>
-<tr class="altColor" id="i2">
+<tr class="rowColor" id="i1">
 <td class="colFirst"><code>default &lt;T&gt;&nbsp;T</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#execute(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.ConnectedWithResult)">execute</a></span>&#8203;(<a href="DatabaseAPI.ConnectedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.ConnectedWithResult</a>&lt;T&gt;&nbsp;operation)</code></th>
 <td class="colLast">
 <div class="block">A connection manager and transaction runner.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="altColor" id="i2">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#executeVoid(boolean,uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connected)">executeVoid</a></span>&#8203;(boolean&nbsp;lockForWriting,
 <a href="DatabaseAPI.Connected.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connected</a>&nbsp;operation)</code></th>
@@ -231,32 +231,32 @@ loadScripts(document, 'script');</script>
 <div class="block">A connection manager and transaction runner.</div>
 </td>
 </tr>
-<tr class="altColor" id="i4">
+<tr class="rowColor" id="i3">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#executeVoid(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connected)">executeVoid</a></span>&#8203;(<a href="DatabaseAPI.Connected.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connected</a>&nbsp;operation)</code></th>
 <td class="colLast">
 <div class="block">A connection manager and transaction runner.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i5">
+<tr class="altColor" id="i4">
 <td class="colFirst"><code><a href="DatabaseAPI.Connection.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connection</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getConnection()">getConnection</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get a connection.</div>
 </td>
 </tr>
-<tr class="altColor" id="i6">
-<td class="colFirst"><code><a href="DatabaseAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getInMemoryDB()">getInMemoryDB</a></span>()</code></th>
+<tr class="rowColor" id="i5">
+<td class="colFirst"><code><a href="DatabaseAPI.Connection.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connection</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getHistoricalConnection()">getHistoricalConnection</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Create an engine interface for an in-memory database.</div>
+<div class="block">Get a connection to the historical database, similar to the above.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i7">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#restoreFromBackup(java.io.File)">restoreFromBackup</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;backupFilename)</code></th>
+<tr class="altColor" id="i6">
+<td class="colFirst"><code>boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isHistoricalDBAvailable()">isHistoricalDBAvailable</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Restores the database from backup.</div>
+<div class="block">Whether the historical data DB is available.</div>
 </td>
 </tr>
 </tbody>
@@ -284,19 +284,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Get a connection. This connection is thread-bound and pooled; it <em>must
  not</em> be passed to other threads. They should get their own
  connections instead. The connection has auto-commit disabled; use the
- <a href="DatabaseAPI.Connection.html#transaction(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)"><code>transaction()</code></a> method instead.
- <p>
- Note that if an in-memory database is used (see
- <a href="#getInMemoryDB()"><code>getInMemoryDB()</code></a>), that DB can <em>only</em> be accessed from the
- connection returned from this method; the next call to this method
- (whether from the current thread or another one) will get an independent
- database. Such in-memory databases are not subject to thread-bound
- cleanup actions; they're simply deleted from memory when no longer used
- (but the connection should be <code>close()</code>d after use for efficiency
- nonetheless).
- <p>
- This would be marked with <a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/MustBeClosed.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink"><code>MustBeClosed</code></a> except that causes a mess
- elsewhere.</div>
+ <a href="DatabaseAPI.Connection.html#transaction(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)"><code>transaction()</code></a> method instead.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A configured initialised connection to the database.</dd>
@@ -305,14 +293,26 @@ loadScripts(document, 'script');</script>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="getInMemoryDB()">getInMemoryDB</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="DatabaseAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI</a></span>&nbsp;<span class="memberName">getInMemoryDB</span>()</div>
-<div class="block">Create an engine interface for an in-memory database. This is intended
- mainly for testing purposes. Note that various coupled automatic services
- are disabled, in particular connections are not closed automatically.</div>
+<h3><a id="isHistoricalDBAvailable()">isHistoricalDBAvailable</a></h3>
+<div class="memberSignature"><span class="returnType">boolean</span>&nbsp;<span class="memberName">isHistoricalDBAvailable</span>()</div>
+<div class="block">Whether the historical data DB is available. If it isn't, you can't
+ move any data to longer-term storage, but ordinary operations should
+ be fine.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The in-memory database interface.</dd>
+<dd>Whether the historical data DB is available.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getHistoricalConnection()">getHistoricalConnection</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/MustBeClosed.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@MustBeClosed</a>
+</span><span class="returnType"><a href="DatabaseAPI.Connection.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connection</a></span>&nbsp;<span class="memberName">getHistoricalConnection</span>()</div>
+<div class="block">Get a connection to the historical database, similar to the above.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A configured initialised connection to the historical database.</dd>
 </dl>
 </section>
 </li>
@@ -397,32 +397,6 @@ loadScripts(document, 'script');</script>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/RuntimeException.html?is-external=true" title="class or interface in java.lang" class="externalLink">RuntimeException</a></code> - If something other than database access goes wrong with the
              contained code.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="createBackup(java.io.File)">createBackup</a></h3>
-<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">createBackup</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;backupFilename)</span></div>
-<div class="block">Creates a backup of the database. <em>This operation should only be
- called by administrators.</em></div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>backupFilename</code> - The backup file to create.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="restoreFromBackup(java.io.File)">restoreFromBackup</a></h3>
-<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">restoreFromBackup</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;backupFilename)</span></div>
-<div class="block">Restores the database from backup. <em>This operation should only be
- called by administrators.</em></div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>backupFilename</code> - The backup file to restore from.</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/dao/PermissionDeniedDataAccessException.html?is-external=true" title="class or interface in org.springframework.dao" class="externalLink">PermissionDeniedDataAccessException</a></code> - If the backup cannot be read.</dd>
 </dl>
 </section>
 </li>

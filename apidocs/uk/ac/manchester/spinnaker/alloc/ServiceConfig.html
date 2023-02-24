@@ -19,8 +19,8 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":9};
-var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],8:["t4","Concrete Methods"]};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":9,"i3":10,"i4":10,"i5":10};
+var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
@@ -177,7 +177,7 @@ extends <a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax
 </a>
 <h2>Method Summary</h2>
 <div class="memberSummary">
-<div role="tablist" aria-orientation="horizontal"><button role="tab" aria-selected="true" aria-controls="memberSummary_tabpanel" tabindex="0" onkeydown="switchTab(event)" id="t0" class="activeTableTab">All Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t1" class="tableTab" onclick="show(1);">Static Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t4" class="tableTab" onclick="show(8);">Concrete Methods</button></div>
+<div role="tablist" aria-orientation="horizontal"><button role="tab" aria-selected="true" aria-controls="memberSummary_tabpanel" tabindex="0" onkeydown="switchTab(event)" id="t0" class="activeTableTab">All Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t1" class="tableTab" onclick="show(1);">Static Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t2" class="tableTab" onclick="show(2);">Instance Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t4" class="tableTab" onclick="show(8);">Concrete Methods</button></div>
 <div id="memberSummary_tabpanel" role="tabpanel">
 <table aria-labelledby="t0">
 <thead>
@@ -189,11 +189,36 @@ extends <a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jdbc/core/JdbcTemplate.html?is-external=true" title="class or interface in org.springframework.jdbc.core" class="externalLink">JdbcTemplate</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#historicalDatabase(javax.sql.DataSource)">historicalDatabase</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/javax/sql/DataSource.html?is-external=true" title="class or interface in javax.sql" class="externalLink">DataSource</a>&nbsp;ds)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor" id="i1">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/javax/sql/DataSource.html?is-external=true" title="class or interface in javax.sql" class="externalLink">DataSource</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#historicalDatasource()">historicalDatasource</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor" id="i2">
 <td class="colFirst"><code>static void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#main(java.lang.String%5B%5D)">main</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>[]&nbsp;args)</code></th>
 <td class="colLast">
 <div class="block">Spring Boot entry point.</div>
 </td>
+</tr>
+<tr class="rowColor" id="i3">
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jdbc/core/JdbcTemplate.html?is-external=true" title="class or interface in org.springframework.jdbc.core" class="externalLink">JdbcTemplate</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#mainDatabase(javax.sql.DataSource)">mainDatabase</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/javax/sql/DataSource.html?is-external=true" title="class or interface in javax.sql" class="externalLink">DataSource</a>&nbsp;ds)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor" id="i4">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/javax/sql/DataSource.html?is-external=true" title="class or interface in javax.sql" class="externalLink">DataSource</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#mainDatasource()">mainDatasource</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor" id="i5">
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/PlatformTransactionManager.html?is-external=true" title="class or interface in org.springframework.transaction" class="externalLink">PlatformTransactionManager</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#mainTransactionManager(javax.sql.DataSource)">mainTransactionManager</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/javax/sql/DataSource.html?is-external=true" title="class or interface in javax.sql" class="externalLink">DataSource</a>&nbsp;ds)</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
 </table>
@@ -238,6 +263,46 @@ extends <a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax
 </a>
 <h2>Method Details</h2>
 <ul class="blockList">
+<li class="blockList">
+<section class="detail">
+<h3><a id="mainDatasource()">mainDatasource</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Bean</a>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html?is-external=true#name()" title="class or interface in org.springframework.context.annotation" class="externalLink">name</a>="mainDatasource")
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/ConfigurationProperties.html?is-external=true" title="class or interface in org.springframework.boot.context.properties" class="externalLink">@ConfigurationProperties</a>(<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/ConfigurationProperties.html?is-external=true#prefix()" title="class or interface in org.springframework.boot.context.properties" class="externalLink">prefix</a>="spalloc.datasource")
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/javax/sql/DataSource.html?is-external=true" title="class or interface in javax.sql" class="externalLink">DataSource</a></span>&nbsp;<span class="memberName">mainDatasource</span>()</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="historicalDatasource()">historicalDatasource</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Bean</a>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html?is-external=true#name()" title="class or interface in org.springframework.context.annotation" class="externalLink">name</a>="historicalDatasource")
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/ConfigurationProperties.html?is-external=true" title="class or interface in org.springframework.boot.context.properties" class="externalLink">@ConfigurationProperties</a>(<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/ConfigurationProperties.html?is-external=true#prefix()" title="class or interface in org.springframework.boot.context.properties" class="externalLink">prefix</a>="spalloc.historical-data.datasource")
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/javax/sql/DataSource.html?is-external=true" title="class or interface in javax.sql" class="externalLink">DataSource</a></span>&nbsp;<span class="memberName">historicalDatasource</span>()</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="mainDatabase(javax.sql.DataSource)">mainDatabase</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Bean</a>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html?is-external=true#name()" title="class or interface in org.springframework.context.annotation" class="externalLink">name</a>="mainDatabase")
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jdbc/core/JdbcTemplate.html?is-external=true" title="class or interface in org.springframework.jdbc.core" class="externalLink">JdbcTemplate</a></span>&nbsp;<span class="memberName">mainDatabase</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Qualifier.html?is-external=true" title="class or interface in org.springframework.beans.factory.annotation" class="externalLink">@Qualifier</a>("mainDatasource")
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/javax/sql/DataSource.html?is-external=true" title="class or interface in javax.sql" class="externalLink">DataSource</a>&nbsp;ds)</span></div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="historicalDatabase(javax.sql.DataSource)">historicalDatabase</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Bean</a>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html?is-external=true#name()" title="class or interface in org.springframework.context.annotation" class="externalLink">name</a>="historicalDatabase")
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jdbc/core/JdbcTemplate.html?is-external=true" title="class or interface in org.springframework.jdbc.core" class="externalLink">JdbcTemplate</a></span>&nbsp;<span class="memberName">historicalDatabase</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Qualifier.html?is-external=true" title="class or interface in org.springframework.beans.factory.annotation" class="externalLink">@Qualifier</a>("historicalDatasource")
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/javax/sql/DataSource.html?is-external=true" title="class or interface in javax.sql" class="externalLink">DataSource</a>&nbsp;ds)</span></div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="mainTransactionManager(javax.sql.DataSource)">mainTransactionManager</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Bean</a>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html?is-external=true#name()" title="class or interface in org.springframework.context.annotation" class="externalLink">name</a>="mainTransactionManager")
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/PlatformTransactionManager.html?is-external=true" title="class or interface in org.springframework.transaction" class="externalLink">PlatformTransactionManager</a></span>&nbsp;<span class="memberName">mainTransactionManager</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Qualifier.html?is-external=true" title="class or interface in org.springframework.beans.factory.annotation" class="externalLink">@Qualifier</a>("mainDatasource")
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/javax/sql/DataSource.html?is-external=true" title="class or interface in javax.sql" class="externalLink">DataSource</a>&nbsp;ds)</span></div>
+</section>
+</li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="main(java.lang.String[])">main</a></h3>

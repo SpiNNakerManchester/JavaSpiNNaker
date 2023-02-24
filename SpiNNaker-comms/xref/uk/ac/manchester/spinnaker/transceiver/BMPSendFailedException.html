@@ -30,7 +30,7 @@
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> java.util.List;
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.SCPRequestHeader;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment"> * Indicates that message sending to a BMP failed for various reasons.</em>
@@ -38,14 +38,15 @@
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a name="BMPSendFailedException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/BMPSendFailedException.html#BMPSendFailedException">BMPSendFailedException</a> <strong class="jxr_keyword">extends</strong> IOException {
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> serialVersionUID = -7806549580351626377L;
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  	BMPSendFailedException(<a name="SCPRequestHeader" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/SCPRequestHeader.html#SCPRequestHeader">SCPRequestHeader</a> hdr, HasCoreLocation core,
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  	BMPSendFailedException(SCPRequest&lt;?&gt; req, HasCoreLocation core,
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  			List&lt;String&gt; retryReason) {
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  		<strong class="jxr_keyword">super</strong>(format(
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  				<span class="jxr_string">"Errors sending request %s to %d,%d,%d over %d retries: %s"</span>,
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  				hdr.command, core.getX(), core.getY(), core.getP(),
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  				BMP_RETRIES, retryReason));
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  	}
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  }
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  				<span class="jxr_string">"Errors sending request %s (%s) to %d,%d,%d over %d retries:"</span>
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  				+ <span class="jxr_string">" %s"</span>,
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  				req.scpRequestHeader.command, req, core.getX(), core.getY(),
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  				core.getP(), BMP_RETRIES, retryReason));
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  	}
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2023 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

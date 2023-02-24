@@ -24,92 +24,92 @@
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">package</strong> uk.ac.manchester.spinnaker.front_end;
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.nio.charset.StandardCharsets.UTF_8;
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.slf4j.LoggerFactory.getLogger;
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> picocli.CommandLine.ExitCode.USAGE;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.client.SpallocClientFactory.getJobFromProxyInfo;
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DOWNLOAD_DESC;
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_APP_DESC;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_DESC;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_MON_DESC;
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_SYS_DESC;
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.CommandDescriptions.GATHER_DESC;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.CommandDescriptions.IOBUF_DESC;
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.CommandDescriptions.LISTEN_DESC;
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.LogControl.setLoggerDir;
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.ParamDescriptions.DBFILE;
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.ParamDescriptions.DSFILE;
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.ParamDescriptions.GATHER;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.ParamDescriptions.MACHINE;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.ParamDescriptions.MAP;
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.ParamDescriptions.PLACEMENT;
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.ParamDescriptions.REPORT;
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.ParamDescriptions.RUN;
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.machine.bean.MapperFactory.createMapper;
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> java.io.File;
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> java.io.FileReader;
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> java.net.URISyntaxException;
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> java.util.List;
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> java.util.Optional;
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> java.util.Properties;
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.ExecutionException;
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> java.util.function.Supplier;
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">import</strong> com.fasterxml.jackson.databind.ObjectMapper;
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <strong class="jxr_keyword">import</strong> com.google.errorprone.annotations.MustBeClosed;
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine;
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine.ArgGroup;
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine.Command;
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine.IModelTransformer;
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine.ITypeConverter;
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine.Mixin;
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine.Model.CommandSpec;
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine.Parameters;
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine.TypeConversionException;
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.connections.LocateConnectedMachineIPAddress;
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.front_end.download.DataReceiver;
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.front_end.download.RecordingRegionDataGatherer;
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.front_end.download.request.Gather;
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.front_end.download.request.Placement;
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.front_end.iobuf.IobufRequest;
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.front_end.iobuf.IobufRetriever;
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.Machine;
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.bean.MachineBean;
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.storage.DatabaseEngine;
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.storage.ProxyAwareStorage;
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.storage.StorageException;
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.transceiver.Transceiver;
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.utils.ValueHolder;
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>  
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_javadoccomment"> * The main command line interface.</em>
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>  <em class="jxr_javadoccomment"> * @author Donal Fellows</em>
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>  @Command(subcommands = CommandLine.HelpCommand.<strong class="jxr_keyword">class</strong>, <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>  		mixinStandardHelpOptions = <strong class="jxr_keyword">true</strong>, <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>  		modelTransformer = CommandLineInterface.BuildPropsLoader.<strong class="jxr_keyword">class</strong>)
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a name="CommandLineInterface" href="../../../../../uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#CommandLineInterface">CommandLineInterface</a> {
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>  	<strong class="jxr_keyword">private</strong> <a name="CommandLineInterface" href="../../../../../uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#CommandLineInterface">CommandLineInterface</a>() {
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>  	}
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>  
-<a class="jxr_linenumber" name="L100" href="#L100">100</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ObjectMapper MAPPER = createMapper();
-<a class="jxr_linenumber" name="L101" href="#L101">101</a> 
-<a class="jxr_linenumber" name="L102" href="#L102">102</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String BUFFER_DB_FILE = <span class="jxr_string">"buffer.sqlite3"</span>;
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.util.stream.Collectors.toList;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.slf4j.LoggerFactory.getLogger;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> picocli.CommandLine.ExitCode.USAGE;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.client.SpallocClientFactory.getJobFromProxyInfo;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DOWNLOAD_DESC;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_APP_DESC;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_DESC;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_MON_DESC;
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_SYS_DESC;
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.CommandDescriptions.GATHER_DESC;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.CommandDescriptions.IOBUF_DESC;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.CommandDescriptions.LISTEN_DESC;
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.LogControl.setLoggerDir;
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.ParamDescriptions.DBFILE;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.ParamDescriptions.DSFILE;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.ParamDescriptions.GATHER;
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.ParamDescriptions.MACHINE;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.ParamDescriptions.MAP;
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.ParamDescriptions.PLACEMENT;
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.ParamDescriptions.REPORT;
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.front_end.ParamDescriptions.RUN;
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.machine.bean.MapperFactory.createMapper;
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> java.io.File;
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> java.io.FileReader;
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> java.net.URISyntaxException;
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> java.util.Optional;
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> java.util.Properties;
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.ExecutionException;
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">import</strong> java.util.function.Supplier;
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <strong class="jxr_keyword">import</strong> com.fasterxml.jackson.databind.ObjectMapper;
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <strong class="jxr_keyword">import</strong> com.google.errorprone.annotations.MustBeClosed;
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine;
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine.ArgGroup;
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine.Command;
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine.IModelTransformer;
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine.ITypeConverter;
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine.Mixin;
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine.Model.CommandSpec;
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine.Parameters;
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine.TypeConversionException;
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.connections.LocateConnectedMachineIPAddress;
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.connections.MachineAware;
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.front_end.download.DataReceiver;
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.front_end.download.RecordingRegionDataGatherer;
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.front_end.download.request.Gather;
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.front_end.download.request.Placement;
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.front_end.iobuf.IobufRequest;
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.front_end.iobuf.IobufRetriever;
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.Machine;
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.bean.MachineBean;
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.storage.DatabaseEngine;
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.storage.ProxyAwareStorage;
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.storage.StorageException;
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.transceiver.Transceiver;
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.transceiver.Transceiver.ConnectionDescriptor;
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.utils.ValueHolder;
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>  
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>  <em class="jxr_javadoccomment"> * The main command line interface.</em>
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>  <em class="jxr_javadoccomment"> * @author Donal Fellows</em>
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>  @Command(subcommands = CommandLine.HelpCommand.<strong class="jxr_keyword">class</strong>, <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>  		mixinStandardHelpOptions = <strong class="jxr_keyword">true</strong>, <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>  		modelTransformer = CommandLineInterface.BuildPropsLoader.<strong class="jxr_keyword">class</strong>)
+<a class="jxr_linenumber" name="L100" href="#L100">100</a> <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a name="CommandLineInterface" href="../../../../../uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#CommandLineInterface">CommandLineInterface</a> {
+<a class="jxr_linenumber" name="L101" href="#L101">101</a> 	<strong class="jxr_keyword">private</strong> <a name="CommandLineInterface" href="../../../../../uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#CommandLineInterface">CommandLineInterface</a>() {
+<a class="jxr_linenumber" name="L102" href="#L102">102</a> 	}
 <a class="jxr_linenumber" name="L103" href="#L103">103</a> 
-<a class="jxr_linenumber" name="L104" href="#L104">104</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String DSE_DB_FILE = <span class="jxr_string">"ds.sqlite3"</span>;
+<a class="jxr_linenumber" name="L104" href="#L104">104</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ObjectMapper MAPPER = createMapper();
 <a class="jxr_linenumber" name="L105" href="#L105">105</a> 
 <a class="jxr_linenumber" name="L106" href="#L106">106</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String PROPS = <span class="jxr_string">"command-line.properties"</span>;
 <a class="jxr_linenumber" name="L107" href="#L107">107</a> 
@@ -704,92 +704,109 @@
 <a class="jxr_linenumber" name="L696" href="#L696">696</a> 	}
 <a class="jxr_linenumber" name="L697" href="#L697">697</a> 
 <a class="jxr_linenumber" name="L698" href="#L698">698</a> 	@MustBeClosed
-<a class="jxr_linenumber" name="L699" href="#L699">699</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> TransceiverInterface getTransceiver(Machine machine,
-<a class="jxr_linenumber" name="L700" href="#L700">700</a> 			SpallocClient.Job job)
-<a class="jxr_linenumber" name="L701" href="#L701">701</a> 			<strong class="jxr_keyword">throws</strong> IOException, SpinnmanException, InterruptedException {
-<a class="jxr_linenumber" name="L702" href="#L702">702</a> 		<strong class="jxr_keyword">if</strong> (job == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L703" href="#L703">703</a> 			<em class="jxr_comment">// No job; must be a direct connection</em>
-<a class="jxr_linenumber" name="L704" href="#L704">704</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Transceiver(machine);
-<a class="jxr_linenumber" name="L705" href="#L705">705</a> 		}
-<a class="jxr_linenumber" name="L706" href="#L706">706</a> 		<strong class="jxr_keyword">return</strong> job.getTransceiver();
-<a class="jxr_linenumber" name="L707" href="#L707">707</a> 	}
-<a class="jxr_linenumber" name="L708" href="#L708">708</a> }
-<a class="jxr_linenumber" name="L709" href="#L709">709</a> 
-<a class="jxr_linenumber" name="L710" href="#L710">710</a> <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L711" href="#L711">711</a> <em class="jxr_javadoccomment"> * The descriptions of various commands.</em>
-<a class="jxr_linenumber" name="L712" href="#L712">712</a> <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L713" href="#L713">713</a> <em class="jxr_javadoccomment"> * @author Donal Fellows</em>
-<a class="jxr_linenumber" name="L714" href="#L714">714</a> <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L715" href="#L715">715</a> <strong class="jxr_keyword">interface</strong> <a name="CommandDescriptions" href="../../../../../uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#CommandDescriptions">CommandDescriptions</a> {
-<a class="jxr_linenumber" name="L716" href="#L716">716</a> 	<em class="jxr_javadoccomment">/** Description of {@code download} command. */</em>
-<a class="jxr_linenumber" name="L717" href="#L717">717</a> 	String DOWNLOAD_DESC = <span class="jxr_string">"Retrieve recording regions using "</span>
-<a class="jxr_linenumber" name="L718" href="#L718">718</a> 			+ <span class="jxr_string">"classic SpiNNaker control protocol transfers."</span>;
-<a class="jxr_linenumber" name="L719" href="#L719">719</a> 
-<a class="jxr_linenumber" name="L720" href="#L720">720</a> 	<em class="jxr_javadoccomment">/** Description of {@code gather} command. */</em>
-<a class="jxr_linenumber" name="L721" href="#L721">721</a> 	String GATHER_DESC = <span class="jxr_string">"Retrieve recording regions using the "</span>
-<a class="jxr_linenumber" name="L722" href="#L722">722</a> 			+ <span class="jxr_string">"fast data streaming protocol. "</span>
-<a class="jxr_linenumber" name="L723" href="#L723">723</a> 			+ <span class="jxr_string">"Requires system cores to be fully configured."</span>;
-<a class="jxr_linenumber" name="L724" href="#L724">724</a> 
-<a class="jxr_linenumber" name="L725" href="#L725">725</a> 	<em class="jxr_javadoccomment">/** Description of {@code dse} command. */</em>
-<a class="jxr_linenumber" name="L726" href="#L726">726</a> 	String DSE_DESC = <span class="jxr_string">"Evaluate data specifications for all cores and upload "</span>
-<a class="jxr_linenumber" name="L727" href="#L727">727</a> 			+ <span class="jxr_string">"the results to SpiNNaker using the classic protocol."</span>;
-<a class="jxr_linenumber" name="L728" href="#L728">728</a> 
-<a class="jxr_linenumber" name="L729" href="#L729">729</a> 	<em class="jxr_javadoccomment">/** Description of {@code dse_app} command. */</em>
-<a class="jxr_linenumber" name="L730" href="#L730">730</a> 	String DSE_APP_DESC = <span class="jxr_string">"Evaluate data specifications for application cores "</span>
-<a class="jxr_linenumber" name="L731" href="#L731">731</a> 			+ <span class="jxr_string">"and upload the results to SpiNNaker using the classic protocol."</span>;
-<a class="jxr_linenumber" name="L732" href="#L732">732</a> 
-<a class="jxr_linenumber" name="L733" href="#L733">733</a> 	<em class="jxr_javadoccomment">/** Description of {@code dse_app_mon} command. */</em>
-<a class="jxr_linenumber" name="L734" href="#L734">734</a> 	String DSE_MON_DESC = <span class="jxr_string">"Evaluate data specifications for application cores "</span>
-<a class="jxr_linenumber" name="L735" href="#L735">735</a> 			+ <span class="jxr_string">"and upload the results to SpiNNaker using the fast data "</span>
-<a class="jxr_linenumber" name="L736" href="#L736">736</a> 			+ <span class="jxr_string">"streaming protocol. "</span>
-<a class="jxr_linenumber" name="L737" href="#L737">737</a> 			+ <span class="jxr_string">"Requires system cores to be fully configured, so "</span>
-<a class="jxr_linenumber" name="L738" href="#L738">738</a> 			+ <span class="jxr_string">"can't be used to set up system cores."</span>;
-<a class="jxr_linenumber" name="L739" href="#L739">739</a> 
-<a class="jxr_linenumber" name="L740" href="#L740">740</a> 	<em class="jxr_javadoccomment">/** Description of {@code dse_sys} command. */</em>
-<a class="jxr_linenumber" name="L741" href="#L741">741</a> 	String DSE_SYS_DESC = <span class="jxr_string">"Evaluate data specifications for system cores and "</span>
-<a class="jxr_linenumber" name="L742" href="#L742">742</a> 			+ <span class="jxr_string">"upload the results to SpiNNaker (always uses the classic "</span>
-<a class="jxr_linenumber" name="L743" href="#L743">743</a> 			+ <span class="jxr_string">"protocol)."</span>;
-<a class="jxr_linenumber" name="L744" href="#L744">744</a> 
-<a class="jxr_linenumber" name="L745" href="#L745">745</a> 	<em class="jxr_javadoccomment">/** Description of {@code iobuf} command. */</em>
-<a class="jxr_linenumber" name="L746" href="#L746">746</a> 	String IOBUF_DESC = <span class="jxr_string">"Download the contents "</span>
-<a class="jxr_linenumber" name="L747" href="#L747">747</a> 			+ <span class="jxr_string">"of the IOBUF buffers and process them."</span>;
-<a class="jxr_linenumber" name="L748" href="#L748">748</a> 
-<a class="jxr_linenumber" name="L749" href="#L749">749</a> 	<em class="jxr_javadoccomment">/** Description of {@code listen_for_unbooted} command. */</em>
-<a class="jxr_linenumber" name="L750" href="#L750">750</a> 	String LISTEN_DESC = <span class="jxr_string">"Listen for unbooted SpiNNaker boards on the local "</span>
-<a class="jxr_linenumber" name="L751" href="#L751">751</a> 			+ <span class="jxr_string">"network. Depends on receiving broadcast UDP messages."</span>;
-<a class="jxr_linenumber" name="L752" href="#L752">752</a> }
-<a class="jxr_linenumber" name="L753" href="#L753">753</a> 
-<a class="jxr_linenumber" name="L754" href="#L754">754</a> <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L755" href="#L755">755</a> <em class="jxr_javadoccomment"> * The descriptions of various parameters to commands, many of which are shared.</em>
-<a class="jxr_linenumber" name="L756" href="#L756">756</a> <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L757" href="#L757">757</a> <em class="jxr_javadoccomment"> * @author Donal Fellows</em>
-<a class="jxr_linenumber" name="L758" href="#L758">758</a> <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L759" href="#L759">759</a> <strong class="jxr_keyword">interface</strong> <a name="ParamDescriptions" href="../../../../../uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#ParamDescriptions">ParamDescriptions</a> {
-<a class="jxr_linenumber" name="L760" href="#L760">760</a> 	<em class="jxr_javadoccomment">/** Description of {@code gatherFile} parameter. */</em>
-<a class="jxr_linenumber" name="L761" href="#L761">761</a> 	String GATHER = <span class="jxr_string">"The name of the gatherer description JSON file."</span>;
-<a class="jxr_linenumber" name="L762" href="#L762">762</a> 
-<a class="jxr_linenumber" name="L763" href="#L763">763</a> 	<em class="jxr_javadoccomment">/** Description of {@code machineFile} parameter. */</em>
-<a class="jxr_linenumber" name="L764" href="#L764">764</a> 	String MACHINE = <span class="jxr_string">"The name of the machine description JSON file."</span>;
+<a class="jxr_linenumber" name="L699" href="#L699">699</a> 	@SuppressWarnings(<span class="jxr_string">"MustBeClosed"</span>)
+<a class="jxr_linenumber" name="L700" href="#L700">700</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> TransceiverInterface getTransceiver(Machine machine,
+<a class="jxr_linenumber" name="L701" href="#L701">701</a> 			SpallocClient.Job job)
+<a class="jxr_linenumber" name="L702" href="#L702">702</a> 			<strong class="jxr_keyword">throws</strong> IOException, SpinnmanException, InterruptedException {
+<a class="jxr_linenumber" name="L703" href="#L703">703</a> 		<strong class="jxr_keyword">final</strong> TransceiverInterface txrx;
+<a class="jxr_linenumber" name="L704" href="#L704">704</a> 		<strong class="jxr_keyword">if</strong> (job == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L705" href="#L705">705</a> 			<em class="jxr_comment">// No job; must be a direct connection</em>
+<a class="jxr_linenumber" name="L706" href="#L706">706</a> 			txrx = Transceiver.makeWithDescriptors(
+<a class="jxr_linenumber" name="L707" href="#L707">707</a> 					machine.version, generateScampConnections(machine));
+<a class="jxr_linenumber" name="L708" href="#L708">708</a> 		} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L709" href="#L709">709</a> 			txrx = job.getTransceiver();
+<a class="jxr_linenumber" name="L710" href="#L710">710</a> 		}
+<a class="jxr_linenumber" name="L711" href="#L711">711</a> 		<strong class="jxr_keyword">var</strong> scpSelector = txrx.getScampConnectionSelector();
+<a class="jxr_linenumber" name="L712" href="#L712">712</a> 		<strong class="jxr_keyword">if</strong> (scpSelector instanceof MachineAware) {
+<a class="jxr_linenumber" name="L713" href="#L713">713</a> 			((MachineAware) scpSelector).setMachine(machine);
+<a class="jxr_linenumber" name="L714" href="#L714">714</a> 		}
+<a class="jxr_linenumber" name="L715" href="#L715">715</a> 		<strong class="jxr_keyword">return</strong> txrx;
+<a class="jxr_linenumber" name="L716" href="#L716">716</a> 	}
+<a class="jxr_linenumber" name="L717" href="#L717">717</a> 
+<a class="jxr_linenumber" name="L718" href="#L718">718</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> List&lt;ConnectionDescriptor&gt; generateScampConnections(
+<a class="jxr_linenumber" name="L719" href="#L719">719</a> 			Machine machine) {
+<a class="jxr_linenumber" name="L720" href="#L720">720</a> 		<strong class="jxr_keyword">return</strong> machine.ethernetConnectedChips().stream()
+<a class="jxr_linenumber" name="L721" href="#L721">721</a> 				.map(chip -&gt; <strong class="jxr_keyword">new</strong> ConnectionDescriptor(chip.ipAddress,
+<a class="jxr_linenumber" name="L722" href="#L722">722</a> 						SCP_SCAMP_PORT, chip.asChipLocation()))
+<a class="jxr_linenumber" name="L723" href="#L723">723</a> 				.collect(toList());
+<a class="jxr_linenumber" name="L724" href="#L724">724</a> 	}
+<a class="jxr_linenumber" name="L725" href="#L725">725</a> }
+<a class="jxr_linenumber" name="L726" href="#L726">726</a> 
+<a class="jxr_linenumber" name="L727" href="#L727">727</a> <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L728" href="#L728">728</a> <em class="jxr_javadoccomment"> * The descriptions of various commands.</em>
+<a class="jxr_linenumber" name="L729" href="#L729">729</a> <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L730" href="#L730">730</a> <em class="jxr_javadoccomment"> * @author Donal Fellows</em>
+<a class="jxr_linenumber" name="L731" href="#L731">731</a> <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L732" href="#L732">732</a> <strong class="jxr_keyword">interface</strong> <a name="CommandDescriptions" href="../../../../../uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#CommandDescriptions">CommandDescriptions</a> {
+<a class="jxr_linenumber" name="L733" href="#L733">733</a> 	<em class="jxr_javadoccomment">/** Description of {@code download} command. */</em>
+<a class="jxr_linenumber" name="L734" href="#L734">734</a> 	String DOWNLOAD_DESC = <span class="jxr_string">"Retrieve recording regions using "</span>
+<a class="jxr_linenumber" name="L735" href="#L735">735</a> 			+ <span class="jxr_string">"classic SpiNNaker control protocol transfers."</span>;
+<a class="jxr_linenumber" name="L736" href="#L736">736</a> 
+<a class="jxr_linenumber" name="L737" href="#L737">737</a> 	<em class="jxr_javadoccomment">/** Description of {@code gather} command. */</em>
+<a class="jxr_linenumber" name="L738" href="#L738">738</a> 	String GATHER_DESC = <span class="jxr_string">"Retrieve recording regions using the "</span>
+<a class="jxr_linenumber" name="L739" href="#L739">739</a> 			+ <span class="jxr_string">"fast data streaming protocol. "</span>
+<a class="jxr_linenumber" name="L740" href="#L740">740</a> 			+ <span class="jxr_string">"Requires system cores to be fully configured."</span>;
+<a class="jxr_linenumber" name="L741" href="#L741">741</a> 
+<a class="jxr_linenumber" name="L742" href="#L742">742</a> 	<em class="jxr_javadoccomment">/** Description of {@code dse} command. */</em>
+<a class="jxr_linenumber" name="L743" href="#L743">743</a> 	String DSE_DESC = <span class="jxr_string">"Evaluate data specifications for all cores and upload "</span>
+<a class="jxr_linenumber" name="L744" href="#L744">744</a> 			+ <span class="jxr_string">"the results to SpiNNaker using the classic protocol."</span>;
+<a class="jxr_linenumber" name="L745" href="#L745">745</a> 
+<a class="jxr_linenumber" name="L746" href="#L746">746</a> 	<em class="jxr_javadoccomment">/** Description of {@code dse_app} command. */</em>
+<a class="jxr_linenumber" name="L747" href="#L747">747</a> 	String DSE_APP_DESC = <span class="jxr_string">"Evaluate data specifications for application cores "</span>
+<a class="jxr_linenumber" name="L748" href="#L748">748</a> 			+ <span class="jxr_string">"and upload the results to SpiNNaker using the classic protocol."</span>;
+<a class="jxr_linenumber" name="L749" href="#L749">749</a> 
+<a class="jxr_linenumber" name="L750" href="#L750">750</a> 	<em class="jxr_javadoccomment">/** Description of {@code dse_app_mon} command. */</em>
+<a class="jxr_linenumber" name="L751" href="#L751">751</a> 	String DSE_MON_DESC = <span class="jxr_string">"Evaluate data specifications for application cores "</span>
+<a class="jxr_linenumber" name="L752" href="#L752">752</a> 			+ <span class="jxr_string">"and upload the results to SpiNNaker using the fast data "</span>
+<a class="jxr_linenumber" name="L753" href="#L753">753</a> 			+ <span class="jxr_string">"streaming protocol. "</span>
+<a class="jxr_linenumber" name="L754" href="#L754">754</a> 			+ <span class="jxr_string">"Requires system cores to be fully configured, so "</span>
+<a class="jxr_linenumber" name="L755" href="#L755">755</a> 			+ <span class="jxr_string">"can't be used to set up system cores."</span>;
+<a class="jxr_linenumber" name="L756" href="#L756">756</a> 
+<a class="jxr_linenumber" name="L757" href="#L757">757</a> 	<em class="jxr_javadoccomment">/** Description of {@code dse_sys} command. */</em>
+<a class="jxr_linenumber" name="L758" href="#L758">758</a> 	String DSE_SYS_DESC = <span class="jxr_string">"Evaluate data specifications for system cores and "</span>
+<a class="jxr_linenumber" name="L759" href="#L759">759</a> 			+ <span class="jxr_string">"upload the results to SpiNNaker (always uses the classic "</span>
+<a class="jxr_linenumber" name="L760" href="#L760">760</a> 			+ <span class="jxr_string">"protocol)."</span>;
+<a class="jxr_linenumber" name="L761" href="#L761">761</a> 
+<a class="jxr_linenumber" name="L762" href="#L762">762</a> 	<em class="jxr_javadoccomment">/** Description of {@code iobuf} command. */</em>
+<a class="jxr_linenumber" name="L763" href="#L763">763</a> 	String IOBUF_DESC = <span class="jxr_string">"Download the contents "</span>
+<a class="jxr_linenumber" name="L764" href="#L764">764</a> 			+ <span class="jxr_string">"of the IOBUF buffers and process them."</span>;
 <a class="jxr_linenumber" name="L765" href="#L765">765</a> 
-<a class="jxr_linenumber" name="L766" href="#L766">766</a> 	<em class="jxr_javadoccomment">/** Description of {@code iobufMapFile} parameter. */</em>
-<a class="jxr_linenumber" name="L767" href="#L767">767</a> 	String MAP = <span class="jxr_string">"The name of the IOBUF map description file."</span>;
-<a class="jxr_linenumber" name="L768" href="#L768">768</a> 
-<a class="jxr_linenumber" name="L769" href="#L769">769</a> 	<em class="jxr_javadoccomment">/** Description of {@code placementFile} parameter. */</em>
-<a class="jxr_linenumber" name="L770" href="#L770">770</a> 	String PLACEMENT = <span class="jxr_string">"The name of the placement description JSON file."</span>;
-<a class="jxr_linenumber" name="L771" href="#L771">771</a> 
-<a class="jxr_linenumber" name="L772" href="#L772">772</a> 	<em class="jxr_javadoccomment">/** Description of {@code reportFolder} parameter. */</em>
-<a class="jxr_linenumber" name="L773" href="#L773">773</a> 	String REPORT = <span class="jxr_string">"The name of the run's reporting folder. "</span>
-<a class="jxr_linenumber" name="L774" href="#L774">774</a> 			+ <span class="jxr_string">"If not provided, no report will be written."</span>;
-<a class="jxr_linenumber" name="L775" href="#L775">775</a> 
-<a class="jxr_linenumber" name="L776" href="#L776">776</a> 	<em class="jxr_javadoccomment">/** Description of {@code dbFile} parameter. */</em>
-<a class="jxr_linenumber" name="L777" href="#L777">777</a> 	String DBFILE = <span class="jxr_string">"The path of the buffer database."</span>;
-<a class="jxr_linenumber" name="L778" href="#L778">778</a> 
-<a class="jxr_linenumber" name="L779" href="#L779">779</a> 	<em class="jxr_javadoccomment">/** Description of {@code dsFile} parameter. */</em>
-<a class="jxr_linenumber" name="L780" href="#L780">780</a> 	String DSFILE = <span class="jxr_string">"The path of the dataspec database."</span>;
-<a class="jxr_linenumber" name="L781" href="#L781">781</a> 
-<a class="jxr_linenumber" name="L782" href="#L782">782</a> 	<em class="jxr_javadoccomment">/** Description of {@code runFolder} parameter. */</em>
-<a class="jxr_linenumber" name="L783" href="#L783">783</a> 	String RUN = <span class="jxr_string">"The name of the run data folder."</span>;
-<a class="jxr_linenumber" name="L784" href="#L784">784</a> }
+<a class="jxr_linenumber" name="L766" href="#L766">766</a> 	<em class="jxr_javadoccomment">/** Description of {@code listen_for_unbooted} command. */</em>
+<a class="jxr_linenumber" name="L767" href="#L767">767</a> 	String LISTEN_DESC = <span class="jxr_string">"Listen for unbooted SpiNNaker boards on the local "</span>
+<a class="jxr_linenumber" name="L768" href="#L768">768</a> 			+ <span class="jxr_string">"network. Depends on receiving broadcast UDP messages."</span>;
+<a class="jxr_linenumber" name="L769" href="#L769">769</a> }
+<a class="jxr_linenumber" name="L770" href="#L770">770</a> 
+<a class="jxr_linenumber" name="L771" href="#L771">771</a> <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L772" href="#L772">772</a> <em class="jxr_javadoccomment"> * The descriptions of various parameters to commands, many of which are shared.</em>
+<a class="jxr_linenumber" name="L773" href="#L773">773</a> <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L774" href="#L774">774</a> <em class="jxr_javadoccomment"> * @author Donal Fellows</em>
+<a class="jxr_linenumber" name="L775" href="#L775">775</a> <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L776" href="#L776">776</a> <strong class="jxr_keyword">interface</strong> <a name="ParamDescriptions" href="../../../../../uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#ParamDescriptions">ParamDescriptions</a> {
+<a class="jxr_linenumber" name="L777" href="#L777">777</a> 	<em class="jxr_javadoccomment">/** Description of {@code gatherFile} parameter. */</em>
+<a class="jxr_linenumber" name="L778" href="#L778">778</a> 	String GATHER = <span class="jxr_string">"The name of the gatherer description JSON file."</span>;
+<a class="jxr_linenumber" name="L779" href="#L779">779</a> 
+<a class="jxr_linenumber" name="L780" href="#L780">780</a> 	<em class="jxr_javadoccomment">/** Description of {@code machineFile} parameter. */</em>
+<a class="jxr_linenumber" name="L781" href="#L781">781</a> 	String MACHINE = <span class="jxr_string">"The name of the machine description JSON file."</span>;
+<a class="jxr_linenumber" name="L782" href="#L782">782</a> 
+<a class="jxr_linenumber" name="L783" href="#L783">783</a> 	<em class="jxr_javadoccomment">/** Description of {@code iobufMapFile} parameter. */</em>
+<a class="jxr_linenumber" name="L784" href="#L784">784</a> 	String MAP = <span class="jxr_string">"The name of the IOBUF map description file."</span>;
+<a class="jxr_linenumber" name="L785" href="#L785">785</a> 
+<a class="jxr_linenumber" name="L786" href="#L786">786</a> 	<em class="jxr_javadoccomment">/** Description of {@code placementFile} parameter. */</em>
+<a class="jxr_linenumber" name="L787" href="#L787">787</a> 	String PLACEMENT = <span class="jxr_string">"The name of the placement description JSON file."</span>;
+<a class="jxr_linenumber" name="L788" href="#L788">788</a> 
+<a class="jxr_linenumber" name="L789" href="#L789">789</a> 	<em class="jxr_javadoccomment">/** Description of {@code reportFolder} parameter. */</em>
+<a class="jxr_linenumber" name="L790" href="#L790">790</a> 	String REPORT = <span class="jxr_string">"The name of the run's reporting folder. "</span>
+<a class="jxr_linenumber" name="L791" href="#L791">791</a> 			+ <span class="jxr_string">"If not provided, no report will be written."</span>;
+<a class="jxr_linenumber" name="L792" href="#L792">792</a> 
+<a class="jxr_linenumber" name="L793" href="#L793">793</a> 	<em class="jxr_javadoccomment">/** Description of {@code dbFile} parameter. */</em>
+<a class="jxr_linenumber" name="L794" href="#L794">794</a> 	String DBFILE = <span class="jxr_string">"The path of the buffer database."</span>;
+<a class="jxr_linenumber" name="L795" href="#L795">795</a> 
+<a class="jxr_linenumber" name="L796" href="#L796">796</a> 	<em class="jxr_javadoccomment">/** Description of {@code dsFile} parameter. */</em>
+<a class="jxr_linenumber" name="L797" href="#L797">797</a> 	String DSFILE = <span class="jxr_string">"The path of the dataspec database."</span>;
+<a class="jxr_linenumber" name="L798" href="#L798">798</a> 
+<a class="jxr_linenumber" name="L799" href="#L799">799</a> 	<em class="jxr_javadoccomment">/** Description of {@code runFolder} parameter. */</em>
+<a class="jxr_linenumber" name="L800" href="#L800">800</a> 	String RUN = <span class="jxr_string">"The name of the run data folder."</span>;
+<a class="jxr_linenumber" name="L801" href="#L801">801</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2023 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

@@ -347,202 +347,208 @@
 <a class="jxr_linenumber" name="L339" href="#L339">339</a> 				<strong class="jxr_keyword">if</strong> (retryTracker != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L340" href="#L340">340</a> 					retryTracker.retryNeeded();
 <a class="jxr_linenumber" name="L341" href="#L341">341</a> 				}
-<a class="jxr_linenumber" name="L342" href="#L342">342</a> 				send();
-<a class="jxr_linenumber" name="L343" href="#L343">343</a> 			}
-<a class="jxr_linenumber" name="L344" href="#L344">344</a> 
-<a class="jxr_linenumber" name="L345" href="#L345">345</a> 			<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> hasRetries() {
-<a class="jxr_linenumber" name="L346" href="#L346">346</a> 				<strong class="jxr_keyword">return</strong> retries &gt; 0;
-<a class="jxr_linenumber" name="L347" href="#L347">347</a> 			}
-<a class="jxr_linenumber" name="L348" href="#L348">348</a> 
-<a class="jxr_linenumber" name="L349" href="#L349">349</a> 			<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> allTimeoutFailures() {
-<a class="jxr_linenumber" name="L350" href="#L350">350</a> 				<strong class="jxr_keyword">return</strong> retryReason.stream().allMatch(TIMEOUT_TOKEN::equals);
-<a class="jxr_linenumber" name="L351" href="#L351">351</a> 			}
-<a class="jxr_linenumber" name="L352" href="#L352">352</a> 
-<a class="jxr_linenumber" name="L353" href="#L353">353</a> 			<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> parseReceivedResponse(<a name="SCPResultMessage" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/SCPResultMessage.html#SCPResultMessage">SCPResultMessage</a> msg)
-<a class="jxr_linenumber" name="L354" href="#L354">354</a> 					<strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L355" href="#L355">355</a> 				<strong class="jxr_keyword">var</strong> response = msg.parsePayload(request);
-<a class="jxr_linenumber" name="L356" href="#L356">356</a> 				<strong class="jxr_keyword">if</strong> (callback != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L357" href="#L357">357</a> 					callback.accept(response);
-<a class="jxr_linenumber" name="L358" href="#L358">358</a> 				}
-<a class="jxr_linenumber" name="L359" href="#L359">359</a> 			}
-<a class="jxr_linenumber" name="L360" href="#L360">360</a> 
-<a class="jxr_linenumber" name="L361" href="#L361">361</a> 			<strong class="jxr_keyword">private</strong> HasCoreLocation dest() {
-<a class="jxr_linenumber" name="L362" href="#L362">362</a> 				<strong class="jxr_keyword">return</strong> request.sdpHeader.getDestination();
-<a class="jxr_linenumber" name="L363" href="#L363">363</a> 			}
-<a class="jxr_linenumber" name="L364" href="#L364">364</a> 		}
-<a class="jxr_linenumber" name="L365" href="#L365">365</a> 
-<a class="jxr_linenumber" name="L366" href="#L366">366</a> 		<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">		 * Create a request handling pipeline.</em>
-<a class="jxr_linenumber" name="L368" href="#L368">368</a> <em class="jxr_javadoccomment">		 *</em>
-<a class="jxr_linenumber" name="L369" href="#L369">369</a> <em class="jxr_javadoccomment">		 * @param connection</em>
-<a class="jxr_linenumber" name="L370" href="#L370">370</a> <em class="jxr_javadoccomment">		 *            The connection over which the communication is to take</em>
-<a class="jxr_linenumber" name="L371" href="#L371">371</a> <em class="jxr_javadoccomment">		 *            place.</em>
-<a class="jxr_linenumber" name="L372" href="#L372">372</a> <em class="jxr_javadoccomment">		 */</em>
-<a class="jxr_linenumber" name="L373" href="#L373">373</a> 		<strong class="jxr_keyword">private</strong> RequestPipeline(<a name="BMPConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/BMPConnection.html#BMPConnection">BMPConnection</a> connection) {
-<a class="jxr_linenumber" name="L374" href="#L374">374</a> 			<strong class="jxr_keyword">this</strong>.connection = connection;
-<a class="jxr_linenumber" name="L375" href="#L375">375</a> 		}
-<a class="jxr_linenumber" name="L376" href="#L376">376</a> 
-<a class="jxr_linenumber" name="L377" href="#L377">377</a> 		<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L378" href="#L378">378</a> <em class="jxr_javadoccomment">		 * Add a BMP request to the set to be sent.</em>
-<a class="jxr_linenumber" name="L379" href="#L379">379</a> <em class="jxr_javadoccomment">		 *</em>
-<a class="jxr_linenumber" name="L380" href="#L380">380</a> <em class="jxr_javadoccomment">		 * @param request</em>
-<a class="jxr_linenumber" name="L381" href="#L381">381</a> <em class="jxr_javadoccomment">		 *            The BMP request to be sent</em>
-<a class="jxr_linenumber" name="L382" href="#L382">382</a> <em class="jxr_javadoccomment">		 * @param callback</em>
-<a class="jxr_linenumber" name="L383" href="#L383">383</a> <em class="jxr_javadoccomment">		 *            A callback function to call when the response has been</em>
-<a class="jxr_linenumber" name="L384" href="#L384">384</a> <em class="jxr_javadoccomment">		 *            received; takes an SCPResponse as a parameter, or a</em>
-<a class="jxr_linenumber" name="L385" href="#L385">385</a> <em class="jxr_javadoccomment">		 *            {@code null} if the response doesn't need to be processed.</em>
-<a class="jxr_linenumber" name="L386" href="#L386">386</a> <em class="jxr_javadoccomment">		 * @throws IOException</em>
-<a class="jxr_linenumber" name="L387" href="#L387">387</a> <em class="jxr_javadoccomment">		 *             If things go really wrong.</em>
-<a class="jxr_linenumber" name="L388" href="#L388">388</a> <em class="jxr_javadoccomment">		 */</em>
-<a class="jxr_linenumber" name="L389" href="#L389">389</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> sendRequest(BMPRequest&lt;T&gt; request, Consumer&lt;T&gt; callback)
-<a class="jxr_linenumber" name="L390" href="#L390">390</a> 				<strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L391" href="#L391">391</a> 			<em class="jxr_comment">// Get the next sequence to be used and store it in the header</em>
-<a class="jxr_linenumber" name="L392" href="#L392">392</a> 			<strong class="jxr_keyword">int</strong> sequence = request.scpRequestHeader
-<a class="jxr_linenumber" name="L393" href="#L393">393</a> 					.issueSequenceNumber(requests.keySet());
-<a class="jxr_linenumber" name="L394" href="#L394">394</a> 
-<a class="jxr_linenumber" name="L395" href="#L395">395</a> 			<em class="jxr_comment">// Send the request, keeping track of how many are sent</em>
-<a class="jxr_linenumber" name="L396" href="#L396">396</a> 			<strong class="jxr_keyword">var</strong> req = <strong class="jxr_keyword">new</strong> Request(request, callback);
-<a class="jxr_linenumber" name="L397" href="#L397">397</a> 			<strong class="jxr_keyword">if</strong> (requests.put(sequence, req) != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L398" href="#L398">398</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(
-<a class="jxr_linenumber" name="L399" href="#L399">399</a> 						<span class="jxr_string">"duplicate sequence number catastrophe"</span>);
-<a class="jxr_linenumber" name="L400" href="#L400">400</a> 			}
-<a class="jxr_linenumber" name="L401" href="#L401">401</a> 			req.send();
-<a class="jxr_linenumber" name="L402" href="#L402">402</a> 		}
-<a class="jxr_linenumber" name="L403" href="#L403">403</a> 
-<a class="jxr_linenumber" name="L404" href="#L404">404</a> 		<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L405" href="#L405">405</a> <em class="jxr_javadoccomment">		 * Add a BMP request to the set to be sent.</em>
-<a class="jxr_linenumber" name="L406" href="#L406">406</a> <em class="jxr_javadoccomment">		 *</em>
-<a class="jxr_linenumber" name="L407" href="#L407">407</a> <em class="jxr_javadoccomment">		 * @param request</em>
-<a class="jxr_linenumber" name="L408" href="#L408">408</a> <em class="jxr_javadoccomment">		 *            The BMP request to be sent</em>
-<a class="jxr_linenumber" name="L409" href="#L409">409</a> <em class="jxr_javadoccomment">		 * @param retries</em>
-<a class="jxr_linenumber" name="L410" href="#L410">410</a> <em class="jxr_javadoccomment">		 *            The number of times to retry on failure.</em>
-<a class="jxr_linenumber" name="L411" href="#L411">411</a> <em class="jxr_javadoccomment">		 * @param callback</em>
-<a class="jxr_linenumber" name="L412" href="#L412">412</a> <em class="jxr_javadoccomment">		 *            A callback function to call when the response has been</em>
-<a class="jxr_linenumber" name="L413" href="#L413">413</a> <em class="jxr_javadoccomment">		 *            received; takes an SCPResponse as a parameter, or a</em>
-<a class="jxr_linenumber" name="L414" href="#L414">414</a> <em class="jxr_javadoccomment">		 *            {@code null} if the response doesn't need to be processed.</em>
-<a class="jxr_linenumber" name="L415" href="#L415">415</a> <em class="jxr_javadoccomment">		 * @throws IOException</em>
-<a class="jxr_linenumber" name="L416" href="#L416">416</a> <em class="jxr_javadoccomment">		 *             If things go really wrong.</em>
-<a class="jxr_linenumber" name="L417" href="#L417">417</a> <em class="jxr_javadoccomment">		 */</em>
-<a class="jxr_linenumber" name="L418" href="#L418">418</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> sendRequest(BMPRequest&lt;T&gt; request, <strong class="jxr_keyword">int</strong> retries,
-<a class="jxr_linenumber" name="L419" href="#L419">419</a> 				Consumer&lt;T&gt; callback) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L420" href="#L420">420</a> 			<em class="jxr_comment">// Get the next sequence to be used and store it in the header</em>
-<a class="jxr_linenumber" name="L421" href="#L421">421</a> 			<strong class="jxr_keyword">int</strong> sequence = request.scpRequestHeader
-<a class="jxr_linenumber" name="L422" href="#L422">422</a> 					.issueSequenceNumber(requests.keySet());
-<a class="jxr_linenumber" name="L423" href="#L423">423</a> 
-<a class="jxr_linenumber" name="L424" href="#L424">424</a> 			<em class="jxr_comment">// Send the request, keeping track of how many are sent</em>
-<a class="jxr_linenumber" name="L425" href="#L425">425</a> 			<strong class="jxr_keyword">var</strong> req = <strong class="jxr_keyword">new</strong> Request(request, retries, callback);
-<a class="jxr_linenumber" name="L426" href="#L426">426</a> 			<strong class="jxr_keyword">if</strong> (requests.put(sequence, req) != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L427" href="#L427">427</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(
-<a class="jxr_linenumber" name="L428" href="#L428">428</a> 						<span class="jxr_string">"duplicate sequence number catastrophe"</span>);
-<a class="jxr_linenumber" name="L429" href="#L429">429</a> 			}
-<a class="jxr_linenumber" name="L430" href="#L430">430</a> 			req.send();
-<a class="jxr_linenumber" name="L431" href="#L431">431</a> 		}
-<a class="jxr_linenumber" name="L432" href="#L432">432</a> 
-<a class="jxr_linenumber" name="L433" href="#L433">433</a> 		<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L434" href="#L434">434</a> <em class="jxr_javadoccomment">		 * Indicate the end of the packets to be sent. This must be called to</em>
-<a class="jxr_linenumber" name="L435" href="#L435">435</a> <em class="jxr_javadoccomment">		 * ensure that all responses are received and handled.</em>
-<a class="jxr_linenumber" name="L436" href="#L436">436</a> <em class="jxr_javadoccomment">		 *</em>
-<a class="jxr_linenumber" name="L437" href="#L437">437</a> <em class="jxr_javadoccomment">		 * @throws IOException</em>
-<a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">		 *             If anything goes wrong with communications.</em>
-<a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">		 * @throws InterruptedException</em>
-<a class="jxr_linenumber" name="L440" href="#L440">440</a> <em class="jxr_javadoccomment">		 *             If communications are interrupted.</em>
-<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">		 * @throws ProcessException</em>
-<a class="jxr_linenumber" name="L442" href="#L442">442</a> <em class="jxr_javadoccomment">		 *             If SpiNNaker rejects a message.</em>
-<a class="jxr_linenumber" name="L443" href="#L443">443</a> <em class="jxr_javadoccomment">		 */</em>
-<a class="jxr_linenumber" name="L444" href="#L444">444</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> finish()
-<a class="jxr_linenumber" name="L445" href="#L445">445</a> 				<strong class="jxr_keyword">throws</strong> IOException, InterruptedException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
-<a class="jxr_linenumber" name="L446" href="#L446">446</a> 			<em class="jxr_comment">// While there are still more packets in progress than some</em>
-<a class="jxr_linenumber" name="L447" href="#L447">447</a> 			<em class="jxr_comment">// threshold</em>
-<a class="jxr_linenumber" name="L448" href="#L448">448</a> 			<strong class="jxr_keyword">while</strong> (!requests.isEmpty()) {
-<a class="jxr_linenumber" name="L449" href="#L449">449</a> 				<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L450" href="#L450">450</a> 					<em class="jxr_comment">// Receive the next response</em>
-<a class="jxr_linenumber" name="L451" href="#L451">451</a> 					retrieve();
-<a class="jxr_linenumber" name="L452" href="#L452">452</a> 				} <strong class="jxr_keyword">catch</strong> (SocketTimeoutException e) {
-<a class="jxr_linenumber" name="L453" href="#L453">453</a> 					handleReceiveTimeout();
-<a class="jxr_linenumber" name="L454" href="#L454">454</a> 				}
-<a class="jxr_linenumber" name="L455" href="#L455">455</a> 			}
-<a class="jxr_linenumber" name="L456" href="#L456">456</a> 			<strong class="jxr_keyword">if</strong> (exception != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L457" href="#L457">457</a> 				<strong class="jxr_keyword">var</strong> exn = exception;
-<a class="jxr_linenumber" name="L458" href="#L458">458</a> 				<strong class="jxr_keyword">var</strong> req = errorRequest;
-<a class="jxr_linenumber" name="L459" href="#L459">459</a> 				exception = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L460" href="#L460">460</a> 				errorRequest = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L461" href="#L461">461</a> 				<strong class="jxr_keyword">throw</strong> makeInstance(req.sdpHeader.getDestination(), exn);
-<a class="jxr_linenumber" name="L462" href="#L462">462</a> 			}
-<a class="jxr_linenumber" name="L463" href="#L463">463</a> 		}
-<a class="jxr_linenumber" name="L464" href="#L464">464</a> 
-<a class="jxr_linenumber" name="L465" href="#L465">465</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> retrieve() <strong class="jxr_keyword">throws</strong> IOException, InterruptedException {
-<a class="jxr_linenumber" name="L466" href="#L466">466</a> 			<em class="jxr_comment">// Receive the next response</em>
-<a class="jxr_linenumber" name="L467" href="#L467">467</a> 			<strong class="jxr_keyword">var</strong> msg = connection.receiveSCPResponse(timeout);
-<a class="jxr_linenumber" name="L468" href="#L468">468</a> 			<strong class="jxr_keyword">var</strong> req = msg.pickRequest(requests);
-<a class="jxr_linenumber" name="L469" href="#L469">469</a> 			<strong class="jxr_keyword">if</strong> (req == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L470" href="#L470">470</a> 				<em class="jxr_comment">// Only process responses which have matching requests</em>
-<a class="jxr_linenumber" name="L471" href="#L471">471</a> 				log.info(<span class="jxr_string">"discarding message with unknown sequence number: {}"</span>,
-<a class="jxr_linenumber" name="L472" href="#L472">472</a> 						msg.getSequenceNumber());
-<a class="jxr_linenumber" name="L473" href="#L473">473</a> 				log.info(<span class="jxr_string">"discarded message: {}"</span>, msg);
-<a class="jxr_linenumber" name="L474" href="#L474">474</a> 				<strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L475" href="#L475">475</a> 			}
-<a class="jxr_linenumber" name="L476" href="#L476">476</a> 
-<a class="jxr_linenumber" name="L477" href="#L477">477</a> 			<em class="jxr_comment">// If the response can be retried, retry it</em>
-<a class="jxr_linenumber" name="L478" href="#L478">478</a> 			<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L479" href="#L479">479</a> 				<strong class="jxr_keyword">if</strong> (msg.isRetriable()) {
-<a class="jxr_linenumber" name="L480" href="#L480">480</a> 					sleep(RETRY_DELAY_MS);
-<a class="jxr_linenumber" name="L481" href="#L481">481</a> 					resend(req, msg.getResult());
-<a class="jxr_linenumber" name="L482" href="#L482">482</a> 				} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L483" href="#L483">483</a> 					<em class="jxr_comment">// No retry is possible. Try constructing the result</em>
-<a class="jxr_linenumber" name="L484" href="#L484">484</a> 					req.parseReceivedResponse(msg);
-<a class="jxr_linenumber" name="L485" href="#L485">485</a> 					<em class="jxr_comment">// Remove the sequence from the outstanding responses</em>
-<a class="jxr_linenumber" name="L486" href="#L486">486</a> 					msg.removeRequest(requests);
-<a class="jxr_linenumber" name="L487" href="#L487">487</a> 				}
-<a class="jxr_linenumber" name="L488" href="#L488">488</a> 			} <strong class="jxr_keyword">catch</strong> (InterruptedException e) {
-<a class="jxr_linenumber" name="L489" href="#L489">489</a> 				<strong class="jxr_keyword">throw</strong> e;
-<a class="jxr_linenumber" name="L490" href="#L490">490</a> 			} <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L491" href="#L491">491</a> 				errorRequest = req.request;
-<a class="jxr_linenumber" name="L492" href="#L492">492</a> 				exception = e;
-<a class="jxr_linenumber" name="L493" href="#L493">493</a> 				msg.removeRequest(requests);
-<a class="jxr_linenumber" name="L494" href="#L494">494</a> 			}
-<a class="jxr_linenumber" name="L495" href="#L495">495</a> 		}
-<a class="jxr_linenumber" name="L496" href="#L496">496</a> 
-<a class="jxr_linenumber" name="L497" href="#L497">497</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> handleReceiveTimeout() {
-<a class="jxr_linenumber" name="L498" href="#L498">498</a> 			<em class="jxr_comment">// If there is a timeout, all packets remaining are resent</em>
-<a class="jxr_linenumber" name="L499" href="#L499">499</a> 			<strong class="jxr_keyword">var</strong> toRemove = <strong class="jxr_keyword">new</strong> BitSet(SEQUENCE_LENGTH);
-<a class="jxr_linenumber" name="L500" href="#L500">500</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> seq : List.copyOf(requests.keySet())) {
-<a class="jxr_linenumber" name="L501" href="#L501">501</a> 				<strong class="jxr_keyword">var</strong> req = requests.get(seq);
-<a class="jxr_linenumber" name="L502" href="#L502">502</a> 				<strong class="jxr_keyword">if</strong> (req == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L503" href="#L503">503</a> 					<em class="jxr_comment">// Shouldn't happen, but if it does we should nuke it.</em>
-<a class="jxr_linenumber" name="L504" href="#L504">504</a> 					toRemove.set(seq);
-<a class="jxr_linenumber" name="L505" href="#L505">505</a> 					<strong class="jxr_keyword">continue</strong>;
-<a class="jxr_linenumber" name="L506" href="#L506">506</a> 				}
-<a class="jxr_linenumber" name="L507" href="#L507">507</a> 
-<a class="jxr_linenumber" name="L508" href="#L508">508</a> 				<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L509" href="#L509">509</a> 					resend(req, TIMEOUT_TOKEN);
-<a class="jxr_linenumber" name="L510" href="#L510">510</a> 				} <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L511" href="#L511">511</a> 					errorRequest = req.request;
-<a class="jxr_linenumber" name="L512" href="#L512">512</a> 					exception = e;
-<a class="jxr_linenumber" name="L513" href="#L513">513</a> 					toRemove.set(seq);
-<a class="jxr_linenumber" name="L514" href="#L514">514</a> 				}
-<a class="jxr_linenumber" name="L515" href="#L515">515</a> 			}
-<a class="jxr_linenumber" name="L516" href="#L516">516</a> 
-<a class="jxr_linenumber" name="L517" href="#L517">517</a> 			toRemove.stream().forEach(requests::remove);
-<a class="jxr_linenumber" name="L518" href="#L518">518</a> 		}
-<a class="jxr_linenumber" name="L519" href="#L519">519</a> 
-<a class="jxr_linenumber" name="L520" href="#L520">520</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> resend(Request req, Object reason) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L521" href="#L521">521</a> 			<strong class="jxr_keyword">if</strong> (!req.hasRetries()) {
-<a class="jxr_linenumber" name="L522" href="#L522">522</a> 				<em class="jxr_comment">// Report timeouts as timeout exception</em>
-<a class="jxr_linenumber" name="L523" href="#L523">523</a> 				<strong class="jxr_keyword">if</strong> (req.allTimeoutFailures()) {
-<a class="jxr_linenumber" name="L524" href="#L524">524</a> 					<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="BMPSendTimedOutException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/BMPSendTimedOutException.html#BMPSendTimedOutException">BMPSendTimedOutException</a>(
-<a class="jxr_linenumber" name="L525" href="#L525">525</a> 							req.request.scpRequestHeader, timeout);
-<a class="jxr_linenumber" name="L526" href="#L526">526</a> 				}
-<a class="jxr_linenumber" name="L527" href="#L527">527</a> 
-<a class="jxr_linenumber" name="L528" href="#L528">528</a> 				<em class="jxr_comment">// Report any other exception</em>
-<a class="jxr_linenumber" name="L529" href="#L529">529</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="BMPSendFailedException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/BMPSendFailedException.html#BMPSendFailedException">BMPSendFailedException</a>(req.request.scpRequestHeader,
-<a class="jxr_linenumber" name="L530" href="#L530">530</a> 						req.dest(), req.retryReason);
-<a class="jxr_linenumber" name="L531" href="#L531">531</a> 			}
-<a class="jxr_linenumber" name="L532" href="#L532">532</a> 
-<a class="jxr_linenumber" name="L533" href="#L533">533</a> 			<em class="jxr_comment">// If the request can be retried, retry it</em>
-<a class="jxr_linenumber" name="L534" href="#L534">534</a> 			req.resend(reason.toString());
-<a class="jxr_linenumber" name="L535" href="#L535">535</a> 		}
-<a class="jxr_linenumber" name="L536" href="#L536">536</a> 	}
-<a class="jxr_linenumber" name="L537" href="#L537">537</a> }
+<a class="jxr_linenumber" name="L342" href="#L342">342</a> 				requestData.rewind();
+<a class="jxr_linenumber" name="L343" href="#L343">343</a> 				send();
+<a class="jxr_linenumber" name="L344" href="#L344">344</a> 			}
+<a class="jxr_linenumber" name="L345" href="#L345">345</a> 
+<a class="jxr_linenumber" name="L346" href="#L346">346</a> 			<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> hasRetries() {
+<a class="jxr_linenumber" name="L347" href="#L347">347</a> 				<strong class="jxr_keyword">return</strong> retries &gt; 0;
+<a class="jxr_linenumber" name="L348" href="#L348">348</a> 			}
+<a class="jxr_linenumber" name="L349" href="#L349">349</a> 
+<a class="jxr_linenumber" name="L350" href="#L350">350</a> 			<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> allTimeoutFailures() {
+<a class="jxr_linenumber" name="L351" href="#L351">351</a> 				<strong class="jxr_keyword">return</strong> retryReason.stream().allMatch(TIMEOUT_TOKEN::equals);
+<a class="jxr_linenumber" name="L352" href="#L352">352</a> 			}
+<a class="jxr_linenumber" name="L353" href="#L353">353</a> 
+<a class="jxr_linenumber" name="L354" href="#L354">354</a> 			<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> parseReceivedResponse(<a name="SCPResultMessage" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/SCPResultMessage.html#SCPResultMessage">SCPResultMessage</a> msg)
+<a class="jxr_linenumber" name="L355" href="#L355">355</a> 					<strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L356" href="#L356">356</a> 				<strong class="jxr_keyword">var</strong> response = msg.parsePayload(request);
+<a class="jxr_linenumber" name="L357" href="#L357">357</a> 				<strong class="jxr_keyword">if</strong> (callback != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L358" href="#L358">358</a> 					callback.accept(response);
+<a class="jxr_linenumber" name="L359" href="#L359">359</a> 				}
+<a class="jxr_linenumber" name="L360" href="#L360">360</a> 			}
+<a class="jxr_linenumber" name="L361" href="#L361">361</a> 
+<a class="jxr_linenumber" name="L362" href="#L362">362</a> 			<strong class="jxr_keyword">private</strong> HasCoreLocation dest() {
+<a class="jxr_linenumber" name="L363" href="#L363">363</a> 				<strong class="jxr_keyword">return</strong> request.sdpHeader.getDestination();
+<a class="jxr_linenumber" name="L364" href="#L364">364</a> 			}
+<a class="jxr_linenumber" name="L365" href="#L365">365</a> 		}
+<a class="jxr_linenumber" name="L366" href="#L366">366</a> 
+<a class="jxr_linenumber" name="L367" href="#L367">367</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L368" href="#L368">368</a> <em class="jxr_javadoccomment">		 * Create a request handling pipeline.</em>
+<a class="jxr_linenumber" name="L369" href="#L369">369</a> <em class="jxr_javadoccomment">		 *</em>
+<a class="jxr_linenumber" name="L370" href="#L370">370</a> <em class="jxr_javadoccomment">		 * @param connection</em>
+<a class="jxr_linenumber" name="L371" href="#L371">371</a> <em class="jxr_javadoccomment">		 *            The connection over which the communication is to take</em>
+<a class="jxr_linenumber" name="L372" href="#L372">372</a> <em class="jxr_javadoccomment">		 *            place.</em>
+<a class="jxr_linenumber" name="L373" href="#L373">373</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L374" href="#L374">374</a> 		<strong class="jxr_keyword">private</strong> RequestPipeline(<a name="BMPConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/BMPConnection.html#BMPConnection">BMPConnection</a> connection) {
+<a class="jxr_linenumber" name="L375" href="#L375">375</a> 			<strong class="jxr_keyword">this</strong>.connection = connection;
+<a class="jxr_linenumber" name="L376" href="#L376">376</a> 		}
+<a class="jxr_linenumber" name="L377" href="#L377">377</a> 
+<a class="jxr_linenumber" name="L378" href="#L378">378</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L379" href="#L379">379</a> <em class="jxr_javadoccomment">		 * Add a BMP request to the set to be sent.</em>
+<a class="jxr_linenumber" name="L380" href="#L380">380</a> <em class="jxr_javadoccomment">		 *</em>
+<a class="jxr_linenumber" name="L381" href="#L381">381</a> <em class="jxr_javadoccomment">		 * @param request</em>
+<a class="jxr_linenumber" name="L382" href="#L382">382</a> <em class="jxr_javadoccomment">		 *            The BMP request to be sent</em>
+<a class="jxr_linenumber" name="L383" href="#L383">383</a> <em class="jxr_javadoccomment">		 * @param callback</em>
+<a class="jxr_linenumber" name="L384" href="#L384">384</a> <em class="jxr_javadoccomment">		 *            A callback function to call when the response has been</em>
+<a class="jxr_linenumber" name="L385" href="#L385">385</a> <em class="jxr_javadoccomment">		 *            received; takes an SCPResponse as a parameter, or a</em>
+<a class="jxr_linenumber" name="L386" href="#L386">386</a> <em class="jxr_javadoccomment">		 *            {@code null} if the response doesn't need to be processed.</em>
+<a class="jxr_linenumber" name="L387" href="#L387">387</a> <em class="jxr_javadoccomment">		 * @throws IOException</em>
+<a class="jxr_linenumber" name="L388" href="#L388">388</a> <em class="jxr_javadoccomment">		 *             If things go really wrong.</em>
+<a class="jxr_linenumber" name="L389" href="#L389">389</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L390" href="#L390">390</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> sendRequest(BMPRequest&lt;T&gt; request, Consumer&lt;T&gt; callback)
+<a class="jxr_linenumber" name="L391" href="#L391">391</a> 				<strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L392" href="#L392">392</a> 			<em class="jxr_comment">// Get the next sequence to be used and store it in the header</em>
+<a class="jxr_linenumber" name="L393" href="#L393">393</a> 			<strong class="jxr_keyword">int</strong> sequence = request.scpRequestHeader
+<a class="jxr_linenumber" name="L394" href="#L394">394</a> 					.issueSequenceNumber(requests.keySet());
+<a class="jxr_linenumber" name="L395" href="#L395">395</a> 
+<a class="jxr_linenumber" name="L396" href="#L396">396</a> 			<em class="jxr_comment">// Send the request, keeping track of how many are sent</em>
+<a class="jxr_linenumber" name="L397" href="#L397">397</a> 			<strong class="jxr_keyword">var</strong> req = <strong class="jxr_keyword">new</strong> Request(request, callback);
+<a class="jxr_linenumber" name="L398" href="#L398">398</a> 			<strong class="jxr_keyword">if</strong> (requests.put(sequence, req) != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L399" href="#L399">399</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(
+<a class="jxr_linenumber" name="L400" href="#L400">400</a> 						<span class="jxr_string">"duplicate sequence number catastrophe"</span>);
+<a class="jxr_linenumber" name="L401" href="#L401">401</a> 			}
+<a class="jxr_linenumber" name="L402" href="#L402">402</a> 			log.debug(<span class="jxr_string">"Sending request {}"</span>, request);
+<a class="jxr_linenumber" name="L403" href="#L403">403</a> 			req.send();
+<a class="jxr_linenumber" name="L404" href="#L404">404</a> 		}
+<a class="jxr_linenumber" name="L405" href="#L405">405</a> 
+<a class="jxr_linenumber" name="L406" href="#L406">406</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L407" href="#L407">407</a> <em class="jxr_javadoccomment">		 * Add a BMP request to the set to be sent.</em>
+<a class="jxr_linenumber" name="L408" href="#L408">408</a> <em class="jxr_javadoccomment">		 *</em>
+<a class="jxr_linenumber" name="L409" href="#L409">409</a> <em class="jxr_javadoccomment">		 * @param request</em>
+<a class="jxr_linenumber" name="L410" href="#L410">410</a> <em class="jxr_javadoccomment">		 *            The BMP request to be sent</em>
+<a class="jxr_linenumber" name="L411" href="#L411">411</a> <em class="jxr_javadoccomment">		 * @param retries</em>
+<a class="jxr_linenumber" name="L412" href="#L412">412</a> <em class="jxr_javadoccomment">		 *            The number of times to retry on failure.</em>
+<a class="jxr_linenumber" name="L413" href="#L413">413</a> <em class="jxr_javadoccomment">		 * @param callback</em>
+<a class="jxr_linenumber" name="L414" href="#L414">414</a> <em class="jxr_javadoccomment">		 *            A callback function to call when the response has been</em>
+<a class="jxr_linenumber" name="L415" href="#L415">415</a> <em class="jxr_javadoccomment">		 *            received; takes an SCPResponse as a parameter, or a</em>
+<a class="jxr_linenumber" name="L416" href="#L416">416</a> <em class="jxr_javadoccomment">		 *            {@code null} if the response doesn't need to be processed.</em>
+<a class="jxr_linenumber" name="L417" href="#L417">417</a> <em class="jxr_javadoccomment">		 * @throws IOException</em>
+<a class="jxr_linenumber" name="L418" href="#L418">418</a> <em class="jxr_javadoccomment">		 *             If things go really wrong.</em>
+<a class="jxr_linenumber" name="L419" href="#L419">419</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L420" href="#L420">420</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> sendRequest(BMPRequest&lt;T&gt; request, <strong class="jxr_keyword">int</strong> retries,
+<a class="jxr_linenumber" name="L421" href="#L421">421</a> 				Consumer&lt;T&gt; callback) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L422" href="#L422">422</a> 			<em class="jxr_comment">// Get the next sequence to be used and store it in the header</em>
+<a class="jxr_linenumber" name="L423" href="#L423">423</a> 			<strong class="jxr_keyword">int</strong> sequence = request.scpRequestHeader
+<a class="jxr_linenumber" name="L424" href="#L424">424</a> 					.issueSequenceNumber(requests.keySet());
+<a class="jxr_linenumber" name="L425" href="#L425">425</a> 
+<a class="jxr_linenumber" name="L426" href="#L426">426</a> 			<em class="jxr_comment">// Send the request, keeping track of how many are sent</em>
+<a class="jxr_linenumber" name="L427" href="#L427">427</a> 			<strong class="jxr_keyword">var</strong> req = <strong class="jxr_keyword">new</strong> Request(request, retries, callback);
+<a class="jxr_linenumber" name="L428" href="#L428">428</a> 			<strong class="jxr_keyword">if</strong> (requests.put(sequence, req) != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L429" href="#L429">429</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(
+<a class="jxr_linenumber" name="L430" href="#L430">430</a> 						<span class="jxr_string">"duplicate sequence number catastrophe"</span>);
+<a class="jxr_linenumber" name="L431" href="#L431">431</a> 			}
+<a class="jxr_linenumber" name="L432" href="#L432">432</a> 			log.debug(<span class="jxr_string">"Sending request {}"</span>, request);
+<a class="jxr_linenumber" name="L433" href="#L433">433</a> 			req.send();
+<a class="jxr_linenumber" name="L434" href="#L434">434</a> 		}
+<a class="jxr_linenumber" name="L435" href="#L435">435</a> 
+<a class="jxr_linenumber" name="L436" href="#L436">436</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L437" href="#L437">437</a> <em class="jxr_javadoccomment">		 * Indicate the end of the packets to be sent. This must be called to</em>
+<a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">		 * ensure that all responses are received and handled.</em>
+<a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">		 *</em>
+<a class="jxr_linenumber" name="L440" href="#L440">440</a> <em class="jxr_javadoccomment">		 * @throws IOException</em>
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">		 *             If anything goes wrong with communications.</em>
+<a class="jxr_linenumber" name="L442" href="#L442">442</a> <em class="jxr_javadoccomment">		 * @throws InterruptedException</em>
+<a class="jxr_linenumber" name="L443" href="#L443">443</a> <em class="jxr_javadoccomment">		 *             If communications are interrupted.</em>
+<a class="jxr_linenumber" name="L444" href="#L444">444</a> <em class="jxr_javadoccomment">		 * @throws ProcessException</em>
+<a class="jxr_linenumber" name="L445" href="#L445">445</a> <em class="jxr_javadoccomment">		 *             If SpiNNaker rejects a message.</em>
+<a class="jxr_linenumber" name="L446" href="#L446">446</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L447" href="#L447">447</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> finish()
+<a class="jxr_linenumber" name="L448" href="#L448">448</a> 				<strong class="jxr_keyword">throws</strong> IOException, InterruptedException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
+<a class="jxr_linenumber" name="L449" href="#L449">449</a> 			<em class="jxr_comment">// While there are still more packets in progress than some</em>
+<a class="jxr_linenumber" name="L450" href="#L450">450</a> 			<em class="jxr_comment">// threshold</em>
+<a class="jxr_linenumber" name="L451" href="#L451">451</a> 			<strong class="jxr_keyword">while</strong> (!requests.isEmpty()) {
+<a class="jxr_linenumber" name="L452" href="#L452">452</a> 				<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L453" href="#L453">453</a> 					<em class="jxr_comment">// Receive the next response</em>
+<a class="jxr_linenumber" name="L454" href="#L454">454</a> 					retrieve();
+<a class="jxr_linenumber" name="L455" href="#L455">455</a> 				} <strong class="jxr_keyword">catch</strong> (SocketTimeoutException e) {
+<a class="jxr_linenumber" name="L456" href="#L456">456</a> 					handleReceiveTimeout();
+<a class="jxr_linenumber" name="L457" href="#L457">457</a> 				}
+<a class="jxr_linenumber" name="L458" href="#L458">458</a> 			}
+<a class="jxr_linenumber" name="L459" href="#L459">459</a> 			<strong class="jxr_keyword">if</strong> (exception != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L460" href="#L460">460</a> 				<strong class="jxr_keyword">var</strong> exn = exception;
+<a class="jxr_linenumber" name="L461" href="#L461">461</a> 				<strong class="jxr_keyword">var</strong> req = errorRequest;
+<a class="jxr_linenumber" name="L462" href="#L462">462</a> 				exception = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L463" href="#L463">463</a> 				errorRequest = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L464" href="#L464">464</a> 				<strong class="jxr_keyword">throw</strong> makeInstance(req.sdpHeader.getDestination(), exn);
+<a class="jxr_linenumber" name="L465" href="#L465">465</a> 			}
+<a class="jxr_linenumber" name="L466" href="#L466">466</a> 		}
+<a class="jxr_linenumber" name="L467" href="#L467">467</a> 
+<a class="jxr_linenumber" name="L468" href="#L468">468</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> retrieve() <strong class="jxr_keyword">throws</strong> IOException, InterruptedException {
+<a class="jxr_linenumber" name="L469" href="#L469">469</a> 			<em class="jxr_comment">// Receive the next response</em>
+<a class="jxr_linenumber" name="L470" href="#L470">470</a> 			<strong class="jxr_keyword">var</strong> msg = connection.receiveSCPResponse(timeout);
+<a class="jxr_linenumber" name="L471" href="#L471">471</a> 			<strong class="jxr_keyword">var</strong> req = msg.pickRequest(requests);
+<a class="jxr_linenumber" name="L472" href="#L472">472</a> 			<strong class="jxr_keyword">if</strong> (req == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L473" href="#L473">473</a> 				<em class="jxr_comment">// Only process responses which have matching requests</em>
+<a class="jxr_linenumber" name="L474" href="#L474">474</a> 				log.info(<span class="jxr_string">"discarding message with unknown sequence number: {}"</span>,
+<a class="jxr_linenumber" name="L475" href="#L475">475</a> 						msg.getSequenceNumber());
+<a class="jxr_linenumber" name="L476" href="#L476">476</a> 				log.info(<span class="jxr_string">"discarded message: {}"</span>, msg);
+<a class="jxr_linenumber" name="L477" href="#L477">477</a> 				<strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L478" href="#L478">478</a> 			}
+<a class="jxr_linenumber" name="L479" href="#L479">479</a> 
+<a class="jxr_linenumber" name="L480" href="#L480">480</a> 			log.debug(<span class="jxr_string">"Received message with sequence {}"</span>,
+<a class="jxr_linenumber" name="L481" href="#L481">481</a> 					msg.getSequenceNumber());
+<a class="jxr_linenumber" name="L482" href="#L482">482</a> 
+<a class="jxr_linenumber" name="L483" href="#L483">483</a> 			<em class="jxr_comment">// If the response can be retried, retry it</em>
+<a class="jxr_linenumber" name="L484" href="#L484">484</a> 			<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L485" href="#L485">485</a> 				<strong class="jxr_keyword">if</strong> (msg.isRetriable()) {
+<a class="jxr_linenumber" name="L486" href="#L486">486</a> 					sleep(RETRY_DELAY_MS);
+<a class="jxr_linenumber" name="L487" href="#L487">487</a> 					resend(req, msg.getResult());
+<a class="jxr_linenumber" name="L488" href="#L488">488</a> 				} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L489" href="#L489">489</a> 					<em class="jxr_comment">// No retry is possible. Try constructing the result</em>
+<a class="jxr_linenumber" name="L490" href="#L490">490</a> 					req.parseReceivedResponse(msg);
+<a class="jxr_linenumber" name="L491" href="#L491">491</a> 					<em class="jxr_comment">// Remove the sequence from the outstanding responses</em>
+<a class="jxr_linenumber" name="L492" href="#L492">492</a> 					msg.removeRequest(requests);
+<a class="jxr_linenumber" name="L493" href="#L493">493</a> 				}
+<a class="jxr_linenumber" name="L494" href="#L494">494</a> 			} <strong class="jxr_keyword">catch</strong> (InterruptedException e) {
+<a class="jxr_linenumber" name="L495" href="#L495">495</a> 				<strong class="jxr_keyword">throw</strong> e;
+<a class="jxr_linenumber" name="L496" href="#L496">496</a> 			} <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L497" href="#L497">497</a> 				errorRequest = req.request;
+<a class="jxr_linenumber" name="L498" href="#L498">498</a> 				exception = e;
+<a class="jxr_linenumber" name="L499" href="#L499">499</a> 				msg.removeRequest(requests);
+<a class="jxr_linenumber" name="L500" href="#L500">500</a> 			}
+<a class="jxr_linenumber" name="L501" href="#L501">501</a> 		}
+<a class="jxr_linenumber" name="L502" href="#L502">502</a> 
+<a class="jxr_linenumber" name="L503" href="#L503">503</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> handleReceiveTimeout() {
+<a class="jxr_linenumber" name="L504" href="#L504">504</a> 			<em class="jxr_comment">// If there is a timeout, all packets remaining are resent</em>
+<a class="jxr_linenumber" name="L505" href="#L505">505</a> 			<strong class="jxr_keyword">var</strong> toRemove = <strong class="jxr_keyword">new</strong> BitSet(SEQUENCE_LENGTH);
+<a class="jxr_linenumber" name="L506" href="#L506">506</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> seq : List.copyOf(requests.keySet())) {
+<a class="jxr_linenumber" name="L507" href="#L507">507</a> 				<strong class="jxr_keyword">var</strong> req = requests.get(seq);
+<a class="jxr_linenumber" name="L508" href="#L508">508</a> 				<strong class="jxr_keyword">if</strong> (req == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L509" href="#L509">509</a> 					<em class="jxr_comment">// Shouldn't happen, but if it does we should nuke it.</em>
+<a class="jxr_linenumber" name="L510" href="#L510">510</a> 					toRemove.set(seq);
+<a class="jxr_linenumber" name="L511" href="#L511">511</a> 					<strong class="jxr_keyword">continue</strong>;
+<a class="jxr_linenumber" name="L512" href="#L512">512</a> 				}
+<a class="jxr_linenumber" name="L513" href="#L513">513</a> 
+<a class="jxr_linenumber" name="L514" href="#L514">514</a> 				<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L515" href="#L515">515</a> 					resend(req, TIMEOUT_TOKEN);
+<a class="jxr_linenumber" name="L516" href="#L516">516</a> 				} <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L517" href="#L517">517</a> 					errorRequest = req.request;
+<a class="jxr_linenumber" name="L518" href="#L518">518</a> 					exception = e;
+<a class="jxr_linenumber" name="L519" href="#L519">519</a> 					toRemove.set(seq);
+<a class="jxr_linenumber" name="L520" href="#L520">520</a> 				}
+<a class="jxr_linenumber" name="L521" href="#L521">521</a> 			}
+<a class="jxr_linenumber" name="L522" href="#L522">522</a> 
+<a class="jxr_linenumber" name="L523" href="#L523">523</a> 			toRemove.stream().forEach(requests::remove);
+<a class="jxr_linenumber" name="L524" href="#L524">524</a> 		}
+<a class="jxr_linenumber" name="L525" href="#L525">525</a> 
+<a class="jxr_linenumber" name="L526" href="#L526">526</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> resend(Request req, Object reason) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L527" href="#L527">527</a> 			<strong class="jxr_keyword">if</strong> (!req.hasRetries()) {
+<a class="jxr_linenumber" name="L528" href="#L528">528</a> 				<em class="jxr_comment">// Report timeouts as timeout exception</em>
+<a class="jxr_linenumber" name="L529" href="#L529">529</a> 				<strong class="jxr_keyword">if</strong> (req.allTimeoutFailures()) {
+<a class="jxr_linenumber" name="L530" href="#L530">530</a> 					<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="BMPSendTimedOutException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/BMPSendTimedOutException.html#BMPSendTimedOutException">BMPSendTimedOutException</a>(
+<a class="jxr_linenumber" name="L531" href="#L531">531</a> 							req.request, timeout);
+<a class="jxr_linenumber" name="L532" href="#L532">532</a> 				}
+<a class="jxr_linenumber" name="L533" href="#L533">533</a> 
+<a class="jxr_linenumber" name="L534" href="#L534">534</a> 				<em class="jxr_comment">// Report any other exception</em>
+<a class="jxr_linenumber" name="L535" href="#L535">535</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="BMPSendFailedException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/BMPSendFailedException.html#BMPSendFailedException">BMPSendFailedException</a>(req.request,
+<a class="jxr_linenumber" name="L536" href="#L536">536</a> 						req.dest(), req.retryReason);
+<a class="jxr_linenumber" name="L537" href="#L537">537</a> 			}
+<a class="jxr_linenumber" name="L538" href="#L538">538</a> 
+<a class="jxr_linenumber" name="L539" href="#L539">539</a> 			<em class="jxr_comment">// If the request can be retried, retry it</em>
+<a class="jxr_linenumber" name="L540" href="#L540">540</a> 			req.resend(reason.toString());
+<a class="jxr_linenumber" name="L541" href="#L541">541</a> 		}
+<a class="jxr_linenumber" name="L542" href="#L542">542</a> 	}
+<a class="jxr_linenumber" name="L543" href="#L543">543</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2023 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

@@ -126,17 +126,19 @@ extends <a href="DatabaseAPI.StatementCommon.html" title="interface in uk.ac.man
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code>uk.ac.manchester.spinnaker.utils.MappableIterable&lt;<a href="Row.html" title="class in uk.ac.manchester.spinnaker.alloc.db">Row</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#call(java.lang.Object...)">call</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>...&nbsp;arguments)</code></th>
+<td class="colFirst"><code>&lt;T&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;T&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#call(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.RowMapper,java.lang.Object...)">call</a></span>&#8203;(<a href="DatabaseAPI.RowMapper.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.RowMapper</a>&lt;T&gt;&nbsp;mapper,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>...&nbsp;arguments)</code></th>
 <td class="colLast">
-<div class="block">Run the query on the given arguments.</div>
+<div class="block">Run the query on the given arguments to read a list of objects.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i1">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="Row.html" title="class in uk.ac.manchester.spinnaker.alloc.db">Row</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#call1(java.lang.Object...)">call1</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>...&nbsp;arguments)</code></th>
+<td class="colFirst"><code>&lt;T&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;T&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#call1(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.RowMapper,java.lang.Object...)">call1</a></span>&#8203;(<a href="DatabaseAPI.RowMapper.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.RowMapper</a>&lt;T&gt;&nbsp;mapper,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>...&nbsp;arguments)</code></th>
 <td class="colLast">
-<div class="block">Run the query on the given arguments.</div>
+<div class="block">Run the query on the given arguments to read a single object.</div>
 </td>
 </tr>
 </tbody>
@@ -147,7 +149,7 @@ extends <a href="DatabaseAPI.StatementCommon.html" title="interface in uk.ac.man
 <h3>Methods inherited from interface&nbsp;uk.ac.manchester.spinnaker.alloc.db.<a href="DatabaseAPI.StatementCommon.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.StatementCommon</a></h3>
 <a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.StatementCommon">
 <!--   -->
-</a><code><a href="DatabaseAPI.StatementCommon.html#close()">close</a>, <a href="DatabaseAPI.StatementCommon.html#explainQueryPlan()">explainQueryPlan</a>, <a href="DatabaseAPI.StatementCommon.html#getNumArguments()">getNumArguments</a>, <a href="DatabaseAPI.StatementCommon.html#getRowColumnNames()">getRowColumnNames</a></code></div>
+</a><code><a href="DatabaseAPI.StatementCommon.html#close()">close</a></code></div>
 </section>
 </li>
 </ul>
@@ -163,34 +165,35 @@ extends <a href="DatabaseAPI.StatementCommon.html" title="interface in uk.ac.man
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="call(java.lang.Object...)">call</a></h3>
-<div class="memberSignature"><span class="returnType">uk.ac.manchester.spinnaker.utils.MappableIterable&lt;<a href="Row.html" title="class in uk.ac.manchester.spinnaker.alloc.db">Row</a>&gt;</span>&nbsp;<span class="memberName">call</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>...&nbsp;arguments)</span></div>
-<div class="block">Run the query on the given arguments.</div>
+<h3><a id="call(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.RowMapper,java.lang.Object...)">call</a></h3>
+<div class="memberSignature"><span class="typeParameters">&lt;T&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;T&gt;</span>&nbsp;<span class="memberName">call</span>&#8203;(<span class="arguments"><a href="DatabaseAPI.RowMapper.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.RowMapper</a>&lt;T&gt;&nbsp;mapper,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>...&nbsp;arguments)</span></div>
+<div class="block">Run the query on the given arguments to read a list of objects.</div>
 <dl>
+<dt><span class="paramLabel">Type Parameters:</span></dt>
+<dd><code>T</code> - The type of the result.</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>mapper</code> - Mapper that gets an object from a row set.</dd>
 <dd><code>arguments</code> - Positional argument to the query</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The results, wrapped as a one-shot iterable. The
-         <a href="Row.html" title="class in uk.ac.manchester.spinnaker.alloc.db">rows</a> in the iterable <em>must not</em> be
-         retained by callers; they may share state and might not
-         outlive the iteration.</dd>
+<dd>The resulting list of objects.</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="call1(java.lang.Object...)">call1</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="Row.html" title="class in uk.ac.manchester.spinnaker.alloc.db">Row</a>&gt;</span>&nbsp;<span class="memberName">call1</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>...&nbsp;arguments)</span></div>
-<div class="block">Run the query on the given arguments. The query must be one that only
- produces a single row result.</div>
+<h3><a id="call1(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.RowMapper,java.lang.Object...)">call1</a></h3>
+<div class="memberSignature"><span class="typeParameters">&lt;T&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;T&gt;</span>&nbsp;<span class="memberName">call1</span>&#8203;(<span class="arguments"><a href="DatabaseAPI.RowMapper.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.RowMapper</a>&lt;T&gt;&nbsp;mapper,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>...&nbsp;arguments)</span></div>
+<div class="block">Run the query on the given arguments to read a single object.</div>
 <dl>
+<dt><span class="paramLabel">Type Parameters:</span></dt>
+<dd><code>T</code> - The type of the result.</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>arguments</code> - Positional argument to the query</dd>
+<dd><code>mapper</code> - Mapper that gets an object from a row set.</dd>
+<dd><code>arguments</code> - Positional argument to the query.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The single row with the results, or empty if there is no such
-         row.</dd>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><code>SingleRowResult</code></dd>
+<dd>The resulting object.</dd>
 </dl>
 </section>
 </li>

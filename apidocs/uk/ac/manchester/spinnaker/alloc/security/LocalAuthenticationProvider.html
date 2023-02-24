@@ -157,7 +157,8 @@ extends <a href="https://docs.spring.io/spring-security/site/docs/current/api/or
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/Authentication.html?is-external=true" title="class or interface in org.springframework.security.core" class="externalLink">Authentication</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateAuthentication(org.springframework.security.core.context.SecurityContext)">updateAuthentication</a></span>&#8203;(<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/context/SecurityContext.html?is-external=true" title="class or interface in org.springframework.security.core.context" class="externalLink">SecurityContext</a>&nbsp;ctx)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateAuthentication(javax.servlet.http.HttpServletRequest,org.springframework.security.core.context.SecurityContext)">updateAuthentication</a></span>&#8203;(<a href="https://jakarta.ee/specifications/servlet/4.0/apidocs/javax/servlet/http/HttpServletRequest.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletRequest</a>&nbsp;req,
+<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/context/SecurityContext.html?is-external=true" title="class or interface in org.springframework.security.core.context" class="externalLink">SecurityContext</a>&nbsp;ctx)</code></th>
 <td class="colLast">
 <div class="block">Convert the type of the authentication in the security context.</div>
 </td>
@@ -211,11 +212,13 @@ extends <a href="https://docs.spring.io/spring-security/site/docs/current/api/or
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="updateAuthentication(org.springframework.security.core.context.SecurityContext)">updateAuthentication</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/Authentication.html?is-external=true" title="class or interface in org.springframework.security.core" class="externalLink">Authentication</a></span>&nbsp;<span class="memberName">updateAuthentication</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/context/SecurityContext.html?is-external=true" title="class or interface in org.springframework.security.core.context" class="externalLink">SecurityContext</a>&nbsp;ctx)</span></div>
+<h3><a id="updateAuthentication(javax.servlet.http.HttpServletRequest,org.springframework.security.core.context.SecurityContext)">updateAuthentication</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/Authentication.html?is-external=true" title="class or interface in org.springframework.security.core" class="externalLink">Authentication</a></span>&nbsp;<span class="memberName">updateAuthentication</span>&#8203;(<span class="arguments"><a href="https://jakarta.ee/specifications/servlet/4.0/apidocs/javax/servlet/http/HttpServletRequest.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletRequest</a>&nbsp;req,
+<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/context/SecurityContext.html?is-external=true" title="class or interface in org.springframework.security.core.context" class="externalLink">SecurityContext</a>&nbsp;ctx)</span></div>
 <div class="block">Convert the type of the authentication in the security context.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>req</code> - The request being made.</dd>
 <dd><code>ctx</code> - The security context.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The new authentication (which is also installed into the security

@@ -75,42 +75,48 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.db">uk.ac.manchester.spinnaker.alloc.db</a></th>
+<td class="colLast">
+<div class="block">Database support for Spalloc server.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.machine">uk.ac.manchester.spinnaker.machine</a></th>
 <td class="colLast">
 <div class="block">Describes a SpiNNaker machine.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.machine.tags">uk.ac.manchester.spinnaker.machine.tags</a></th>
 <td class="colLast">
 <div class="block">Describes IPtags and reverse IPtags.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.model">uk.ac.manchester.spinnaker.messages.model</a></th>
 <td class="colLast">
 <div class="block">Model support classes for the communication messages.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp</a></th>
 <td class="colLast">
 <div class="block">The messages of SpiNNaker Control Protocol (SCP).</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.storage">uk.ac.manchester.spinnaker.storage</a></th>
 <td class="colLast">
 <div class="block">Storage management.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.storage.sqlite">uk.ac.manchester.spinnaker.storage.sqlite</a></th>
 <td class="colLast">
 <div class="block">Storage management implementation that uses SQLite.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver</a></th>
 <td class="colLast">
 <div class="block">How to actually talk to a SpiNNaker machine.</div>
@@ -121,6 +127,59 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="classUses">
 <ul class="blockList">
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.db">
+<!--   -->
+</a>
+<h2>Uses of <a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a> in <a href="../../alloc/db/package-summary.html">uk.ac.manchester.spinnaker.alloc.db</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../../alloc/db/package-summary.html">uk.ac.manchester.spinnaker.alloc.db</a> that return <a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Row.</span><code><span class="memberNameLink"><a href="../../alloc/db/Row.html#getCore(java.lang.String,java.lang.String,java.lang.String)">getCore</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;x,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;y,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;p)</code></th>
+<td class="colLast">
+<div class="block">Get a core from a result set row.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../../alloc/db/package-summary.html">uk.ac.manchester.spinnaker.alloc.db</a> that return types with arguments of type <a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>static <a href="../../alloc/db/DatabaseAPI.RowMapper.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.RowMapper</a>&lt;<a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&gt;</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Row.</span><code><span class="memberNameLink"><a href="../../alloc/db/Row.html#core(java.lang.String,java.lang.String,java.lang.String)">core</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;x,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;y,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;p)</code></th>
+<td class="colLast">
+<div class="block">Create a function for extracting a core from a result set row.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
 <li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.machine">
 <!--   -->

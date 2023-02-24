@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6,"i13":6};
+<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -132,26 +132,19 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isHistoricalDBAvailable()">isHistoricalDBAvailable</a></span>()</code></th>
-<td class="colLast">
-<div class="block">Whether the historical data DB is available.</div>
-</td>
-</tr>
-<tr class="altColor" id="i2">
-<td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isReadOnly()">isReadOnly</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Retrieves whether this connection is in read-only mode.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="altColor" id="i2">
 <td class="colFirst"><code><a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Query</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#query(java.lang.String)">query</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;sql)</code></th>
 <td class="colLast">
 <div class="block">Create a new query.</div>
 </td>
 </tr>
-<tr class="altColor" id="i4">
+<tr class="rowColor" id="i3">
 <td class="colFirst"><code><a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Query</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#query(java.lang.String,boolean)">query</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;sql,
 boolean&nbsp;lockType)</code></th>
@@ -159,14 +152,14 @@ boolean&nbsp;lockType)</code></th>
 <div class="block">Create a new query.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i5">
+<tr class="altColor" id="i4">
 <td class="colFirst"><code><a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Query</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#query(org.springframework.core.io.Resource)">query</a></span>&#8203;(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a>&nbsp;sqlResource)</code></th>
 <td class="colLast">
 <div class="block">Create a new query.</div>
 </td>
 </tr>
-<tr class="altColor" id="i6">
+<tr class="rowColor" id="i5">
 <td class="colFirst"><code><a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Query</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#query(org.springframework.core.io.Resource,boolean)">query</a></span>&#8203;(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a>&nbsp;sqlResource,
 boolean&nbsp;lockType)</code></th>
@@ -174,7 +167,7 @@ boolean&nbsp;lockType)</code></th>
 <div class="block">Create a new query.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i7">
+<tr class="altColor" id="i6">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#rollback()">rollback</a></span>()</code></th>
 <td class="colLast">
@@ -182,7 +175,7 @@ boolean&nbsp;lockType)</code></th>
  database locks currently held by this connection.</div>
 </td>
 </tr>
-<tr class="altColor" id="i8">
+<tr class="rowColor" id="i7">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#transaction(boolean,uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Transacted)">transaction</a></span>&#8203;(boolean&nbsp;lockForWriting,
 <a href="DatabaseAPI.Transacted.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Transacted</a>&nbsp;operation)</code></th>
@@ -190,7 +183,7 @@ boolean&nbsp;lockType)</code></th>
 <div class="block">A nestable transaction runner.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i9">
+<tr class="altColor" id="i8">
 <td class="colFirst"><code>&lt;T&gt;&nbsp;T</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#transaction(boolean,uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)">transaction</a></span>&#8203;(boolean&nbsp;lockForWriting,
 <a href="DatabaseAPI.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.TransactedWithResult</a>&lt;T&gt;&nbsp;operation)</code></th>
@@ -198,28 +191,28 @@ boolean&nbsp;lockType)</code></th>
 <div class="block">A nestable transaction runner.</div>
 </td>
 </tr>
-<tr class="altColor" id="i10">
+<tr class="rowColor" id="i9">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#transaction(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Transacted)">transaction</a></span>&#8203;(<a href="DatabaseAPI.Transacted.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Transacted</a>&nbsp;operation)</code></th>
 <td class="colLast">
 <div class="block">A nestable transaction runner.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i11">
+<tr class="altColor" id="i10">
 <td class="colFirst"><code>&lt;T&gt;&nbsp;T</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#transaction(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)">transaction</a></span>&#8203;(<a href="DatabaseAPI.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.TransactedWithResult</a>&lt;T&gt;&nbsp;operation)</code></th>
 <td class="colLast">
 <div class="block">A nestable transaction runner.</div>
 </td>
 </tr>
-<tr class="altColor" id="i12">
+<tr class="rowColor" id="i11">
 <td class="colFirst"><code><a href="DatabaseAPI.Update.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Update</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#update(java.lang.String)">update</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;sql)</code></th>
 <td class="colLast">
 <div class="block">Create a new update.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i13">
+<tr class="altColor" id="i12">
 <td class="colFirst"><code><a href="DatabaseAPI.Update.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Update</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#update(org.springframework.core.io.Resource)">update</a></span>&#8203;(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a>&nbsp;sqlResource)</code></th>
 <td class="colLast">
@@ -288,19 +281,6 @@ boolean&nbsp;lockType)</code></th>
          otherwise.</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Connection.html?is-external=true#isReadOnly()" title="class or interface in java.sql" class="externalLink"><code>Connection.isReadOnly()</code></a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="isHistoricalDBAvailable()">isHistoricalDBAvailable</a></h3>
-<div class="memberSignature"><span class="returnType">boolean</span>&nbsp;<span class="memberName">isHistoricalDBAvailable</span>()</div>
-<div class="block">Whether the historical data DB is available. If it isn't, you can't
- move any data to longer-term storage, but ordinary operations should
- be fine.</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>Whether the historical data DB is available.</dd>
 </dl>
 </section>
 </li>

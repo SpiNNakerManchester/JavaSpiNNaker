@@ -115,30 +115,36 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
+<th class="colFirst" scope="row"><a href="DatabaseAPI.RowMapper.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.RowMapper</a>&lt;T&gt;</th>
+<td class="colLast">
+<div class="block">Maps database Row to an object.</div>
+</td>
+</tr>
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="DatabaseAPI.StatementCommon.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.StatementCommon</a></th>
 <td class="colLast">
 <div class="block">Common shared API between <a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><code>DatabaseAPI.Query</code></a> and <a href="DatabaseAPI.Update.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><code>DatabaseAPI.Update</code></a>.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="DatabaseAPI.Transacted.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Transacted</a></th>
 <td class="colLast">
 <div class="block">Some code that may be run within a transaction.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="DatabaseAPI.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.TransactedWithResult</a>&lt;T&gt;</th>
 <td class="colLast">
 <div class="block">Some code that may be run within a transaction that returns a result.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="DatabaseAPI.Update.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Update</a></th>
 <td class="colLast">
 <div class="block">Wrapping a prepared update to be more suitable for Java 8 onwards.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="SQLiteFlags.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">SQLiteFlags</a></th>
 <td class="colLast">
 <div class="block">Flags in SQLite that the driver doesn't name for us.</div>
@@ -172,9 +178,9 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
-<th class="colFirst" scope="row"><a href="DatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine</a></th>
+<th class="colFirst" scope="row"><a href="DatabaseEngineJDBCImpl.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngineJDBCImpl</a></th>
 <td class="colLast">
-<div class="block">The database engine interface.</div>
+<div class="block">Implementation of the DatabaseAPI that uses JDBC.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -213,42 +219,6 @@ loadScripts(document, 'script');</script>
 <th class="colFirst" scope="row"><a href="Utils.html" title="class in uk.ac.manchester.spinnaker.alloc.db">Utils</a></th>
 <td class="colLast">
 <div class="block">Miscellaneous database-related utility operations.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</li>
-<li class="blockList">
-<div class="typeSummary">
-<table>
-<caption><span>Annotation Types Summary</span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Annotation Type</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<th class="colFirst" scope="row"><a href="DatabaseEngine.ArgumentCount.html" title="annotation in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.ArgumentCount</a></th>
-<td class="colLast">
-<div class="block">If placed on a bean of type <code>Function</code>, specifies how many
- arguments that function takes.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="DatabaseEngine.Deterministic.html" title="annotation in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.Deterministic</a></th>
-<td class="colLast">
-<div class="block">If placed on a bean of type <code>Function</code>, specifies that the function
- will always give the same answer with the same inputs.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colFirst" scope="row"><a href="DatabaseEngine.Innocuous.html" title="annotation in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.Innocuous</a></th>
-<td class="colLast">Deprecated.
-<div class="deprecationComment">Consult the SQLite documentation on innocuous functions very
-             carefully before enabling this.</div>
 </td>
 </tr>
 </tbody>

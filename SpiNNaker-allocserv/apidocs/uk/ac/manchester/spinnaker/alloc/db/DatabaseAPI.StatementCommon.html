@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":6,"i3":6};
+<script type="text/javascript">var data = {"i0":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -136,27 +136,6 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="block">Close this statement.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i1">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#explainQueryPlan()">explainQueryPlan</a></span>()</code></th>
-<td class="colLast">
-<div class="block">Get the query plan explanation.</div>
-</td>
-</tr>
-<tr class="altColor" id="i2">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getNumArguments()">getNumArguments</a></span>()</code></th>
-<td class="colLast">
-<div class="block">Get the number of arguments expected when calling this statement.</div>
-</td>
-</tr>
-<tr class="rowColor" id="i3">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRowColumnNames()">getRowColumnNames</a></span>()</code></th>
-<td class="colLast">
-<div class="block">Get the set of names of columns produced when calling this statement.</div>
-</td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -176,50 +155,12 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="getNumArguments()">getNumArguments</a></h3>
-<div class="memberSignature"><span class="returnType">int</span>&nbsp;<span class="memberName">getNumArguments</span>()</div>
-<div class="block">Get the number of arguments expected when calling this statement.</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The number of arguments. Types are arbitrary (because SQLite)</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="getRowColumnNames()">getRowColumnNames</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</span>&nbsp;<span class="memberName">getRowColumnNames</span>()</div>
-<div class="block">Get the set of names of columns produced when calling this statement.</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>A set of names. The order is the order in the SQL producing
-         the result set, but this should normally be insignificant.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="close()">close</a></h3>
 <div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">close</span>()</div>
 <div class="block">Close this statement. This never throws a checked exception.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true#close()" title="class or interface in java.lang" class="externalLink">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="explainQueryPlan()">explainQueryPlan</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</span>&nbsp;<span class="memberName">explainQueryPlan</span>()</div>
-<div class="block">Get the query plan explanation. Note that DML and DDL <em>may</em>
- have empty query plans; that's up to the DB.</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>A list of lines that describe the query plan.</dd>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="https://www.sqlite.org/eqp.html">SQLite
-      documentation</a></dd>
 </dl>
 </section>
 </li>
