@@ -166,6 +166,8 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 		var j = lookUpJobFromPath(request);
 		// If we have a job, remember it and succeed
 		j.ifPresent(job -> JOB.put(attributes, job));
+		log.debug("Before handshake with request uri {}, job {}",
+				request.getURI(), j);
 		return j.isPresent();
 	}
 
@@ -174,6 +176,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	public void afterHandshake(ServerHttpRequest request,
 			ServerHttpResponse response, WebSocketHandler wsHandler,
 			Exception exception) {
+		log.debug("Handshake done for uri {}", request.getURI());
 	}
 
 	/**
@@ -184,6 +187,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	 */
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) {
+		log.debug("Websocket session {} established", session);
 		initProxyCore(session, JOB.get(session));
 	}
 
@@ -198,6 +202,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	@Override
 	public void afterConnectionClosed(WebSocketSession session,
 			CloseStatus status) {
+		log.debug("Websocket session {} closed", session);
 		closed(session, PROXY.get(session), JOB.get(session));
 	}
 
@@ -230,6 +235,8 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 		if (!(exception instanceof EOFException)) {
 			// We don't log EOFException
 			log.warn("transport error for {}", session, exception);
+		} else {
+			log.debug("End of web socket session {}", session, exception);
 		}
 		// Don't need to close; afterConnectionClosed() will be called next
 	}

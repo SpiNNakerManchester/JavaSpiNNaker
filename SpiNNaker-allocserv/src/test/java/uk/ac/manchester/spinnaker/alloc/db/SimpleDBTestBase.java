@@ -17,26 +17,28 @@ package uk.ac.manchester.spinnaker.alloc.db;
 
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import uk.ac.manchester.spinnaker.alloc.TestSupport;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
- * Support class for doing testing against an in-memory database. There will be
- * a connection per test (i.e., the DB will be implicitly deleted at the end of
- * <em>each</em> test), with that connection made available in the {@link #c}
+ * Support class for doing testing against a simple database. There will be
+ * a connection per test and the DB will be implicitly cleaned at the end of
+ * <em>each</em> test, with that connection made available in the {@link #c}
  * field. That field <em>must not</em> be modified by subclasses.
  * <p>
  * Subclasses should be annotated with {@link SpringBootTest}.
  */
 @UsedInJavadocOnly(SpringBootTest.class)
-public abstract class MemDBTestBase extends SQLQueries {
-	private DatabaseEngine memdb;
+public abstract class SimpleDBTestBase extends TestSupport {
 
 	/**
 	 * The DB connection. Only valid in a test. <em>Must not</em> be modified by
@@ -45,17 +47,12 @@ public abstract class MemDBTestBase extends SQLQueries {
 	@SuppressWarnings("checkstyle:visibilitymodifier")
 	protected Connection c;
 
-	@BeforeAll
-	void getMemoryDatabase(@Autowired DatabaseEngine mainDBEngine) {
-		assumeTrue(mainDBEngine != null, "spring-configured DB engine absent");
-		memdb = mainDBEngine.getInMemoryDB();
-	}
-
 	@BeforeEach
 	@SuppressWarnings("MustBeClosed")
-	void getConnection() {
-		c = memdb.getConnection();
+	void getConnection() throws IOException {
+		c = db.getConnection();
 		assumeTrue(c != null, "connection not generated");
+		killDB();
 	}
 
 	@AfterEach

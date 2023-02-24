@@ -152,11 +152,22 @@ public abstract class UDPConnection<T> implements Connection {
 	 * override {@link #isClosed()}, and possibly {@link #isConnected()} as
 	 * well.
 	 *
-	 * @param canSend
-	 *            Whether this is a connection that can send messages.
+	 * @param remoteHost
+	 *            The remote host name or IP address to send packets to. If
+	 *            {@code null}, the socket will be available for listening only,
+	 *            and will throw an exception if used for sending.
+	 * @param remotePort
+	 *            The remote port to send packets to. If {@code remoteHost} is
+	 *            {@code null}, this is ignored. If {@code remoteHost} is
+	 *            specified, this must also be specified as non-zero for the
+	 *            connection to allow sending.
 	 */
-	UDPConnection(boolean canSend) {
-		this.canSend = canSend;
+	UDPConnection(InetAddress remoteHost, Integer remotePort) {
+		canSend = (remoteHost != null && remotePort != null && remotePort > 0);
+		if (canSend) {
+			remoteIPAddress = (Inet4Address) remoteHost;
+			remoteAddress = new InetSocketAddress(remoteIPAddress, remotePort);
+		}
 		socket = null;
 	}
 
@@ -243,6 +254,9 @@ public abstract class UDPConnection<T> implements Connection {
 	 */
 	@ForOverride
 	protected InetSocketAddress getLocalAddress() throws IOException {
+		if (socket == null) {
+			return null;
+		}
 		return (InetSocketAddress) socket.getLocalSocketAddress();
 	}
 
@@ -262,20 +276,13 @@ public abstract class UDPConnection<T> implements Connection {
 	 * {@link DelegatingSCPConnection}.
 	 *
 	 * @return The socket's remote address
-	 * @throws IOException
-	 *             If the socket is closed.
 	 */
-	@ForOverride
-	protected InetSocketAddress getRemoteAddress() throws IOException {
-		return (InetSocketAddress) socket.getRemoteSocketAddress();
+	protected InetSocketAddress getRemoteAddress() {
+		return remoteAddress;
 	}
 
 	private InetSocketAddress remoteAddr() {
-		try {
-			return requireNonNullElse(getRemoteAddress(), ANY);
-		} catch (IOException e) {
-			return ANY;
-		}
+		return requireNonNullElse(getRemoteAddress(), ANY);
 	}
 
 	/** @return The local IP address to which the connection is bound. */
@@ -306,7 +313,7 @@ public abstract class UDPConnection<T> implements Connection {
 	public final InetAddress getRemoteIPAddress() {
 		try {
 			return getRemoteAddress().getAddress();
-		} catch (NullPointerException | IOException e) {
+		} catch (NullPointerException e) {
 			return null;
 		}
 	}
@@ -319,7 +326,7 @@ public abstract class UDPConnection<T> implements Connection {
 	public final int getRemotePort() {
 		try {
 			return getRemoteAddress().getPort();
-		} catch (NullPointerException | IOException e) {
+		} catch (NullPointerException e) {
 			return -1;
 		}
 	}
@@ -600,10 +607,6 @@ public abstract class UDPConnection<T> implements Connection {
 	@Override
 	public final void sendTo(ByteBuffer data, InetAddress address, int port)
 			throws IOException {
-		if (!canSend) {
-			throw new IOException("Remote host address or port not set; "
-					+ "data cannot be sent with this connection");
-		}
 		if (isClosed()) {
 			throw new EOFException();
 		}

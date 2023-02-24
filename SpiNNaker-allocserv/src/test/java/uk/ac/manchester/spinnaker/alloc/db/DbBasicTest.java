@@ -19,17 +19,20 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assumeWritable;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.instant;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.object;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.jdbc.BadSqlGrammarException;
-import org.springframework.jdbc.InvalidResultSetAccessException;
+import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.test.context.ActiveProfiles;
 
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectionImpl;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
 
 /**
  * Test that the database engine interface works and that the queries are
@@ -41,7 +44,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectionImpl;
 @SpringBootTest
 @TestInstance(PER_CLASS)
 @ActiveProfiles("unittest")
-class DbBasicTest extends MemDBTestBase {
+class DbBasicTest extends SimpleDBTestBase {
 	private static void assertContains(String expected, String value) {
 		assertTrue(value.contains(expected),
 				() -> "did not find " + expected + " in " + value);
@@ -56,9 +59,9 @@ class DbBasicTest extends MemDBTestBase {
 		try (var q = c.query(COUNT)) {
 			c.transaction(() -> {
 				int rows = 0;
-				for (var row : q.call()) {
+				for (var row : q.call(integer("c"))) {
 					// For v2, v3, v4 and v5 board configs (
-					assertEquals(104, row.getInt("c"));
+					assertEquals(104, row);
 					rows++;
 				}
 				assertEquals(1, rows, "should be only one row in query result");
@@ -73,39 +76,32 @@ class DbBasicTest extends MemDBTestBase {
 	@Test
 	void testBadQueries() {
 		c.transaction(() -> {
-			Exception e;
 			try (var q0 = c.query(COUNT);
 					var q1 = c.query(COUNT + "WHERE model = :model")) {
 
 				// Too many args
-				e = assertThrows(InvalidDataAccessResourceUsageException.class,
-						() -> q0.call1(1));
-				assertEquals("prepared statement takes no arguments",
-						e.getMessage());
+				assertThrows(TransientDataAccessResourceException.class,
+						() -> q0.call1((row) -> null, 1));
 
 				// Not enough args
-				e = assertThrows(InvalidDataAccessResourceUsageException.class,
-						() -> q1.call1());
-				assertEquals("prepared statement takes 1 arguments, not 0",
-						e.getMessage());
+				assertThrows(BadSqlGrammarException.class,
+						() -> q1.call1((row) -> null));
 
 				// No column to fetch
-				e = assertThrows(InvalidResultSetAccessException.class,
-						() -> q0.call1().orElseThrow().getInstant("d"));
-				assertContains("no such column: 'd'", e.getMessage());
+				assertThrows(UncategorizedSQLException.class,
+						() -> q0.call1(instant("d")).orElseThrow());
 			}
 
 			// No column in query definition
-			e = assertThrows(BadSqlGrammarException.class,
-					() -> c.query(COUNT + "WHERE job_id = ?"));
-			assertContains("no such column: job_id", e.getMessage());
+		    assertThrows(BadSqlGrammarException.class,
+					() -> c.query(COUNT + "WHERE job_id = ?").call(r -> 1));
 		});
 
 		// Accessing row after it has been disposed of
 		var row = c.transaction(() -> {
 			try (var q = c.query(COUNT)) {
-				var r = q.call1().orElseThrow();
-				assertContains("Row(c:", r.toString());
+				var r = q.call1((theRow) -> theRow).orElseThrow();
+				assertEquals("Row(...)", r.toString());
 				return r;
 			}
 		});
@@ -118,27 +114,21 @@ class DbBasicTest extends MemDBTestBase {
 	void testBadUpdates() {
 		// Not very good SQL for updates, but we won't actually run them
 		c.transaction(() -> {
-			Exception e;
 			try (var q0 = c.update(COUNT);
 					var q1 = c.update(COUNT + "WHERE model = :model")) {
 
 				// Too many args
-				e = assertThrows(InvalidDataAccessResourceUsageException.class,
+				assertThrows(TransientDataAccessResourceException.class,
 						() -> q0.call(1));
-				assertEquals("prepared statement takes no arguments",
-						e.getMessage());
 
 				// Not enough args
-				e = assertThrows(InvalidDataAccessResourceUsageException.class,
+				assertThrows(DataIntegrityViolationException.class,
 						() -> q1.call());
-				assertEquals("prepared statement takes 1 arguments, not 0",
-						e.getMessage());
 			}
 
 			// No column in query definition
-			e = assertThrows(BadSqlGrammarException.class,
-					() -> c.update(COUNT + "WHERE job_id = ?"));
-			assertContains("no such column: job_id", e.getMessage());
+			assertThrows(DataIntegrityViolationException.class,
+					() -> c.update(COUNT + "WHERE job_id = ?").call());
 		});
 	}
 
@@ -148,56 +138,47 @@ class DbBasicTest extends MemDBTestBase {
 		assumeWritable(c);
 		c.transaction(() -> {
 			int rows;
-			((ConnectionImpl) c).exec("CREATE TEMPORARY TABLE foo(x)");
+			((Connection) c).update(
+					"CREATE TEMPORARY TABLE foo "
+					+ "(k INT PRIMARY KEY AUTO_INCREMENT, x INT)").call();
 			try (var u = c.update("INSERT INTO foo(x) VALUES(?)");
 					var q = c.query("SELECT x FROM foo WHERE ? = ?");
 					var q2 = c.query("SELECT x FROM foo")) {
 				rows = 0;
-				for (var row : q.call(1, 1)) {
-					assertNotNull(row.getObject("x"));
+				for (var row : q.call(object("x"), 1, 1)) {
+					assertNotNull(row);
 					rows++;
 				}
 				assertEquals(0, rows);
 
-				int keyCount = 0;
-				for (var key : u.keys(123)) {
-					// Tricky: assumes how SQLite generates keys
-					assertEquals(Integer.valueOf(1), key);
-					keyCount++;
-				}
-				assertEquals(1, keyCount);
+				var key = u.key(123).orElseThrow();
+				assertEquals(Integer.valueOf(1), key);
 
 				rows = 0;
-				for (var row : q.call(1, 1)) {
-					assertEquals(123, row.getInt("x"));
+				for (var row : q.call(integer("x"), 1, 1)) {
+					assertEquals(123, row);
 					rows++;
 				}
 				assertEquals(1, rows);
 
 				// Check that it works with the row-extraction mapping too
 				rows = 0;
-				for (var row : q.call(1, 1).map(integer("x"))) {
+				for (var row : q.call(integer("x"), 1, 1)) {
 					assertEquals(123, row);
 					rows++;
 				}
 				assertEquals(1, rows);
 
 				// Test what happens when we give too many arguments
-				var e1 = assertThrows(DataAccessException.class,
-						() -> q.call(1, 2, 3));
-				assertEquals("prepared statement takes 2 arguments, not 3",
-						e1.getMostSpecificCause().getMessage());
+				assertThrows(DataAccessException.class,
+						() -> q.call((row) -> null, 1, 2, 3));
 
-				var e2 = assertThrows(DataAccessException.class,
-						() -> q2.call(1));
-				assertEquals("prepared statement takes no arguments",
-						e2.getMostSpecificCause().getMessage());
+				assertThrows(DataAccessException.class,
+						() -> q2.call((row) -> null, 1));
 
 				// Test what happens when we give too few arguments
-				var e3 = assertThrows(DataAccessException.class,
-						() -> q.call(1));
-				assertEquals("prepared statement takes 2 arguments, not 1",
-						e3.getMostSpecificCause().getMessage());
+				assertThrows(DataAccessException.class,
+						() -> q.call((row) -> null, 1));
 			}
 		});
 	}

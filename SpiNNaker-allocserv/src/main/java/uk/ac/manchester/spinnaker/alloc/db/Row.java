@@ -16,21 +16,27 @@
 package uk.ac.manchester.spinnaker.alloc.db;
 
 import static uk.ac.manchester.spinnaker.alloc.IOUtils.deserialize;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.columnNames;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.TypeMismatchDataAccessException;
 
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.RowMapper;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -47,6 +53,14 @@ public final class Row {
 
 	Row(ResultSet rs) {
 		this.rs = rs;
+	}
+
+	static Set<String> columnNames(ResultSetMetaData md) throws SQLException {
+		var names = new LinkedHashSet<String>();
+		for (int i = 1; i <= md.getColumnCount(); i++) {
+			names.add(md.getColumnName(i));
+		}
+		return names;
 	}
 
 	private String getSQL() {
@@ -133,7 +147,7 @@ public final class Row {
 	 *            The name of the column.
 	 * @return A function to get the string from the column of a row.
 	 */
-	public static Function<Row, String> string(String columnLabel) {
+	public static RowMapper<String> string(String columnLabel) {
 		return r -> r.getString(columnLabel);
 	}
 
@@ -157,7 +171,7 @@ public final class Row {
 	 *            The name of the column.
 	 * @return A function to get the {@code boolean} from the column of a row.
 	 */
-	public static Function<Row, Boolean> bool(String columnLabel) {
+	public static RowMapper<Boolean> bool(String columnLabel) {
 		return r -> r.getBoolean(columnLabel);
 	}
 
@@ -195,7 +209,16 @@ public final class Row {
 	 *             If the column's contents can't be retrieved.
 	 */
 	public Integer getInteger(String columnLabel) {
-		return get(() -> (Integer) rs.getObject(columnLabel));
+		return get(() -> {
+			var obj = rs.getObject(columnLabel);
+			if (obj instanceof Long) {
+				return ((Long) obj).intValue();
+			}
+			if (obj instanceof BigDecimal) {
+				return ((BigDecimal) obj).intValue();
+			}
+			return (Integer) obj;
+		});
 	}
 
 	/**
@@ -205,7 +228,7 @@ public final class Row {
 	 *            The name of the column.
 	 * @return A function to get the nullable integer from the column of a row.
 	 */
-	public static Function<Row, Integer> integer(String columnLabel) {
+	public static RowMapper<Integer> integer(String columnLabel) {
 		return r -> r.getInteger(columnLabel);
 	}
 
@@ -229,7 +252,7 @@ public final class Row {
 	 *            The name of the column.
 	 * @return A function to get the byte array from the column of a row.
 	 */
-	public static Function<Row, byte[]> bytes(String columnLabel) {
+	public static RowMapper<byte[]> bytes(String columnLabel) {
 		return r -> r.getBytes(columnLabel);
 	}
 
@@ -273,7 +296,7 @@ public final class Row {
 	 * @return A function to get the deserialized object from the column of a
 	 *         row.
 	 */
-	public static <T> Function<Row, T> serial(String columnLabel,
+	public static <T> RowMapper<T> serial(String columnLabel,
 			Class<T> cls) {
 		return r -> r.getSerial(columnLabel, cls);
 	}
@@ -304,7 +327,7 @@ public final class Row {
 	 *            The name of the column.
 	 * @return A function to get the instant from the column of a row.
 	 */
-	public static Function<Row, Instant> instant(String columnLabel) {
+	public static RowMapper<Instant> instant(String columnLabel) {
 		return r -> r.getInstant(columnLabel);
 	}
 
@@ -334,7 +357,7 @@ public final class Row {
 	 *            The name of the column.
 	 * @return A function to get the duration from the column of a row.
 	 */
-	public static Function<Row, Duration> duration(String columnLabel) {
+	public static RowMapper<Duration> duration(String columnLabel) {
 		return r -> r.getDuration(columnLabel);
 	}
 
@@ -361,7 +384,7 @@ public final class Row {
 	 *            The name of the column.
 	 * @return A function to get the object from the column of a row.
 	 */
-	public static Function<Row, Object> object(String columnLabel) {
+	public static RowMapper<Object> object(String columnLabel) {
 		return r -> r.getObject(columnLabel);
 	}
 
@@ -399,7 +422,7 @@ public final class Row {
 	 *            The enumeration type class.
 	 * @return A function to get the {@code enum} from the column of a row.
 	 */
-	public static <T extends Enum<T>> Function<Row, T>
+	public static <T extends Enum<T>> RowMapper<T>
 			enumerate(String columnLabel, Class<T> type) {
 		return r -> r.getEnum(columnLabel, type);
 	}
@@ -431,7 +454,7 @@ public final class Row {
 	 * @return A function to get the nullable {@code long} from the column of a
 	 *         row.
 	 */
-	public static Function<Row, Long> int64(String columnLabel) {
+	public static RowMapper<Long> int64(String columnLabel) {
 		return r -> r.getLong(columnLabel);
 	}
 
@@ -452,5 +475,74 @@ public final class Row {
 			sb.append("...");
 		}
 		return sb.append(")").toString();
+	}
+
+	/**
+	 * Get a chip from a result set row.
+	 *
+	 * @param x
+	 *            The <em>name</em> of the column with the X coordinate.
+	 * @param y
+	 *            The <em>name</em> of the column with the Y coordinate.
+	 * @return The chip location.
+	 */
+	public ChipLocation getChip(String x, String y) {
+		return get(() -> new ChipLocation(rs.getInt(x), rs.getInt(y)));
+	}
+
+	/**
+	 * Create a function for extracting a chip from a result set row.
+	 *
+	 * @param x
+	 *            The <em>name</em> of the column with the X coordinate.
+	 * @param y
+	 *            The <em>name</em> of the column with the Y coordinate.
+	 * @return The mapping function.
+	 */
+	public static RowMapper<ChipLocation> chip(String x, String y) {
+		return row -> new ChipLocation(row.getInt(x), row.getInt(y));
+	}
+
+	/**
+	 * Get a core from a result set row.
+	 *
+	 * @param x
+	 *            The <em>name</em> of the column with the X coordinate.
+	 * @param y
+	 *            The <em>name</em> of the column with the Y coordinate.
+	 * @param p
+	 *            The <em>name</em> of the column with the core ID.
+	 * @return The core location.
+	 */
+	public CoreLocation getCore(String x, String y, String p) {
+		return get(() -> new CoreLocation(rs.getInt(x), rs.getInt(y),
+				rs.getInt(p)));
+	}
+
+	/**
+	 * Create a function for extracting a core from a result set row.
+	 *
+	 * @param x
+	 *            The <em>name</em> of the column with the X coordinate.
+	 * @param y
+	 *            The <em>name</em> of the column with the Y coordinate.
+	 * @param p
+	 *            The <em>name</em> of the column with the core ID.
+	 * @return The mapping function.
+	 */
+	public static RowMapper<CoreLocation> core(String x, String y, String p) {
+		return row -> new CoreLocation(row.getInt(x), row.getInt(y),
+				row.getInt(p));
+	}
+
+	/**
+	 * Make a mappable iterator out of a list.
+	 *
+	 * @param <T> The type of the list.
+	 * @param lst The list to convert.
+	 * @return A mappable iterator.
+	 */
+	public static <T> MappableIterable<T> stream(List<T> lst) {
+		return () -> lst.iterator();
 	}
 }

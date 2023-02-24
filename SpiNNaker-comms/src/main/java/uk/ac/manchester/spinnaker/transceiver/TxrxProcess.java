@@ -564,6 +564,8 @@ public class TxrxProcess {
 					throw new InterruptedIOException(
 							"interrupted while waiting to send");
 				}
+				log.debug("Sending request {} with connection {}", request,
+						connection);
 				switch (request.sdpHeader.getFlags()) {
 				case REPLY_EXPECTED:
 				case REPLY_EXPECTED_NO_P2P:
@@ -582,7 +584,7 @@ public class TxrxProcess {
 				if (retryTracker != null) {
 					retryTracker.retryNeeded();
 				}
-				// TODO reissue sequence number?
+				requestData.rewind();
 				send();
 			}
 
@@ -634,6 +636,8 @@ public class TxrxProcess {
 		 *            place
 		 */
 		RequestPipeline(SCPConnection connection) {
+			log.debug("Request pipeline {} using connection {}", this,
+					connection);
 			this.connection = connection;
 			synchronized (OUTSTANDING_REQUESTS) {
 				outstandingRequests = OUTSTANDING_REQUESTS.computeIfAbsent(
@@ -736,7 +740,8 @@ public class TxrxProcess {
 						.issueSequenceNumber(outstandingRequests.keySet()));
 
 				var req = new Request<>(request, callback);
-				log.debug("sending message with sequence {}", sequence);
+				log.debug("{}: sending message with sequence {}", this,
+						sequence);
 				if (outstandingRequests.put(sequence, req) != null) {
 					throw new DuplicateSequenceNumberException();
 				}
@@ -792,6 +797,8 @@ public class TxrxProcess {
 			while (numOutstandingRequests() > 0) {
 				multiRetrieve(0);
 			}
+			log.debug("Finished called on {} with connection {}", this,
+					connection);
 		}
 
 		/**
@@ -820,11 +827,14 @@ public class TxrxProcess {
 
 		private void singleRetrieve() throws IOException, InterruptedException {
 			// Receive the next response
-			log.debug("waiting for message... timeout of {}", packetTimeout);
+			log.debug("{}: Connection {} waiting for message... timeout of {}",
+					this, connection, packetTimeout);
 			var msg = connection.receiveSCPResponse(packetTimeout);
 			if (log.isDebugEnabled()) {
-				log.debug("received message {} with seq num {}",
-						msg.getResult(), msg.getSequenceNumber());
+				log.debug(
+						"{}, Connection {} received message {} with seq num {}",
+						this, connection, msg.getResult(),
+						msg.getSequenceNumber());
 			}
 			var req = getRequestForResult(msg);
 
@@ -915,11 +925,14 @@ public class TxrxProcess {
 
 		@Override
 		public String toString() {
-			return format(
-					"ReqPipe(req=%d,outstanding=%d,resent=%d,"
-							+ "restart=%d,timeouts=%d)",
-					numRequests, numOutstandingRequests(), numResent,
-					numRetryCodeResent, numTimeouts);
+			synchronized (outstandingRequests) {
+				return format(
+						"%s(req=%d,outstanding=%d,resent=%d,"
+								+ "restart=%d,timeouts=%d)",
+						super.toString(), numRequests,
+						outstandingRequests.size(),
+						numResent, numRetryCodeResent, numTimeouts);
+			}
 		}
 	}
 

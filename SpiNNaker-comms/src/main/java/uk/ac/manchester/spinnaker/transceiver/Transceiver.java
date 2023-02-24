@@ -24,7 +24,6 @@ import static java.nio.ByteBuffer.allocate;
 import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.buffer;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.NUM_ROUTER_DIAGNOSTIC_COUNTERS;
@@ -439,7 +438,7 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		// handle the boot connection
-		connections.add(new BootConnection(host, bootPortNumber));
+		connections.add(new BootConnection(null, null, host, bootPortNumber));
 
 		this.version = version;
 		if (ignoredChips != null) {
@@ -502,24 +501,6 @@ public class Transceiver extends UDPTransceiver
 	 * Create a transceiver.
 	 *
 	 * @param version
-	 *            The SpiNNaker board version number.
-	 * @throws IOException
-	 *             if networking fails
-	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 */
-	@MustBeClosed
-	public Transceiver(MachineVersion version)
-			throws IOException, SpinnmanException, InterruptedException {
-		this(version, null, null, null, null, null, null);
-	}
-
-	/**
-	 * Create a transceiver.
-	 *
-	 * @param version
 	 *            The type of SpiNNaker board used within the SpiNNaker machine
 	 *            being used. May be {@code null} if the board in question can
 	 *            be assumed to be always already booted.
@@ -537,15 +518,19 @@ public class Transceiver extends UDPTransceiver
 	public Transceiver(MachineVersion version,
 			Collection<Connection> connections)
 			throws IOException, SpinnmanException, InterruptedException {
-		this(version, connections, null, null, null, null, null);
+		this(version, connections, null, null, null, null,	null);
 	}
 
 	/**
-	 * Given a machine, make a transceiver for talking to all boards of that
-	 * machine.
+	 * Create a transceiver.
 	 *
-	 * @param machine
-	 *            The machine description
+	 * @param version
+	 *            The type of SpiNNaker board used within the SpiNNaker machine
+	 *            being used. May be {@code null} if the board in question can
+	 *            be assumed to be always already booted.
+	 * @param scampConnections
+	 *            Descriptions of SCP Connections to make.
+	 * @return The created transceiver.
 	 * @throws IOException
 	 *             if networking fails
 	 * @throws SpinnmanException
@@ -554,26 +539,11 @@ public class Transceiver extends UDPTransceiver
 	 *             If the communications were interrupted.
 	 */
 	@MustBeClosed
-	public Transceiver(Machine machine)
+	public static Transceiver makeWithDescriptors(MachineVersion version,
+			Collection<ConnectionDescriptor> scampConnections)
 			throws IOException, SpinnmanException, InterruptedException {
-		this(requireNonNull(machine, "need a real machine")
-				.getBootEthernetAddress(), machine.version, null, null, null,
-				null, null, false, generateScampConnections(machine), null,
-				null);
-		this.machine = machine;
-		if (scpSelector instanceof MachineAware) {
-			((MachineAware) scpSelector).setMachine(machine);
-		}
-		log.info("known connections to this transceiver: {}",
-				udpScpConnections);
-	}
-
-	private static List<ConnectionDescriptor> generateScampConnections(
-			Machine machine) {
-		return machine.ethernetConnectedChips().stream()
-				.map(chip -> new ConnectionDescriptor(chip.ipAddress,
-						SCP_SCAMP_PORT, chip.asChipLocation()))
-				.collect(toList());
+		return new Transceiver(version, null, null, null, null,
+				scampConnections, null);
 	}
 
 	/**
@@ -653,7 +623,7 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public SCPConnection createScpConnection(ChipLocation chip,
 			InetAddress addr) throws IOException {
-		return new SCPConnection(chip, addr);
+		return new SCPConnection(chip, null, null, addr);
 	}
 
 	private ConnectionSelector<SCPConnection> makeConnectionSelector() {

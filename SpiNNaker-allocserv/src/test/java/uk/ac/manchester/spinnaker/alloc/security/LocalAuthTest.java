@@ -21,13 +21,11 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.TestSupport;
@@ -37,29 +35,17 @@ import uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl.TestAPI;
 @SpringBootTest
 @SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
-@TestPropertySource(properties = {
-	"spalloc.database-path=" + LocalAuthTest.DB,
-	"spalloc.historical-data.path=" + LocalAuthTest.HIST_DB
-})
 class LocalAuthTest extends TestSupport {
-	/** The name of the database file. */
-	static final String DB = "target/sec_test.sqlite3";
-
-	/** The name of the database file. */
-	static final String HIST_DB = "target/sec_test-hist.sqlite3";
 
 	private TestAPI authEngine;
-
-	@BeforeAll
-	static void clearDB() throws IOException {
-		killDB(DB);
-	}
 
 	@BeforeEach
 	@SuppressWarnings("deprecation")
 	void checkSetup(
-			@Autowired LocalAuthenticationProvider<TestAPI> authEngine) {
+			@Autowired LocalAuthenticationProvider<TestAPI> authEngine)
+	        throws IOException {
 		assumeTrue(db != null, "spring-configured DB engine absent");
+		killDB();
 		setupDB1();
 		this.authEngine = authEngine.getTestAPI();
 	}
@@ -86,7 +72,7 @@ class LocalAuthTest extends TestSupport {
 			assertEquals(false, c.transaction(() -> {
 				try (var q = c.query("SELECT locked FROM user_info "
 						+ "WHERE user_id = :user_id")) {
-					return q.call1(USER).map(Row.bool("locked")).orElseThrow();
+					return q.call1(Row.bool("locked"), USER).orElseThrow();
 				}
 			}));
 		}

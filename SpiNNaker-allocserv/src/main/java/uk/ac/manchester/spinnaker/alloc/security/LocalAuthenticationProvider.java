@@ -19,6 +19,8 @@ import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 
 import java.util.Collection;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -63,13 +65,16 @@ public interface LocalAuthenticationProvider<TestAPI>
 	/**
 	 * Convert the type of the authentication in the security context.
 	 *
+	 * @param req
+	 *            The request being made.
 	 * @param ctx
 	 *            The security context.
 	 * @return The new authentication (which is also installed into the security
 	 *         context), or {@code null} <em>if the authentication is not
 	 *         changed</em>.
 	 */
-	Authentication updateAuthentication(SecurityContext ctx);
+	Authentication updateAuthentication(HttpServletRequest req,
+			SecurityContext ctx);
 
 	/**
 	 * Map the authorities, adding them to the result.
