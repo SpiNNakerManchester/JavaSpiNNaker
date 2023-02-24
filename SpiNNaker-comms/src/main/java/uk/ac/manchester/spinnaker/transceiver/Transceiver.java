@@ -530,6 +530,7 @@ public class Transceiver extends UDPTransceiver
 	 *            be assumed to be always already booted.
 	 * @param scampConnections
 	 *            Descriptions of SCP Connections to make.
+	 * @return The created transceiver.
 	 * @throws IOException
 	 *             if networking fails
 	 * @throws SpinnmanException
