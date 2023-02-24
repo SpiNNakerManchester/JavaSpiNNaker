@@ -706,7 +706,7 @@ public final class CommandLineInterface {
 			txrx = Transceiver.makeWithDescriptors(
 					machine.version, generateScampConnections(machine));
 		} else {
-		    txrx = job.getTransceiver();
+			txrx = job.getTransceiver();
 		}
 		var scpSelector = txrx.getScampConnectionSelector();
 		if (scpSelector instanceof MachineAware) {
