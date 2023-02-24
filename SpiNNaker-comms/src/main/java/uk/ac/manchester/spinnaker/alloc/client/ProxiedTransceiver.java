@@ -21,6 +21,8 @@ import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Map;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
@@ -53,6 +55,7 @@ final class ProxiedTransceiver extends Transceiver {
 	 * @throws SpinnmanExcception
 	 *             If SpiNNaker rejects a message.
 	 */
+	@MustBeClosed
 	ProxiedTransceiver(MachineVersion version,
 			Collection<Connection> connections,
 			Map<Inet4Address, ChipLocation> hostToChip,
