@@ -490,6 +490,7 @@ public abstract class SQLQueries {
 
 	/** Mark a job as dead. */
 	@Parameter("death_reason")
+	@Parameter("timestamp")
 	@Parameter("job_id")
 	protected static final String DESTROY_JOB =
 			"UPDATE jobs SET job_state = 4, death_reason = :death_reason, "
@@ -688,6 +689,7 @@ public abstract class SQLQueries {
 	 *
 	 * @see AllocatorTask
 	 */
+	@Parameter("time_now")
 	@ResultColumn("job_id")
 	protected static final String FIND_EXPIRED_JOBS = //
 			"SELECT job_id FROM jobs " //
@@ -2172,7 +2174,7 @@ public abstract class SQLQueries {
 	@Parameter("alloc_id")
 	@Parameter("job_id")
 	@Parameter("board_id")
-	@Parameter("alloc_timestamp")
+	@Parameter("allocation_timestamp")
 	protected static final String WRITE_HISTORICAL_ALLOCS =
 			"INSERT IGNORE INTO board_allocations( "
 			+ "alloc_id, job_id, board_id, allocation_timestamp) "
@@ -2188,7 +2190,7 @@ public abstract class SQLQueries {
 	@Parameter("width")
 	@Parameter("height")
 	@Parameter("depth")
-	@Parameter("allocated_root")
+	@Parameter("root_id")
 	@Parameter("keepalive_interval")
 	@Parameter("keepalive_host")
 	@Parameter("death_reason")
@@ -2279,11 +2281,11 @@ public abstract class SQLQueries {
 	@Parameter("to_state")
 	@Parameter("power")
 	@Parameter("fpga_n")
-	@Parameter("fpga_s")
 	@Parameter("fpga_e")
+	@Parameter("fpga_se")
+	@Parameter("fpga_s")
 	@Parameter("fpga_w")
 	@Parameter("fpga_nw")
-	@Parameter("fpga_se")
 	@GeneratesID
 	@Value("classpath:queries/issue_change_for_job.sql")
 	protected Resource issueChangeForJob;
@@ -2330,8 +2332,8 @@ public abstract class SQLQueries {
 	 * @see Spalloc
 	 */
 	@Parameter("machine_id")
-	@Parameter("chip_x")
-	@Parameter("chip_y")
+	@Parameter("x")
+	@Parameter("y")
 	@ResultColumn("board_id")
 	@ResultColumn("address")
 	@ResultColumn("bmp_id")
@@ -2360,9 +2362,9 @@ public abstract class SQLQueries {
 	 * @see Spalloc
 	 */
 	@Parameter("job_id")
-	@Parameter("root_board_id")
-	@Parameter("chip_x")
-	@Parameter("chip_y")
+	@Parameter("board_id")
+	@Parameter("x")
+	@Parameter("y")
 	@ResultColumn("board_id")
 	@ResultColumn("address")
 	@ResultColumn("x")

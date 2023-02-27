@@ -155,7 +155,7 @@ class DMLTest extends SimpleDBTestBase {
 		assumeWritable(c);
 		try (var u = c.update(DESTROY_JOB)) {
 			c.transaction(() -> {
-				assertEquals(List.of("death_reason", "job_id"),
+				assertEquals(List.of("death_reason", "timestamp", "job_id"),
 						u.getParameters());
 				assertEquals(0, u.call("anything", 0, NO_JOB));
 			});
@@ -167,7 +167,7 @@ class DMLTest extends SimpleDBTestBase {
 		assumeWritable(c);
 		try (var u = c.update(DELETE_TASK)) {
 			c.transaction(() -> {
-				assertEquals(List.of("job_id"), u.getParameters());
+				assertEquals(List.of("request_id"), u.getParameters());
 				assertEquals(0, u.call(NO_JOB));
 			});
 		}
@@ -284,9 +284,11 @@ class DMLTest extends SimpleDBTestBase {
 		assumeWritable(c);
 		try (var u = c.update(issueChangeForJob)) {
 			c.transaction(() -> {
-				assertEquals(List.of("job_id", "board_id", "from_state",
-						"to_state", "power", "fpga_n", "fpga_s", "fpga_e",
-						"fpga_w", "fpga_nw", "fpga_se"), u.getParameters());
+				assertEquals(
+						List.of("job_id", "board_id", "from_state", "to_state",
+								"power", "fpga_n", "fpga_e", "fpga_se",
+								"fpga_s", "fpga_w", "fpga_nw"),
+						u.getParameters());
 				// No such job
 				assertThrowsFK(() -> u.call(NO_JOB, NO_BOARD, UNKNOWN, UNKNOWN,
 						true, false, false, false, false, false, false));
@@ -767,7 +769,7 @@ class DMLTest extends SimpleDBTestBase {
 				var q = conn.update(WRITE_HISTORICAL_ALLOCS)) {
 			conn.transaction(() -> {
 				assertEquals(List.of("alloc_id", "job_id", "board_id",
-						"alloc_timestamp"), q.getParameters());
+						"allocation_timestamp"), q.getParameters());
 				assertEquals(1, q.call(0, 0, 0, A_LONG_TIME));
 			});
 		}
@@ -781,7 +783,7 @@ class DMLTest extends SimpleDBTestBase {
 			conn.transaction(() -> {
 				assertEquals(List.of("job_id", "machine_id", "owner",
 						"create_timestamp", "width", "height", "depth",
-						"allocated_root", "keepalive_interval",
+						"root_id", "keepalive_interval",
 						"keepalive_host", "death_reason", "death_timestamp",
 						"original_request", "allocation_timestamp",
 						"allocation_size", "machine_name", "user_name",

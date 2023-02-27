@@ -409,7 +409,7 @@ class DQLTest extends SimpleDBTestBase {
 	void findExpiredJobs() {
 		try (var q = c.query(FIND_EXPIRED_JOBS)) {
 			c.transaction(() -> {
-				assertEquals(List.of(), q.getParameters());
+				assertEquals(List.of("time_now"), q.getParameters());
 				assertEquals(empty(), q.call1((row) -> 1, 0));
 			});
 		}
@@ -507,7 +507,7 @@ class DQLTest extends SimpleDBTestBase {
 	void findBoardByGlobalChip() {
 		try (var q = c.query(findBoardByGlobalChip)) {
 			c.transaction(() -> {
-				assertEquals(List.of("machine_id", "chip_x", "chip_y"),
+				assertEquals(List.of("machine_id", "x", "y"),
 						q.getParameters());
 				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE, -1, -1));
 			});
@@ -518,8 +518,7 @@ class DQLTest extends SimpleDBTestBase {
 	void findBoardByJobChip() {
 		try (var q = c.query(findBoardByJobChip)) {
 			c.transaction(() -> {
-				assertEquals(
-						List.of("job_id", "root_board_id", "chip_x", "chip_y"),
+				assertEquals(List.of("job_id", "board_id", "x", "y"),
 						q.getParameters());
 				assertEquals(empty(),
 						q.call1((row) -> 1, NO_JOB, NO_BOARD, -1, -1));
@@ -1008,7 +1007,8 @@ class DQLTest extends SimpleDBTestBase {
 		try (var q = c.query(GET_COMPLETED_BLACKLIST_OP)) {
 			c.transaction(() -> {
 				assertEquals(List.of("op_id"), q.getParameters());
-				assertEquals(List.of("board_id", "op", "data", "failure"),
+				assertEquals(
+						List.of("board_id", "op", "data", "failure", "failed"),
 						q.getResultSetColumnNames());
 				assertEquals(empty(), q.call1((row) -> 1, NO_BLACKLIST_OP));
 			});
