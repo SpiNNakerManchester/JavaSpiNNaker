@@ -15,6 +15,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
+import static java.util.Optional.empty;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
@@ -639,7 +640,7 @@ class DMLTest extends SimpleDBTestBase {
 		assumeTrue(db.isHistoricalDBAvailable());
 		try (var q = c.query(READ_HISTORICAL_ALLOCS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, A_LONG_TIME, 0).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, A_LONG_TIME, 0));
 			});
 		}
 	}
@@ -649,7 +650,7 @@ class DMLTest extends SimpleDBTestBase {
 		assumeTrue(db.isHistoricalDBAvailable());
 		try (var q = c.query(READ_HISTORICAL_JOBS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, A_LONG_TIME, 0).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, A_LONG_TIME, 0));
 			});
 		}
 	}

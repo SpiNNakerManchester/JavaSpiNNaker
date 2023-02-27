@@ -53,7 +53,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getAllMachines() {
 		try (var q = c.query(GET_ALL_MACHINES)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, false).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, false));
 			});
 		}
 	}
@@ -62,7 +62,7 @@ class DQLTest extends SimpleDBTestBase {
 	void listMachineNames() {
 		try (var q = c.query(LIST_MACHINE_NAMES)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, false).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, false));
 			});
 		}
 	}
@@ -71,8 +71,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getMachineById() {
 		try (var q = c.query(GET_MACHINE_BY_ID)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE,
-						false).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE, false));
 			});
 		}
 	}
@@ -81,7 +80,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getNamedMachine() {
 		try (var q = c.query(GET_NAMED_MACHINE)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_NAME, false).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_NAME, false));
 			});
 		}
 	}
@@ -90,7 +89,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getMachineJobs() {
 		try (var q = c.query(GET_MACHINE_JOBS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE));
 			});
 		}
 	}
@@ -99,7 +98,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getMachineReports() {
 		try (var q = c.query(GET_MACHINE_REPORTS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE));
 			});
 		}
 	}
@@ -108,7 +107,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getJobIds() {
 		try (var q = c.query(GET_JOB_IDS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, 0, 0).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, 0, 0));
 			});
 		}
 	}
@@ -127,7 +126,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getJob() {
 		try (var q = c.query(GET_JOB)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_JOB).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_JOB));
 			});
 		}
 	}
@@ -136,7 +135,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getJobBoards() {
 		try (var q = c.query(GET_JOB_BOARDS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_JOB).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_JOB));
 			});
 		}
 	}
@@ -145,7 +144,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getJobBoardCoords() {
 		try (var q = c.query(GET_JOB_BOARD_COORDS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_JOB).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_JOB));
 			});
 		}
 	}
@@ -167,7 +166,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getRootOfBoard() {
 		try (var q = c.query(GET_ROOT_OF_BOARD)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_BOARD).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_BOARD));
 			});
 		}
 	}
@@ -176,7 +175,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getRootBMPAddress() {
 		try (var q = c.query(GET_ROOT_BMP_ADDRESS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE));
 			});
 		}
 	}
@@ -185,8 +184,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getBMPAddress() {
 		try (var q = c.query(GET_BMP_ADDRESS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE, 0,
-						0).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE, 0, 0));
 			});
 		}
 	}
@@ -195,7 +193,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getBoardAddress() {
 		try (var q = c.query(GET_BOARD_ADDRESS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_BOARD).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_BOARD));
 			});
 		}
 	}
@@ -204,7 +202,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getBoardPowerInfo() {
 		try (var q = c.query(GET_BOARD_POWER_INFO)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_BOARD).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_BOARD));
 			});
 		}
 	}
@@ -213,7 +211,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getBoardJob() {
 		try (var q = c.query(GET_BOARD_JOB)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_BOARD).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_BOARD));
 			});
 		}
 	}
@@ -222,7 +220,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getBoardReports() {
 		try (var q = c.query(GET_BOARD_REPORTS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_BOARD).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_BOARD));
 			});
 		}
 	}
@@ -231,7 +229,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getBoardNumbers() {
 		try (var q = c.query(GET_BOARD_NUMBERS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE));
 			});
 		}
 	}
@@ -240,7 +238,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getBmpBoardNumbers() {
 		try (var q = c.query(GET_BMP_BOARD_NUMBERS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE, 0, 0).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE, 0, 0));
 			});
 		}
 	}
@@ -249,7 +247,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getLiveBoards() {
 		try (var q = c.query(GET_LIVE_BOARDS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE));
 			});
 		}
 	}
@@ -258,7 +256,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getDeadBoards() {
 		try (var q = c.query(GET_DEAD_BOARDS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE));
 			});
 		}
 	}
@@ -267,7 +265,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getAllBoards() {
 		try (var q = c.query(GET_ALL_BOARDS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE));
 			});
 		}
 	}
@@ -286,7 +284,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getDeadLinks() {
 		try (var q = c.query(getDeadLinks)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE));
 			});
 		}
 	}
@@ -295,7 +293,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getAvailableBoardNumbers() {
 		try (var q = c.query(GET_AVAILABLE_BOARD_NUMBERS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE));
 			});
 		}
 	}
@@ -304,7 +302,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getTags() {
 		try (var q = c.query(GET_TAGS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE));
 			});
 		}
 	}
@@ -324,7 +322,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getBoardConnectInfo() {
 		try (var q = c.query(GET_BOARD_CONNECT_INFO)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_JOB).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_JOB));
 			});
 		}
 	}
@@ -333,7 +331,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getRootCoords() {
 		try (var q = c.query(GET_ROOT_COORDS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_BOARD).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_BOARD));
 			});
 		}
 	}
@@ -342,7 +340,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getAllocationTasks() {
 		try (var q = c.query(getAllocationTasks)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, QUEUED).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, QUEUED));
 			});
 		}
 	}
@@ -351,7 +349,7 @@ class DQLTest extends SimpleDBTestBase {
 	void findFreeBoard() {
 		try (var q = c.query(FIND_FREE_BOARD)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE));
 			});
 		}
 	}
@@ -360,8 +358,8 @@ class DQLTest extends SimpleDBTestBase {
 	void getBoardByCoords() {
 		try (var q = c.query(GET_BOARD_BY_COORDS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE, -1, -1,
-						-1).isPresent());
+				assertEquals(empty(),
+						q.call1((row) -> 1, NO_MACHINE, -1, -1, -1));
 			});
 		}
 	}
@@ -370,7 +368,7 @@ class DQLTest extends SimpleDBTestBase {
 	void findExpiredJobs() {
 		try (var q = c.query(FIND_EXPIRED_JOBS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, 0).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, 0));
 			});
 		}
 	}
@@ -388,7 +386,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getChanges() {
 		try (var q = c.query(GET_CHANGES)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_JOB).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_JOB));
 			});
 		}
 	}
@@ -397,8 +395,8 @@ class DQLTest extends SimpleDBTestBase {
 	void findRectangle() {
 		try (var q = c.query(findRectangle)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, -1, -1, NO_MACHINE,
-						0).isPresent());
+				assertEquals(empty(),
+						q.call1((row) -> 1, -1, -1, NO_MACHINE, 0));
 			});
 		}
 	}
@@ -407,8 +405,8 @@ class DQLTest extends SimpleDBTestBase {
 	void findRectangleAt() {
 		try (var q = c.query(findRectangleAt)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_BOARD, -1, -1, NO_MACHINE,
-								0).isPresent());
+				assertEquals(empty(),
+						q.call1((row) -> 1, NO_BOARD, -1, -1, NO_MACHINE, 0));
 			});
 		}
 	}
@@ -417,8 +415,8 @@ class DQLTest extends SimpleDBTestBase {
 	void findLocation() {
 		try (var q = c.query(findLocation)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE,
-						NO_BOARD).isPresent());
+				assertEquals(empty(),
+						q.call1((row) -> 1, NO_MACHINE, NO_BOARD));
 			});
 		}
 	}
@@ -448,7 +446,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getPerimeterLinks() {
 		try (var q = c.query(getPerimeterLinks)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_JOB).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_JOB));
 			});
 		}
 	}
@@ -457,8 +455,7 @@ class DQLTest extends SimpleDBTestBase {
 	void findBoardByGlobalChip() {
 		try (var q = c.query(findBoardByGlobalChip)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE, -1,
-						-1).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE, -1, -1));
 			});
 		}
 	}
@@ -467,8 +464,8 @@ class DQLTest extends SimpleDBTestBase {
 	void findBoardByJobChip() {
 		try (var q = c.query(findBoardByJobChip)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_JOB, NO_BOARD, -1,
-						-1).isPresent());
+				assertEquals(empty(),
+						q.call1((row) -> 1, NO_JOB, NO_BOARD, -1, -1));
 			});
 		}
 	}
@@ -477,8 +474,8 @@ class DQLTest extends SimpleDBTestBase {
 	void findBoardByLogicalCoords() {
 		try (var q = c.query(findBoardByLogicalCoords)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE, -1, -1,
-						-1).isPresent());
+				assertEquals(empty(),
+						q.call1((row) -> 1, NO_MACHINE, -1, -1, -1));
 			});
 		}
 	}
@@ -487,8 +484,8 @@ class DQLTest extends SimpleDBTestBase {
 	void findBoardByPhysicalCoords() {
 		try (var q = c.query(findBoardByPhysicalCoords)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE, -1, -1,
-						-1).isPresent());
+				assertEquals(empty(),
+						q.call1((row) -> 1, NO_MACHINE, -1, -1, -1));
 			});
 		}
 	}
@@ -497,8 +494,8 @@ class DQLTest extends SimpleDBTestBase {
 	void findBoardByIPAddress() {
 		try (var q = c.query(findBoardByIPAddress)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE,
-						"127.0.0.1").isPresent());
+				assertEquals(empty(),
+						q.call1((row) -> 1, NO_MACHINE, "127.0.0.1"));
 			});
 		}
 	}
@@ -507,7 +504,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getJobsWithChanges() {
 		try (var q = c.query(getJobsWithChanges)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE, 0).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE, 0));
 			});
 		}
 	}
@@ -516,8 +513,8 @@ class DQLTest extends SimpleDBTestBase {
 	void getConnectedBoards() {
 		try (var q = c.query(getConnectedBoards)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE, -1, -1, -1, -1, -1,
-						-1).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE, -1, -1,
+						-1, -1, -1, -1));
 			});
 		}
 	}
@@ -526,8 +523,7 @@ class DQLTest extends SimpleDBTestBase {
 	void findBoardByNameAndXYZ() {
 		try (var q = c.query(FIND_BOARD_BY_NAME_AND_XYZ)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_NAME, -1, -1, -1)
-						.isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_NAME, -1, -1, -1));
 			});
 		}
 	}
@@ -536,7 +532,7 @@ class DQLTest extends SimpleDBTestBase {
 	void findBoardById() {
 		try (var q = c.query(FIND_BOARD_BY_ID)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_BOARD).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_BOARD));
 			});
 		}
 	}
@@ -545,8 +541,7 @@ class DQLTest extends SimpleDBTestBase {
 	void findBoardByNameAndCFB() {
 		try (var q = c.query(FIND_BOARD_BY_NAME_AND_CFB)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_NAME, -1, -1, -1)
-						.isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_NAME, -1, -1, -1));
 			});
 		}
 	}
@@ -555,8 +550,8 @@ class DQLTest extends SimpleDBTestBase {
 	void findBoardByNameAndIPAddress() {
 		try (var q = c.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_NAME, "256.256.256.256")
-						.isPresent());
+				assertEquals(empty(),
+						q.call1((row) -> 1, NO_NAME, "256.256.256.256"));
 			});
 		}
 	}
@@ -565,7 +560,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getFunctioningField() {
 		try (var q = c.query(GET_FUNCTIONING_FIELD)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_BOARD).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_BOARD));
 			});
 		}
 	}
@@ -574,7 +569,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getGroupQuota() {
 		try (var q = c.query(GET_GROUP_QUOTA)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_GROUP).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_GROUP));
 			});
 		}
 	}
@@ -603,7 +598,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getGroupById() {
 		try (var q = c.query(GET_GROUP_BY_ID)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_GROUP).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_GROUP));
 			});
 		}
 	}
@@ -612,7 +607,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getGroupByName() {
 		try (var q = c.query(GET_GROUP_BY_NAME)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_NAME).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_NAME));
 			});
 		}
 	}
@@ -621,7 +616,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getUsersOfGroup() {
 		try (var q = c.query(GET_USERS_OF_GROUP)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_GROUP).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_GROUP));
 			});
 		}
 	}
@@ -630,7 +625,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getMembership() {
 		try (var q = c.query(GET_MEMBERSHIP)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MEMBER).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MEMBER));
 			});
 		}
 	}
@@ -639,7 +634,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getMembershipsOfUser() {
 		try (var q = c.query(GET_MEMBERSHIPS_OF_USER)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_USER).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_USER));
 			});
 		}
 	}
@@ -649,7 +644,7 @@ class DQLTest extends SimpleDBTestBase {
 		try (var q = c.query(GET_USER_QUOTA)) {
 			c.transaction(() -> {
 				// Still get a quota, it is just 0
-				assertTrue(q.call1((row) -> 1, NO_NAME).isPresent());
+				assertNotEquals(empty(), q.call1((row) -> 1, NO_NAME));
 			});
 		}
 	}
@@ -668,7 +663,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getJobUsageAndQuota() {
 		try (var q = c.query(GET_JOB_USAGE_AND_QUOTA)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_JOB).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_JOB));
 			});
 		}
 	}
@@ -678,7 +673,7 @@ class DQLTest extends SimpleDBTestBase {
 		try (var q = c.query(GET_CONSOLIDATION_TARGETS)) {
 			c.transaction(() -> {
 				// Empty DB has no consolidation targets
-				assertFalse(q.call1((row) -> 1).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1));
 			});
 		}
 	}
@@ -688,7 +683,7 @@ class DQLTest extends SimpleDBTestBase {
 		try (var q = c.query(IS_USER_LOCKED)) {
 			c.transaction(() -> {
 				// Empty DB has no consolidation targets
-				assertFalse(q.call1((row) -> 1, "").isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, ""));
 			});
 		}
 	}
@@ -697,7 +692,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getUserAuthorities() {
 		try (var q = c.query(GET_USER_AUTHORITIES)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_USER).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_USER));
 			});
 		}
 	}
@@ -707,7 +702,7 @@ class DQLTest extends SimpleDBTestBase {
 		try (var q = c.query(LIST_ALL_USERS)) {
 			c.transaction(() -> {
 				// Testing DB has no users by default
-				assertFalse(q.call1((row) -> 1).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1));
 			});
 		}
 	}
@@ -717,7 +712,7 @@ class DQLTest extends SimpleDBTestBase {
 		try (var q = c.query(LIST_ALL_USERS_OF_TYPE)) {
 			c.transaction(() -> {
 				// Testing DB has no users by default
-				assertFalse(q.call1((row) -> 1, false).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, false));
 			});
 		}
 	}
@@ -727,7 +722,7 @@ class DQLTest extends SimpleDBTestBase {
 		try (var q = c.query(GET_USER_ID)) {
 			c.transaction(() -> {
 				// Testing DB has no users by default
-				assertFalse(q.call1((row) -> 1, NO_NAME).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_NAME));
 			});
 		}
 	}
@@ -736,7 +731,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getUserDetails() {
 		try (var q = c.query(GET_USER_DETAILS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_USER).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_USER));
 			});
 		}
 	}
@@ -745,7 +740,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getUserDetailsByName() {
 		try (var q = c.query(GET_USER_DETAILS_BY_NAME)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_NAME).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_NAME));
 			});
 		}
 	}
@@ -754,7 +749,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getUserDetailsBySubject() {
 		try (var q = c.query(GET_USER_DETAILS_BY_SUBJECT)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_NAME).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_NAME));
 			});
 		}
 	}
@@ -763,7 +758,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getGroupByNameAndMember() {
 		try (var q = c.query(GET_GROUP_BY_NAME_AND_MEMBER)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_NAME, NO_NAME).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_NAME, NO_NAME));
 			});
 		}
 	}
@@ -772,7 +767,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getGroupsAndQuotasOfUser() {
 		try (var q = c.query(GET_GROUPS_AND_QUOTAS_OF_USER)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_NAME).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_NAME));
 			});
 		}
 	}
@@ -807,7 +802,7 @@ class DQLTest extends SimpleDBTestBase {
 		try (var q = c.query(LIST_LIVE_JOBS)) {
 			c.transaction(() -> {
 				// No jobs right now
-				assertFalse(q.call1((row) -> 1).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1));
 			});
 		}
 	}
@@ -816,7 +811,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getLocalUserDetails() {
 		try (var q = c.query(GET_LOCAL_USER_DETAILS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_USER).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_USER));
 			});
 		}
 	}
@@ -825,7 +820,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getReportedBoards() {
 		try (var q = c.query(getReportedBoards)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, 0).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, 0));
 			});
 		}
 	}
@@ -834,7 +829,7 @@ class DQLTest extends SimpleDBTestBase {
 	void isBoardBlacklistCurrent() {
 		try (var q = c.query(IS_BOARD_BLACKLIST_CURRENT)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_BOARD).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_BOARD));
 			});
 		}
 	}
@@ -843,7 +838,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getBlacklistedChips() {
 		try (var q = c.query(GET_BLACKLISTED_CHIPS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_BOARD).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_BOARD));
 			});
 		}
 	}
@@ -852,7 +847,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getBlacklistedCores() {
 		try (var q = c.query(GET_BLACKLISTED_CORES)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_BOARD).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_BOARD));
 			});
 		}
 	}
@@ -861,7 +856,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getBlacklistedLinks() {
 		try (var q = c.query(GET_BLACKLISTED_LINKS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_BOARD).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_BOARD));
 			});
 		}
 	}
@@ -870,7 +865,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getBlacklistReads() {
 		try (var q = c.query(GET_BLACKLIST_READS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE));
 			});
 		}
 	}
@@ -879,7 +874,7 @@ class DQLTest extends SimpleDBTestBase {
 	void getBlacklistWrites() {
 		try (var q = c.query(GET_BLACKLIST_WRITES)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE).isPresent());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE));
 			});
 		}
 	}
@@ -902,7 +897,10 @@ class DQLTest extends SimpleDBTestBase {
 	void getCompletedBlacklistOp() {
 		try (var q = c.query(GET_COMPLETED_BLACKLIST_OP)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_BLACKLIST_OP).isPresent());
+				assertEquals(List.of("op_id"), q.getParameters());
+				assertEquals(List.of("board_id", "op", "data", "failure"),
+						q.getResultSetColumnNames());
+				assertEquals(empty(), q.call1((row) -> 1, NO_BLACKLIST_OP));
 			});
 		}
 	}
