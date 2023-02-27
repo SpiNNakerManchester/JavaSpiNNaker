@@ -41,9 +41,8 @@ class LocalAuthTest extends TestSupport {
 
 	@BeforeEach
 	@SuppressWarnings("deprecation")
-	void checkSetup(
-			@Autowired LocalAuthenticationProvider<TestAPI> authEngine)
-	        throws IOException {
+	void checkSetup(@Autowired LocalAuthenticationProvider<TestAPI> authEngine)
+			throws IOException {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		killDB();
 		setupDB1();

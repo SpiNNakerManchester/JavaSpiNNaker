@@ -26,7 +26,6 @@ import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_MEMBER;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_NAME;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_USER;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
-import static uk.ac.manchester.spinnaker.alloc.db.Row.object;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 
 import java.util.Map;

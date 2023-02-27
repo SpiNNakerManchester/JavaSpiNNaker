@@ -20,9 +20,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import java.io.IOException;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import uk.ac.manchester.spinnaker.alloc.TestSupport;
@@ -39,7 +37,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @UsedInJavadocOnly(SpringBootTest.class)
 public abstract class SimpleDBTestBase extends TestSupport {
-
 	/**
 	 * The DB connection. Only valid in a test. <em>Must not</em> be modified by
 	 * subclasses.
