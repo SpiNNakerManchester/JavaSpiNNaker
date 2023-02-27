@@ -238,6 +238,8 @@ public abstract class SQLQueries {
 	@Parameter("group_id")
 	@Parameter("keepalive_interval")
 	@Parameter("original_request")
+	@Parameter("keepalive_timestamp")
+	@Parameter("create_timestamp")
 	@GeneratesID
 	protected static final String INSERT_JOB = "INSERT INTO jobs("
 			+ "machine_id, owner, group_id, keepalive_interval, "
@@ -478,6 +480,7 @@ public abstract class SQLQueries {
 			"SELECT tag FROM tags WHERE machine_id = :machine_id";
 
 	/** Update the keepalive timestamp. */
+	@Parameter("keepalive_timestamp")
 	@Parameter("keepalive_host")
 	@Parameter("job_id")
 	protected static final String UPDATE_KEEPALIVE =
@@ -673,7 +676,6 @@ public abstract class SQLQueries {
 	 * Set the power state of a board. Related timestamps are updated by
 	 * trigger.
 	 */
-	@Parameter("board_power")
 	@Parameter("time_now")
 	@Parameter("board_id")
 	protected static final String SET_BOARD_POWER_OFF =
@@ -1135,8 +1137,6 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("delta")
 	@Parameter("group_id")
-	@ResultColumn("group_name")
-	@ResultColumn("quota")
 	protected static final String ADJUST_QUOTA =
 			"UPDATE user_groups SET quota = GREATEST(0, quota + :delta) "
 					+ "WHERE group_id = :group_id AND quota IS NOT NULL";
@@ -1496,6 +1496,7 @@ public abstract class SQLQueries {
 	 *
 	 * @see LocalAuthProviderImpl
 	 */
+	@Parameter("login_timestamp")
 	@Parameter("openid_subject")
 	@Parameter("user_id")
 	protected static final String MARK_LOGIN_SUCCESS =
@@ -1511,12 +1512,10 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("failure_limit")
 	@Parameter("user_id")
-	@ResultColumn("locked")
-	@SingleRowResult
+	@Parameter("timestamp_now")
 	protected static final String MARK_LOGIN_FAILURE =
 			"UPDATE user_info SET failure_count = failure_count + 1, "
-					+ "last_fail_timestamp = "
-					+ ":login_timestamp, "
+					+ "last_fail_timestamp = :login_timestamp, "
 					+ "locked = (failure_count + 1 >= :failure_limit) "
 					+ "WHERE user_id = :user_id";
 
@@ -1526,7 +1525,7 @@ public abstract class SQLQueries {
 	 * @see LocalAuthProviderImpl
 	 */
 	@Parameter("lock_interval")
-	@ResultColumn("user_name")
+	@Parameter("timestamp_now")
 	protected static final String UNLOCK_LOCKED_USERS =
 			"UPDATE user_info SET failure_count = 0, last_fail_timestamp = 0, "
 					+ "locked = 0 WHERE last_fail_timestamp + :lock_interval "
@@ -1805,6 +1804,7 @@ public abstract class SQLQueries {
 	 *
 	 * @see MachineStateControl
 	 */
+	@Parameter("timestamp_now")
 	@Parameter("board_id")
 	protected static final String MARK_BOARD_BLACKLIST_CHANGED =
 			"UPDATE boards SET blacklist_set_timestamp = "
@@ -1816,6 +1816,7 @@ public abstract class SQLQueries {
 	 *
 	 * @see MachineStateControl
 	 */
+	@Parameter("timestamp_now")
 	@Parameter("board_id")
 	protected static final String MARK_BOARD_BLACKLIST_SYNCHED =
 			"UPDATE boards SET blacklist_sync_timestamp = "
