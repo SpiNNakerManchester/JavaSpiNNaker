@@ -888,8 +888,11 @@ class DQLTest extends SimpleDBTestBase {
 	void getSerialInfoReqs() {
 		try (var q = c.query(GET_SERIAL_INFO_REQS)) {
 			c.transaction(() -> {
-				assertEquals(List.of(), q.getParameters());
-				assertEquals(List.of(), q.getResultSetColumnNames());
+				assertEquals(List.of("machine_id"), q.getParameters());
+				assertEquals(
+						List.of("op_id", "board_id", "bmp_serial_id",
+								"board_num", "cabinet", "frame"),
+						q.getResultSetColumnNames());
 				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE));
 			});
 		}
