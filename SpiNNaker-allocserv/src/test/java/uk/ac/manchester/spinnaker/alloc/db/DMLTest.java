@@ -786,7 +786,7 @@ class DMLTest extends SimpleDBTestBase {
 						"root_id", "keepalive_interval",
 						"keepalive_host", "death_reason", "death_timestamp",
 						"original_request", "allocation_timestamp",
-						"allocation_size", "machine_name", "user_name",
+						"allocation_size", "machine_name", "owner_name",
 						"group_id", "group_name"), q.getParameters());
 				assertEquals(1,
 						q.call(0, 0, "", A_LONG_TIME, 0, 0, 0, 0, A_LONG_TIME,

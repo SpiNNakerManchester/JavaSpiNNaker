@@ -2199,7 +2199,7 @@ public abstract class SQLQueries {
 	@Parameter("allocation_timestamp")
 	@Parameter("allocation_size")
 	@Parameter("machine_name")
-	@Parameter("user_name")
+	@Parameter("owner_name")
 	@Parameter("group_id")
 	@Parameter("group_name")
 	protected static final String WRITE_HISTORICAL_JOBS =
