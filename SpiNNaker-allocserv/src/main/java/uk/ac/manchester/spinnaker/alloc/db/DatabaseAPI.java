@@ -566,7 +566,7 @@ public interface DatabaseAPI {
 		 * @throws DataAccessException
 		 *             If the statement is invalid SQL.
 		 */
-		List<String> getResultSetColumnNames() throws DataAccessException;
+		List<String> getColumns() throws DataAccessException;
 	}
 
 	/**

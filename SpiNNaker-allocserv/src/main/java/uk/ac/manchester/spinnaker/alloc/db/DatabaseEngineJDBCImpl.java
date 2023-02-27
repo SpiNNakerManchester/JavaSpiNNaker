@@ -342,7 +342,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		}
 
 		@Override
-		public List<String> getResultSetColumnNames() {
+		public List<String> getColumns() {
 			return jdbcTemplate.execute(sql,
 					(PreparedStatementCallback<List<String>>) ps -> {
 						var md = ps.getMetaData();
