@@ -25,8 +25,6 @@ import static uk.ac.manchester.spinnaker.alloc.IOUtils.serialize;
 import java.io.IOException;
 import java.io.Serializable;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
@@ -47,8 +45,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterUtils;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
@@ -345,19 +343,15 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 		@Override
 		public List<String> getResultSetColumnNames() {
-			var md = jdbcTemplate.query(sql,
-					(ResultSetExtractor<
-							ResultSetMetaData>) ResultSet::getMetaData,
-					(Object[]) null);
-			try {
-				var names = new ArrayList<String>();
-				for (int i = 1; i <= md.getColumnCount(); i++) {
-					names.add(md.getColumnName(i));
-				}
-				return names;
-			} catch (SQLException e) {
-				return null;
-			}
+			return jdbcTemplate.execute(sql,
+					(PreparedStatementCallback<List<String>>) ps -> {
+						var md = ps.getMetaData();
+						var names = new ArrayList<String>();
+						for (int i = 1; i <= md.getColumnCount(); i++) {
+							names.add(md.getColumnLabel(i));
+						}
+						return names;
+					});
 		}
 	}
 
