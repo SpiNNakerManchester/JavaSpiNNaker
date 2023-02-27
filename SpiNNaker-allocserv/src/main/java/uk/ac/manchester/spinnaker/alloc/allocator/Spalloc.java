@@ -27,10 +27,10 @@ import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.int64;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.chip;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
-import static uk.ac.manchester.spinnaker.alloc.model.Utils.chip;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 import static uk.ac.manchester.spinnaker.utils.OptionalUtils.apply;
@@ -86,7 +86,6 @@ import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
-import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * The core implementation of the Spalloc service.
@@ -136,9 +135,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			boolean allowOutOfService) {
 		var me = epochs.getMachineEpoch();
 		try (var listMachines = conn.query(GET_ALL_MACHINES)) {
-			return listMachines.call(allowOutOfService).toMap(
-					string("machine_name"),
-					row -> new MachineImpl(conn, row, me));
+			return Row.stream(listMachines.call(
+					row -> new MachineImpl(conn, row, me), allowOutOfService))
+					.toMap(Machine::getName, (m) -> m);
 		}
 	}
 
@@ -162,11 +161,16 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			var rec = new MachineListEntryRecord();
 			rec.setId(id);
 			rec.setName(row.getString("machine_name"));
-			var m = countMachineThings.call1(id).orElseThrow();
-			rec.setNumBoards(m.getInt("board_count"));
-			rec.setNumInUse(m.getInt("in_use"));
-			rec.setNumJobs(m.getInt("num_jobs"));
-			rec.setTags(getTags.call(id).map(string("tag")).toList());
+			if (!countMachineThings.call1((m) -> {
+				rec.setNumBoards(m.getInt("board_count"));
+				rec.setNumInUse(m.getInt("in_use"));
+				rec.setNumJobs(m.getInt("num_jobs"));
+				rec.setTags(getTags.call(string("tag"), id));
+				// We have to return something but don't read the result
+				return true;
+			}, id).isPresent()) {
+				throw new AssertionError("No result from count machine things");
+			}
 			return rec;
 		}
 	}
@@ -176,8 +180,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			listMachines(boolean allowOutOfService) {
 		try (var sql = new ListMachinesSQL()) {
 			return sql.transactionRead(
-					() -> sql.listMachines.call(allowOutOfService)
-							.map(sql::makeMachineListEntryRecord).toList());
+					() -> sql.listMachines.call(
+							sql::makeMachineListEntryRecord,
+							allowOutOfService));
 		}
 	}
 
@@ -192,8 +197,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			Connection conn) {
 		var me = epochs.getMachineEpoch();
 		try (var idMachine = conn.query(GET_MACHINE_BY_ID)) {
-			return idMachine.call1(id, allowOutOfService)
-					.map(row -> new MachineImpl(conn, row, me));
+			return idMachine.call1(row -> new MachineImpl(conn, row, me),
+					id, allowOutOfService);
 		}
 	}
 
@@ -201,8 +206,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			boolean allowOutOfService, Connection conn) {
 		var me = epochs.getMachineEpoch();
 		try (var namedMachine = conn.query(GET_NAMED_MACHINE)) {
-			return namedMachine.call1(name, allowOutOfService)
-					.map(row -> new MachineImpl(conn, row, me));
+			return namedMachine.call1(row -> new MachineImpl(conn, row, me),
+					name, allowOutOfService);
 		}
 	}
 
@@ -242,21 +247,23 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			boolean allowOutOfService, Permit permit) {
 		try (var sql = new DescribeMachineSQL()) {
 			return sql.transactionRead(() -> apply(
-					sql.namedMachine.call1(machine, allowOutOfService)
-							.map(Spalloc::getBasicMachineInfo),
-					md -> sql.countMachineThings.call1(md.getId())
-							.map(integer("in_use")).ifPresent(md::setNumInUse),
+					sql.namedMachine.call1(Spalloc::getBasicMachineInfo,
+							machine, allowOutOfService),
+					md -> sql.countMachineThings.call1(integer("in_use"),
+							md.getId()).ifPresent(md::setNumInUse),
 					md -> md.setTags(
-							sql.getTags.call(md.getId()).map(string("tag"))),
-					md -> md.setJobs(sql.getJobs.call(md.getId())
-							.map(row -> getMachineJobInfo(permit, sql.getCoords,
-									row))),
-					md -> md.setLive(sql.getLive.call(md.getId())
-							.map(row -> new BoardCoords(row, !permit.admin))),
-					md -> md.setDead(sql.getDead.call(md.getId())
-							.map(row -> new BoardCoords(row, !permit.admin))),
-					md -> sql.getQuota.call1(permit.name)
-							.map(int64("quota_total"))
+							sql.getTags.call(string("tag"), md.getId())),
+					md -> md.setJobs(sql.getJobs.call(
+							row -> getMachineJobInfo(permit, sql.getCoords,
+									row),
+							md.getId())),
+					md -> md.setLive(sql.getLive.call(
+							row -> new BoardCoords(row, !permit.admin),
+							md.getId())),
+					md -> md.setDead(sql.getDead.call(
+							row -> new BoardCoords(row, !permit.admin),
+							md.getId())),
+					md -> sql.getQuota.call1(int64("quota_total"), permit.name)
 							.ifPresent(md::setQuota)));
 		}
 	}
@@ -280,25 +287,43 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		ji.setId(jobId);
 		ji.setOwner(owner);
 		ji.setBoards(
-				getCoords.call(jobId).map(r -> new BoardCoords(r, !mayUnveil)));
+				getCoords.call(r -> new BoardCoords(r, !mayUnveil), jobId));
 		return ji;
 	}
 
 	@Override
 	public Jobs getJobs(boolean deleted, int limit, int start) {
+		var epoch = epochs.getJobsEpoch();
 		return executeRead(conn -> {
-			var jc = new JobCollection(epochs.getJobsEpoch());
+			var jc = new JobCollection(epoch);
 			if (deleted) {
 				try (var jobs = conn.query(GET_JOB_IDS)) {
-					jc.setJobs(jobs.call(limit, start));
+					jc.setJobs(jobs.call((row) -> makeJob(row, epoch), limit,
+							start));
 				}
 			} else {
 				try (var jobs = conn.query(GET_LIVE_JOB_IDS)) {
-					jc.setJobs(jobs.call(limit, start));
+					jc.setJobs(jobs.call((row) -> makeJob(row, epoch), limit,
+							start));
 				}
 			}
 			return jc;
 		});
+	}
+
+	/**
+	 * Makes "partial" jobs; some fields are shrouded, modifications are
+	 * disabled.
+	 *
+	 * @param row
+	 *            The row to make the job from.
+	 */
+	private Job makeJob(Row row, Epoch epoch) {
+		int jobId = row.getInt("job_id");
+		int machineId = row.getInt("machine_id");
+		var jobState = row.getEnum("job_state", JobState.class);
+		var keepalive = row.getInstant("keepalive_timestamp");
+		return new JobImpl(epoch, jobId, machineId, jobState, keepalive);
 	}
 
 	@Override
@@ -306,10 +331,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		return executeRead(conn -> {
 			try (var listLiveJobs = conn.query(LIST_LIVE_JOBS);
 					var countPoweredBoards = conn.query(COUNT_POWERED_BOARDS)) {
-				return listLiveJobs.call()
-						.map(row -> makeJobListEntryRecord(permit,
-								countPoweredBoards, row))
-						.toList();
+				return listLiveJobs.call(row -> makeJobListEntryRecord(permit,
+						countPoweredBoards, row));
 			}
 		});
 	}
@@ -322,8 +345,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		rec.setState(row.getEnum("job_state", JobState.class));
 		var numBoards = row.getInteger("allocation_size");
 		rec.setNumBoards(numBoards);
-		rec.setPowered(nonNull(numBoards) && numBoards == countPoweredBoards
-				.call1(id).orElseThrow().getInt("c"));
+		rec.setPowered(nonNull(numBoards) && numBoards.equals(countPoweredBoards
+				.call1(integer("c"), id).orElseThrow()));
 		rec.setMachineId(row.getInt("machine_id"));
 		rec.setMachineName(row.getString("machine_name"));
 		rec.setCreationTimestamp(row.getInstant("create_timestamp"));
@@ -345,7 +368,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	private Optional<JobImpl> getJob(int id, Connection conn) {
 		var epoch = epochs.getJobsEpoch();
 		try (var s = conn.query(GET_JOB)) {
-			return s.call1(id).map(row -> new JobImpl(epoch, conn, row));
+			return s.call1(row -> new JobImpl(epoch, conn, row), id);
 		}
 	}
 
@@ -357,8 +380,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					var chipDimensions = conn.query(GET_JOB_CHIP_DIMENSIONS);
 					var countPoweredBoards = conn.query(COUNT_POWERED_BOARDS);
 					var getCoords = conn.query(GET_JOB_BOARD_COORDS)) {
-				return s.call1(id).map(row -> jobDescription(id, row,
-						chipDimensions, countPoweredBoards, getCoords));
+				return s.call1(row -> jobDescription(id, row,
+						chipDimensions, countPoweredBoards, getCoords), id);
 			}
 		});
 	}
@@ -378,14 +401,15 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		jd.setStartTime(job.getInstant("create_timestamp"));
 		jd.setKeepAlive(job.getDuration("keepalive_interval"));
 		jd.setRequestBytes(job.getBytes("original_request"));
-		chipDimensions.call1(id).ifPresent(cd -> {
+		chipDimensions.call1(cd -> {
 			jd.setWidth(cd.getInt("width"));
 			jd.setHeight(cd.getInt("height"));
-		});
+			// We have to return something but we ignore it anyway
+			return true;
+		}, id);
 		int poweredCount =
-				countPoweredBoards.call1(id).orElseThrow().getInt("c");
-		jd.setBoards(getCoords.call(id).map(r -> new BoardCoords(r, false))
-				.toList());
+				countPoweredBoards.call1(integer("c"), id).orElseThrow();
+		jd.setBoards(getCoords.call(r -> new BoardCoords(r, false), id));
 		jd.setPowered(jd.getBoards().size() == poweredCount);
 		return jd;
 	}
@@ -490,6 +514,17 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		});
 	}
 
+	private class UserQuota {
+		Long quota;
+
+		int groupId;
+
+		UserQuota(Row row) {
+			quota = row.getLong("quota");
+			groupId = row.getInt("group_id");
+		}
+	}
+
 	/**
 	 * Work out what the ID of the group that a job will be accounted against
 	 * is.
@@ -508,7 +543,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	private int selectGroup(Connection conn, String user, String groupName) {
 		if (nonNull(groupName)) {
 			try (var getGroup = conn.query(GET_GROUP_BY_NAME_AND_MEMBER)) {
-				return getGroup.call1(user, groupName).map(integer("group_id"))
+				return getGroup.call1(integer("group_id"), user, groupName)
 						.orElseThrow(() -> new NoSuchGroupException(
 								"group %s does not exist or %s "
 										+ "is not a member of it",
@@ -517,10 +552,10 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 		try (var listGroups = conn.query(GET_GROUPS_AND_QUOTAS_OF_USER)) {
 			// No name given; need to guess.
-			return listGroups.call(user)
-					.filter(r -> isNull(r.getLong("quota"))
-							|| r.getLong("quota") > 0L)
-					.map(integer("group_id")).first()
+			return Row.stream(listGroups.call(UserQuota::new, user))
+					.filter(q -> isNull(q.quota)
+							|| q.quota > 0L)
+					.map(q -> q.groupId).first()
 					.orElseThrow(() -> new NoSuchGroupException(
 							"user %s is not a member of any "
 									+ "groups with quota left",
@@ -530,7 +565,18 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	private static Optional<Integer> getUser(Connection conn, String userName) {
 		try (var getUser = conn.query(GET_USER_ID)) {
-			return getUser.call1(userName).map(integer("user_id"));
+			return getUser.call1(integer("user_id"), userName);
+		}
+	}
+
+	private class BoardLocated {
+		int boardId;
+
+		int z;
+
+		BoardLocated(Row row) {
+			boardId = row.getInt("board_id");
+			z = row.getInt("z");
 		}
 	}
 
@@ -556,24 +602,24 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				var findPhysical = conn.query(FIND_BOARD_BY_NAME_AND_CFB);
 				var findIP = conn.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
 			if (nonNull(b.triad)) {
-				return findTriad
-						.call1(machineName, b.triad.x, b.triad.y, b.triad.z)
-						.filter(r -> !requireTriadRoot || r.getInt("z") == 0)
-						.map(integer("board_id"))
+				return findTriad.call1(BoardLocated::new,
+						machineName, b.triad.x, b.triad.y, b.triad.z)
+						.filter(board -> !requireTriadRoot || board.z == 0)
+						.map(board -> board.boardId)
 						.orElseThrow(() -> new IllegalArgumentException(
 								NO_BOARD_MSG));
 			} else if (nonNull(b.physical)) {
-				return findPhysical
-						.call1(machineName, b.physical.c,
+				return findPhysical.call1(
+						BoardLocated::new, machineName, b.physical.c,
 								b.physical.f, b.physical.b)
-						.filter(r -> !requireTriadRoot || r.getInt("z") == 0)
-						.map(integer("board_id"))
+						.filter(board -> !requireTriadRoot || board.z == 0)
+						.map(board -> board.boardId)
 						.orElseThrow(() -> new IllegalArgumentException(
 								NO_BOARD_MSG));
 			} else {
-				return findIP.call1(machineName, b.ip)
-						.filter(r -> !requireTriadRoot || r.getInt("z") == 0)
-						.map(integer("board_id"))
+				return findIP.call1(BoardLocated::new, machineName, b.ip)
+						.filter(board -> !requireTriadRoot || board.z == 0)
+						.map(board -> board.boardId)
 						.orElseThrow(() -> new IllegalArgumentException(
 								NO_BOARD_MSG));
 			}
@@ -583,7 +629,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	private static Optional<Integer> insertJob(Connection conn, MachineImpl m,
 			int owner, int group, Duration keepaliveInterval, byte[] req) {
 		try (var makeJob = conn.update(INSERT_JOB)) {
-			return makeJob.key(m.id, owner, group, keepaliveInterval, req);
+			return makeJob.key(m.id, owner, group, keepaliveInterval, req,
+					Instant.now(), Instant.now());
 		}
 	}
 
@@ -631,6 +678,17 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		return description;
 	}
 
+	private class Problem {
+		int boardId;
+
+		Integer jobId;
+
+		Problem(Row row) {
+			boardId = row.getInt("board_id");
+			jobId = row.getInt("job_id");
+		}
+	}
+
 	@Override
 	public void reportProblem(String address, HasChipLocation coreLocation,
 			String description, Permit permit) {
@@ -639,8 +697,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			var email = sql.transaction(() -> {
 				var machines = getMachines(sql.getConnection(), true).values();
 				for (var m : machines) {
-					var mail = sql.findBoardNet.call1(m.getId(), address)
-							.flatMap(row -> reportProblem(row, desc, permit,
+					var mail = sql.findBoardNet.call1(
+							Problem::new, m.getId(), address)
+							.flatMap(prob -> reportProblem(prob, desc, permit,
 									sql));
 					if (mail.isPresent()) {
 						return mail;
@@ -655,18 +714,42 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 	}
 
-	private Optional<EmailBuilder> reportProblem(Row row, String description,
-			Permit permit, BoardReportSQL sql) {
-		var email = new EmailBuilder(row.getInt("job_id"));
+	private Optional<EmailBuilder> reportProblem(Problem problem,
+			String description,	Permit permit, BoardReportSQL sql) {
+		var email = new EmailBuilder(problem.jobId);
 		email.header(description, 1, permit.name);
 		int userId = getUser(sql.getConnection(), permit.name).orElseThrow(
 				() -> new ReportRollbackExn("no such user: %s", permit.name));
-		sql.insertReport.key(row.getInt("board_id"), row.getInt("job_id"),
-				description, userId).ifPresent(email::issue);
+		sql.insertReport.key(problem.boardId, problem.jobId,
+				description, userId, Instant.now()).ifPresent(email::issue);
 		return takeBoardsOutOfService(sql, email).map(acted -> {
 			email.footer(acted);
 			return email;
 		});
+	}
+
+	private class Reported {
+		int boardId;
+
+		int x;
+
+		int y;
+
+		int z;
+
+		String address;
+
+		int numReports;
+
+		Reported(Row row) {
+			boardId = row.getInt("board_id");
+			x = row.getInt("x");
+			y = row.getInt("y");
+			z = row.getInt("z");
+			address = row.getString("address");
+			numReports = row.getInt("numReports");
+		}
+
 	}
 
 	/**
@@ -681,10 +764,10 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	private Optional<Integer> takeBoardsOutOfService(BoardReportSQL sql,
 			EmailBuilder email) {
 		int acted = 0;
-		for (var r : sql.getReported.call(props.getReportActionThreshold())) {
-			int boardId = r.getInt("board_id");
-			if (sql.setFunctioning.call(false, boardId) > 0) {
-				email.serviceActionDone(r);
+		for (var report : sql.getReported.call(Reported::new,
+				props.getReportActionThreshold())) {
+			if (sql.setFunctioning.call(false, report.boardId) > 0) {
+				email.serviceActionDone(report);
 				acted++;
 			}
 		}
@@ -733,7 +816,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			height = rs.getInt("height");
 			inService = rs.getBoolean("in_service");
 			try (var getTags = conn.query(GET_TAGS)) {
-				tags = copy(getTags.call(id).map(string("tag")).toSet());
+				tags = Row.stream(copy(getTags.call(string("tag"), id)))
+						.toSet();
 			}
 		}
 
@@ -758,8 +842,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (var conn = getConnection();
 					var findBoard = conn.query(findBoardByGlobalChip)) {
 				return conn.transaction(false,
-						() -> findBoard.call1(id, chip.getX(), chip.getY())
-								.map(row -> new BoardLocationImpl(row, this)));
+						() -> findBoard.call1(
+								row -> new BoardLocationImpl(row, this), id,
+								chip.getX(), chip.getY()));
 			}
 		}
 
@@ -769,8 +854,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (var conn = getConnection();
 					var findBoard = conn.query(findBoardByPhysicalCoords)) {
 				return conn.transaction(false,
-						() -> findBoard.call1(id, coords.c, coords.f, coords.b)
-								.map(row -> new BoardLocationImpl(row, this)));
+						() -> findBoard.call1(
+								row -> new BoardLocationImpl(row, this), id,
+								coords.c, coords.f, coords.b));
 			}
 		}
 
@@ -780,8 +866,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (var conn = getConnection();
 					var findBoard = conn.query(findBoardByLogicalCoords)) {
 				return conn.transaction(false,
-						() -> findBoard.call1(id, coords.x, coords.y, coords.z)
-								.map(row -> new BoardLocationImpl(row, this)));
+						() -> findBoard.call1(
+								row -> new BoardLocationImpl(row, this), id,
+								coords.x, coords.y, coords.z));
 			}
 		}
 
@@ -790,8 +877,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (var conn = getConnection();
 					var findBoard = conn.query(findBoardByIPAddress)) {
 				return conn.transaction(false,
-						() -> findBoard.call1(id, address)
-								.map(row -> new BoardLocationImpl(row, this)));
+						() -> findBoard.call1(
+								row -> new BoardLocationImpl(row, this), id,
+								address));
 			}
 		}
 
@@ -799,8 +887,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		public String getRootBoardBMPAddress() {
 			try (var conn = getConnection();
 					var rootBMPaddr = conn.query(GET_ROOT_BMP_ADDRESS)) {
-				return conn.transaction(false, () -> rootBMPaddr.call1(id)
-						.map(string("address")).orElse(null));
+				return conn.transaction(false, () -> rootBMPaddr.call1(
+						string("address"), id).orElse(null));
 			}
 		}
 
@@ -808,8 +896,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		public List<Integer> getBoardNumbers() {
 			try (var conn = getConnection();
 					var boardNumbers = conn.query(GET_BOARD_NUMBERS)) {
-				return conn.transaction(false, () -> boardNumbers.call(id)
-						.map(integer("board_num")).toList());
+				return conn.transaction(false, () -> boardNumbers.call(
+						integer("board_num"), id));
 			}
 		}
 
@@ -825,9 +913,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (var conn = getConnection();
 					var boardNumbers = conn.query(GET_DEAD_BOARDS)) {
 				var downBoards = conn.transaction(false,
-						() -> boardNumbers.call(id)
-								.map(row -> new BoardCoords(row, false))
-								.toList());
+						() -> boardNumbers.call(
+								row -> new BoardCoords(row, false), id));
 				synchronized (Spalloc.this) {
 					downBoardsCache.putIfAbsent(name, downBoards);
 				}
@@ -847,7 +934,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (var conn = getConnection();
 					var boardNumbers = conn.query(getDeadLinks)) {
 				var downLinks = conn.transaction(false, () -> boardNumbers
-						.call(id).map(Spalloc::makeDownLinkFromRow).toList());
+						.call(Spalloc::makeDownLinkFromRow, id));
 				synchronized (Spalloc.this) {
 					downLinksCache.putIfAbsent(name, downLinks);
 				}
@@ -860,8 +947,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (var conn = getConnection();
 					var boardNumbers = conn
 							.query(GET_AVAILABLE_BOARD_NUMBERS)) {
-				return conn.transaction(false, () -> boardNumbers.call(id)
-						.map(integer("board_num")).toList());
+				return conn.transaction(false, () -> boardNumbers.call(
+						integer("board_num"), id));
 			}
 		}
 
@@ -901,8 +988,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					var bmpAddr = conn.query(GET_BMP_ADDRESS)) {
 				return conn.transaction(false,
 						() -> bmpAddr
-								.call1(id, bmp.getCabinet(), bmp.getFrame())
-								.map(string("address")).orElse(null));
+								.call1(string("address"), id, bmp.getCabinet(),
+										bmp.getFrame()).orElse(null));
 			}
 		}
 
@@ -912,8 +999,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					var boardNumbers = conn.query(GET_BMP_BOARD_NUMBERS)) {
 				return conn.transaction(false,
 						() -> boardNumbers
-								.call(id, bmp.getCabinet(), bmp.getFrame())
-								.map(integer("board_num")).toList());
+								.call(integer("board_num"), id,
+										bmp.getCabinet(), bmp.getFrame()));
 			}
 		}
 
@@ -967,23 +1054,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			return jobs.stream().map(Job::getId).collect(toList());
 		}
 
-		private void setJobs(MappableIterable<Row> rows) {
-			jobs = rows.map(this::makeJob).toList();
-		}
-
-		/**
-		 * Makes "partial" jobs; some fields are shrouded, modifications are
-		 * disabled.
-		 *
-		 * @param row
-		 *            The row to make the job from.
-		 */
-		private Job makeJob(Row row) {
-			int jobId = row.getInt("job_id");
-			int machineId = row.getInt("machine_id");
-			var jobState = row.getEnum("job_state", JobState.class);
-			var keepalive = row.getInstant("keepalive_timestamp");
-			return new JobImpl(epoch, jobId, machineId, jobState, keepalive);
+		private void setJobs(List<Job> jobs) {
+			this.jobs = jobs;
 		}
 	}
 
@@ -1070,13 +1142,13 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					numActions);
 		}
 
-		void serviceActionDone(Row r) {
+		void serviceActionDone(Reported report) {
 			b.format(
 					"\tAction: board (X:%d,Y:%d,Z:%d) (IP: %s) "
 							+ "taken out of service once not in use "
 							+ "(%d problems reported)\n",
-					r.getInt("x"), r.getInt("y"), r.getInt("z"),
-					r.getString("address"), r.getInt("numReports"));
+					report.x, report.y, report.z,
+					report.address, report.numReports);
 		}
 
 		/** @return The assembled message body. */
@@ -1148,8 +1220,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			owner = row.getString("owner");
 			if (nonNull(root)) {
 				try (var boardRoot = conn.query(GET_ROOT_OF_BOARD)) {
-					chipRoot = boardRoot.call1(root)
-							.map(chip("root_x", "root_y")).orElse(null);
+					chipRoot = boardRoot.call1(chip("root_x", "root_y"), root)
+							.orElse(null);
 				}
 			}
 			state = row.getEnum("job_state", JobState.class);
@@ -1187,7 +1259,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			}
 			try (var conn = getConnection();
 					var keepAlive = conn.update(UPDATE_KEEPALIVE)) {
-				conn.transaction(() -> keepAlive.call(keepaliveAddress, id));
+				conn.transaction(() -> keepAlive.call(Instant.now(),
+						keepaliveAddress, id));
 			}
 		}
 
@@ -1274,9 +1347,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (var conn = getConnection();
 					var findBoard = conn.query(findBoardByJobChip)) {
 				return conn.transaction(false, () -> findBoard
-						.call1(id, root, x, y)
-						.map(row -> new BoardLocationImpl(row,
-								getJobMachine(conn))));
+						.call1(row -> new BoardLocationImpl(row,
+								getJobMachine(conn)), id, root, x, y));
 			}
 		}
 
@@ -1348,20 +1420,21 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		 */
 		private int getJobBoardForReport(BoardReportSQL q, ReportedBoard board,
 				EmailBuilder email) throws ReportRollbackExn {
-			Row r;
+			Problem r;
 			if (nonNull(board.chip)) {
 				r = q.findBoardByChip
-						.call1(id, root, board.chip.getX(), board.chip.getY())
+						.call1(Problem::new, id, root, board.chip.getX(),
+								board.chip.getY())
 						.orElseThrow(() -> new ReportRollbackExn(board.chip));
 				email.chip(board);
 			} else if (nonNull(board.x)) {
 				r = q.findBoardByTriad
-						.call1(machineId, board.x, board.y, board.z)
+						.call1(Problem::new, machineId, board.x, board.y,
+								board.z)
 						.orElseThrow(() -> new ReportRollbackExn(
 								"triad (%s,%s,%s) not in machine", board.x,
 								board.y, board.z));
-				var j = r.getInteger("job_id");
-				if (isNull(j) || id != j) {
+				if (isNull(r.jobId) || id != r.jobId) {
 					throw new ReportRollbackExn(
 							"triad (%s,%s,%s) not allocated to job %d", board.x,
 							board.y, board.z, id);
@@ -1369,24 +1442,22 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				email.triad(board);
 			} else if (nonNull(board.cabinet)) {
 				r = q.findBoardPhys
-						.call1(machineId, board.cabinet, board.frame,
-								board.board)
+						.call1(Problem::new, machineId, board.cabinet,
+								board.frame, board.board)
 						.orElseThrow(() -> new ReportRollbackExn(
 								"physical board [%s,%s,%s] not in machine",
 								board.cabinet, board.frame, board.board));
-				var j = r.getInteger("job_id");
-				if (isNull(j) || id != j) {
+				if (isNull(r.jobId) || id != r.jobId) {
 					throw new ReportRollbackExn(
 							"physical board [%s,%s,%s] not allocated to job %d",
 							board.cabinet, board.frame, board.board, id);
 				}
 				email.phys(board);
 			} else if (nonNull(board.address)) {
-				r = q.findBoardNet.call1(machineId, board.address)
+				r = q.findBoardNet.call1(Problem::new, machineId, board.address)
 						.orElseThrow(() -> new ReportRollbackExn(
 								"board at %s not in machine", board.address));
-				var j = r.getInteger("job_id");
-				if (isNull(j) || id != j) {
+				if (isNull(r.jobId) || id != r.jobId) {
 					throw new ReportRollbackExn(
 							"board at %s not allocated to job %d",
 							board.address, id);
@@ -1395,7 +1466,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			} else {
 				throw new UnsupportedOperationException();
 			}
-			return r.getInt("board_id");
+			return r.boardId;
 		}
 
 		/**
@@ -1414,7 +1485,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		 */
 		private void addIssueReport(BoardReportSQL u, int boardId, String issue,
 				int userId, EmailBuilder email) {
-			u.insertReport.key(boardId, id, issue, userId)
+			u.insertReport.key(boardId, id, issue, userId, Instant.now())
 					.ifPresent(email::issue);
 		}
 
@@ -1494,16 +1565,19 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				machine = getJobMachine(conn);
 				try (var getRootXY = conn.query(GET_ROOT_COORDS);
 						var getBoardInfo = conn.query(GET_BOARD_CONNECT_INFO)) {
-					getRootXY.call1(root).ifPresent(row -> {
+					getRootXY.call1(row -> {
 						rootX = row.getInt("x");
 						rootY = row.getInt("y");
 						rootZ = row.getInt("z");
-					});
+						// We have to return something,
+						// but it doesn't matter what
+						return true;
+					}, root);
 					int capacityEstimate = width * height;
 					connections = new ArrayList<>(capacityEstimate);
 					boards = new ArrayList<>(capacityEstimate);
 					boardIds = new ArrayList<>(capacityEstimate);
-					getBoardInfo.call(id).forEach(row -> {
+					getBoardInfo.call(row -> {
 						boardIds.add(row.getInt("board_id"));
 						boards.add(new BoardCoordinates(row.getInt("x"),
 								row.getInt("y"), row.getInt("z")));
@@ -1511,7 +1585,10 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 								relativeChipLocation(row.getInt("root_x"),
 										row.getInt("root_y")),
 								row.getString("address")));
-					});
+						// We have to return something,
+						// but it doesn't matter what
+						return true;
+					}, id);
 				}
 			}
 
@@ -1578,7 +1655,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				try (var conn = getConnection();
 						var power = conn.query(GET_SUM_BOARDS_POWERED)) {
 					return conn.transaction(false,
-							() -> power.call1(id).map(integer("total_on"))
+							() -> power.call1(integer("total_on"), id)
 									.map(totalOn -> totalOn < boardIds.size()
 											? OFF
 											: ON)
@@ -1626,12 +1703,12 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					row.getInt("z"));
 			physical = new BoardPhysicalCoordinates(row.getInt("cabinet"),
 					row.getInt("frame"), row.getInteger("board_num"));
-			chip = chip(row, "chip_x", "chip_y");
+			chip = row.getChip("chip_x", "chip_y");
 			machineWidth = machine.getWidth();
 			machineHeight = machine.getHeight();
 			var boardX = row.getInteger("board_chip_x");
 			if (nonNull(boardX)) {
-				boardChip = chip(row, "board_chip_x", "board_chip_y");
+				boardChip = row.getChip("board_chip_x", "board_chip_y");
 			} else {
 				boardChip = chip;
 			}
@@ -1640,7 +1717,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			if (nonNull(jobId)) {
 				job = new JobImpl(epochs.getJobsEpoch(), jobId,
 						machine.getId());
-				job.chipRoot = chip(row, "job_root_chip_x", "job_root_chip_y");
+				job.chipRoot = row.getChip("job_root_chip_x",
+						"job_root_chip_y");
 			}
 		}
 

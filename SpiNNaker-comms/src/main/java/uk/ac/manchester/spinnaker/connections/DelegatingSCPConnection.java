@@ -56,7 +56,7 @@ public class DelegatingSCPConnection extends SCPConnection {
 	}
 
 	@Override
-	protected InetSocketAddress getRemoteAddress() throws IOException {
+	protected InetSocketAddress getRemoteAddress() {
 		return delegate.getRemoteAddress();
 	}
 

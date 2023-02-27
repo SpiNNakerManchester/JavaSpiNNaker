@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.List;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.messages.scp.SCPRequestHeader;
+import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 
 /**
  * Indicates that message sending to a BMP failed for various reasons.
@@ -30,11 +30,12 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequestHeader;
 public final class BMPSendFailedException extends IOException {
 	private static final long serialVersionUID = -7806549580351626377L;
 
-	BMPSendFailedException(SCPRequestHeader hdr, HasCoreLocation core,
+	BMPSendFailedException(SCPRequest<?> req, HasCoreLocation core,
 			List<String> retryReason) {
 		super(format(
-				"Errors sending request %s to %d,%d,%d over %d retries: %s",
-				hdr.command, core.getX(), core.getY(), core.getP(),
-				BMP_RETRIES, retryReason));
+				"Errors sending request %s (%s) to %d,%d,%d over %d retries:"
+				+ " %s",
+				req.scpRequestHeader.command, req, core.getX(), core.getY(),
+				core.getP(), BMP_RETRIES, retryReason));
 	}
 }

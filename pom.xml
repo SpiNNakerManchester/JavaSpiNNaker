@@ -65,6 +65,8 @@ limitations under the License.
 		<jython.version>2.7.3</jython.version>
 		<error-prone.version>2.18.0</error-prone.version>
 		<picocli.version>4.7.1</picocli.version>
+		<mysql.version>8.0.32</mysql.version>
+		<testcontainers.version>1.17.6</testcontainers.version>
 	</properties>
 
 	<dependencyManagement>
@@ -785,7 +787,7 @@ limitations under the License.
 	<name>SpiNNaker Java Host</name>
 	<description>Implementation of the host software for SpiNNaker in Java.</description>
 	<inceptionYear>2018</inceptionYear>
-	<url>http://spinnakermanchester.github.io/</url>
+	<url>https://spinnakermanchester.github.io/</url>
 	<organization>
 		<name>SpiNNaker Team @ University of Manchester</name>
 		<url>http://apt.cs.manchester.ac.uk/projects/SpiNNaker/</url>
@@ -818,7 +820,7 @@ limitations under the License.
 		<site>
 			<id>github-pages</id>
 			<name>GitHub Pages</name>
-			<url>http://spinnakermanchester.github.io/JavaSpiNNaker</url>
+			<url>https://spinnakermanchester.github.io/JavaSpiNNaker</url>
 		</site>
 	</distributionManagement>
 	<mailingLists>

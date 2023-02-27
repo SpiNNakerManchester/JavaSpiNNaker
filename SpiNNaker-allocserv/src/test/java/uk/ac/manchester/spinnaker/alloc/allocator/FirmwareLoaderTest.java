@@ -24,7 +24,6 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import java.io.IOException;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -47,16 +46,9 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
 @SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
 @TestPropertySource(properties = {
-	"spalloc.database-path=" + FirmwareLoaderTest.DB,
-	"spalloc.historical-data.path=" + FirmwareLoaderTest.HIST_DB,
 	"spalloc.transceiver.fpga-reload=true" // Enable reloading!
 })
 class FirmwareLoaderTest extends TestSupport {
-	/** The name of the database file. */
-	static final String DB = "target/firmware_test.sqlite3";
-
-	/** The name of the database file. */
-	static final String HIST_DB = "target/firmware_test-hist.sqlite3";
 
 	private static final int TEST_TIMEOUT = 10;
 
@@ -65,17 +57,13 @@ class FirmwareLoaderTest extends TestSupport {
 
 	private BMPController.TestAPI bmpCtrl;
 
-	@BeforeAll
-	static void clearDB() throws IOException {
-		killDB(DB);
-	}
-
 	@BeforeEach
 	@SuppressWarnings("deprecation")
 	void checkSetup(@Autowired TransceiverFactory txrxFactory,
-			@Autowired BMPController bmpCtrl) {
+			@Autowired BMPController bmpCtrl) throws IOException {
 		MockTransceiver.installIntoFactory(txrxFactory);
 		assumeTrue(db != null, "spring-configured DB engine absent");
+		killDB();
 		setupDB1();
 		this.bmpCtrl = bmpCtrl.getTestAPI();
 		this.bmpCtrl.clearBmpException();
@@ -143,12 +131,12 @@ class FirmwareLoaderTest extends TestSupport {
 				 * are very strange.
 				 */
 				log.debug("state to force reset: {} {} {}",
-						c.query("SELECT * FROM job_request").call()
-								.map(Object::toString).toList(),
-						c.query("SELECT * FROM pending_changes").call()
-								.map(Object::toString).toList(),
-						c.query("SELECT * FROM boards").call()
-								.map(Object::toString).toList());
+						c.query("SELECT * FROM job_request")
+								.call(Object::toString),
+						c.query("SELECT * FROM pending_changes")
+								.call(Object::toString),
+						c.query("SELECT * FROM boards")
+								.call(Object::toString));
 			}
 			c.update("DELETE FROM job_request").call();
 			c.update("DELETE FROM pending_changes").call();

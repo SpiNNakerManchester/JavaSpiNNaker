@@ -19,7 +19,7 @@ WITH report_counts AS (
 		COUNT(board_reports.report_id) AS num_reports
 	FROM board_reports
 	JOIN boards USING (board_id)
-	WHERE boards.functioning IS NOT 0 -- Ignore disabled boards
+	WHERE boards.functioning != 0 -- Ignore disabled boards
 	GROUP BY board_id)
 SELECT
     boards.board_id,

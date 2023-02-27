@@ -29,12 +29,12 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.asDir;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByNameQuietly;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,15 +58,13 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.errorprone.annotations.MustBeClosed;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
-import uk.ac.manchester.spinnaker.alloc.client.AllocatedMachine.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient.Job;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient.Machine;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient.SpallocException;
-import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
-import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.messages.model.Version;
@@ -80,9 +79,8 @@ import uk.ac.manchester.spinnaker.utils.Daemon;
  * <strong>Implementation Note:</strong> Neither this class nor the client
  * classes it creates maintain state that needs to be closed explicitly
  * <em>except</em> for
- * {@linkplain SpallocClient.Job#getConnection(HasChipLocation) proxied
- * connections} and {@linkplain SpallocClient.Job#getTransceiver()
- * transceivers}, as connections and transceivers usually need to be closed.
+ * {@linkplain SpallocClient.Job#getTransceiver() transceivers}, as transceivers
+ * usually need to be closed.
  *
  * @author Donal Fellows
  */
@@ -145,8 +143,9 @@ public class SpallocClientFactory {
 		if (proxy == null) {
 			return null;
 		}
+		log.info("Using proxy {} for connections", proxy.spallocUrl);
 		return new SpallocClientFactory(URI.create(proxy.spallocUrl))
-				.getJob(proxy.jobUrl, proxy.bearerToken);
+				.getJob(proxy.jobUrl, proxy.headers, proxy.cookies);
 	}
 
 	/**
@@ -281,35 +280,22 @@ public class SpallocClientFactory {
 	}
 
 	/**
-	 * Create a client and log in.
-	 *
-	 * @param bearerToken
-	 *            The HBP/EBRAINS bearer token to authenticate with.
-	 * @return The client API for the given server.
-	 * @throws IOException
-	 *             If the server doesn't respond or logging in fails.
-	 */
-	public SpallocClient login(String bearerToken) throws IOException {
-		var s = new ClientSession(baseUrl, bearerToken);
-
-		return new ClientImpl(s, s.discoverRoot());
-	}
-
-	/**
 	 * Get direct access to a Job.
 	 *
 	 * @param uri
 	 *            The URI of the job
-	 * @param bearerToken
-	 *            The bearer token to authenticate with
+	 * @param headers
+	 *            The headers to read authentication from.
+	 * @param cookies
+	 *            The cookies to read authentication from.
 	 * @return A job.
 	 * @throws IOException
 	 *             If there is an error communicating with the server.
 	 */
-	public Job getJob(String uri, String bearerToken)
-			throws IOException {
+	public Job getJob(String uri, Map<String, String> headers,
+			Map<String, String> cookies) throws IOException {
 		var u = URI.create(uri);
-		var s = new ClientSession(baseUrl, bearerToken);
+		var s = new ClientSession(baseUrl, headers, cookies);
 		var c = new ClientImpl(s, s.discoverRoot());
 		log.info("Connecting to job on {}", u);
 		return c.job(u);
@@ -686,36 +672,30 @@ public class SpallocClientFactory {
 			}
 		}
 
-		@Override
-		public SCPConnection getConnection(HasChipLocation chip)
-				throws IOException, InterruptedException {
-			return new ProxiedSCPConnection(chip.asChipLocation(), getProxy());
-		}
-
-		@Override
-		public EIEIOConnection getEIEIOConnection()
-				throws IOException, InterruptedException {
-			var hostToChip = machine().getConnections().stream()
-					.collect(toMap(c -> getByNameQuietly(c.getHostname()),
-							ConnectionInfo::getChip));
-			return new ProxiedEIEIOListenerConnection(hostToChip, getProxy());
-		}
-
+		@MustBeClosed
 		@Override
 		public TransceiverInterface getTransceiver()
 				throws IOException, InterruptedException, SpinnmanException {
 			var ws = getProxy();
 			var am = machine();
+			// TODO: We should know if the machine wraps around or not here...
+			var version = MachineVersion.TRIAD_NO_WRAPAROUND;
 			var conns = new ArrayList<Connection>();
 			var hostToChip = new HashMap<Inet4Address, ChipLocation>();
+			InetAddress bootChipAddress = null;
 			for (var bc : am.getConnections()) {
-				conns.add(new ProxiedSCPConnection(
-						bc.getChip().asChipLocation(), ws));
-				hostToChip.put(getByNameQuietly(bc.getHostname()),
-						bc.getChip());
+				var chipAddr = getByNameQuietly(bc.getHostname());
+				var chipLoc = bc.getChip().asChipLocation();
+				conns.add(new ProxiedSCPConnection(chipLoc, ws, chipAddr));
+				hostToChip.put(chipAddr, bc.getChip());
+				if (chipLoc.equals(ZERO_ZERO)) {
+					bootChipAddress = chipAddr;
+				}
 			}
-			conns.add(new ProxiedBootConnection(ws));
-			return new ProxiedTransceiver(conns, hostToChip, ws);
+			if (bootChipAddress != null) {
+				conns.add(new ProxiedBootConnection(ws, bootChipAddress));
+			}
+			return new ProxiedTransceiver(version, conns, hostToChip, ws);
 		}
 
 		@Override

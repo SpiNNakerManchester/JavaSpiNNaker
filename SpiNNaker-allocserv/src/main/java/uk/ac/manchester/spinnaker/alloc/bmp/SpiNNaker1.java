@@ -265,6 +265,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	@Override
 	public void powerOnAndCheck(List<Integer> boards)
 			throws ProcessException, InterruptedException, IOException {
+		log.debug("Power on and check boards {} for BMP {}", boards, bmp);
 		var boardsToPower = remap(boards);
 		boolean reloadDone = false; // so we only do firmware loading once
 		for (int attempt = 1; attempt <= props.getFpgaAttempts(); attempt++) {
@@ -297,6 +298,8 @@ class SpiNNaker1 implements SpiNNakerControl {
 			}
 			if (retryBoards.isEmpty() && reloadBoards.isEmpty()) {
 				// Success!
+				log.debug("Finished power on and check boards {} for {}",
+						boards, bmp);
 				return;
 			}
 			// We don't try reloading the first time
