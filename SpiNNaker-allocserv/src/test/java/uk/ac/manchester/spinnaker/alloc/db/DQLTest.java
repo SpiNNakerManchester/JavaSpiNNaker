@@ -15,6 +15,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
+import static java.util.Optional.empty;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BLACKLIST_OP;
@@ -28,6 +29,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_USER;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -886,7 +888,9 @@ class DQLTest extends SimpleDBTestBase {
 	void getSerialInfoReqs() {
 		try (var q = c.query(GET_SERIAL_INFO_REQS)) {
 			c.transaction(() -> {
-				assertFalse(q.call1((row) -> 1, NO_MACHINE).isPresent());
+				assertEquals(List.of(), q.getParameters());
+				assertEquals(List.of(), q.getResultSetColumnNames());
+				assertEquals(empty(), q.call1((row) -> 1, NO_MACHINE));
 			});
 		}
 	}

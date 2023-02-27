@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DataAccessException;
 
 import com.google.errorprone.annotations.CompileTimeConstant;
 import com.google.errorprone.annotations.MustBeClosed;
@@ -508,12 +509,20 @@ public interface DatabaseAPI {
 	 * @author Donal Fellows
 	 */
 	interface StatementCommon extends AutoCloseable {
-
 		/**
 		 * Close this statement. This never throws a checked exception.
 		 */
 		@Override
 		void close();
+
+		/**
+		 * Get the list of parameters to the statement. This may be an expensive
+		 * operation.
+		 *
+		 * @return List of parameter names. Unnamed parameters <em>may</em> be
+		 *         mapped as {@code null}.
+		 */
+		List<String> getParameters();
 	}
 
 	/**
@@ -522,7 +531,6 @@ public interface DatabaseAPI {
 	 * @author Donal Fellows
 	 */
 	interface Query extends StatementCommon {
-
 		/**
 		 * Run the query on the given arguments to read a list of objects.
 		 *
@@ -546,6 +554,19 @@ public interface DatabaseAPI {
 		 * @return The resulting object.
 		 */
 		<T> Optional<T> call1(RowMapper<T> mapper, Object... arguments);
+
+		/**
+		 * Get the column names from the result set. This may be an expensive
+		 * operation.
+		 *
+		 * @return The list of column names. The names of columns where they are
+		 *         not assigned by the query is arbitrary and up to the database
+		 *         engine. This will be {@code null} if the manipulation of
+		 *         metadata fails; this isn't expected.
+		 * @throws DataAccessException
+		 *             If the statement is invalid SQL.
+		 */
+		List<String> getResultSetColumnNames() throws DataAccessException;
 	}
 
 	/**

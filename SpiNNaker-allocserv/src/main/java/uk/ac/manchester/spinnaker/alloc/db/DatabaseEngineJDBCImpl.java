@@ -16,12 +16,17 @@
 package uk.ac.manchester.spinnaker.alloc.db;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.jdbc.core.namedparam.NamedParameterUtils.buildSqlParameterList;
+import static org.springframework.jdbc.core.namedparam.NamedParameterUtils.parseSqlStatement;
 import static uk.ac.manchester.spinnaker.alloc.IOUtils.serialize;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
@@ -43,6 +48,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterUtils;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -251,15 +258,17 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 	}
 
-	private final class QueryImpl implements Query {
+	private abstract class StatementImpl implements StatementCommon {
+		private final String originalSql;
 
-		private final String sql;
+		final String sql;
 
-		private final JdbcTemplate queryJdbcTemplate;
+		final JdbcTemplate jdbcTemplate;
 
-		QueryImpl(String sql, JdbcTemplate queryJdbcTemplate) {
+		StatementImpl(String sql, JdbcTemplate jdbcTemplate) {
+			this.originalSql = sql;
 			this.sql = NamedParameterUtils.parseSqlStatementIntoString(sql);
-			this.queryJdbcTemplate = queryJdbcTemplate;
+			this.jdbcTemplate = jdbcTemplate;
 		}
 
 		@Override
@@ -268,9 +277,52 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		}
 
 		@Override
+		public List<String> getParameters() {
+			return buildSqlParameterList(parseSqlStatement(originalSql),
+					new EmptySqlParameterSource()).stream()
+					.map(p -> p.getName()).collect(toUnmodifiableList());
+		}
+
+		Object[] resolveArguments(Object[] arguments) {
+			Object[] resolved = new Object[arguments.length];
+			for (int i = 0; i < arguments.length; i++) {
+				Object arg = arguments[i];
+				// The classes we augment the DB driver with
+				if (arg instanceof Optional) {
+					// Unpack one layer of Optional only; absent = NULL
+					arg = ((Optional<?>) arg).orElse(null);
+				}
+				if (arg instanceof Instant) {
+					arg = ((Instant) arg).getEpochSecond();
+				} else if (arg instanceof Duration) {
+					arg = ((Duration) arg).getSeconds();
+				} else if (arg instanceof Enum) {
+					arg = ((Enum<?>) arg).ordinal();
+				} else if (arg != null && arg instanceof Serializable
+						&& !(arg instanceof String || arg instanceof Number
+								|| arg instanceof Boolean
+								|| arg instanceof byte[])) {
+					try {
+						arg = serialize(arg);
+					} catch (IOException e) {
+						arg = null;
+					}
+				}
+				resolved[i] = arg;
+			}
+			return resolved;
+		}
+	}
+
+	private final class QueryImpl extends StatementImpl implements Query {
+		QueryImpl(String sql, JdbcTemplate queryJdbcTemplate) {
+			super(sql, queryJdbcTemplate);
+		}
+
+		@Override
 		public <T> List<T> call(RowMapper<T> mapper, Object... arguments) {
 			var resolved = resolveArguments(arguments);
-			return queryJdbcTemplate.query(sql, (results) -> {
+			return jdbcTemplate.query(sql, (results) -> {
 				List<T> values = new ArrayList<T>();
 				while (results.next()) {
 					values.add(mapper.mapRow(new Row(results)));
@@ -282,7 +334,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		@Override
 		public <T> Optional<T> call1(RowMapper<T> mapper, Object... arguments) {
 			var resolved = resolveArguments(arguments);
-			return queryJdbcTemplate.query(sql, (results) -> {
+			return jdbcTemplate.query(sql, (results) -> {
 				if (results.next()) {
 					// Allow nullable if there is a value
 					return Optional.ofNullable(mapper.mapRow(new Row(results)));
@@ -290,28 +342,34 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 				return Optional.empty();
 			}, resolved);
 		}
-	}
-
-	private final class UpdateImpl implements Update {
-
-		private String sql;
-
-		private final JdbcTemplate updateJdbcTemplate;
-
-		UpdateImpl(String sql, JdbcTemplate updateJdbcTemplate) {
-			this.sql = NamedParameterUtils.parseSqlStatementIntoString(sql);
-			this.updateJdbcTemplate = updateJdbcTemplate;
-		}
 
 		@Override
-		public void close() {
-			// Does nothing
+		public List<String> getResultSetColumnNames() {
+			var md = jdbcTemplate.query(sql,
+					(ResultSetExtractor<
+							ResultSetMetaData>) ResultSet::getMetaData,
+					(Object[]) null);
+			try {
+				var names = new ArrayList<String>();
+				for (int i = 1; i <= md.getColumnCount(); i++) {
+					names.add(md.getColumnName(i));
+				}
+				return names;
+			} catch (SQLException e) {
+				return null;
+			}
+		}
+	}
+
+	private final class UpdateImpl extends StatementImpl implements Update {
+		UpdateImpl(String sql, JdbcTemplate updateJdbcTemplate) {
+			super(sql, updateJdbcTemplate);
 		}
 
 		@Override
 		public int call(Object... arguments) {
 			var resolved = resolveArguments(arguments);
-			return updateJdbcTemplate.update(sql, resolved);
+			return jdbcTemplate.update(sql, resolved);
 		}
 
 		@Override
@@ -319,44 +377,13 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 			var resolved = resolveArguments(arguments);
 			KeyHolder keyHolder = new GeneratedKeyHolder();
 			var pss = new PreparedStatementCreatorImpl(sql, resolved);
-			updateJdbcTemplate.update(pss, keyHolder);
+			jdbcTemplate.update(pss, keyHolder);
 			Number key = keyHolder.getKey();
 			if (key == null) {
 				return Optional.empty();
 			}
 			return Optional.of(key.intValue());
 		}
-
-	}
-
-	private Object[] resolveArguments(Object[] arguments) {
-		Object[] resolved = new Object[arguments.length];
-		for (int i = 0; i < arguments.length; i++) {
-			Object arg = arguments[i];
-			// The classes we augment the DB driver with
-			if (arg instanceof Optional) {
-				// Unpack one layer of Optional only; absent = NULL
-				arg = ((Optional<?>) arg).orElse(null);
-			}
-			if (arg instanceof Instant) {
-				arg = ((Instant) arg).getEpochSecond();
-			} else if (arg instanceof Duration) {
-				arg = ((Duration) arg).getSeconds();
-			} else if (arg instanceof Enum) {
-				arg = ((Enum<?>) arg).ordinal();
-			} else if (arg != null && arg instanceof Serializable
-					&& !(arg instanceof String || arg instanceof Number
-							|| arg instanceof Boolean
-							|| arg instanceof byte[])) {
-				try {
-					arg = serialize(arg);
-				} catch (IOException e) {
-					arg = null;
-				}
-			}
-			resolved[i] = arg;
-		}
-		return resolved;
 	}
 
 	/**
@@ -418,5 +445,4 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		}
 		return names;
 	}
-
 }
