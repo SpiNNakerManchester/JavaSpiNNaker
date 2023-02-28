@@ -745,6 +745,8 @@ class DMLTest extends SimpleDBTestBase {
 			c.transaction(() -> {
 				assertEquals(List.of("grace_period", "time_now"),
 						q.getParameters());
+				assertEquals(List.of("alloc_id", "job_id", "board_id",
+						"alloc_timestamp"), q.getColumns());
 				assertEquals(empty(), q.call1((row) -> 1, A_LONG_TIME, 0));
 			});
 		}
@@ -757,6 +759,13 @@ class DMLTest extends SimpleDBTestBase {
 			c.transaction(() -> {
 				assertEquals(List.of("grace_period", "time_now"),
 						q.getParameters());
+				assertEquals(List.of("job_id", "machine_id", "owner",
+						"create_timestamp", "width", "height", "depth",
+						"allocated_root", "keepalive_interval",
+						"keepalive_host", "death_reason", "death_timestamp",
+						"original_request", "allocation_timestamp",
+						"allocation_size", "machine_name", "user_name",
+						"group_id", "group_name"), q.getColumns());
 				assertEquals(empty(), q.call1((row) -> 1, A_LONG_TIME, 0));
 			});
 		}
