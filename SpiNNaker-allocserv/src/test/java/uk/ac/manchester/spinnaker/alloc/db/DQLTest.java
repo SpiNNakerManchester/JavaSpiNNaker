@@ -121,22 +121,23 @@ class DQLTest extends SimpleDBTestBase {
 				assertEquals(List.of("machine_id"), q.getParameters());
 				assertEquals(
 						List.of("board_id", "report_id", "reported_issue",
-								"reporter_name", "report_timestamp"),
+								"report_timestamp", "reporter_name"),
 						q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, NO_MACHINE));
 			});
 		}
 	}
 
-	private static final List<String> MINI_JOB_COLUMNS =
-			List.of("job_id", "machine_id", "job_state", "keepalive_timestamp");
+	// private static final List<String> MINI_JOB_COLUMNS =
+	//		List.of("job_id", "machine_id", "job_state", "keepalive_timestamp");
 
 	@Test
 	void getJobIds() {
 		try (var q = c.query(GET_JOB_IDS)) {
 			c.transaction(() -> {
 				assertEquals(List.of("limit", "offset"), q.getParameters());
-				assertEquals(MINI_JOB_COLUMNS, q.getColumns());
+				// Disabled: https://bugs.mysql.com/bug.php?id=103437
+				// assertEquals(MINI_JOB_COLUMNS, q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, 0, 0));
 			});
 		}
@@ -147,7 +148,8 @@ class DQLTest extends SimpleDBTestBase {
 		try (var q = c.query(GET_LIVE_JOB_IDS)) {
 			c.transaction(() -> {
 				assertEquals(List.of("limit", "offset"), q.getParameters());
-				assertEquals(MINI_JOB_COLUMNS, q.getColumns());
+				// Disabled: https://bugs.mysql.com/bug.php?id=103437
+				// assertEquals(MINI_JOB_COLUMNS, q.getColumns());
 				q.call(Row.integer("job_id"), 0, 0);
 				// Must not throw
 			});
@@ -288,7 +290,7 @@ class DQLTest extends SimpleDBTestBase {
 				assertEquals(List.of("board_id"), q.getParameters());
 				assertEquals(
 						List.of("board_id", "report_id", "reported_issue",
-								"reporter_name", "report_timestamp"),
+								"report_timestamp", "reporter_name"),
 						q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, NO_BOARD));
 			});
@@ -594,6 +596,11 @@ class DQLTest extends SimpleDBTestBase {
 			"cabinet", "frame", "board_num", "chip_x", "chip_y", "board_chip_x",
 			"board_chip_y", "job_root_chip_x", "job_root_chip_y");
 
+	private static final List<String> LOCATED_BOARD_2 = List.of("board_id",
+			"address", "x", "y", "z", "job_id", "machine_name", "cabinet",
+			"frame", "board_num", "chip_x", "chip_y", "board_chip_x",
+			"board_chip_y", "job_root_chip_x", "job_root_chip_y");
+
 	@Test
 	void findBoardByGlobalChip() {
 		try (var q = c.query(findBoardByGlobalChip)) {
@@ -613,7 +620,7 @@ class DQLTest extends SimpleDBTestBase {
 			c.transaction(() -> {
 				assertEquals(List.of("job_id", "board_id", "x", "y"),
 						q.getParameters());
-				assertEquals(LOCATED_BOARD, q.getColumns());
+				assertEquals(LOCATED_BOARD_2, q.getColumns());
 				assertEquals(empty(),
 						q.call1(Row::toString, NO_JOB, NO_BOARD, -1, -1));
 			});
@@ -684,13 +691,17 @@ class DQLTest extends SimpleDBTestBase {
 		}
 	}
 
+	private static final List<String> FULL_BOARD_COLUMNS = List.of("board_id",
+			"x", "y", "z", "cabinet", "frame", "board_num", "address",
+			"machine_name", "bmp_serial_id", "physical_serial_id");
+
 	@Test
 	void findBoardByNameAndXYZ() {
 		try (var q = c.query(FIND_BOARD_BY_NAME_AND_XYZ)) {
 			c.transaction(() -> {
 				assertEquals(List.of("machine_name", "x", "y", "z"),
 						q.getParameters());
-				assertEquals(BOARD_COLUMNS, q.getColumns());
+				assertEquals(FULL_BOARD_COLUMNS, q.getColumns());
 				assertEquals(empty(),
 						q.call1(Row::toString, NO_NAME, -1, -1, -1));
 			});
@@ -702,7 +713,7 @@ class DQLTest extends SimpleDBTestBase {
 		try (var q = c.query(FIND_BOARD_BY_ID)) {
 			c.transaction(() -> {
 				assertEquals(List.of("board_id"), q.getParameters());
-				assertEquals(BOARD_COLUMNS, q.getColumns());
+				assertEquals(FULL_BOARD_COLUMNS, q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, NO_BOARD));
 			});
 		}
@@ -715,7 +726,7 @@ class DQLTest extends SimpleDBTestBase {
 				assertEquals(
 						List.of("machine_name", "cabinet", "frame", "board"),
 						q.getParameters());
-				assertEquals(BOARD_COLUMNS, q.getColumns());
+				assertEquals(FULL_BOARD_COLUMNS, q.getColumns());
 				assertEquals(empty(),
 						q.call1(Row::toString, NO_NAME, -1, -1, -1));
 			});
@@ -728,7 +739,7 @@ class DQLTest extends SimpleDBTestBase {
 			c.transaction(() -> {
 				assertEquals(List.of("machine_name", "address"),
 						q.getParameters());
-				assertEquals(BOARD_COLUMNS, q.getColumns());
+				assertEquals(FULL_BOARD_COLUMNS, q.getColumns());
 				assertEquals(empty(),
 						q.call1(Row::toString, NO_NAME, "256.256.256.256"));
 			});

@@ -565,8 +565,8 @@ public abstract class SQLQueries {
 	@ResultColumn("board_id")
 	@ResultColumn("report_id")
 	@ResultColumn("reported_issue")
-	@ResultColumn("reporter_name")
 	@ResultColumn("report_timestamp")
+	@ResultColumn("reporter_name")
 	protected static final String GET_MACHINE_REPORTS =
 			"SELECT board_id, report_id, reported_issue, report_timestamp, "
 					+ "user_name AS reporter_name "
@@ -584,8 +584,8 @@ public abstract class SQLQueries {
 	@ResultColumn("board_id")
 	@ResultColumn("report_id")
 	@ResultColumn("reported_issue")
-	@ResultColumn("reporter_name")
 	@ResultColumn("report_timestamp")
+	@ResultColumn("reporter_name")
 	protected static final String GET_BOARD_REPORTS =
 			"SELECT board_id, report_id, reported_issue, report_timestamp, "
 					+ "user_name AS reporter_name "
