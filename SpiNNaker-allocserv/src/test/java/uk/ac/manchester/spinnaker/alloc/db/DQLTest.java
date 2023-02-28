@@ -49,9 +49,53 @@ import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 @TestInstance(PER_CLASS)
 @ActiveProfiles("unittest")
 class DQLTest extends SimpleDBTestBase {
+	private static final List<String> BASIC_USER_COLUMNS =
+			List.of("user_id", "user_name", "openid_subject");
+
+	/** Columns to inflate a BoardCoords. */
+	private static final List<String> BOARD_COLUMNS = List.of("board_id", "x",
+			"y", "z", "cabinet", "frame", "board_num", "address");
+
+	private static final List<String> FULL_BOARD_COLUMNS = List.of("board_id",
+			"x", "y", "z", "cabinet", "frame", "board_num", "address",
+			"machine_name", "bmp_serial_id", "physical_serial_id");
+
+	private static final List<String> LOCATED_BOARD = List.of("board_id",
+			"bmp_id", "job_id", "machine_name", "address", "x", "y", "z",
+			"cabinet", "frame", "board_num", "chip_x", "chip_y", "board_chip_x",
+			"board_chip_y", "job_root_chip_x", "job_root_chip_y");
+
+	private static final List<String> LOCATED_BOARD_2 = List.of("board_id",
+			"address", "x", "y", "z", "job_id", "machine_name", "cabinet",
+			"frame", "board_num", "chip_x", "chip_y", "board_chip_x",
+			"board_chip_y", "job_root_chip_x", "job_root_chip_y");
+
 	/** The columns to inflate a MachineImpl. */
 	private static final List<String> MACHINE_COLUMNS = List.of("machine_id",
 			"machine_name", "width", "height", "in_service");
+
+	/** Columns to inflate a JobImpl. */
+	private static final List<String> JOB_COLUMNS = List.of("job_id",
+			"machine_id", "machine_name", "width", "height", "depth", "root_id",
+			"job_state", "keepalive_timestamp", "keepalive_host",
+			"keepalive_interval", "create_timestamp", "death_reason",
+			"death_timestamp", "original_request", "owner");
+
+	// Not currently used due to MySQL connector bug
+	@SuppressWarnings("unused")
+	private static final List<String> MINI_JOB_COLUMNS =
+			List.of("job_id", "machine_id", "job_state", "keepalive_timestamp");
+
+	private static final List<String> USER_COLUMNS =
+			List.of("user_id", "user_name", "has_password", "trust_level",
+					"locked", "disabled", "last_successful_login_timestamp",
+					"last_fail_timestamp", "openid_subject", "is_internal");
+
+	private static final List<String> GROUP_COLUMNS =
+			List.of("group_id", "group_name", "quota", "group_type");
+
+	private static final List<String> MEMBER_COLUMNS = List.of("membership_id",
+			"user_id", "group_id", "user_name", "group_name");
 
 	@Test
 	void getAllMachines() {
@@ -128,9 +172,6 @@ class DQLTest extends SimpleDBTestBase {
 		}
 	}
 
-	// private static final List<String> MINI_JOB_COLUMNS =
-	//		List.of("job_id", "machine_id", "job_state", "keepalive_timestamp");
-
 	@Test
 	void getJobIds() {
 		try (var q = c.query(GET_JOB_IDS)) {
@@ -156,13 +197,6 @@ class DQLTest extends SimpleDBTestBase {
 		}
 	}
 
-	/** Columns to inflate a JobImpl. */
-	private static final List<String> JOB_COLUMNS = List.of("job_id",
-			"machine_id", "machine_name", "width", "height", "depth", "root_id",
-			"job_state", "keepalive_timestamp", "keepalive_host",
-			"keepalive_interval", "create_timestamp", "death_reason",
-			"death_timestamp", "original_request", "owner");
-
 	@Test
 	void getJob() {
 		try (var q = c.query(GET_JOB)) {
@@ -184,10 +218,6 @@ class DQLTest extends SimpleDBTestBase {
 			});
 		}
 	}
-
-	/** Columns to inflate a BoardCoords. */
-	private static final List<String> BOARD_COLUMNS = List.of("board_id", "x",
-			"y", "z", "cabinet", "frame", "board_num", "address");
 
 	@Test
 	void getJobBoardCoords() {
@@ -591,16 +621,6 @@ class DQLTest extends SimpleDBTestBase {
 		}
 	}
 
-	private static final List<String> LOCATED_BOARD = List.of("board_id",
-			"bmp_id", "job_id", "machine_name", "address", "x", "y", "z",
-			"cabinet", "frame", "board_num", "chip_x", "chip_y", "board_chip_x",
-			"board_chip_y", "job_root_chip_x", "job_root_chip_y");
-
-	private static final List<String> LOCATED_BOARD_2 = List.of("board_id",
-			"address", "x", "y", "z", "job_id", "machine_name", "cabinet",
-			"frame", "board_num", "chip_x", "chip_y", "board_chip_x",
-			"board_chip_y", "job_root_chip_x", "job_root_chip_y");
-
 	@Test
 	void findBoardByGlobalChip() {
 		try (var q = c.query(findBoardByGlobalChip)) {
@@ -691,10 +711,6 @@ class DQLTest extends SimpleDBTestBase {
 		}
 	}
 
-	private static final List<String> FULL_BOARD_COLUMNS = List.of("board_id",
-			"x", "y", "z", "cabinet", "frame", "board_num", "address",
-			"machine_name", "bmp_serial_id", "physical_serial_id");
-
 	@Test
 	void findBoardByNameAndXYZ() {
 		try (var q = c.query(FIND_BOARD_BY_NAME_AND_XYZ)) {
@@ -768,9 +784,6 @@ class DQLTest extends SimpleDBTestBase {
 		}
 	}
 
-	private static final List<String> GROUP_COLUMNS =
-			List.of("group_id", "group_name", "quota", "group_type");
-
 	@Test
 	void listAllGroups() {
 		try (var q = c.query(LIST_ALL_GROUPS)) {
@@ -828,9 +841,6 @@ class DQLTest extends SimpleDBTestBase {
 			});
 		}
 	}
-
-	private static final List<String> MEMBER_COLUMNS = List.of("membership_id",
-			"user_id", "group_id", "user_name", "group_name");
 
 	@Test
 	void getMembership() {
@@ -927,9 +937,6 @@ class DQLTest extends SimpleDBTestBase {
 		}
 	}
 
-	private static final List<String> BASIC_USER_COLUMNS =
-			List.of("user_id", "user_name", "openid_subject");
-
 	@Test
 	void listAllUsers() {
 		try (var q = c.query(LIST_ALL_USERS)) {
@@ -965,11 +972,6 @@ class DQLTest extends SimpleDBTestBase {
 			});
 		}
 	}
-
-	private static final List<String> USER_COLUMNS =
-			List.of("user_id", "user_name", "has_password", "trust_level",
-					"locked", "disabled", "last_successful_login_timestamp",
-					"last_fail_timestamp", "openid_subject", "is_internal");
 
 	@Test
 	void getUserDetails() {
