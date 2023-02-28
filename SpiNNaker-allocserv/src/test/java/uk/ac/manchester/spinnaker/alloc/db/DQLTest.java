@@ -511,9 +511,9 @@ class DQLTest extends SimpleDBTestBase {
 	void findExpiredJobs() {
 		try (var q = c.query(FIND_EXPIRED_JOBS)) {
 			c.transaction(() -> {
-				assertEquals(List.of("time_now"), q.getParameters());
+				assertEquals(List.of(), q.getParameters());
 				assertEquals(List.of("job_id"), q.getColumns());
-				assertEquals(empty(), q.call1(Row::toString, 0));
+				assertEquals(empty(), q.call1(Row::toString));
 			});
 		}
 	}
@@ -690,10 +690,9 @@ class DQLTest extends SimpleDBTestBase {
 	void getJobsWithChanges() {
 		try (var q = c.query(getJobsWithChanges)) {
 			c.transaction(() -> {
-				assertEquals(List.of("machine_id", "time_now"),
-						q.getParameters());
+				assertEquals(List.of("machine_id"), q.getParameters());
 				assertEquals(List.of("job_id"), q.getColumns());
-				assertEquals(empty(), q.call1(Row::toString, NO_MACHINE, 0));
+				assertEquals(empty(), q.call1(Row::toString, NO_MACHINE));
 			});
 		}
 	}

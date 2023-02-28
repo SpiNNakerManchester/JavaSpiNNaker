@@ -15,7 +15,7 @@
 WITH
 	-- Arguments and current timestamp
 	args(machine_id, now) AS (
-		SELECT :machine_id, :time_now),
+		SELECT :machine_id, UNIX_TIMESTAMP()),
 	-- The machine on which we are allocating
 	m AS (SELECT machines.* FROM machines JOIN args USING (machine_id) LIMIT 1),
 	-- The set of boards that are "busy" settling after changing state

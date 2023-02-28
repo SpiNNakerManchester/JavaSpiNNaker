@@ -71,12 +71,11 @@ class DMLTest extends SimpleDBTestBase {
 			c.transaction(() -> {
 				assertEquals(
 						List.of("machine_id", "user_id", "group_id",
-								"keepalive_interval", "original_request",
-								"keepalive_timestamp", "create_timestamp"),
+								"keepalive_interval", "original_request"),
 						u.getParameters());
 				// No such machine
 				assertThrowsFK(() -> u.call(NO_MACHINE, NO_USER, NO_GROUP, d,
-						new byte[0], 0, 0));
+						new byte[0]));
 			});
 		}
 	}
@@ -143,9 +142,9 @@ class DMLTest extends SimpleDBTestBase {
 		assumeWritable(c);
 		try (var u = c.update(UPDATE_KEEPALIVE)) {
 			c.transaction(() -> {
-				assertEquals(List.of("keepalive_timestamp", "keepalive_host",
-						"job_id"), u.getParameters());
-				assertEquals(0, u.call(0, NO_NAME, NO_JOB));
+				assertEquals(List.of("keepalive_host", "job_id"),
+						u.getParameters());
+				assertEquals(0, u.call(NO_NAME, NO_JOB));
 			});
 		}
 	}
@@ -155,9 +154,9 @@ class DMLTest extends SimpleDBTestBase {
 		assumeWritable(c);
 		try (var u = c.update(DESTROY_JOB)) {
 			c.transaction(() -> {
-				assertEquals(List.of("death_reason", "timestamp", "job_id"),
+				assertEquals(List.of("death_reason", "job_id"),
 						u.getParameters());
-				assertEquals(0, u.call("anything", 0, NO_JOB));
+				assertEquals(0, u.call("anything", NO_JOB));
 			});
 		}
 	}
@@ -178,9 +177,10 @@ class DMLTest extends SimpleDBTestBase {
 		assumeWritable(c);
 		try (var u = c.update(ALLOCATE_BOARDS_JOB)) {
 			c.transaction(() -> {
-				assertEquals(List.of("width", "height", "depth", "board_id",
-						"num_boards", "time_now", "allocated_board_id",
-						"job_id"), u.getParameters());
+				assertEquals(
+						List.of("width", "height", "depth", "board_id",
+								"num_boards", "allocated_board_id", "job_id"),
+						u.getParameters());
 				assertEquals(0, u.call(-1, -1, -1, NO_BOARD, 0, 0, NO_BOARD,
 						NO_JOB));
 			});
@@ -226,9 +226,9 @@ class DMLTest extends SimpleDBTestBase {
 		assumeWritable(c);
 		try (var u = c.update(SET_STATE_DESTROYED)) {
 			c.transaction(() -> {
-				assertEquals(List.of("num_pending", "time_now", "job_id"),
+				assertEquals(List.of("num_pending", "job_id"),
 						u.getParameters());
-				assertEquals(0, u.call(0, 0, NO_JOB));
+				assertEquals(0, u.call(0, NO_JOB));
 			});
 		}
 	}
@@ -301,9 +301,8 @@ class DMLTest extends SimpleDBTestBase {
 		assumeWritable(c);
 		try (var u = c.update(SET_BOARD_POWER_ON)) {
 			c.transaction(() -> {
-				assertEquals(List.of("time_now", "board_id"),
-						u.getParameters());
-				assertEquals(0, u.call(0, NO_BOARD));
+				assertEquals(List.of("board_id"), u.getParameters());
+				assertEquals(0, u.call(NO_BOARD));
 			});
 		}
 	}
@@ -313,9 +312,8 @@ class DMLTest extends SimpleDBTestBase {
 		assumeWritable(c);
 		try (var u = c.update(SET_BOARD_POWER_OFF)) {
 			c.transaction(() -> {
-				assertEquals(List.of("time_now", "board_id"),
-						u.getParameters());
-				assertEquals(0, u.call(0, NO_BOARD));
+				assertEquals(List.of("board_id"), u.getParameters());
+				assertEquals(0, u.call(NO_BOARD));
 			});
 		}
 	}
@@ -487,10 +485,9 @@ class DMLTest extends SimpleDBTestBase {
 		assumeWritable(c);
 		try (var u = c.update(MARK_LOGIN_SUCCESS)) {
 			c.transaction(() -> {
-				assertEquals(
-						List.of("login_timestamp", "openid_subject", "user_id"),
+				assertEquals(List.of("openid_subject", "user_id"),
 						u.getParameters());
-				assertEquals(0, u.call(0, NO_NAME, NO_USER));
+				assertEquals(0, u.call(NO_NAME, NO_USER));
 			});
 		}
 	}
@@ -500,10 +497,9 @@ class DMLTest extends SimpleDBTestBase {
 		assumeWritable(c);
 		try (var u = c.update(MARK_LOGIN_FAILURE)) {
 			c.transaction(() -> {
-				assertEquals(
-						List.of("login_timestamp", "failure_limit", "user_id"),
+				assertEquals(List.of("failure_limit", "user_id"),
 						u.getParameters());
-				assertEquals(0, u.call(0, 0, NO_USER));
+				assertEquals(0, u.call(0, NO_USER));
 			});
 		}
 	}
@@ -513,9 +509,8 @@ class DMLTest extends SimpleDBTestBase {
 		assumeWritable(c);
 		try (var u = c.update(UNLOCK_LOCKED_USERS)) {
 			c.transaction(() -> {
-				assertEquals(List.of("lock_interval", "timestamp_now"),
-						u.getParameters());
-				assertEquals(0, u.call(Duration.ofDays(1000), 0));
+				assertEquals(List.of("lock_interval"), u.getParameters());
+				assertEquals(0, u.call(Duration.ofDays(1000)));
 			});
 		}
 	}
@@ -708,10 +703,10 @@ class DMLTest extends SimpleDBTestBase {
 		assumeWritable(c);
 		try (var u = c.update(INSERT_BOARD_REPORT)) {
 			c.transaction(() -> {
-				assertEquals(List.of("board_id", "job_id", "issue", "user_id",
-						"time_now"), u.getParameters());
+				assertEquals(List.of("board_id", "job_id", "issue", "user_id"),
+						u.getParameters());
 				assertThrowsFK(
-						() -> u.call(NO_BOARD, NO_JOB, NO_NAME, NO_USER, 0));
+						() -> u.call(NO_BOARD, NO_JOB, NO_NAME, NO_USER));
 			});
 		}
 	}
@@ -743,11 +738,10 @@ class DMLTest extends SimpleDBTestBase {
 		assumeTrue(db.isHistoricalDBAvailable());
 		try (var q = c.query(READ_HISTORICAL_ALLOCS)) {
 			c.transaction(() -> {
-				assertEquals(List.of("grace_period", "time_now"),
-						q.getParameters());
+				assertEquals(List.of("grace_period"), q.getParameters());
 				assertEquals(List.of("alloc_id", "job_id", "board_id",
 						"alloc_timestamp"), q.getColumns());
-				assertEquals(empty(), q.call1((row) -> 1, A_LONG_TIME, 0));
+				assertEquals(empty(), q.call1(Row::toString, A_LONG_TIME));
 			});
 		}
 	}
@@ -757,8 +751,7 @@ class DMLTest extends SimpleDBTestBase {
 		assumeTrue(db.isHistoricalDBAvailable());
 		try (var q = c.query(READ_HISTORICAL_JOBS)) {
 			c.transaction(() -> {
-				assertEquals(List.of("grace_period", "time_now"),
-						q.getParameters());
+				assertEquals(List.of("grace_period"), q.getParameters());
 				assertEquals(List.of("job_id", "machine_id", "owner",
 						"create_timestamp", "width", "height", "depth",
 						"allocated_root", "keepalive_interval",
@@ -766,7 +759,7 @@ class DMLTest extends SimpleDBTestBase {
 						"original_request", "allocation_timestamp",
 						"allocation_size", "machine_name", "user_name",
 						"group_id", "group_name"), q.getColumns());
-				assertEquals(empty(), q.call1((row) -> 1, A_LONG_TIME, 0));
+				assertEquals(empty(), q.call1(Row::toString, A_LONG_TIME));
 			});
 		}
 	}
@@ -986,10 +979,9 @@ class DMLTest extends SimpleDBTestBase {
 		assumeWritable(c);
 		try (var u = c.update(MARK_BOARD_BLACKLIST_CHANGED)) {
 			c.transaction(() -> {
-				assertEquals(List.of("timestamp_now", "board_id"),
-						u.getParameters());
+				assertEquals(List.of("board_id"), u.getParameters());
 				// No such board, so no delete
-				assertEquals(0, u.call(0, NO_BOARD));
+				assertEquals(0, u.call(NO_BOARD));
 			});
 		}
 	}
@@ -999,10 +991,9 @@ class DMLTest extends SimpleDBTestBase {
 		assumeWritable(c);
 		try (var u = c.update(MARK_BOARD_BLACKLIST_SYNCHED)) {
 			c.transaction(() -> {
-				assertEquals(List.of("timestamp_now", "board_id"),
-						u.getParameters());
+				assertEquals(List.of("board_id"), u.getParameters());
 				// No such board, so no delete
-				assertEquals(0, u.call(0, NO_BOARD));
+				assertEquals(0, u.call(NO_BOARD));
 			});
 		}
 	}

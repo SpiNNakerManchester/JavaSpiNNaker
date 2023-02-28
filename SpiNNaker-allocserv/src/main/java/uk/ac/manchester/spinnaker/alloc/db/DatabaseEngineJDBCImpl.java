@@ -20,6 +20,7 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.jdbc.core.namedparam.NamedParameterUtils.buildSqlParameterList;
 import static org.springframework.jdbc.core.namedparam.NamedParameterUtils.parseSqlStatement;
+import static org.springframework.jdbc.core.namedparam.NamedParameterUtils.parseSqlStatementIntoString;
 import static uk.ac.manchester.spinnaker.alloc.IOUtils.serialize;
 
 import java.io.IOException;
@@ -47,11 +48,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterUtils;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -106,8 +106,8 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 	}
 
 	private void runSQLFile(Resource sqlFile, JdbcTemplate template) {
-		String sql = readSQL(sqlFile);
-		String[] lines = sql.split("\n");
+		var sql = readSQL(sqlFile);
+		var lines = sql.split("\n");
 		int i = 0;
 		while (i < lines.length) {
 			// Find the next statement start
@@ -119,10 +119,10 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 			i++;
 
 			// Build a statement until it ends
-			StringBuilder stmt = new StringBuilder();
+			var stmt = new StringBuilder();
 			while (i < lines.length && !lines[i].startsWith("-- STMT")
 					&& !lines[i].startsWith("-- IGNORE")) {
-				String line = lines[i].trim();
+				var line = lines[i].trim();
 				if (!line.startsWith("--") && !line.isEmpty()) {
 					log.trace("DDL statement line {}", line);
 					stmt.append(line);
@@ -131,7 +131,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 				i++;
 			}
 			if (stmt.length() != 0) {
-				String statement = stmt.toString();
+				var statement = stmt.toString();
 				log.debug("Executing DDL Statement: {}", statement);
 				template.execute(statement);
 			}
@@ -265,7 +265,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 		StatementImpl(String sql, JdbcTemplate jdbcTemplate) {
 			this.originalSql = sql;
-			this.sql = NamedParameterUtils.parseSqlStatementIntoString(sql);
+			this.sql = parseSqlStatementIntoString(sql);
 			this.jdbcTemplate = jdbcTemplate;
 		}
 
@@ -275,16 +275,16 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		}
 
 		@Override
-		public List<String> getParameters() {
+		public final List<String> getParameters() {
 			return buildSqlParameterList(parseSqlStatement(originalSql),
 					new EmptySqlParameterSource()).stream()
-					.map(p -> p.getName()).collect(toUnmodifiableList());
+					.map(SqlParameter::getName).collect(toUnmodifiableList());
 		}
 
-		Object[] resolveArguments(Object[] arguments) {
-			Object[] resolved = new Object[arguments.length];
+		final Object[] resolveArguments(Object[] arguments) {
+			var resolved = new Object[arguments.length];
 			for (int i = 0; i < arguments.length; i++) {
-				Object arg = arguments[i];
+				var arg = arguments[i];
 				// The classes we augment the DB driver with
 				if (arg instanceof Optional) {
 					// Unpack one layer of Optional only; absent = NULL
@@ -321,7 +321,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		public <T> List<T> call(RowMapper<T> mapper, Object... arguments) {
 			var resolved = resolveArguments(arguments);
 			return jdbcTemplate.query(sql, (results) -> {
-				List<T> values = new ArrayList<T>();
+				var values = new ArrayList<T>();
 				while (results.next()) {
 					values.add(mapper.mapRow(new Row(results)));
 				}
@@ -369,10 +369,10 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		@Override
 		public Optional<Integer> key(Object... arguments) {
 			var resolved = resolveArguments(arguments);
-			KeyHolder keyHolder = new GeneratedKeyHolder();
+			var keyHolder = new GeneratedKeyHolder();
 			var pss = new PreparedStatementCreatorImpl(sql, resolved);
 			jdbcTemplate.update(pss, keyHolder);
-			Number key = keyHolder.getKey();
+			var key = keyHolder.getKey();
 			if (key == null) {
 				return Optional.empty();
 			}

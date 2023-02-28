@@ -174,9 +174,10 @@ public class UserControl extends DatabaseAwareBean {
 	}
 
 	private final class UpdatePassSQL extends UserCheckSQL {
-		private Query getPasswordedUser = conn.query(GET_LOCAL_USER_DETAILS);
+		private final Query getPasswordedUser =
+				conn.query(GET_LOCAL_USER_DETAILS);
 
-		private Update setPassword = conn.update(SET_USER_PASS);
+		private final Update setPassword = conn.update(SET_USER_PASS);
 
 		@Override
 		public void close() {

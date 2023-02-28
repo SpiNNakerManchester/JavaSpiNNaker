@@ -32,7 +32,6 @@ import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 import static uk.ac.manchester.spinnaker.utils.OptionalUtils.ifElse;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -568,7 +567,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 *            Who logged in?
 		 */
 		void noteLoginSuccessForUser(int userId) {
-			if (loginSuccess.call(Instant.now(), null, userId) != 1) {
+			if (loginSuccess.call(null, userId) != 1) {
 				log.warn("failed to note success for user {}", userId);
 			}
 		}
@@ -583,7 +582,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 *            What is their OpenID {@code sub} (subject) claim?
 		 */
 		void noteLoginSuccessForUser(int userId, String subject) {
-			if (loginSuccess.call(Instant.now(), subject, userId) != 1) {
+			if (loginSuccess.call(subject, userId) != 1) {
 				log.warn("failed to note success for user {}", userId);
 			}
 		}
@@ -599,12 +598,12 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 *            gets a temporary lock applied.
 		 */
 		void noteLoginFailureForUser(int userId, String username) {
-			loginFailure.call(Instant.now(), authProps.getMaxLoginFailures(),
-					userId);
+			loginFailure.call(authProps.getMaxLoginFailures(), userId);
+			// TODO check if that locked; MySQL doesn't have RETURNING clauses
 		}
 
 		void unlock() {
-			unlock.call(authProps.getAccountLockDuration(), Instant.now());
+			unlock.call(authProps.getAccountLockDuration());
 		}
 	}
 
