@@ -181,8 +181,8 @@ class DMLTest extends SimpleDBTestBase {
 						List.of("width", "height", "depth", "board_id",
 								"num_boards", "allocated_board_id", "job_id"),
 						u.getParameters());
-				assertEquals(0, u.call(-1, -1, -1, NO_BOARD, 0, 0, NO_BOARD,
-						NO_JOB));
+				assertEquals(0,
+						u.call(-1, -1, -1, NO_BOARD, 0, NO_BOARD, NO_JOB));
 			});
 		}
 	}
