@@ -62,8 +62,6 @@ import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addR
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addUrl;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addUser;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addUserList;
-import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
-import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.COLLABRATORY;
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.INTERNAL;
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.ORGANISATION;
@@ -102,6 +100,7 @@ import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 import uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
+import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.MemberRecord;
@@ -142,12 +141,24 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Autowired
 	private QuotaManager quotaManager;
 
+	private class MachineName {
+		String name;
+
+		boolean inService;
+
+		MachineName(Row row) {
+			name = row.getString("machine_name");
+			inService = row.getBoolean("in_service");
+		}
+	}
+
 	private Map<String, Boolean> getMachineNames(boolean allowOutOfService) {
 		try (var conn = getConnection();
 				var listMachines = conn.query(LIST_MACHINE_NAMES)) {
 			return conn.transaction(false,
-					() -> listMachines.call(allowOutOfService)
-							.toMap(string("machine_name"), bool("in_service")));
+					() -> Row.stream(listMachines.call(MachineName::new,
+							allowOutOfService))
+					.toMap(m -> m.name, m -> m.inService));
 		} catch (DataAccessException e) {
 			log.warn("problem when listing machines", e);
 			return Map.of();

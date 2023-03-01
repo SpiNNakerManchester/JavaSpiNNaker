@@ -69,7 +69,8 @@ class TestTransceiver {
 		var connections = new ArrayList<Connection>();
 
 		boardConfig.setUpRemoteBoard();
-		connections.add(new SCPConnection(BOOT_CHIP, boardConfig.remotehost));
+		connections.add(new SCPConnection(BOOT_CHIP, null, null,
+				boardConfig.remotehost));
 
 		try (var txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
@@ -82,7 +83,8 @@ class TestTransceiver {
 		var connections = new ArrayList<Connection>();
 
 		boardConfig.setUpRemoteBoard();
-		connections.add(new SCPConnection(BOOT_CHIP, boardConfig.remotehost));
+		connections.add(new SCPConnection(BOOT_CHIP, null, null,
+				boardConfig.remotehost));
 
 		try (var txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
@@ -95,10 +97,12 @@ class TestTransceiver {
 		var connections = new ArrayList<Connection>();
 
 		boardConfig.setUpRemoteBoard();
-		connections.add(new SCPConnection(BOOT_CHIP, boardConfig.remotehost));
+		connections.add(new SCPConnection(BOOT_CHIP, null, null,
+				boardConfig.remotehost));
 
 		boardConfig.setUpLocalVirtualBoard();
-		connections.add(new SCPConnection(BOOT_CHIP, boardConfig.remotehost));
+		connections.add(new SCPConnection(BOOT_CHIP, null, null,
+				boardConfig.remotehost));
 
 		try (var txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
@@ -114,7 +118,8 @@ class TestTransceiver {
 		var connections = new ArrayList<Connection>();
 
 		boardConfig.setUpRemoteBoard();
-		connections.add(new SCPConnection(BOOT_CHIP, boardConfig.remotehost));
+		connections.add(new SCPConnection(BOOT_CHIP, null, null,
+				boardConfig.remotehost));
 
 		boardConfig.setUpLocalVirtualBoard();
 		connections.add(
@@ -163,7 +168,7 @@ class TestTransceiver {
 		assumeFalse(ping(noHost) == 0,
 				() -> "unreachable host (" + noHost + ") appears to be up");
 		var connections = new ArrayList<Connection>();
-		connections.add(new SCPConnection(BOOT_CHIP, noHost));
+		connections.add(new SCPConnection(BOOT_CHIP, null, null, noHost));
 		var orig = new EIEIOConnection(null, null);
 		connections.add(orig);
 
@@ -207,7 +212,7 @@ class TestTransceiver {
 
 		var connections = new ArrayList<Connection>();
 		var noHost = InetFactory.getByName(NOHOST);
-		connections.add(new SCPConnection(BOOT_CHIP, noHost));
+		connections.add(new SCPConnection(BOOT_CHIP, null, null, noHost));
 		try (var txrx = new MockWriteTransceiver(FIVE, connections)) {
 			// All chips
 			txrx.enableWatchDogTimer(true);

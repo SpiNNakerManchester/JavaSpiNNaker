@@ -17,7 +17,7 @@ message: If you use this software, please cite it as below.
 title: Java host code for working with SpiNNaker machines.
 repository-code: https://github.com/SpiNNakerManchester/JavaSpiNNaker
 version: 6.0.0
-url: http://spinnakermanchester.github.io/
+url: https://spinnakermanchester.github.io/
 license: GPL-3.0-or-later
 date-released: 2021-04-09
 identifier: JavaSpiNNaker

@@ -118,8 +118,8 @@ public abstract class SQLQueries {
 	@ResultColumn("num_jobs")
 	@SingleRowResult
 	protected static final String COUNT_MACHINE_THINGS = """
-			WITH args(m) AS (VALUES (:machine_id)),
-				b AS (SELECT * from boards,args WHERE machine_id = m),
+			WITH args(m) AS (SELECT :machine_id),
+				b AS (SELECT * from boards, args WHERE machine_id = m),
 				bc AS (SELECT COUNT(*) AS c FROM b),
 				iu AS (SELECT COUNT(*) AS c FROM b
 					WHERE allocated_job IS NOT NULL),
@@ -274,8 +274,7 @@ public abstract class SQLQueries {
 				original_request, keepalive_timestamp, create_timestamp,
 				job_state)
 			VALUES(:machine_id, :user_id, :group_id, :keepalive_interval,
-				:original_request, CAST(strftime('%s','now') AS INTEGER),
-				CAST(strftime('%s','now') AS INTEGER),
+				:original_request, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(),
 				1) -- job starts QUEUED
 			""";
 
@@ -424,7 +423,7 @@ public abstract class SQLQueries {
 				JOIN bmp USING (bmp_id)
 			WHERE boards.machine_id = :machine_id
 				AND board_num IS NOT NULL
-				AND functioning IS 1
+				AND functioning = 1
 			ORDER BY z ASC, x ASC, y ASC
 			""";
 
@@ -446,7 +445,7 @@ public abstract class SQLQueries {
 			FROM boards
 				JOIN bmp USING (bmp_id)
 			WHERE boards.machine_id = :machine_id
-				AND (board_num IS NULL OR functioning IS 0)
+				AND (board_num IS NULL OR functioning = 0)
 			ORDER BY z ASC, x ASC, y ASC
 			""";
 
@@ -557,7 +556,7 @@ public abstract class SQLQueries {
 	@Parameter("job_id")
 	protected static final String UPDATE_KEEPALIVE = """
 			UPDATE jobs
-			SET keepalive_timestamp = CAST(strftime('%s','now') AS INTEGER),
+			SET keepalive_timestamp = UNIX_TIMESTAMP(),
 				keepalive_host = :keepalive_host
 			WHERE job_id = :job_id AND job_state != 4 -- job is not DESTROYED
 			""";
@@ -567,7 +566,9 @@ public abstract class SQLQueries {
 	@Parameter("job_id")
 	protected static final String DESTROY_JOB = """
 			UPDATE jobs
-			SET job_state = 4, death_reason = :death_reason
+			SET job_state = 4, -- job becomes DESTROYED
+				death_reason = :death_reason,
+				death_timestamp = UNIX_TIMESTAMP()
 			WHERE job_id = :job_id AND job_state != 4 -- job is not DESTROYED
 			""";
 
@@ -579,7 +580,7 @@ public abstract class SQLQueries {
 	@ResultColumn("total_on")
 	@SingleRowResult
 	protected static final String GET_SUM_BOARDS_POWERED = """
-			SELECT sum(board_power) AS total_on
+			SELECT COALESCE(sum(board_power), 0) AS total_on
 			FROM boards
 			WHERE allocated_job = :job_id
 			""";
@@ -650,12 +651,13 @@ public abstract class SQLQueries {
 	@ResultColumn("board_id")
 	@ResultColumn("report_id")
 	@ResultColumn("reported_issue")
-	@ResultColumn("reporter_name")
 	@ResultColumn("report_timestamp")
+	@ResultColumn("reporter_name")
 	protected static final String GET_MACHINE_REPORTS = """
 			SELECT board_id, report_id, reported_issue, report_timestamp,
 				user_name AS reporter_name
-			FROM board_reports JOIN user_info ON reporter = user_id
+			FROM board_reports
+				JOIN user_info ON reporter = user_id
 				JOIN boards USING (board_id)
 			WHERE machine_id = :machine_id
 			ORDER BY board_id, report_id
@@ -670,8 +672,8 @@ public abstract class SQLQueries {
 	@ResultColumn("board_id")
 	@ResultColumn("report_id")
 	@ResultColumn("reported_issue")
-	@ResultColumn("reporter_name")
 	@ResultColumn("report_timestamp")
+	@ResultColumn("reporter_name")
 	protected static final String GET_BOARD_REPORTS = """
 			SELECT board_id, report_id, reported_issue, report_timestamp,
 				user_name AS reporter_name
@@ -712,12 +714,15 @@ public abstract class SQLQueries {
 	@Parameter("depth")
 	@Parameter("board_id")
 	@Parameter("num_boards")
+	@Parameter("allocated_board_id")
 	@Parameter("job_id")
 	protected static final String ALLOCATE_BOARDS_JOB = """
 			UPDATE jobs
 			SET width = :width, height = :height, depth = :depth,
 				num_pending = 0, root_id = :board_id,
-				allocation_size = :num_boards
+				allocation_size = :num_boards,
+				allocation_timestamp = UNIX_TIMESTAMP(),
+				allocated_root = :allocated_board_id
 			WHERE job_id = :job_id
 			""";
 
@@ -762,14 +767,24 @@ public abstract class SQLQueries {
 			""";
 
 	/**
-	 * Set the power state of a board. Related timestamps are updated by
-	 * trigger.
+	 * Set the power state of a board to ON.
 	 */
-	@Parameter("board_power")
 	@Parameter("board_id")
-	protected static final String SET_BOARD_POWER = """
+	protected static final String SET_BOARD_POWER_ON = """
 			UPDATE boards
-			SET board_power = :board_power
+			SET board_power = 1,
+				power_on_timestamp = UNIX_TIMESTAMP()
+			WHERE board_id = :board_id
+			""";
+
+	/**
+	 * Set the power state of a board to OFF.
+	 */
+	@Parameter("board_id")
+	protected static final String SET_BOARD_POWER_OFF = """
+			UPDATE boards
+			SET board_power = 0,
+				power_off_timestamp = UNIX_TIMESTAMP()
 			WHERE board_id = :board_id
 			""";
 
@@ -780,11 +795,9 @@ public abstract class SQLQueries {
 	 */
 	@ResultColumn("job_id")
 	protected static final String FIND_EXPIRED_JOBS = """
-			SELECT job_id
-			FROM jobs
+			SELECT job_id FROM jobs
 			WHERE job_state != 4 -- job is not DESTROYED
-				AND keepalive_timestamp + keepalive_interval <
-					CAST(strftime('%s','now') AS INTEGER)
+				AND keepalive_timestamp + keepalive_interval < UNIX_TIMESTAMP()
 			""";
 
 	/**
@@ -800,6 +813,20 @@ public abstract class SQLQueries {
 			SET job_state = :job_state, num_pending = :num_pending
 			WHERE job_id = :job_id
 			""";
+
+	/**
+	 * Set the state destroyed and number of pending changes for a job.
+	 *
+	 * @see AllocatorTask
+	 */
+	@Parameter("num_pending")
+	@Parameter("time_now")
+	@Parameter("job_id")
+	protected static final String SET_STATE_DESTROYED =
+			"UPDATE jobs SET job_state = 4, "
+					+ "num_pending = :num_pending, "
+					+ "death_timestamp = UNIX_TIMESTAMP() "
+					+ "WHERE job_id = :job_id";
 
 	/** Delete a request to allocate resources for a job. */
 	@Parameter("job_id")
@@ -949,7 +976,7 @@ public abstract class SQLQueries {
 	@Parameter("live")
 	@GeneratesID
 	protected static final String INSERT_LINK = """
-			INSERT OR IGNORE INTO links(
+			INSERT IGNORE INTO links(
 				board_1, dir_1, board_2, dir_2, live)
 			VALUES (:board_1, :dir_1, :board_2, :dir_2, :live)
 			""";
@@ -1184,12 +1211,12 @@ public abstract class SQLQueries {
 	@ResultColumn("user_id")
 	@SingleRowResult
 	protected static final String GET_USER_QUOTA = """
-			SELECT * FROM (
-				SELECT SUM(quota) AS quota_total, quotas.user_id
-				FROM quotas
-					JOIN user_info USING (user_id)
-				WHERE user_info.user_name = :user_name)
-			WHERE user_id IS NOT NULL
+			SELECT
+				SUM(quota) AS quota_total,
+				quotas.user_id
+			FROM quotas
+				JOIN user_info USING (user_id)
+			WHERE user_info.user_name = :user_name AND user_id IS NOT NULL
 			""";
 
 	/**
@@ -1201,8 +1228,7 @@ public abstract class SQLQueries {
 	@ResultColumn("quota")
 	@SingleRowResult
 	protected static final String GET_GROUP_QUOTA = """
-			SELECT quota
-			FROM groups
+			SELECT quota FROM user_groups
 			WHERE group_id = :group_id
 			LIMIT 1
 			""";
@@ -1216,7 +1242,7 @@ public abstract class SQLQueries {
 	@ResultColumn("current_usage")
 	@SingleRowResult
 	protected static final String GET_CURRENT_USAGE = """
-			SELECT SUM(usage) AS current_usage
+			SELECT COALESCE(SUM(quota_used), 0) AS current_usage
 			FROM jobs_usage
 			WHERE group_id = :group_id
 			""";
@@ -1227,13 +1253,14 @@ public abstract class SQLQueries {
 	 * @see QuotaManager
 	 */
 	@Parameter("job_id")
-	@ResultColumn("usage")
+	@ResultColumn("quota_used")
 	@ResultColumn("quota")
 	@SingleRowResult
 	protected static final String GET_JOB_USAGE_AND_QUOTA = """
-			SELECT [usage], quota FROM jobs_usage
-			WHERE :job_id = :job_id
-				AND [usage] IS NOT NULL AND quota IS NOT NULL
+			SELECT quota_used, quota FROM jobs_usage
+			WHERE job_id = :job_id
+				AND quota_used IS NOT NULL
+				AND quota IS NOT NULL
 			LIMIT 1
 			""";
 
@@ -1245,9 +1272,9 @@ public abstract class SQLQueries {
 	 */
 	@ResultColumn("job_id")
 	@ResultColumn("group_id")
-	@ResultColumn("usage")
+	@ResultColumn("quota_used")
 	protected static final String GET_CONSOLIDATION_TARGETS = """
-			SELECT job_id, group_id, [usage]
+			SELECT job_id, group_id, quota_used
 			FROM jobs_usage
 			WHERE complete AND quota IS NOT NULL
 			""";
@@ -1260,7 +1287,7 @@ public abstract class SQLQueries {
 	@Parameter("usage")
 	@Parameter("group_id")
 	protected static final String DECREMENT_QUOTA = """
-			UPDATE groups
+			UPDATE user_groups
 			SET quota = quota - :usage
 			WHERE group_id = :group_id AND quota IS NOT NULL
 			""";
@@ -1285,13 +1312,10 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("delta")
 	@Parameter("group_id")
-	@ResultColumn("group_name")
-	@ResultColumn("quota")
 	protected static final String ADJUST_QUOTA = """
-			UPDATE groups
-			SET quota = max(0, quota + :delta)
+			UPDATE user_groups
+			SET quota = GREATEST(0, quota + :delta)
 			WHERE group_id = :group_id AND quota IS NOT NULL
-			RETURNING group_name, quota
 			""";
 
 	/**
@@ -1409,11 +1433,12 @@ public abstract class SQLQueries {
 	@ResultColumn("group_id")
 	@SingleRowResult
 	protected static final String GET_GROUP_BY_NAME_AND_MEMBER = """
-			SELECT groups.group_id
-			FROM groups
+			SELECT user_groups.group_id
+			FROM user_groups
 				JOIN group_memberships USING (group_id)
 				JOIN user_info USING (user_id)
-			WHERE user_name = :user_name AND group_name = :group_name
+			WHERE user_name = :user_name
+				AND group_name = :group_name
 			LIMIT 1
 			""";
 
@@ -1426,12 +1451,13 @@ public abstract class SQLQueries {
 	@ResultColumn("group_id")
 	@ResultColumn("quota")
 	protected static final String GET_GROUPS_AND_QUOTAS_OF_USER = """
-			SELECT groups.group_id, COALESCE(groups.quota, 1) AS quota
+			SELECT user_groups.group_id, user_groups.quota
 			FROM group_memberships
 				JOIN user_info USING (user_id)
-				JOIN groups USING (group_id)
-			WHERE user_name = :user_name AND quota > 0
-			ORDER BY groups.quota DESC
+				JOIN user_groups USING (group_id)
+			WHERE user_name = :user_name
+				AND (quota > 0 OR quota IS NULL)
+			ORDER BY user_groups.quota DESC
 			""";
 
 	/**
@@ -1446,11 +1472,12 @@ public abstract class SQLQueries {
 	@ResultColumn("user_id")
 	@ResultColumn("user_name")
 	protected static final String GET_USERS_OF_GROUP = """
-			SELECT membership_id, groups.group_id, groups.group_name,
+			SELECT membership_id, user_groups.group_id,
+				user_groups.group_name,
 				user_info.user_id, user_info.user_name
 			FROM group_memberships
 				JOIN user_info USING (user_id)
-				JOIN groups USING (group_id)
+				JOIN user_groups USING (group_id)
 			WHERE group_id = :group_id
 			""";
 
@@ -1467,13 +1494,12 @@ public abstract class SQLQueries {
 	@ResultColumn("group_name")
 	@SingleRowResult
 	protected static final String GET_MEMBERSHIP = """
-			SELECT membership_id, user_info.user_id, groups.group_id,
+			SELECT membership_id, user_info.user_id, user_groups.group_id,
 				user_name, group_name
 			FROM group_memberships
 				JOIN user_info USING (user_id)
-				JOIN groups USING (group_id)
+				JOIN user_groups USING (group_id)
 			WHERE membership_id = :membership_id
-			LIMIT 1
 			""";
 
 	/**
@@ -1488,11 +1514,11 @@ public abstract class SQLQueries {
 	@ResultColumn("group_name")
 	@ResultColumn("user_name")
 	protected static final String GET_MEMBERSHIPS_OF_USER = """
-			SELECT membership_id, user_info.user_id, groups.group_id,
+			SELECT membership_id, user_info.user_id, user_groups.group_id,
 				user_name, group_name
 			FROM group_memberships
 				JOIN user_info USING (user_id)
-				JOIN groups USING (group_id)
+				JOIN user_groups USING (group_id)
 			WHERE group_memberships.user_id = :user_id
 			""";
 
@@ -1506,9 +1532,9 @@ public abstract class SQLQueries {
 	@Parameter("group_type")
 	@GeneratesID
 	protected static final String CREATE_GROUP = """
-			INSERT INTO groups(
+			INSERT INTO user_groups(
 				group_name, quota, group_type)
-			VALUES (:group_name, :quota, :group_type)
+			VALUES(:group_name, :quota, :group_type)
 			""";
 
 	/**
@@ -1520,9 +1546,9 @@ public abstract class SQLQueries {
 	@Parameter("quota")
 	@Parameter("group_type")
 	protected static final String CREATE_GROUP_IF_NOT_EXISTS = """
-			INSERT OR IGNORE INTO groups(
+			INSERT IGNORE INTO user_groups(
 				group_name, quota, group_type)
-			VALUES (:group_name, :quota, :group_type)
+			VALUES(:group_name, :quota, :group_type)
 			""";
 
 	/**
@@ -1534,9 +1560,8 @@ public abstract class SQLQueries {
 	@ResultColumn("group_name")
 	@SingleRowResult
 	protected static final String DELETE_GROUP = """
-			DELETE FROM groups WHERE group_id = :group_id
-			-- LIMIT 1 -- Not supported in Xerial driver build
-			RETURNING group_name
+			DELETE FROM user_groups
+			WHERE group_id = :group_id
 			""";
 
 	/**
@@ -1547,17 +1572,12 @@ public abstract class SQLQueries {
 	@Parameter("group_name")
 	@Parameter("quota")
 	@Parameter("group_id")
-	@ResultColumn("group_id")
-	@ResultColumn("group_name")
-	@ResultColumn("quota")
-	@ResultColumn("group_type")
 	@SingleRowResult
 	protected static final String UPDATE_GROUP = """
-			UPDATE groups
+			UPDATE user_groups
 			SET group_name = COALESCE(:group_name, group_name),
-				quota = :quota WHERE group_id = :group_id
-			-- LIMIT 1 -- Not supported in Xerial driver build
-			RETURNING group_id, group_name, quota, group_type
+				quota = :quota
+			WHERE group_id = :group_id
 			""";
 
 	/**
@@ -1593,7 +1613,7 @@ public abstract class SQLQueries {
 	 * @see LocalAuthProviderImpl
 	 */
 	protected static final String GROUP_SYNC_MAKE_TEMP_TABLE = """
-			CREATE TEMP TABLE IF NOT EXISTS usergroupids(
+			CREATE TEMPORARY TABLE usergroupids(
 				group_id INTEGER)
 			""";
 
@@ -1608,8 +1628,8 @@ public abstract class SQLQueries {
 	@Parameter("group_name")
 	@Parameter("group_type")
 	protected static final String GROUP_SYNC_INSERT_TEMP_ROW = """
-			INSERT INTO temp.usergroupids
-				SELECT group_id FROM groups
+			INSERT INTO usergroupids
+				SELECT group_id FROM user_groups
 				WHERE group_name = :group_name
 					AND group_type = :group_type
 			""";
@@ -1625,10 +1645,10 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("user_id")
 	protected static final String GROUP_SYNC_ADD_GROUPS = """
-			INSERT OR IGNORE INTO group_memberships(
+			INSERT IGNORE INTO group_memberships(
 				user_id, group_id)
 			SELECT :user_id AS user_id, group_id
-			FROM temp.usergroupids
+			FROM usergroupids
 			""";
 
 	/**
@@ -1644,21 +1664,18 @@ public abstract class SQLQueries {
 	protected static final String GROUP_SYNC_REMOVE_GROUPS = """
 			DELETE FROM group_memberships
 			WHERE user_id = :user_id AND group_id NOT IN (
-				SELECT group_id FROM temp.usergroupids)
+				SELECT group_id FROM usergroupids)
 			""";
 
 	/**
-	 * Step 5 of group synchronisation: drop the temporary table. Except we
-	 * don't because that doesn't work in a transaction; squelching the contents
-	 * works though (the table itself is dropped automatically when the
-	 * connection is dropped so we don't need to clean it up here). Should be
+	 * Step 5 of group synchronisation: drop the temporary table. Should be
 	 * performed in a transaction with the other group synch steps. <em>Requires
 	 * that {@link #GROUP_SYNC_MAKE_TEMP_TABLE} was run first.</em>
 	 *
 	 * @see LocalAuthProviderImpl
 	 */
 	protected static final String GROUP_SYNC_DROP_TEMP_TABLE = """
-			DELETE FROM temp.usergroupids
+			DROP TEMPORARY TABLE usergroupids
 			""";
 
 	/**
@@ -1704,8 +1721,7 @@ public abstract class SQLQueries {
 	@Parameter("user_id")
 	protected static final String MARK_LOGIN_SUCCESS = """
 			UPDATE user_info
-			SET last_successful_login_timestamp =
-					CAST(strftime('%s','now') AS INTEGER),
+			SET last_successful_login_timestamp = UNIX_TIMESTAMP(),
 				failure_count = 0, openid_subject = :openid_subject
 			WHERE user_id = :user_id
 			""";
@@ -1717,15 +1733,12 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("failure_limit")
 	@Parameter("user_id")
-	@ResultColumn("locked")
-	@SingleRowResult
 	protected static final String MARK_LOGIN_FAILURE = """
 			UPDATE user_info
 			SET failure_count = failure_count + 1,
-				last_fail_timestamp = CAST(strftime('%s','now') AS INTEGER),
+				last_fail_timestamp = UNIX_TIMESTAMP(),
 				locked = (failure_count + 1 >= :failure_limit)
 			WHERE user_id = :user_id
-			RETURNING locked
 			""";
 
 	/**
@@ -1734,14 +1747,11 @@ public abstract class SQLQueries {
 	 * @see LocalAuthProviderImpl
 	 */
 	@Parameter("lock_interval")
-	@ResultColumn("user_name")
 	protected static final String UNLOCK_LOCKED_USERS = """
 			UPDATE user_info
 			SET failure_count = 0, last_fail_timestamp = 0, locked = 0
-			WHERE last_fail_timestamp + :lock_interval <
-					CAST(strftime('%s','now') AS INTEGER)
+			WHERE last_fail_timestamp + :lock_interval < UNIX_TIMESTAMP()
 				AND locked
-			RETURNING user_name
 			""";
 
 	/**
@@ -1880,11 +1890,11 @@ public abstract class SQLQueries {
 	@Parameter("openid_subject")
 	@GeneratesID
 	protected static final String CREATE_USER = """
-			INSERT OR IGNORE INTO user_info(
+			INSERT IGNORE INTO user_info(
 				user_name, encrypted_password, trust_level, disabled,
 				openid_subject)
-			VALUES (:user_name, :encoded_password, :trust_level,
-				:disabled, :openid_subject)
+			VALUES(:user_name, :encoded_password, :trust_level, :disabled,
+				:openid_subject)
 			""";
 
 	/**
@@ -1898,7 +1908,7 @@ public abstract class SQLQueries {
 	@ResultColumn("group_type")
 	protected static final String LIST_ALL_GROUPS = """
 			SELECT group_id, group_name, quota, group_type
-			FROM groups
+			FROM user_groups
 			""";
 
 	/**
@@ -1913,7 +1923,7 @@ public abstract class SQLQueries {
 	@ResultColumn("group_type")
 	protected static final String LIST_ALL_GROUPS_OF_TYPE = """
 			SELECT group_id, group_name, quota, group_type
-			FROM groups
+			FROM user_groups
 			WHERE group_type = :type
 			""";
 
@@ -1930,7 +1940,7 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	protected static final String GET_GROUP_BY_ID = """
 			SELECT group_id, group_name, quota, group_type
-			FROM groups
+			FROM user_groups
 			WHERE group_id = :group_id
 			LIMIT 1
 			""";
@@ -1948,7 +1958,7 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	protected static final String GET_GROUP_BY_NAME = """
 			SELECT group_id, group_name, quota, group_type
-			FROM groups
+			FROM user_groups
 			WHERE group_name = :group_name
 			LIMIT 1
 			""";
@@ -1965,8 +1975,8 @@ public abstract class SQLQueries {
 	@GeneratesID
 	protected static final String INSERT_BOARD_REPORT = """
 			INSERT INTO board_reports(
-				board_id, job_id, reported_issue, reporter)
-			VALUES (:board_id, :job_id, :issue, :user_id)
+				board_id, job_id, reported_issue, reporter, report_timestamp)
+			VALUES(:board_id, :job_id, :issue, :user_id, UNIX_TIMESTAMP())
 			""";
 
 	/**
@@ -2061,7 +2071,7 @@ public abstract class SQLQueries {
 	@Parameter("board_id")
 	protected static final String MARK_BOARD_BLACKLIST_CHANGED = """
 			UPDATE boards
-			SET blacklist_set_timestamp = CAST(strftime('%s','now') AS INTEGER)
+			SET blacklist_set_timestamp = UNIX_TIMESTAMP()
 			WHERE board_id = :board_id
 			""";
 
@@ -2073,8 +2083,7 @@ public abstract class SQLQueries {
 	@Parameter("board_id")
 	protected static final String MARK_BOARD_BLACKLIST_SYNCHED = """
 			UPDATE boards
-			SET blacklist_sync_timestamp =
-					CAST(strftime('%s','now') AS INTEGER)
+			SET blacklist_sync_timestamp = UNIX_TIMESTAMP()
 			WHERE board_id = :board_id
 			""";
 
@@ -2106,12 +2115,11 @@ public abstract class SQLQueries {
 	@Parameter("x")
 	@Parameter("y")
 	protected static final String ADD_BLACKLISTED_CHIP = """
-			WITH args(board_id, x, y) AS (VALUES(:board_id, :x, :y)),
+			INSERT INTO blacklisted_chips(board_id, coord_id, notes)
+			WITH args(board_id, x, y) AS (SELECT :board_id, :x, :y),
 				m(model) AS (SELECT board_model FROM machines
 					JOIN boards USING (machine_id)
 					JOIN args USING (board_id))
-			INSERT INTO blacklisted_chips(
-				board_id, coord_id, notes)
 			SELECT args.board_id, coord_id, NULL
 			FROM board_model_coords
 				JOIN m USING (model)
@@ -2131,12 +2139,12 @@ public abstract class SQLQueries {
 	@Parameter("y")
 	@Parameter("p")
 	protected static final String ADD_BLACKLISTED_CORE = """
-			WITH args(board_id, x, y, p) AS (VALUES(:board_id, :x, :y, :p)),
+			INSERT INTO blacklisted_cores(
+				board_id, coord_id, physical_core, notes)
+			WITH args(board_id, x, y, p) AS (SELECT :board_id, :x, :y, :p),
 				m(model) AS (SELECT board_model FROM machines
 					JOIN boards USING (machine_id)
 					JOIN args USING (board_id))
-			INSERT INTO blacklisted_cores(
-				board_id, coord_id, physical_core, notes)
 			SELECT args.board_id, coord_id, p, NULL
 			FROM board_model_coords
 				JOIN m USING (model)
@@ -2156,13 +2164,13 @@ public abstract class SQLQueries {
 	@Parameter("y")
 	@Parameter("direction")
 	protected static final String ADD_BLACKLISTED_LINK = """
+			INSERT INTO blacklisted_links(
+				board_id, coord_id, direction, notes)
 			WITH args(board_id, x, y, dir) AS (
-					VALUES(:board_id, :x, :y, :direction)),
+					SELECT :board_id, :x, :y, :direction),
 				m(model) AS (SELECT board_model FROM machines
 					JOIN boards USING (machine_id)
 					JOIN args USING (board_id))
-			INSERT INTO blacklisted_links(
-				board_id, coord_id, direction, notes)
 			SELECT args.board_id, coord_id, dir, NULL
 			FROM board_model_coords
 				JOIN m USING (model)
@@ -2286,10 +2294,10 @@ public abstract class SQLQueries {
 	protected static final String SET_BOARD_SERIAL_IDS = """
 			INSERT INTO board_serial(
 				board_id, bmp_serial_id, physical_serial_id)
-			VALUES (:board_id, :bmp_serial_id, :physical_serial_id)
-			ON CONFLICT DO UPDATE
-			SET bmp_serial_id = excluded.bmp_serial_id,
-				physical_serial_id = excluded.physical_serial_id
+			VALUES(:board_id, :bmp_serial_id, :physical_serial_id)
+			ON DUPLICATE KEY UPDATE
+				bmp_serial_id = VALUES(bmp_serial_id),
+				physical_serial_id = VALUES(physical_serial_id)
 			""";
 
 	/**
@@ -2487,8 +2495,8 @@ public abstract class SQLQueries {
 					board_reports.board_id,
 					COUNT(board_reports.report_id) AS num_reports
 				FROM board_reports
-					JOIN boards USING (board_id)
-				WHERE boards.functioning IS NOT 0
+				JOIN boards USING (board_id)
+				WHERE boards.functioning != 0 -- Ignore disabled boards
 				GROUP BY board_id)
 			SELECT
 				boards.board_id,
@@ -2519,7 +2527,7 @@ public abstract class SQLQueries {
 	protected static final String ISSUE_CHANGE_FOR_JOB = """
 			INSERT INTO pending_changes(
 				job_id, board_id, from_state, to_state,
-				"power", fpga_n, fpga_e, fpga_se, fpga_s, fpga_w, fpga_nw)
+				power, fpga_n, fpga_e, fpga_se, fpga_s, fpga_w, fpga_nw)
 			VALUES (
 				:job_id, :board_id, :from_state, :to_state,
 				:power, :fpga_n, :fpga_e, :fpga_se, :fpga_s, :fpga_w, :fpga_nw)
@@ -2632,6 +2640,110 @@ public abstract class SQLQueries {
 			RETURNING alloc_id
 			""";
 
+
+
+	/**
+	 * Read historical allocations to be written to the historical data DB.
+	 * Only allocations that are already completed will ever get read here.
+	 *
+	 * @see AllocatorTask#tombstone()
+	 */
+	@Parameter("grace_period")
+	@ResultColumn("alloc_id")
+	@ResultColumn("job_id")
+	@ResultColumn("board_id")
+	@ResultColumn("alloc_timestamp")
+	protected static final String READ_HISTORICAL_ALLOCS =
+			"SELECT	alloc_id, job_id, board_id, alloc_timestamp "
+			+ "FROM old_board_allocations JOIN jobs USING (job_id) "
+			+ "WHERE jobs.death_timestamp + :grace_period < UNIX_TIMESTAMP()";
+
+	/**
+	 * Read historical jobs to be written to the historical data DB.
+	 * Only jobs that are already completed will ever get read here.
+	 */
+	@Parameter("grace_period")
+	@ResultColumn("job_id")
+	@ResultColumn("machine_id")
+	@ResultColumn("owner")
+	@ResultColumn("create_timestamp")
+	@ResultColumn("width")
+	@ResultColumn("height")
+	@ResultColumn("depth")
+	@ResultColumn("allocated_root")
+	@ResultColumn("keepalive_interval")
+	@ResultColumn("keepalive_host")
+	@ResultColumn("death_reason")
+	@ResultColumn("death_timestamp")
+	@ResultColumn("original_request")
+	@ResultColumn("allocation_timestamp")
+	@ResultColumn("allocation_size")
+	@ResultColumn("machine_name")
+	@ResultColumn("user_name")
+	@ResultColumn("group_id")
+	@ResultColumn("group_name")
+	protected static final String READ_HISTORICAL_JOBS =
+			"SELECT job_id, machine_id, owner, create_timestamp, "
+			+ "jobs.width as width, jobs.height as height, jobs.depth as depth,"
+			+ "allocated_root, keepalive_interval, keepalive_host, "
+			+ "death_reason, death_timestamp, original_request, "
+			+ "allocation_timestamp, allocation_size, "
+			+ "machine_name, user_name, group_id, group_name "
+			+ "FROM jobs "
+			+ "JOIN user_groups USING (group_id) "
+			+ "JOIN machines USING (machine_id) "
+			+ "JOIN user_info ON jobs.owner = user_info.user_id "
+			+ "WHERE death_timestamp + :grace_period < UNIX_TIMESTAMP()";
+
+	/**
+	 * Write to the historical allocations database.
+	 */
+	@Parameter("alloc_id")
+	@Parameter("job_id")
+	@Parameter("board_id")
+	@Parameter("allocation_timestamp")
+	protected static final String WRITE_HISTORICAL_ALLOCS =
+			"INSERT IGNORE INTO board_allocations( "
+			+ "alloc_id, job_id, board_id, allocation_timestamp) "
+			+ "VALUES(:alloc_id, :job_id, :board_id, :allocation_timestamp)";
+
+	/**
+	 * Write to the historical jobs database.
+	 */
+	@Parameter("job_id")
+	@Parameter("machine_id")
+	@Parameter("owner")
+	@Parameter("create_timestamp")
+	@Parameter("width")
+	@Parameter("height")
+	@Parameter("depth")
+	@Parameter("root_id")
+	@Parameter("keepalive_interval")
+	@Parameter("keepalive_host")
+	@Parameter("death_reason")
+	@Parameter("death_timestamp")
+	@Parameter("original_request")
+	@Parameter("allocation_timestamp")
+	@Parameter("allocation_size")
+	@Parameter("machine_name")
+	@Parameter("owner_name")
+	@Parameter("group_id")
+	@Parameter("group_name")
+	protected static final String WRITE_HISTORICAL_JOBS =
+			"INSERT IGNORE INTO jobs( "
+			+ "job_id, machine_id, owner, create_timestamp, "
+			+ "width, height, depth, root_id, "
+			+ "keepalive_interval, keepalive_host, "
+			+ "death_reason, death_timestamp, "
+			+ "original_request, allocation_timestamp, allocation_size, "
+			+ "machine_name, owner_name, group_id, group_name) "
+			+ "VALUES(:job_id, :machine_id, :owner, :create_timestamp, "
+			+ ":width, :height, :depth, :root_id, "
+			+ ":keepalive_interval, :keepalive_host, "
+			+ ":death_reason, :death_timestamp, "
+			+ ":original_request, :allocation_timestamp, :allocation_size, "
+			+ ":machine_name, :owner_name, :group_id, :group_name)";
+
 	// SQL loaded from files because it is too complicated otherwise!
 
 	/**
@@ -2675,6 +2787,40 @@ public abstract class SQLQueries {
 	protected Resource findRectangleAt;
 
 	/**
+<<<<<<< HEAD
+=======
+	 * Find an allocatable board with a specific board ID. (This will have been
+	 * previously converted from some other form of board coordinates.)
+	 *
+	 * @see AllocatorTask
+	 */
+	@Parameter("machine_id")
+	@Parameter("board_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@SingleRowResult
+	@Value("classpath:queries/find_location.sql")
+	protected Resource findLocation;
+
+	/** Create a request to change the power status of a board. */
+	@Parameter("job_id")
+	@Parameter("board_id")
+	@Parameter("from_state")
+	@Parameter("to_state")
+	@Parameter("power")
+	@Parameter("fpga_n")
+	@Parameter("fpga_e")
+	@Parameter("fpga_se")
+	@Parameter("fpga_s")
+	@Parameter("fpga_w")
+	@Parameter("fpga_nw")
+	@GeneratesID
+	@Value("classpath:queries/issue_change_for_job.sql")
+	protected Resource issueChangeForJob;
+
+	/**
+>>>>>>> refs/heads/master
 	 * Count the number of <em>connected</em> boards (i.e., have at least one
 	 * path over enabled links to the root board of the allocation) within a
 	 * rectangle of triads. The triads are taken as being full depth.
@@ -2716,8 +2862,8 @@ public abstract class SQLQueries {
 	 * @see Spalloc
 	 */
 	@Parameter("machine_id")
-	@Parameter("chip_x")
-	@Parameter("chip_y")
+	@Parameter("x")
+	@Parameter("y")
 	@ResultColumn("board_id")
 	@ResultColumn("address")
 	@ResultColumn("bmp_id")
@@ -2746,9 +2892,9 @@ public abstract class SQLQueries {
 	 * @see Spalloc
 	 */
 	@Parameter("job_id")
-	@Parameter("root_board_id")
-	@Parameter("chip_x")
-	@Parameter("chip_y")
+	@Parameter("board_id")
+	@Parameter("x")
+	@Parameter("y")
 	@ResultColumn("board_id")
 	@ResultColumn("address")
 	@ResultColumn("x")

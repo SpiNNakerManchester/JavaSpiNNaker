@@ -110,14 +110,14 @@ public interface SupportQueries {
 	String TEST_GET_QUOTA = """
 			SELECT quota
 			FROM quotas
-			WHERE machine_id = ? AND user_id = ?
+			WHERE user_id = ?
 			""";
 
 	/** Set the quota for a group. */
 	@Parameter("quota")
 	@Parameter("group")
 	String TEST_SET_QUOTA = """
-			UPDATE groups
+			UPDATE user_groups
 			SET quota = :quota
 			WHERE group_id = :group
 			""";
@@ -130,8 +130,8 @@ public interface SupportQueries {
 	@Parameter("depth")
 	@GeneratesID
 	String INSERT_MACHINE = """
-			INSERT OR IGNORE INTO machines(
-				machine_id, machine_name, width, height, [depth], board_model)
+			INSERT INTO machines(
+				machine_id, machine_name, width, height, depth, board_model)
 			VALUES (?, ?, ?, ?, ?, 5)
 			""";
 
@@ -143,7 +143,7 @@ public interface SupportQueries {
 	@Parameter("frame")
 	@GeneratesID
 	String INSERT_BMP_WITH_ID = """
-			INSERT OR IGNORE INTO bmp(
+			INSERT INTO bmp(
 				bmp_id, machine_id, address, cabinet, frame)
 			VALUES (?, ?, ?, ?, ?)
 			""";
@@ -155,7 +155,7 @@ public interface SupportQueries {
 	@Parameter("disabled")
 	@GeneratesID
 	String INSERT_USER = """
-			INSERT OR IGNORE INTO user_info(
+			INSERT INTO user_info(
 				user_id, user_name, trust_level, disabled, encrypted_password)
 			VALUES (?, ?, ?, ?, '*')
 			""";
@@ -166,7 +166,7 @@ public interface SupportQueries {
 	@Parameter("quota")
 	@GeneratesID
 	String INSERT_GROUP = """
-			INSERT OR IGNORE INTO groups(
+			INSERT INTO user_groups(
 				group_id, group_name, quota, group_type)
 			VALUES (?, ?, ?, 0)
 			""";
@@ -177,7 +177,7 @@ public interface SupportQueries {
 	@Parameter("group_id")
 	@GeneratesID
 	String INSERT_MEMBER = """
-			INSERT OR IGNORE INTO group_memberships(
+			INSERT INTO group_memberships(
 				membership_id, user_id, group_id)
 			VALUES (?, ?, ?)
 			""";
@@ -196,7 +196,7 @@ public interface SupportQueries {
 	@Parameter("board_power")
 	@GeneratesID
 	String INSERT_BOARD_WITH_ID = """
-			INSERT OR IGNORE INTO boards(
+			INSERT INTO boards(
 				board_id, address, bmp_id, board_num, machine_id, x, y, z,
 				root_x, root_y, board_power)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)

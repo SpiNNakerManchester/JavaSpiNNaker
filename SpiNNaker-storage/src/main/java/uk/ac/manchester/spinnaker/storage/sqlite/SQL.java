@@ -282,21 +282,34 @@ abstract class SQL {
 	static final String PROXY_URI = "job uri";
 
 	/**
-	 * The name of the result containing the proxy Authorization.
+	 * The name of the result containing the proxy Authorization cookie.
 	 * <p>
 	 * Must match {@link #GET_PROXY_INFORMATION}.
 	 */
-	static final String PROXY_AUTH = "Authorization";
+	static final String COOKIE = "COOKIE";
+
+	/**
+	 * The kind of the result containing a proxy header.
+	 */
+	static final String HEADER = "HEADER";
+
+	/**
+	 * The kind of the result containing a spalloc information.
+	 */
+	static final String SPALLOC = "SPALLOC";
 
 	/**
 	 * Get information about the proxy.
 	 */
+	@ResultColumn("kind")
 	@ResultColumn("name")
 	@ResultColumn("value")
 	static final String GET_PROXY_INFORMATION = """
-			SELECT name, value FROM proxy_configuration
-			WHERE (kind = 'SPALLOC' AND name = 'job uri')
-				OR (kind = 'HEADER' AND name = 'Authorization')
-				OR (kind = 'SPALLOC' AND name = 'service uri')
+			SELECT kind, name, value
+			FROM proxy_configuration
+			WHERE ((kind = 'SPALLOC' AND name = 'job uri')
+				OR (kind = 'HEADER')
+				OR (kind = 'COOKIE')
+				OR (kind = 'SPALLOC' AND name = 'service uri'))
 			""";
 }

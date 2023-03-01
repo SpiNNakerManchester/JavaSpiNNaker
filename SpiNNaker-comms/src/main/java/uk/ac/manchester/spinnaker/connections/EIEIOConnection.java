@@ -57,7 +57,7 @@ public class EIEIOConnection
 	 * @hidden
 	 */
 	protected EIEIOConnection() {
-		super(true);
+		super(null, null);
 	}
 
 	/**

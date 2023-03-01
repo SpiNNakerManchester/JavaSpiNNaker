@@ -43,7 +43,7 @@ SELECT
 	root.root_y AS job_root_chip_y
 FROM boards
 	JOIN bmp USING (bmp_id)
-	JOIN machines AS m USING (machine_id)
+	JOIN machines AS m ON m.machine_id = bmp.machine_id
 	JOIN board_model_coords AS bmc ON m.board_model = bmc.model
 	-- LEFT JOIN because might not be any job
 	LEFT JOIN jobs ON jobs.job_id = boards.allocated_job

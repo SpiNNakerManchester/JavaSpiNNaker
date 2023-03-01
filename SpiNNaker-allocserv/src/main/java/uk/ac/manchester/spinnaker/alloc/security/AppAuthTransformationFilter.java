@@ -36,13 +36,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
+
 /**
  * A filter to apply authentication transformation as supplied by the
  * {@link LocalAuthenticationProvider}. Relies on the session ID being updated
  * to ensure that stale login information is not retained.
  *
- * @see LocalAuthenticationProvider#updateAuthentication(SecurityContext)
+ * @see LocalAuthenticationProvider#updateAuthentication(HttpServletRequest,
+ * SecurityContext)
  */
+@UsedInJavadocOnly(SecurityContext.class)
 @Component
 public class AppAuthTransformationFilter extends OncePerRequestFilter {
 	private static final Logger log =
@@ -75,7 +79,7 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 		if (nonNull(savedAuth)) {
 			ctx.setAuthentication(savedAuth);
 		} else {
-			var a = localAuthProvider.updateAuthentication(ctx);
+			var a = localAuthProvider.updateAuthentication(request, ctx);
 			if (nonNull(a)) {
 				saveToken(s, a);
 			}

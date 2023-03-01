@@ -17,7 +17,7 @@
 -- chip coordinates.
 
 WITH
-	args(job, root, x, y) AS (VALUES (:job_id, :board_id, :x, :y)),
+	args(job, root, x, y) AS (SELECT :job_id, :board_id, :x, :y),
 	-- Boards that are allocated to the job
 	bs AS (
 		SELECT boards.* FROM boards, args

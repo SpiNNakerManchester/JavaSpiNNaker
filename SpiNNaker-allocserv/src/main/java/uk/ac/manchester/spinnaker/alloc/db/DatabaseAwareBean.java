@@ -23,6 +23,7 @@ import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.ConnectedWithResult;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Transacted;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult;
 
 /**
@@ -33,10 +34,10 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult;
  */
 public abstract class DatabaseAwareBean extends SQLQueries {
 	/** The application database. */
-	private DatabaseEngine db;
+	private DatabaseAPI db;
 
 	@Autowired
-	final void setDatabaseEngine(DatabaseEngine db) {
+	final void setDatabaseEngine(DatabaseAPI db) {
 		this.db = requireNonNull(db, "DatabaseEngine must not be null");
 	}
 
@@ -49,6 +50,26 @@ public abstract class DatabaseAwareBean extends SQLQueries {
 	@MustBeClosed
 	protected final Connection getConnection() {
 		return db.getConnection();
+	}
+
+	/**
+	 * Get a connection to the historical database. Connections <em>may</em> be
+	 * shared, but might not be (especially in the case of testing databases).
+	 *
+	 * @return Database connection. Requires closing.
+	 */
+	@MustBeClosed
+	protected final Connection getHistoricalConnection() {
+		return db.getHistoricalConnection();
+	}
+
+	/**
+	 * Determine if the historical database can be used.
+	 *
+	 * @return Whether the historical database can be used.
+	 */
+	protected final boolean isHistoricalDBAvailable() {
+		return db.isHistoricalDBAvailable();
 	}
 
 	/**
@@ -160,6 +181,19 @@ public abstract class DatabaseAwareBean extends SQLQueries {
 		 */
 		public final <T> T transactionRead(TransactedWithResult<T> action) {
 			return conn.transaction(false, action);
+		}
+
+		/**
+		 * A nestable transaction runner. If the {@code action} completes
+		 * normally (and this isn't a nested use), the transaction commits. If a
+		 * runtime exception is thrown, the transaction is rolled back (and the
+		 * exception flows through). A write lock is used.
+		 *
+		 * @param action
+		 *            The code to run inside the transaction.
+		 */
+		public final void transaction(Transacted action) {
+			conn.transaction(action);
 		}
 
 		/** @return The encapsulated connection. */

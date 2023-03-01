@@ -339,6 +339,7 @@ class BMPCommandProcess {
 				if (retryTracker != null) {
 					retryTracker.retryNeeded();
 				}
+				requestData.rewind();
 				send();
 			}
 
@@ -398,6 +399,7 @@ class BMPCommandProcess {
 				throw new RuntimeException(
 						"duplicate sequence number catastrophe");
 			}
+			log.debug("Sending request {}", request);
 			req.send();
 		}
 
@@ -427,6 +429,7 @@ class BMPCommandProcess {
 				throw new RuntimeException(
 						"duplicate sequence number catastrophe");
 			}
+			log.debug("Sending request {}", request);
 			req.send();
 		}
 
@@ -473,6 +476,9 @@ class BMPCommandProcess {
 				log.info("discarded message: {}", msg);
 				return;
 			}
+
+			log.debug("Received message with sequence {}",
+					msg.getSequenceNumber());
 
 			// If the response can be retried, retry it
 			try {
@@ -522,11 +528,11 @@ class BMPCommandProcess {
 				// Report timeouts as timeout exception
 				if (req.allTimeoutFailures()) {
 					throw new BMPSendTimedOutException(
-							req.request.scpRequestHeader, timeout);
+							req.request, timeout);
 				}
 
 				// Report any other exception
-				throw new BMPSendFailedException(req.request.scpRequestHeader,
+				throw new BMPSendFailedException(req.request,
 						req.dest(), req.retryReason);
 			}
 

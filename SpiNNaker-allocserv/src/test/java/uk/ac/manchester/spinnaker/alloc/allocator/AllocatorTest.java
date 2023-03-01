@@ -22,12 +22,12 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.POWER;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 
 import java.io.IOException;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,45 +37,36 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.TestSupport;
+import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask.HistTestAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask.TestAPI;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
 import uk.ac.manchester.spinnaker.alloc.bmp.MockTransceiver;
 import uk.ac.manchester.spinnaker.alloc.bmp.TransceiverFactory;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 
 @SpringBootTest
 @SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
 @TestPropertySource(properties = {
-	"spalloc.database-path=" + AllocatorTest.DB,
-	"spalloc.historical-data.path=" + AllocatorTest.HIST_DB,
 	// These tests sometimes hold transactions for a long time; this is OK
 	"spalloc.sqlite.lock-note-threshold=2200ms",
 	"spalloc.sqlite.lock-warn-threshold=3s"
 })
 class AllocatorTest extends TestSupport {
-	/** The name of the database file. */
-	static final String DB = "target/alloc_test.sqlite3";
-
-	/** The name of the database file. */
-	static final String HIST_DB = "target/alloc_test-hist.sqlite3";
 
 	@Autowired
 	private AllocatorTask alloc;
 
 	private BMPController.TestAPI bmpCtrl;
 
-	@BeforeAll
-	static void clearDB() throws IOException {
-		killDB(DB);
-	}
-
 	@BeforeEach
 	@SuppressWarnings("deprecation")
 	void checkSetup(@Autowired TransceiverFactory txrxFactory,
-			@Autowired BMPController bmpCtrl) {
+			@Autowired BMPController bmpCtrl) throws IOException {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		MockTransceiver.installIntoFactory(txrxFactory);
+		killDB();
 		setupDB3();
 		this.bmpCtrl = bmpCtrl.getTestAPI();
 		this.bmpCtrl.clearBmpException();
@@ -123,12 +114,17 @@ class AllocatorTest extends TestSupport {
 		return alloc.getTestAPI(conn);
 	}
 
+	@SuppressWarnings("deprecation")
+	private HistTestAPI getHistAllocTester(Connection histConn) {
+		return alloc.getHistTestAPI(conn, histConn);
+	}
+
 	@SuppressWarnings("CompileTimeConstant")
-	private int countJobInTable(int job, String table) {
+	private int countJobInTable(Connection c, int job) {
 		// Table names CANNOT be parameters; they're not values
-		return conn.query(format(
-				"SELECT COUNT(*) AS c FROM %s WHERE job_id = :job", table))
-				.call1(job).orElseThrow().getInt("c");
+		return c.query(
+				"SELECT COUNT(*) AS c FROM jobs WHERE job_id = :job")
+				.call1(integer("c"), job).orElseThrow();
 	}
 
 	// The actual tests
@@ -407,23 +403,26 @@ class AllocatorTest extends TestSupport {
 	@Test
 	public void tombstone() throws Exception {
 		doTransactionalTest(() -> {
-			assumeTrue(conn.isHistoricalDBAvailable());
+			assumeTrue(db.isHistoricalDBAvailable());
 
-			int job = makeQueuedJob(1);
-			conn.update(TEST_SET_JOB_STATE).call(DESTROYED, job);
-			conn.update(TEST_SET_JOB_DEATH_TIME).call(0, job);
-			int preMain = countJobInTable(job, "jobs");
-			assertTrue(preMain == 1,
-					() -> "must have created a job we can tombstone");
-			int preTomb = countJobInTable(job, "tombstone.jobs");
+			try (Connection histConn = db.getHistoricalConnection()) {
 
-			var moved = getAllocTester().tombstone();
+				int job = makeQueuedJob(1);
+				conn.update(TEST_SET_JOB_STATE).call(DESTROYED, job);
+				conn.update(TEST_SET_JOB_DEATH_TIME).call(0, job);
+				int preMain = countJobInTable(conn, job);
+				assertTrue(preMain == 1,
+						() -> "must have created a job we can tombstone");
+				int preTomb = countJobInTable(histConn, job);
 
-			assertEquals(1, moved.numJobs());
-			// No resources were ever allocated, so no moves to do
-			assertEquals(0, moved.numAllocs());
-			assertEquals(preMain - 1, countJobInTable(job, "jobs"));
-			assertEquals(preTomb + 1, countJobInTable(job, "tombstone.jobs"));
+				var moved = getHistAllocTester(histConn).tombstone();
+
+				assertEquals(1, moved.numJobs());
+				// No resources were ever allocated, so no moves to do
+				assertEquals(0, moved.numAllocs());
+				assertEquals(preMain - 1, countJobInTable(conn, job));
+				assertEquals(preTomb + 1, countJobInTable(histConn, job));
+			}
 		});
 	}
 }

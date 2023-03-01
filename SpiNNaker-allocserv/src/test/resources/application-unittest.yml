@@ -31,3 +31,8 @@ spalloc:
   sqlite:
     performance-log: true
     performance-threshold: 1e2
+  datasource:
+    jdbc-url: jdbc:tc:mysql:8:///;databaseName=spalloc?user=root&password=test
+  historical-data:
+    datasource:
+      jdbc-url: jdbc:tc:mysql:8:///;databaseName=spallochistory?user=root&password=test

@@ -17,7 +17,7 @@
 WITH RECURSIVE
 	-- Name the arguments for sanity
 	args(root_id, width, height, machine_id, max_dead_boards) AS (
-		VALUES (:board_id, :width, :height, :machine_id, :max_dead_boards)),
+		SELECT :board_id, :width, :height, :machine_id, :max_dead_boards),
 	-- Profile the machines and boards to the one we care about
 	m AS (
 		SELECT machines.* FROM machines JOIN args USING (machine_id)
@@ -28,16 +28,16 @@ WITH RECURSIVE
 		SELECT bs.* FROM bs JOIN args ON bs.board_id = args.root_id
 		LIMIT 1),
 	-- Generate sequences of right size
-	cx(x) AS (SELECT 0 UNION ALL SELECT x+1 FROM cx
-		LIMIT (SELECT width FROM args)),
-	cy(y) AS (SELECT 0 UNION ALL SELECT y+1 FROM cy
-		LIMIT (SELECT height FROM args)),
-	cz(z) AS (VALUES (0), (1), (2)),
+	cx(x) AS (SELECT 0 UNION ALL SELECT x+1 FROM cx, args
+		WHERE x < args.width - 1),
+	cy(y) AS (SELECT 0 UNION ALL SELECT y+1 FROM cy, args
+		WHERE y < args.height - 1),
+	cz(z) AS (SELECT 0 UNION SELECT 1 UNION SELECT 2),
 	-- Form the sequences into grids of points
 	c(x,y,z) AS (SELECT x, y, z FROM cx, cy, cz),
 	-- Count boards in rectangle based at specified root
 	root_count(available) AS (
-		SELECT SUM(bs.may_be_allocated)
+		SELECT SUM(bs.may_be_allocated) AS available
 		FROM selected_root, m, c, bs
 		WHERE bs.x = (c.x + selected_root.x) % m.width
 			AND bs.y = (c.y + selected_root.y) % m.height

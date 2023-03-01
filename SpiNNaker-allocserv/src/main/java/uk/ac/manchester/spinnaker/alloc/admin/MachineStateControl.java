@@ -60,6 +60,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.Epoch;
 import uk.ac.manchester.spinnaker.alloc.bmp.BlacklistStore;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.RowMapper;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.BoardIssueReport;
@@ -185,7 +186,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		public boolean getState() {
 			return executeRead(conn -> {
 				try (var q = conn.query(GET_FUNCTIONING_FIELD)) {
-					return q.call1(id).map(bool("functioning")).orElse(false);
+					return q.call1(bool("functioning"), id).orElse(false);
 				}
 			});
 		}
@@ -203,7 +204,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		public Optional<Integer> getAllocatedJob() {
 			return executeRead(conn -> {
 				try (var q = conn.query(GET_BOARD_JOB)) {
-					return q.call1(id).map(integer("allocated_job"));
+					return q.call1(integer("allocated_job"), id);
 				}
 			});
 		}
@@ -212,7 +213,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		public boolean getPower() {
 			return executeRead(conn -> {
 				try (var q = conn.query(GET_BOARD_POWER_INFO)) {
-					return q.call1(id).map(bool("board_power")).orElse(false);
+					return q.call1(bool("board_power"), id).orElse(false);
 				}
 			});
 		}
@@ -221,7 +222,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		public Optional<Instant> getPowerOnTime() {
 			return executeRead(conn -> {
 				try (var q = conn.query(GET_BOARD_POWER_INFO)) {
-					return q.call1(id).map(instant("power_on_timestamp"));
+					return q.call1(instant("power_on_timestamp"), id);
 				}
 			});
 		}
@@ -230,7 +231,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		public Optional<Instant> getPowerOffTime() {
 			return executeRead(conn -> {
 				try (var q = conn.query(GET_BOARD_POWER_INFO)) {
-					return q.call1(id).map(instant("power_off_timestamp"));
+					return q.call1(instant("power_off_timestamp"), id);
 				}
 			});
 		}
@@ -239,7 +240,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		public List<BoardIssueReport> getReports() {
 			return executeRead(conn -> {
 				try (var q = conn.query(GET_BOARD_REPORTS)) {
-					return q.call(id).map(BoardIssueReport::new).toList();
+					return q.call(BoardIssueReport::new, id);
 				}
 			});
 		}
@@ -288,7 +289,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	public Optional<BoardState> findId(int id) {
 		return executeRead(conn -> {
 			try (var q = conn.query(FIND_BOARD_BY_ID)) {
-				return q.call1(id).map(BoardState::new);
+				return q.call1(BoardState::new, id);
 			}
 		});
 	}
@@ -306,8 +307,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 			@Valid @NonNull TriadCoords coords) {
 		return executeRead(conn -> {
 			try (var q = conn.query(FIND_BOARD_BY_NAME_AND_XYZ)) {
-				return q.call1(machine, coords.x(), coords.y(), coords.z())
-						.map(BoardState::new);
+				return q.call1(BoardState::new, machine, coords.x(), coords.y(),
+						coords.z());
 			}
 		});
 	}
@@ -325,8 +326,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 			@Valid @NotNull PhysicalCoords coords) {
 		return executeRead(conn -> {
 			try (var q = conn.query(FIND_BOARD_BY_NAME_AND_CFB)) {
-				return q.call1(machine, coords.c(), coords.f(), coords.b())
-						.map(BoardState::new);
+				return q.call1(BoardState::new, machine, coords.c(), coords.f(),
+						coords.b());
 			}
 		});
 	}
@@ -344,7 +345,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 			@IPAddress String address) {
 		return executeRead(conn -> {
 			try (var q = conn.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
-				return q.call1(machine, address).map(BoardState::new);
+				return q.call1(BoardState::new, machine, address);
 			}
 		});
 	}
@@ -356,14 +357,24 @@ public class MachineStateControl extends DatabaseAwareBean {
 		return executeRead(conn -> {
 			try (var getMachines = conn.query(GET_ALL_MACHINES);
 					var getTags = conn.query(GET_TAGS)) {
-				var infos = getMachines.call(true).map(MachineTagging::new)
-						.toList();
+				var infos = getMachines.call(MachineTagging::new, true);
 				for (var t : infos) {
-					t.setTags(getTags.call(t.getId()).map(string("tag")));
+					t.setTags(getTags.call(string("tag"), t.getId()));
 				}
 				return infos;
 			}
 		});
+	}
+
+	private class MachineNameId {
+		int id;
+
+		String name;
+
+		MachineNameId(Row row) {
+			id = row.getInt("machine_id");
+			name = row.getString("machine_name");
+		}
 	}
 
 	/**
@@ -374,10 +385,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 		return executeRead(conn -> {
 			try (var getMachines = conn.query(GET_ALL_MACHINES);
 					var getMachineReports = conn.query(GET_MACHINE_REPORTS)) {
-				return getMachines.call(true).toMap(string("machine_name"),
-						machine -> getMachineReports
-								.call(machine.getInt("machine_id"))
-								.map(BoardIssueReport::new).toList());
+				return Row.stream(getMachines.call(MachineNameId::new, true))
+						.toMap(m -> m.name, m -> getMachineReports.call(
+								BoardIssueReport::new, m.id));
 			}
 		});
 	}
@@ -398,9 +408,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 			try (var getMachine = conn.query(GET_NAMED_MACHINE);
 					var deleteTags = conn.update(DELETE_MACHINE_TAGS);
 					var addTag = conn.update(INSERT_TAG)) {
-				int machineId = getMachine.call1(machineName, true).orElseThrow(
-						() -> new IllegalArgumentException("no such machine"))
-						.getInt("machine_id");
+				int machineId = getMachine.call1(integer("machine_id"),
+						machineName, true).orElseThrow(
+						() -> new IllegalArgumentException("no such machine"));
 				deleteTags.call(machineId);
 				for (var tag : tags) {
 					addTag.call(machineId, tag);
@@ -630,10 +640,10 @@ public class MachineStateControl extends DatabaseAwareBean {
 				var boards = conn.query(GET_ALL_BOARDS);
 				var all = conn.query(GET_ALL_BOARDS_OF_ALL_MACHINES)) {
 			if (machineName == null) {
-				return all.call().map(integer("board_id")).toList();
+				return all.call(integer("board_id"));
 			}
-			return machines.call1(machineName).map(integer("machine_id")).map(
-					mid -> boards.call(mid).map(integer("board_id")).toList())
+			return machines.call1(integer("machine_id"), machineName).map(
+					mid -> boards.call(integer("board_id"), mid))
 					.orElse(List.of());
 		}
 	}
@@ -744,7 +754,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	public boolean isBlacklistSynched(BoardState board) {
 		return executeRead(conn -> {
 			try (var isCurrent = conn.query(IS_BOARD_BLACKLIST_CURRENT)) {
-				return isCurrent.call1(board.id).map(bool("current"))
+				return isCurrent.call1(bool("current"), board.id)
 						.orElse(false);
 			}
 		});
@@ -800,7 +810,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		 * @throws DataAccessException
 		 *             If there is a problem accessing the database.
 		 */
-		<T> Optional<T> getResult(Function<Row, T> retriever)
+		<T> Optional<T> getResult(RowMapper<T> retriever)
 				throws InterruptedException, BlacklistException,
 				DataAccessException {
 			var end = now().plus(props.getBlacklistTimeout());
@@ -808,8 +818,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 				var result = executeRead(conn -> {
 					try (var getResult =
 							conn.query(GET_COMPLETED_BLACKLIST_OP)) {
-						return getResult.call1(op).map(this::throwIfFailed)
-								.map(retriever);
+						return getResult.call1(row -> retriever.mapRow(
+								throwIfFailed(row)), op);
 					}
 				});
 				if (result.isPresent()) {

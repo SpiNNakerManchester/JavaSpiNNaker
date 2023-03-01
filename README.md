@@ -45,6 +45,6 @@ This option says where to find the built version of JavaSpiNNaker. If you have f
 [Spalloc Server](https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/SpiNNaker-allocserv) is its own sub-project.
 
 # Documentation
-[API documentation](http://spinnakermanchester.github.io/JavaSpiNNaker/apidocs/) (Javadoc)
+[API documentation](https://spinnakermanchester.github.io/JavaSpiNNaker/apidocs/) (Javadoc)
 <br>
-[Maven metadata](http://spinnakermanchester.github.io/JavaSpiNNaker/)
+[Maven metadata](https://spinnakermanchester.github.io/JavaSpiNNaker/)

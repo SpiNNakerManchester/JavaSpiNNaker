@@ -19,7 +19,7 @@ package uk.ac.manchester.spinnaker.messages.model;
  * Identifiers for the FPGAs on a SpiNNaker board, as managed by BMP.
  * <p>
  * SpiNNaker FPGA identifiers, taken from the
- * <a href="http://spinnakermanchester.github.io/docs/spin5-links.pdf">SpiNN-5
+ * <a href="https://spinnakermanchester.github.io/docs/spin5-links.pdf">SpiNN-5
  * FPGA SATA Links</a> datasheet.
  */
 public enum FPGA {
