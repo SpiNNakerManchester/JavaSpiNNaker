@@ -2787,8 +2787,6 @@ public abstract class SQLQueries {
 	protected Resource findRectangleAt;
 
 	/**
-<<<<<<< HEAD
-=======
 	 * Find an allocatable board with a specific board ID. (This will have been
 	 * previously converted from some other form of board coordinates.)
 	 *
