@@ -142,11 +142,12 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	private final class ListMachinesSQL extends AbstractSQL {
-		private Query listMachines = conn.query(GET_ALL_MACHINES);
+		private final Query listMachines = conn.query(GET_ALL_MACHINES);
 
-		private Query countMachineThings = conn.query(COUNT_MACHINE_THINGS);
+		private final Query countMachineThings =
+				conn.query(COUNT_MACHINE_THINGS);
 
-		private Query getTags = conn.query(GET_TAGS);
+		private final Query getTags = conn.query(GET_TAGS);
 
 		@Override
 		public void close() {
@@ -629,8 +630,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	private static Optional<Integer> insertJob(Connection conn, MachineImpl m,
 			int owner, int group, Duration keepaliveInterval, byte[] req) {
 		try (var makeJob = conn.update(INSERT_JOB)) {
-			return makeJob.key(m.id, owner, group, keepaliveInterval, req,
-					Instant.now(), Instant.now());
+			return makeJob.key(m.id, owner, group, keepaliveInterval, req);
 		}
 	}
 
@@ -721,7 +721,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		int userId = getUser(sql.getConnection(), permit.name).orElseThrow(
 				() -> new ReportRollbackExn("no such user: %s", permit.name));
 		sql.insertReport.key(problem.boardId, problem.jobId,
-				description, userId, Instant.now()).ifPresent(email::issue);
+				description, userId).ifPresent(email::issue);
 		return takeBoardsOutOfService(sql, email).map(acted -> {
 			email.footer(acted);
 			return email;
@@ -1259,8 +1259,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			}
 			try (var conn = getConnection();
 					var keepAlive = conn.update(UPDATE_KEEPALIVE)) {
-				conn.transaction(() -> keepAlive.call(Instant.now(),
-						keepaliveAddress, id));
+				conn.transaction(() -> keepAlive.call(keepaliveAddress, id));
 			}
 		}
 
@@ -1485,7 +1484,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		 */
 		private void addIssueReport(BoardReportSQL u, int boardId, String issue,
 				int userId, EmailBuilder email) {
-			u.insertReport.key(boardId, id, issue, userId, Instant.now())
+			u.insertReport.key(boardId, id, issue, userId)
 					.ifPresent(email::issue);
 		}
 

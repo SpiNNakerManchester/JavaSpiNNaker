@@ -79,7 +79,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 
 	private ExecutorService executor;
 
-	private ConnectionIDIssuer idIssuer = new ConnectionIDIssuer();
+	private final ConnectionIDIssuer idIssuer = new ConnectionIDIssuer();
 
 	SpinWSHandler() {
 		var group = new ThreadGroup("ws/udp workers");
