@@ -17,9 +17,9 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
 
 import static java.util.EnumSet.noneOf;
 import static java.util.Objects.requireNonNull;
-import static uk.ac.manchester.spinnaker.alloc.db.Row.enumerate;
-import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
-import static uk.ac.manchester.spinnaker.alloc.model.Utils.chip;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.chip;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.core;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.stream;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -32,6 +32,8 @@ import com.google.errorprone.annotations.RestrictedApi;
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
+import uk.ac.manchester.spinnaker.alloc.db.Row;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 
@@ -59,6 +61,17 @@ public class BlacklistStore extends DatabaseAwareBean {
 		return executeRead(conn -> readBlacklist(conn, boardId));
 	}
 
+	private class DeadLink {
+		ChipLocation location;
+
+		Direction direction;
+
+		DeadLink(Row row) {
+			location = new ChipLocation(row.getInt("x"), row.getInt("y"));
+			direction = row.getEnum("direction", Direction.class);
+		}
+	}
+
 	/**
 	 * Read a blacklist from the database.
 	 *
@@ -74,13 +87,18 @@ public class BlacklistStore extends DatabaseAwareBean {
 		try (var blChips = conn.query(GET_BLACKLISTED_CHIPS);
 				var blCores = conn.query(GET_BLACKLISTED_CORES);
 				var blLinks = conn.query(GET_BLACKLISTED_LINKS)) {
-			var blacklistedChips = blChips.call(boardId)
-					.map(chip("x", "y")).toSet();
-			var blacklistedCores = blCores.call(boardId).toCollectingMap(
-					HashSet::new, chip("x", "y"), integer("p"));
-			var blacklistedLinks = blLinks.call(boardId).toCollectingMap(
-					() -> noneOf(Direction.class), chip("x", "y"),
-					enumerate("direction", Direction.class));
+			var blacklistedChips =
+					stream(blChips.call(chip("x", "y"), boardId)).toSet();
+			var blacklistedCores =
+					stream(blCores.call(core("x", "y", "p"), boardId))
+					.toCollectingMap(
+							HashSet::new, c -> c.asChipLocation(),
+							c -> c.getP());
+			var blacklistedLinks =
+					stream(blLinks.call(DeadLink::new, boardId))
+					.toCollectingMap(
+							() -> noneOf(Direction.class), d -> d.location,
+							d -> d.direction);
 
 			if (blacklistedChips.isEmpty() && blacklistedCores.isEmpty()
 					&& blacklistedLinks.isEmpty()) {

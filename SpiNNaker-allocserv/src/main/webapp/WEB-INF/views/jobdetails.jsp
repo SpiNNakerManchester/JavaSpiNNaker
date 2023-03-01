@@ -154,6 +154,14 @@ limitations under the License.
 			value="${ job.machine }" escapeXml="true" /></a></td>
 </tr>
 </table>
+<c:if test="${ job.state != 'DESTROYED' }">
+<p>
+<form method="POST" action="${ deleteUri }">
+	<sec:csrfInput />
+	Reason: <input type="text" name="reason" />
+	<input type="submit" class="warningbutton" value="Destroy this job" />
+</form>
+</c:if>
 
 <jsp:include page="basicfooter.jsp" />
 </body>

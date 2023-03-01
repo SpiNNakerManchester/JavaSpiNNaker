@@ -21,8 +21,6 @@ import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.security.oauth2.core.oidc.IdTokenClaimNames.SUB;
 import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.PREFERRED_USERNAME;
-import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
-import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.COLLABRATORY;
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.INTERNAL;
@@ -43,11 +41,13 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.intercept.RunAsUserToken;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -164,6 +164,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			if (e.getMessage().contains("A UNIQUE constraint failed")) {
 				// Already exists; no big deal
 				return Optional.empty();
+			} else if (e.getMessage().contains("Duplicate entry")) {
+				return Optional.empty();
 			}
 			throw e;
 		}
@@ -267,7 +269,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	@Override
-	public Authentication updateAuthentication(SecurityContext ctx) {
+	public Authentication updateAuthentication(HttpServletRequest req,
+			SecurityContext ctx) {
 		var current = ctx.getAuthentication();
 		if (nonNull(current)) {
 			if (supports(current.getClass())) {
@@ -279,8 +282,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 					return updated;
 				}
 			} else if (!isUnsupportedAuthTokenClass(current.getClass())) {
-				log.warn("unexpected authentication type {} (token: {})",
-						current.getClass(), current);
+				log.warn("unexpected authentication type {} (token: {})"
+						+ "on request {}",
+						current.getClass(), current, req.getRequestURI());
 			}
 		}
 		return null;
@@ -495,14 +499,14 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 		private final Update loginSuccess = conn.update(MARK_LOGIN_SUCCESS);
 
-		private final Query loginFailure = conn.query(MARK_LOGIN_FAILURE);
+		private final Update loginFailure = conn.update(MARK_LOGIN_FAILURE);
 
 		private final Update createUser = conn.update(CREATE_USER);
 
 		private final Update createGroup =
 				conn.update(CREATE_GROUP_IF_NOT_EXISTS);
 
-		private final Query unlock = conn.query(UNLOCK_LOCKED_USERS);
+		private final Update unlock = conn.update(UNLOCK_LOCKED_USERS);
 
 		@Override
 		public void close() {
@@ -514,18 +518,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			getUserBlocked.close();
 			unlock.close();
 			super.close();
-		}
-
-		/**
-		 * Get a description of basic auth-related user data.
-		 *
-		 * @param username
-		 *            Who are we fetching for?
-		 * @return The DB row describing them. Includes {@code user_id},
-		 *         {@code disabled} and {@code locked}.
-		 */
-		Optional<Row> getUser(String username) {
-			return getUserBlocked.call1(username);
 		}
 
 		/**
@@ -568,23 +560,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 
 		/**
-		 * Get the extended auth-related user data.
-		 *
-		 * @param userId
-		 *            Who are we fetching for?
-		 * @return The DB row describing them. Includes {@code has_password} and
-		 *         {@code trust_level}.
-		 */
-		Row getUserAuthorities(int userId) {
-			/*
-			 * I believe the NoSuchElementException can never be thrown; caller
-			 * checks the password, we just got the userId from the DB, and
-			 * we're in a transaction so the world won't change under our feet.
-			 */
-			return userAuthorities.call1(userId).orElseThrow();
-		}
-
-		/**
 		 * Tells the database that the user login worked. This is necessary
 		 * because the DB can't perform the password check itself.
 		 *
@@ -623,17 +598,12 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 *            gets a temporary lock applied.
 		 */
 		void noteLoginFailureForUser(int userId, String username) {
-			if (loginFailure.call1(authProps.getMaxLoginFailures(), userId)
-					.map(bool("locked")).orElse(false)) {
-				log.warn("automatically locking user {} for {}", username,
-						authProps.getAccountLockDuration());
-			}
+			loginFailure.call(authProps.getMaxLoginFailures(), userId);
+			// TODO check if that locked; MySQL doesn't have RETURNING clauses
 		}
 
 		void unlock() {
-			unlock.call(authProps.getAccountLockDuration())
-					.map(string("user_name")).forEach(user -> log
-							.info("automatically unlocked user {}", user));
+			unlock.call(authProps.getAccountLockDuration());
 		}
 	}
 
@@ -659,6 +629,12 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			super(sql.getConnection());
 			try (var make = conn.update(GROUP_SYNC_MAKE_TEMP_TABLE)) {
 				make.call();
+			} catch (BadSqlGrammarException e) {
+				if (!e.getMessage().contains("already exists")) {
+					throw e;
+				}
+				log.warn("Group temp table already exists ("
+						+ e.getMessage() + ")");
 			}
 			insert = conn.update(GROUP_SYNC_INSERT_TEMP_ROW);
 			add = conn.update(GROUP_SYNC_ADD_GROUPS);
@@ -925,6 +901,21 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				}, () -> false);
 	}
 
+	private static class AuthInfo {
+
+		final String encryptedPassword;
+
+		final TrustLevel trustLevel;
+
+		final String openIdSubject;
+
+		AuthInfo(Row row) {
+			encryptedPassword = row.getString("encrypted_password");
+			trustLevel = row.getEnum("trust_level", TrustLevel.class);
+			openIdSubject = row.getString("openid_subject");
+		}
+	}
+
 	/**
 	 * Look up a local user. Does all checks <em>except</em> the password check;
 	 * that's slow (because bcrypt) so we do it outside the transaction. This
@@ -941,34 +932,36 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 */
 	private static Optional<LocalAuthResult> lookUpUserDetails(String username,
 			AuthQueries queries) {
-		return ifElse(queries.getUser(username), userInfo -> {
-			int userId = userInfo.getInt("user_id");
-			if (userInfo.getBoolean("disabled")) {
+		return queries.getUserBlocked.call1(row -> {
+			int userId = row.getInt("user_id");
+			if (row.getBoolean("disabled")) {
 				log.info("login failure for {}: account is disabled", username);
 				throw new DisabledException("account is disabled");
 			}
 			try {
-				if (userInfo.getBoolean("locked")) {
+				if (row.getBoolean("locked")) {
 					// Note that this extends the lock!
 					throw new LockedException("account is locked");
 				}
-				var authInfo = queries.getUserAuthorities(userId);
-				var encPass = authInfo.getString("encrypted_password");
+				var authInfo = queries.userAuthorities.call1(AuthInfo::new,
+						userId).get();
+				var encPass = authInfo.encryptedPassword;
 				if (isNull(encPass)) {
 					/*
 					 * We know this user, but they can't use this authentication
 					 * method. They'll probably have to use OpenID.
 					 */
-					return Optional.empty();
+					return null;
 				}
-				var trust = authInfo.getEnum("trust_level", TrustLevel.class);
-				return Optional.of(new LocalAuthResult(userId, trust, encPass));
+				var trust = authInfo.trustLevel;
+				log.info("User trust level is " + trust);
+				return new LocalAuthResult(userId, trust, encPass);
 			} catch (AuthenticationException e) {
 				queries.noteLoginFailureForUser(userId, username);
 				log.info("login failure for {}", username, e);
 				throw e;
 			}
-		}, Optional::empty);
+		}, username);
 	}
 
 	/**
@@ -1023,7 +1016,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		var collabs = new ArrayList<String>();
 		var orgs = new ArrayList<String>();
 		authorities.forEach(ga -> inflateGroup(ga, collabs, orgs, queries));
-		return ifElse(queries.getUser(username), userInfo -> {
+		boolean ok = queries.getUserBlocked.call1(userInfo -> {
+			log.info("Found user " + username + " in database");
 			int userId = userInfo.getInt("user_id");
 			synchExternalGroups(username, userId, orgs, collabs, queries);
 			if (userInfo.getBoolean("disabled")) {
@@ -1035,16 +1029,16 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 					// Note that this extends the lock!
 					throw new LockedException("account is locked");
 				}
-				var authInfo = queries.getUserAuthorities(userId);
-				if (nonNull(authInfo.getString("encrypted_password"))) {
+				var authInfo = queries.userAuthorities.call1(AuthInfo::new,
+						userId).get();
+				if (nonNull(authInfo.encryptedPassword)) {
 					/*
 					 * We know this user, but they can't use this authentication
 					 * method. They'll probably have to use username+password.
 					 */
 					return false;
 				}
-				checkSubject(username, subject,
-						authInfo.getString("openid_subject"));
+				checkSubject(username, subject,	authInfo.openIdSubject);
 				queries.noteLoginSuccessForUser(userId, subject);
 				log.info("login success for {}", username);
 				return true;
@@ -1053,23 +1047,27 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				log.info("login failure for {}", username, e);
 				throw e;
 			}
-		}, () -> {
-			/*
-			 * No such user; need to inflate one now. If we successfully make
-			 * the user, they're also immediately authorised as they're
-			 * definitely not disabled or locked.
-			 */
-			return ifElse(queries.createUser(username, null, USER, subject),
-					id -> {
-						synchExternalGroups(username, id, orgs, collabs,
-								queries);
-						return true;
-					}, () -> {
-						// Can't note a failure; no record to note it in!
-						log.warn("failed to make user {}", username);
-						return false;
-					});
-		});
+		}, username).get();
+
+		if (ok) {
+			return true;
+		}
+
+		/*
+		 * No such user; need to inflate one now. If we successfully make
+		 * the user, they're also immediately authorised as they're
+		 * definitely not disabled or locked.
+		 */
+		return ifElse(queries.createUser(username, null, USER, subject),
+				id -> {
+					synchExternalGroups(username, id, orgs, collabs,
+							queries);
+					return true;
+				}, () -> {
+					// Can't note a failure; no record to note it in!
+					log.warn("failed to make user {}", username);
+					return false;
+				});
 	}
 
 	/**

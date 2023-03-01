@@ -662,13 +662,13 @@ class FirmwareDefinition {
 	List<String> bitfileNames;
 
 	/** Where to load each of the bitfiles from. */
-	private Map<String, Resource> bitFiles = new HashMap<>();
+	private final Map<String, Resource> bitFiles = new HashMap<>();
 
 	/**
 	 * What the intended modification time of each of the bitfiles is. From the
 	 * manifest, because actual file modification times are broken.
 	 */
-	private Map<String, Integer> modTimes = new HashMap<>();
+	private final Map<String, Integer> modTimes = new HashMap<>();
 
 	@PostConstruct
 	private void loadManifest() throws IOException {

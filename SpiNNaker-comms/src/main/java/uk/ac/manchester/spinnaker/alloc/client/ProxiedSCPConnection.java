@@ -15,6 +15,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.client;
 
+import static java.lang.String.format;
 import static java.util.Objects.isNull;
 
 import java.io.EOFException;
@@ -46,14 +47,17 @@ final class ProxiedSCPConnection extends SCPConnection {
 	 *            Which ethernet chip in the job are we talking to?
 	 * @param ws
 	 *            The proxy handle.
+	 * @param remoteAddr
+	 *            The remote address of the chip on the machine.
 	 * @throws IOException
 	 *             If we couldn't finish setting up our networking.
 	 * @throws InterruptedException
 	 *             If interrupted while things were setting up.
 	 */
-	ProxiedSCPConnection(ChipLocation chip, ProxyProtocolClient ws)
+	ProxiedSCPConnection(ChipLocation chip, ProxyProtocolClient ws,
+			InetAddress remoteAddr)
 			throws IOException, InterruptedException {
-		super(chip);
+		super(chip, remoteAddr);
 		this.ws = ws;
 		receiveQueue = new LinkedBlockingQueue<>();
 		channel = ws.openChannel(chip, SCP_SCAMP_PORT, receiveQueue);
@@ -111,5 +115,10 @@ final class ProxiedSCPConnection extends SCPConnection {
 	@Override
 	public void closeEventually() {
 		closeAndLogNoExcept();
+	}
+
+	@Override
+	public String toString() {
+		return format("%s via Proxy %s", super.toString(), channel);
 	}
 }

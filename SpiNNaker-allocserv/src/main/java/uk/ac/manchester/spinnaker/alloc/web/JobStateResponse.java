@@ -25,7 +25,6 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_
 import java.io.IOException;
 import java.net.URI;
 import java.time.Instant;
-import java.util.Optional;
 
 import org.springframework.dao.DataAccessException;
 
@@ -96,7 +95,7 @@ public class JobStateResponse {
 
 	private static CreateJobRequest origRequest(JsonMapper mapper, Job job) {
 		try {
-			Optional<byte[]> data = job.getOriginalRequest();
+			var data = job.getOriginalRequest();
 			if (!data.isPresent()) {
 				return null;
 			}

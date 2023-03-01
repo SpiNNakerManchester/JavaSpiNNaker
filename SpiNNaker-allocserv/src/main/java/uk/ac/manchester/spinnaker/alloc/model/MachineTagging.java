@@ -20,6 +20,7 @@ import static java.util.stream.Collectors.joining;
 
 import java.net.URI;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -27,7 +28,6 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import jakarta.validation.constraints.NotBlank;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
-import uk.ac.manchester.spinnaker.utils.MappableIterable;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -103,8 +103,10 @@ public class MachineTagging {
 	}
 
 	/** @param tags The tags of the machine. */
-	public void setTags(MappableIterable<String> tags) {
-		this.tags = tags.toSet();
+	public void setTags(List<String> tags) {
+		for (var tag : tags) {
+			this.tags.add(tag);
+		}
 	}
 
 	/**

@@ -20,7 +20,6 @@ import static java.util.Objects.nonNull;
 import static java.util.function.Function.identity;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
-import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 
 import java.net.URI;
 import java.security.Principal;
@@ -51,7 +50,6 @@ import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.security.PasswordServices;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
-import uk.ac.manchester.spinnaker.utils.MappableIterable;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -77,12 +75,12 @@ public class UserControl extends DatabaseAwareBean {
 			super.close();
 		}
 
-		MappableIterable<Row> allUsers() {
-			return allUsers.call();
+		List<UserRecord> allUsers() {
+			return allUsers.call(UserControl::sketchUser);
 		}
 
-		MappableIterable<Row> allUsers(boolean internal) {
-			return allUsersOfType.call(internal);
+		List<UserRecord> allUsers(boolean internal) {
+			return allUsersOfType.call(UserControl::sketchUser, internal);
 		}
 	}
 
@@ -118,8 +116,8 @@ public class UserControl extends DatabaseAwareBean {
 		 * @return Database row, if user exists.
 		 * @see SQLQueries#GET_USER_DETAILS
 		 */
-		Optional<Row> getUser(int id) {
-			return getUserDetails.call1(id);
+		Optional<UserRecord> getUser(int id) {
+			return getUserDetails.call1(UserControl::sketchUser, id);
 		}
 
 		Function<UserRecord, UserRecord>
@@ -128,8 +126,9 @@ public class UserControl extends DatabaseAwareBean {
 				return identity();
 			}
 			return user -> {
-				user.setGroups(getMembershipsOfUser.call(user.getUserId())
-						.map(UserControl::member).toMap(TreeMap::new,
+				user.setGroups(Row.stream(getMembershipsOfUser.call(
+						UserControl::member, user.getUserId()))
+						.toMap(TreeMap::new,
 								MemberRecord::getGroupName, urlGen));
 				return user;
 			};
@@ -175,9 +174,10 @@ public class UserControl extends DatabaseAwareBean {
 	}
 
 	private final class UpdatePassSQL extends UserCheckSQL {
-		private Query getPasswordedUser = conn.query(GET_LOCAL_USER_DETAILS);
+		private final Query getPasswordedUser =
+				conn.query(GET_LOCAL_USER_DETAILS);
 
-		private Update setPassword = conn.update(SET_USER_PASS);
+		private final Update setPassword = conn.update(SET_USER_PASS);
 
 		@Override
 		public void close() {
@@ -214,9 +214,9 @@ public class UserControl extends DatabaseAwareBean {
 
 		private final Update insertGroup = conn.update(CREATE_GROUP);
 
-		private final Query updateGroup = conn.query(UPDATE_GROUP);
+		private final Update updateGroup = conn.update(UPDATE_GROUP);
 
-		private final Query deleteGroup = conn.query(DELETE_GROUP);
+		private final Update deleteGroup = conn.update(DELETE_GROUP);
 
 		@Override
 		public void close() {
@@ -230,20 +230,20 @@ public class UserControl extends DatabaseAwareBean {
 			super.close();
 		}
 
-		MappableIterable<Row> listGroups() {
-			return listGroups.call();
+		List<GroupRecord> listGroups() {
+			return listGroups.call(GroupRecord::new);
 		}
 
-		MappableIterable<Row> listGroups(GroupType type) {
-			return listGroupsOfType.call(type);
+		List<GroupRecord> listGroups(GroupType type) {
+			return listGroupsOfType.call(GroupRecord::new, type);
 		}
 
-		Optional<Row> getGroupId(int id) {
-			return getGroupId.call1(id);
+		Optional<GroupRecord> getGroupId(int id) {
+			return getGroupId.call1(GroupRecord::new, id);
 		}
 
-		Optional<Row> getGroupName(String name) {
-			return getGroupName.call1(name);
+		Optional<GroupRecord> getGroupName(String name) {
+			return getGroupName.call1(GroupRecord::new, name);
 		}
 
 		Optional<Integer> insertGroup(String name, Optional<Long> quota,
@@ -251,13 +251,20 @@ public class UserControl extends DatabaseAwareBean {
 			return insertGroup.key(name, quota, groupType);
 		}
 
-		public Optional<Row> updateGroup(int id, String name,
+		public Optional<GroupRecord> updateGroup(int id, String name,
 				Optional<Long> quota) {
-			return updateGroup.call1(name, quota.orElse(null), id);
+			if (updateGroup.call(name, quota.orElse(null), id) == 0) {
+				return Optional.empty();
+			}
+			return getGroupId(id);
 		}
 
-		Optional<Row> deleteGroup(int id) {
-			return deleteGroup.call1(id);
+		Optional<String> deleteGroup(int id) {
+			return getGroupId.call1(row -> {
+				// Order matters! Get the name before the delete
+				var groupName = row.getString("group_name");
+				return deleteGroup.call(id) == 1 ? groupName : null;
+			}, id);
 		}
 
 		Function<GroupRecord, GroupRecord>
@@ -266,8 +273,9 @@ public class UserControl extends DatabaseAwareBean {
 				return identity();
 			}
 			return group -> {
-				group.setMembers(getUsers.call(group.getGroupId())
-						.map(UserControl::member).toMap(TreeMap::new,
+				group.setMembers(Row.stream(getUsers.call(
+						UserControl::member, group.getGroupId()))
+						.toMap(TreeMap::new,
 								MemberRecord::getUserName, urlGen));
 				return group;
 			};
@@ -292,8 +300,7 @@ public class UserControl extends DatabaseAwareBean {
 	 */
 	public List<UserRecord> listUsers() {
 		try (var sql = new AllUsersSQL()) {
-			return sql.transactionRead(
-					() -> sql.allUsers().map(UserControl::sketchUser).toList());
+			return sql.transactionRead(() -> sql.allUsers());
 		}
 	}
 
@@ -308,8 +315,7 @@ public class UserControl extends DatabaseAwareBean {
 	 */
 	public List<UserRecord> listUsers(boolean internal) {
 		try (var sql = new AllUsersSQL()) {
-			return sql.transactionRead(() -> sql.allUsers(internal)
-					.map(UserControl::sketchUser).toList());
+			return sql.transactionRead(() -> sql.allUsers(internal));
 		}
 	}
 
@@ -323,7 +329,7 @@ public class UserControl extends DatabaseAwareBean {
 	public Map<String, URI> listUsers(Function<UserRecord, URI> uriMapper) {
 		try (var sql = new AllUsersSQL()) {
 			return sql.transactionRead(
-					() -> sql.allUsers().map(UserControl::sketchUser).toMap(
+					() -> Row.stream(sql.allUsers()).toMap(
 							TreeMap::new, UserRecord::getUserName, uriMapper));
 		}
 	}
@@ -341,8 +347,7 @@ public class UserControl extends DatabaseAwareBean {
 	public Map<String, URI> listUsers(boolean internal,
 			Function<UserRecord, URI> uriMapper) {
 		try (var sql = new AllUsersSQL()) {
-			return sql.transactionRead(() -> sql.allUsers(internal)
-					.map(UserControl::sketchUser)
+			return sql.transactionRead(() -> Row.stream(sql.allUsers(internal))
 					.toMap(TreeMap::new, UserRecord::getUserName, uriMapper));
 		}
 	}
@@ -376,7 +381,7 @@ public class UserControl extends DatabaseAwareBean {
 		return sql
 				.createUser(user.getUserName(), encPass, user.getTrustLevel(),
 						!user.getEnabled(), user.getOpenIdSubject())
-				.flatMap(sql::getUser).map(UserRecord::new);
+				.flatMap(sql::getUser);
 	}
 
 	/**
@@ -399,7 +404,7 @@ public class UserControl extends DatabaseAwareBean {
 
 	private Optional<UserRecord> getUser(int id,
 			Function<MemberRecord, URI> urlGen, UserCheckSQL sql) {
-		return sql.getUserDetails.call1(id).map(UserRecord::new)
+		return sql.getUserDetails.call1(UserRecord::new, id)
 				.map(sql.populateMemberships(urlGen));
 	}
 
@@ -423,7 +428,7 @@ public class UserControl extends DatabaseAwareBean {
 
 	private Optional<UserRecord> getUser(String user,
 			Function<MemberRecord, URI> urlGen, UserCheckSQL sql) {
-		return sql.getUserDetailsByName.call1(user).map(UserRecord::new)
+		return sql.getUserDetailsByName.call1(UserRecord::new, user)
 				.map(sql.populateMemberships(urlGen));
 	}
 
@@ -454,7 +459,7 @@ public class UserControl extends DatabaseAwareBean {
 
 	// Use this for looking up the current user, who should exist!
 	private static int getCurrentUserId(UserCheckSQL sql, String userName) {
-		return sql.userCheck.call1(userName).map(integer("user_id"))
+		return sql.userCheck.call1(integer("user_id"), userName)
 				.orElseThrow(() -> new RuntimeException(
 						"current user has unexpectedly vanshed"));
 	}
@@ -512,8 +517,7 @@ public class UserControl extends DatabaseAwareBean {
 			}
 		}
 
-		return sql.getUser(id).map(UserRecord::new)
-				.map(sql.populateMemberships(urlGen));
+		return sql.getUser(id).map(sql.populateMemberships(urlGen));
 	}
 
 	/**
@@ -534,11 +538,11 @@ public class UserControl extends DatabaseAwareBean {
 					// May not delete yourself!
 					return Optional.empty();
 				}
-				return sql.getUserName.call1(id).map(row -> {
+				return sql.getUserName.call1(row -> {
 					// Order matters! Get the name before the delete
 					var userName = row.getString("user_name");
 					return sql.deleteUser.call(id) == 1 ? userName : null;
-				});
+				}, id);
 			});
 		}
 	}
@@ -562,8 +566,9 @@ public class UserControl extends DatabaseAwareBean {
 			throws AuthenticationException {
 		try (var c = getConnection();
 				var q = c.query(GET_LOCAL_USER_DETAILS)) {
-			return c.transaction(false, () -> q.call1(principal.getName())
-					.map(UserControl::passChange).orElseThrow(
+			return c.transaction(false,
+					() -> q.call1(UserControl::passChange, principal.getName())
+					.orElseThrow(
 							// OpenID-authenticated user; go away
 							() -> new AuthenticationServiceException(
 									"user is managed externally; "
@@ -627,7 +632,7 @@ public class UserControl extends DatabaseAwareBean {
 			PasswordChangeRecord user, UpdatePassSQL sql) {
 		var result = sql
 				.transaction(() -> sql.getPasswordedUser
-						.call1(principal.getName()).map(GetUserResult::new))
+						.call1(GetUserResult::new, principal.getName()))
 				.orElseThrow(
 						// OpenID-authenticated user; go away
 						() -> new AuthenticationServiceException(
@@ -662,8 +667,7 @@ public class UserControl extends DatabaseAwareBean {
 	 */
 	public List<GroupRecord> listGroups() {
 		try (var sql = new GroupsSQL()) {
-			return sql.transactionRead(
-					() -> sql.listGroups().map(GroupRecord::new).toList());
+			return sql.transactionRead(() -> sql.listGroups());
 		}
 	}
 
@@ -677,8 +681,7 @@ public class UserControl extends DatabaseAwareBean {
 	 */
 	public List<GroupRecord> listGroups(GroupType type) {
 		try (var sql = new GroupsSQL()) {
-			return sql.transactionRead(
-					() -> sql.listGroups(type).map(GroupRecord::new).toList());
+			return sql.transactionRead(() -> sql.listGroups(type));
 		}
 	}
 
@@ -691,8 +694,7 @@ public class UserControl extends DatabaseAwareBean {
 	 */
 	public Map<String, URI> listGroups(Function<GroupRecord, URI> uriMapper) {
 		try (var sql = new GroupsSQL()) {
-			return sql.transactionRead(() -> sql.listGroups()
-					.map(GroupRecord::new)
+			return sql.transactionRead(() -> Row.stream(sql.listGroups())
 					.toMap(TreeMap::new, GroupRecord::getGroupName, uriMapper));
 		}
 	}
@@ -709,8 +711,7 @@ public class UserControl extends DatabaseAwareBean {
 	public Map<String, URI> listGroups(GroupType type,
 			Function<GroupRecord, URI> uriMapper) {
 		try (var sql = new GroupsSQL()) {
-			return sql.transactionRead(() -> sql.listGroups(type)
-					.map(GroupRecord::new)
+			return sql.transactionRead(() -> Row.stream(sql.listGroups(type))
 					.toMap(TreeMap::new, GroupRecord::getGroupName, uriMapper));
 		}
 	}
@@ -730,7 +731,7 @@ public class UserControl extends DatabaseAwareBean {
 			Function<MemberRecord, URI> urlGen) {
 		try (var sql = new GroupsSQL()) {
 			return sql.transactionRead(
-					() -> sql.getGroupId(id).map(GroupRecord::new)
+					() -> sql.getGroupId(id)
 							.map(sql.populateMemberships(urlGen)));
 		}
 	}
@@ -750,7 +751,7 @@ public class UserControl extends DatabaseAwareBean {
 			Function<MemberRecord, URI> urlGen) {
 		try (var sql = new GroupsSQL()) {
 			return sql.transactionRead(
-					() -> sql.getGroupName(name).map(GroupRecord::new)
+					() -> sql.getGroupName(name)
 							.map(sql.populateMemberships(urlGen)));
 		}
 	}
@@ -773,7 +774,7 @@ public class UserControl extends DatabaseAwareBean {
 			return sql.transaction(() -> sql
 					.insertGroup(groupTemplate.getGroupName(),
 							groupTemplate.getQuota(), type)
-					.flatMap(sql::getGroupId).map(GroupRecord::new));
+					.flatMap(sql::getGroupId));
 		}
 	}
 
@@ -795,7 +796,6 @@ public class UserControl extends DatabaseAwareBean {
 		try (var sql = new GroupsSQL()) {
 			return sql.transaction(() -> sql
 					.updateGroup(id, group.getGroupName(), group.getQuota())
-					.map(GroupRecord::new)
 					.map(sql.populateMemberships(urlGen)));
 		}
 	}
@@ -811,7 +811,7 @@ public class UserControl extends DatabaseAwareBean {
 	public Optional<String> deleteGroup(int groupId) {
 		try (var sql = new GroupsSQL()) {
 			return sql.transaction(
-					() -> sql.deleteGroup(groupId).map(string("group_name")));
+					() -> sql.deleteGroup(groupId));
 		}
 	}
 
@@ -902,7 +902,7 @@ public class UserControl extends DatabaseAwareBean {
 		try (var c = getConnection();
 				var q = c.query(GET_MEMBERSHIP)) {
 			mr = c.transaction(false,
-					() -> q.call1(memberId).map(UserControl::member));
+					() -> q.call1(UserControl::member, memberId));
 		}
 		mr.ifPresent(member -> {
 			if (nonNull(groupUriGen)) {

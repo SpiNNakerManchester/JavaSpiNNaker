@@ -20,7 +20,7 @@ limitations under the License.
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.ac.manchester.spinnaker</groupId>
 	<artifactId>SpiNNaker</artifactId>
-	<version>6.0.1-SNAPSHOT</version>
+	<version>7.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -32,15 +32,15 @@ limitations under the License.
 		<!-- What does the CheckForFIXME profile look for? -->
 		<forbidden.keywords.re>FIXME|Auto-generated method stub</forbidden.keywords.re>
 
-		<spinnaker.version>6.0.1-SNAPSHOT</spinnaker.version>
+		<spinnaker.version>7.0.0-SNAPSHOT</spinnaker.version>
 
 		<junit.version>5.9.2</junit.version>
 		<checkstyle.version>10.3.3</checkstyle.version>
-		<javadoc.version>3.4.1</javadoc.version>
-		<testing.version>3.0.0-M8</testing.version>
+		<javadoc.version>3.5.0</javadoc.version>
+		<testing.version>3.0.0-M9</testing.version>
 
 		<slf4j.version>2.0.6</slf4j.version>
-		<log4j.version>2.19.0</log4j.version>
+		<log4j.version>2.20.0</log4j.version>
 
 		<spring.version>6.0.3</spring.version>
 		<spring.boot.version>3.0.1</spring.boot.version>
@@ -59,12 +59,14 @@ limitations under the License.
 		<jackson.version>2.14.2</jackson.version>
 		<jackson.doc.version>2.14</jackson.doc.version>
 		<sqlite.version>3.40.1.0</sqlite.version>
-		<keycloak.version>20.0.3</keycloak.version>
+		<keycloak.version>20.0.4</keycloak.version>
 		<swagger.version>4.15.5</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.3</jython.version>
 		<error-prone.version>2.18.0</error-prone.version>
 		<picocli.version>4.7.1</picocli.version>
+		<mysql.version>8.0.32</mysql.version>
+		<testcontainers.version>1.17.6</testcontainers.version>
 	</properties>
 
 	<dependencyManagement>
@@ -215,7 +217,7 @@ limitations under the License.
 			<dependency>
 				<groupId>org.json</groupId>
 				<artifactId>json</artifactId>
-				<version>20220924</version>
+				<version>20230227</version>
 			</dependency>
 			<dependency>
 				<groupId>org.skyscreamer</groupId>
@@ -374,7 +376,7 @@ limitations under the License.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.10.1</version>
+					<version>3.11.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -799,7 +801,7 @@ limitations under the License.
 	<name>SpiNNaker Java Host</name>
 	<description>Implementation of the host software for SpiNNaker in Java.</description>
 	<inceptionYear>2018</inceptionYear>
-	<url>http://spinnakermanchester.github.io/</url>
+	<url>https://spinnakermanchester.github.io/</url>
 	<organization>
 		<name>SpiNNaker Team @ University of Manchester</name>
 		<url>http://apt.cs.manchester.ac.uk/projects/SpiNNaker/</url>
@@ -832,7 +834,7 @@ limitations under the License.
 		<site>
 			<id>github-pages</id>
 			<name>GitHub Pages</name>
-			<url>http://spinnakermanchester.github.io/JavaSpiNNaker</url>
+			<url>https://spinnakermanchester.github.io/JavaSpiNNaker</url>
 		</site>
 	</distributionManagement>
 	<mailingLists>

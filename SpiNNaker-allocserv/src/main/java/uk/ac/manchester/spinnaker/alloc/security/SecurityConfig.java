@@ -106,7 +106,7 @@ public class SecurityConfig {
 
 	private static final ParameterizedTypeReference<
 			Map<String, Object>> PARAMETERIZED_RESPONSE_TYPE =
-					new ParameterizedTypeReference<Map<String, Object>>() {
+					new ParameterizedTypeReference<>() {
 					};
 
 	private static final MediaType DEFAULT_CONTENT_TYPE = MediaType

@@ -52,9 +52,9 @@ class PhysicalSerialMapping {
 	@Value("classpath:blacklists/spin5-serial.txt")
 	private Resource spin5serialFile;
 
-	private Map<String, String> physicalToLogical = new HashMap<>();
+	private final Map<String, String> physicalToLogical = new HashMap<>();
 
-	private Map<String, String> logicalToPhysical = new HashMap<>();
+	private final Map<String, String> logicalToPhysical = new HashMap<>();
 
 	@PostConstruct
 	void loadMapping() throws IOException {

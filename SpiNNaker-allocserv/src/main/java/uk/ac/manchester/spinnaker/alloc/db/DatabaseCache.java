@@ -45,10 +45,10 @@ import jakarta.annotation.PreDestroy;
 abstract class DatabaseCache<Conn extends Connection> {
 	private static final Logger log = getLogger(DatabaseCache.class);
 
-	private ThreadLocal<Conn> connectionCache =
+	private final ThreadLocal<Conn> connectionCache =
 			withInitial(this::generateCachedDatabaseConnection);
 
-	private List<CloserThread> closerThreads =
+	private final List<CloserThread> closerThreads =
 			synchronizedList(new ArrayList<>());
 
 	/**

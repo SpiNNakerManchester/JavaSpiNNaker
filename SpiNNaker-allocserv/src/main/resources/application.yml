@@ -74,8 +74,11 @@ cxf:
 spalloc:
   # Where we hold files that we write to
   working-directory: "."
-  # Where's the database?
-  database-path: ${spalloc.working-directory}/spalloc.sqlite3
+  # Where is the (JDBC) datasource?
+  datasource:
+    jdbc-url: jdbc:mysql://localhost:3306/spalloc
+    username: REPLACE_ME
+    password: REPLACE_ME
   # How long should long calls take before returning anyway?
   wait: 30s
   # Whether to pause ALL periodic callbacks; probably only useful for debugging
@@ -98,6 +101,11 @@ spalloc:
     # Cron-like expression to say when to run the migration task.
     # Defaults to overnight at 02:00 every day
     schedule: "0 0 2 * * *"
+    # The JDBC data source
+    datasource:
+      jdbc-url: jdbc:mysql://localhost:3306/spalloc_history
+      username: REPLACE_ME
+      password: REPLACE_ME
   keepalive:
     # How long between runs of the keepalive-expiry algorithm
     expiry-period: 30s

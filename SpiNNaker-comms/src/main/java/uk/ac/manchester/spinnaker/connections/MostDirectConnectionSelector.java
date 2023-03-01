@@ -65,8 +65,12 @@ public final class MostDirectConnectionSelector<C extends SCPSenderReceiver>
 			if (firstConnection == null || conn.getChip().equals(ROOT)) {
 				firstConnection = conn;
 			}
+			log.debug("Connection selector using connection {} for {}",
+					conn, conn.getChip());
 			this.connections.put(conn.getChip(), conn);
 		}
+		log.debug("Connection selector using connection {} as default",
+				firstConnection);
 		this.defaultConnection = firstConnection;
 	}
 
