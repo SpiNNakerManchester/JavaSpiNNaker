@@ -201,8 +201,8 @@ public interface SpallocJobAPI {
 		}
 		String bootHost = null;
 		for (var c : connInfo) {
-			if (c.getChip().equals(ZERO_ZERO)) {
-				bootHost = c.getHostname();
+			if (c.chip().equals(ZERO_ZERO)) {
+				bootHost = c.hostname();
 			}
 		}
 		if (bootHost == null) {
@@ -212,8 +212,8 @@ public interface SpallocJobAPI {
 				uk.ac.manchester.spinnaker.connections.model.Connection>();
 		connections.add(new BootConnection(getByName(bootHost), null));
 		for (var c : connInfo) {
-			connections.add(
-					new SCPConnection(c.getChip(), getByName(c.getHostname())));
+			connections
+					.add(new SCPConnection(c.chip(), getByName(c.hostname())));
 		}
 
 		return new Transceiver(ver, connections);
