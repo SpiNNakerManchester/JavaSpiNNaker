@@ -1902,7 +1902,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="GET_MACHINE_REPORTS">GET_MACHINE_REPORTS</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("machine_id")
-@ResultColumn("board_id") @ResultColumn("report_id") @ResultColumn("reported_issue") @ResultColumn("reporter_name") @ResultColumn("report_timestamp")
+@ResultColumn("board_id") @ResultColumn("report_id") @ResultColumn("reported_issue") @ResultColumn("report_timestamp") @ResultColumn("reporter_name")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GET_MACHINE_REPORTS</span></div>
 <div class="block">Get the problem reports about boards in a machine.</div>
 <dl>
@@ -1916,7 +1916,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="GET_BOARD_REPORTS">GET_BOARD_REPORTS</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("board_id")
-@ResultColumn("board_id") @ResultColumn("report_id") @ResultColumn("reported_issue") @ResultColumn("reporter_name") @ResultColumn("report_timestamp")
+@ResultColumn("board_id") @ResultColumn("report_id") @ResultColumn("reported_issue") @ResultColumn("report_timestamp") @ResultColumn("reporter_name")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GET_BOARD_REPORTS</span></div>
 <div class="block">Get the problem reports about a board.</div>
 <dl>
@@ -1955,7 +1955,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="ALLOCATE_BOARDS_JOB">ALLOCATE_BOARDS_JOB</a></h3>
-<div class="memberSignature"><span class="annotations">@Parameter("width") @Parameter("height") @Parameter("depth") @Parameter("board_id") @Parameter("num_boards") @Parameter("time_now") @Parameter("allocated_board_id") @Parameter("job_id")
+<div class="memberSignature"><span class="annotations">@Parameter("width") @Parameter("height") @Parameter("depth") @Parameter("board_id") @Parameter("num_boards") @Parameter("allocated_board_id") @Parameter("job_id")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">ALLOCATE_BOARDS_JOB</span></div>
 <div class="block">Tell a job that it is allocated. Doesn't set the state.</div>
 <dl>
@@ -2009,10 +2009,9 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="SET_BOARD_POWER_ON">SET_BOARD_POWER_ON</a></h3>
-<div class="memberSignature"><span class="annotations">@Parameter("time_now") @Parameter("board_id")
+<div class="memberSignature"><span class="annotations">@Parameter("board_id")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">SET_BOARD_POWER_ON</span></div>
-<div class="block">Set the power state of a board. Related timestamps are updated by
- trigger.</div>
+<div class="block">Set the power state of a board.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_BOARD_POWER_ON">Constant Field Values</a></dd>
@@ -2022,10 +2021,9 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="SET_BOARD_POWER_OFF">SET_BOARD_POWER_OFF</a></h3>
-<div class="memberSignature"><span class="annotations">@Parameter("board_power") @Parameter("time_now") @Parameter("board_id")
+<div class="memberSignature"><span class="annotations">@Parameter("board_id")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">SET_BOARD_POWER_OFF</span></div>
-<div class="block">Set the power state of a board. Related timestamps are updated by
- trigger.</div>
+<div class="block">Set the power state of a board.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_BOARD_POWER_OFF">Constant Field Values</a></dd>
@@ -2462,7 +2460,6 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="ADJUST_QUOTA">ADJUST_QUOTA</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("delta") @Parameter("group_id")
-@ResultColumn("group_name") @ResultColumn("quota")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">ADJUST_QUOTA</span></div>
 <div class="block">Add or remove time from a quota. Used when someone's administratively
  adjusting the quota.</div>
@@ -2819,8 +2816,6 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="MARK_LOGIN_FAILURE">MARK_LOGIN_FAILURE</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("failure_limit") @Parameter("user_id")
-@ResultColumn("locked")
-@SingleRowResult
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">MARK_LOGIN_FAILURE</span></div>
 <div class="block">Note the login failure.</div>
 <dl>
@@ -2834,7 +2829,6 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="UNLOCK_LOCKED_USERS">UNLOCK_LOCKED_USERS</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("lock_interval")
-@ResultColumn("user_name")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">UNLOCK_LOCKED_USERS</span></div>
 <div class="block">Unlock accounts.</div>
 <dl>
@@ -3043,7 +3037,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="INSERT_BOARD_REPORT">INSERT_BOARD_REPORT</a></h3>
-<div class="memberSignature"><span class="annotations">@Parameter("board_id") @Parameter("job_id") @Parameter("issue") @Parameter("user_id") @Parameter("time_now")
+<div class="memberSignature"><span class="annotations">@Parameter("board_id") @Parameter("job_id") @Parameter("issue") @Parameter("user_id")
 @GeneratesID
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">INSERT_BOARD_REPORT</span></div>
 <div class="block">Create a board issue report.</div>
@@ -3447,7 +3441,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="READ_HISTORICAL_ALLOCS">READ_HISTORICAL_ALLOCS</a></h3>
-<div class="memberSignature"><span class="annotations">@Parameter("grace_period") @Parameter("time_now")
+<div class="memberSignature"><span class="annotations">@Parameter("grace_period")
 @ResultColumn("alloc_id") @ResultColumn("job_id") @ResultColumn("board_id") @ResultColumn("alloc_timestamp")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">READ_HISTORICAL_ALLOCS</span></div>
 <div class="block">Read historical allocations to be written to the historical data DB.
@@ -3462,7 +3456,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="READ_HISTORICAL_JOBS">READ_HISTORICAL_JOBS</a></h3>
-<div class="memberSignature"><span class="annotations">@Parameter("grace_period") @Parameter("time_now")
+<div class="memberSignature"><span class="annotations">@Parameter("grace_period")
 @ResultColumn("job_id") @ResultColumn("machine_id") @ResultColumn("owner") @ResultColumn("create_timestamp") @ResultColumn("width") @ResultColumn("height") @ResultColumn("depth") @ResultColumn("allocated_root") @ResultColumn("keepalive_interval") @ResultColumn("keepalive_host") @ResultColumn("death_reason") @ResultColumn("death_timestamp") @ResultColumn("original_request") @ResultColumn("allocation_timestamp") @ResultColumn("allocation_size") @ResultColumn("machine_name") @ResultColumn("user_name") @ResultColumn("group_id") @ResultColumn("group_name")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">READ_HISTORICAL_JOBS</span></div>
 <div class="block">Read historical jobs to be written to the historical data DB.
@@ -3476,7 +3470,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="WRITE_HISTORICAL_ALLOCS">WRITE_HISTORICAL_ALLOCS</a></h3>
-<div class="memberSignature"><span class="annotations">@Parameter("alloc_id") @Parameter("job_id") @Parameter("board_id") @Parameter("alloc_timestamp")
+<div class="memberSignature"><span class="annotations">@Parameter("alloc_id") @Parameter("job_id") @Parameter("board_id") @Parameter("allocation_timestamp")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">WRITE_HISTORICAL_ALLOCS</span></div>
 <div class="block">Write to the historical allocations database.</div>
 <dl>
@@ -3488,7 +3482,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="WRITE_HISTORICAL_JOBS">WRITE_HISTORICAL_JOBS</a></h3>
-<div class="memberSignature"><span class="annotations">@Parameter("job_id") @Parameter("machine_id") @Parameter("owner") @Parameter("create_timestamp") @Parameter("width") @Parameter("height") @Parameter("depth") @Parameter("allocated_root") @Parameter("keepalive_interval") @Parameter("keepalive_host") @Parameter("death_reason") @Parameter("death_timestamp") @Parameter("original_request") @Parameter("allocation_timestamp") @Parameter("allocation_size") @Parameter("machine_name") @Parameter("user_name") @Parameter("group_id") @Parameter("group_name")
+<div class="memberSignature"><span class="annotations">@Parameter("job_id") @Parameter("machine_id") @Parameter("owner") @Parameter("create_timestamp") @Parameter("width") @Parameter("height") @Parameter("depth") @Parameter("root_id") @Parameter("keepalive_interval") @Parameter("keepalive_host") @Parameter("death_reason") @Parameter("death_timestamp") @Parameter("original_request") @Parameter("allocation_timestamp") @Parameter("allocation_size") @Parameter("machine_name") @Parameter("owner_name") @Parameter("group_id") @Parameter("group_name")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">WRITE_HISTORICAL_JOBS</span></div>
 <div class="block">Write to the historical jobs database.</div>
 <dl>
@@ -3549,7 +3543,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="issueChangeForJob">issueChangeForJob</a></h3>
-<div class="memberSignature"><span class="annotations">@Parameter("job_id") @Parameter("board_id") @Parameter("from_state") @Parameter("to_state") @Parameter("power") @Parameter("fpga_n") @Parameter("fpga_s") @Parameter("fpga_e") @Parameter("fpga_w") @Parameter("fpga_nw") @Parameter("fpga_se")
+<div class="memberSignature"><span class="annotations">@Parameter("job_id") @Parameter("board_id") @Parameter("from_state") @Parameter("to_state") @Parameter("power") @Parameter("fpga_n") @Parameter("fpga_e") @Parameter("fpga_se") @Parameter("fpga_s") @Parameter("fpga_w") @Parameter("fpga_nw")
 @GeneratesID
 <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Value.html?is-external=true" title="class or interface in org.springframework.beans.factory.annotation" class="externalLink">@Value</a>("classpath:queries/issue_change_for_job.sql")
 </span><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></span>&nbsp;<span class="memberName">issueChangeForJob</span></div>
@@ -3597,7 +3591,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="findBoardByGlobalChip">findBoardByGlobalChip</a></h3>
-<div class="memberSignature"><span class="annotations">@Parameter("machine_id") @Parameter("chip_x") @Parameter("chip_y")
+<div class="memberSignature"><span class="annotations">@Parameter("machine_id") @Parameter("x") @Parameter("y")
 @ResultColumn("board_id") @ResultColumn("address") @ResultColumn("bmp_id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("job_id") @ResultColumn("machine_name") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("board_num") @ResultColumn("chip_x") @ResultColumn("chip_y") @ResultColumn("board_chip_x") @ResultColumn("board_chip_y") @ResultColumn("job_root_chip_x") @ResultColumn("job_root_chip_y")
 @SingleRowResult
 <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Value.html?is-external=true" title="class or interface in org.springframework.beans.factory.annotation" class="externalLink">@Value</a>("classpath:queries/find_board_by_global_chip.sql")
@@ -3613,7 +3607,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="findBoardByJobChip">findBoardByJobChip</a></h3>
-<div class="memberSignature"><span class="annotations">@Parameter("job_id") @Parameter("root_board_id") @Parameter("chip_x") @Parameter("chip_y")
+<div class="memberSignature"><span class="annotations">@Parameter("job_id") @Parameter("board_id") @Parameter("x") @Parameter("y")
 @ResultColumn("board_id") @ResultColumn("address") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("job_id") @ResultColumn("machine_name") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("board_num") @ResultColumn("chip_x") @ResultColumn("chip_y") @ResultColumn("board_chip_x") @ResultColumn("board_chip_y")
 @SingleRowResult
 <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Value.html?is-external=true" title="class or interface in org.springframework.beans.factory.annotation" class="externalLink">@Value</a>("classpath:queries/find_board_by_job_chip.sql")
@@ -3677,7 +3671,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="getJobsWithChanges">getJobsWithChanges</a></h3>
-<div class="memberSignature"><span class="annotations">@Parameter("machine_id") @Parameter("time_now")
+<div class="memberSignature"><span class="annotations">@Parameter("machine_id")
 @ResultColumn("job_id")
 <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Value.html?is-external=true" title="class or interface in org.springframework.beans.factory.annotation" class="externalLink">@Value</a>("classpath:queries/get_jobs_with_changes.sql")
 </span><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></span>&nbsp;<span class="memberName">getJobsWithChanges</span></div>

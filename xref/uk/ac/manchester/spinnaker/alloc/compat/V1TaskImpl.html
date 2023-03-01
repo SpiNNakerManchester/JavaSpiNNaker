@@ -245,14 +245,14 @@
 <a class="jxr_linenumber" name="L237" href="#L237">237</a> 	@Override
 <a class="jxr_linenumber" name="L238" href="#L238">238</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> Optional&lt;Integer&gt; createJobNumBoards(<strong class="jxr_keyword">int</strong> numBoards,
 <a class="jxr_linenumber" name="L239" href="#L239">239</a> 			Map&lt;String, Object&gt; kwargs, byte[] cmd) <strong class="jxr_keyword">throws</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a> {
-<a class="jxr_linenumber" name="L240" href="#L240">240</a> 		Integer maxDead = parseDec(kwargs.get(<span class="jxr_string">"max_dead_boards"</span>));
+<a class="jxr_linenumber" name="L240" href="#L240">240</a> 		<strong class="jxr_keyword">var</strong> maxDead = parseDec(kwargs.get(<span class="jxr_string">"max_dead_boards"</span>));
 <a class="jxr_linenumber" name="L241" href="#L241">241</a> 		<strong class="jxr_keyword">return</strong> createJob(<strong class="jxr_keyword">new</strong> CreateNumBoards(numBoards, maxDead), kwargs, cmd);
 <a class="jxr_linenumber" name="L242" href="#L242">242</a> 	}
 <a class="jxr_linenumber" name="L243" href="#L243">243</a> 
 <a class="jxr_linenumber" name="L244" href="#L244">244</a> 	@Override
 <a class="jxr_linenumber" name="L245" href="#L245">245</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> Optional&lt;Integer&gt; createJobRectangle(<strong class="jxr_keyword">int</strong> width, <strong class="jxr_keyword">int</strong> height,
 <a class="jxr_linenumber" name="L246" href="#L246">246</a> 			Map&lt;String, Object&gt; kwargs, byte[] cmd) <strong class="jxr_keyword">throws</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a> {
-<a class="jxr_linenumber" name="L247" href="#L247">247</a> 		Integer maxDead = parseDec(kwargs.get(<span class="jxr_string">"max_dead_boards"</span>));
+<a class="jxr_linenumber" name="L247" href="#L247">247</a> 		<strong class="jxr_keyword">var</strong> maxDead = parseDec(kwargs.get(<span class="jxr_string">"max_dead_boards"</span>));
 <a class="jxr_linenumber" name="L248" href="#L248">248</a> 		<strong class="jxr_keyword">return</strong> createJob(<strong class="jxr_keyword">new</strong> CreateDimensions(width, height, maxDead), kwargs,
 <a class="jxr_linenumber" name="L249" href="#L249">249</a> 				cmd);
 <a class="jxr_linenumber" name="L250" href="#L250">250</a> 	}

@@ -671,13 +671,13 @@
 <a class="jxr_linenumber" name="L663" href="#L663">663</a> 	List&lt;String&gt; bitfileNames;
 <a class="jxr_linenumber" name="L664" href="#L664">664</a> 
 <a class="jxr_linenumber" name="L665" href="#L665">665</a> 	<em class="jxr_javadoccomment">/** Where to load each of the bitfiles from. */</em>
-<a class="jxr_linenumber" name="L666" href="#L666">666</a> 	<strong class="jxr_keyword">private</strong> Map&lt;String, Resource&gt; bitFiles = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
+<a class="jxr_linenumber" name="L666" href="#L666">666</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Map&lt;String, Resource&gt; bitFiles = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
 <a class="jxr_linenumber" name="L667" href="#L667">667</a> 
 <a class="jxr_linenumber" name="L668" href="#L668">668</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L669" href="#L669">669</a> <em class="jxr_javadoccomment">	 * What the intended modification time of each of the bitfiles is. From the</em>
 <a class="jxr_linenumber" name="L670" href="#L670">670</a> <em class="jxr_javadoccomment">	 * manifest, because actual file modification times are broken.</em>
 <a class="jxr_linenumber" name="L671" href="#L671">671</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L672" href="#L672">672</a> 	<strong class="jxr_keyword">private</strong> Map&lt;String, Integer&gt; modTimes = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
+<a class="jxr_linenumber" name="L672" href="#L672">672</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Map&lt;String, Integer&gt; modTimes = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
 <a class="jxr_linenumber" name="L673" href="#L673">673</a> 
 <a class="jxr_linenumber" name="L674" href="#L674">674</a> 	@PostConstruct
 <a class="jxr_linenumber" name="L675" href="#L675">675</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> loadManifest() <strong class="jxr_keyword">throws</strong> IOException {

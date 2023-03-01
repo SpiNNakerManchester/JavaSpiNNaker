@@ -398,7 +398,7 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#ALLOCATE_BOARDS_JOB">ALLOCATE_BOARDS_JOB</a></code></th>
-<td class="colLast"><code>"UPDATE jobs SET width = :width, height = :height, depth = :depth, num_pending = 0, root_id = :board_id, allocation_size = :num_boards, allocation_timestamp = :time_now,allocated_root = :allocated_board_id WHERE job_id = :job_id"</code></td>
+<td class="colLast"><code>"UPDATE jobs SET width = :width, height = :height, depth = :depth, num_pending = 0, root_id = :board_id, allocation_size = :num_boards, allocation_timestamp = UNIX_TIMESTAMP(), allocated_root = :allocated_board_id WHERE job_id = :job_id"</code></td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.BUMP_IMPORTANCE">
@@ -587,7 +587,7 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#DESTROY_JOB">DESTROY_JOB</a></code></th>
-<td class="colLast"><code>"UPDATE jobs SET job_state = 4, death_reason = :death_reason, death_timestamp = :timestamp WHERE job_id = :job_id AND job_state != 4"</code></td>
+<td class="colLast"><code>"UPDATE jobs SET job_state = 4, death_reason = :death_reason, death_timestamp = UNIX_TIMESTAMP() WHERE job_id = :job_id AND job_state != 4"</code></td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.FAILED_BLACKLIST_OP">
@@ -629,7 +629,7 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#FIND_EXPIRED_JOBS">FIND_EXPIRED_JOBS</a></code></th>
-<td class="colLast"><code>"SELECT job_id FROM jobs WHERE job_state != 4 AND keepalive_timestamp + keepalive_interval &lt; :time_now"</code></td>
+<td class="colLast"><code>"SELECT job_id FROM jobs WHERE job_state != 4 AND keepalive_timestamp + keepalive_interval &lt; UNIX_TIMESTAMP()"</code></td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.FIND_FREE_BOARD">
@@ -1098,14 +1098,14 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#INSERT_BOARD_REPORT">INSERT_BOARD_REPORT</a></code></th>
-<td class="colLast"><code>"INSERT INTO board_reports(board_id, job_id, reported_issue, reporter, report_timestamp) VALUES(:board_id, :job_id, :issue, :user_id, :time_now)"</code></td>
+<td class="colLast"><code>"INSERT INTO board_reports(board_id, job_id, reported_issue, reporter, report_timestamp) VALUES(:board_id, :job_id, :issue, :user_id, UNIX_TIMESTAMP())"</code></td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.INSERT_JOB">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#INSERT_JOB">INSERT_JOB</a></code></th>
-<td class="colLast"><code>"INSERT INTO jobs(machine_id, owner, group_id, keepalive_interval, original_request, keepalive_timestamp, create_timestamp, job_state) VALUES(:machine_id, :user_id, :group_id, :keepalive_interval, :original_request, :keepalive_timestamp, :create_timestamp, 1)"</code></td>
+<td class="colLast"><code>"INSERT INTO jobs(machine_id, owner, group_id, keepalive_interval, original_request, keepalive_timestamp, create_timestamp, job_state) VALUES(:machine_id, :user_id, :group_id, :keepalive_interval, :original_request, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1)"</code></td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.INSERT_LINK">
@@ -1238,14 +1238,14 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#MARK_BOARD_BLACKLIST_CHANGED">MARK_BOARD_BLACKLIST_CHANGED</a></code></th>
-<td class="colLast"><code>"UPDATE boards SET blacklist_set_timestamp = :timestamp_now WHERE board_id = :board_id"</code></td>
+<td class="colLast"><code>"UPDATE boards SET blacklist_set_timestamp = UNIX_TIMESTAMP() WHERE board_id = :board_id"</code></td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.MARK_BOARD_BLACKLIST_SYNCHED">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#MARK_BOARD_BLACKLIST_SYNCHED">MARK_BOARD_BLACKLIST_SYNCHED</a></code></th>
-<td class="colLast"><code>"UPDATE boards SET blacklist_sync_timestamp = :timestamp_now WHERE board_id = :board_id"</code></td>
+<td class="colLast"><code>"UPDATE boards SET blacklist_sync_timestamp = UNIX_TIMESTAMP() WHERE board_id = :board_id"</code></td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.MARK_CONSOLIDATED">
@@ -1259,28 +1259,28 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#MARK_LOGIN_FAILURE">MARK_LOGIN_FAILURE</a></code></th>
-<td class="colLast"><code>"UPDATE user_info SET failure_count = failure_count + 1, last_fail_timestamp = :login_timestamp, locked = (failure_count + 1 &gt;= :failure_limit) WHERE user_id = :user_id"</code></td>
+<td class="colLast"><code>"UPDATE user_info SET failure_count = failure_count + 1, last_fail_timestamp = UNIX_TIMESTAMP(), locked = (failure_count + 1 &gt;= :failure_limit) WHERE user_id = :user_id"</code></td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.MARK_LOGIN_SUCCESS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#MARK_LOGIN_SUCCESS">MARK_LOGIN_SUCCESS</a></code></th>
-<td class="colLast"><code>"UPDATE user_info SET last_successful_login_timestamp = :login_timestamp, failure_count = 0, openid_subject = :openid_subject WHERE user_id = :user_id"</code></td>
+<td class="colLast"><code>"UPDATE user_info SET last_successful_login_timestamp = UNIX_TIMESTAMP(), failure_count = 0, openid_subject = :openid_subject WHERE user_id = :user_id"</code></td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.READ_HISTORICAL_ALLOCS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#READ_HISTORICAL_ALLOCS">READ_HISTORICAL_ALLOCS</a></code></th>
-<td class="colLast"><code>"SELECT\talloc_id, job_id, board_id, alloc_timestamp FROM old_board_allocations JOIN jobs USING (job_id) WHERE jobs.death_timestamp + :grace_period &lt; :time_now"</code></td>
+<td class="colLast"><code>"SELECT\talloc_id, job_id, board_id, alloc_timestamp FROM old_board_allocations JOIN jobs USING (job_id) WHERE jobs.death_timestamp + :grace_period &lt; UNIX_TIMESTAMP()"</code></td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.READ_HISTORICAL_JOBS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#READ_HISTORICAL_JOBS">READ_HISTORICAL_JOBS</a></code></th>
-<td class="colLast"><code>"SELECT job_id, machine_id, owner, create_timestamp, jobs.width as width, jobs.height as height, jobs.depth as depth,allocated_root, keepalive_interval, keepalive_host, death_reason, death_timestamp, original_request, allocation_timestamp, allocation_size, machine_name, user_name, group_id, group_name FROM jobs JOIN user_groups USING (group_id) JOIN machines USING (machine_id) JOIN user_info ON jobs.owner = user_info.user_id WHERE death_timestamp + :grace_period &lt; :time_now"</code></td>
+<td class="colLast"><code>"SELECT job_id, machine_id, owner, create_timestamp, jobs.width as width, jobs.height as height, jobs.depth as depth,allocated_root, keepalive_interval, keepalive_host, death_reason, death_timestamp, original_request, allocation_timestamp, allocation_size, machine_name, user_name, group_id, group_name FROM jobs JOIN user_groups USING (group_id) JOIN machines USING (machine_id) JOIN user_info ON jobs.owner = user_info.user_id WHERE death_timestamp + :grace_period &lt; UNIX_TIMESTAMP()"</code></td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.REMOVE_USER_FROM_GROUP">
@@ -1294,14 +1294,14 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_BOARD_POWER_OFF">SET_BOARD_POWER_OFF</a></code></th>
-<td class="colLast"><code>"UPDATE boards SET board_power = 0, power_off_timestamp = :time_now WHERE board_id = :board_id"</code></td>
+<td class="colLast"><code>"UPDATE boards SET board_power = 0, power_off_timestamp = UNIX_TIMESTAMP() WHERE board_id = :board_id"</code></td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_BOARD_POWER_ON">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_BOARD_POWER_ON">SET_BOARD_POWER_ON</a></code></th>
-<td class="colLast"><code>"UPDATE boards SET board_power = 1, power_on_timestamp = :time_now WHERE board_id = :board_id"</code></td>
+<td class="colLast"><code>"UPDATE boards SET board_power = 1, power_on_timestamp = UNIX_TIMESTAMP() WHERE board_id = :board_id"</code></td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_BOARD_SERIAL_IDS">
@@ -1343,7 +1343,7 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_STATE_DESTROYED">SET_STATE_DESTROYED</a></code></th>
-<td class="colLast"><code>"UPDATE jobs SET job_state = 4, num_pending = :num_pending, death_timestamp = :time_now WHERE job_id = :job_id"</code></td>
+<td class="colLast"><code>"UPDATE jobs SET job_state = 4, num_pending = :num_pending, death_timestamp = UNIX_TIMESTAMP() WHERE job_id = :job_id"</code></td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_STATE_PENDING">
@@ -1392,7 +1392,7 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#UNLOCK_LOCKED_USERS">UNLOCK_LOCKED_USERS</a></code></th>
-<td class="colLast"><code>"UPDATE user_info SET failure_count = 0, last_fail_timestamp = 0, locked = 0 WHERE last_fail_timestamp + :lock_interval &lt; :timestamp_now AND locked"</code></td>
+<td class="colLast"><code>"UPDATE user_info SET failure_count = 0, last_fail_timestamp = 0, locked = 0 WHERE last_fail_timestamp + :lock_interval &lt; UNIX_TIMESTAMP() AND locked"</code></td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.UPDATE_GROUP">
@@ -1406,7 +1406,7 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#UPDATE_KEEPALIVE">UPDATE_KEEPALIVE</a></code></th>
-<td class="colLast"><code>"UPDATE jobs SET keepalive_timestamp = :keepalive_timestamp, keepalive_host = :keepalive_host WHERE job_id = :job_id AND job_state != 4"</code></td>
+<td class="colLast"><code>"UPDATE jobs SET keepalive_timestamp = UNIX_TIMESTAMP(), keepalive_host = :keepalive_host WHERE job_id = :job_id AND job_state != 4"</code></td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.WRITE_HISTORICAL_ALLOCS">
