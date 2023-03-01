@@ -124,30 +124,34 @@ public class ServiceConfig extends Application {
 
 	@Bean(name = "mainDatasource")
 	@ConfigurationProperties(prefix = "spalloc.datasource")
-	public DataSource mainDatasource() {
+	@Role(ROLE_SUPPORT)
+	DataSource mainDatasource() {
 		return DataSourceBuilder.create().build();
 	}
 
 	@Bean(name = "historicalDatasource")
 	@ConfigurationProperties(prefix = "spalloc.historical-data.datasource")
-	public DataSource historicalDatasource() {
+	@Role(ROLE_SUPPORT)
+	DataSource historicalDatasource() {
 		return DataSourceBuilder.create().build();
 	}
 
 	@Bean(name = "mainDatabase")
-	public JdbcTemplate mainDatabase(
-			@Qualifier("mainDatasource") DataSource ds) {
+	@Role(ROLE_SUPPORT)
+	JdbcTemplate mainDatabase(@Qualifier("mainDatasource") DataSource ds) {
 		return new JdbcTemplate(ds);
 	}
 
 	@Bean(name = "historicalDatabase")
-	public JdbcTemplate historicalDatabase(
+	@Role(ROLE_SUPPORT)
+	JdbcTemplate historicalDatabase(
 			@Qualifier("historicalDatasource") DataSource ds) {
 		return new JdbcTemplate(ds);
 	}
 
 	@Bean(name = "mainTransactionManager")
-	public PlatformTransactionManager mainTransactionManager(
+	@Role(ROLE_INFRASTRUCTURE)
+	PlatformTransactionManager mainTransactionManager(
 			@Qualifier("mainDatasource") DataSource ds) {
 		return new JdbcTransactionManager(ds);
 	}
@@ -374,17 +378,6 @@ public class ServiceConfig extends Application {
 			return prefix + suffix;
 		}
 	}
-
-	/*@Bean(name = "dataSource")
-    @ConfigurationProperties(prefix = "spring.datasource")
-    public DataSource dataSource() {
-        return DataSourceBuilder.create().build();
-    }
-
-    @Bean(name = "jdbcTemplate")
-    public JdbcTemplate applicationDataConnection(){
-        return new JdbcTemplate(dataSource());
-    } */
 
 	@Autowired
 	private ApplicationContext ctx;
