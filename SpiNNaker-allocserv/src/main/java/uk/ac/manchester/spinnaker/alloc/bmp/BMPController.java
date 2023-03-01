@@ -43,7 +43,6 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.curry;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
@@ -158,13 +157,15 @@ public class BMPController extends DatabaseAwareBean {
 
 	private final ThreadGroup group = new ThreadGroup("BMP workers");
 
-	private Deque<Function<AfterSQL, Boolean>> cleanupTasks =
+	private final Deque<Function<AfterSQL, Boolean>> cleanupTasks =
 			new ConcurrentLinkedDeque<>();
 
-	private Deque<Runnable> postCleanupTasks = new ConcurrentLinkedDeque<>();
+	private final Deque<Runnable> postCleanupTasks =
+			new ConcurrentLinkedDeque<>();
 
 	/** We have our own pool. */
-	private ExecutorService executor = newCachedThreadPool(this::makeThread);
+	private final ExecutorService executor =
+			newCachedThreadPool(this::makeThread);
 
 	@GuardedBy("this")
 	private Throwable bmpProcessingException;
@@ -1154,7 +1155,7 @@ public class BMPController extends DatabaseAwareBean {
 				// The outer loop is always over a small set, fortunately
 				for (var machine : machines) {
 					stream(sql.getJobIdsWithChanges.call(integer("job_id"),
-							machine.getId(), Instant.now()))
+							machine.getId()))
 							.filter(jobId -> !busyJobs.contains(jobId))
 							.forEach(jobId -> takeRequestsForJob(machine, jobId,
 									sql, requestCollector));
@@ -1352,16 +1353,16 @@ public class BMPController extends DatabaseAwareBean {
 		// What follows are type-safe wrappers
 
 		int setBoardPowerOn(Integer boardId) {
-			return setBoardPowerOn.call(Instant.now(), boardId);
+			return setBoardPowerOn.call(boardId);
 		}
 
 		int setBoardPowerOff(Integer boardId) {
-			return setBoardPowerOff.call(Instant.now(), boardId);
+			return setBoardPowerOff.call(boardId);
 		}
 
 		int setJobState(JobState state, int pending, Integer jobId) {
 			if (state == JobState.DESTROYED) {
-				return setJobDestroyed.call(pending, Instant.now(), jobId);
+				return setJobDestroyed.call(pending, jobId);
 			}
 			return setJobState.call(state, pending, jobId);
 		}
@@ -1406,8 +1407,8 @@ public class BMPController extends DatabaseAwareBean {
 
 		int insertBoardReport(
 				int boardId, Integer jobId, String issue, int userId) {
-			return insertBoardReport.key(boardId, jobId, issue, userId,
-					Instant.now()).orElseThrow();
+			return insertBoardReport.key(boardId, jobId, issue, userId)
+					.orElseThrow();
 		}
 
 		int markBoardAsDead(Integer boardId) {

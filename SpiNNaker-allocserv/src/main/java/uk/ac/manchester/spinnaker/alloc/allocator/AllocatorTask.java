@@ -495,7 +495,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	private boolean expireJobs(Connection conn) {
 		boolean changed = false;
 		try (var find = conn.query(FIND_EXPIRED_JOBS)) {
-			var toKill = find.call(integer("job_id"), Instant.now());
+			var toKill = find.call(integer("job_id"));
 			for (var id : toKill) {
 				changed |= destroyJob(conn, id, "keepalive expired");
 			}
@@ -693,10 +693,9 @@ public class AllocatorTask extends DatabaseAwareBean
 				var writeJobs = histConn.update(WRITE_HISTORICAL_JOBS);
 				var writeAllocs = histConn.update(WRITE_HISTORICAL_ALLOCS)) {
 			var grace = historyProps.getGracePeriod();
-			var copied = conn.transaction(() -> new Copied(
-					readJobs.call(HistoricalJob::new, grace, Instant.now()),
-					readAllocs.call(
-							HistoricalAlloc::new, grace, Instant.now())));
+			var copied = conn.transaction(
+					() -> new Copied(readJobs.call(HistoricalJob::new, grace),
+							readAllocs.call(HistoricalAlloc::new, grace)));
 			histConn.transaction(() -> {
 				copied.allocs().forEach((a) -> writeAllocs.call(a.args()));
 				copied.jobs().forEach((j) -> writeJobs.call(j.args()));
@@ -743,7 +742,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			// Inserts into pending_changes; these run after job is dead
 			setPower(sql, id, OFF, DESTROYED);
 			sql.killAlloc.call(id);
-			return sql.markAsDestroyed.call(reason, Instant.now(), id) > 0;
+			return sql.markAsDestroyed.call(reason, id) > 0;
 		} finally {
 			rememberer.killProxies(id);
 		}
@@ -1001,7 +1000,7 @@ public class AllocatorTask extends DatabaseAwareBean
 
 		var board = boardsToAllocate.get(0);
 		sql.allocJob.call(rect.width, rect.height, rect.depth,
-				board, boardsToAllocate.size(), Instant.now(), board, jobId);
+				board, boardsToAllocate.size(), board, jobId);
 		log.debug("allocated {} boards to {}; issuing power up commands",
 				boardsToAllocate.size(), jobId);
 		// Any proxies that existed are now defunct; user must make anew
@@ -1087,7 +1086,7 @@ public class AllocatorTask extends DatabaseAwareBean
 
 		if (targetState == DESTROYED) {
 			log.debug("num changes for {} in destroy: {}", jobId, numPending);
-			sql.setStateDestroyed.call(numPending, Instant.now(), jobId);
+			sql.setStateDestroyed.call(numPending, jobId);
 		} else {
 			sql.setStatePending.call(
 				numPending > 0 ? POWER : targetState,

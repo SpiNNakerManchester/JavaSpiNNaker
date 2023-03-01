@@ -237,14 +237,14 @@ class V1TaskImpl extends V1CompatTask {
 	@Override
 	protected final Optional<Integer> createJobNumBoards(int numBoards,
 			Map<String, Object> kwargs, byte[] cmd) throws TaskException {
-		Integer maxDead = parseDec(kwargs.get("max_dead_boards"));
+		var maxDead = parseDec(kwargs.get("max_dead_boards"));
 		return createJob(new CreateNumBoards(numBoards, maxDead), kwargs, cmd);
 	}
 
 	@Override
 	protected final Optional<Integer> createJobRectangle(int width, int height,
 			Map<String, Object> kwargs, byte[] cmd) throws TaskException {
-		Integer maxDead = parseDec(kwargs.get("max_dead_boards"));
+		var maxDead = parseDec(kwargs.get("max_dead_boards"));
 		return createJob(new CreateDimensions(width, height, maxDead), kwargs,
 				cmd);
 	}

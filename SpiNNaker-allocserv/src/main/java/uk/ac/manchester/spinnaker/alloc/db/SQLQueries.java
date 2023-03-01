@@ -244,7 +244,7 @@ public abstract class SQLQueries {
 			+ "original_request, keepalive_timestamp, create_timestamp, "
 			+ "job_state) "
 			+ "VALUES(:machine_id, :user_id, :group_id, :keepalive_interval, "
-			+ ":original_request, :keepalive_timestamp, :create_timestamp, "
+			+ ":original_request, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), "
 			+ /* QUEUED */ "1)";
 
 	/** Create a request to allocate a number of boards. */
@@ -481,7 +481,7 @@ public abstract class SQLQueries {
 	@Parameter("keepalive_host")
 	@Parameter("job_id")
 	protected static final String UPDATE_KEEPALIVE =
-			"UPDATE jobs SET keepalive_timestamp = :keepalive_timestamp, "
+			"UPDATE jobs SET keepalive_timestamp = UNIX_TIMESTAMP(), "
 					+ "keepalive_host = :keepalive_host WHERE job_id = :job_id "
 					+ "AND job_state != 4"; // DESTROYED
 
@@ -491,7 +491,7 @@ public abstract class SQLQueries {
 	protected static final String DESTROY_JOB =
 			"UPDATE jobs SET job_state = 4, death_reason = :death_reason, "
 					// 4 = DESTROYED
-					+ "death_timestamp = :timestamp "
+					+ "death_timestamp = UNIX_TIMESTAMP() "
 					+ "WHERE job_id = :job_id AND job_state != 4";
 
 	/**
@@ -561,8 +561,8 @@ public abstract class SQLQueries {
 	@ResultColumn("board_id")
 	@ResultColumn("report_id")
 	@ResultColumn("reported_issue")
-	@ResultColumn("reporter_name")
 	@ResultColumn("report_timestamp")
+	@ResultColumn("reporter_name")
 	protected static final String GET_MACHINE_REPORTS =
 			"SELECT board_id, report_id, reported_issue, report_timestamp, "
 					+ "user_name AS reporter_name "
@@ -580,8 +580,8 @@ public abstract class SQLQueries {
 	@ResultColumn("board_id")
 	@ResultColumn("report_id")
 	@ResultColumn("reported_issue")
-	@ResultColumn("reporter_name")
 	@ResultColumn("report_timestamp")
+	@ResultColumn("reporter_name")
 	protected static final String GET_BOARD_REPORTS =
 			"SELECT board_id, report_id, reported_issue, report_timestamp, "
 					+ "user_name AS reporter_name "
@@ -615,13 +615,13 @@ public abstract class SQLQueries {
 	@Parameter("depth")
 	@Parameter("board_id")
 	@Parameter("num_boards")
-	@Parameter("time_now")
 	@Parameter("allocated_board_id")
 	@Parameter("job_id")
 	protected static final String ALLOCATE_BOARDS_JOB = "UPDATE jobs SET "
 			+ "width = :width, height = :height, depth = :depth, "
 			+ "num_pending = 0, root_id = :board_id, "
-			+ "allocation_size = :num_boards, allocation_timestamp = :time_now,"
+			+ "allocation_size = :num_boards, "
+			+ "allocation_timestamp = UNIX_TIMESTAMP(), "
 			+ "allocated_root = :allocated_board_id "
 			+ "WHERE job_id = :job_id";
 
@@ -659,26 +659,21 @@ public abstract class SQLQueries {
 					+ "WHERE allocated_job = :job_id";
 
 	/**
-	 * Set the power state of a board. Related timestamps are updated by
-	 * trigger.
+	 * Set the power state of a board.
 	 */
-	@Parameter("time_now")
 	@Parameter("board_id")
 	protected static final String SET_BOARD_POWER_ON =
 			"UPDATE boards SET board_power = 1, "
-					+ "power_on_timestamp = :time_now "
+					+ "power_on_timestamp = UNIX_TIMESTAMP() "
 					+ "WHERE board_id = :board_id";
 
 	/**
-	 * Set the power state of a board. Related timestamps are updated by
-	 * trigger.
+	 * Set the power state of a board.
 	 */
-	@Parameter("board_power")
-	@Parameter("time_now")
 	@Parameter("board_id")
 	protected static final String SET_BOARD_POWER_OFF =
 			"UPDATE boards SET board_power = 0, "
-					+ "power_off_timestamp = :time_now "
+					+ "power_off_timestamp = UNIX_TIMESTAMP() "
 					+ "WHERE board_id = :board_id";
 
 	/**
@@ -691,7 +686,7 @@ public abstract class SQLQueries {
 			"SELECT job_id FROM jobs " //
 					+ "WHERE job_state != 4 " // DESTROYED
 					+ "AND keepalive_timestamp + keepalive_interval < "
-					+ ":time_now";
+					+ "UNIX_TIMESTAMP()";
 
 	/**
 	 * Set the state and number of pending changes for a job.
@@ -716,7 +711,8 @@ public abstract class SQLQueries {
 	protected static final String SET_STATE_DESTROYED =
 			"UPDATE jobs SET job_state = 4, "
 					+ "num_pending = :num_pending, "
-					+ "death_timestamp = :time_now WHERE job_id = :job_id";
+					+ "death_timestamp = UNIX_TIMESTAMP() "
+					+ "WHERE job_id = :job_id";
 
 	/** Delete a request to allocate resources for a job. */
 	@Parameter("job_id")
@@ -1135,8 +1131,6 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("delta")
 	@Parameter("group_id")
-	@ResultColumn("group_name")
-	@ResultColumn("quota")
 	protected static final String ADJUST_QUOTA =
 			"UPDATE user_groups SET quota = GREATEST(0, quota + :delta) "
 					+ "WHERE group_id = :group_id AND quota IS NOT NULL";
@@ -1498,11 +1492,10 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("openid_subject")
 	@Parameter("user_id")
-	protected static final String MARK_LOGIN_SUCCESS =
-			"UPDATE user_info SET last_successful_login_timestamp = "
-					+ ":login_timestamp, "
-					+ "failure_count = 0, openid_subject = :openid_subject "
-					+ "WHERE user_id = :user_id";
+	protected static final String MARK_LOGIN_SUCCESS = "UPDATE user_info SET "
+			+ "last_successful_login_timestamp = UNIX_TIMESTAMP(), "
+			+ "failure_count = 0, openid_subject = :openid_subject "
+			+ "WHERE user_id = :user_id";
 
 	/**
 	 * Note the login failure.
@@ -1511,12 +1504,9 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("failure_limit")
 	@Parameter("user_id")
-	@ResultColumn("locked")
-	@SingleRowResult
 	protected static final String MARK_LOGIN_FAILURE =
 			"UPDATE user_info SET failure_count = failure_count + 1, "
-					+ "last_fail_timestamp = "
-					+ ":login_timestamp, "
+					+ "last_fail_timestamp = UNIX_TIMESTAMP(), "
 					+ "locked = (failure_count + 1 >= :failure_limit) "
 					+ "WHERE user_id = :user_id";
 
@@ -1526,11 +1516,10 @@ public abstract class SQLQueries {
 	 * @see LocalAuthProviderImpl
 	 */
 	@Parameter("lock_interval")
-	@ResultColumn("user_name")
 	protected static final String UNLOCK_LOCKED_USERS =
 			"UPDATE user_info SET failure_count = 0, last_fail_timestamp = 0, "
 					+ "locked = 0 WHERE last_fail_timestamp + :lock_interval "
-					+ "< :timestamp_now "
+					+ "< UNIX_TIMESTAMP() "
 					+ "AND locked";
 
 	/**
@@ -1718,13 +1707,13 @@ public abstract class SQLQueries {
 	@Parameter("job_id")
 	@Parameter("issue")
 	@Parameter("user_id")
-	@Parameter("time_now")
 	@GeneratesID
 	protected static final String INSERT_BOARD_REPORT =
 			"INSERT INTO board_reports("
 					+ "board_id, job_id, reported_issue, reporter, "
 					+ "report_timestamp) "
-					+ "VALUES(:board_id, :job_id, :issue, :user_id, :time_now)";
+					+ "VALUES(:board_id, :job_id, :issue, :user_id, "
+					+ "UNIX_TIMESTAMP())";
 
 	/**
 	 * Actually delete a job record. Only called by the data tombstone-r. This
@@ -1807,8 +1796,7 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("board_id")
 	protected static final String MARK_BOARD_BLACKLIST_CHANGED =
-			"UPDATE boards SET blacklist_set_timestamp = "
-					+ ":timestamp_now "
+			"UPDATE boards SET blacklist_set_timestamp = UNIX_TIMESTAMP() "
 					+ "WHERE board_id = :board_id";
 
 	/**
@@ -1818,8 +1806,7 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("board_id")
 	protected static final String MARK_BOARD_BLACKLIST_SYNCHED =
-			"UPDATE boards SET blacklist_sync_timestamp = "
-					+ ":timestamp_now "
+			"UPDATE boards SET blacklist_sync_timestamp = UNIX_TIMESTAMP() "
 					+ "WHERE board_id = :board_id";
 
 	/**
@@ -2148,7 +2135,6 @@ public abstract class SQLQueries {
 	 * @see AllocatorTask#tombstone()
 	 */
 	@Parameter("grace_period")
-	@Parameter("time_now")
 	@ResultColumn("alloc_id")
 	@ResultColumn("job_id")
 	@ResultColumn("board_id")
@@ -2156,14 +2142,13 @@ public abstract class SQLQueries {
 	protected static final String READ_HISTORICAL_ALLOCS =
 			"SELECT	alloc_id, job_id, board_id, alloc_timestamp "
 			+ "FROM old_board_allocations JOIN jobs USING (job_id) "
-			+ "WHERE jobs.death_timestamp + :grace_period < :time_now";
+			+ "WHERE jobs.death_timestamp + :grace_period < UNIX_TIMESTAMP()";
 
 	/**
 	 * Read historical jobs to be written to the historical data DB.
 	 * Only jobs that are already completed will ever get read here.
 	 */
 	@Parameter("grace_period")
-	@Parameter("time_now")
 	@ResultColumn("job_id")
 	@ResultColumn("machine_id")
 	@ResultColumn("owner")
@@ -2194,7 +2179,7 @@ public abstract class SQLQueries {
 			+ "JOIN user_groups USING (group_id) "
 			+ "JOIN machines USING (machine_id) "
 			+ "JOIN user_info ON jobs.owner = user_info.user_id "
-			+ "WHERE death_timestamp + :grace_period < :time_now";
+			+ "WHERE death_timestamp + :grace_period < UNIX_TIMESTAMP()";
 
 	/**
 	 * Write to the historical allocations database.
@@ -2202,7 +2187,7 @@ public abstract class SQLQueries {
 	@Parameter("alloc_id")
 	@Parameter("job_id")
 	@Parameter("board_id")
-	@Parameter("alloc_timestamp")
+	@Parameter("allocation_timestamp")
 	protected static final String WRITE_HISTORICAL_ALLOCS =
 			"INSERT IGNORE INTO board_allocations( "
 			+ "alloc_id, job_id, board_id, allocation_timestamp) "
@@ -2218,7 +2203,7 @@ public abstract class SQLQueries {
 	@Parameter("width")
 	@Parameter("height")
 	@Parameter("depth")
-	@Parameter("allocated_root")
+	@Parameter("root_id")
 	@Parameter("keepalive_interval")
 	@Parameter("keepalive_host")
 	@Parameter("death_reason")
@@ -2227,7 +2212,7 @@ public abstract class SQLQueries {
 	@Parameter("allocation_timestamp")
 	@Parameter("allocation_size")
 	@Parameter("machine_name")
-	@Parameter("user_name")
+	@Parameter("owner_name")
 	@Parameter("group_id")
 	@Parameter("group_name")
 	protected static final String WRITE_HISTORICAL_JOBS =
@@ -2309,11 +2294,11 @@ public abstract class SQLQueries {
 	@Parameter("to_state")
 	@Parameter("power")
 	@Parameter("fpga_n")
-	@Parameter("fpga_s")
 	@Parameter("fpga_e")
+	@Parameter("fpga_se")
+	@Parameter("fpga_s")
 	@Parameter("fpga_w")
 	@Parameter("fpga_nw")
-	@Parameter("fpga_se")
 	@GeneratesID
 	@Value("classpath:queries/issue_change_for_job.sql")
 	protected Resource issueChangeForJob;
@@ -2360,8 +2345,8 @@ public abstract class SQLQueries {
 	 * @see Spalloc
 	 */
 	@Parameter("machine_id")
-	@Parameter("chip_x")
-	@Parameter("chip_y")
+	@Parameter("x")
+	@Parameter("y")
 	@ResultColumn("board_id")
 	@ResultColumn("address")
 	@ResultColumn("bmp_id")
@@ -2390,9 +2375,9 @@ public abstract class SQLQueries {
 	 * @see Spalloc
 	 */
 	@Parameter("job_id")
-	@Parameter("root_board_id")
-	@Parameter("chip_x")
-	@Parameter("chip_y")
+	@Parameter("board_id")
+	@Parameter("x")
+	@Parameter("y")
 	@ResultColumn("board_id")
 	@ResultColumn("address")
 	@ResultColumn("x")
@@ -2501,7 +2486,6 @@ public abstract class SQLQueries {
 	 * of how long after switching a board on or off is applied.)
 	 */
 	@Parameter("machine_id")
-	@Parameter("time_now")
 	@ResultColumn("job_id")
 	@Value("classpath:queries/get_jobs_with_changes.sql")
 	protected Resource getJobsWithChanges;

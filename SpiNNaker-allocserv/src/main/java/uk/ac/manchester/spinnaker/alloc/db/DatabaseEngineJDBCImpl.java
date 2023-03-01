@@ -16,7 +16,11 @@
 package uk.ac.manchester.spinnaker.alloc.db;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.jdbc.core.namedparam.NamedParameterUtils.buildSqlParameterList;
+import static org.springframework.jdbc.core.namedparam.NamedParameterUtils.parseSqlStatement;
+import static org.springframework.jdbc.core.namedparam.NamedParameterUtils.parseSqlStatementIntoString;
 import static uk.ac.manchester.spinnaker.alloc.IOUtils.serialize;
 
 import java.io.IOException;
@@ -42,11 +46,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.namedparam.NamedParameterUtils;
+import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -101,8 +106,8 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 	}
 
 	private void runSQLFile(Resource sqlFile, JdbcTemplate template) {
-		String sql = readSQL(sqlFile);
-		String[] lines = sql.split("\n");
+		var sql = readSQL(sqlFile);
+		var lines = sql.split("\n");
 		int i = 0;
 		while (i < lines.length) {
 			// Find the next statement start
@@ -114,10 +119,10 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 			i++;
 
 			// Build a statement until it ends
-			StringBuilder stmt = new StringBuilder();
+			var stmt = new StringBuilder();
 			while (i < lines.length && !lines[i].startsWith("-- STMT")
 					&& !lines[i].startsWith("-- IGNORE")) {
-				String line = lines[i].trim();
+				var line = lines[i].trim();
 				if (!line.startsWith("--") && !line.isEmpty()) {
 					log.trace("DDL statement line {}", line);
 					stmt.append(line);
@@ -126,7 +131,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 				i++;
 			}
 			if (stmt.length() != 0) {
-				String statement = stmt.toString();
+				var statement = stmt.toString();
 				log.debug("Executing DDL Statement: {}", statement);
 				template.execute(statement);
 			}
@@ -251,15 +256,17 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 	}
 
-	private final class QueryImpl implements Query {
+	private abstract class StatementImpl implements StatementCommon {
+		private final String originalSql;
 
-		private final String sql;
+		final String sql;
 
-		private final JdbcTemplate queryJdbcTemplate;
+		final JdbcTemplate jdbcTemplate;
 
-		QueryImpl(String sql, JdbcTemplate queryJdbcTemplate) {
-			this.sql = NamedParameterUtils.parseSqlStatementIntoString(sql);
-			this.queryJdbcTemplate = queryJdbcTemplate;
+		StatementImpl(String sql, JdbcTemplate jdbcTemplate) {
+			this.originalSql = sql;
+			this.sql = parseSqlStatementIntoString(sql);
+			this.jdbcTemplate = jdbcTemplate;
 		}
 
 		@Override
@@ -268,10 +275,53 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		}
 
 		@Override
+		public final List<String> getParameters() {
+			return buildSqlParameterList(parseSqlStatement(originalSql),
+					new EmptySqlParameterSource()).stream()
+					.map(SqlParameter::getName).collect(toUnmodifiableList());
+		}
+
+		final Object[] resolveArguments(Object[] arguments) {
+			var resolved = new Object[arguments.length];
+			for (int i = 0; i < arguments.length; i++) {
+				var arg = arguments[i];
+				// The classes we augment the DB driver with
+				if (arg instanceof Optional) {
+					// Unpack one layer of Optional only; absent = NULL
+					arg = ((Optional<?>) arg).orElse(null);
+				}
+				if (arg instanceof Instant) {
+					arg = ((Instant) arg).getEpochSecond();
+				} else if (arg instanceof Duration) {
+					arg = ((Duration) arg).getSeconds();
+				} else if (arg instanceof Enum) {
+					arg = ((Enum<?>) arg).ordinal();
+				} else if (arg != null && arg instanceof Serializable
+						&& !(arg instanceof String || arg instanceof Number
+								|| arg instanceof Boolean
+								|| arg instanceof byte[])) {
+					try {
+						arg = serialize(arg);
+					} catch (IOException e) {
+						arg = null;
+					}
+				}
+				resolved[i] = arg;
+			}
+			return resolved;
+		}
+	}
+
+	private final class QueryImpl extends StatementImpl implements Query {
+		QueryImpl(String sql, JdbcTemplate queryJdbcTemplate) {
+			super(sql, queryJdbcTemplate);
+		}
+
+		@Override
 		public <T> List<T> call(RowMapper<T> mapper, Object... arguments) {
 			var resolved = resolveArguments(arguments);
-			return queryJdbcTemplate.query(sql, (results) -> {
-				List<T> values = new ArrayList<T>();
+			return jdbcTemplate.query(sql, (results) -> {
+				var values = new ArrayList<T>();
 				while (results.next()) {
 					values.add(mapper.mapRow(new Row(results)));
 				}
@@ -282,7 +332,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		@Override
 		public <T> Optional<T> call1(RowMapper<T> mapper, Object... arguments) {
 			var resolved = resolveArguments(arguments);
-			return queryJdbcTemplate.query(sql, (results) -> {
+			return jdbcTemplate.query(sql, (results) -> {
 				if (results.next()) {
 					// Allow nullable if there is a value
 					return Optional.ofNullable(mapper.mapRow(new Row(results)));
@@ -290,73 +340,44 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 				return Optional.empty();
 			}, resolved);
 		}
-	}
-
-	private final class UpdateImpl implements Update {
-
-		private String sql;
-
-		private final JdbcTemplate updateJdbcTemplate;
-
-		UpdateImpl(String sql, JdbcTemplate updateJdbcTemplate) {
-			this.sql = NamedParameterUtils.parseSqlStatementIntoString(sql);
-			this.updateJdbcTemplate = updateJdbcTemplate;
-		}
 
 		@Override
-		public void close() {
-			// Does nothing
+		public List<String> getColumns() {
+			return jdbcTemplate.execute(sql,
+					(PreparedStatementCallback<List<String>>) ps -> {
+						var md = ps.getMetaData();
+						var names = new ArrayList<String>();
+						for (int i = 1; i <= md.getColumnCount(); i++) {
+							names.add(md.getColumnLabel(i));
+						}
+						return names;
+					});
+		}
+	}
+
+	private final class UpdateImpl extends StatementImpl implements Update {
+		UpdateImpl(String sql, JdbcTemplate updateJdbcTemplate) {
+			super(sql, updateJdbcTemplate);
 		}
 
 		@Override
 		public int call(Object... arguments) {
 			var resolved = resolveArguments(arguments);
-			return updateJdbcTemplate.update(sql, resolved);
+			return jdbcTemplate.update(sql, resolved);
 		}
 
 		@Override
 		public Optional<Integer> key(Object... arguments) {
 			var resolved = resolveArguments(arguments);
-			KeyHolder keyHolder = new GeneratedKeyHolder();
+			var keyHolder = new GeneratedKeyHolder();
 			var pss = new PreparedStatementCreatorImpl(sql, resolved);
-			updateJdbcTemplate.update(pss, keyHolder);
-			Number key = keyHolder.getKey();
+			jdbcTemplate.update(pss, keyHolder);
+			var key = keyHolder.getKey();
 			if (key == null) {
 				return Optional.empty();
 			}
 			return Optional.of(key.intValue());
 		}
-
-	}
-
-	private Object[] resolveArguments(Object[] arguments) {
-		Object[] resolved = new Object[arguments.length];
-		for (int i = 0; i < arguments.length; i++) {
-			Object arg = arguments[i];
-			// The classes we augment the DB driver with
-			if (arg instanceof Optional) {
-				// Unpack one layer of Optional only; absent = NULL
-				arg = ((Optional<?>) arg).orElse(null);
-			}
-			if (arg instanceof Instant) {
-				arg = ((Instant) arg).getEpochSecond();
-			} else if (arg instanceof Duration) {
-				arg = ((Duration) arg).getSeconds();
-			} else if (arg instanceof Enum) {
-				arg = ((Enum<?>) arg).ordinal();
-			} else if (arg != null && arg instanceof Serializable
-					&& !(arg instanceof String || arg instanceof Number
-							|| arg instanceof Boolean
-							|| arg instanceof byte[])) {
-				try {
-					arg = serialize(arg);
-				} catch (IOException e) {
-					arg = null;
-				}
-			}
-			resolved[i] = arg;
-		}
-		return resolved;
 	}
 
 	/**
@@ -418,5 +439,4 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		}
 		return names;
 	}
-
 }
