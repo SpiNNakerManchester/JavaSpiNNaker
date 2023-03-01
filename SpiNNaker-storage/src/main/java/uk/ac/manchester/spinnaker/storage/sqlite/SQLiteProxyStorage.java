@@ -34,7 +34,10 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 
 abstract class SQLiteProxyStorage<T extends DatabaseAPI>
 		extends SQLiteConnectionManager<T> implements ProxyAwareStorage {
-
+	/**
+	 * @param connProvider
+	 *            The source of database connections.
+	 */
 	protected SQLiteProxyStorage(ConnectionProvider<T> connProvider) {
 		super(connProvider);
 	}
@@ -52,7 +55,7 @@ abstract class SQLiteProxyStorage<T extends DatabaseAPI>
 	 * @return The proxy information.
 	 * @throws SQLException
 	 *             If there is an error reading the database.
-	 * @throws IllegalStateException
+	 * @throws Unreachable
 	 *             If a bad row is retrieved; should be unreachable if SQL is
 	 *             synched to code.
 	 */
@@ -68,31 +71,21 @@ abstract class SQLiteProxyStorage<T extends DatabaseAPI>
 				var kind = rs.getString("kind");
 				var name = rs.getString("name");
 				var value = rs.getString("value");
-				if (name == null || value == null) {
+				if (kind == null || name == null || value == null) {
 					continue;
 				}
 				switch (kind) {
-				case SPALLOC:
+				case SPALLOC -> {
 					switch (name) {
-					case SPALLOC_URI -> {
-						spallocUri = value;
+					case SPALLOC_URI -> spallocUri = value;
+					case PROXY_URI -> jobUri = value;
+					default -> throw new Unreachable();
 					}
-					case PROXY_URI -> {
-						jobUri = value;
-					}
-					default ->
-						throw new IllegalStateException("unreachable reached");
-					}
-					break;
+				}
 
-				case COOKIE:
-					cookies.put(name, value);
-					break;
-				case HEADER:
-					headers.put(name, value);
-					break;
-				default:
-					throw new IllegalStateException("unreachable reached");
+				case COOKIE -> cookies.put(name, value);
+				case HEADER -> headers.put(name, value);
+				default -> throw new Unreachable();
 				}
 			}
 		}
@@ -101,5 +94,14 @@ abstract class SQLiteProxyStorage<T extends DatabaseAPI>
 			return null;
 		}
 		return new ProxyInformation(spallocUri, jobUri, headers, cookies);
+	}
+
+	/** Thrown when an unreachable state is reached. */
+	private static class Unreachable extends IllegalStateException {
+		private static final long serialVersionUID = 1L;
+
+		Unreachable() {
+			super("unreachable reached");
+		}
 	}
 }
