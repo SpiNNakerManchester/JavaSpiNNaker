@@ -58,7 +58,7 @@ public final class Row {
 	static Set<String> columnNames(ResultSetMetaData md) throws SQLException {
 		var names = new LinkedHashSet<String>();
 		for (int i = 1; i <= md.getColumnCount(); i++) {
-			names.add(md.getColumnName(i));
+			names.add(md.getColumnLabel(i));
 		}
 		return names;
 	}
