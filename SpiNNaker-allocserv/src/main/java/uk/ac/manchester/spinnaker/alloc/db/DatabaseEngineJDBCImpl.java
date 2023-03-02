@@ -16,6 +16,7 @@
 package uk.ac.manchester.spinnaker.alloc.db;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.jdbc.core.namedparam.NamedParameterUtils.buildSqlParameterList;
@@ -25,16 +26,11 @@ import static uk.ac.manchester.spinnaker.alloc.IOUtils.serialize;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -47,18 +43,16 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
- * Implementation of the DatabaseAPI that uses JDBC.
+ * Implementation of the {@link DatabaseAPI} that uses JDBC to talk to MySQL.
  */
 @Service
 @Primary
@@ -229,31 +223,6 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		}
 	}
 
-	private final class PreparedStatementCreatorImpl
-			implements PreparedStatementCreator {
-		private final String query;
-
-		private final Object[] values;
-
-		private PreparedStatementCreatorImpl(String query,
-				Object[] values) {
-			this.query = query;
-			this.values = values;
-		}
-
-		@Override
-		public PreparedStatement createPreparedStatement(
-				java.sql.Connection con) throws SQLException {
-			var stmt = con.prepareStatement(query,
-					Statement.RETURN_GENERATED_KEYS);
-			for (int i = 0; i < values.length; i++) {
-				stmt.setObject(i + 1, values[i]);
-			}
-			return stmt;
-		}
-
-	}
-
 	private abstract class StatementImpl implements StatementCommon {
 		private final String originalSql;
 
@@ -368,13 +337,15 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		public Optional<Integer> key(Object... arguments) {
 			var resolved = resolveArguments(arguments);
 			var keyHolder = new GeneratedKeyHolder();
-			var pss = new PreparedStatementCreatorImpl(sql, resolved);
-			jdbcTemplate.update(pss, keyHolder);
-			var key = keyHolder.getKey();
-			if (key == null) {
-				return Optional.empty();
-			}
-			return Optional.of(key.intValue());
+			jdbcTemplate.update(con -> {
+				var stmt = con.prepareStatement(sql, RETURN_GENERATED_KEYS);
+				for (int i = 0; i < resolved.length; i++) {
+					stmt.setObject(i + 1, resolved[i]);
+				}
+				return stmt;
+			}, keyHolder);
+			return Optional.ofNullable(keyHolder.getKey())
+					.map(Number::intValue);
 		}
 	}
 
@@ -427,13 +398,5 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		try (var conn = getConnection()) {
 			return conn.transaction(lockForWriting, () -> operation.act(conn));
 		}
-	}
-
-	static Set<String> columnNames(SqlRowSetMetaData md) throws SQLException {
-		var names = new LinkedHashSet<String>();
-		for (int i = 1; i <= md.getColumnCount(); i++) {
-			names.add(md.getColumnName(i));
-		}
-		return names;
 	}
 }

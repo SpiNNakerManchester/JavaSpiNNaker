@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc;
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static java.lang.System.setProperty;
+import static java.util.concurrent.Executors.defaultThreadFactory;
 import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.status;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletRequest;
@@ -93,7 +95,6 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.KeepaliveProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI;
-import uk.ac.manchester.spinnaker.alloc.db.TerminationNotifyingThreadFactory;
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
 import uk.ac.manchester.spinnaker.alloc.security.SecurityConfig;
 import uk.ac.manchester.spinnaker.alloc.web.MvcConfig;
@@ -156,6 +157,12 @@ public class ServiceConfig extends Application {
 		return new JdbcTransactionManager(ds);
 	}
 
+	@Bean(name = "spallocThreadFactory")
+	@Role(ROLE_INFRASTRUCTURE)
+	ThreadFactory threadFactory() {
+		return defaultThreadFactory();
+	}
+
 	/**
 	 * The thread pool. The rest of the application expects there to be a single
 	 * such pool.
@@ -163,8 +170,8 @@ public class ServiceConfig extends Application {
 	 * @param numThreads
 	 *            The size of the pool. From
 	 *            {@code spring.task.scheduling.pool.size} property.
-	 * @param threadFactory
-	 *            How threads that service the pool are made.
+	 * @param factory
+	 *            The thread factory.
 	 * @return The set up thread pool bean.
 	 */
 	@Bean(destroyMethod = "shutdown")
@@ -172,8 +179,8 @@ public class ServiceConfig extends Application {
 	@Role(ROLE_INFRASTRUCTURE)
 	ScheduledExecutorService scheduledThreadPoolExecutor(
 			@Value("${spring.task.scheduling.pool.size}") int numThreads,
-			TerminationNotifyingThreadFactory threadFactory) {
-		return newScheduledThreadPool(numThreads, threadFactory);
+			ThreadFactory factory) {
+		return newScheduledThreadPool(numThreads, factory);
 	}
 
 	/**

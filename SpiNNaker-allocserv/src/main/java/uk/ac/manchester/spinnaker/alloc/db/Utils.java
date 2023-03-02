@@ -19,17 +19,12 @@ import static java.lang.System.arraycopy;
 import static java.util.Objects.isNull;
 
 import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
+import java.sql.SQLTransientConnectionException;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
-import org.springframework.dao.PessimisticLockingFailureException;
-import org.springframework.dao.RecoverableDataAccessException;
-import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.InvalidResultSetAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
-import org.sqlite.SQLiteException;
 
 /**
  * Miscellaneous database-related utility operations.
@@ -96,8 +91,9 @@ public abstract class Utils {
 	 * @return Whether it was caused by the database being busy.
 	 */
 	public static boolean isBusy(DataAccessException exception) {
-		if (exception.getMostSpecificCause() instanceof SQLiteException cause) {
-			return isBusy(cause);
+		var root = exception.getMostSpecificCause();
+		if (root instanceof SQLException e) {
+			return isBusy(e);
 		}
 		return false;
 	}
@@ -111,16 +107,8 @@ public abstract class Utils {
 	 * @return Whether it was caused by the database being busy.
 	 */
 	public static boolean isBusy(SQLException exception) {
-		if (exception instanceof SQLiteException sqliteExn) {
-			return switch (sqliteExn.getResultCode()) {
-			case SQLITE_BUSY -> true;
-			case SQLITE_BUSY_SNAPSHOT -> true;
-			case SQLITE_BUSY_TIMEOUT -> true;
-			case SQLITE_BUSY_RECOVERY -> true;
-			default -> false;
-			};
-		}
-		return false;
+		return exception instanceof SQLTimeoutException
+				|| exception instanceof SQLTransientConnectionException;
 	}
 
 	/**
@@ -135,64 +123,12 @@ public abstract class Utils {
 	 */
 	public static DataAccessException mapException(SQLException exception,
 			String sql) {
-		if (!(exception instanceof SQLiteException exn)) {
-			if (exception.getMessage().contains("no such column: ")) {
-				return restack(new InvalidResultSetAccessException(
-						exception.getMessage(), trimSQLComments(sql),
-						exception));
-			}
-			return restack(new UncategorizedSQLException(
-					"general SQL exception", trimSQLComments(sql), exception));
+		if (exception.getMessage().contains("no such column: ")) {
+			return restack(new InvalidResultSetAccessException(
+					exception.getMessage(), trimSQLComments(sql), exception));
 		}
-		var msg = exn.getMessage();
-		boolean replaced = false;
-		if (msg.contains("SQL error or missing database (")) {
-			msg = msg.replaceFirst("SQL error or missing database \\((.*)\\)",
-					"$1");
-			replaced = true;
-		}
-		return switch (exn.getResultCode()) {
-		case SQLITE_CONSTRAINT, SQLITE_CONSTRAINT_CHECK,
-				SQLITE_CONSTRAINT_COMMITHOOK, SQLITE_CONSTRAINT_FOREIGNKEY,
-				SQLITE_CONSTRAINT_FUNCTION, SQLITE_CONSTRAINT_PRIMARYKEY,
-				SQLITE_CONSTRAINT_UNIQUE, SQLITE_CONSTRAINT_NOTNULL,
-				SQLITE_CONSTRAINT_TRIGGER, SQLITE_CONSTRAINT_ROWID,
-				SQLITE_CONSTRAINT_VTAB, SQLITE_MISMATCH ->
-			restack(new DataIntegrityViolationException(msg, exn));
-
-		case SQLITE_BUSY, SQLITE_BUSY_RECOVERY, SQLITE_BUSY_SNAPSHOT,
-				SQLITE_BUSY_TIMEOUT, SQLITE_LOCKED, SQLITE_LOCKED_SHAREDCACHE ->
-			restack(new PessimisticLockingFailureException(msg, exn));
-
-		case SQLITE_ABORT, SQLITE_ABORT_ROLLBACK, SQLITE_FULL, SQLITE_EMPTY ->
-			restack(new RecoverableDataAccessException(msg, exn));
-
-		case SQLITE_SCHEMA, SQLITE_TOOBIG, SQLITE_RANGE ->
-			restack(new InvalidDataAccessResourceUsageException(msg, exn));
-
-		case SQLITE_IOERR, SQLITE_IOERR_SHORT_READ, SQLITE_IOERR_READ,
-				SQLITE_IOERR_WRITE, SQLITE_IOERR_FSYNC, SQLITE_IOERR_DIR_FSYNC,
-				SQLITE_IOERR_TRUNCATE, SQLITE_IOERR_FSTAT, SQLITE_IOERR_UNLOCK,
-				SQLITE_IOERR_RDLOCK, SQLITE_IOERR_DELETE, SQLITE_IOERR_NOMEM,
-				SQLITE_IOERR_ACCESS, SQLITE_IOERR_CHECKRESERVEDLOCK,
-				SQLITE_IOERR_LOCK, SQLITE_IOERR_CLOSE, SQLITE_IOERR_SHMOPEN,
-				SQLITE_IOERR_SHMSIZE, SQLITE_IOERR_SHMMAP, SQLITE_IOERR_SEEK,
-				SQLITE_IOERR_DELETE_NOENT, SQLITE_IOERR_MMAP,
-				SQLITE_IOERR_GETTEMPPATH, SQLITE_IOERR_CONVPATH, SQLITE_PERM,
-				SQLITE_READONLY, SQLITE_READONLY_RECOVERY,
-				SQLITE_READONLY_CANTLOCK, SQLITE_READONLY_ROLLBACK,
-				SQLITE_READONLY_DBMOVED, SQLITE_AUTH, SQLITE_MISUSE,
-				SQLITE_NOLFS, SQLITE_CORRUPT, SQLITE_CORRUPT_VTAB,
-				SQLITE_CANTOPEN, SQLITE_CANTOPEN_ISDIR,
-				SQLITE_CANTOPEN_FULLPATH, SQLITE_CANTOPEN_CONVPATH,
-				SQLITE_NOTADB, SQLITE_FORMAT ->
-			restack(new DataAccessResourceFailureException(msg, exn));
-
-		default -> restack(replaced
-				? new BadSqlGrammarException(msg, trimSQLComments(sql), exn)
-				: new UncategorizedSQLException("general SQL exception",
-						trimSQLComments(sql), exn));
-		};
+		return restack(new UncategorizedSQLException("general SQL exception",
+				trimSQLComments(sql), exception));
 	}
 
 	// 2 = restack() and mapException() themselves
