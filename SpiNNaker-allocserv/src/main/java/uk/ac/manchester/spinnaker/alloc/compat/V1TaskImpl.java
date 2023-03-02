@@ -25,6 +25,10 @@ import static uk.ac.manchester.spinnaker.alloc.compat.Utils.parseDec;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.state;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.timestamp;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_X_OF_ONE_BOARD;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_Y_OF_ONE_BOARD;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.TRIAD_HEIGHT;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.TRIAD_WIDTH;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.collectToArray;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
 
@@ -156,13 +160,20 @@ class V1TaskImpl extends V1CompatTask {
 		job.access(host());
 		var machine = job.getMachine()
 				.orElseThrow(() -> new TaskException("boards not allocated"));
-		return new JobMachineInfo(job.getWidth().orElse(0),
-				job.getHeight().orElse(0),
-				machine.getConnections().stream()
-						.map(ci -> new Connection(ci.getChip(),
-								ci.getHostname()))
-						.collect(toList()),
-				machine.getMachine().getName(), machine.getBoards());
+		int w, h;
+		if (machine.getDepth() == 1) {
+			// Special case: single board alloc
+			w = SIZE_X_OF_ONE_BOARD;
+			h = SIZE_Y_OF_ONE_BOARD;
+		} else {
+			// Everything else is in terms of triads
+			w = job.getWidth().orElse(0) * TRIAD_WIDTH;
+			h = job.getHeight().orElse(0) * TRIAD_HEIGHT;
+		}
+		return new JobMachineInfo(w, h, machine.getConnections().stream()
+				.map(ci -> new Connection(ci.getChip(), ci.getHostname()))
+				.collect(toList()), machine.getMachine().getName(),
+				machine.getBoards());
 	}
 
 	@Override
