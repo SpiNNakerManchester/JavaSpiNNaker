@@ -145,7 +145,8 @@ extends <a href="DatabaseAPI.StatementCommon.html" title="interface in uk.ac.man
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getColumns()">getColumns</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Get the column names from the result set.</div>
+<div class="block">Get the column names from the result set that this query will
+ generate.</div>
 </td>
 </tr>
 </tbody>
@@ -209,8 +210,9 @@ extends <a href="DatabaseAPI.StatementCommon.html" title="interface in uk.ac.man
 <h3><a id="getColumns()">getColumns</a></h3>
 <div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</span>&nbsp;<span class="memberName">getColumns</span>()
                  throws <span class="exceptions"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/dao/DataAccessException.html?is-external=true" title="class or interface in org.springframework.dao" class="externalLink">DataAccessException</a></span></div>
-<div class="block">Get the column names from the result set. This may be an expensive
- operation.</div>
+<div class="block">Get the column names from the result set that this query will
+ generate. This may be an expensive operation; it's use is
+ <em>not</em> recommended outside of test code.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The list of column names. The names of columns where they are
@@ -218,7 +220,8 @@ extends <a href="DatabaseAPI.StatementCommon.html" title="interface in uk.ac.man
          engine. This will be <code>null</code> if the manipulation of
          metadata fails; this isn't expected.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/dao/DataAccessException.html?is-external=true" title="class or interface in org.springframework.dao" class="externalLink">DataAccessException</a></code> - If the statement is invalid SQL.</dd>
+<dd><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/dao/DataAccessException.html?is-external=true" title="class or interface in org.springframework.dao" class="externalLink">DataAccessException</a></code> - If the statement is invalid SQL. Or if the DB connector
+             has a bug (like the MySQL one does), alas.</dd>
 </dl>
 </section>
 </li>
