@@ -59,6 +59,7 @@ abstract class SQLiteProxyStorage<T extends DatabaseAPI>
 	 *             If a bad row is retrieved; should be unreachable if SQL is
 	 *             synched to code.
 	 */
+	@SuppressWarnings("checkstyle:InnerAssignment") // Rule is misapplying
 	private ProxyInformation getProxyInfo(Connection conn) throws SQLException {
 		String spallocUri = null;
 		String jobUri = null;
