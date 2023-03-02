@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static java.lang.Math.max;
 import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_CHECK;
 import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_CHIP_SIZE;
 import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
@@ -36,9 +35,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-import org.sqlite.SQLiteException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -799,24 +796,9 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 				|| machine.hasDeadLinkAt(here, d1)
 				|| machine.deadBoards.contains(there)
 				|| machine.hasDeadLinkAt(there, d2);
-		try {
-			log.debug("making {}:{} <-{}-> {}:{}", here, d1, dead ? "/" : "-",
-					there, d2);
-			return sql.makeLink.key(b1, d1, b2, d2, !dead);
-		} catch (DataAccessException e) {
-			if (e.getMostSpecificCause() instanceof SQLiteException) {
-				var exn = (SQLiteException) e.getMostSpecificCause();
-				/*
-				 * If the CHECK constraint says no, just ignore; we'll do the
-				 * link from the other direction. This does mean we're doing too
-				 * much work, but better to do too much and be reliable.
-				 */
-				if (exn.getResultCode() == SQLITE_CONSTRAINT_CHECK) {
-					return Optional.empty();
-				}
-			}
-			throw e;
-		}
+		log.debug("making {}:{} <-{}-> {}:{}", here, d1, dead ? "/" : "-",
+				there, d2);
+		return sql.makeLink.key(b1, d1, b2, d2, !dead);
 	}
 
 	/**

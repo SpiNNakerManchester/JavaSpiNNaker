@@ -556,15 +556,17 @@ public interface DatabaseAPI {
 		<T> Optional<T> call1(RowMapper<T> mapper, Object... arguments);
 
 		/**
-		 * Get the column names from the result set. This may be an expensive
-		 * operation.
+		 * Get the column names from the result set that this query will
+		 * generate. This may be an expensive operation; it's use is
+		 * <em>not</em> recommended outside of test code.
 		 *
 		 * @return The list of column names. The names of columns where they are
 		 *         not assigned by the query is arbitrary and up to the database
 		 *         engine. This will be {@code null} if the manipulation of
 		 *         metadata fails; this isn't expected.
 		 * @throws DataAccessException
-		 *             If the statement is invalid SQL.
+		 *             If the statement is invalid SQL. Or if the DB connector
+		 *             has a bug (like the MySQL one does), alas.
 		 */
 		List<String> getColumns() throws DataAccessException;
 	}
