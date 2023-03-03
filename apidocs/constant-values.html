@@ -903,489 +903,496 @@ loadScripts(document, 'script');</script>
 <td class="colLast"><code>"SELECT board_id, report_id, reported_issue, report_timestamp, user_name AS reporter_name FROM board_reports JOIN user_info ON reporter = user_id JOIN boards USING (board_id) WHERE machine_id = :machine_id ORDER BY board_id, report_id"</code></td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_MACHINE_WRAPS">
+<!--   -->
+</a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_MACHINE_WRAPS">GET_MACHINE_WRAPS</a></code></th>
+<td class="colLast"><code>"WITH linked AS (SELECT b1.machine_id, b1.x AS x1, b1.y AS y1, b2.x AS x2, b2.y AS y2 FROM links JOIN boards AS b1 ON links.board_1 = b1.board_id JOIN boards AS b2 ON links.board_2 = b2.board_id) SELECT EXISTS (SELECT 1 FROM linked WHERE linked.machine_id = machines.machine_id AND ((linked.x1 = 0 AND linked.x2 = machines.width - 1) OR (linked.x2 = 0 AND linked.x1 = machines.width - 1))) AS horizontal_wrap, EXISTS (SELECT 1 FROM linked WHERE linked.machine_id = machines.machine_id AND ((linked.y1 = 0 AND linked.y2 = machines.height - 1) OR (linked.y2 = 0 AND linked.y1 = machines.height - 1))) AS vertical_wrap FROM machines WHERE machine_id = :machine_id LIMIT 1"</code></td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_MEMBERSHIP">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_MEMBERSHIP">GET_MEMBERSHIP</a></code></th>
 <td class="colLast"><code>"SELECT membership_id, user_info.user_id, user_groups.group_id, user_name, group_name FROM group_memberships JOIN user_info USING (user_id) JOIN user_groups USING (group_id) WHERE membership_id = :membership_id"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_MEMBERSHIPS_OF_USER">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_MEMBERSHIPS_OF_USER">GET_MEMBERSHIPS_OF_USER</a></code></th>
 <td class="colLast"><code>"SELECT membership_id, user_info.user_id, user_groups.group_id, user_name, group_name FROM group_memberships JOIN user_info USING (user_id) JOIN user_groups USING (group_id) WHERE group_memberships.user_id = :user_id"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_NAMED_MACHINE">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_NAMED_MACHINE">GET_NAMED_MACHINE</a></code></th>
 <td class="colLast"><code>"SELECT machine_id, machine_name, width, height, in_service FROM machines WHERE machine_name = :machine_name AND (in_service OR :allow_out_of_service) LIMIT 1"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_ROOT_BMP_ADDRESS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_ROOT_BMP_ADDRESS">GET_ROOT_BMP_ADDRESS</a></code></th>
 <td class="colLast"><code>"SELECT bmp.address FROM bmp JOIN boards USING (bmp_id) WHERE boards.machine_id = :machine_id AND boards.x = 0 AND boards.y = 0 LIMIT 1"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_ROOT_COORDS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_ROOT_COORDS">GET_ROOT_COORDS</a></code></th>
 <td class="colLast"><code>"SELECT x, y, z, root_x, root_y FROM boards WHERE board_id = :board_id LIMIT 1"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_ROOT_OF_BOARD">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_ROOT_OF_BOARD">GET_ROOT_OF_BOARD</a></code></th>
 <td class="colLast"><code>"SELECT root_x, root_y FROM boards WHERE board_id = :board_id LIMIT 1"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_SERIAL_INFO_REQS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_SERIAL_INFO_REQS">GET_SERIAL_INFO_REQS</a></code></th>
 <td class="colLast"><code>"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, cabinet, frame FROM blacklist_ops JOIN boards USING (board_id) JOIN bmp USING (bmp_id) LEFT JOIN board_serial USING (board_id) WHERE op = 2 AND NOT completed AND boards.machine_id = :machine_id"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_SUM_BOARDS_POWERED">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_SUM_BOARDS_POWERED">GET_SUM_BOARDS_POWERED</a></code></th>
 <td class="colLast"><code>"SELECT COALESCE(sum(board_power), 0) AS total_on FROM boards WHERE allocated_job = :job_id"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_TAGS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_TAGS">GET_TAGS</a></code></th>
 <td class="colLast"><code>"SELECT tag FROM tags WHERE machine_id = :machine_id"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_USER_AUTHORITIES">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_USER_AUTHORITIES">GET_USER_AUTHORITIES</a></code></th>
 <td class="colLast"><code>"SELECT trust_level, encrypted_password, openid_subject FROM user_info WHERE user_id = :user_id LIMIT 1"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_USER_DETAILS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_USER_DETAILS">GET_USER_DETAILS</a></code></th>
 <td class="colLast"><code>"SELECT user_id, user_name, encrypted_password IS NOT NULL AS has_password, trust_level, locked, disabled, last_successful_login_timestamp, last_fail_timestamp, openid_subject, is_internal FROM user_info WHERE user_id = :user_id LIMIT 1"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_USER_DETAILS_BY_NAME">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_USER_DETAILS_BY_NAME">GET_USER_DETAILS_BY_NAME</a></code></th>
 <td class="colLast"><code>"SELECT user_id, user_name, encrypted_password IS NOT NULL AS has_password, trust_level, locked, disabled, last_successful_login_timestamp, last_fail_timestamp, openid_subject, is_internal FROM user_info WHERE user_name = :user_name LIMIT 1"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_USER_DETAILS_BY_SUBJECT">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_USER_DETAILS_BY_SUBJECT">GET_USER_DETAILS_BY_SUBJECT</a></code></th>
 <td class="colLast"><code>"SELECT user_id, user_name, encrypted_password IS NOT NULL AS has_password, trust_level, locked, disabled, last_successful_login_timestamp, last_fail_timestamp, openid_subject, is_internal FROM user_info WHERE openid_subject = :openid_subject LIMIT 1"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_USER_ID">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_USER_ID">GET_USER_ID</a></code></th>
 <td class="colLast"><code>"SELECT user_id FROM user_info WHERE user_name = :user_name LIMIT 1"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_USER_QUOTA">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_USER_QUOTA">GET_USER_QUOTA</a></code></th>
 <td class="colLast"><code>"SELECT SUM(quota) AS quota_total, quotas.user_id FROM quotas JOIN user_info USING (user_id) WHERE user_info.user_name = :user_name AND user_id IS NOT NULL"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_USERS_OF_GROUP">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_USERS_OF_GROUP">GET_USERS_OF_GROUP</a></code></th>
 <td class="colLast"><code>"SELECT membership_id, user_groups.group_id, user_groups.group_name, user_info.user_id, user_info.user_name FROM group_memberships JOIN user_info USING (user_id) JOIN user_groups USING (group_id) WHERE group_id = :group_id"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GROUP_SYNC_ADD_GROUPS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GROUP_SYNC_ADD_GROUPS">GROUP_SYNC_ADD_GROUPS</a></code></th>
 <td class="colLast"><code>"INSERT IGNORE INTO group_memberships(user_id, group_id) SELECT :user_id AS user_id, group_id FROM usergroupids"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GROUP_SYNC_DROP_TEMP_TABLE">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GROUP_SYNC_DROP_TEMP_TABLE">GROUP_SYNC_DROP_TEMP_TABLE</a></code></th>
 <td class="colLast"><code>"DROP TEMPORARY TABLE usergroupids"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GROUP_SYNC_INSERT_TEMP_ROW">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GROUP_SYNC_INSERT_TEMP_ROW">GROUP_SYNC_INSERT_TEMP_ROW</a></code></th>
 <td class="colLast"><code>"INSERT INTO usergroupids SELECT group_id FROM user_groups WHERE group_name = :group_name AND group_type = :group_type"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GROUP_SYNC_MAKE_TEMP_TABLE">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GROUP_SYNC_MAKE_TEMP_TABLE">GROUP_SYNC_MAKE_TEMP_TABLE</a></code></th>
 <td class="colLast"><code>"CREATE TEMPORARY TABLE usergroupids(group_id INTEGER)"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GROUP_SYNC_REMOVE_GROUPS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GROUP_SYNC_REMOVE_GROUPS">GROUP_SYNC_REMOVE_GROUPS</a></code></th>
 <td class="colLast"><code>"DELETE FROM group_memberships WHERE user_id = :user_id AND group_id NOT IN (SELECT group_id FROM usergroupids)"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.INSERT_BMP">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#INSERT_BMP">INSERT_BMP</a></code></th>
 <td class="colLast"><code>"INSERT INTO bmp(machine_id, address, cabinet, frame) VALUES(:machine_id, :address, :cabinet, :frame)"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.INSERT_BOARD">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#INSERT_BOARD">INSERT_BOARD</a></code></th>
 <td class="colLast"><code>"INSERT INTO boards(machine_id, address, bmp_id, board_num, x, y, z, root_x, root_y, functioning) VALUES(:machine_id, :address, :bmp_id, :board_num, :x, :y, :z, :root_x, :root_y, :enabled)"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.INSERT_BOARD_REPORT">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#INSERT_BOARD_REPORT">INSERT_BOARD_REPORT</a></code></th>
 <td class="colLast"><code>"INSERT INTO board_reports(board_id, job_id, reported_issue, reporter, report_timestamp) VALUES(:board_id, :job_id, :issue, :user_id, UNIX_TIMESTAMP())"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.INSERT_JOB">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#INSERT_JOB">INSERT_JOB</a></code></th>
 <td class="colLast"><code>"INSERT INTO jobs(machine_id, owner, group_id, keepalive_interval, original_request, keepalive_timestamp, create_timestamp, job_state) VALUES(:machine_id, :user_id, :group_id, :keepalive_interval, :original_request, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1)"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.INSERT_LINK">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#INSERT_LINK">INSERT_LINK</a></code></th>
 <td class="colLast"><code>"INSERT IGNORE INTO links(board_1, dir_1, board_2, dir_2, live) VALUES (:board_1, :dir_1, :board_2, :dir_2, :live)"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.INSERT_MACHINE_SPINN_5">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#INSERT_MACHINE_SPINN_5">INSERT_MACHINE_SPINN_5</a></code></th>
 <td class="colLast"><code>"INSERT INTO machines(machine_name, width, height, depth, board_model) VALUES(:name, :width, :height, :depth, 5)"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.INSERT_REQ_BOARD">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#INSERT_REQ_BOARD">INSERT_REQ_BOARD</a></code></th>
 <td class="colLast"><code>"INSERT INTO job_request(job_id, board_id, priority) VALUES (:job_id, :board_id, :priority)"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.INSERT_REQ_N_BOARDS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#INSERT_REQ_N_BOARDS">INSERT_REQ_N_BOARDS</a></code></th>
 <td class="colLast"><code>"INSERT INTO job_request(job_id, num_boards, max_dead_boards, priority) VALUES (:job_id, :num_boards, :max_dead_boards, :priority)"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.INSERT_REQ_SIZE">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#INSERT_REQ_SIZE">INSERT_REQ_SIZE</a></code></th>
 <td class="colLast"><code>"INSERT INTO job_request(job_id, width, height, max_dead_boards, priority) VALUES (:job_id, :width, :height, :max_dead_boards, :priority)"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.INSERT_REQ_SIZE_BOARD">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#INSERT_REQ_SIZE_BOARD">INSERT_REQ_SIZE_BOARD</a></code></th>
 <td class="colLast"><code>"INSERT INTO job_request(job_id, board_id, width, height, max_dead_boards, priority) VALUES(:job_id, :board_id, :width, :height, :max_dead_boards,:priority)"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.INSERT_TAG">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#INSERT_TAG">INSERT_TAG</a></code></th>
 <td class="colLast"><code>"INSERT INTO tags(machine_id, tag) VALUES(:machine_id, :tag)"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.IS_BOARD_BLACKLIST_CURRENT">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#IS_BOARD_BLACKLIST_CURRENT">IS_BOARD_BLACKLIST_CURRENT</a></code></th>
 <td class="colLast"><code>"SELECT blacklist_sync_timestamp &gt;= blacklist_set_timestamp AS current FROM boards WHERE board_id = :board_id LIMIT 1"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.IS_USER_LOCKED">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#IS_USER_LOCKED">IS_USER_LOCKED</a></code></th>
 <td class="colLast"><code>"SELECT user_id, locked, disabled FROM user_info WHERE user_name = :username"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.KILL_JOB_ALLOC_TASK">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#KILL_JOB_ALLOC_TASK">KILL_JOB_ALLOC_TASK</a></code></th>
 <td class="colLast"><code>"DELETE FROM job_request WHERE job_id = :job_id"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.KILL_JOB_PENDING">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#KILL_JOB_PENDING">KILL_JOB_PENDING</a></code></th>
 <td class="colLast"><code>"DELETE FROM pending_changes WHERE job_id = :job_id"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.LIST_ALL_GROUPS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#LIST_ALL_GROUPS">LIST_ALL_GROUPS</a></code></th>
 <td class="colLast"><code>"SELECT group_id, group_name, quota, group_type FROM user_groups"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.LIST_ALL_GROUPS_OF_TYPE">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#LIST_ALL_GROUPS_OF_TYPE">LIST_ALL_GROUPS_OF_TYPE</a></code></th>
 <td class="colLast"><code>"SELECT group_id, group_name, quota, group_type FROM user_groups WHERE group_type = :type"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.LIST_ALL_USERS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#LIST_ALL_USERS">LIST_ALL_USERS</a></code></th>
 <td class="colLast"><code>"SELECT user_id, user_name, openid_subject FROM user_info"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.LIST_ALL_USERS_OF_TYPE">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#LIST_ALL_USERS_OF_TYPE">LIST_ALL_USERS_OF_TYPE</a></code></th>
 <td class="colLast"><code>"SELECT user_id, user_name, openid_subject FROM user_info WHERE is_internal = :internal"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.LIST_LIVE_JOBS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#LIST_LIVE_JOBS">LIST_LIVE_JOBS</a></code></th>
 <td class="colLast"><code>"SELECT job_id, jobs.machine_id, create_timestamp, keepalive_interval, job_state, allocation_size, keepalive_host, user_name, machines.machine_name FROM jobs JOIN machines USING (machine_id) JOIN user_info ON jobs.owner = user_info.user_id WHERE job_state != 4"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.LIST_MACHINE_NAMES">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#LIST_MACHINE_NAMES">LIST_MACHINE_NAMES</a></code></th>
 <td class="colLast"><code>"SELECT machine_name, in_service FROM machines WHERE in_service OR :allow_out_of_service ORDER BY machine_name ASC"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.LOAD_DIR_INFO">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#LOAD_DIR_INFO">LOAD_DIR_INFO</a></code></th>
 <td class="colLast"><code>"SELECT z, direction, dx, dy, dz FROM movement_directions"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.MARK_BOARD_BLACKLIST_CHANGED">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#MARK_BOARD_BLACKLIST_CHANGED">MARK_BOARD_BLACKLIST_CHANGED</a></code></th>
 <td class="colLast"><code>"UPDATE boards SET blacklist_set_timestamp = UNIX_TIMESTAMP() WHERE board_id = :board_id"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.MARK_BOARD_BLACKLIST_SYNCHED">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#MARK_BOARD_BLACKLIST_SYNCHED">MARK_BOARD_BLACKLIST_SYNCHED</a></code></th>
 <td class="colLast"><code>"UPDATE boards SET blacklist_sync_timestamp = UNIX_TIMESTAMP() WHERE board_id = :board_id"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.MARK_CONSOLIDATED">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#MARK_CONSOLIDATED">MARK_CONSOLIDATED</a></code></th>
 <td class="colLast"><code>"UPDATE jobs SET accounted_for = 1 WHERE job_id = :job_id"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.MARK_LOGIN_FAILURE">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#MARK_LOGIN_FAILURE">MARK_LOGIN_FAILURE</a></code></th>
 <td class="colLast"><code>"UPDATE user_info SET failure_count = failure_count + 1, last_fail_timestamp = UNIX_TIMESTAMP(), locked = (failure_count + 1 &gt;= :failure_limit) WHERE user_id = :user_id"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.MARK_LOGIN_SUCCESS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#MARK_LOGIN_SUCCESS">MARK_LOGIN_SUCCESS</a></code></th>
 <td class="colLast"><code>"UPDATE user_info SET last_successful_login_timestamp = UNIX_TIMESTAMP(), failure_count = 0, openid_subject = :openid_subject WHERE user_id = :user_id"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.READ_HISTORICAL_ALLOCS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#READ_HISTORICAL_ALLOCS">READ_HISTORICAL_ALLOCS</a></code></th>
 <td class="colLast"><code>"SELECT\talloc_id, job_id, board_id, alloc_timestamp FROM old_board_allocations JOIN jobs USING (job_id) WHERE jobs.death_timestamp + :grace_period &lt; UNIX_TIMESTAMP()"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.READ_HISTORICAL_JOBS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#READ_HISTORICAL_JOBS">READ_HISTORICAL_JOBS</a></code></th>
 <td class="colLast"><code>"SELECT job_id, machine_id, owner, create_timestamp, jobs.width as width, jobs.height as height, jobs.depth as depth,allocated_root, keepalive_interval, keepalive_host, death_reason, death_timestamp, original_request, allocation_timestamp, allocation_size, machine_name, user_name, group_id, group_name FROM jobs JOIN user_groups USING (group_id) JOIN machines USING (machine_id) JOIN user_info ON jobs.owner = user_info.user_id WHERE death_timestamp + :grace_period &lt; UNIX_TIMESTAMP()"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.REMOVE_USER_FROM_GROUP">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#REMOVE_USER_FROM_GROUP">REMOVE_USER_FROM_GROUP</a></code></th>
 <td class="colLast"><code>"DELETE FROM group_memberships WHERE user_id = :user_id AND group_id = :group_id"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_BOARD_POWER_OFF">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_BOARD_POWER_OFF">SET_BOARD_POWER_OFF</a></code></th>
 <td class="colLast"><code>"UPDATE boards SET board_power = 0, power_off_timestamp = UNIX_TIMESTAMP() WHERE board_id = :board_id"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_BOARD_POWER_ON">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_BOARD_POWER_ON">SET_BOARD_POWER_ON</a></code></th>
 <td class="colLast"><code>"UPDATE boards SET board_power = 1, power_on_timestamp = UNIX_TIMESTAMP() WHERE board_id = :board_id"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_BOARD_SERIAL_IDS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_BOARD_SERIAL_IDS">SET_BOARD_SERIAL_IDS</a></code></th>
 <td class="colLast"><code>"INSERT INTO board_serial(board_id, bmp_serial_id, physical_serial_id) VALUES(:board_id, :bmp_serial_id, :physical_serial_id) ON DUPLICATE KEY UPDATE bmp_serial_id = VALUES(bmp_serial_id), physical_serial_id = VALUES(physical_serial_id)"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_FUNCTIONING_FIELD">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_FUNCTIONING_FIELD">SET_FUNCTIONING_FIELD</a></code></th>
 <td class="colLast"><code>"UPDATE boards SET functioning = :enabled WHERE board_id = :board_id"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_IN_PROGRESS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_IN_PROGRESS">SET_IN_PROGRESS</a></code></th>
 <td class="colLast"><code>"UPDATE pending_changes SET in_progress = :in_progress WHERE change_id = :change_id"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_MACHINE_STATE">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_MACHINE_STATE">SET_MACHINE_STATE</a></code></th>
 <td class="colLast"><code>"UPDATE machines SET in_service = :in_service WHERE machine_name = :machine_name"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_MAX_COORDS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_MAX_COORDS">SET_MAX_COORDS</a></code></th>
 <td class="colLast"><code>"UPDATE machines SET max_chip_x = :max_x, max_chip_y = :max_y WHERE machine_id = :machine_id"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_STATE_DESTROYED">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_STATE_DESTROYED">SET_STATE_DESTROYED</a></code></th>
 <td class="colLast"><code>"UPDATE jobs SET job_state = 4, num_pending = :num_pending, death_timestamp = UNIX_TIMESTAMP() WHERE job_id = :job_id"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_STATE_PENDING">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_STATE_PENDING">SET_STATE_PENDING</a></code></th>
 <td class="colLast"><code>"UPDATE jobs SET job_state = :job_state, num_pending = :num_pending WHERE job_id = :job_id"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_USER_DISABLED">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_USER_DISABLED">SET_USER_DISABLED</a></code></th>
 <td class="colLast"><code>"UPDATE user_info SET disabled = :disabled WHERE user_id = :user_id"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_USER_LOCKED">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_USER_LOCKED">SET_USER_LOCKED</a></code></th>
 <td class="colLast"><code>"UPDATE user_info SET locked = :locked WHERE user_id = :user_id"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_USER_NAME">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_USER_NAME">SET_USER_NAME</a></code></th>
 <td class="colLast"><code>"UPDATE user_info SET user_name = :user_name WHERE user_id = :user_id"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_USER_PASS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_USER_PASS">SET_USER_PASS</a></code></th>
 <td class="colLast"><code>"UPDATE user_info SET encrypted_password = :password WHERE user_id = :user_id"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_USER_TRUST">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_USER_TRUST">SET_USER_TRUST</a></code></th>
 <td class="colLast"><code>"UPDATE user_info SET trust_level = :trust WHERE user_id = :user_id"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.UNLOCK_LOCKED_USERS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#UNLOCK_LOCKED_USERS">UNLOCK_LOCKED_USERS</a></code></th>
 <td class="colLast"><code>"UPDATE user_info SET failure_count = 0, last_fail_timestamp = 0, locked = 0 WHERE last_fail_timestamp + :lock_interval &lt; UNIX_TIMESTAMP() AND locked"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.UPDATE_GROUP">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#UPDATE_GROUP">UPDATE_GROUP</a></code></th>
 <td class="colLast"><code>"UPDATE user_groups SET group_name = COALESCE(:group_name, group_name), quota = :quota WHERE group_id = :group_id "</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.UPDATE_KEEPALIVE">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#UPDATE_KEEPALIVE">UPDATE_KEEPALIVE</a></code></th>
 <td class="colLast"><code>"UPDATE jobs SET keepalive_timestamp = UNIX_TIMESTAMP(), keepalive_host = :keepalive_host WHERE job_id = :job_id AND job_state != 4"</code></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.WRITE_HISTORICAL_ALLOCS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#WRITE_HISTORICAL_ALLOCS">WRITE_HISTORICAL_ALLOCS</a></code></th>
 <td class="colLast"><code>"INSERT IGNORE INTO board_allocations( alloc_id, job_id, board_id, allocation_timestamp) VALUES(:alloc_id, :job_id, :board_id, :allocation_timestamp)"</code></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.WRITE_HISTORICAL_JOBS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
