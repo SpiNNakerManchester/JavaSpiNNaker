@@ -809,14 +809,14 @@ public interface SpallocAPI {
 		Optional<ChipLocation> getRootChip();
 
 		/**
-		 * @return the allocated width of the job's rectangle, or {@code null}
-		 *         if not allocated (or not known).
+		 * @return the allocated width of the job's rectangle of triads, or
+		 *         {@code null} if not allocated (or not known).
 		 */
 		Optional<Integer> getWidth();
 
 		/**
-		 * @return the allocated height of the job's rectangle, or {@code null}
-		 *         if not allocated (or not known).
+		 * @return the allocated height of the job's rectangle of triads, or
+		 *         {@code null} if not allocated (or not known).
 		 */
 		Optional<Integer> getHeight();
 
@@ -903,6 +903,12 @@ public interface SpallocAPI {
 		 * @return The height of the machine.
 		 */
 		int getHeight();
+
+		/** @return Whether the machine wraps in the horizontal direction. */
+		boolean isHorizonallyWrapped();
+
+		/** @return Whether the machine wraps in the vertical direction. */
+		boolean isVerticallyWrapped();
 
 		/** @return Whether this machine is currently in service. */
 		boolean isInService();

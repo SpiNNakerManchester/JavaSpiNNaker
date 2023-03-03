@@ -148,6 +148,18 @@ class DQLTest extends SimpleDBTestBase {
 	}
 
 	@Test
+	void getMachineWraps() {
+		try (var q = c.query(GET_MACHINE_WRAPS)) {
+			c.transaction(() -> {
+				assertEquals(List.of("machine_id"), q.getParameters());
+				assertEquals(List.of("horizontal_wrap", "vertical_wrap"),
+						q.getColumns());
+				assertEquals(empty(), q.call1(Row::toString, NO_MACHINE));
+			});
+		}
+	}
+
+	@Test
 	void getMachineJobs() {
 		try (var q = c.query(GET_MACHINE_JOBS)) {
 			c.transaction(() -> {
