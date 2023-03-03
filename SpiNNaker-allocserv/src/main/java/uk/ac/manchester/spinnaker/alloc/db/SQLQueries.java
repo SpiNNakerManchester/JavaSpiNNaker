@@ -60,8 +60,27 @@ public abstract class SQLQueries {
 	@ResultColumn("width")
 	@ResultColumn("height")
 	@ResultColumn("in_service")
+	@ResultColumn("horizonal_wrap")
+	@ResultColumn("vertical_wrap")
 	protected static final String GET_ALL_MACHINES =
-			"SELECT machine_id, machine_name, width, height, in_service "
+			"WITH linked AS ("
+					+ "SELECT b1.machine_id, b1.x AS x1, b1.y AS y1, "
+					+ "b2.x AS x2, b2.y AS y2 "
+					+ "FROM links "
+					+ "JOIN boards AS b1 ON links.board_1 = b1.board_id "
+					+ "JOIN boards AS b2 ON links.board_2 = b2.board_id) "
+					+ "SELECT machine_id, machine_name, width, height, "
+					+ "in_service, "
+					+ "EXISTS (SELECT 1 FROM linked WHERE "
+					+ "linked.machine_id = machines.machine_id AND "
+					+ "((linked.x1 = 0 AND linked.x2 = machines.width - 1) OR "
+					+ "(linked.x2 = 0 AND linked.x1 = machines.width - 1))) "
+					+ "AS horizontal_wrap, "
+					+ "EXISTS (SELECT 1 FROM linked WHERE "
+					+ "linked.machine_id = machines.machine_id AND "
+					+ "((linked.y1 = 0 AND linked.y2 = machines.height - 1) OR "
+					+ "(linked.y2 = 0 AND linked.y1 = machines.height - 1))) "
+					+ "AS vertical_wrap "
 					+ "FROM machines "
 					+ "WHERE in_service OR :allow_out_of_service "
 					+ "ORDER BY machine_name ASC";
@@ -83,9 +102,27 @@ public abstract class SQLQueries {
 	@ResultColumn("width")
 	@ResultColumn("height")
 	@ResultColumn("in_service")
+	@ResultColumn("horizonal_wrap")
+	@ResultColumn("vertical_wrap")
 	@SingleRowResult
 	protected static final String GET_MACHINE_BY_ID =
-			"SELECT machine_id, machine_name, width, height, in_service "
+			"WITH linked AS ("
+					+ "SELECT b1.machine_id, b1.x AS x1, b1.y AS y1, "
+					+ "b2.x AS x2, b2.y AS y2 FROM links "
+					+ "JOIN boards AS b1 ON links.board_1 = b1.board_id "
+					+ "JOIN boards AS b2 ON links.board_2 = b2.board_id) "
+					+ "SELECT machine_id, machine_name, width, height, "
+					+ "in_service, "
+					+ "EXISTS (SELECT 1 FROM linked WHERE "
+					+ "linked.machine_id = machines.machine_id AND "
+					+ "((linked.x1 = 0 AND linked.x2 = machines.width - 1) OR "
+					+ "(linked.x2 = 0 AND linked.x1 = machines.width - 1))) "
+					+ "AS horizontal_wrap, "
+					+ "EXISTS (SELECT 1 FROM linked WHERE "
+					+ "linked.machine_id = machines.machine_id AND "
+					+ "((linked.y1 = 0 AND linked.y2 = machines.height - 1) OR "
+					+ "(linked.y2 = 0 AND linked.y1 = machines.height - 1))) "
+					+ "AS vertical_wrap "
 					+ "FROM machines WHERE machine_id = :machine_id "
 					+ "AND (in_service OR :allow_out_of_service) LIMIT 1";
 
@@ -97,9 +134,27 @@ public abstract class SQLQueries {
 	@ResultColumn("width")
 	@ResultColumn("height")
 	@ResultColumn("in_service")
+	@ResultColumn("horizonal_wrap")
+	@ResultColumn("vertical_wrap")
 	@SingleRowResult
 	protected static final String GET_NAMED_MACHINE =
-			"SELECT machine_id, machine_name, width, height, in_service "
+			"WITH linked AS ("
+					+ "SELECT b1.machine_id, b1.x AS x1, b1.y AS y1, "
+					+ "b2.x AS x2, b2.y AS y2 FROM links "
+					+ "JOIN boards AS b1 ON links.board_1 = b1.board_id "
+					+ "JOIN boards AS b2 ON links.board_2 = b2.board_id) "
+					+ "SELECT machine_id, machine_name, width, height, "
+					+ "in_service, "
+					+ "EXISTS (SELECT 1 FROM linked WHERE "
+					+ "linked.machine_id = machines.machine_id AND "
+					+ "((linked.x1 = 0 AND linked.x2 = machines.width - 1) OR "
+					+ "(linked.x2 = 0 AND linked.x1 = machines.width - 1))) "
+					+ "AS horizontal_wrap, "
+					+ "EXISTS (SELECT 1 FROM linked WHERE "
+					+ "linked.machine_id = machines.machine_id AND "
+					+ "((linked.y1 = 0 AND linked.y2 = machines.height - 1) OR "
+					+ "(linked.y2 = 0 AND linked.y1 = machines.height - 1))) "
+					+ "AS vertical_wrap "
 					+ "FROM machines WHERE machine_name = :machine_name "
 					+ "AND (in_service OR :allow_out_of_service) LIMIT 1";
 

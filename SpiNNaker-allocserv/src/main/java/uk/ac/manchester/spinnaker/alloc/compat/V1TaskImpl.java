@@ -157,7 +157,6 @@ class V1TaskImpl extends V1CompatTask {
 	@Override
 	protected final JobMachineInfo getJobMachineInfo(int jobId)
 			throws TaskException {
-		// NB: The views in this method already handle whole-machine wraparounds
 		var job = getJob(jobId);
 		job.access(host());
 		var machine = job.getMachine()
@@ -168,9 +167,20 @@ class V1TaskImpl extends V1CompatTask {
 			w = SIZE_X_OF_ONE_BOARD;
 			h = SIZE_Y_OF_ONE_BOARD;
 		} else {
-			// Everything else is in terms of triads
-			w = job.getWidth().orElse(0) * TRIAD_WIDTH + HALF_SIZE;
-			h = job.getHeight().orElse(0) * TRIAD_HEIGHT + HALF_SIZE;
+			// Everything else is in terms of triads; careful of wraparounds
+			var full = machine.getMachine();
+			int linearTriadSize = job.getWidth().orElse(0);
+			w = linearTriadSize * TRIAD_WIDTH;
+			if (linearTriadSize != full.getWidth()
+					|| !full.isHorizonallyWrapped()) {
+				w += HALF_SIZE;
+			}
+			linearTriadSize = job.getHeight().orElse(0);
+			h = linearTriadSize * TRIAD_HEIGHT;
+			if (linearTriadSize != full.getHeight()
+					|| !full.isVerticallyWrapped()) {
+				h += HALF_SIZE;
+			}
 		}
 		return new JobMachineInfo(w, h, machine.getConnections().stream()
 				.map(ci -> new Connection(ci.getChip(), ci.getHostname()))

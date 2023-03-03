@@ -805,6 +805,10 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 		private final int height;
 
+		private final boolean hWrap;
+
+		private final boolean vWrap;
+
 		@JsonIgnore
 		private final Epoch epoch;
 
@@ -815,6 +819,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			width = rs.getInt("width");
 			height = rs.getInt("height");
 			inService = rs.getBoolean("in_service");
+			hWrap = rs.getBoolean("horizontal_wrap");
+			vWrap = rs.getBoolean("vertical_wrap");
 			try (var getTags = conn.query(GET_TAGS)) {
 				tags = Row.stream(copy(getTags.call(string("tag"), id)))
 						.toSet();
@@ -1019,6 +1025,16 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		@Override
 		public String toString() {
 			return "Machine(" + name + ")";
+		}
+
+		@Override
+		public boolean isHorizonallyWrapped() {
+			return hWrap;
+		}
+
+		@Override
+		public boolean isVerticallyWrapped() {
+			return vWrap;
 		}
 	}
 

@@ -905,6 +905,12 @@ public interface SpallocAPI {
 		 */
 		int getHeight();
 
+		/** @return Whether the machine wraps in the horizontal direction. */
+		boolean isHorizonallyWrapped();
+
+		/** @return Whether the machine wraps in the vertical direction. */
+		boolean isVerticallyWrapped();
+
 		/** @return Whether this machine is currently in service. */
 		boolean isInService();
 
