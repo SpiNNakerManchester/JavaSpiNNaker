@@ -62,7 +62,8 @@ public abstract class SQLQueries {
 	@ResultColumn("in_service")
 	protected static final String GET_ALL_MACHINES =
 			"SELECT machine_id, machine_name, width, height, in_service "
-					+ "FROM machines WHERE in_service OR :allow_out_of_service "
+					+ "FROM machines "
+					+ "WHERE in_service OR :allow_out_of_service "
 					+ "ORDER BY machine_name ASC";
 
 	/** Get the machine names in alphabetical order. */
