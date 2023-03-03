@@ -805,9 +805,11 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 		private final int height;
 
-		private final boolean hWrap;
+		private boolean lookedUpWraps;
 
-		private final boolean vWrap;
+		private boolean hWrap;
+
+		private boolean vWrap;
 
 		@JsonIgnore
 		private final Epoch epoch;
@@ -819,8 +821,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			width = rs.getInt("width");
 			height = rs.getInt("height");
 			inService = rs.getBoolean("in_service");
-			hWrap = rs.getBoolean("horizontal_wrap");
-			vWrap = rs.getBoolean("vertical_wrap");
+			lookedUpWraps = false;
 			try (var getTags = conn.query(GET_TAGS)) {
 				tags = Row.stream(copy(getTags.call(string("tag"), id)))
 						.toSet();
@@ -1027,13 +1028,35 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			return "Machine(" + name + ")";
 		}
 
+		private void retrieveWraps() {
+			try (var conn = getConnection();
+					var getWraps = conn.query(GET_MACHINE_WRAPS)) {
+				/*
+				 * No locking; not too bothered which thread asks as result will
+				 * be the same either way
+				 */
+				lookedUpWraps =
+						conn.transaction(false, () -> getWraps.call1(rs -> {
+							hWrap = rs.getBoolean("horizontal_wrap");
+							vWrap = rs.getBoolean("vertical_wrap");
+							return true;
+						}, id)).orElse(false);
+			}
+		}
+
 		@Override
 		public boolean isHorizonallyWrapped() {
+			if (!lookedUpWraps) {
+				retrieveWraps();
+			}
 			return hWrap;
 		}
 
 		@Override
 		public boolean isVerticallyWrapped() {
+			if (!lookedUpWraps) {
+				retrieveWraps();
+			}
 			return vWrap;
 		}
 	}

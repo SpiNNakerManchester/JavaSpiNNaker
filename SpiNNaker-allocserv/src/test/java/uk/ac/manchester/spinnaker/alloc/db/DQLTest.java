@@ -72,8 +72,7 @@ class DQLTest extends SimpleDBTestBase {
 
 	/** The columns to inflate a MachineImpl. */
 	private static final List<String> MACHINE_COLUMNS = List.of("machine_id",
-			"machine_name", "width", "height", "in_service", "horizontal_wrap",
-			"vertical_wrap");
+			"machine_name", "width", "height", "in_service");
 
 	/** Columns to inflate a JobImpl. */
 	private static final List<String> JOB_COLUMNS = List.of("job_id",
@@ -144,6 +143,18 @@ class DQLTest extends SimpleDBTestBase {
 						q.getParameters());
 				assertEquals(MACHINE_COLUMNS, q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, NO_NAME, false));
+			});
+		}
+	}
+
+	@Test
+	void getMachineWraps() {
+		try (var q = c.query(GET_MACHINE_WRAPS)) {
+			c.transaction(() -> {
+				assertEquals(List.of("machine_id"), q.getParameters());
+				assertEquals(List.of("horizontal_wrap", "vertical_wrap"),
+						q.getColumns());
+				assertEquals(empty(), q.call1(Row::toString, NO_MACHINE));
 			});
 		}
 	}
