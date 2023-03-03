@@ -72,7 +72,7 @@ class DQLTest extends SimpleDBTestBase {
 
 	/** The columns to inflate a MachineImpl. */
 	private static final List<String> MACHINE_COLUMNS = List.of("machine_id",
-			"machine_name", "width", "height", "in_service", "horizonal_wrap",
+			"machine_name", "width", "height", "in_service", "horizontal_wrap",
 			"vertical_wrap");
 
 	/** Columns to inflate a JobImpl. */

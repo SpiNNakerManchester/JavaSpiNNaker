@@ -60,7 +60,7 @@ public abstract class SQLQueries {
 	@ResultColumn("width")
 	@ResultColumn("height")
 	@ResultColumn("in_service")
-	@ResultColumn("horizonal_wrap")
+	@ResultColumn("horizontal_wrap")
 	@ResultColumn("vertical_wrap")
 	protected static final String GET_ALL_MACHINES =
 			"WITH linked AS ("
@@ -102,7 +102,7 @@ public abstract class SQLQueries {
 	@ResultColumn("width")
 	@ResultColumn("height")
 	@ResultColumn("in_service")
-	@ResultColumn("horizonal_wrap")
+	@ResultColumn("horizontal_wrap")
 	@ResultColumn("vertical_wrap")
 	@SingleRowResult
 	protected static final String GET_MACHINE_BY_ID =
@@ -134,7 +134,7 @@ public abstract class SQLQueries {
 	@ResultColumn("width")
 	@ResultColumn("height")
 	@ResultColumn("in_service")
-	@ResultColumn("horizonal_wrap")
+	@ResultColumn("horizontal_wrap")
 	@ResultColumn("vertical_wrap")
 	@SingleRowResult
 	protected static final String GET_NAMED_MACHINE =
