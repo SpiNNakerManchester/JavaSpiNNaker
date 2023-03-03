@@ -22,6 +22,7 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.Set;
 
+import javax.sql.DataSource;
 import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Email;
@@ -41,6 +42,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.google.errorprone.annotations.Keep;
 
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 import uk.ac.manchester.spinnaker.utils.validation.TCPPort;
 
@@ -93,6 +95,9 @@ public class SpallocProperties {
 	/** Properties relating to control of the overall machine state. */
 	private StateControlProperties stateCtrl;
 
+	/** The database connection configuration. */
+	private DataSourceProperties datasource;
+
 	/**
 	 * @param databasePath
 	 *            Path to the main database file.
@@ -126,7 +131,10 @@ public class SpallocProperties {
 	 *            BMPs.
 	 * @param stateControl
 	 *            Properties relating to control of the overall machine state.
+	 * @param datasource
+	 *            The database connection configuration.
 	 */
+	@SuppressWarnings("checkstyle:ParameterNumber")
 	public SpallocProperties(//
 			@DefaultValue("spalloc.sqlite3") File databasePath,
 			@DefaultValue("30s") Duration wait,
@@ -142,7 +150,8 @@ public class SpallocProperties {
 			@DefaultValue DBProperties sqlite,
 			@DefaultValue ReportProperties reportEmail,
 			@DefaultValue TxrxProperties transceiver,
-			@DefaultValue StateControlProperties stateControl) {
+			@DefaultValue StateControlProperties stateControl,
+			@DefaultValue DataSourceProperties datasource) {
 		this.databasePath = databasePath;
 		this.wait = wait;
 		this.pause = pause;
@@ -158,6 +167,7 @@ public class SpallocProperties {
 		this.reportEmail = reportEmail;
 		this.transceiver = transceiver;
 		this.stateCtrl = stateControl;
+		this.datasource = datasource;
 	}
 
 	/**
@@ -370,6 +380,17 @@ public class SpallocProperties {
 		this.stateCtrl = stateCtrl;
 	}
 
+	/** @return The database connection configuration. */
+	@NotNull
+	@Valid
+	public DataSourceProperties getDatasource() {
+		return datasource;
+	}
+
+	void setDatasource(DataSourceProperties datasource) {
+		this.datasource = datasource;
+	}
+
 	/** How to handle job data that is now only of historic interest. */
 	public static class HistoricalDataProperties {
 		/**
@@ -390,6 +411,12 @@ public class SpallocProperties {
 		private String schedule;
 
 		/**
+		 * Database connection properties for the connection to the historical
+		 * database.
+		 */
+		private DataSourceProperties datasource;
+
+		/**
 		 * @param path
 		 *            Path to the historical job database file. <em>Must be
 		 *            distinct from the main database!</em>
@@ -399,14 +426,19 @@ public class SpallocProperties {
 		 * @param schedule
 		 *            Cron expression saying when to move completed jobs to the
 		 *            historical database.
+		 * @param datasource
+		 *            Database connection properties for the connection to the
+		 *            historical database.
 		 */
 		public HistoricalDataProperties(
 				@DefaultValue("spalloc-history.sqlite3") File path,
 				@DefaultValue("14d") Duration gracePeriod,
-				@DefaultValue("0 0 2 * * *") String schedule) {
+				@DefaultValue("0 0 2 * * *") String schedule,
+				@DefaultValue DataSourceProperties datasource) {
 			this.path = path;
 			this.gracePeriod = gracePeriod;
 			this.schedule = schedule;
+			this.datasource = datasource;
 		}
 
 		/**
@@ -446,6 +478,19 @@ public class SpallocProperties {
 
 		void setSchedule(String schedule) {
 			this.schedule = schedule;
+		}
+
+		/**
+		 * @return Database connection properties for the connection to the
+		 *         historical database.
+		 */
+		@Valid
+		public DataSourceProperties getDatasource() {
+			return datasource;
+		}
+
+		void setDatasource(DataSourceProperties datasource) {
+			this.datasource = datasource;
 		}
 	}
 
@@ -1592,6 +1637,67 @@ public class SpallocProperties {
 
 		void setDummy(boolean dummy) {
 			this.dummy = dummy;
+		}
+	}
+
+	/**
+	 * The properties of a {@link DataSource}, describing how to make a database
+	 * connection.
+	 */
+	@UsedInJavadocOnly(DataSource.class)
+	public static class DataSourceProperties {
+		/** URL for creating a connection. */
+		@NotEmpty
+		private String jdbcUrl;
+
+		/** User name for the connection. */
+		private String username;
+
+		/** Password for the connection. */
+		private String password;
+
+		/**
+		 * @param jdbcUrl
+		 *            URL for creating a connection.
+		 * @param username
+		 *            User name for the connection.
+		 * @param password
+		 *            Password for the connection.
+		 */
+		public DataSourceProperties(
+				@DefaultValue("jdbc:sqlite:/fix.me") String jdbcUrl,
+				@DefaultValue("sa") String username,
+				@DefaultValue("*") String password) {
+			this.jdbcUrl = jdbcUrl;
+			this.username = username;
+			this.password = password;
+		}
+
+		/** @return URL for creating a connection. */
+		public String getJdbcUrl() {
+			return jdbcUrl;
+		}
+
+		void setJdbcUrl(String jdbcUrl) {
+			this.jdbcUrl = jdbcUrl;
+		}
+
+		/** @return User name for the connection. */
+		public String getUsername() {
+			return username;
+		}
+
+		void setUsername(String username) {
+			this.username = username;
+		}
+
+		/** @return Password for the connection. */
+		public String getPassword() {
+			return password;
+		}
+
+		void setPassword(String password) {
+			this.password = password;
 		}
 	}
 

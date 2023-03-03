@@ -174,6 +174,16 @@ class JsonTest {
 		public List<Integer> getBoardNumbers(BMPCoords bmp) {
 			return List.of();
 		}
+
+		@Override
+		public boolean isHorizonallyWrapped() {
+			return false;
+		}
+
+		@Override
+		public boolean isVerticallyWrapped() {
+			return false;
+		}
 	}
 
 	private static class SM extends StubSubMachine {
