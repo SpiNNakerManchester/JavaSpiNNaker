@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -119,9 +119,10 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.io.File,java.time.Duration,java.lang.String)">HistoricalDataProperties</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;path,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.io.File,java.time.Duration,java.lang.String,uk.ac.manchester.spinnaker.alloc.SpallocProperties.DataSourceProperties)">HistoricalDataProperties</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;path,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;gracePeriod,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;schedule)</code></th>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;schedule,
+<a href="SpallocProperties.DataSourceProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.DataSourceProperties</a>&nbsp;datasource)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
@@ -148,16 +149,21 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
+<td class="colFirst"><code><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="SpallocProperties.DataSourceProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.DataSourceProperties</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getDatasource()">getDatasource</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor" id="i1">
 <td class="colFirst"><code><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getGracePeriod()">getGracePeriod</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor" id="i1">
+<tr class="altColor" id="i2">
 <td class="colFirst"><code><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getPath()">getPath</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor" id="i2">
+<tr class="rowColor" id="i3">
 <td class="colFirst"><code><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotBlank.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotBlank</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSchedule()">getSchedule</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
@@ -186,13 +192,15 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(java.io.File,java.time.Duration,java.lang.String)">HistoricalDataProperties</a></h3>
+<h3><a id="&lt;init&gt;(java.io.File,java.time.Duration,java.lang.String,uk.ac.manchester.spinnaker.alloc.SpallocProperties.DataSourceProperties)">HistoricalDataProperties</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">HistoricalDataProperties</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("spalloc-history.sqlite3")
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;path,
 <a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("14d")
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;gracePeriod,
 <a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("0 0 2 * * *")
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;schedule)</span></div>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;schedule,
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>
+<a href="SpallocProperties.DataSourceProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.DataSourceProperties</a>&nbsp;datasource)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>path</code> - Path to the historical job database file. <em>Must be
@@ -200,6 +208,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <dd><code>gracePeriod</code> - How long after job completion should we wait before moving
             the data?</dd>
 <dd><code>schedule</code> - Cron expression saying when to move completed jobs to the
+            historical database.</dd>
+<dd><code>datasource</code> - Database connection properties for the connection to the
             historical database.</dd>
 </dl>
 </section>
@@ -246,6 +256,18 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Cron expression saying when to move completed jobs to the
+         historical database.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getDatasource()">getDatasource</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="SpallocProperties.DataSourceProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.DataSourceProperties</a></span>&nbsp;<span class="memberName">getDatasource</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>Database connection properties for the connection to the
          historical database.</dd>
 </dl>
 </section>
