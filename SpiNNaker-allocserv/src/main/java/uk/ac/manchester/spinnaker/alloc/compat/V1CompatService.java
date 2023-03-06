@@ -50,14 +50,19 @@ import jakarta.annotation.PreDestroy;
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.CompatibilityProperties;
+import uk.ac.manchester.spinnaker.alloc.model.Prototype;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
- * Implementation of the old style Spalloc interface.
+ * Implementation of the old style Spalloc interface. Delegates handling a
+ * single connection to a {@link V1CompatTask} instance (manufactured by Spring
+ * as a {@linkplain Prototype prototype} bean).
  *
  * @author Donal Fellows
  */
 @Service("spalloc-v1-compatibility-service")
+@UsedInJavadocOnly(Prototype.class)
 public class V1CompatService {
 	private static final Logger log = getLogger(V1CompatService.class);
 
