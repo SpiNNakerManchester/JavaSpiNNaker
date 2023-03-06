@@ -99,7 +99,12 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public static interface <span class="typeNameLabel">DatabaseAPI.Update</span>
 extends <a href="DatabaseAPI.StatementCommon.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.StatementCommon</a></pre>
-<div class="block">Wrapping a prepared update to be more suitable for Java 8 onwards.</div>
+<div class="block">Wrapping a prepared update to be more suitable for Java 8 onwards. This
+ supports prepared statements that do not yield result sets, but may (in
+ some circumstances) generate IDs.
+ <p>
+ Note that, as a security measure, most database connectors do not support
+ putting multiple statements in a single prepared statement.</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
 <dd>Donal Fellows</dd>

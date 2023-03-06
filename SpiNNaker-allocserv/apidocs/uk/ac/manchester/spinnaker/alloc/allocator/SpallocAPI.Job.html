@@ -322,7 +322,9 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</span>&nbsp;<span class="memberName">getKeepaliveHost</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>Host address that issued last keepalive event, if any.</dd>
+<dd>Host address that issued last keepalive event, or
+         <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true#empty()" title="class or interface in java.util" class="externalLink"><code>empty()</code></a> if this information is not
+         available to the current user.</dd>
 </dl>
 </section>
 </li>
@@ -332,7 +334,7 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Instant.html?is-external=true" title="class or interface in java.time" class="externalLink">Instant</a></span>&nbsp;<span class="memberName">getKeepaliveTimestamp</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>Time of the last keepalive event, if any.</dd>
+<dd>Time of the last keepalive event.</dd>
 </dl>
 </section>
 </li>
@@ -342,7 +344,8 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</span>&nbsp;<span class="memberName">getOwner</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The creator of the job.</dd>
+<dd>The creator of the job. <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true#empty()" title="class or interface in java.util" class="externalLink"><code>empty()</code></a> if
+         this is not available to the current user.</dd>
 </dl>
 </section>
 </li>
@@ -352,7 +355,9 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;byte[]&gt;</span>&nbsp;<span class="memberName">getOriginalRequest</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The serialized original request to create the job.</dd>
+<dd>The serialized original request to create the job.
+         <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true#empty()" title="class or interface in java.util" class="externalLink"><code>empty()</code></a> if this is not available to
+         the current user.</dd>
 </dl>
 </section>
 </li>
@@ -362,7 +367,8 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Instant.html?is-external=true" title="class or interface in java.time" class="externalLink">Instant</a>&gt;</span>&nbsp;<span class="memberName">getFinishTime</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>When the job finished.</dd>
+<dd>When the job finished. <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true#empty()" title="class or interface in java.util" class="externalLink"><code>empty()</code></a> if
+         the job is not yet finished.</dd>
 </dl>
 </section>
 </li>
@@ -372,8 +378,8 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</span>&nbsp;<span class="memberName">getReason</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>Why the job died. Might be <code>null</code> if this isn't known
-         (including if the job is alive).</dd>
+<dd>Why the job died. Might be <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true#empty()" title="class or interface in java.util" class="externalLink"><code>empty()</code></a>
+         if this isn't known (including if the job is alive).</dd>
 </dl>
 </section>
 </li>
@@ -383,8 +389,8 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.SubMachine.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.SubMachine</a>&gt;</span>&nbsp;<span class="memberName">getMachine</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The (sub-)machine allocated to the job. <code>null</code> if no
-         resources allocated.</dd>
+<dd>The (sub-)machine allocated to the job.
+         <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true#empty()" title="class or interface in java.util" class="externalLink"><code>empty()</code></a> if no resources allocated.</dd>
 </dl>
 </section>
 </li>
@@ -401,7 +407,8 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <dd><code>x</code> - The X coordinate of a chip on the board of interest.</dd>
 <dd><code>y</code> - The Y coordinate of a chip on the board of interest.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The location, if resources allocated and the location maps.</dd>
+<dd>The location, if resources allocated and the location maps.
+         <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true#empty()" title="class or interface in java.util" class="externalLink"><code>empty()</code></a> otherwise.</dd>
 </dl>
 </section>
 </li>
@@ -411,8 +418,7 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;uk.ac.manchester.spinnaker.machine.ChipLocation&gt;</span>&nbsp;<span class="memberName">getRootChip</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The absolute location of root chip. <code>null</code> if no
-         resources allocated.</dd>
+<dd>The absolute location of root chip. <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true#empty()" title="class or interface in java.util" class="externalLink"><code>empty()</code></a> if no resources allocated.</dd>
 </dl>
 </section>
 </li>
@@ -423,7 +429,8 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the allocated width of the job's rectangle of triads, or
-         <code>null</code> if not allocated (or not known).</dd>
+         <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true#empty()" title="class or interface in java.util" class="externalLink"><code>empty()</code></a> if not allocated (or not
+         known).</dd>
 </dl>
 </section>
 </li>
@@ -434,7 +441,8 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the allocated height of the job's rectangle of triads, or
-         <code>null</code> if not allocated (or not known).</dd>
+         <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true#empty()" title="class or interface in java.util" class="externalLink"><code>empty()</code></a> if not allocated (or not
+         known).</dd>
 </dl>
 </section>
 </li>
@@ -444,9 +452,10 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</span>&nbsp;<span class="memberName">getDepth</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the allocated depth of this sub-machine, or <code>null</code> if
-         not allocated (or not known). When supplied, will be 1
-         (single board) or 3 (by triad)</dd>
+<dd>the allocated depth of this sub-machine, or
+         <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true#empty()" title="class or interface in java.util" class="externalLink"><code>empty()</code></a> if not allocated (or not
+         known). When supplied, will be 1 (single board) or 3 (by
+         triad)</dd>
 </dl>
 </section>
 </li>

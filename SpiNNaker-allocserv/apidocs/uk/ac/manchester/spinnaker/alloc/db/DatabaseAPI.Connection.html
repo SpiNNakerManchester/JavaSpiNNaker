@@ -372,16 +372,24 @@ boolean&nbsp;lockType)</code></th>
 <div class="block">Create a new query. Usage pattern:
  <pre>
  try (var q = conn.query(SQL_SELECT)) {
-     for (var row : u.call(argument1, argument2)) {
-         // Do something with the row
+     for (var value : q.call(mapper, argument1, argument2)) {
+         // Do something with the mapped row
      }
  }
  </pre>
  or:
  <pre>
  try (var q = conn.query(SQL_SELECT)) {
-     u.call(argument1, argument2).forEach(row -&gt; {
-         // Do something with the row
+     q.call(mapper, argument1, argument2).forEach(value -&gt; {
+         // Do something with the mapped row
+     });
+ }
+ </pre>
+ or:
+ <pre>
+ try (var q = conn.query(SQL_SELECT)) {
+     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
+         // Do something with the mapped row
      });
  }
  </pre></div>
@@ -405,17 +413,25 @@ boolean&nbsp;lockType)</code></th>
 boolean&nbsp;lockType)</span></div>
 <div class="block">Create a new query. Usage pattern:
  <pre>
- try (var q = conn.query(SQL_SELECT)) {
-     for (var row : u.call(argument1, argument2)) {
-         // Do something with the row
+ try (var q = conn.query(SQL_SELECT, false)) {
+     for (var value : q.call(mapper, argument1, argument2)) {
+         // Do something with the mapped row
      }
  }
  </pre>
  or:
  <pre>
- try (var q = conn.query(SQL_SELECT)) {
-     u.call(argument1, argument2).forEach(row -&gt; {
-         // Do something with the row
+ try (var q = conn.query(SQL_SELECT, false)) {
+     q.call(mapper, argument1, argument2).forEach(value -&gt; {
+         // Do something with the mapped row
+     });
+ }
+ </pre>
+ or:
+ <pre>
+ try (var q = conn.query(SQL_SELECT, false)) {
+     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
+         // Do something with the mapped row
      });
  }
  </pre></div>
@@ -439,16 +455,24 @@ boolean&nbsp;lockType)</span></div>
 <div class="block">Create a new query.
  <pre>
  try (var q = conn.query(sqlSelectResource)) {
-     for (var row : u.call(argument1, argument2)) {
-         // Do something with the row
+     for (var value : q.call(mapper, argument1, argument2)) {
+         // Do something with the mapped row
      }
  }
  </pre>
  or:
  <pre>
  try (var q = conn.query(sqlSelectResource)) {
-     u.call(argument1, argument2).forEach(row -&gt; {
-         // Do something with the row
+     q.call(mapper, argument1, argument2).forEach(value -&gt; {
+         // Do something with the mapped row
+     });
+ }
+ </pre>
+ or:
+ <pre>
+ try (var q = conn.query(sqlSelectResource)) {
+     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
+         // Do something with the mapped row
      });
  }
  </pre></div>
@@ -471,17 +495,25 @@ boolean&nbsp;lockType)</span></div>
 boolean&nbsp;lockType)</span></div>
 <div class="block">Create a new query.
  <pre>
- try (var q = conn.query(sqlSelectResource)) {
-     for (var row : u.call(argument1, argument2)) {
-         // Do something with the row
+ try (var q = conn.query(sqlSelectResource, false)) {
+     for (var value : q.call(mapper, argument1, argument2)) {
+         // Do something with the mapped row
      }
  }
  </pre>
  or:
  <pre>
- try (var q = conn.query(sqlSelectResource)) {
-     u.call(argument1, argument2).forEach(row -&gt; {
-         // Do something with the row
+ try (var q = conn.query(sqlSelectResource, false)) {
+     q.call(mapper, argument1, argument2).forEach(value -&gt; {
+         // Do something with the mapped row
+     });
+ }
+ </pre>
+ or:
+ <pre>
+ try (var q = conn.query(sqlSelectResource, false)) {
+     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
+         // Do something with the mapped row
      });
  }
  </pre></div>
@@ -529,7 +561,8 @@ boolean&nbsp;lockType)</span></div>
  <p>
  <strong>Note:</strong> If you use a <code>RETURNING</code> clause then
  you should use a <a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><code>DatabaseAPI.Query</code></a> with the <code>lockType</code> set to
- <code>true</code>.</div>
+ <code>true</code>.
+ <em><code>RETURNING</code> clauses are not supported by MySQL.</em></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>sql</code> - The SQL of the update.</dd>
@@ -571,7 +604,8 @@ boolean&nbsp;lockType)</span></div>
  <p>
  <strong>Note:</strong> If you use a <code>RETURNING</code> clause then
  you should use a <a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><code>DatabaseAPI.Query</code></a> with the <code>lockType</code> set to
- <code>true</code>.</div>
+ <code>true</code>.
+ <em><code>RETURNING</code> clauses are not supported by MySQL.</em></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>sqlResource</code> - Reference to the SQL of the update.</dd>

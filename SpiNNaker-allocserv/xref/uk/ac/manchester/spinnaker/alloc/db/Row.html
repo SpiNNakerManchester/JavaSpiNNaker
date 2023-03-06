@@ -546,14 +546,16 @@
 <a class="jxr_linenumber" name="L538" href="#L538">538</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L539" href="#L539">539</a> <em class="jxr_javadoccomment">	 * Make a mappable iterator out of a list.</em>
 <a class="jxr_linenumber" name="L540" href="#L540">540</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L541" href="#L541">541</a> <em class="jxr_javadoccomment">	 * @param &lt;T&gt; The type of the list.</em>
-<a class="jxr_linenumber" name="L542" href="#L542">542</a> <em class="jxr_javadoccomment">	 * @param lst The list to convert.</em>
-<a class="jxr_linenumber" name="L543" href="#L543">543</a> <em class="jxr_javadoccomment">	 * @return A mappable iterator.</em>
-<a class="jxr_linenumber" name="L544" href="#L544">544</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L545" href="#L545">545</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T&gt; MappableIterable&lt;T&gt; stream(List&lt;T&gt; lst) {
-<a class="jxr_linenumber" name="L546" href="#L546">546</a> 		<strong class="jxr_keyword">return</strong> () -&gt; lst.iterator();
-<a class="jxr_linenumber" name="L547" href="#L547">547</a> 	}
-<a class="jxr_linenumber" name="L548" href="#L548">548</a> }
+<a class="jxr_linenumber" name="L541" href="#L541">541</a> <em class="jxr_javadoccomment">	 * @param &lt;T&gt;</em>
+<a class="jxr_linenumber" name="L542" href="#L542">542</a> <em class="jxr_javadoccomment">	 *            The type of the list.</em>
+<a class="jxr_linenumber" name="L543" href="#L543">543</a> <em class="jxr_javadoccomment">	 * @param lst</em>
+<a class="jxr_linenumber" name="L544" href="#L544">544</a> <em class="jxr_javadoccomment">	 *            The list to convert.</em>
+<a class="jxr_linenumber" name="L545" href="#L545">545</a> <em class="jxr_javadoccomment">	 * @return A mappable iterator.</em>
+<a class="jxr_linenumber" name="L546" href="#L546">546</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L547" href="#L547">547</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T&gt; MappableIterable&lt;T&gt; stream(List&lt;T&gt; lst) {
+<a class="jxr_linenumber" name="L548" href="#L548">548</a> 		<strong class="jxr_keyword">return</strong> () -&gt; lst.iterator();
+<a class="jxr_linenumber" name="L549" href="#L549">549</a> 	}
+<a class="jxr_linenumber" name="L550" href="#L550">550</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2023 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>
