@@ -756,39 +756,45 @@ public interface SpallocAPI {
 		Instant getStartTime();
 
 		/**
-		 * @return Host address that issued last keepalive event, if any.
+		 * @return Host address that issued last keepalive event, or
+		 *         {@link Optional#empty() empty()} if this information is not
+		 *         available to the current user.
 		 */
 		Optional<String> getKeepaliveHost();
 
 		/**
-		 * @return Time of the last keepalive event, if any.
+		 * @return Time of the last keepalive event.
 		 */
 		Instant getKeepaliveTimestamp();
 
 		/**
-		 * @return The creator of the job.
+		 * @return The creator of the job. {@link Optional#empty() empty()} if
+		 *         this is not available to the current user.
 		 */
 		Optional<String> getOwner();
 
 		/**
 		 * @return The serialized original request to create the job.
+		 *         {@link Optional#empty() empty()} if this is not available to
+		 *         the current user.
 		 */
 		Optional<byte[]> getOriginalRequest();
 
 		/**
-		 * @return When the job finished.
+		 * @return When the job finished. {@link Optional#empty() empty()} if
+		 *         the job is not yet finished.
 		 */
 		Optional<Instant> getFinishTime();
 
 		/**
-		 * @return Why the job died. Might be {@code null} if this isn't known
-		 *         (including if the job is alive).
+		 * @return Why the job died. Might be {@link Optional#empty() empty()}
+		 *         if this isn't known (including if the job is alive).
 		 */
 		Optional<String> getReason();
 
 		/**
-		 * @return The (sub-)machine allocated to the job. {@code null} if no
-		 *         resources allocated.
+		 * @return The (sub-)machine allocated to the job.
+		 *         {@link Optional#empty() empty()} if no resources allocated.
 		 */
 		Optional<SubMachine> getMachine();
 
@@ -800,31 +806,35 @@ public interface SpallocAPI {
 		 * @param y
 		 *            The Y coordinate of a chip on the board of interest.
 		 * @return The location, if resources allocated and the location maps.
+		 *         {@link Optional#empty() empty()} otherwise.
 		 */
 		Optional<BoardLocation> whereIs(@ValidX int x, @ValidY int y);
 
 		/**
-		 * @return The absolute location of root chip. {@code null} if no
-		 *         resources allocated.
+		 * @return The absolute location of root chip. {@link Optional#empty()
+		 *         empty()} if no resources allocated.
 		 */
 		Optional<ChipLocation> getRootChip();
 
 		/**
 		 * @return the allocated width of the job's rectangle of triads, or
-		 *         {@code null} if not allocated (or not known).
+		 *         {@link Optional#empty() empty()} if not allocated (or not
+		 *         known).
 		 */
 		Optional<Integer> getWidth();
 
 		/**
 		 * @return the allocated height of the job's rectangle of triads, or
-		 *         {@code null} if not allocated (or not known).
+		 *         {@link Optional#empty() empty()} if not allocated (or not
+		 *         known).
 		 */
 		Optional<Integer> getHeight();
 
 		/**
-		 * @return the allocated depth of this sub-machine, or {@code null} if
-		 *         not allocated (or not known). When supplied, will be 1
-		 *         (single board) or 3 (by triad)
+		 * @return the allocated depth of this sub-machine, or
+		 *         {@link Optional#empty() empty()} if not allocated (or not
+		 *         known). When supplied, will be 1 (single board) or 3 (by
+		 *         triad)
 		 */
 		Optional<Integer> getDepth();
 
