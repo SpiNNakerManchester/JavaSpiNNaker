@@ -275,7 +275,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 				throw e;
 			}
 		}
-		if (isNull(line)) {
+		if (isNull(line) || line.isBlank()) {
 			if (currentThread().isInterrupted()) {
 				throw new InterruptedException();
 			}
