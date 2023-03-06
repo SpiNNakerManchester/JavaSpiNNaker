@@ -30,6 +30,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
@@ -168,10 +169,10 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			 * throw the information away. I'm not going to fix that.
 			 */
 			log.error("Something went wrong in comms", e);
+		} catch (InterruptedException | InterruptedIOException interrupted) {
+			log.debug("interrupted", interrupted);
 		} catch (IOException e) {
 			log.error("problem with socket {}", sock, e);
-		} catch (InterruptedException interrupted) {
-			log.error("Interrupted Exception!", interrupted);
 		} finally {
 			log.debug("closing down connection from {}", sock);
 			closeNotifiers();
