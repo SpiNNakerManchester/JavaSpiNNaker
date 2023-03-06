@@ -15,6 +15,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
+import java.sql.ResultSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -245,16 +246,24 @@ public interface DatabaseAPI {
 		 * Create a new query. Usage pattern:
 		 * <pre>
 		 * try (var q = conn.query(SQL_SELECT)) {
-		 *     for (var row : u.call(argument1, argument2)) {
-		 *         // Do something with the row
+		 *     for (var value : q.call(mapper, argument1, argument2)) {
+		 *         // Do something with the mapped row
 		 *     }
 		 * }
 		 * </pre>
 		 * or:
 		 * <pre>
 		 * try (var q = conn.query(SQL_SELECT)) {
-		 *     u.call(argument1, argument2).forEach(row -&gt; {
-		 *         // Do something with the row
+		 *     q.call(mapper, argument1, argument2).forEach(value -&gt; {
+		 *         // Do something with the mapped row
+		 *     });
+		 * }
+		 * </pre>
+		 * or:
+		 * <pre>
+		 * try (var q = conn.query(SQL_SELECT)) {
+		 *     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
+		 *         // Do something with the mapped row
 		 *     });
 		 * }
 		 * </pre>
@@ -273,17 +282,25 @@ public interface DatabaseAPI {
 		/**
 		 * Create a new query. Usage pattern:
 		 * <pre>
-		 * try (var q = conn.query(SQL_SELECT)) {
-		 *     for (var row : u.call(argument1, argument2)) {
-		 *         // Do something with the row
+		 * try (var q = conn.query(SQL_SELECT, false)) {
+		 *     for (var value : q.call(mapper, argument1, argument2)) {
+		 *         // Do something with the mapped row
 		 *     }
 		 * }
 		 * </pre>
 		 * or:
 		 * <pre>
-		 * try (var q = conn.query(SQL_SELECT)) {
-		 *     u.call(argument1, argument2).forEach(row -&gt; {
-		 *         // Do something with the row
+		 * try (var q = conn.query(SQL_SELECT, false)) {
+		 *     q.call(mapper, argument1, argument2).forEach(value -&gt; {
+		 *         // Do something with the mapped row
+		 *     });
+		 * }
+		 * </pre>
+		 * or:
+		 * <pre>
+		 * try (var q = conn.query(SQL_SELECT, false)) {
+		 *     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
+		 *         // Do something with the mapped row
 		 *     });
 		 * }
 		 * </pre>
@@ -305,16 +322,24 @@ public interface DatabaseAPI {
 		 * Create a new query.
 		 * <pre>
 		 * try (var q = conn.query(sqlSelectResource)) {
-		 *     for (var row : u.call(argument1, argument2)) {
-		 *         // Do something with the row
+		 *     for (var value : q.call(mapper, argument1, argument2)) {
+		 *         // Do something with the mapped row
 		 *     }
 		 * }
 		 * </pre>
 		 * or:
 		 * <pre>
 		 * try (var q = conn.query(sqlSelectResource)) {
-		 *     u.call(argument1, argument2).forEach(row -&gt; {
-		 *         // Do something with the row
+		 *     q.call(mapper, argument1, argument2).forEach(value -&gt; {
+		 *         // Do something with the mapped row
+		 *     });
+		 * }
+		 * </pre>
+		 * or:
+		 * <pre>
+		 * try (var q = conn.query(sqlSelectResource)) {
+		 *     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
+		 *         // Do something with the mapped row
 		 *     });
 		 * }
 		 * </pre>
@@ -333,17 +358,25 @@ public interface DatabaseAPI {
 		/**
 		 * Create a new query.
 		 * <pre>
-		 * try (var q = conn.query(sqlSelectResource)) {
-		 *     for (var row : u.call(argument1, argument2)) {
-		 *         // Do something with the row
+		 * try (var q = conn.query(sqlSelectResource, false)) {
+		 *     for (var value : q.call(mapper, argument1, argument2)) {
+		 *         // Do something with the mapped row
 		 *     }
 		 * }
 		 * </pre>
 		 * or:
 		 * <pre>
-		 * try (var q = conn.query(sqlSelectResource)) {
-		 *     u.call(argument1, argument2).forEach(row -&gt; {
-		 *         // Do something with the row
+		 * try (var q = conn.query(sqlSelectResource, false)) {
+		 *     q.call(mapper, argument1, argument2).forEach(value -&gt; {
+		 *         // Do something with the mapped row
+		 *     });
+		 * }
+		 * </pre>
+		 * or:
+		 * <pre>
+		 * try (var q = conn.query(sqlSelectResource, false)) {
+		 *     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
+		 *         // Do something with the mapped row
 		 *     });
 		 * }
 		 * </pre>
@@ -389,6 +422,7 @@ public interface DatabaseAPI {
 		 * <strong>Note:</strong> If you use a {@code RETURNING} clause then
 		 * you should use a {@link Query} with the {@code lockType} set to
 		 * {@code true}.
+		 * <em>{@code RETURNING} clauses are not supported by MySQL.</em>
 		 *
 		 * @param sql
 		 *            The SQL of the update.
@@ -428,6 +462,7 @@ public interface DatabaseAPI {
 		 * <strong>Note:</strong> If you use a {@code RETURNING} clause then
 		 * you should use a {@link Query} with the {@code lockType} set to
 		 * {@code true}.
+		 * <em>{@code RETURNING} clauses are not supported by MySQL.</em>
 		 *
 		 * @param sqlResource
 		 *            Reference to the SQL of the update.
@@ -504,13 +539,15 @@ public interface DatabaseAPI {
 	}
 
 	/**
-	 * Common shared API between {@link Query} and {@link Update}.
+	 * Common shared API between {@link Query} and {@link Update}. This supports
+	 * prepared statements within the general mechanisms of this API.
 	 *
 	 * @author Donal Fellows
 	 */
 	interface StatementCommon extends AutoCloseable {
 		/**
-		 * Close this statement. This never throws a checked exception.
+		 * Close this statement. This never throws a checked exception. Some
+		 * database connector may ignore this method.
 		 */
 		@Override
 		void close();
@@ -526,15 +563,19 @@ public interface DatabaseAPI {
 	}
 
 	/**
-	 * Wrapping a prepared query to be more suitable for Java 8 onwards.
+	 * Wrapping a prepared query to be more suitable for Java 8 onwards. This
+	 * supports prepared statements that yield {@linkplain ResultSet result
+	 * sets}.
 	 *
 	 * @author Donal Fellows
 	 */
+	@UsedInJavadocOnly(ResultSet.class)
 	interface Query extends StatementCommon {
 		/**
 		 * Run the query on the given arguments to read a list of objects.
 		 *
-		 * @param <T> The type of the result.
+		 * @param <T>
+		 *            The type of the result.
 		 * @param mapper
 		 *            Mapper that gets an object from a row set.
 		 * @param arguments
@@ -546,7 +587,8 @@ public interface DatabaseAPI {
 		/**
 		 * Run the query on the given arguments to read a single object.
 		 *
-		 * @param <T> The type of the result.
+		 * @param <T>
+		 *            The type of the result.
 		 * @param mapper
 		 *            Mapper that gets an object from a row set.
 		 * @param arguments
@@ -572,7 +614,12 @@ public interface DatabaseAPI {
 	}
 
 	/**
-	 * Wrapping a prepared update to be more suitable for Java 8 onwards.
+	 * Wrapping a prepared update to be more suitable for Java 8 onwards. This
+	 * supports prepared statements that do not yield result sets, but may (in
+	 * some circumstances) generate IDs.
+	 * <p>
+	 * Note that, as a security measure, most database connectors do not support
+	 * putting multiple statements in a single prepared statement.
 	 *
 	 * @author Donal Fellows
 	 */
@@ -602,16 +649,16 @@ public interface DatabaseAPI {
 	/**
 	 * Maps database Row to an object.
 	 *
-	 * @param <T> The type of object returned
+	 * @param <T>
+	 *            The type of object returned
 	 */
 	@FunctionalInterface
 	interface RowMapper<T> {
-
 		/**
 		 * Map a row to an object.
 		 *
-		 * @param row The row to map.
-		 *
+		 * @param row
+		 *            The row to map.
 		 * @return The object created from the row.
 		 */
 		T mapRow(Row row);

@@ -86,9 +86,7 @@ class V1CompatTest extends TestSupport {
 				act.accept(new PrintWriter(to),
 						new NonThrowingLineReader(from));
 			} finally {
-				if (!f.cancel(true)) {
-					log.error("cancel failed?");
-				}
+				log.debug("task cancel failed; probably already finished");
 			}
 		}
 	}

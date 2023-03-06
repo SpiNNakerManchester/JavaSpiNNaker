@@ -169,10 +169,10 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			 * throw the information away. I'm not going to fix that.
 			 */
 			log.error("Something went wrong in comms", e);
+		} catch (InterruptedException | InterruptedIOException interrupted) {
+			log.debug("interrupted", interrupted);
 		} catch (IOException e) {
 			log.error("problem with socket {}", sock, e);
-		} catch (InterruptedException interrupted) {
-			log.error("Interrupted Exception!", interrupted);
 		} finally {
 			log.debug("closing down connection from {}", sock);
 			closeNotifiers();
@@ -278,7 +278,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			ex.initCause(e);
 			throw ex;
 		}
-		if (isNull(line)) {
+		if (isNull(line) || line.isBlank()) {
 			if (currentThread().isInterrupted()) {
 				throw new InterruptedException();
 			}
