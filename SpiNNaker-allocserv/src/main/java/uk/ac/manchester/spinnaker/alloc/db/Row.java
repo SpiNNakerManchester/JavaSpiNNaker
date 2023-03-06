@@ -538,8 +538,10 @@ public final class Row {
 	/**
 	 * Make a mappable iterator out of a list.
 	 *
-	 * @param <T> The type of the list.
-	 * @param lst The list to convert.
+	 * @param <T>
+	 *            The type of the list.
+	 * @param lst
+	 *            The list to convert.
 	 * @return A mappable iterator.
 	 */
 	public static <T> MappableIterable<T> stream(List<T> lst) {
