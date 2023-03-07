@@ -16,7 +16,7 @@ limitations under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.ac.manchester.spinnaker</groupId>
 	<artifactId>SpiNNaker</artifactId>
@@ -804,11 +804,11 @@ limitations under the License.
 	<url>https://spinnakermanchester.github.io/</url>
 	<organization>
 		<name>SpiNNaker Team @ University of Manchester</name>
-		<url>http://apt.cs.manchester.ac.uk/projects/SpiNNaker/</url>
+		<url>https://apt.cs.manchester.ac.uk/projects/SpiNNaker/</url>
 	</organization>
 	<licenses>
 		<license>
-			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+			<url>https://www.apache.org/licenses/LICENSE-2.0</url>
 			<name>Apache License, Version 2.0</name>
 			<distribution>manual</distribution>
 		</license>
@@ -898,7 +898,7 @@ limitations under the License.
 				<role>Head of SpiNNaker Project</role>
 			</roles>
 			<organization>The University of Manchester</organization>
-			<url>http://apt.cs.manchester.ac.uk/people/sfurber/</url>
+			<url>https://apt.cs.manchester.ac.uk/people/sfurber/</url>
 		</developer>
 		<developer>
 			<id>alan-stokes</id>
