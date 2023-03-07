@@ -565,8 +565,7 @@ final class ClientSession implements Session {
 				// Don't know what went wrong! Log might say
 				throw new IOException("undiagnosed connection failure");
 			}
-		} catch (IOException | InterruptedException | RuntimeException
-				| Error e) {
+		} catch (IOException | InterruptedException | RuntimeException e) {
 			throw e;
 		} catch (Exception e) {
 			throw new IOException("unexpected exception", e);
