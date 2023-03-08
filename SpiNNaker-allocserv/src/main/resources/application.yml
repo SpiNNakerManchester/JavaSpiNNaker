@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -64,7 +64,7 @@ server:
 
 cxf:
   path: /spalloc/srv
-  servlet.init: 
+  servlet.init:
     service-list-path: info
   jaxrs:
     component-scan: true
@@ -245,14 +245,14 @@ spalloc:
     default-keepalive: 1m
   state-control:
     # Settings relating to overall system (admin) state
-    
-    # How long to wait between polls of the BMP controller 
+
+    # How long to wait between polls of the BMP controller
     blacklist-poll: 15s
-    # How long to wait for a BMP controller operation to complete 
+    # How long to wait for a BMP controller operation to complete
     blacklist-timeout: 120s
-    # Max number of board serial numbers to read in a batch 
+    # Max number of board serial numbers to read in a batch
     serial-read-batch-size: 24
-    # Max number of board blacklists to read in a batch 
+    # Max number of board blacklists to read in a batch
     blacklist-read-batch-size: 6
 
 ---
