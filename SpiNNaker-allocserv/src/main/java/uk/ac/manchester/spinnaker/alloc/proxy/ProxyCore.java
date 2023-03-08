@@ -15,14 +15,18 @@
  */
 package uk.ac.manchester.spinnaker.alloc.proxy;
 
+import static java.net.InetAddress.getByName;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.web.socket.CloseStatus.BAD_DATA;
 import static org.springframework.web.socket.CloseStatus.SERVER_ERROR;
 import static uk.ac.manchester.spinnaker.alloc.proxy.ProxyOp.CLOSE;
 import static uk.ac.manchester.spinnaker.alloc.proxy.ProxyOp.OPEN_UNCONNECTED;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.KILOBYTE;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -39,6 +43,7 @@ import java.util.function.IntSupplier;
 import org.slf4j.Logger;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator;
 
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
@@ -62,6 +67,18 @@ public class ProxyCore implements AutoCloseable {
 	private static final int ID_WORDS = 1;
 
 	private static final int IP_ADDR_AND_PORT_WORDS = 5;
+
+	/**
+	 * Max amount of time to wait to send a message on the websocket, in
+	 * milliseconds.
+	 */
+	private static final int SEND_TIME_LIMIT_MS = 10 * MSEC_PER_SEC;
+
+	/**
+	 * Max amount of space (in bytes) that may be used to buffer messages
+	 * waiting to be sent on the websocket.
+	 */
+	private static final int SEND_BUFFER_SIZE = 512 * KILOBYTE;
 
 	private final WebSocketSession session;
 
@@ -100,15 +117,15 @@ public class ProxyCore implements AutoCloseable {
 	ProxyCore(WebSocketSession s, List<ConnectionInfo> connections,
 			Executor executor, IntSupplier idIssuer, boolean writeCounts,
 			InetAddress localHost) {
-		session = s;
+		session = new ConcurrentWebSocketSessionDecorator(s, SEND_TIME_LIMIT_MS,
+				SEND_BUFFER_SIZE);
 		this.executor = executor;
 		this.idIssuer = idIssuer;
 		this.writeCounts = writeCounts;
 		this.localHost = localHost;
 		for (var ci : connections) {
 			try {
-				hosts.put(ci.getChip(),
-						InetAddress.getByName(ci.getHostname()));
+				hosts.put(ci.getChip(), getByName(ci.getHostname()));
 			} catch (UnknownHostException e) {
 				log.warn("unexpectedly unknown board address: {}",
 						ci.getHostname(), e);
@@ -155,10 +172,7 @@ public class ProxyCore implements AutoCloseable {
 			var impl = decode(message.getInt());
 			var reply = impl != null ? impl.call(message) : null;
 			if (reply != null) {
-				reply.flip();
-				synchronized (session) {
-					session.sendMessage(new BinaryMessage(reply));
-				}
+				session.sendMessage(new BinaryMessage(reply.flip()));
 			}
 		} catch (IOException e) {
 			log.error("Closing data on server error", e);
@@ -178,6 +192,35 @@ public class ProxyCore implements AutoCloseable {
 		return msg;
 	}
 
+	private static final int MAX_EXN_LENGTH = 1000;
+
+	private static void assertEndOfMessage(ByteBuffer message) {
+		if (message.hasRemaining()) {
+			throw new IllegalArgumentException("extra content ("
+					+ message.remaining() + " bytes) supplied in message");
+		}
+	}
+
+	private static ByteBuffer composeError(int corId, Exception ex) {
+		var msg = ex.getMessage();
+		while (true) {
+			if (msg == null) {
+				msg = "";
+			}
+			var msgBytes = msg.getBytes(UTF_8);
+			if (msgBytes.length > MAX_EXN_LENGTH) {
+				msg = null;
+				continue;
+			}
+			var data = allocate(WORD_SIZE + WORD_SIZE + msgBytes.length);
+			data.order(LITTLE_ENDIAN);
+			data.putInt(ProxyOp.ERROR.ordinal());
+			data.putInt(corId);
+			data.put(msgBytes);
+			return data;
+		}
+	}
+
 	/**
 	 * Open a connected channel in response to a {@link ProxyOp#OPEN} message.
 	 * Note that no control over the local (to the service) port number or
@@ -189,29 +232,33 @@ public class ProxyCore implements AutoCloseable {
 	 *            been already read out of the buffer.
 	 * @return The response message to send, in the bytes leading up to the
 	 *         position. The caller will {@linkplain ByteBuffer#flip() flip} the
-	 *         message. If {@code null}, no response will be sent.
-	 * @throws IOException
-	 *             If the proxy connection can't be opened.
+	 *         message. Underlying failures that are not due to outright
+	 *         protocol abuse will be reported to users as a
+	 *         {@link ProxyOp#ERROR} message.
 	 * @throws IllegalArgumentException
-	 *             If bad arguments are supplied.
+	 *             If insufficient or too many arguments are supplied.
 	 */
-	protected ByteBuffer openConnectedChannel(ByteBuffer message)
-			throws IOException {
+	protected ByteBuffer openConnectedChannel(ByteBuffer message) {
 		// This method handles message parsing/assembly and validation
 		int corId = message.getInt();
-
 		int x = message.getInt();
 		int y = message.getInt();
-		var who = getTargetHost(x, y);
-
 		int port = message.getInt();
-		validatePort(port);
+		assertEndOfMessage(message);
 
-		int id = openConnected(who, port);
+		try {
+			var who = getTargetHost(x, y);
+			validatePort(port);
 
-		var msg = response(ProxyOp.OPEN, corId, ID_WORDS);
-		msg.putInt(id);
-		return msg;
+			int id = openConnected(who, port);
+
+			var msg = response(ProxyOp.OPEN, corId, ID_WORDS);
+			msg.putInt(id);
+			return msg;
+		} catch (Exception e) {
+			log.error("failed to open connected channel", e);
+			return composeError(corId, e);
+		}
 	}
 
 	/**
@@ -259,27 +306,34 @@ public class ProxyCore implements AutoCloseable {
 	 *            been already read out of the buffer.
 	 * @return The response message to send, in the bytes leading up to the
 	 *         position. The caller will {@linkplain ByteBuffer#flip() flip} the
-	 *         message. If {@code null}, no response will be sent.
-	 * @throws IOException
-	 *             If the proxy connection can't be opened.
+	 *         message. Underlying failures that are not due to outright
+	 *         protocol abuse will be reported to users as a
+	 *         {@link ProxyOp#ERROR} message.
+	 * @throws IllegalArgumentException
+	 *             If insufficient or too many arguments are supplied.
 	 */
-	protected ByteBuffer openUnconnectedChannel(ByteBuffer message)
-			throws IOException {
+	protected ByteBuffer openUnconnectedChannel(ByteBuffer message) {
 		// This method handles message parsing/assembly and validation
 		int corId = message.getInt();
+		assertEndOfMessage(message);
 
-		var localAddress = new ValueHolder<InetAddress>();
-		var localPort = new ValueHolder<Integer>();
-		int id = openUnconnected(localAddress, localPort);
-		byte[] addr = localAddress.getValue().getAddress();
-		log.debug("Unconnected channel local address: {}", addr);
+		try {
+			var localAddress = new ValueHolder<InetAddress>();
+			var localPort = new ValueHolder<Integer>();
+			int id = openUnconnected(localAddress, localPort);
+			var addr = localAddress.getValue().getAddress();
+			log.debug("Unconnected channel local address: {}", addr);
 
-		var msg = response(OPEN_UNCONNECTED, corId,
-				ID_WORDS + IP_ADDR_AND_PORT_WORDS);
-		msg.putInt(id);
-		msg.put(addr);
-		msg.putInt(localPort.getValue());
-		return msg;
+			var msg = response(OPEN_UNCONNECTED, corId,
+					ID_WORDS + IP_ADDR_AND_PORT_WORDS);
+			msg.putInt(id);
+			msg.put(addr);
+			msg.putInt(localPort.getValue());
+			return msg;
+		} catch (Exception e) {
+			log.error("failed to open unconnected channel", e);
+			return composeError(corId, e);
+		}
 	}
 
 	private int openUnconnected(ValueHolder<InetAddress> localAddress,
@@ -311,17 +365,24 @@ public class ProxyCore implements AutoCloseable {
 	 *            been already read out of the buffer.
 	 * @return The response message to send, in the bytes leading up to the
 	 *         position. The caller will {@linkplain ByteBuffer#flip() flip} the
-	 *         message. If {@code null}, no response will be sent.
-	 * @throws IOException
-	 *             If the proxy connection can't be closed.
+	 *         message. Underlying failures that are not due to outright
+	 *         protocol abuse will be reported to users as a
+	 *         {@link ProxyOp#ERROR} message.
+	 * @throws IllegalArgumentException
+	 *             If insufficient or too many arguments are supplied.
 	 */
-	protected ByteBuffer closeChannel(ByteBuffer message)
-			throws IOException {
+	protected ByteBuffer closeChannel(ByteBuffer message) {
 		int corId = message.getInt();
 		int id = message.getInt();
-		var msg = response(CLOSE, corId, ID_WORDS);
-		msg.putInt(closeChannel(id));
-		return msg;
+		assertEndOfMessage(message);
+		try {
+			var msg = response(CLOSE, corId, ID_WORDS);
+			msg.putInt(closeChannel(id));
+			return msg;
+		} catch (Exception e) {
+			log.error("failed to close channel", e);
+			return composeError(corId, e);
+		}
 	}
 
 	private int closeChannel(int id) throws IOException {

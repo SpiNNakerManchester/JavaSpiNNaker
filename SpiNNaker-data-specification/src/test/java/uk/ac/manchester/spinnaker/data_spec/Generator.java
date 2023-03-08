@@ -21,8 +21,8 @@ import static uk.ac.manchester.spinnaker.data_spec.Commands.BREAK;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.END_SPEC;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.MV;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.NOP;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.RESERVE;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.REFERENCE;
+import static uk.ac.manchester.spinnaker.data_spec.Commands.RESERVE;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.SET_WR_PTR;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.SWITCH_FOCUS;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.WRITE;
@@ -35,6 +35,7 @@ import static uk.ac.manchester.spinnaker.data_spec.Constants.LEN3;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.NO_REGS;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.SRC1_ONLY;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.SRC2_ONLY;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.KILOBYTE;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -74,7 +75,7 @@ public final class Generator {
 		void generate(Generator generator);
 	}
 
-	private static final int BUFFER_SIZE = 32 * 1024;
+	private static final int BUFFER_SIZE = 32 * KILOBYTE;
 
 	private Generator() {
 		buffer = allocate(BUFFER_SIZE).order(LITTLE_ENDIAN);

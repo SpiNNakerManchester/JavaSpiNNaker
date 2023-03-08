@@ -30,7 +30,12 @@ enum ProxyProtocol {
 	/** Open an unconnected channel, or its response. Two-way. */
 	OPEN_U(8),
 	/** Send a message on an unconnected channel. Never received. One-way. */
-	MSG_TO(1600);
+	MSG_TO(1600),
+	/**
+	 * Indicates an error from a message that expects a correlated response.
+	 * Never sent by the client.
+	 */
+	ERR(0);
 
 	private final int size;
 

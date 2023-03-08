@@ -297,6 +297,12 @@ final class ClientSession implements Session {
 			log.warn("Unexpected text message on websocket: {}", message);
 		}
 
+		private IOException manufactureException(ByteBuffer message) {
+			var bytes = new byte[message.remaining()];
+			message.get(bytes);
+			return new IOException(new String(bytes, UTF_8));
+		}
+
 		@Override
 		public void onMessage(ByteBuffer message) {
 			message.order(LITTLE_ENDIAN);
@@ -311,6 +317,11 @@ final class ClientSession implements Session {
 			case MSG:
 				requireNonNull(channels.get(message.getInt()),
 						"unrecognised channel").receive(message);
+				break;
+			case ERR:
+				requireNonNull(replyHandlers.remove(message.getInt()),
+						"uncorrelated response")
+						.completeExceptionally(manufactureException(message));
 				break;
 			// case MSG_TO: // Never sent
 			default:
@@ -365,6 +376,16 @@ final class ClientSession implements Session {
 		public void onError(Exception ex) {
 			log.error("Failure on websocket", ex);
 			failure = ex;
+		}
+
+		private void rethrowFailure() throws IOException, InterruptedException {
+			try {
+				throw failure;
+			} catch (IOException | InterruptedException | RuntimeException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new IOException("unexpected exception", e);
+			}
 		}
 
 		/** Base class for channels routed via the proxy. */
@@ -557,18 +578,12 @@ final class ClientSession implements Session {
 			log.debug("Marking websocket with token {}={}", csrfHeader, csrf);
 			wsc.addHeader(csrfHeader, csrf);
 		}
-		try {
-			if (!wsc.connectBlocking()) {
-				if (nonNull(wsc.failure)) {
-					throw wsc.failure;
-				}
-				// Don't know what went wrong! Log might say
-				throw new IOException("undiagnosed connection failure");
+		if (!wsc.connectBlocking()) {
+			if (nonNull(wsc.failure)) {
+				wsc.rethrowFailure();
 			}
-		} catch (IOException | InterruptedException | RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new IOException("unexpected exception", e);
+			// Don't know what went wrong! Log might say
+			throw new IOException("undiagnosed connection failure");
 		}
 		wsc.setConnectionLostTimeout(PING_DELAY);
 		return wsc;

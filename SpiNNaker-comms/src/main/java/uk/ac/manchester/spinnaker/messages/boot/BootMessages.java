@@ -30,6 +30,7 @@ import static uk.ac.manchester.spinnaker.messages.boot.SystemVariableBootValues.
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.boot_signature;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.is_root_chip;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.unix_timestamp;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.KILOBYTE;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.DataInputStream;
@@ -55,7 +56,7 @@ public class BootMessages {
 	private static final int BOOT_MESSAGE_DATA_BYTES =
 			BOOT_MESSAGE_DATA_WORDS * WORD_SIZE;
 
-	private static final int BOOT_IMAGE_MAX_BYTES = 32 * 1024;
+	private static final int BOOT_IMAGE_MAX_BYTES = 32 * KILOBYTE;
 
 	private static final int BOOT_STRUCT_REPLACE_OFFSET = 384;
 

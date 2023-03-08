@@ -161,12 +161,7 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 			mainLoop();
 		} catch (IOException e) {
 			if (!isClosed()) {
-				try {
-					close();
-					emergencyRemove.run();
-				} catch (IOException e1) {
-					e.addSuppressed(e1);
-				}
+				emergencyClose(e);
 				log.warn("problem in SpiNNaker-to-client part of {}", name, e);
 			}
 		} catch (InterruptedException e) {
@@ -175,6 +170,15 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 		} finally {
 			log.debug("shutting down listener {}", name);
 			me.setName(oldThreadName);
+		}
+	}
+
+	private void emergencyClose(IOException exn) {
+		try {
+			close();
+			emergencyRemove.run();
+		} catch (IOException e) {
+			exn.addSuppressed(e);
 		}
 	}
 
@@ -200,9 +204,7 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 		var outgoing = workingBuffer.duplicate();
 		outgoing.put(msg);
 		outgoing.flip();
-		synchronized (session) {
-			session.sendMessage(new BinaryMessage(outgoing));
-		}
+		session.sendMessage(new BinaryMessage(outgoing));
 	}
 
 	/**
@@ -224,12 +226,7 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 			mainLoop(recvFrom);
 		} catch (IOException e) {
 			if (!isClosed()) {
-				try {
-					close();
-					emergencyRemove.run();
-				} catch (IOException e1) {
-					e.addSuppressed(e1);
-				}
+				emergencyClose(e);
 				log.warn("problem in SpiNNaker-to-client part of {}", name, e);
 			}
 		} finally {

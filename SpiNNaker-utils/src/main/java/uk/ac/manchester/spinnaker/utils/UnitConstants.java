@@ -54,6 +54,18 @@ public final class UnitConstants {
 	public static final double NSEC_PER_MSEC = 1000000.0;
 
 	/**
+	 * The number of bytes in a kilobyte. Properly a "kibibyte", but that's a
+	 * horrible term.
+	 */
+	public static final int KILOBYTE = 1024;
+
+	/**
+	 * The number of bytes in a megabyte. Properly a "mibibyte", but that's a
+	 * horrible term.
+	 */
+	public static final int MEGABYTE = 1024 * KILOBYTE;
+
+	/**
 	 * Formats a duration with hours, minutes seconds and milliseconds as
 	 * required.
 	 *

@@ -55,6 +55,7 @@ import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTE
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.SYS_VARS;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.defaultBMPforMachine;
 import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.KILOBYTE;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.File;
@@ -225,7 +226,7 @@ public class Transceiver extends UDPTransceiver
 	 * How much data to pile into SCAMP before reducing the number of messages
 	 * in flight at a time.
 	 */
-	private static final int LARGE_DATA_WRITE_THRESHOLD = 16 * 1024;
+	private static final int LARGE_DATA_WRITE_THRESHOLD = 16 * KILOBYTE;
 
 	/**
 	 * The maximum number of SCP messages to have in flight in a large data
