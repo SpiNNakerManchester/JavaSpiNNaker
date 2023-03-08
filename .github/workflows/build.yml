@@ -106,6 +106,9 @@ jobs:
       run: mvn directory:highest-basedir@find-root checkstyle:check --settings $SETTINGS_FILE
     - name: "Check: Documentation"
       run: mvn javadoc:aggregate --settings $SETTINGS_FILE -P "!jsp-precompile"
+    - name: Validate CITATION.cff
+      if: matrix.java == 11
+      uses: dieghernan/cff-validator@2.3
 
   minor-style:
     needs: compile
