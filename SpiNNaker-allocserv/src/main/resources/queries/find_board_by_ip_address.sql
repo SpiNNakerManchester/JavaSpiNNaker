@@ -4,7 +4,7 @@
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
 --
---     http://www.apache.org/licenses/LICENSE-2.0
+--     https://www.apache.org/licenses/LICENSE-2.0
 --
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,7 @@ SELECT
 	root.root_y AS job_root_chip_y
 FROM boards
 	JOIN bmp USING (bmp_id)
-	JOIN machines AS m ON m.machine_id = bmp.machine_id 
+	JOIN machines AS m ON m.machine_id = bmp.machine_id
 	-- LEFT JOIN because might not be any job
 	LEFT JOIN jobs ON jobs.job_id = boards.allocated_job
 	LEFT JOIN boards AS root ON root.board_id = jobs.root_id

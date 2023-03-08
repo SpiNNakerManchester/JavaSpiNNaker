@@ -4,7 +4,7 @@
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
 --
---     http://www.apache.org/licenses/LICENSE-2.0
+--     https://www.apache.org/licenses/LICENSE-2.0
 --
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@ WITH RECURSIVE
 				FROM machines JOIN args USING (machine_id)
 				LIMIT 1),
 			xrange(n) AS (
-				SELECT 0 UNION ALL SELECT n+1 FROM xrange, args 
+				SELECT 0 UNION ALL SELECT n+1 FROM xrange, args
 				WHERE n < args.width - 1),
 			yrange(n) AS (
 				SELECT 0 UNION ALL SELECT n+1 FROM yrange, args
