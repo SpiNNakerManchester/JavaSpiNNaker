@@ -49,7 +49,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.access.intercept.RunAsUserToken;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -300,7 +299,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	/** The classes that we <em>know</em> we don't ever want to handle. */
 	private static final Class<?>[] UNSUPPORTED_AUTH_TOKEN_CLASSES = {
 		AnonymousAuthenticationToken.class, RememberMeAuthenticationToken.class,
-		RunAsUserToken.class, TestingAuthenticationToken.class
+		TestingAuthenticationToken.class
 	};
 
 	@Override
