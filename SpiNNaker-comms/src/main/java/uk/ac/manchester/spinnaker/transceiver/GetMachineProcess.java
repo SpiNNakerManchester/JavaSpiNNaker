@@ -53,7 +53,7 @@ import uk.ac.manchester.spinnaker.messages.scp.GetChipInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 
 /** A process for getting the machine details over a set of connections. */
-class GetMachineProcess extends TxrxProcess {
+final class GetMachineProcess extends TxrxProcess {
 	private static final Logger log = getLogger(GetMachineProcess.class);
 
 	/** A dictionary of (x, y) &rarr; ChipInfo. */

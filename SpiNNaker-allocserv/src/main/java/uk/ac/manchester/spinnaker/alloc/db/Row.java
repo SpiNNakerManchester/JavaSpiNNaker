@@ -211,11 +211,11 @@ public final class Row {
 	public Integer getInteger(String columnLabel) {
 		return get(() -> {
 			var obj = rs.getObject(columnLabel);
-			if (obj instanceof Long) {
-				return ((Long) obj).intValue();
+			if (obj instanceof Long l) {
+				return l.intValue();
 			}
-			if (obj instanceof BigDecimal) {
-				return ((BigDecimal) obj).intValue();
+			if (obj instanceof BigDecimal bd) {
+				return bd.intValue();
 			}
 			return (Integer) obj;
 		});

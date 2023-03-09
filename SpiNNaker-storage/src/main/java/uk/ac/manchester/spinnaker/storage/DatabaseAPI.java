@@ -16,9 +16,21 @@
 package uk.ac.manchester.spinnaker.storage;
 
 /**
- * Interface that real database interfaces are subclasses of.
+ * Interface that real database interfaces are subclasses of. All database
+ * interfaces defined by this know how to read the proxy information from the
+ * DB.
  *
  * @author Donal Fellows
  */
-public sealed interface DatabaseAPI permits ProxyAwareStorage {
+public interface DatabaseAPI {
+	/**
+	 * Get the proxy information from the database.
+	 *
+	 * @return The proxy information, or {@code null} if none defined. When
+	 *         there is no proxy, only direct connections to SpiNNaker are
+	 *         possible.
+	 * @throws StorageException
+	 *             If anything goes wrong.
+	 */
+	ProxyInformation getProxyInformation() throws StorageException;
 }

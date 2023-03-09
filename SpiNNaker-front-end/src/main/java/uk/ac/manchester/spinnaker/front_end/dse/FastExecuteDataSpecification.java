@@ -346,7 +346,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 * @author Donal Fellows
 	 * @author Alan Stokes
 	 */
-	private class BoardWorker implements AutoCloseable {
+	private final class BoardWorker implements AutoCloseable {
 		private Ethernet board;
 
 		private DSEStorage storage;
@@ -498,7 +498,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		 * @author Donal Fellows
 		 */
 		@SuppressWarnings("serial")
-		private class MissingRecorder extends ArrayDeque<BitSet>
+		private final class MissingRecorder extends ArrayDeque<BitSet>
 				implements AutoCloseable {
 			MissingRecorder() {
 				missingSequenceNumbers = this;
@@ -833,7 +833,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 *
 	 * @author Donal Fellows
 	 */
-	private class GathererProtocol extends FastDataInProtocol {
+	private final class GathererProtocol extends FastDataInProtocol {
 		private GathererProtocol(ChipLocation chip, boolean ignored) {
 			super(machine, gathererForChip.get(chip), monitorForChip.get(chip));
 		}
@@ -856,7 +856,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 *
 	 * @author Alan Stokes
 	 */
-	private static class SeenFlags {
+	private static final class SeenFlags {
 		boolean seenEnd;
 
 		boolean seenAll;

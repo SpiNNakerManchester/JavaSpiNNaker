@@ -45,17 +45,17 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  *
  * @author Donal Fellows
  */
-public final class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
+public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 		implements DSEStorage {
 	/**
 	 * Create an instance.
 	 *
-	 * @param connectionProvider
-	 *            The connection provider that will be asked for how to talk SQL
-	 *            to the database.
+	 * @param db
+	 *            The database engine that will be asked for how to talk SQL to
+	 *            the database.
 	 */
-	public SQLiteDataSpecStorage(DSEDatabaseEngine connectionProvider) {
-		super(connectionProvider);
+	public SQLiteDataSpecStorage(DSEDatabaseEngine db) {
+		super(db);
 	}
 
 	@Override

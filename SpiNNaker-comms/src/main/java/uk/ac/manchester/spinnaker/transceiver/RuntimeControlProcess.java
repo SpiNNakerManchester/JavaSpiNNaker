@@ -51,7 +51,7 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  *
  * @author Donal Fellows
  */
-class RuntimeControlProcess extends TxrxProcess {
+final class RuntimeControlProcess extends TxrxProcess {
 	private static final int BUF_HEADER_BYTES = 16;
 
 	private static final int BLOCK_HEADER_BYTES = 16;

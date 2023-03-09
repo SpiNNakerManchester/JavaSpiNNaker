@@ -210,7 +210,7 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 		}
 	}
 
-	private class BoardWorker {
+	private final class BoardWorker {
 		private final Ethernet board;
 
 		private final DSEStorage storage;

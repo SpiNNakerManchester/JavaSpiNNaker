@@ -297,7 +297,8 @@ public class SpallocClientFactory {
 		return c.job(u);
 	}
 
-	private abstract static class Common {
+	private abstract static sealed class Common
+			permits ClientImpl, JobImpl, MachineImpl {
 		private final SpallocClient client;
 
 		final Session s;

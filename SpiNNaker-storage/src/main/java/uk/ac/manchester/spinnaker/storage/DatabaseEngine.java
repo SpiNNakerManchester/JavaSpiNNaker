@@ -30,7 +30,7 @@ import org.sqlite.SQLiteConfig;
 import com.google.errorprone.annotations.MustBeClosed;
 
 /**
- * The database engine interface. Based on SQLite.
+ * The database engine interface. Assumed to be based on SQLite.
  *
  * @author Donal Fellows
  * @param <APIType>
@@ -38,7 +38,6 @@ import com.google.errorprone.annotations.MustBeClosed;
  *            work with the database this class makes connections to.
  */
 public abstract sealed class DatabaseEngine<APIType extends DatabaseAPI>
-		implements ConnectionProvider<APIType>
 		permits BufferManagerDatabaseEngine, DSEDatabaseEngine {
 	private static final Logger log = getLogger(DatabaseEngine.class);
 
@@ -66,7 +65,14 @@ public abstract sealed class DatabaseEngine<APIType extends DatabaseAPI>
 		log.info("will manage database at {}", dbFile.getAbsolutePath());
 	}
 
-	@Override
+	/**
+	 * Get a connection to a database, creating it if needed.
+	 *
+	 * @return The configured connection to the database. The database will have
+	 *         been seeded with DDL if necessary.
+	 * @throws SQLException
+	 *             If anything goes wrong.
+	 */
 	@MustBeClosed
 	public Connection getConnection() throws SQLException {
 		if (log.isDebugEnabled()) {
@@ -84,6 +90,12 @@ public abstract sealed class DatabaseEngine<APIType extends DatabaseAPI>
 		}
 		return conn;
 	}
+
+	/**
+	 * @return a storage interface that is suitable for providing support for a
+	 *         particular API.
+	 */
+	public abstract APIType getStorageInterface();
 
 	/**
 	 * @return The DDL for initialising this kind of database.

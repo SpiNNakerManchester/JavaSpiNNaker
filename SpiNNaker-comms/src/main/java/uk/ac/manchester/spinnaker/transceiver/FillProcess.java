@@ -34,7 +34,7 @@ import uk.ac.manchester.spinnaker.messages.scp.FillRequest;
 import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
 
 /** A process for filling memory. */
-class FillProcess extends TxrxProcess {
+final class FillProcess extends TxrxProcess {
 	private static final Logger log = getLogger(FillProcess.class);
 
 	private static final int ALIGNMENT = 4;

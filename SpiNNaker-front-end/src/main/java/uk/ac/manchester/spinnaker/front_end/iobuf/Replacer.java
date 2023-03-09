@@ -39,7 +39,7 @@ import org.slf4j.Logger;
  *
  * @author Donal Fellows
  */
-class Replacer {
+final class Replacer {
 	private static final Logger log = getLogger(Replacer.class);
 
 	private static final Pattern FORMAT_SEQUENCE =

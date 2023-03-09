@@ -81,7 +81,7 @@ import uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.DatabaseEngine;
-import uk.ac.manchester.spinnaker.storage.ProxyAwareStorage;
+import uk.ac.manchester.spinnaker.storage.DatabaseAPI;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
@@ -685,12 +685,12 @@ public final class CommandLineInterface {
 	}
 
 	private static SpallocClient.Job getJob(
-			DatabaseEngine<? extends ProxyAwareStorage> databaseEngine)
+			DatabaseEngine<? extends DatabaseAPI> databaseEngine)
 			throws StorageException, IOException {
 		return getJob(databaseEngine.getStorageInterface());
 	}
 
-	private static SpallocClient.Job getJob(ProxyAwareStorage storage)
+	private static SpallocClient.Job getJob(DatabaseAPI storage)
 			throws StorageException, IOException {
 		return getJobFromProxyInfo(storage.getProxyInformation());
 	}
@@ -709,8 +709,8 @@ public final class CommandLineInterface {
 			txrx = job.getTransceiver();
 		}
 		var scpSelector = txrx.getScampConnectionSelector();
-		if (scpSelector instanceof MachineAware) {
-			((MachineAware) scpSelector).setMachine(machine);
+		if (scpSelector instanceof MachineAware ma) {
+			ma.setMachine(machine);
 		}
 		return txrx;
 	}

@@ -161,17 +161,6 @@ public class AllocatorTask extends DatabaseAwareBean
 		}
 	}
 
-	private class Perimeter {
-		int boardId;
-
-		Direction direction;
-
-		Perimeter(Row row) {
-			boardId = row.getInt("board_id");
-			direction = row.getEnum("direction", Direction.class);
-		}
-	}
-
 	/** Encapsulates the queries and updates used in power control. */
 	private sealed class PowerSQL extends AbstractSQL
 			permits AllocSQL, DestroySQL {
@@ -342,6 +331,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		}
 	}
 
+	/** Encapsulates the task to do a particular allocation. */
 	private class AllocTask {
 		final int id;
 
@@ -563,100 +553,113 @@ public class AllocatorTask extends DatabaseAwareBean
 		int numAllocs() {
 			return allocs.size();
 		}
-	}
 
-	private class HistoricalAlloc {
-		int allocId;
+		/**
+		 * Details of a copied allocation record.
+		 *
+		 * @param allocId
+		 *            Allocation ID
+		 * @param jobId
+		 *            Job ID
+		 * @param boardId
+		 *            Board ID (the board that was allocated)
+		 * @param allocTimestamp
+		 *            When the board was allocated.
+		 */
+		record HistoricalAlloc(int allocId, int jobId, int boardId,
+				Instant allocTimestamp) {
+			HistoricalAlloc(Row row) {
+				this(row.getInt("alloc_id"), row.getInt("job_id"),
+						row.getInt("board_id"),
+						row.getInstant("alloc_timestamp"));
+			}
 
-		int jobId;
-
-		int boardId;
-
-		Instant allocTimestamp;
-
-		HistoricalAlloc(Row row) {
-			allocId = row.getInt("alloc_id");
-			jobId = row.getInt("job_id");
-			boardId = row.getInt("board_id");
-			allocTimestamp = row.getInstant("alloc_timestamp");
+			private Object[] args() {
+				return new Object[] {
+					allocId, jobId, boardId, allocTimestamp
+				};
+			}
 		}
 
-		Object[] args() {
-			return new Object[] {
-				allocId, jobId, boardId, allocTimestamp
-			};
-		}
-	}
+		/**
+		 * Details of a copied job record.
+		 *
+		 * @param jobId
+		 *            Job ID
+		 * @param machineId
+		 *            Machine ID
+		 * @param owner
+		 *            Whose job was it (user ID)
+		 * @param createTimestamp
+		 *            When the job was submitted
+		 * @param width
+		 *            Width of requested allocation, in triads
+		 * @param height
+		 *            Height of requested allocation, in triads
+		 * @param depth
+		 *            Depth of requested allocation; 1 (single board) or 3
+		 * @param allocatedRoot
+		 *            ID of board at root of allocation
+		 * @param keepaliveInterval
+		 *            How often keep-alive messages should come
+		 * @param keepaliveHost
+		 *            IP address of machine keeping job alive
+		 * @param deathReason
+		 *            Why did the job terminate?
+		 * @param deathTimestamp
+		 *            When did the job terminate
+		 * @param originalRequest
+		 *            What was actually asked for. (Original request data)
+		 * @param allocationTimestamp
+		 *            When did we complete allocation. Quota consumption was
+		 *            from this moment to the death timestamp.
+		 * @param allocationSize
+		 *            How many boards were allocated
+		 * @param machineName
+		 *            Name of allocated machine (convenience; implied by machine
+		 *            ID)
+		 * @param userName
+		 *            Name of user (convenience; implied by owner ID)
+		 * @param groupId
+		 *            Group for accounting purposes
+		 * @param groupName
+		 *            Name of group (convenience; implied by group ID)
+		 */
+		record HistoricalJob(int jobId, int machineId, String owner,
+				Instant createTimestamp, int width, int height, int depth,
+				int allocatedRoot, Instant keepaliveInterval,
+				String keepaliveHost, String deathReason,
+				Instant deathTimestamp, byte[] originalRequest,
+				Instant allocationTimestamp, int allocationSize,
+				String machineName, String userName, int groupId,
+				String groupName) {
+			HistoricalJob(Row row) {
+				this(row.getInt("job_id"), row.getInt("machine_id"),
+						row.getString("owner"),
+						row.getInstant("create_timestamp"), row.getInt("width"),
+						row.getInt("height"), row.getInt("depth"),
+						row.getInt("allocated_root"),
+						row.getInstant("keepalive_interval"),
+						row.getString("keepalive_host"),
+						row.getString("death_reason"),
+						row.getInstant("death_timestamp"),
+						row.getBytes("original_request"),
+						row.getInstant("allocation_timestamp"),
+						row.getInt("allocation_size"),
+						row.getString("machine_name"),
+						row.getString("user_name"), row.getInt("group_id"),
+						row.getString("group_name"));
+			}
 
-	private class HistoricalJob {
-		int jobId;
-
-		int machineId;
-
-		String owner;
-
-		Instant createTimestamp;
-
-		int width;
-
-		int height;
-
-		int depth;
-
-		int allocatedRoot;
-
-		Instant keepaliveInterval;
-
-		String keepaliveHost;
-
-		String deathReason;
-
-		Instant deathTimestamp;
-
-		byte[] originalRequest;
-
-		Instant allocationTimestamp;
-
-		int allocationSize;
-
-		String machineName;
-
-		String userName;
-
-		int groupId;
-
-		String groupName;
-
-		HistoricalJob(Row row) {
-			jobId = row.getInt("job_id");
-			machineId = row.getInt("machine_id");
-			owner = row.getString("owner");
-			createTimestamp = row.getInstant("create_timestamp");
-			width = row.getInt("width");
-			height = row.getInt("height");
-			depth = row.getInt("depth");
-			allocatedRoot = row.getInt("allocated_root");
-			keepaliveInterval = row.getInstant("keepalive_interval");
-			keepaliveHost = row.getString("keepalive_host");
-			deathReason = row.getString("death_reason");
-			deathTimestamp = row.getInstant("death_timestamp");
-			originalRequest = row.getBytes("original_request");
-			allocationTimestamp = row.getInstant("allocation_timestamp");
-			allocationSize = row.getInt("allocation_size");
-			machineName = row.getString("machine_name");
-			userName = row.getString("user_name");
-			groupId = row.getInt("group_id");
-			groupName = row.getString("group_name");
-		}
-
-		Object[] args() {
-			return new Object[] {
-				jobId, machineId, owner, createTimestamp,
-				width, height, depth, allocatedRoot, keepaliveInterval,
-				keepaliveHost, deathReason, deathTimestamp, originalRequest,
-				allocationTimestamp, allocationSize, machineName, userName,
-				groupId, groupName
-			};
+			private Object[] args() {
+				return new Object[] {
+					jobId, machineId, owner, createTimestamp, width, height,
+					depth, allocatedRoot, keepaliveInterval, keepaliveHost,
+					deathReason, deathTimestamp, originalRequest,
+					allocationTimestamp, allocationSize, machineName, userName,
+					groupId, groupName
+				};
+			}
 		}
 	}
 
@@ -683,17 +686,17 @@ public class AllocatorTask extends DatabaseAwareBean
 				var writeJobs = histConn.update(WRITE_HISTORICAL_JOBS);
 				var writeAllocs = histConn.update(WRITE_HISTORICAL_ALLOCS)) {
 			var grace = historyProps.getGracePeriod();
-			var copied = conn.transaction(
-					() -> new Copied(readJobs.call(HistoricalJob::new, grace),
-							readAllocs.call(HistoricalAlloc::new, grace)));
+			var copied = conn.transaction(() -> new Copied(
+					readJobs.call(Copied.HistoricalJob::new, grace),
+					readAllocs.call(Copied.HistoricalAlloc::new, grace)));
 			histConn.transaction(() -> {
-				copied.allocStream().forEach((a) -> writeAllocs.call(a.args()));
-				copied.jobStream().forEach((j) -> writeJobs.call(j.args()));
+				copied.allocStream().forEach(a -> writeAllocs.call(a.args()));
+				copied.jobStream().forEach(j -> writeJobs.call(j.args()));
 			});
 			conn.transaction(() -> {
 				copied.allocStream()
-						.forEach((a) -> deleteAllocs.call(a.allocId));
-				copied.jobStream().forEach((j) -> deleteJobs.call(j.jobId));
+						.forEach(a -> deleteAllocs.call(a.allocId()));
+				copied.jobStream().forEach(j -> deleteJobs.call(j.jobId()));
 			});
 			return copied;
 		}
@@ -1043,6 +1046,13 @@ public class AllocatorTask extends DatabaseAwareBean
 		// Number of changes pending, one per board
 		int numPending = 0;
 
+		record Perimeter(int boardId, Direction direction) {
+			Perimeter(Row row) {
+				this(row.getInt("board_id"),
+						row.getEnum("direction", Direction.class));
+			}
+		}
+
 		if (power == ON) {
 			/*
 			 * This is a bit of a trickier case, as we need to say which links
@@ -1050,10 +1060,10 @@ public class AllocatorTask extends DatabaseAwareBean
 			 * switched off because they are links to boards that are not
 			 * allocated to the job. Off-board links are shut off by default.
 			 */
-			var perimeterLinks = Row.stream(
-					sql.getPerimeter.call(Perimeter::new, jobId))
-					.toCollectingMap(Direction.class, (p) -> p.boardId,
-							(p) -> p.direction);
+			var perimeterLinks =
+					Row.stream(sql.getPerimeter.call(Perimeter::new, jobId))
+							.toCollectingMap(Direction.class,
+									Perimeter::boardId, Perimeter::direction);
 
 			for (var boardId : boards) {
 				var toChange = perimeterLinks.getOrDefault(boardId,

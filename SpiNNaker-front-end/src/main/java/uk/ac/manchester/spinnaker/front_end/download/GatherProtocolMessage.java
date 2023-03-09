@@ -30,7 +30,9 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPPort;
  *
  * @author Donal Fellows
  */
-public abstract class GatherProtocolMessage extends SDPMessage {
+public abstract sealed class GatherProtocolMessage extends SDPMessage
+		permits ClearMessage, StartSendingMessage,
+				MissingSequenceNumbersMessage {
 	/**
 	 * Create a protocol message.
 	 *

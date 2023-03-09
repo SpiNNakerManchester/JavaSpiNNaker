@@ -598,24 +598,6 @@ public class UserControl extends DatabaseAwareBean {
 	}
 
 	/**
-	 * Record extracted from a row of the {@code user_info} table.
-	 *
-	 * @param baseUser
-	 *            The user's password change record, <em>without</em> the actual
-	 *            password fields filled out.
-	 * @param oldEncPass
-	 *            Old encoded password.
-	 * @see UserControl#updateUser(Principal, PasswordChangeRecord,
-	 *      UpdatePassSQL)
-	 */
-	private record GetUserResult(PasswordChangeRecord baseUser,
-			String oldEncPass) {
-		private GetUserResult(Row row) {
-			this(passChange(row), row.getString("encrypted_password"));
-		}
-	}
-
-	/**
 	 * Back end of {@link #updateUser(Principal,PasswordChangeRecord)}.
 	 * <p>
 	 * <strong>Do not hold a transaction when calling this!</strong> This is a
@@ -632,6 +614,23 @@ public class UserControl extends DatabaseAwareBean {
 	 */
 	private PasswordChangeRecord updateUser(Principal principal,
 			PasswordChangeRecord user, UpdatePassSQL sql) {
+		/**
+		 * Record extracted from a row of the {@code user_info} table.
+		 *
+		 * @param baseUser
+		 *            The user's password change record, <em>without</em> the
+		 *            actual password fields filled out.
+		 * @param oldEncPass
+		 *            Old encoded password.
+		 * @see UserControl#updateUser(Principal, PasswordChangeRecord,
+		 *      UpdatePassSQL)
+		 */
+		record GetUserResult(PasswordChangeRecord baseUser, String oldEncPass) {
+			private GetUserResult(Row row) {
+				this(passChange(row), row.getString("encrypted_password"));
+			}
+		}
+
 		var result = sql
 				.transaction(() -> sql.getPasswordedUser
 						.call1(GetUserResult::new, principal.getName()))

@@ -36,7 +36,7 @@ import uk.ac.manchester.spinnaker.messages.scp.FloodFillEnd;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillStart;
 
 /** A process for writing memory on multiple SpiNNaker chips at once. */
-class WriteMemoryFloodProcess extends TxrxProcess {
+final class WriteMemoryFloodProcess extends TxrxProcess {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.

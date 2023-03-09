@@ -515,17 +515,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		});
 	}
 
-	private class UserQuota {
-		Long quota;
-
-		int groupId;
-
-		UserQuota(Row row) {
-			quota = row.getLong("quota");
-			groupId = row.getInt("group_id");
-		}
-	}
-
 	/**
 	 * Work out what the ID of the group that a job will be accounted against
 	 * is.
@@ -542,6 +531,16 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	 *             If we can't get a definite group to account against.
 	 */
 	private int selectGroup(Connection conn, String user, String groupName) {
+		record UserQuota(Long quota, int groupId) {
+			UserQuota(Row row) {
+				this(row.getLong("quota"), row.getInt("group_id"));
+			}
+
+			boolean meaningful() {
+				return isNull(quota) || quota > 0L;
+			}
+		}
+
 		if (nonNull(groupName)) {
 			try (var getGroup = conn.query(GET_GROUP_BY_NAME_AND_MEMBER)) {
 				return getGroup.call1(integer("group_id"), user, groupName)
@@ -554,9 +553,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		try (var listGroups = conn.query(GET_GROUPS_AND_QUOTAS_OF_USER)) {
 			// No name given; need to guess.
 			return Row.stream(listGroups.call(UserQuota::new, user))
-					.filter(q -> isNull(q.quota)
-							|| q.quota > 0L)
-					.map(q -> q.groupId).first()
+					.filter(UserQuota::meaningful)
+					.map(UserQuota::groupId).first()
 					.orElseThrow(() -> new NoSuchGroupException(
 							"user %s is not a member of any "
 									+ "groups with quota left",
@@ -567,17 +565,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	private static Optional<Integer> getUser(Connection conn, String userName) {
 		try (var getUser = conn.query(GET_USER_ID)) {
 			return getUser.call1(integer("user_id"), userName);
-		}
-	}
-
-	private class BoardLocated {
-		int boardId;
-
-		int z;
-
-		BoardLocated(Row row) {
-			boardId = row.getInt("board_id");
-			z = row.getInt("z");
 		}
 	}
 
@@ -599,6 +586,12 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	 */
 	private Integer locateBoard(Connection conn, String machineName,
 			HasBoardCoords b, boolean requireTriadRoot) {
+		record BoardLocated(int boardId, int z) {
+			BoardLocated(Row row) {
+				this(row.getInt("board_id"), row.getInt("z"));
+			}
+		}
+
 		try (var findTriad = conn.query(FIND_BOARD_BY_NAME_AND_XYZ);
 				var findPhysical = conn.query(FIND_BOARD_BY_NAME_AND_CFB);
 				var findIP = conn.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
@@ -677,14 +670,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		return description;
 	}
 
-	private class Problem {
-		int boardId;
-
-		Integer jobId;
-
+	private record Problem(int boardId, Integer jobId) {
 		Problem(Row row) {
-			boardId = row.getInt("board_id");
-			jobId = row.getInt("job_id");
+			this(row.getInt("board_id"), row.getInt("job_id"));
 		}
 	}
 
@@ -727,28 +715,13 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		});
 	}
 
-	private class Reported {
-		int boardId;
-
-		int x;
-
-		int y;
-
-		int z;
-
-		String address;
-
-		int numReports;
-
+	private record Reported(int boardId, int x, int y, int z, String address,
+			int numReports) {
 		Reported(Row row) {
-			boardId = row.getInt("board_id");
-			x = row.getInt("x");
-			y = row.getInt("y");
-			z = row.getInt("z");
-			address = row.getString("address");
-			numReports = row.getInt("numReports");
+			this(row.getInt("board_id"), row.getInt("x"), row.getInt("y"),
+					row.getInt("z"), row.getString("address"),
+					row.getInt("numReports"));
 		}
-
 	}
 
 	/**

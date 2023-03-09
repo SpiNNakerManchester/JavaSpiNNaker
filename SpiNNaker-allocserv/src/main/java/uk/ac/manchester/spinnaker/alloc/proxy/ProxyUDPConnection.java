@@ -260,11 +260,11 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 				continue;
 			}
 			// SECURITY: drop any packet not from an allocated board
-			if (!recvFrom.contains(packet.getAddress().getAddress())) {
-				log.debug("dropped packet from {}", packet.getAddress());
+			if (!recvFrom.contains(packet.address().getAddress())) {
+				log.debug("dropped packet from {}", packet.address());
 				continue;
 			}
-			handleReceivedMessage(packet.getByteBuffer());
+			handleReceivedMessage(packet.byteBuffer());
 		}
 	}
 }

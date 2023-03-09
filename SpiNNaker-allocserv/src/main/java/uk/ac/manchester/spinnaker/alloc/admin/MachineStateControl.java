@@ -366,28 +366,23 @@ public class MachineStateControl extends DatabaseAwareBean {
 		});
 	}
 
-	private class MachineNameId {
-		int id;
-
-		String name;
-
-		MachineNameId(Row row) {
-			id = row.getInt("machine_id");
-			name = row.getString("machine_name");
-		}
-	}
-
 	/**
 	 * @return The unacknowledged reports about boards with potential problems
 	 *         in existing machines, categorised by machine.
 	 */
 	public Map<String, List<BoardIssueReport>> getMachineReports() {
+		record MachineNameId(int id, String name) {
+			MachineNameId(Row row) {
+				this(row.getInt("machine_id"), row.getString("machine_name"));
+			}
+		}
+
 		return executeRead(conn -> {
 			try (var getMachines = conn.query(GET_ALL_MACHINES);
 					var getMachineReports = conn.query(GET_MACHINE_REPORTS)) {
 				return Row.stream(getMachines.call(MachineNameId::new, true))
-						.toMap(m -> m.name, m -> getMachineReports.call(
-								BoardIssueReport::new, m.id));
+						.toMap(MachineNameId::name, m -> getMachineReports
+								.call(BoardIssueReport::new, m.id()));
 			}
 		});
 	}

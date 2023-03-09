@@ -24,7 +24,7 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.scp.ApplicationRun;
 
 /** Launch an application. */
-class ApplicationRunProcess extends TxrxProcess {
+final class ApplicationRunProcess extends TxrxProcess {
 	/**
 	 * Create.
 	 *

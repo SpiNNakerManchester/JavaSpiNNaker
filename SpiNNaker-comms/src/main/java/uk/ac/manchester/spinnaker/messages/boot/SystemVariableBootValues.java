@@ -31,7 +31,7 @@ import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
  * Default values of the system variables that get passed to SpiNNaker during
  * boot.
  */
-public class SystemVariableBootValues implements SerializableMessage {
+public final class SystemVariableBootValues implements SerializableMessage {
 	/** The size of the boot variable block, in bytes. */
 	static final int BOOT_VARIABLE_SIZE = 256;
 

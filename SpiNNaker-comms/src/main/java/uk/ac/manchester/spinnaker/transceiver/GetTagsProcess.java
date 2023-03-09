@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.messages.scp.IPTagGet;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo;
 
 /** Gets IP tags and reverse IP tags. */
-class GetTagsProcess extends TxrxProcess {
+final class GetTagsProcess extends TxrxProcess {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
