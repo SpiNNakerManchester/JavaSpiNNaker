@@ -17,11 +17,14 @@ package uk.ac.manchester.spinnaker.data_spec;
 
 /**
  * How to actually call a DSE operation.
+ * <p>
+ * Classes outside of this package do not need to directly make instances of
+ * this class.
  *
  * @author Donal Fellows
  */
 @FunctionalInterface
-interface Callable {
+public interface Callable {
 	/**
 	 * The outer interface of a DSE operation. Note that this is subject to
 	 * coercion to make the actual operations have a wider range of supported
@@ -29,8 +32,9 @@ interface Callable {
 	 *
 	 * @param cmd
 	 *            The encoded command word.
-	 * @return Usually {@code 0}. Sometimes a marker to indicate special
-	 *         states (currently just for end-of-specification).
+	 * @return Usually {@code 0}. Sometimes a marker to indicate special states
+	 *         (currently just used for {@linkplain Commands#END_SPEC
+	 *         end-of-specification}).
 	 * @throws DataSpecificationException
 	 *             If anything goes wrong in the data specification.
 	 */
