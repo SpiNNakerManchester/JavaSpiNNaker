@@ -40,7 +40,7 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 @Component
 @Provider
 @Role(ROLE_SUPPORT)
-public class DataAccessExceptionMapper
+class DataAccessExceptionMapper
 		implements ExceptionMapper<DataAccessException> {
 	static final Logger log = getLogger(DataAccessExceptionMapper.class);
 
