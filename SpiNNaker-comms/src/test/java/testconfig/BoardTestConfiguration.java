@@ -56,7 +56,7 @@ public class BoardTestConfiguration {
 	 * Microsoft invalid IP address.
 	 *
 	 * @see <a href=
-	 *      "http://answers.microsoft.com/en-us/windows/forum/windows_vista-networking/invalid-ip-address-169254xx/ce096728-e2b7-4d54-80cc-52a4ed342870"
+	 *      "https://answers.microsoft.com/en-us/windows/forum/windows_vista-networking/invalid-ip-address-169254xx/ce096728-e2b7-4d54-80cc-52a4ed342870"
 	 *      >Forum post</a>
 	 */
 	public static final String NOHOST = "169.254.254.254";
