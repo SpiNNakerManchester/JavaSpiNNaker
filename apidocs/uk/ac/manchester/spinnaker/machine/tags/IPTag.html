@@ -151,19 +151,6 @@ extends <a href="Tag.html" title="class in uk.ac.manchester.spinnaker.machine.ta
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,int,int,int,java.lang.String,java.lang.Integer,java.lang.Boolean,java.lang.String)">IPTag</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;boardAddress,
-int&nbsp;tagID,
-int&nbsp;x,
-int&nbsp;y,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;targetAddress,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;udpPort,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a>&nbsp;stripSDP,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;trafficIdentifier)</code></th>
-<td class="colLast">
-<div class="block">Constructor for JSON deserialization.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.net.InetAddress,uk.ac.manchester.spinnaker.machine.ChipLocation,int,java.net.InetAddress)">IPTag</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;boardAddress,
 <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;destination,
 int&nbsp;tagID,
@@ -172,7 +159,7 @@ int&nbsp;tagID,
 <div class="block">Create an IP tag.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.net.InetAddress,uk.ac.manchester.spinnaker.machine.ChipLocation,int,java.net.InetAddress,boolean)">IPTag</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;boardAddress,
 <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;destination,
 int&nbsp;tagID,
@@ -180,7 +167,7 @@ int&nbsp;tagID,
 boolean&nbsp;stripSDP)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.net.InetAddress,uk.ac.manchester.spinnaker.machine.ChipLocation,int,java.net.InetAddress,java.lang.Integer)">IPTag</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;boardAddress,
 <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;destination,
 int&nbsp;tagID,
@@ -190,7 +177,7 @@ int&nbsp;tagID,
 <div class="block">Create an IP tag.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.net.InetAddress,uk.ac.manchester.spinnaker.machine.ChipLocation,int,java.net.InetAddress,java.lang.Integer,boolean)">IPTag</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;boardAddress,
 <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;destination,
 int&nbsp;tagID,
@@ -199,7 +186,7 @@ int&nbsp;tagID,
 boolean&nbsp;stripSDP)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.net.InetAddress,uk.ac.manchester.spinnaker.machine.ChipLocation,int,java.net.InetAddress,java.lang.Integer,boolean,uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier)">IPTag</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;boardAddress,
 <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;destination,
 int&nbsp;tagID,
@@ -405,35 +392,6 @@ boolean&nbsp;stripSDP,
             or <code>null</code> if not yet assigned.</dd>
 <dd><code>stripSDP</code> - Indicates whether the SDP header should be removed</dd>
 <dd><code>trafficIdentifier</code> - The identifier for traffic transmitted using this tag</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="&lt;init&gt;(java.lang.String,int,int,int,java.lang.String,java.lang.Integer,java.lang.Boolean,java.lang.String)">IPTag</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">IPTag</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;boardAddress,
-int&nbsp;tagID,
-int&nbsp;x,
-int&nbsp;y,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;targetAddress,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;udpPort,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a>&nbsp;stripSDP,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;trafficIdentifier)</span>
-      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a></span></div>
-<div class="block">Constructor for JSON deserialization.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>boardAddress</code> - The IP address of the board on which the tag is allocated</dd>
-<dd><code>tagID</code> - The ID of the tag (0..7)</dd>
-<dd><code>x</code> - The X coordinate of the destination.</dd>
-<dd><code>y</code> - The Y coordinate of the destination.</dd>
-<dd><code>targetAddress</code> - The IP address to which SDP packets with the tag will be sent</dd>
-<dd><code>udpPort</code> - The port to which the SDP packets with the tag will be sent,
-            or <code>null</code> if not yet assigned.</dd>
-<dd><code>stripSDP</code> - Indicates whether the SDP header should be removed</dd>
-<dd><code>trafficIdentifier</code> - The identifier for traffic transmitted using this tag</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a></code> - If an IP address doesn't resolve.</dd>
 </dl>
 </section>
 </li>
