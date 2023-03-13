@@ -180,6 +180,7 @@ public final class IPTag extends Tag {
 	 *            The identifier for traffic transmitted using this tag
 	 * @throws UnknownHostException
 	 *             If an IP address doesn't resolve.
+	 * @hidden
 	 */
 	public IPTag(
 			@JsonProperty(value = "boardAddress", required = true)

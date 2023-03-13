@@ -160,8 +160,8 @@ public final class CommandLineInterface {
 	// Wrappers because of three configurations varying in one parameter
 	@Command(name = "dse", description = DSE_DESC)
 	private void dseAllCores(@Mixin MachineParam machine,
-			@Mixin DsFile dsFile,
-			@Mixin RunFolder runFolder)
+			@Mixin DsFileParam dsFile,
+			@Mixin RunFolderParam runFolder)
 			throws Exception {
 		runDSEUploadingViaClassicTransfer(machine.get(), dsFile.get(),
 				runFolder.get(), null);
@@ -170,8 +170,8 @@ public final class CommandLineInterface {
 	@Command(name = "dse_sys", description = DSE_SYS_DESC)
 	private void dseSystemCores(
 			@Mixin MachineParam machine,
-			@Mixin DsFile dsFile,
-			@Mixin RunFolder runFolder)
+			@Mixin DsFileParam dsFile,
+			@Mixin RunFolderParam runFolder)
 			throws Exception {
 		runDSEUploadingViaClassicTransfer(machine.get(), dsFile.get(),
 				runFolder.get(), false);
@@ -180,8 +180,8 @@ public final class CommandLineInterface {
 	@Command(name = "dse_app", description = DSE_APP_DESC)
 	private void dseApplicationCores(
 			@Mixin MachineParam machine,
-			@Mixin DsFile dsFile,
-			@Mixin RunFolder runFolder)
+			@Mixin DsFileParam dsFile,
+			@Mixin RunFolderParam runFolder)
 			throws Exception {
 		runDSEUploadingViaClassicTransfer(machine.get(), dsFile.get(),
 				runFolder.get(), true);
@@ -298,8 +298,8 @@ public final class CommandLineInterface {
 	public void runDSEForAppCoresUploadingViaMonitorStreaming(
 			@Mixin GatherersParam gatherers,
 			@Mixin MachineParam machine,
-			@Mixin DsFile dsFile,
-			@Mixin RunFolder runFolder,
+			@Mixin DsFileParam dsFile,
+			@Mixin RunFolderParam runFolder,
 			@Parameters(description = REPORT, arity = "0..1", index = "3")
 			Optional<File> reportFolder)
 			throws IOException, SpinnmanException, StorageException,
@@ -344,8 +344,8 @@ public final class CommandLineInterface {
 	public void retrieveIOBUFs(
 			@Mixin MachineParam machine,
 			@Mixin IobufMapParam iobuf,
-			@Mixin DbFile dbFile,
-			@Mixin RunFolder runFolder)
+			@Mixin DbFileParam dbFile,
+			@Mixin RunFolderParam runFolder)
 			throws IOException, SpinnmanException, InterruptedException,
 			StorageException, URISyntaxException {
 		setLoggerDir(runFolder.get());
@@ -386,8 +386,8 @@ public final class CommandLineInterface {
 	public void downloadRecordingChannelsViaClassicTransfer(
 			@Mixin PlacementsParam placements,
 			@Mixin MachineParam machine,
-			@Mixin DbFile dbFile,
-			@Mixin RunFolder runFolder)
+			@Mixin DbFileParam dbFile,
+			@Mixin RunFolderParam runFolder)
 			throws IOException, SpinnmanException, StorageException,
 			InterruptedException, URISyntaxException {
 		setLoggerDir(runFolder.get());
@@ -427,8 +427,8 @@ public final class CommandLineInterface {
 	public void downloadRecordingChannelsViaMonitorStreaming(
 			@Mixin GatherersParam gatherers,
 			@Mixin MachineParam machine,
-			@Mixin DbFile dbFile,
-			@Mixin RunFolder runFolder)
+			@Mixin DbFileParam dbFile,
+			@Mixin RunFolderParam runFolder)
 			throws IOException, SpinnmanException, StorageException,
 			InterruptedException, URISyntaxException {
 		setLoggerDir(runFolder.get());
@@ -458,6 +458,10 @@ public final class CommandLineInterface {
 		@Parameters(paramLabel = "<machineFile>", description = MACHINE, //
 				converter = Converter.class)
 		private Machine machine;
+
+		/** @hidden */
+		public MachineParam() {
+		}
 
 		/** @return The machine parsed from the named file. */
 		@Override
@@ -491,6 +495,10 @@ public final class CommandLineInterface {
 				converter = Converter.class)
 		private IobufRequest request;
 
+		/** @hidden */
+		public IobufMapParam() {
+		}
+
 		/** @return The request parsed from the named file. */
 		@Override
 		public IobufRequest get() {
@@ -521,6 +529,10 @@ public final class CommandLineInterface {
 		@Parameters(paramLabel = "<gatherFile>", description = GATHER, //
 				converter = Converter.class)
 		private Supplier<List<Gather>> gatherers;
+
+		/** @hidden */
+		public GatherersParam() {
+		}
 
 		/** @return The gatherers parsed from the named file. */
 		@Override
@@ -556,6 +568,10 @@ public final class CommandLineInterface {
 				converter = Converter.class)
 		private Supplier<List<Placement>> placements;
 
+		/** @hidden */
+		public PlacementsParam() {
+		}
+
 		/** @return The placements parsed from the named file. */
 		@Override
 		public List<Placement> get() {
@@ -584,9 +600,13 @@ public final class CommandLineInterface {
 	 * @see ArgGroup
 	 * @see Parameters
 	 */
-	public static class RunFolder implements Supplier<File> {
+	public static class RunFolderParam implements Supplier<File> {
 		@Parameters(description = RUN, converter = Converter.class, arity = "1")
 		private ValueHolder<File> runFolder = new ValueHolder<>();
+
+		/** @hidden */
+		public RunFolderParam() {
+		}
 
 		/** @return The folder for the run. */
 		@Override
@@ -617,10 +637,14 @@ public final class CommandLineInterface {
 	 * @see ArgGroup
 	 * @see Parameters
 	 */
-	public static class DbFile implements Supplier<File> {
+	public static class DbFileParam implements Supplier<File> {
 		@Parameters(description = DBFILE, converter = Converter.class,
 				arity = "1")
 		private ValueHolder<File> dbFile = new ValueHolder<>();
+
+		/** @hidden */
+		public DbFileParam() {
+		}
 
 		/** @return The file of the buffer database. */
 		@Override
@@ -651,10 +675,14 @@ public final class CommandLineInterface {
 	 * @see ArgGroup
 	 * @see Parameters
 	 */
-	public static class DsFile implements Supplier<File> {
+	public static class DsFileParam implements Supplier<File> {
 		@Parameters(description = DSFILE, converter = Converter.class,
 				arity = "1")
 		private ValueHolder<File> dsFile = new ValueHolder<>();
+
+		/** @hidden */
+		public DsFileParam() {
+		}
 
 		/** @return The file of the dataspec database. */
 		@Override
