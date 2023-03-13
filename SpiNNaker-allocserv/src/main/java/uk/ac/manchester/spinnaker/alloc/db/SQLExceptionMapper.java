@@ -37,8 +37,7 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
  */
 @Component
 @Provider
-public class SQLExceptionMapper
-		implements ExceptionMapper<SQLException> {
+class SQLExceptionMapper implements ExceptionMapper<SQLException> {
 	static final Logger log = getLogger(SQLExceptionMapper.class);
 
 	@Autowired

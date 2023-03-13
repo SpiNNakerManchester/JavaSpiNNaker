@@ -16,16 +16,20 @@
 package uk.ac.manchester.spinnaker.machine.tags;
 
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.util.Objects;
 
 import jakarta.validation.Valid;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Used to hold data that is contained within a Reverse IP tag. Reverse IP tags
- * allow data to flow at runtime from the outside world into SpiNNaker.
+ * allow data to flow at runtime from the outside world into SpiNNaker; they are
+ * the SpiNNaker equivalent of a {@linkplain ServerSocket server socket}.
  */
+@UsedInJavadocOnly(ServerSocket.class)
 public final class ReverseIPTag extends Tag {
 	private static final int DEFAULT_SDP_PORT = 1;
 
@@ -66,7 +70,8 @@ public final class ReverseIPTag extends Tag {
 	 *            The port number to use for SDP packets that are formed on the
 	 *            machine.
 	 */
-	public ReverseIPTag(InetAddress boardAddress, int tagID, int udpPort,
+	public ReverseIPTag(
+			InetAddress boardAddress, int tagID, int udpPort,
 			HasCoreLocation destination, int sdpPort) {
 		super(boardAddress, tagID, udpPort);
 		this.destination = destination.asCoreLocation();
