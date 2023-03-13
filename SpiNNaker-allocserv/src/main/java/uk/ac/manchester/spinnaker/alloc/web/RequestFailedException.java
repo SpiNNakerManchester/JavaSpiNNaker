@@ -194,6 +194,7 @@ public class RequestFailedException extends RuntimeException {
 	 * Handler for {@link RequestFailedException}.
 	 *
 	 * @author Donal Fellows
+	 * @hidden
 	 */
 	@Component
 	@Provider
