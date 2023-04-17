@@ -18,6 +18,14 @@ on: #[push]
   push:
     branches: [ master ]
 
+env:
+  SETTINGS_FILE: .github/settings.xml
+  # Workaround for occasional unreliable downloads.
+  # See https://stackoverflow.com/q/55899091/301832 for details
+  MAVEN_OPTS: >
+    -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
+    -Dmaven.wagon.http.retryHandler.count=3
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,7 +33,6 @@ jobs:
       matrix:
         java: [17]
     env:
-      SETTINGS_FILE: .github/settings.xml
       SITE_DIR: target/staging
 
     steps:

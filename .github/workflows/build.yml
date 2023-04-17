@@ -23,6 +23,11 @@ on:
     - cron: "40 4 * * *"
 env:
   SETTINGS_FILE: .github/settings.xml
+  # Workaround for occasional unreliable downloads.
+  # See https://stackoverflow.com/q/55899091/301832 for details
+  MAVEN_OPTS: >
+    -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
+    -Dmaven.wagon.http.retryHandler.count=3
 
 jobs:
   compile:
