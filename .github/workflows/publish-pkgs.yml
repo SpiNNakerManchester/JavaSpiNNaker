@@ -16,6 +16,15 @@ name: Publish package to GitHub Packages
 on:
   release:
     types: [created]
+
+env:
+  SETTINGS_FILE: .github/settings.xml
+  # Workaround for occasional unreliable downloads.
+  # See https://stackoverflow.com/q/55899091/301832 for details
+  MAVEN_OPTS: >
+    -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
+    -Dmaven.wagon.http.retryHandler.count=3
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -29,6 +38,6 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
       - name: Publish package
-        run: mvn --batch-mode deploy
+        run: mvn deploy --batch-mode --settings $SETTINGS_FILE
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
