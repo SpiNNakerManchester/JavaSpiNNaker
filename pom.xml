@@ -30,7 +30,7 @@ limitations under the License.
 		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 
 		<!-- What does the CheckForFIXME profile look for? -->
-		<forbidden.keywords.re>FIXME|Auto-generated method stub</forbidden.keywords.re>
+		<forbidden.keywords.re>\bFIXME\b|Auto-generated method stub</forbidden.keywords.re>
 
 		<spinnaker.version>7.0.0-SNAPSHOT</spinnaker.version>
 
