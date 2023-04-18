@@ -34,6 +34,14 @@ on:
   schedule:
     - cron: '31 6 * * 0'
 
+env:
+  # Workaround for occasional unreliable downloads.
+  # See https://stackoverflow.com/q/55899091/301832 for details
+  # Except Maven doesn't use Wagon any more, but Aether.
+  # https://maven.apache.org/resolver/configuration.html
+  MAVEN_OPTS: >
+    -Daether.connector.http.connectionMaxTtl=25
+
 jobs:
   analyze:
     name: Analyze
@@ -74,12 +82,6 @@ jobs:
     # If this step fails, then you should remove it and run the build manually (see below)
     - name: Autobuild
       uses: github/codeql-action/autobuild@v2
-      env:
-        # Workaround for occasional unreliable downloads.
-        # See https://stackoverflow.com/q/55899091/301832 for details
-        MAVEN_OPTS: >
-          -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
-          -Dmaven.wagon.http.retryHandler.count=3
 
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 https://git.io/JvXDl
