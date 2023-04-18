@@ -21,9 +21,10 @@ env:
   SETTINGS_FILE: .github/settings.xml
   # Workaround for occasional unreliable downloads.
   # See https://stackoverflow.com/q/55899091/301832 for details
+  # Except Maven doesn't use Wagon any more, but Aether.
+  # https://maven.apache.org/resolver/configuration.html
   MAVEN_OPTS: >
-    -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
-    -Dmaven.wagon.http.retryHandler.count=3
+    -Daether.connector.http.connectionMaxTtl=25
 
 jobs:
   publish:
