@@ -35,6 +35,7 @@ on:
     - cron: '31 6 * * 0'
 
 env:
+  SETTINGS_FILE: .github/settings.xml
   # Workaround for occasional unreliable downloads.
   # See https://stackoverflow.com/q/55899091/301832 for details
   # Except Maven doesn't use Wagon any more, but Aether.
@@ -76,6 +77,11 @@ jobs:
         java-version: ${{ matrix.version }}
         distribution: zulu
         cache: maven
+
+    # Fetch the dependencies if we can, to accelerate the autobuild step
+    - name: Resolve dependencies
+      run: mvn -B dependency:resolve dependency:resolve-plugins --settings $SETTINGS_FILE
+      continue-on-error: true
 
     # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
     # If this step fails, then you should remove it and run the build manually (see below)
