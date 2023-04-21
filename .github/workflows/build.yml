@@ -33,6 +33,7 @@ env:
 jobs:
   compile:
     runs-on: ubuntu-latest
+    timeout-minutes: 100
     strategy:
       matrix:
         # Minimum Java version!
@@ -55,6 +56,7 @@ jobs:
   test:
     needs: compile
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       matrix:
         java: [17]
@@ -94,6 +96,7 @@ jobs:
   validate:
     needs: compile
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     strategy:
       matrix:
         java: [17]
@@ -116,6 +119,7 @@ jobs:
   minor-style:
     needs: compile
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
