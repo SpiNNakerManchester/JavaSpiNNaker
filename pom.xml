@@ -1251,5 +1251,33 @@ limitations under the License.
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>spellcheck</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.github.tomxiong</groupId>
+						<artifactId>spell-check-maven-plugin</artifactId>
+						<version>1.0.0</version>
+						<executions>
+							<execution>
+								<phase>validate</phase>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<includes>
+								<include>**/*.java</include>
+							</includes>
+							<excludes>
+								<exclude>**/test/**</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 </project>
