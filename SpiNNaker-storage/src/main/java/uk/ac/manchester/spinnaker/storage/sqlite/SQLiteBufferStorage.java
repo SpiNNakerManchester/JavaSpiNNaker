@@ -19,11 +19,6 @@ import static java.lang.System.arraycopy;
 import static java.lang.System.currentTimeMillis;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FIFTH;
-import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FIRST;
-import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FOURTH;
-import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.SECOND;
-import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.THIRD;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_CONTENT;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_EXTRA_CONTENT;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.FETCH_EXTRA_RECORDING;
@@ -45,6 +40,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
@@ -78,29 +74,20 @@ public class SQLiteBufferStorage
 			throws SQLException {
 		try (var s = conn.prepareStatement(GET_LOCATION)) {
 			// x, y, processor
-			s.setInt(FIRST, core.getX());
-			s.setInt(SECOND, core.getY());
-			s.setInt(THIRD, core.getP());
+			setArguments(s, core.getX(), core.getY(), core.getP());
 			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
-					return rs.getInt(FIRST);
+					return rs.getInt("core_id");
 				}
 			}
 		}
 		try (var s = conn.prepareStatement(INSERT_LOCATION,
 				RETURN_GENERATED_KEYS)) {
 			// x, y, processor
-			s.setInt(FIRST, core.getX());
-			s.setInt(SECOND, core.getY());
-			s.setInt(THIRD, core.getP());
+			setArguments(s, core.getX(), core.getY(), core.getP());
 			s.executeUpdate();
-			try (var keys = s.getGeneratedKeys()) {
-				while (keys.next()) {
-					return keys.getInt(FIRST);
-				}
-				throw new IllegalStateException(
-						"could not make or find recording region core record");
-			}
+			return getLastKey(s).orElseThrow(() -> new IllegalStateException(
+					"could not make or find recording region core record"));
 		}
 	}
 
@@ -108,28 +95,21 @@ public class SQLiteBufferStorage
 			Region region) throws SQLException {
 		try (var s = conn.prepareStatement(GET_REGION)) {
 			// core_id, local_region_index
-			s.setInt(FIRST, coreID);
-			s.setInt(SECOND, region.regionIndex);
+			setArguments(s, coreID, region.regionIndex);
 			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
-					return rs.getInt(FIRST);
+					return rs.getInt("region_id");
 				}
 			}
 		}
 		try (var s = conn.prepareStatement(INSERT_REGION,
 				RETURN_GENERATED_KEYS)) {
 			// core_id, local_region_index, address
-			s.setInt(FIRST, coreID);
-			s.setInt(SECOND, region.regionIndex);
-			s.setInt(THIRD, region.startAddress.address);
+			setArguments(s, coreID, region.regionIndex,
+					region.startAddress.address);
 			s.executeUpdate();
-			try (var keys = s.getGeneratedKeys()) {
-				while (keys.next()) {
-					return keys.getInt(FIRST);
-				}
-				throw new IllegalStateException(
-						"could not make or find recording region record");
-			}
+			return getLastKey(s).orElseThrow(() -> new IllegalStateException(
+					"could not make or find recording region record"));
 		}
 	}
 
@@ -150,15 +130,32 @@ public class SQLiteBufferStorage
 		}
 	}
 
+	private static byte[] read(ByteArrayInputStream chunk, int chunkLen)
+			throws SQLException {
+		byte[] buffer = new byte[chunkLen];
+		int len;
+		try {
+			len = IOUtils.read(chunk, buffer, 0, chunkLen);
+		} catch (IOException e) {
+			throw new SQLException("failed to read buffer", e);
+		}
+		if (len == chunkLen) {
+			return buffer;
+		} else if (len <= 0) {
+			return new byte[0];
+		}
+		byte[] nb = new byte[len];
+		arraycopy(buffer, 0, nb, 0, len);
+		return nb;
+	}
+
 	private void addContentToMainRow(Connection conn, int regionID,
 			int chunkLen, ByteArrayInputStream chunk, long timestamp)
 			throws SQLException {
 		try (var s = conn.prepareStatement(ADD_CONTENT)) {
 			// content, append_time, region_id
-			s.setBinaryStream(FIRST, chunk, chunkLen);
-			s.setInt(SECOND, chunkLen);
-			s.setLong(THIRD, timestamp);
-			s.setInt(FOURTH, regionID);
+			setArguments(s, read(chunk, chunkLen), chunkLen, timestamp,
+					regionID);
 			s.executeUpdate();
 		}
 	}
@@ -167,8 +164,7 @@ public class SQLiteBufferStorage
 			long timestamp) throws SQLException {
 		try (var s = conn.prepareStatement(PREP_EXTRA_CONTENT)) {
 			// append_time, region_id
-			s.setLong(FIRST, timestamp);
-			s.setInt(SECOND, regionID);
+			setArguments(s, timestamp, regionID);
 			s.executeUpdate();
 		}
 	}
@@ -177,9 +173,7 @@ public class SQLiteBufferStorage
 			ByteArrayInputStream chunk) throws SQLException {
 		try (var s = conn.prepareStatement(ADD_EXTRA_CONTENT)) {
 			// region_id, content
-			s.setInt(FIRST, regionID);
-			s.setBinaryStream(SECOND, chunk, chunkLen);
-			s.setInt(THIRD, chunkLen);
+			setArguments(s, regionID, read(chunk, chunkLen), chunkLen);
 			s.executeUpdate();
 		}
 	}
@@ -187,10 +181,10 @@ public class SQLiteBufferStorage
 	private boolean useMainTable(Connection conn, int regionID)
 			throws SQLException {
 		try (var s = conn.prepareStatement(GET_MAIN_CONTENT_AVAILABLE)) {
-			s.setInt(FIRST, regionID);
+			setArguments(s, regionID);
 			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
-					int existing = rs.getInt(FIRST);
+					int existing = rs.getInt("existing");
 					return existing == 1;
 				}
 			}
@@ -247,14 +241,12 @@ public class SQLiteBufferStorage
 			int regionID = -1;
 			try (var s = conn.prepareStatement(FETCH_RECORDING)) {
 				// x, y, processor, local_region_index
-				s.setInt(FIRST, region.core.getX());
-				s.setInt(SECOND, region.core.getY());
-				s.setInt(THIRD, region.core.getP());
-				s.setInt(FOURTH, region.regionIndex);
+				setArguments(s, region.core.getX(), region.core.getY(),
+						region.core.getP(), region.regionIndex);
 				try (var rs = s.executeQuery()) {
 					while (rs.next()) {
-						accum.write(rs.getBytes(FIRST));
-						regionID = rs.getInt(FIFTH);
+						accum.write(rs.getBytes("content"));
+						regionID = rs.getInt("region_id");
 					}
 				}
 			}
@@ -264,10 +256,10 @@ public class SQLiteBufferStorage
 			}
 			try (var s = conn.prepareStatement(FETCH_EXTRA_RECORDING)) {
 				// region_id
-				s.setInt(FIRST, regionID);
+				setArguments(s, regionID);
 				try (var rs = s.executeQuery()) {
 					while (rs.next()) {
-						accum.write(rs.getBytes(FIRST));
+						accum.write(rs.getBytes("content"));
 					}
 				}
 			}
@@ -284,9 +276,9 @@ public class SQLiteBufferStorage
 					var rs = s.executeQuery()) {
 				var result = new ArrayList<CoreLocation>();
 				while (rs.next()) {
-					int x = rs.getInt(FIRST);
-					int y = rs.getInt(SECOND);
-					int p = rs.getInt(THIRD);
+					int x = rs.getInt("x");
+					int y = rs.getInt("y");
+					int p = rs.getInt("processor");
 					result.add(new CoreLocation(x, y, p));
 				}
 				return result;
@@ -299,13 +291,11 @@ public class SQLiteBufferStorage
 			throws StorageException {
 		return callR(conn -> {
 			try (var s = conn.prepareStatement(GET_REGIONS_WITH_STORAGE)) {
-				s.setInt(FIRST, core.getX());
-				s.setInt(SECOND, core.getY());
-				s.setInt(THIRD, core.getP());
+				setArguments(s, core.getX(), core.getY(), core.getP());
 				try (var rs = s.executeQuery()) {
 					var result = new ArrayList<Integer>();
 					while (rs.next()) {
-						result.add(rs.getInt(FIRST));
+						result.add(rs.getInt("local_region_index"));
 					}
 					return result;
 				}
