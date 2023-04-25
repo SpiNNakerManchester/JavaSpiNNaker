@@ -40,11 +40,11 @@ public final class SpinnakerLinkData extends AbstractDataLink {
 	 * @param spinnakerLinkId
 	 *            The link ID from the SpiNNaker perspective.
 	 * @param location
-	 *            The location/Chip being linked to
+	 *            The location/chip being linked to
 	 * @param linkId
-	 *            The ID/Direction coming out of the Chip
+	 *            The ID/direction coming out of the chip
 	 * @param boardAddress
-	 *            IP address of the Datalink on the board.
+	 *            IP address of the data link on the board.
 	 */
 	public SpinnakerLinkData(int spinnakerLinkId, HasChipLocation location,
 			Direction linkId, InetAddress boardAddress) {

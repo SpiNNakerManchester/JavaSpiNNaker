@@ -13,5 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** Describes a datalink. */
+/**
+ * Describes a data link. Data links connect a SpiNNaker board to something that
+ * isn't on that board, and where the messages aren't routed via Ethernet
+ * packets.
+ */
 package uk.ac.manchester.spinnaker.machine.datalinks;
