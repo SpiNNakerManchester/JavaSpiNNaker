@@ -48,7 +48,7 @@ public class MachineBean {
 	private final List<@Valid ChipBean> chips;
 
 	/**
-	 * Main Constructor that sets all values.
+	 * Make an instance.
 	 *
 	 * @param height
 	 *            The height of the Machine in Chips
@@ -129,5 +129,4 @@ public class MachineBean {
 		}
 		return builder.toString();
 	}
-
 }

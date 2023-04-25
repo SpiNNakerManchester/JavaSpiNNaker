@@ -70,7 +70,7 @@ public class ChipResources {
 	/**
 	 * Adds the default values if and only if no value had been specifically
 	 * set. If a value is not set in both this and the defaults it will remain
-	 * as not set. No Exception is thrown.
+	 * as not set.
 	 *
 	 * @param defaults
 	 *            Another resources whose values should replace those which have
@@ -110,7 +110,7 @@ public class ChipResources {
 	}
 
 	/**
-	 * @return the sdram
+	 * @return the SDRAM capacity
 	 */
 	public int getSdram() {
 		return sdram;
@@ -127,7 +127,7 @@ public class ChipResources {
 	}
 
 	/**
-	 * @return the router_entries
+	 * @return the number of router entries
 	 */
 	public int getRouterEntries() {
 		return routerEntries;

@@ -36,10 +36,6 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * A representation of a SpiNNaker Machine with a number of {@link Chip}s. This
  * machine is one that has been constructed to model the real world, but which
  * is not actually based truly on real-world data.
- * <p>
- * Machine is also iterable, providing {@code ((x, y), chip)} where: {@code x}
- * is the x-coordinate of a chip. {@code y} is the y-coordinate of a chip, and
- * {@code chip} is the chip with the given {@code x, y} coordinates.
  *
  * @see <a href=
  *      "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/machine.py">
@@ -51,7 +47,7 @@ public class VirtualMachine extends Machine {
 	 * Creates a virtual machine to fill the machine dimensions.
 	 *
 	 * @param machineDimensions
-	 *            Size of the machine along the x and y axes in Chips.
+	 *            Size of the machine along the X and Y axes, in chips.
 	 * @param ignoreChips
 	 *            A set of chips to ignore in the machine. Requests for a
 	 *            "machine" will have these chips excluded, as if they never
@@ -115,14 +111,14 @@ public class VirtualMachine extends Machine {
 	 * Creates a virtual machine to fill the machine dimensions with no ignores.
 	 *
 	 * @param machineDimensions
-	 *            Size of the machine along the x and y axes in Chips.
+	 *            Size of the machine along the X and Y axes, in chips.
 	 */
 	public VirtualMachine(MachineDimensions machineDimensions) {
 		this(machineDimensions, null, null, null);
 	}
 
 	/**
-	 * Creates a virtual machine based on the MachineVersion.
+	 * Creates a virtual machine based on the given machine version.
 	 *
 	 * @param version
 	 *            A version which specifies fixed size.

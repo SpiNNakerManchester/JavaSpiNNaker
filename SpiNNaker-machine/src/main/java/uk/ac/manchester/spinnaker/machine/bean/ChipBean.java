@@ -28,7 +28,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
- * Used for converting JSON into a {@link Chip}.
+ * Descriptor used for converting JSON into a {@link Chip}.
  *
  * @author Christian-B
  */
@@ -52,7 +52,7 @@ public class ChipBean {
 	private ChipResources resources;
 
 	/**
-	 * Main constructor with all values as properties.
+	 * Make an instance.
 	 *
 	 * @param x
 	 *            X coordinate of the Chip

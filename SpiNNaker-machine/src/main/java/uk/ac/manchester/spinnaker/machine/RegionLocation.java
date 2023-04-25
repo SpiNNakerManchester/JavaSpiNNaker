@@ -27,7 +27,7 @@ import com.google.errorprone.annotations.Immutable;
 /**
  * Holding case for a CoreLocation (X, Y and P) and the recording region ID.
  *
- * @author Christian
+ * @author Christian-B
  */
 @Immutable
 public final class RegionLocation
@@ -44,19 +44,19 @@ public final class RegionLocation
 	@ValidP
 	public final int p;
 
-	/** The recording Region. */
+	/** The recording region ID. */
 	public final int region;
 
 	/** Precalculated hashcode. */
 	private final int hashcode;
 
 	/**
-	 * Creates the Region based on a Core and a region.
+	 * Creates the region based on a core and a region.
 	 *
 	 * @param core
-	 *            The Core to use
+	 *            The core to use
 	 * @param region
-	 *            The Region to use.
+	 *            The ID of the region to use.
 	 */
 	public RegionLocation(HasCoreLocation core, int region) {
 		x = core.getX();
