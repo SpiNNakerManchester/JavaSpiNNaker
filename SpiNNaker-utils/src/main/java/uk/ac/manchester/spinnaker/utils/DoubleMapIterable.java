@@ -29,7 +29,6 @@ import java.util.Map;
  *            Class of the Object to be supplied by the final Iterator.
  */
 public final class DoubleMapIterable<V> implements MappableIterable<V> {
-
 	private final Iterable<? extends Map<?, V>> outer;
 
 	/**
@@ -56,5 +55,4 @@ public final class DoubleMapIterable<V> implements MappableIterable<V> {
 	public Iterator<V> iterator() {
 		return new DoubleMapIterator<>(outer);
 	}
-
 }

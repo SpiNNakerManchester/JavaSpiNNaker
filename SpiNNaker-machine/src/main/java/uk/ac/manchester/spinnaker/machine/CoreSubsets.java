@@ -27,7 +27,7 @@ import java.util.TreeMap;
 
 import javax.validation.Valid;
 
-import uk.ac.manchester.spinnaker.utils.DoubleMapIterator;
+import uk.ac.manchester.spinnaker.utils.DoubleMapIterable;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
@@ -343,7 +343,7 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 
 	@Override
 	public Iterator<CoreLocation> iterator() {
-		return new DoubleMapIterator<>(locations);
+		return new DoubleMapIterable<>(locations).iterator();
 	}
 
 	/**
