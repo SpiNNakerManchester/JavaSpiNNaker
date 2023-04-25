@@ -83,13 +83,13 @@ loadScripts(document, 'script');</script>
 <tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.machine.bean">uk.ac.manchester.spinnaker.machine.bean</a></th>
 <td class="colLast">
-<div class="block">Beans to describes a SpiNNaker machine.</div>
+<div class="block">Beans used to describe a SpiNNaker machine in JSON.</div>
 </td>
 </tr>
 <tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.machine.datalinks">uk.ac.manchester.spinnaker.machine.datalinks</a></th>
 <td class="colLast">
-<div class="block">Describes a datalink.</div>
+<div class="block">Describes a data link.</div>
 </td>
 </tr>
 </tbody>
@@ -145,14 +145,14 @@ loadScripts(document, 'script');</script>
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></span></code></th>
 <td class="colLast">
-<div class="block">The location of a Chip as an X and Y tuple.</div>
+<div class="block">The location of a <a href="../Chip.html" title="class in uk.ac.manchester.spinnaker.machine"><code>Chip</code></a> as an X and Y tuple.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a></span></code></th>
 <td class="colLast">
-<div class="block">The location of a Core as an X, Y, P tuple.</div>
+<div class="block">The location of a <a href="../Processor.html" title="class in uk.ac.manchester.spinnaker.machine"><code>Processor</code></a> on a <a href="../Chip.html" title="class in uk.ac.manchester.spinnaker.machine"><code>Chip</code></a> as an X, Y, P tuple.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -180,7 +180,7 @@ loadScripts(document, 'script');</script>
 <td class="colFirst"><code><a href="../Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Machine.</span><code><span class="memberNameLink"><a href="../Machine.html#getChipAt(uk.ac.manchester.spinnaker.machine.HasChipLocation)">getChipAt</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;location)</code></th>
 <td class="colLast">
-<div class="block">Get the chip at a specific (x, y) location.</div>
+<div class="block">Get the chip at a specific <em>(x, y)</em> location.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -188,7 +188,7 @@ loadScripts(document, 'script');</script>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Machine.</span><code><span class="memberNameLink"><a href="../Machine.html#getChipOverLink(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.Direction)">getChipOverLink</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;source,
 <a href="../Direction.html" title="enum in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;direction)</code></th>
 <td class="colLast">
-<div class="block">Get the existing Chip over the given link.</div>
+<div class="block">Get the existing chip over the given link.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -242,7 +242,7 @@ int&nbsp;height)</code></th>
 <td class="colFirst"><code>default boolean</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">HasChipLocation.</span><code><span class="memberNameLink"><a href="../HasChipLocation.html#onSameChipAs(uk.ac.manchester.spinnaker.machine.HasChipLocation)">onSameChipAs</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;other)</code></th>
 <td class="colLast">
-<div class="block">Check if two locations are colocated at the chip level.</div>
+<div class="block">Check if two locations are co-located at the chip level.</div>
 </td>
 </tr>
 </tbody>
@@ -300,7 +300,7 @@ int&nbsp;nAvailableMulticastEntries,
 <a href="../bean/ChipDetails.html" title="class in uk.ac.manchester.spinnaker.machine.bean">ChipDetails</a>&nbsp;details,
 <a href="../Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine)</code></th>
 <td class="colLast">
-<div class="block">Creates a new Router from this source with links in all but the missing
+<div class="block">Creates a new router from this source with links in all but the missing
  directions.</div>
 </td>
 </tr>

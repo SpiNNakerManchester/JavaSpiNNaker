@@ -161,8 +161,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="LinkBean.html" title="class in uk.ac.manchester.spinnaker.machine.bean">LinkBean</a>&gt;&nbsp;links,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;deadLinks)</code></th>
 <td class="colLast">
-<div class="block">Creates a Chip Details bean with the required fields leaving optional
- ones form setters.</div>
+<div class="block">Make an instance.</div>
 </td>
 </tr>
 </tbody>
@@ -280,18 +279,18 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="LinkBean.html" title="class in uk.ac.manchester.spinnaker.machine.bean">LinkBean</a>&gt;&nbsp;links,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;deadLinks)</span>
             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a></span></div>
-<div class="block">Creates a Chip Details bean with the required fields leaving optional
- ones form setters.</div>
+<div class="block">Make an instance.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>cores</code> - Total number of cores working cores including monitors.</dd>
-<dd><code>ipAddress</code> - the ipAddress to set</dd>
-<dd><code>ethernet</code> - Location of the nearest Ethernet Chip.</dd>
+<dd><code>ipAddress</code> - the IP address to set</dd>
+<dd><code>ethernet</code> - Location of the nearest Ethernet-enabled chip.</dd>
 <dd><code>links</code> - Description of link information (only present when the links
             are not a complete default set).</dd>
-<dd><code>deadLinks</code> - the deadLinks to set</dd>
+<dd><code>deadLinks</code> - the dead links of the chip</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a></code> - If the ipAddress can not be converted to an InetAddress</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a></code> - If the <code>ipAddress</code> can not be converted to an
+             <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink"><code>InetAddress</code></a></dd>
 </dl>
 </section>
 </li>
@@ -321,7 +320,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></span>&nbsp;<span class="memberName">getEthernet</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the ethernet</dd>
+<dd>the location of the board's Ethernet-enabled chip</dd>
 </dl>
 </section>
 </li>
@@ -331,7 +330,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a></span>&nbsp;<span class="memberName">getIpAddress</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the ipAddress</dd>
+<dd>the IP address</dd>
 </dl>
 </section>
 </li>
@@ -341,7 +340,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="../Direction.html" title="enum in uk.ac.manchester.spinnaker.machine">Direction</a>&gt;</span>&nbsp;<span class="memberName">getDeadDirections</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the deadLinks</dd>
+<dd>the dead links of the chip</dd>
 </dl>
 </section>
 </li>

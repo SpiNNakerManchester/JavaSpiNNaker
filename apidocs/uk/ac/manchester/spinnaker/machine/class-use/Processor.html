@@ -118,7 +118,7 @@ loadScripts(document, 'script');</script>
 <td class="colFirst"><code>static <a href="../Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Processor.</span><code><span class="memberNameLink"><a href="../Processor.html#factory(int)">factory</a></span>&#8203;(int&nbsp;processorId)</code></th>
 <td class="colLast">
-<div class="block">Obtain a non-monitor Processor object for this ID.</div>
+<div class="block">Obtain a non-monitor processor object for this ID.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -126,7 +126,7 @@ loadScripts(document, 'script');</script>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Processor.</span><code><span class="memberNameLink"><a href="../Processor.html#factory(int,boolean)">factory</a></span>&#8203;(int&nbsp;processorId,
 boolean&nbsp;isMonitor)</code></th>
 <td class="colLast">
-<div class="block">Obtain a Processor object for this ID which could be a monitor.</div>
+<div class="block">Obtain a processor object for this ID, which could be a monitor.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -136,7 +136,7 @@ int&nbsp;clockSpeed,
 int&nbsp;dtcmAvailable,
 boolean&nbsp;isMonitor)</code></th>
 <td class="colLast">
-<div class="block">Obtain a Processor object for this ID and with these properties.</div>
+<div class="block">Obtain a processor for this ID and with these properties.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -150,7 +150,7 @@ boolean&nbsp;isMonitor)</code></th>
 <td class="colFirst"><code><a href="../Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Chip.</span><code><span class="memberNameLink"><a href="../Chip.html#getUserProcessor(int)">getUserProcessor</a></span>&#8203;(int&nbsp;processorId)</code></th>
 <td class="colLast">
-<div class="block">Obtains the User Processor with this ID, or returns <code>null</code>.</div>
+<div class="block">Obtains the user processor with this ID, or returns <code>null</code>.</div>
 </td>
 </tr>
 </tbody>
@@ -171,14 +171,14 @@ boolean&nbsp;isMonitor)</code></th>
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Chip.</span><code><span class="memberNameLink"><a href="../Chip.html#allProcessors()">allProcessors</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Return a list off all the Processors on this Chip</div>
+<div class="block">Return a list off all the processors on this chip.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Chip.</span><code><span class="memberNameLink"><a href="../Chip.html#userProcessors()">userProcessors</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Return a view over the User Processors on this Chip</div>
+<div class="block">Return a view over the user processors on this chip.</div>
 </td>
 </tr>
 </tbody>
@@ -243,7 +243,7 @@ int&nbsp;sdram,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;ipAddress,
 <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;nearestEthernet)</code></th>
 <td class="colLast">
-<div class="block">Constructor for a Chip with the non-default processors.</div>
+<div class="block">Constructor for a chip with non-default processors.</div>
 </td>
 </tr>
 </tbody>

@@ -125,7 +125,7 @@ loadScripts(document, 'script');</script>
 <tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.machine.bean">uk.ac.manchester.spinnaker.machine.bean</a></th>
 <td class="colLast">
-<div class="block">Beans to describes a SpiNNaker machine.</div>
+<div class="block">Beans used to describe a SpiNNaker machine in JSON.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -137,7 +137,7 @@ loadScripts(document, 'script');</script>
 <tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.machine.datalinks">uk.ac.manchester.spinnaker.machine.datalinks</a></th>
 <td class="colLast">
-<div class="block">Describes a datalink.</div>
+<div class="block">Describes a data link.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -553,7 +553,8 @@ loadScripts(document, 'script');</script>
 <td class="colFirst"><code><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Chip.</span><code><span class="memberNameLink"><a href="../Chip.html#nearestEthernet">nearestEthernet</a></span></code></th>
 <td class="colLast">
-<div class="block">The nearest Ethernet coordinates, or <code>null</code> if none known.</div>
+<div class="block">The nearest Ethernet-enabled chip coordinates, or <code>null</code> if none
+ known.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -576,7 +577,7 @@ loadScripts(document, 'script');</script>
 <th class="colSecond" scope="row"><span class="typeNameLabel">ChipLocation.</span><code><span class="memberNameLink"><a href="../ChipLocation.html#ZERO_ZERO">ZERO_ZERO</a></span></code></th>
 <td class="colLast">
 <div class="block">The location (0,0), which is in the bottom/left corner and typically the
- ethernet chip for the lead board of an allocation.</div>
+ Ethernet-enabled chip for the lead board of an allocation.</div>
 </td>
 </tr>
 </tbody>
@@ -660,8 +661,8 @@ int&nbsp;height)</code></th>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Machine.</span><code><span class="memberNameLink"><a href="../Machine.html#normalizedLocation(int,int)">normalizedLocation</a></span>&#8203;(int&nbsp;x,
 int&nbsp;y)</code></th>
 <td class="colLast">
-<div class="block">Converts x and y to a chip location, if required (and applicable)
- adjusting for wrap around.</div>
+<div class="block">Converts <em>x</em> and <em>y</em> to a chip location, if required (and
+ applicable) adjusting for wrap around.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -698,21 +699,21 @@ int&nbsp;y)</code></th>
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Machine.</span><code><span class="memberNameLink"><a href="../Machine.html#chipCoordinates()">chipCoordinates</a></span>()</code></th>
 <td class="colLast">
-<div class="block">A Set of all the Locations of the Chips.</div>
+<div class="block">A set of all the locations of the chips in this machine.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/SortedMap.html?is-external=true" title="class or interface in java.util" class="externalLink">SortedMap</a>&lt;<a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>,&#8203;<a href="../Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Machine.</span><code><span class="memberNameLink"><a href="../Machine.html#chipsMap()">chipsMap</a></span>()</code></th>
 <td class="colLast">
-<div class="block">An unmodifiable view over the map from ChipLocations to Chips.</div>
+<div class="block">An unmodifiable view over the map from locations to chips.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Machine.</span><code><span class="memberNameLink"><a href="../Machine.html#findAbnormalChips()">findAbnormalChips</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Returns a list of the abnormal Chips that are recommended for removal.</div>
+<div class="block">Returns a list of the abnormal chips that are recommended for removal.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -726,8 +727,8 @@ int&nbsp;y)</code></th>
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">CoreSubsets.</span><code><span class="memberNameLink"><a href="../CoreSubsets.html#getChips()">getChips</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Returns the ChipLocations for which there is at least one CoreLocations
- in the Subsets.</div>
+<div class="block">Returns the <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine"><code>ChipLocation</code></a>s for which there is at least one
+ <a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine"><code>CoreLocation</code></a> in the subsets.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -811,14 +812,14 @@ int&nbsp;p)</code></th>
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">CoreSubsets.</span><code><span class="memberNameLink"><a href="../CoreSubsets.html#coreByChip(uk.ac.manchester.spinnaker.machine.ChipLocation)">coreByChip</a></span>&#8203;(<a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">
-<div class="block">Provides the CoreLocations for just a single Chip.</div>
+<div class="block">Provides the <a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine"><code>CoreLocation</code></a>s for just a single chip.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code><a href="../Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Machine.</span><code><span class="memberNameLink"><a href="../Machine.html#getChipAt(uk.ac.manchester.spinnaker.machine.ChipLocation)">getChipAt</a></span>&#8203;(<a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;location)</code></th>
 <td class="colLast">
-<div class="block">Get the chip at a specific (x, y) location.</div>
+<div class="block">Get the chip at a specific <em>(x, y)</em> location.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -855,7 +856,7 @@ int&nbsp;p)</code></th>
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">CoreSubsets.</span><code><span class="memberNameLink"><a href="../CoreSubsets.html#pByChip(uk.ac.manchester.spinnaker.machine.ChipLocation)">pByChip</a></span>&#8203;(<a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">
-<div class="block">Provides the processor identifiers for just a single Chip.</div>
+<div class="block">Provides the processor identifiers for just a single chip.</div>
 </td>
 </tr>
 </tbody>
@@ -939,7 +940,7 @@ int&nbsp;sdram,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;ipAddress,
 <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;nearestEthernet)</code></th>
 <td class="colLast">
-<div class="block">Constructor for a Chip with the non-default processors.</div>
+<div class="block">Constructor for a chip with non-default processors.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -948,7 +949,7 @@ int&nbsp;sdram,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;ipAddress,
 <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;nearestEthernet)</code></th>
 <td class="colLast">
-<div class="block">Constructor for a Chip with the default processors.</div>
+<div class="block">Constructor for a chip with the default processors.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -1090,8 +1091,7 @@ int&nbsp;sdram,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../bean/LinkBean.html" title="class in uk.ac.manchester.spinnaker.machine.bean">LinkBean</a>&gt;&nbsp;links,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;deadLinks)</code></th>
 <td class="colLast">
-<div class="block">Creates a Chip Details bean with the required fields leaving optional
- ones form setters.</div>
+<div class="block">Make an instance.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -1102,7 +1102,7 @@ int&nbsp;width,
 <a href="../bean/ChipResources.html" title="class in uk.ac.manchester.spinnaker.machine.bean">ChipResources</a>&nbsp;standardResources,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../bean/ChipBean.html" title="class in uk.ac.manchester.spinnaker.machine.bean">ChipBean</a>&gt;&nbsp;chips)</code></th>
 <td class="colLast">
-<div class="block">Main Constructor that sets all values.</div>
+<div class="block">Make an instance.</div>
 </td>
 </tr>
 </tbody>
@@ -1158,7 +1158,7 @@ int&nbsp;width,
 <td class="colFirst"><code><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">AbstractDataLink.</span><code><span class="memberNameLink"><a href="../datalinks/AbstractDataLink.html#location">location</a></span></code></th>
 <td class="colLast">
-<div class="block">Coordinates of the location/Chip being linked to.</div>
+<div class="block">Coordinates of the location/chip being linked to.</div>
 </td>
 </tr>
 </tbody>

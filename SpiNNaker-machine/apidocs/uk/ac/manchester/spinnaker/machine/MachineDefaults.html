@@ -124,7 +124,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#COORD_SHIFT">COORD_SHIFT</a></span></code></th>
 <td class="colLast">
-<div class="block">Width of field of hashcode for holding (one dimension of the) chip
+<div class="block">Width of field of hash code for holding (one dimension of the) chip
  coordinate.</div>
 </td>
 </tr>
@@ -132,7 +132,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#CORE_SHIFT">CORE_SHIFT</a></span></code></th>
 <td class="colLast">
-<div class="block">Width of field of hashcode for holding processor ID.</div>
+<div class="block">Width of field of hash code for holding processor ID.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -209,7 +209,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#REGION_SHIFT">REGION_SHIFT</a></span></code></th>
 <td class="colLast">
-<div class="block">Width of field of hashcode for holding region ID.</div>
+<div class="block">Width of field of hash code for holding region ID.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -244,14 +244,14 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#TRIAD_HEIGHT">TRIAD_HEIGHT</a></span></code></th>
 <td class="colLast">
-<div class="block">The height of only known Triad in chips.</div>
+<div class="block">The height of only known triad in chips.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#TRIAD_WIDTH">TRIAD_WIDTH</a></span></code></th>
 <td class="colLast">
-<div class="block">The width of the Triad in chips.</div>
+<div class="block">The width of the triad in chips.</div>
 </td>
 </tr>
 </tbody>
@@ -282,8 +282,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#validateChipLocation(int,int)">validateChipLocation</a></span>&#8203;(int&nbsp;x,
 int&nbsp;y)</code></th>
 <td class="colLast">
-<div class="block">Checks the x and y parameter are legal ones regardless of the type of
- machine.</div>
+<div class="block">Checks the X and Y coordinate parameters are legal ones regardless of the
+ type of machine.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i1">
@@ -292,8 +292,8 @@ int&nbsp;y)</code></th>
 int&nbsp;y,
 int&nbsp;p)</code></th>
 <td class="colLast">
-<div class="block">Checks the x, y and p, parameter are legal ones regardless of the type of
- machine.</div>
+<div class="block">Checks the X, Y, and P coordinate parameters are legal ones regardless of
+ the type of machine.</div>
 </td>
 </tr>
 </tbody>
@@ -432,7 +432,7 @@ int&nbsp;p)</code></th>
 <section class="detail">
 <h3><a id="TRIAD_HEIGHT">TRIAD_HEIGHT</a></h3>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">TRIAD_HEIGHT</span></div>
-<div class="block">The height of only known Triad in chips. Spalloc arranges boards in
+<div class="block">The height of only known triad in chips. Spalloc arranges boards in
  groups of three &mdash; triads &mdash; that tile out to form a large
  machine.</div>
 <dl>
@@ -445,7 +445,7 @@ int&nbsp;p)</code></th>
 <section class="detail">
 <h3><a id="TRIAD_WIDTH">TRIAD_WIDTH</a></h3>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">TRIAD_WIDTH</span></div>
-<div class="block">The width of the Triad in chips. Spalloc arranges boards in groups of
+<div class="block">The width of the triad in chips. Spalloc arranges boards in groups of
  three &mdash; triads &mdash; that tile out to form a large machine.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -479,7 +479,7 @@ int&nbsp;p)</code></th>
 <section class="detail">
 <h3><a id="COORD_SHIFT">COORD_SHIFT</a></h3>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">COORD_SHIFT</span></div>
-<div class="block">Width of field of hashcode for holding (one dimension of the) chip
+<div class="block">Width of field of hash code for holding (one dimension of the) chip
  coordinate.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -502,7 +502,7 @@ int&nbsp;p)</code></th>
 <section class="detail">
 <h3><a id="CORE_SHIFT">CORE_SHIFT</a></h3>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">CORE_SHIFT</span></div>
-<div class="block">Width of field of hashcode for holding processor ID.</div>
+<div class="block">Width of field of hash code for holding processor ID.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../../constant-values.html#uk.ac.manchester.spinnaker.machine.MachineDefaults.CORE_SHIFT">Constant Field Values</a></dd>
@@ -513,7 +513,7 @@ int&nbsp;p)</code></th>
 <section class="detail">
 <h3><a id="REGION_SHIFT">REGION_SHIFT</a></h3>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">REGION_SHIFT</span></div>
-<div class="block">Width of field of hashcode for holding region ID.</div>
+<div class="block">Width of field of hash code for holding region ID.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../../constant-values.html#uk.ac.manchester.spinnaker.machine.MachineDefaults.REGION_SHIFT">Constant Field Values</a></dd>
@@ -543,14 +543,15 @@ int&nbsp;p)</code></th>
 <div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">validateChipLocation</span>&#8203;(<span class="arguments">int&nbsp;x,
 int&nbsp;y)</span>
                                  throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></span></div>
-<div class="block">Checks the x and y parameter are legal ones regardless of the type of
- machine.</div>
+<div class="block">Checks the X and Y coordinate parameters are legal ones regardless of the
+ type of machine.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>x</code> - X part of the chips location</dd>
-<dd><code>y</code> - Y part of the chips location</dd>
+<dd><code>x</code> - X coordinate of the chips location</dd>
+<dd><code>y</code> - Y coordinate of the chips location</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - Thrown is either x or y is negative or too big.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - Thrown if either <em>x</em> or <em>y</em> is negative or too
+             big.</dd>
 </dl>
 </section>
 </li>
@@ -561,15 +562,16 @@ int&nbsp;y)</span>
 int&nbsp;y,
 int&nbsp;p)</span>
                                  throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></span></div>
-<div class="block">Checks the x, y and p, parameter are legal ones regardless of the type of
- machine.</div>
+<div class="block">Checks the X, Y, and P coordinate parameters are legal ones regardless of
+ the type of machine.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>x</code> - X part of the core/chip's location</dd>
-<dd><code>y</code> - Y part of the core/chip's location</dd>
-<dd><code>p</code> - P part of the core's location</dd>
+<dd><code>x</code> - X coordinate of the core/chip's location</dd>
+<dd><code>y</code> - Y coordinate of the core/chip's location</dd>
+<dd><code>p</code> - P coordinate of the core's location</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - Thrown is x, y or p are negative or too big.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - Thrown if <em>x</em>, <em>y</em>, or <em>p</em> are negative
+             or too big.</dd>
 </dl>
 </section>
 </li>

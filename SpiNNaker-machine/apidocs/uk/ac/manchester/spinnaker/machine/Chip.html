@@ -133,14 +133,15 @@ implements <a href="HasChipLocation.html" title="interface in uk.ac.manchester.s
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#ipAddress">ipAddress</a></span></code></th>
 <td class="colLast">
-<div class="block">The IP address of the chip or None if no Ethernet attached.</div>
+<div class="block">The IP address of the chip or <code>null</code> if no Ethernet attached.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#nearestEthernet">nearestEthernet</a></span></code></th>
 <td class="colLast">
-<div class="block">The nearest Ethernet coordinates, or <code>null</code> if none known.</div>
+<div class="block">The nearest Ethernet-enabled chip coordinates, or <code>null</code> if none
+ known.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -208,7 +209,7 @@ int&nbsp;sdram,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;ipAddress,
 <a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;nearestEthernet)</code></th>
 <td class="colLast">
-<div class="block">Constructor for a Chip with the non-default processors.</div>
+<div class="block">Constructor for a chip with non-default processors.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -217,7 +218,7 @@ int&nbsp;sdram,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;ipAddress,
 <a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;nearestEthernet)</code></th>
 <td class="colLast">
-<div class="block">Constructor for a Chip with the default processors.</div>
+<div class="block">Constructor for a chip with the default processors.</div>
 </td>
 </tr>
 </tbody>
@@ -247,7 +248,7 @@ int&nbsp;sdram,
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#allProcessors()">allProcessors</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Return a list off all the Processors on this Chip</div>
+<div class="block">Return a list off all the processors on this chip.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i1">
@@ -261,7 +262,7 @@ int&nbsp;sdram,
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#difference(uk.ac.manchester.spinnaker.machine.Chip)">difference</a></span>&#8203;(<a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a>&nbsp;other)</code></th>
 <td class="colLast">
-<div class="block">Describes one difference found between this machine and another machine.</div>
+<div class="block">Describes one difference found between this chip and another chip.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i3">
@@ -279,13 +280,15 @@ int&nbsp;sdram,
 <tr class="rowColor" id="i5">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getTagIds()">getTagIds</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Get the IDs of the tags of the chip.</div>
+</td>
 </tr>
 <tr class="altColor" id="i6">
 <td class="colFirst"><code><a href="Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getUserProcessor(int)">getUserProcessor</a></span>&#8203;(int&nbsp;processorId)</code></th>
 <td class="colLast">
-<div class="block">Obtains the User Processor with this ID, or returns <code>null</code>.</div>
+<div class="block">Obtains the user processor with this ID, or returns <code>null</code>.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i7">
@@ -333,7 +336,7 @@ int&nbsp;sdram,
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#userProcessors()">userProcessors</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Return a view over the User Processors on this Chip</div>
+<div class="block">Return a view over the user processors on this chip.</div>
 </td>
 </tr>
 </tbody>
@@ -381,7 +384,7 @@ int&nbsp;sdram,
 <section class="detail">
 <h3><a id="ipAddress">ipAddress</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a></span>&nbsp;<span class="memberName">ipAddress</span></div>
-<div class="block">The IP address of the chip or None if no Ethernet attached.</div>
+<div class="block">The IP address of the chip or <code>null</code> if no Ethernet attached.</div>
 </section>
 </li>
 <li class="blockList">
@@ -389,7 +392,8 @@ int&nbsp;sdram,
 <h3><a id="nearestEthernet">nearestEthernet</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
 </span><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></span>&nbsp;<span class="memberName">nearestEthernet</span></div>
-<div class="block">The nearest Ethernet coordinates, or <code>null</code> if none known.</div>
+<div class="block">The nearest Ethernet-enabled chip coordinates, or <code>null</code> if none
+ known. ("Nearest" here means "on the same board".)</div>
 </section>
 </li>
 </ul>
@@ -415,20 +419,21 @@ int&nbsp;sdram,
 <div class="block">Main constructor which sets all parameters.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>location</code> - The x and y coordinates of the chip's position in the
+<dd><code>location</code> - The coordinates of the chip's position in the
             two-dimensional grid of chips.</dd>
 <dd><code>processors</code> - An iterable of processor objects.</dd>
 <dd><code>router</code> - A router for the chip.</dd>
 <dd><code>sdram</code> - The size of the SDRAM.</dd>
-<dd><code>ipAddress</code> - The IP address of the chip or <code>null</code> if no Ethernet
-            attached.</dd>
+<dd><code>ipAddress</code> - The IP address of the chip's Ethernet connection, or
+            <code>null</code> if no Ethernet attached.</dd>
 <dd><code>tagIds</code> - List of SDP identifiers available. Can be empty to force
-            empty. If <code>null</code>, will use the default list for Ethernet
-            Chips and empty for non-ethernet Chips</dd>
-<dd><code>nearestEthernet</code> - The nearest Ethernet coordinates or <code>null</code> if none
-            known.</dd>
+            empty. If <code>null</code>, will use the default list for
+            Ethernet-enabled chips and empty for non-Ethernet-enabled
+            chips</dd>
+<dd><code>nearestEthernet</code> - The nearest Ethernet-enabled chip coordinates or <code>null</code>
+            if none known.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - Thrown if multiple chips share the same id.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - Thrown if multiple chips share the same ID.</dd>
 </dl>
 </section>
 </li>
@@ -444,19 +449,19 @@ int&nbsp;sdram,
 <div class="block">Constructor which fills in some default values.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>location</code> - The x and y coordinates of the chip's position in the
+<dd><code>location</code> - The coordinates of the chip's position in the
             two-dimensional grid of chips.</dd>
 <dd><code>processors</code> - An iterable of processor objects.</dd>
 <dd><code>router</code> - A router for the chip.</dd>
 <dd><code>sdram</code> - The size of the SDRAM.</dd>
-<dd><code>ipAddress</code> - The IP address of the chip or <code>null</code> if no Ethernet
-            attached.</dd>
-<dd><code>nearestEthernet</code> - The nearest Ethernet coordinates or <code>null</code> if none
-            known.</dd>
+<dd><code>ipAddress</code> - The IP address of the chip's attached Ethernet connection, or
+            <code>null</code> if no Ethernet attached.</dd>
+<dd><code>nearestEthernet</code> - The nearest Ethernet-enabled chip coordinates, or <code>null</code>
+            if none known.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - Thrown if multiple Links share the same
-             <code>sourceLinkDirection</code>. Thrown if multiple chips share
-             the same id.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - Thrown if multiple links share the same
+             <code>sourceLinkDirection</code>, or if multiple chips share
+             the same ID.</dd>
 </dl>
 </section>
 </li>
@@ -468,12 +473,10 @@ int&nbsp;sdram,
 <a href="Router.html" title="class in uk.ac.manchester.spinnaker.machine">Router</a>&nbsp;router,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;ipAddress,
 <a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;nearestEthernet)</span></div>
-<div class="block">Constructor for a Chip with the non-default processors.
- <p>
- Creates the Router on the fly based on the links.</div>
+<div class="block">Constructor for a chip with non-default processors.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>location</code> - The x and y coordinates of the chip's position in the
+<dd><code>location</code> - The coordinates of the chip's position in the
             two-dimensional grid of chips.</dd>
 <dd><code>processors</code> - An iterable of processor objects.</dd>
 <dd><code>router</code> - A router for the chip.</dd>
@@ -494,20 +497,18 @@ int&nbsp;sdram,
 <a href="Router.html" title="class in uk.ac.manchester.spinnaker.machine">Router</a>&nbsp;router,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;ipAddress,
 <a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;nearestEthernet)</span></div>
-<div class="block">Constructor for a Chip with the default processors.
- <p>
- Creates the Router on the fly based on the links.</div>
+<div class="block">Constructor for a chip with the default processors.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>location</code> - The x and y coordinates of the chip's position in the
-            two-dimensional grid of chips.</dd>
+<dd><code>location</code> - The coordinates of the chip's position in the two-dimensional
+            grid of chips.</dd>
 <dd><code>router</code> - A router for the chip.</dd>
 <dd><code>ipAddress</code> - The IP address of the chip or <code>null</code> if no Ethernet
             attached.</dd>
-<dd><code>nearestEthernet</code> - The nearest Ethernet coordinates or <code>null</code> if none
-            known.</dd>
+<dd><code>nearestEthernet</code> - The nearest Ethernet-connected chip's coordinates or
+            <code>null</code> if none known.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - Indicates another Link with this <code>sourceLinkDirection</code>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - Indicates another link with this <code>sourceLinkDirection</code>
              has already been added.</dd>
 </dl>
 </section>
@@ -542,7 +543,7 @@ int&nbsp;sdram,
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="HasChipLocation.html#getY()">getY</a></code>&nbsp;in interface&nbsp;<code><a href="HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The X coordinate of the chip.</dd>
+<dd>The Y coordinate of the chip.</dd>
 </dl>
 </section>
 </li>
@@ -566,11 +567,11 @@ int&nbsp;sdram,
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">hasUserProcessor</span>&#8203;(<span class="arguments">int&nbsp;processorId)</span></div>
 <div class="block">Determines if a user processor with the given ID exists in the chip.
  <p>
- Warning: If a Monitor processor exists with this ID this method will
- return false.</div>
+ <strong>Warning:</strong> If a monitor processor exists with this ID,
+ this method will return <code>false</code>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>processorId</code> - Id of the potential processor.</dd>
+<dd><code>processorId</code> - ID of the potential processor.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>True if and only if there is a user processor for this ID.</dd>
 </dl>
@@ -580,15 +581,15 @@ int&nbsp;sdram,
 <section class="detail">
 <h3><a id="getUserProcessor(int)">getUserProcessor</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a></span>&nbsp;<span class="memberName">getUserProcessor</span>&#8203;(<span class="arguments">int&nbsp;processorId)</span></div>
-<div class="block">Obtains the User Processor with this ID, or returns <code>null</code>.
+<div class="block">Obtains the user processor with this ID, or returns <code>null</code>.
  <p>
  This method will only check user processors so will return <code>null</code>
- even if a monitor processor exists with this id.</div>
+ even if a monitor processor exists with this ID.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>processorId</code> - Id of the potential processor.</dd>
+<dd><code>processorId</code> - ID of the potential processor.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The Processor or <code>null</code> if not is found.</dd>
+<dd>The processor, or <code>null</code> if not is found.</dd>
 </dl>
 </section>
 </li>
@@ -596,15 +597,14 @@ int&nbsp;sdram,
 <section class="detail">
 <h3><a id="allProcessors()">allProcessors</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a>&gt;</span>&nbsp;<span class="memberName">allProcessors</span>()</div>
-<div class="block">Return a list off all the Processors on this Chip
- <p>
+<div class="block">Return a list off all the processors on this chip.
  This method will check both the user and monitor processors.
  <p>
- The Processors will be ordered by ProcessorID which are guaranteed to all
+ The processors will be ordered by their ID, which are guaranteed to all
  be different.
  <p>
  The current implementation builds a new list on the fly so this list is
- mutable without affecting the Chip. Future implementations could return
+ mutable without affecting the chip. Future implementations could return
  an unmodifiable list.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -616,16 +616,15 @@ int&nbsp;sdram,
 <section class="detail">
 <h3><a id="userProcessors()">userProcessors</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a>&gt;</span>&nbsp;<span class="memberName">userProcessors</span>()</div>
-<div class="block">Return a view over the User Processors on this Chip
- <p>
- Monitor processors are not included so every Processor in the list is
+<div class="block">Return a view over the user processors on this chip.
+ Monitor processors are not included so every processor in the list is
  guaranteed to have the property <code>isMonitor == false</code>!
  <p>
- The Processors will be ordered by ProcessorID which are guaranteed to all
+ The processors will be ordered by their ID, which are guaranteed to all
  be different.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>A unmodifiable View over the processors.</dd>
+<dd>A unmodifiable view over the processors.</dd>
 </dl>
 </section>
 </li>
@@ -636,7 +635,7 @@ int&nbsp;sdram,
 <div class="block">The total number of processors.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The size of the Processor Collection</dd>
+<dd>The size of the processor collection.</dd>
 </dl>
 </section>
 </li>
@@ -661,7 +660,7 @@ int&nbsp;sdram,
 <div class="block">Get the first processor in the list which is not a monitor core.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>A Processor</dd>
+<dd>A processor</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/NoSuchElementException.html?is-external=true" title="class or interface in java.util" class="externalLink">NoSuchElementException</a></code> - If all the Processor(s) are monitors.</dd>
 </dl>
@@ -671,9 +670,10 @@ int&nbsp;sdram,
 <section class="detail">
 <h3><a id="getTagIds()">getTagIds</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</span>&nbsp;<span class="memberName">getTagIds</span>()</div>
+<div class="block">Get the IDs of the tags of the chip.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the tagIds</dd>
+<dd>the tag IDs</dd>
 </dl>
 </section>
 </li>
@@ -711,15 +711,12 @@ int&nbsp;sdram,
 <section class="detail">
 <h3><a id="difference(uk.ac.manchester.spinnaker.machine.Chip)">difference</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">difference</span>&#8203;(<span class="arguments"><a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a>&nbsp;other)</span></div>
-<div class="block">Describes one difference found between this machine and another machine.
- <p>
+<div class="block">Describes one difference found between this chip and another chip.
  This method will always return <code>null</code> if no difference is found
- between the two machines. So semantically is the same as Equals except
- that this works if other is a super class of machine in which case only
- the share variables are compared.
+ between the two machines.
  <p>
- This method returns as soon as it has found a difference so there may be
- other not specified differences.
+ This method returns as soon as it has found a difference; there may be
+ other unspecified differences.
  <p>
  <strong>Warning:</strong> This method could change over time, so there is
  no implied guarantee to the order that variables are checked or to the

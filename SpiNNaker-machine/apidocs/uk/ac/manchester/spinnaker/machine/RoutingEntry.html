@@ -159,7 +159,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#encode()">encode</a></span>()</code></th>
 <td class="colLast">
-<div class="block">gets the Entry as a single word.</div>
+<div class="block">Gets the entry as a single word.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i1">
@@ -173,7 +173,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getProcessorIDs()">getProcessorIDs</a></span>()</code></th>
 <td class="colLast">
-<div class="block">The ID/Directions of the links that this entry routes to.</div>
+<div class="block">The ID/directions of the links that this entry routes to.</div>
 </td>
 </tr>
 </tbody>
@@ -219,7 +219,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>processorIDs</code> - The IDs of the processors that this entry routes to. The
             Duplicate IDs are ignored.</dd>
-<dd><code>linkIDs</code> - The IDs of the links that this entry routes to. The Duplicate
+<dd><code>linkIDs</code> - The IDs of the links that this entry routes to. The duplicate
             IDs are ignored.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If a bad processor ID is given (i.e., one that doesn't match
@@ -241,7 +241,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="encode()">encode</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">encode</span>()</div>
-<div class="block">gets the Entry as a single word.</div>
+<div class="block">Gets the entry as a single word.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The word-encoded form of the routing entry.</dd>
@@ -254,12 +254,12 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="Direction.html" title="enum in uk.ac.manchester.spinnaker.machine">Direction</a>&gt;</span>&nbsp;<span class="memberName">getLinkIDs</span>()</div>
 <div class="block">The IDs of the processors that this entry routes to.
  <p>
- If the RoutingEntry was created from its encoded form and unmodified
- after that, the list is guaranteed to be sorted in natural order and
- contain no duplicates.</div>
+ If the <code>RoutingEntry</code> was created from its encoded form and
+ unmodified after that, the list is guaranteed to be sorted in natural
+ order and contain no duplicates.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>An unmodifiable over the processor IDs.</dd>
+<dd>An unmodifiable collection over the processor IDs.</dd>
 </dl>
 </section>
 </li>
@@ -267,11 +267,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="getProcessorIDs()">getProcessorIDs</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</span>&nbsp;<span class="memberName">getProcessorIDs</span>()</div>
-<div class="block">The ID/Directions of the links that this entry routes to.
+<div class="block">The ID/directions of the links that this entry routes to.
  <p>
- If the RoutingEntry was created from its encoded form and unmodified
- after that, the list is guaranteed to be sorted in natural order and
- contain no duplicates.</div>
+ If the <code>RoutingEntry</code> was created from its encoded form and
+ unmodified after that, the list is guaranteed to be sorted in natural
+ order and contain no duplicates.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>An unmodifiable view over the link IDs in natural order.</dd>

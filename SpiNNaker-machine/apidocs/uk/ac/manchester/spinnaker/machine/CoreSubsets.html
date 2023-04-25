@@ -99,7 +99,9 @@ loadScripts(document, 'script');</script>
 <pre>public final class <span class="typeNameLabel">CoreSubsets</span>
 extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>
 implements <a href="https://spinnakermanchester.github.io/SpiNNaker-utils/apidocs/uk/ac/manchester/spinnaker/utils/MappableIterable.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.utils" class="externalLink">MappableIterable</a>&lt;<a href="CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&gt;</pre>
-<div class="block">Represents a set of of <a href="CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine"><code>CoreLocation</code></a>s organized by Chip.</div>
+<div class="block">Represents a set of of <a href="CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine"><code>CoreLocation</code></a>s organised by chip. Each chip
+ location conceptually has a subset of cores that are members of this overall
+ <code>CoreSubsets</code>.</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
 <dd>Christian-B</dd>
@@ -173,7 +175,7 @@ implements <a href="https://spinnakermanchester.github.io/SpiNNaker-utils/apidoc
 int&nbsp;y,
 int&nbsp;p)</code></th>
 <td class="colLast">
-<div class="block">Adds the Core Location, creating a new subset if required.</div>
+<div class="block">Adds the core location, creating a new subset if required.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i1">
@@ -188,7 +190,7 @@ int&nbsp;p)</code></th>
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#addCore(uk.ac.manchester.spinnaker.machine.CoreLocation)">addCore</a></span>&#8203;(<a href="CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&nbsp;core)</code></th>
 <td class="colLast">
-<div class="block">Adds the Core Location.</div>
+<div class="block">Adds the core Location.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i3">
@@ -219,7 +221,7 @@ int&nbsp;y,
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#coreByChip(uk.ac.manchester.spinnaker.machine.ChipLocation)">coreByChip</a></span>&#8203;(<a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">
-<div class="block">Provides the CoreLocations for just a single Chip.</div>
+<div class="block">Provides the <a href="CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine"><code>CoreLocation</code></a>s for just a single chip.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i7">
@@ -233,22 +235,23 @@ int&nbsp;y,
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getChips()">getChips</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Returns the ChipLocations for which there is at least one CoreLocations
- in the Subsets.</div>
+<div class="block">Returns the <a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine"><code>ChipLocation</code></a>s for which there is at least one
+ <a href="CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine"><code>CoreLocation</code></a> in the subsets.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i9">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#hashCode()">hashCode</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Generate a hashcode for these subsets.</div>
+<div class="block">Generate a hash-code for these subsets.</div>
 </td>
 </tr>
 <tr class="altColor" id="i10">
 <td class="colFirst"><code><a href="CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#intersection(uk.ac.manchester.spinnaker.machine.CoreSubsets)">intersection</a></span>&#8203;(<a href="CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;other)</code></th>
 <td class="colLast">
-<div class="block">Returns a new CoreSubsets which is an intersect of this and the other.</div>
+<div class="block">Returns a new <code>CoreSubsets</code> which is an intersect of this and the
+ other.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i11">
@@ -263,7 +266,7 @@ int&nbsp;y,
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isCore(uk.ac.manchester.spinnaker.machine.CoreLocation)">isCore</a></span>&#8203;(<a href="CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&nbsp;core)</code></th>
 <td class="colLast">
 <div class="block">Determine if there is a chip with coordinates (x, y) in the subset, which
- has a core with the given id in the subset.</div>
+ has a core with the given ID in the subset.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i13">
@@ -282,7 +285,7 @@ int&nbsp;y,
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#pByChip(uk.ac.manchester.spinnaker.machine.ChipLocation)">pByChip</a></span>&#8203;(<a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">
-<div class="block">Provides the processor identifiers for just a single Chip.</div>
+<div class="block">Provides the processor identifiers for just a single chip.</div>
 </td>
 </tr>
 <tr class="altColor" id="i16">
@@ -372,16 +375,16 @@ int&nbsp;y,
 <section class="detail">
 <h3><a id="addCore(uk.ac.manchester.spinnaker.machine.CoreLocation)">addCore</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">addCore</span>&#8203;(<span class="arguments"><a href="CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&nbsp;core)</span></div>
-<div class="block">Adds the Core Location.
+<div class="block">Adds the core Location.
  <p>
- This method uses set semantics so attempts to add a Core/Processor that
+ This method uses set semantics so attempts to add a core/processor that
  is already in the subset are silently ignored.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>core</code> - Location (x, y, p) to add.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If the subsets have been set immutable. For example because a
-             hashcode has been generated,</dd>
+             hash-code has been generated,</dd>
 </dl>
 </section>
 </li>
@@ -391,18 +394,18 @@ int&nbsp;y,
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">addCore</span>&#8203;(<span class="arguments">int&nbsp;x,
 int&nbsp;y,
 int&nbsp;p)</span></div>
-<div class="block">Adds the Core Location, creating a new subset if required.
+<div class="block">Adds the core location, creating a new subset if required.
  <p>
- This method uses set semantics so attempts to add a Core/Processor that
+ This method uses set semantics so attempts to add a core/processor that
  is already in the subset are silently ignored.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>x</code> - x coordinate of chip</dd>
-<dd><code>y</code> - y coordinate of chip</dd>
-<dd><code>p</code> - p coordinate/ processor id</dd>
+<dd><code>x</code> - X coordinate of chip</dd>
+<dd><code>y</code> - Y coordinate of chip</dd>
+<dd><code>p</code> - P coordinate/ processor ID</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If the subsets have been set immutable. For example because a
-             hashcode has been generated,</dd>
+             hash-code has been generated,</dd>
 </dl>
 </section>
 </li>
@@ -413,12 +416,12 @@ int&nbsp;p)</span></div>
 int&nbsp;p)</span></div>
 <div class="block">Adds the processor for this chip, creating a new subset if required.
  <p>
- This method uses set semantics so attempts to add a Core/Processor that
+ This method uses set semantics so attempts to add a core/processor that
  is already in the subset are silently ignored.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>chip</code> - Chip key of CoreSubset to add to.</dd>
-<dd><code>p</code> - p coordinate/ processor id.</dd>
+<dd><code>p</code> - P coordinate/ processor ID.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If the subsets have been set immutable. For example because a
              hashcode has been generated,</dd>
@@ -432,7 +435,7 @@ int&nbsp;p)</span></div>
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors)</span></div>
 <div class="block">Adds the processors for this chip, creating a new subset if required.
  <p>
- This method uses set semantics so attempts to add a Core/Processor that
+ This method uses set semantics so attempts to add a core/processor that
  is already in the subset are silently ignored.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -440,7 +443,7 @@ int&nbsp;p)</span></div>
 <dd><code>processors</code> - p coordinates/ processor IDs.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If the subsets have been set immutable. For example because a
-             hashcode has been generated,</dd>
+             hash-code has been generated,</dd>
 </dl>
 </section>
 </li>
@@ -452,7 +455,7 @@ int&nbsp;y,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors)</span></div>
 <div class="block">Adds the processors for this chip, creating a new subset if required.
  <p>
- This method uses set semantics so attempts to add a Core/Processor that
+ This method uses set semantics so attempts to add a core/processor that
  is already in the subset are silently ignored.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -461,7 +464,7 @@ int&nbsp;y,
 <dd><code>processors</code> - p coordinates/ processor IDs.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If the subsets have been set immutable. For example because a
-             hashcode has been generated,</dd>
+             hash-code has been generated,</dd>
 </dl>
 </section>
 </li>
@@ -471,7 +474,7 @@ int&nbsp;y,
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">addCores</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&gt;&nbsp;locations)</span></div>
 <div class="block">Adds the locations into this one.
  <p>
- This method uses set semantics so attempts to add a Core/Processor that
+ This method uses set semantics so attempts to add a core/processor that
  is already in the subset are silently ignored.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -486,7 +489,7 @@ int&nbsp;y,
 <div class="block">The total number of processors that are in these core subsets.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The sum of the individual CoreSubset sizes.</dd>
+<dd>The sum of the individual subset sizes.</dd>
 </dl>
 </section>
 </li>
@@ -497,7 +500,7 @@ int&nbsp;y,
 <div class="block">Whether there are any processors in these core subsets.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd><code>true</code> when the core subsets are empty.</dd>
+<dd><code>true</code> when all the subsets are empty.</dd>
 </dl>
 </section>
 </li>
@@ -507,7 +510,7 @@ int&nbsp;y,
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">isChip</span>&#8203;(<span class="arguments"><a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;chip)</span></div>
 <div class="block">Determine if the chip with coordinates (x, y) is in the subset.
  <p>
- Note: An empty subset mapped to the Chip is ignored.</div>
+ <strong>Note:</strong> An empty subset mapped to the chip is ignored.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>chip</code> - Coordinates to check</dd>
@@ -521,7 +524,7 @@ int&nbsp;y,
 <h3><a id="isCore(uk.ac.manchester.spinnaker.machine.CoreLocation)">isCore</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">isCore</span>&#8203;(<span class="arguments"><a href="CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&nbsp;core)</span></div>
 <div class="block">Determine if there is a chip with coordinates (x, y) in the subset, which
- has a core with the given id in the subset.</div>
+ has a core with the given ID in the subset.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>core</code> - x, y and p coordinates</dd>
@@ -534,19 +537,19 @@ int&nbsp;y,
 <section class="detail">
 <h3><a id="hashCode()">hashCode</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">hashCode</span>()</div>
-<div class="block">Generate a hashcode for these subsets.
+<div class="block">Generate a hash-code for these subsets.
  <p>
- Two CoreSubsets that have the same subsets (and are therefore considered
- equals) will generate the same hashcode.
+ Two <code>CoreSubsets</code> that have the same subsets (and are therefore
+ considered equals) will generate the same hash-code.
  <p>
- To guarantee consistency over time, once a hashcode is requested the
- CoreSubsets and all its subsets will be made immutable and any further
- add calls will raise an exception.</div>
+ To guarantee consistency over time, once a hash-code is requested the
+ <code>CoreSubsets</code> and all its subsets will be made immutable and any
+ further add calls will raise an exception.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>integer to use as the hashcode.</dd>
+<dd>integer to use as the hash-code.</dd>
 </dl>
 </section>
 </li>
@@ -564,10 +567,10 @@ int&nbsp;y,
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>obj</code> - Other Object to compare to.</dd>
+<dd><code>obj</code> - Other object to compare to.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>True if and only if <code>obj</code> is another CoreSubsets with
-         exactly the same subsets.</dd>
+<dd>True if and only if <code>obj</code> is another <code>CoreSubsets</code>
+         with exactly the same subsets.</dd>
 </dl>
 </section>
 </li>
@@ -585,13 +588,14 @@ int&nbsp;y,
 <section class="detail">
 <h3><a id="intersection(uk.ac.manchester.spinnaker.machine.CoreSubsets)">intersection</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a></span>&nbsp;<span class="memberName">intersection</span>&#8203;(<span class="arguments"><a href="CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;other)</span></div>
-<div class="block">Returns a new CoreSubsets which is an intersect of this and the other.</div>
+<div class="block">Returns a new <code>CoreSubsets</code> which is an intersect of this and the
+ other.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>other</code> - A second CoreSubsets with possibly overlapping cores.</dd>
+<dd><code>other</code> - A second <code>CoreSubsets</code> with possibly overlapping cores.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>A new CoreSubsets object with only the cores present in both.
-         Therefore the result may be empty.</dd>
+<dd>A new <code>CoreSubsets</code> object with only the cores present in
+         both. Therefore the result may be empty.</dd>
 </dl>
 </section>
 </li>
@@ -599,8 +603,8 @@ int&nbsp;y,
 <section class="detail">
 <h3><a id="getChips()">getChips</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&gt;</span>&nbsp;<span class="memberName">getChips</span>()</div>
-<div class="block">Returns the ChipLocations for which there is at least one CoreLocations
- in the Subsets.
+<div class="block">Returns the <a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine"><code>ChipLocation</code></a>s for which there is at least one
+ <a href="CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine"><code>CoreLocation</code></a> in the subsets.
  <p>
  The order of the locations is guaranteed to be the natural order.</div>
 <dl>
@@ -623,7 +627,7 @@ int&nbsp;y,
 <section class="detail">
 <h3><a id="coreByChip(uk.ac.manchester.spinnaker.machine.ChipLocation)">coreByChip</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&gt;</span>&nbsp;<span class="memberName">coreByChip</span>&#8203;(<span class="arguments"><a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;chip)</span></div>
-<div class="block">Provides the CoreLocations for just a single Chip.
+<div class="block">Provides the <a href="CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine"><code>CoreLocation</code></a>s for just a single chip.
  <p>
  This will be an empty list when <a href="#isChip(uk.ac.manchester.spinnaker.machine.ChipLocation)"><code>isChip(ChipLocation)</code></a> returns
  <code>false</code>.</div>
@@ -639,7 +643,7 @@ int&nbsp;y,
 <section class="detail">
 <h3><a id="pByChip(uk.ac.manchester.spinnaker.machine.ChipLocation)">pByChip</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</span>&nbsp;<span class="memberName">pByChip</span>&#8203;(<span class="arguments"><a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;chip)</span></div>
-<div class="block">Provides the processor identifiers for just a single Chip.
+<div class="block">Provides the processor identifiers for just a single chip.
  <p>
  This will be an empty list when <a href="#isChip(uk.ac.manchester.spinnaker.machine.ChipLocation)"><code>isChip(ChipLocation)</code></a> returns
  <code>false</code>.</div>

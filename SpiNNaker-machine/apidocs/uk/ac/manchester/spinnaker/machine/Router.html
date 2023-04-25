@@ -156,39 +156,39 @@ implements <a href="https://spinnakermanchester.github.io/SpiNNaker-utils/apidoc
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E()">Router</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Default Constructor to add links later using default values.</div>
+<div class="block">Default constructor allowing links to be added later.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(int)">Router</a></span>&#8203;(int&nbsp;nAvailableMulticastEntries)</code></th>
 <td class="colLast">
-<div class="block">Default Constructor to add links later.</div>
+<div class="block">Default constructor allowing links to be added later.</div>
 </td>
 </tr>
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.Iterable)">Router</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="Link.html" title="class in uk.ac.manchester.spinnaker.machine">Link</a>&gt;&nbsp;links)</code></th>
 <td class="colLast">
-<div class="block">Pass through Constructor that uses default values.</div>
+<div class="block">Pass-through constructor that uses default values.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.Iterable,int)">Router</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="Link.html" title="class in uk.ac.manchester.spinnaker.machine">Link</a>&gt;&nbsp;links,
 int&nbsp;nAvailableMulticastEntries)</code></th>
 <td class="colLast">
-<div class="block">Main Constructor that allows setting of all values.</div>
+<div class="block">Main constructor that allows setting of all values.</div>
 </td>
 </tr>
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.util.stream.Stream)">Router</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;<a href="Link.html" title="class in uk.ac.manchester.spinnaker.machine">Link</a>&gt;&nbsp;links)</code></th>
 <td class="colLast">
-<div class="block">Pass through Constructor that uses default values.</div>
+<div class="block">Pass-through constructor that uses default values.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.util.stream.Stream,int)">Router</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;<a href="Link.html" title="class in uk.ac.manchester.spinnaker.machine">Link</a>&gt;&nbsp;links,
 int&nbsp;nAvailableMulticastEntries)</code></th>
 <td class="colLast">
-<div class="block">Main Constructor that allows setting of all values.</div>
+<div class="block">Main constructor that allows setting of all values.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -197,7 +197,7 @@ int&nbsp;nAvailableMulticastEntries,
 <a href="bean/ChipDetails.html" title="class in uk.ac.manchester.spinnaker.machine.bean">ChipDetails</a>&nbsp;details,
 <a href="Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine)</code></th>
 <td class="colLast">
-<div class="block">Creates a new Router from this source with links in all but the missing
+<div class="block">Creates a new router from this source with links in all but the missing
  directions.</div>
 </td>
 </tr>
@@ -240,7 +240,7 @@ int&nbsp;nAvailableMulticastEntries,
 <td class="colFirst"><code><a href="Link.html" title="class in uk.ac.manchester.spinnaker.machine">Link</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getLink(uk.ac.manchester.spinnaker.machine.Direction)">getLink</a></span>&#8203;(<a href="Direction.html" title="enum in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;direction)</code></th>
 <td class="colLast">
-<div class="block">Obtains a Link going in this direction.</div>
+<div class="block">Obtains a link going in this direction.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i3">
@@ -252,7 +252,7 @@ int&nbsp;nAvailableMulticastEntries,
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#hasLink(uk.ac.manchester.spinnaker.machine.Direction)">hasLink</a></span>&#8203;(<a href="Direction.html" title="enum in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;direction)</code></th>
 <td class="colLast">
-<div class="block">Indicates if there is a Link going in this direction.</div>
+<div class="block">Indicates if there is a link going in this direction.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i5">
@@ -271,7 +271,7 @@ int&nbsp;nAvailableMulticastEntries,
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="Link.html" title="class in uk.ac.manchester.spinnaker.machine">Link</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#links()">links</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Return a View over the links.</div>
+<div class="block">Return a view over the links.</div>
 </td>
 </tr>
 <tr class="altColor" id="i8">
@@ -285,7 +285,7 @@ int&nbsp;nAvailableMulticastEntries,
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#size()">size</a></span>()</code></th>
 <td class="colLast">
-<div class="block">The size of the Router which is the number of Link(s).</div>
+<div class="block">The size of the router which is the number of link(s) it has.</div>
 </td>
 </tr>
 <tr class="altColor" id="i10">
@@ -353,7 +353,7 @@ int&nbsp;nAvailableMulticastEntries,
 <section class="detail">
 <h3><a id="&lt;init&gt;(int)">Router</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">Router</span>&#8203;(<span class="arguments">int&nbsp;nAvailableMulticastEntries)</span></div>
-<div class="block">Default Constructor to add links later.</div>
+<div class="block">Default constructor allowing links to be added later.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>nAvailableMulticastEntries</code> - The number of entries available in the routing table.</dd>
@@ -364,7 +364,8 @@ int&nbsp;nAvailableMulticastEntries,
 <section class="detail">
 <h3><a id="&lt;init&gt;()">Router</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">Router</span>()</div>
-<div class="block">Default Constructor to add links later using default values.</div>
+<div class="block">Default constructor allowing links to be added later. The router will be
+ of standard size.</div>
 </section>
 </li>
 <li class="blockList">
@@ -373,10 +374,10 @@ int&nbsp;nAvailableMulticastEntries,
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">Router</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="Link.html" title="class in uk.ac.manchester.spinnaker.machine">Link</a>&gt;&nbsp;links,
 int&nbsp;nAvailableMulticastEntries)</span>
        throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></span></div>
-<div class="block">Main Constructor that allows setting of all values.</div>
+<div class="block">Main constructor that allows setting of all values.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>links</code> - Known Link(s) to add. All must have unique
+<dd><code>links</code> - Known link(s) to add. All must have unique
             <code>sourceLinkDirection</code>(s).</dd>
 <dd><code>nAvailableMulticastEntries</code> - The number of entries available in the routing table.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -391,10 +392,10 @@ int&nbsp;nAvailableMulticastEntries)</span>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">Router</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;<a href="Link.html" title="class in uk.ac.manchester.spinnaker.machine">Link</a>&gt;&nbsp;links,
 int&nbsp;nAvailableMulticastEntries)</span>
        throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></span></div>
-<div class="block">Main Constructor that allows setting of all values.</div>
+<div class="block">Main constructor that allows setting of all values.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>links</code> - Known Link(s) to add. All must have unique
+<dd><code>links</code> - Known link(s) to add. All must have unique
             <code>sourceLinkDirection</code>(s).</dd>
 <dd><code>nAvailableMulticastEntries</code> - The number of entries available in the routing table.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -408,10 +409,10 @@ int&nbsp;nAvailableMulticastEntries)</span>
 <h3><a id="&lt;init&gt;(java.lang.Iterable)">Router</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">Router</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="Link.html" title="class in uk.ac.manchester.spinnaker.machine">Link</a>&gt;&nbsp;links)</span>
        throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></span></div>
-<div class="block">Pass through Constructor that uses default values.</div>
+<div class="block">Pass-through constructor that uses default values.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>links</code> - Known Link(s) to add. All must have unique
+<dd><code>links</code> - Known link(s) to add. All must have unique
             <code>sourceLinkDirection</code>(s).</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - Indicates that there are two Links with the same
@@ -424,7 +425,7 @@ int&nbsp;nAvailableMulticastEntries)</span>
 <h3><a id="&lt;init&gt;(java.util.stream.Stream)">Router</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">Router</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;<a href="Link.html" title="class in uk.ac.manchester.spinnaker.machine">Link</a>&gt;&nbsp;links)</span>
        throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></span></div>
-<div class="block">Pass through Constructor that uses default values.</div>
+<div class="block">Pass-through constructor that uses default values.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>links</code> - Known Link(s) to add. All must have unique
@@ -442,7 +443,7 @@ int&nbsp;nAvailableMulticastEntries)</span>
 int&nbsp;nAvailableMulticastEntries,
 <a href="bean/ChipDetails.html" title="class in uk.ac.manchester.spinnaker.machine.bean">ChipDetails</a>&nbsp;details,
 <a href="Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine)</span></div>
-<div class="block">Creates a new Router from this source with links in all but the missing
+<div class="block">Creates a new router from this source with links in all but the missing
  directions. Used to build a router object from JSON.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -486,7 +487,7 @@ int&nbsp;nAvailableMulticastEntries,
 <section class="detail">
 <h3><a id="hasLink(uk.ac.manchester.spinnaker.machine.Direction)">hasLink</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">hasLink</span>&#8203;(<span class="arguments"><a href="Direction.html" title="enum in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;direction)</span></div>
-<div class="block">Indicates if there is a Link going in this direction.</div>
+<div class="block">Indicates if there is a link going in this direction.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>direction</code> - Direction to find link for.</dd>
@@ -499,7 +500,7 @@ int&nbsp;nAvailableMulticastEntries,
 <section class="detail">
 <h3><a id="getLink(uk.ac.manchester.spinnaker.machine.Direction)">getLink</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="Link.html" title="class in uk.ac.manchester.spinnaker.machine">Link</a></span>&nbsp;<span class="memberName">getLink</span>&#8203;(<span class="arguments"><a href="Direction.html" title="enum in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;direction)</span></div>
-<div class="block">Obtains a Link going in this direction.
+<div class="block">Obtains a link going in this direction.
  <p>
  <code>null</code> is returned if no link found.</div>
 <dl>
@@ -514,9 +515,9 @@ int&nbsp;nAvailableMulticastEntries,
 <section class="detail">
 <h3><a id="links()">links</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="Link.html" title="class in uk.ac.manchester.spinnaker.machine">Link</a>&gt;</span>&nbsp;<span class="memberName">links</span>()</div>
-<div class="block">Return a View over the links.
+<div class="block">Return a view over the links.
  <p>
- Each Link is guaranteed to differ in at least the
+ Each link is guaranteed to differ in at least the
  <code>sourceLinkDirection</code>.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -528,10 +529,10 @@ int&nbsp;nAvailableMulticastEntries,
 <section class="detail">
 <h3><a id="size()">size</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">size</span>()</div>
-<div class="block">The size of the Router which is the number of Link(s).
+<div class="block">The size of the router which is the number of link(s) it has.
  <p>
- The number of NeighbouringChipsCoords will always be equal to the number
- of links.</div>
+ The number of neighbouring chip coordinates will always be equal to the
+ number of links.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The number of Link(s) and therefore NeighbouringChipsCoords</dd>
@@ -544,7 +545,7 @@ int&nbsp;nAvailableMulticastEntries,
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;<a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&gt;</span>&nbsp;<span class="memberName">streamNeighbouringChipsCoords</span>()</div>
 <div class="block">Stream of the destinations of each link.
  <p>
- There will be exactly one destination for each Link. While normally all
+ There will be exactly one destination for each link. While normally all
  destinations will be unique the is no guarantee.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -558,11 +559,11 @@ int&nbsp;nAvailableMulticastEntries,
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://spinnakermanchester.github.io/SpiNNaker-utils/apidocs/uk/ac/manchester/spinnaker/utils/MappableIterable.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.utils" class="externalLink">MappableIterable</a>&lt;<a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&gt;</span>&nbsp;<span class="memberName">iterNeighbouringChipsCoords</span>()</div>
 <div class="block">Iterable over the destinations of each link.
  <p>
- There will be exactly one destination for each Link. While normally all
+ There will be exactly one destination for each link. While normally all
  destinations will be unique the is no guarantee.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>A Stream over the destination locations.</dd>
+<dd>The destination locations.</dd>
 </dl>
 </section>
 </li>

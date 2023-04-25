@@ -101,7 +101,9 @@ loadScripts(document, 'script');</script>
 <pre>public final class <span class="typeNameLabel">IPTag</span>
 extends <a href="Tag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">Tag</a></pre>
 <div class="block">Used to hold data that is contained within an IP tag. IP tags allow data to
- flow at runtime from SpiNNaker to the outside world.</div>
+ flow at runtime from SpiNNaker to the outside world via UDP packets. Those
+ UDP packets may have an SDP header, or that may be removed; this is one of
+ the configuration options for the tag.</div>
 </section>
 <section class="summary">
 <ul class="blockList">

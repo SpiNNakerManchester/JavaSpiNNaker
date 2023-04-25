@@ -144,14 +144,14 @@ implements <a href="https://spinnakermanchester.github.io/SpiNNaker-utils/apidoc
 <td class="colFirst"><code><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="MachineDimensions.html" title="class in uk.ac.manchester.spinnaker.machine">MachineDimensions</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#machineDimensions">machineDimensions</a></span></code></th>
 <td class="colLast">
-<div class="block">Size of the machine along the x and y axes in Chips.</div>
+<div class="block">Size of the machine along the X and Y axes, in chips.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code><a href="MachineVersion.html" title="enum in uk.ac.manchester.spinnaker.machine">MachineVersion</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#version">version</a></span></code></th>
 <td class="colLast">
-<div class="block">The version of the Machine based on its height and Width.</div>
+<div class="block">The version of the machine based on its height and width.</div>
 </td>
 </tr>
 </tbody>
@@ -178,7 +178,7 @@ implements <a href="https://spinnakermanchester.github.io/SpiNNaker-utils/apidoc
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.bean.MachineBean)">Machine</a></span>&#8203;(<a href="bean/MachineBean.html" title="class in uk.ac.manchester.spinnaker.machine.bean">MachineBean</a>&nbsp;bean)</code></th>
 <td class="colLast">
-<div class="block">Creates a Machine from a Bean.</div>
+<div class="block">Creates a machine from a (serializable) descriptor.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -260,7 +260,7 @@ implements <a href="https://spinnakermanchester.github.io/SpiNNaker-utils/apidoc
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#chipCoordinates()">chipCoordinates</a></span>()</code></th>
 <td class="colLast">
-<div class="block">A Set of all the Locations of the Chips.</div>
+<div class="block">A set of all the locations of the chips in this machine.</div>
 </td>
 </tr>
 <tr class="altColor" id="i6">
@@ -274,14 +274,14 @@ implements <a href="https://spinnakermanchester.github.io/SpiNNaker-utils/apidoc
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#chips()">chips</a></span>()</code></th>
 <td class="colLast">
-<div class="block">The chips in the machine.</div>
+<div class="block">Get the chips in the machine.</div>
 </td>
 </tr>
 <tr class="altColor" id="i8">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/SortedMap.html?is-external=true" title="class or interface in java.util" class="externalLink">SortedMap</a>&lt;<a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>,&#8203;<a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#chipsMap()">chipsMap</a></span>()</code></th>
 <td class="colLast">
-<div class="block">An unmodifiable view over the map from ChipLocations to Chips.</div>
+<div class="block">An unmodifiable view over the map from locations to chips.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i9">
@@ -307,14 +307,14 @@ implements <a href="https://spinnakermanchester.github.io/SpiNNaker-utils/apidoc
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#ethernetConnectedChips()">ethernetConnectedChips</a></span>()</code></th>
 <td class="colLast">
-<div class="block">The chips in the machine that have an Ethernet connection.</div>
+<div class="block">The chips in the machine that have control over an Ethernet connection.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i13">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findAbnormalChips()">findAbnormalChips</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Returns a list of the abnormal Chips that are recommended for removal.</div>
+<div class="block">Returns a list of the abnormal chips that are recommended for removal.</div>
 </td>
 </tr>
 <tr class="altColor" id="i14">
@@ -343,21 +343,21 @@ implements <a href="https://spinnakermanchester.github.io/SpiNNaker-utils/apidoc
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getChipAt(int,int)">getChipAt</a></span>&#8203;(int&nbsp;x,
 int&nbsp;y)</code></th>
 <td class="colLast">
-<div class="block">Get the chip at a specific (x, y) location.</div>
+<div class="block">Get the chip at a specific <em>(x, y)</em> location.</div>
 </td>
 </tr>
 <tr class="altColor" id="i18">
 <td class="colFirst"><code><a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getChipAt(uk.ac.manchester.spinnaker.machine.ChipLocation)">getChipAt</a></span>&#8203;(<a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;location)</code></th>
 <td class="colLast">
-<div class="block">Get the chip at a specific (x, y) location.</div>
+<div class="block">Get the chip at a specific <em>(x, y)</em> location.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i19">
 <td class="colFirst"><code><a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getChipAt(uk.ac.manchester.spinnaker.machine.HasChipLocation)">getChipAt</a></span>&#8203;(<a href="HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;location)</code></th>
 <td class="colLast">
-<div class="block">Get the chip at a specific (x, y) location.</div>
+<div class="block">Get the chip at a specific <em>(x, y)</em> location.</div>
 </td>
 </tr>
 <tr class="altColor" id="i20">
@@ -365,7 +365,7 @@ int&nbsp;y)</code></th>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getChipOverLink(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.Direction)">getChipOverLink</a></span>&#8203;(<a href="HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;source,
 <a href="Direction.html" title="enum in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;direction)</code></th>
 <td class="colLast">
-<div class="block">Get the existing Chip over the given link.</div>
+<div class="block">Get the existing chip over the given link.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i21">
@@ -382,14 +382,14 @@ int&nbsp;fpgaLinkId,
 <td class="colFirst"><code><a href="https://spinnakermanchester.github.io/SpiNNaker-utils/apidocs/uk/ac/manchester/spinnaker/utils/MappableIterable.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.utils" class="externalLink">MappableIterable</a>&lt;<a href="datalinks/FPGALinkData.html" title="class in uk.ac.manchester.spinnaker.machine.datalinks">FPGALinkData</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getFpgaLinks()">getFpgaLinks</a></span>()</code></th>
 <td class="colLast">
-<div class="block">An iterable over all the added FPGA link data items.</div>
+<div class="block">The added FPGA link data items.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i23">
 <td class="colFirst"><code><a href="https://spinnakermanchester.github.io/SpiNNaker-utils/apidocs/uk/ac/manchester/spinnaker/utils/MappableIterable.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.utils" class="externalLink">MappableIterable</a>&lt;<a href="datalinks/FPGALinkData.html" title="class in uk.ac.manchester.spinnaker.machine.datalinks">FPGALinkData</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getFpgaLinks(java.net.InetAddress)">getFpgaLinks</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;address)</code></th>
 <td class="colLast">
-<div class="block">An iterable over all the added FPGA link data items for this address.</div>
+<div class="block">The added FPGA link data items for the given address.</div>
 </td>
 </tr>
 <tr class="altColor" id="i24">
@@ -455,28 +455,28 @@ int&nbsp;y)</code></th>
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Iterator.html?is-external=true" title="class or interface in java.util" class="externalLink">Iterator</a>&lt;<a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#iterator()">iterator</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Returns an iterator over the Chips in this Machine.</div>
+<div class="block">Get an iterator over the chips in this machine.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i33">
 <td class="colFirst"><code><a href="https://spinnakermanchester.github.io/SpiNNaker-utils/apidocs/uk/ac/manchester/spinnaker/utils/MappableIterable.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.utils" class="externalLink">MappableIterable</a>&lt;<a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#iterChipsOnBoard(uk.ac.manchester.spinnaker.machine.Chip)">iterChipsOnBoard</a></span>&#8203;(<a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a>&nbsp;chip)</code></th>
 <td class="colLast">
-<div class="block">Iterable over the destinations of each link.</div>
+<div class="block">The chips on the same board as the given chip.</div>
 </td>
 </tr>
 <tr class="altColor" id="i34">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#maxChipX()">maxChipX</a></span>()</code></th>
 <td class="colLast">
-<div class="block">The maximum possible x-coordinate of any chip in the board.</div>
+<div class="block">The maximum possible X-coordinate of any chip in the board.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i35">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#maxChipY()">maxChipY</a></span>()</code></th>
 <td class="colLast">
-<div class="block">The maximum possible y-coordinate of any chip in the board.</div>
+<div class="block">The maximum possible Y-coordinate of any chip in the board.</div>
 </td>
 </tr>
 <tr class="altColor" id="i36">
@@ -490,7 +490,7 @@ int&nbsp;y)</code></th>
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#nChips()">nChips</a></span>()</code></th>
 <td class="colLast">
-<div class="block">The number of Chips on this Machine.</div>
+<div class="block">The number of chips on this machine.</div>
 </td>
 </tr>
 <tr class="altColor" id="i38">
@@ -498,8 +498,8 @@ int&nbsp;y)</code></th>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#normalizedLocation(int,int)">normalizedLocation</a></span>&#8203;(int&nbsp;x,
 int&nbsp;y)</code></th>
 <td class="colLast">
-<div class="block">Converts x and y to a chip location, if required (and applicable)
- adjusting for wrap around.</div>
+<div class="block">Converts <em>x</em> and <em>y</em> to a chip location, if required (and
+ applicable) adjusting for wrap around.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i39">
@@ -537,7 +537,7 @@ int&nbsp;y)</code></th>
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="datalinks/SpinnakerLinkData.html" title="class in uk.ac.manchester.spinnaker.machine.datalinks">SpinnakerLinkData</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#spinnakerLinks()">spinnakerLinks</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Collection of the spinnaker links on this machine.</div>
+<div class="block">Collection of the SpiNNaker links on this machine.</div>
 </td>
 </tr>
 <tr class="altColor" id="i44">
@@ -596,7 +596,7 @@ int&nbsp;y)</code></th>
 <h3><a id="machineDimensions">machineDimensions</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
 </span><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="MachineDimensions.html" title="class in uk.ac.manchester.spinnaker.machine">MachineDimensions</a></span>&nbsp;<span class="memberName">machineDimensions</span></div>
-<div class="block">Size of the machine along the x and y axes in Chips.</div>
+<div class="block">Size of the machine along the X and Y axes, in chips.</div>
 </section>
 </li>
 <li class="blockList">
@@ -611,7 +611,7 @@ int&nbsp;y)</code></th>
 <section class="detail">
 <h3><a id="version">version</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="MachineVersion.html" title="enum in uk.ac.manchester.spinnaker.machine">MachineVersion</a></span>&nbsp;<span class="memberName">version</span></div>
-<div class="block">The version of the Machine based on its height and Width.</div>
+<div class="block">The version of the machine based on its height and width.</div>
 </section>
 </li>
 </ul>
@@ -632,7 +632,7 @@ int&nbsp;y)</code></th>
 <div class="block">Creates an empty machine.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>machineDimensions</code> - Size of the machine along the x and y axes, in Chips.</dd>
+<dd><code>machineDimensions</code> - Size of the machine along the X and Y axes, in chips.</dd>
 <dd><code>boot</code> - The coordinates of the chip used to boot the machine.</dd>
 </dl>
 </section>
@@ -646,11 +646,12 @@ int&nbsp;y)</code></th>
 <div class="block">Creates a machine starting with the supplied chips.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>machineDimensions</code> - Size of the machine along the x and y axes, in Chips.</dd>
-<dd><code>chips</code> - An iterable of chips in the machine.</dd>
+<dd><code>machineDimensions</code> - Size of the machine along the X and Y axes, in chips.</dd>
+<dd><code>chips</code> - The chips in the machine.</dd>
 <dd><code>boot</code> - The coordinates of the chip used to boot the machine.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - On an attempt to add a second Chip with the same location.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - On an attempt to add a chip with a duplicate location of a
+             chip already in the machine.</dd>
 </dl>
 </section>
 </li>
@@ -658,10 +659,10 @@ int&nbsp;y)</code></th>
 <section class="detail">
 <h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.bean.MachineBean)">Machine</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">Machine</span>&#8203;(<span class="arguments"><a href="bean/MachineBean.html" title="class in uk.ac.manchester.spinnaker.machine.bean">MachineBean</a>&nbsp;bean)</span></div>
-<div class="block">Creates a Machine from a Bean.</div>
+<div class="block">Creates a machine from a (serializable) descriptor.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>bean</code> - Bean holding the Values to set.</dd>
+<dd><code>bean</code> - Descriptor holding the values to set.</dd>
 </dl>
 </section>
 </li>
@@ -681,20 +682,21 @@ int&nbsp;y)</code></th>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></span>&nbsp;<span class="memberName">rebuild</span>()</div>
 <div class="block">Provides a machine without abnormal chips or links.
  <p>
- This may be the original machine or it may be a shallow near copy.
+ This may be the original machine or it may be a shallow near-copy.
  <p>
- Once this method is run it is expected that the original Machine is no
- longer used. The original internal objects are reused whenever possible.
- Changes made to the original Machine may or may not effect the new
- Machine. This includes changes made to the chips, their routers or their
- processors.
+ Once this method is run it is expected that the original <a href="Machine.html" title="class in uk.ac.manchester.spinnaker.machine"><code>Machine</code></a>
+ is no longer used. The original internal objects are reused whenever
+ possible. Changes made to the original <a href="Machine.html" title="class in uk.ac.manchester.spinnaker.machine"><code>Machine</code></a> may or may not
+ effect the new <a href="Machine.html" title="class in uk.ac.manchester.spinnaker.machine"><code>Machine</code></a>. This includes changes made to the chips,
+ their routers or their processors.
  <p>
  For what makes up an abnormal link see <a href="#findAbnormalLinks()"><code>findAbnormalLinks()</code></a>.
  <p>
  For what makes up an abnormal chip see <a href="#findAbnormalChips()"><code>findAbnormalChips()</code></a>.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>A Machine (possibly the original one) without the abnormal bits.</dd>
+<dd>A <code>Machine</code> (possibly the original one) without the
+         abnormal bits.</dd>
 </dl>
 </section>
 </li>
@@ -707,23 +709,23 @@ int&nbsp;y)</code></th>
  <p>
  This may be the original machine or it may be a shallow near copy.
  <p>
- Once this method is run it is expected that the original Machine is no
- longer used. The original internal objects are reused whenever possible.
- Changes made to the original Machine may or may not effect the new
- Machine. This includes changes made to the chips, their routers or their
- processors.</div>
+ Once this method is run it is expected that the original <a href="Machine.html" title="class in uk.ac.manchester.spinnaker.machine"><code>Machine</code></a>
+ is no longer used. The original internal objects are reused whenever
+ possible. Changes made to the original <a href="Machine.html" title="class in uk.ac.manchester.spinnaker.machine"><code>Machine</code></a> may or may not
+ effect the new <a href="Machine.html" title="class in uk.ac.manchester.spinnaker.machine"><code>Machine</code></a>. This includes changes made to the chips,
+ their routers or their processors.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>ignoreChips</code> - The locations of the chips (if any) that should not be in the
-            rebuilt machine. Chips not specified to be ignore or not
+            rebuilt machine. Chips not specified to be ignored are not
             checked in any way. If this parameter is <code>null</code> the
             result of <a href="#findAbnormalLinks()"><code>findAbnormalLinks()</code></a> is used. If this
             parameter is empty it is ignored as are any location that do
             not represent a chip in the machine.</dd>
-<dd><code>ignoreLinks</code> - A mapping of Locations to Directions of links that should be
-            in the rebuilt machine. Links not specified to be ignored are
-            not checked in any way. If this parameter is <code>null</code> the
-            result of <a href="#findAbnormalChips()"><code>findAbnormalChips()</code></a> is used. If this
+<dd><code>ignoreLinks</code> - A mapping of locations to directions of links that should not
+            be in the rebuilt machine. Links not specified to be ignored
+            are not checked in any way. If this parameter is <code>null</code>
+            the result of <a href="#findAbnormalChips()"><code>findAbnormalChips()</code></a> is used. If this
             parameter is empty it is ignored as are any location that do
             not represent a chip in the machine, or direction that do not
             represent an existing link.</dd>
@@ -742,7 +744,8 @@ int&nbsp;y)</code></th>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>chip</code> - The chip to add to the machine.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - On an attempt to add a second Chip with the same location.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - On an attempt to add a chip with a duplicate location of a
+             chip already in the machine.</dd>
 </dl>
 </section>
 </li>
@@ -753,7 +756,10 @@ int&nbsp;y)</code></th>
 <div class="block">Add some chips to the machine.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>chips</code> - an iterable of chips.</dd>
+<dd><code>chips</code> - The chips to add.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - On an attempt to add a chip with a duplicate location of a
+             chip already in the machine.</dd>
 </dl>
 </section>
 </li>
@@ -761,12 +767,12 @@ int&nbsp;y)</code></th>
 <section class="detail">
 <h3><a id="chips()">chips</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a>&gt;</span>&nbsp;<span class="memberName">chips</span>()</div>
-<div class="block">The chips in the machine.
- <p>
- The Chips will be returned in the natural order of their ChipLocation.</div>
+<div class="block">Get the chips in the machine.
+ The chips will be returned in the natural order of their
+ <a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine"><code>ChipLocation</code></a>.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>An Unmodifiable Ordered Collection of the chips.</dd>
+<dd>An unmodifiable ordered collection of the chips.</dd>
 </dl>
 </section>
 </li>
@@ -774,14 +780,14 @@ int&nbsp;y)</code></th>
 <section class="detail">
 <h3><a id="iterator()">iterator</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Iterator.html?is-external=true" title="class or interface in java.util" class="externalLink">Iterator</a>&lt;<a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a>&gt;</span>&nbsp;<span class="memberName">iterator</span>()</div>
-<div class="block">Returns an iterator over the Chips in this Machine.
- <p>
- The Chips will be returned in the natural order of their ChipLocation.</div>
+<div class="block">Get an iterator over the chips in this machine.
+ The chips will be returned in the natural order of their
+ <a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine"><code>ChipLocation</code></a>.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true#iterator()" title="class or interface in java.lang" class="externalLink">iterator</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a>&gt;</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>An iterator over the Chips in this Machine.</dd>
+<dd>An iterator over the chips in this machine.</dd>
 </dl>
 </section>
 </li>
@@ -789,10 +795,10 @@ int&nbsp;y)</code></th>
 <section class="detail">
 <h3><a id="nChips()">nChips</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">nChips</span>()</div>
-<div class="block">The number of Chips on this Machine.</div>
+<div class="block">The number of chips on this machine.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The number of Chips on this Machine.</dd>
+<dd>The number of chips on this machine.</dd>
 </dl>
 </section>
 </li>
@@ -800,12 +806,11 @@ int&nbsp;y)</code></th>
 <section class="detail">
 <h3><a id="chipCoordinates()">chipCoordinates</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&gt;</span>&nbsp;<span class="memberName">chipCoordinates</span>()</div>
-<div class="block">A Set of all the Locations of the Chips.
- <p>
+<div class="block">A set of all the locations of the chips in this machine.
  This set is guaranteed to iterate in the natural order of the locations.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>(ordered) set of the locations of each chip in the Machine.</dd>
+<dd>The (ordered) set of the locations of each chip in the machine.</dd>
 </dl>
 </section>
 </li>
@@ -813,12 +818,11 @@ int&nbsp;y)</code></th>
 <section class="detail">
 <h3><a id="chipsMap()">chipsMap</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/SortedMap.html?is-external=true" title="class or interface in java.util" class="externalLink">SortedMap</a>&lt;<a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>,&#8203;<a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a>&gt;</span>&nbsp;<span class="memberName">chipsMap</span>()</div>
-<div class="block">An unmodifiable view over the map from ChipLocations to Chips.
- <p>
+<div class="block">An unmodifiable view over the map from locations to chips.
  This map is sorted by the natural order of the locations.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>An unmodifiable view over the map from ChipLocations to Chips.</dd>
+<dd>An unmodifiable view over the map from locations to chips.</dd>
 </dl>
 </section>
 </li>
@@ -826,15 +830,14 @@ int&nbsp;y)</code></th>
 <section class="detail">
 <h3><a id="getChipAt(uk.ac.manchester.spinnaker.machine.ChipLocation)">getChipAt</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></span>&nbsp;<span class="memberName">getChipAt</span>&#8203;(<span class="arguments"><a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;location)</span></div>
-<div class="block">Get the chip at a specific (x, y) location.
- <p>
+<div class="block">Get the chip at a specific <em>(x, y)</em> location.
  Will return <code>null</code> if <a href="#hasChipAt(uk.ac.manchester.spinnaker.machine.ChipLocation)"><code>hasChipAt</code></a>
  for the same location returns <code>false</code>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>location</code> - coordinates of the requested chip.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>A Chip or <code>null</code> if no Chip found at that location.</dd>
+<dd>A chip, or <code>null</code> if no chip found at that location.</dd>
 </dl>
 </section>
 </li>
@@ -842,15 +845,14 @@ int&nbsp;y)</code></th>
 <section class="detail">
 <h3><a id="getChipAt(uk.ac.manchester.spinnaker.machine.HasChipLocation)">getChipAt</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></span>&nbsp;<span class="memberName">getChipAt</span>&#8203;(<span class="arguments"><a href="HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;location)</span></div>
-<div class="block">Get the chip at a specific (x, y) location.
- <p>
+<div class="block">Get the chip at a specific <em>(x, y)</em> location.
  Will return <code>null</code> if <a href="#hasChipAt(uk.ac.manchester.spinnaker.machine.ChipLocation)"><code>hasChipAt</code></a>
  for the same location returns <code>false</code>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>location</code> - coordinates of the requested chip.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>A Chip or <code>null</code> if no Chip found at that location.</dd>
+<dd>A chip, or <code>null</code> if no chip found at that location.</dd>
 </dl>
 </section>
 </li>
@@ -859,18 +861,20 @@ int&nbsp;y)</code></th>
 <h3><a id="getChipAt(int,int)">getChipAt</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></span>&nbsp;<span class="memberName">getChipAt</span>&#8203;(<span class="arguments">int&nbsp;x,
 int&nbsp;y)</span></div>
-<div class="block">Get the chip at a specific (x, y) location.
+<div class="block">Get the chip at a specific <em>(x, y)</em> location.
  <p>
  Will return <code>null</code> if <a href="#hasChipAt(uk.ac.manchester.spinnaker.machine.ChipLocation)"><code>hasChipAt</code></a>
  for the same location returns <code>false</code>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>x</code> - The x-coordinate of the requested chip</dd>
-<dd><code>y</code> - The y-coordinate of the requested chip</dd>
+<dd><code>x</code> - The X-coordinate of the requested chip</dd>
+<dd><code>y</code> - The Y-coordinate of the requested chip</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>A Chip or <code>null</code> if no Chip found at that location.</dd>
+<dd>A chip, or <code>null</code> if no Chip found at that location.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - Thrown is either x or y is negative or too big.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - Thrown is either <em>x</em> or <em>y</em> is negative or too
+             big (see
+             <a href="MachineDefaults.html#validateChipLocation(int,int)"><code>MachineDefaults.validateChipLocation(int, int)</code></a>).</dd>
 </dl>
 </section>
 </li>
@@ -883,7 +887,7 @@ int&nbsp;y)</span></div>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>location</code> - coordinates of the requested chip.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>True if and only if the machine has a Chip at that location.</dd>
+<dd>True if and only if the machine has a chip at that location.</dd>
 </dl>
 </section>
 </li>
@@ -896,7 +900,7 @@ int&nbsp;y)</span></div>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>location</code> - coordinates of the requested chip.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>True if and only if the machine has a Chip at that location.</dd>
+<dd>True if and only if the machine has a chip at that location.</dd>
 </dl>
 </section>
 </li>
@@ -908,12 +912,14 @@ int&nbsp;y)</span></div>
 <div class="block">Determine if a chip exists at the given coordinates.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>x</code> - The x-coordinate of the requested chip</dd>
-<dd><code>y</code> - The y-coordinate of the requested chip</dd>
+<dd><code>x</code> - The X-coordinate of the requested chip</dd>
+<dd><code>y</code> - The Y-coordinate of the requested chip</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>True if and only if the machine has a Chip at that location.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - Thrown is either x or y is negative or too big.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - Thrown is either <em>x</em> or <em>y</em> is negative or too
+             big (see
+             <a href="MachineDefaults.html#validateChipLocation(int,int)"><code>MachineDefaults.validateChipLocation(int, int)</code></a>).</dd>
 </dl>
 </section>
 </li>
@@ -938,15 +944,14 @@ int&nbsp;y)</span></div>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></span>&nbsp;<span class="memberName">getLocationOverLink</span>&#8203;(<span class="arguments"><a href="HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;source,
 <a href="Direction.html" title="enum in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;direction)</span></div>
 <div class="block">Get the coordinates of a possible chip over the given link.
- <p>
  This method will take wrap-arounds into account if appropriate.
  <p>
- This method intentionally <em>does not</em> check if a Chip at the
+ This method intentionally <em>does not</em> check if a chip at the
  resulting location already exists.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>source</code> - The coordinates of the source of the link.</dd>
-<dd><code>direction</code> - The Direction of the link to traverse</dd>
+<dd><code>direction</code> - The direction of the link to traverse</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Location of a possible chip that would be connected by this link.</dd>
 </dl>
@@ -957,20 +962,20 @@ int&nbsp;y)</span></div>
 <h3><a id="getChipOverLink(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.Direction)">getChipOverLink</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></span>&nbsp;<span class="memberName">getChipOverLink</span>&#8203;(<span class="arguments"><a href="HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;source,
 <a href="Direction.html" title="enum in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;direction)</span></div>
-<div class="block">Get the existing Chip over the given link.
+<div class="block">Get the existing chip over the given link.
+ This method returns the destination chip <em>without</em> checking if the
+ physical link is active.
  <p>
- This method is just a combination of getLocationOverLink and getChipAt.
- It therefore takes wrap-around into account and does check for the
- existence of the destination chip.
- <p>
- This method returns the destination chip WITHOUT checking if the physical
- link is active.</div>
+ This method is just a combination of
+ <a href="#getLocationOverLink(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.Direction)"><code>getLocationOverLink(HasChipLocation, Direction)</code></a> and
+ <a href="#getChipAt(uk.ac.manchester.spinnaker.machine.ChipLocation)"><code>getChipAt(ChipLocation)</code></a>. It therefore takes wrap-around into
+ account and does check for the existence of the destination chip.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>source</code> - The coordinates of the source of the link.</dd>
-<dd><code>direction</code> - The Direction of the link to traverse</dd>
+<dd><code>direction</code> - The direction of the link to traverse</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The Destination Chip connected by this (possible) link. or
+<dd>The destination chip connected by this (possible) link. or
          <code>null</code> if it does not exist.</dd>
 </dl>
 </section>
@@ -979,13 +984,13 @@ int&nbsp;y)</span></div>
 <section class="detail">
 <h3><a id="maxChipX()">maxChipX</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">maxChipX</span>()</div>
-<div class="block">The maximum possible x-coordinate of any chip in the board.
+<div class="block">The maximum possible X-coordinate of any chip in the board.
  <p>
  Currently no check is carried out to guarantee there is actually a Chip
- with this x value.</div>
+ with this X value.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The maximum possible x-coordinate.</dd>
+<dd>The maximum possible X-coordinate.</dd>
 </dl>
 </section>
 </li>
@@ -993,13 +998,13 @@ int&nbsp;y)</span></div>
 <section class="detail">
 <h3><a id="maxChipY()">maxChipY</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">maxChipY</span>()</div>
-<div class="block">The maximum possible y-coordinate of any chip in the board.
+<div class="block">The maximum possible Y-coordinate of any chip in the board.
  <p>
  Currently no check is carried out to guarantee there is actually a Chip
- with this y value.</div>
+ with this Y value.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The maximum possible y-coordinate.</dd>
+<dd>The maximum possible Y-coordinate.</dd>
 </dl>
 </section>
 </li>
@@ -1007,16 +1012,15 @@ int&nbsp;y)</span></div>
 <section class="detail">
 <h3><a id="ethernetConnectedChips()">ethernetConnectedChips</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a>&gt;</span>&nbsp;<span class="memberName">ethernetConnectedChips</span>()</div>
-<div class="block">The chips in the machine that have an Ethernet connection. These are
- defined as the Chip that have a non-<code>null</code> INET address.
+<div class="block">The chips in the machine that have control over an Ethernet connection.
+ These are defined as the chip that have a non-<code>null</code> INET address.
+ There is no guarantee regarding the order of the Chips.
  <p>
- While these are typically the bottom-left Chip of each board, this is not
- guaranteed.
- <p>
- There is no guarantee regarding the order of the Chips.</div>
+ While these are typically the bottom-left chip of each board, this is not
+ guaranteed.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>An unmodifiable list of the Chips with an INET address.</dd>
+<dd>An unmodifiable list of the chips with an INET address.</dd>
 </dl>
 </section>
 </li>
@@ -1024,10 +1028,10 @@ int&nbsp;y)</span></div>
 <section class="detail">
 <h3><a id="spinnakerLinks()">spinnakerLinks</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="datalinks/SpinnakerLinkData.html" title="class in uk.ac.manchester.spinnaker.machine.datalinks">SpinnakerLinkData</a>&gt;</span>&nbsp;<span class="memberName">spinnakerLinks</span>()</div>
-<div class="block">Collection of the spinnaker links on this machine.</div>
+<div class="block">Collection of the SpiNNaker links on this machine.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>An unmodifiable unordered collection of all the spinnaker links
+<dd>An unmodifiable unordered collection of all the SpiNNaker links
          on this machine.</dd>
 </dl>
 </section>
@@ -1044,7 +1048,8 @@ int&nbsp;y)</span></div>
 <dd><code>address</code> - The board address that this SpiNNaker link is associated with.
             If <code>null</code> the boot INET address will be used.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The associated SpinnakerLink or <code>null</code> if not found.</dd>
+<dd>The associated SpiNNaker link information, or <code>null</code> if not
+         found.</dd>
 </dl>
 </section>
 </li>
@@ -1057,7 +1062,8 @@ int&nbsp;y)</span></div>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - The ID of the link</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The associated SpinnakerLink or <code>null</code> if not found.</dd>
+<dd>The associated SpiNNaker link information, or <code>null</code> if not
+         found.</dd>
 </dl>
 </section>
 </li>
@@ -1068,7 +1074,7 @@ int&nbsp;y)</span></div>
 <div class="block">Add SpiNNaker links that are on a given machine depending on the height
  and width and therefore version of the board.
  <p>
- If a link already exists the original link is retain and that spinnaker
+ If a link already exists the original link is retain and that SpiNNaker
  link is not added.</div>
 </section>
 </li>
@@ -1077,8 +1083,8 @@ int&nbsp;y)</span></div>
 <h3><a id="normalizedLocation(int,int)">normalizedLocation</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></span>&nbsp;<span class="memberName">normalizedLocation</span>&#8203;(<span class="arguments">int&nbsp;x,
 int&nbsp;y)</span></div>
-<div class="block">Converts x and y to a chip location, if required (and applicable)
- adjusting for wrap around.
+<div class="block">Converts <em>x</em> and <em>y</em> to a chip location, if required (and
+ applicable) adjusting for wrap around.
  <p>
  The only check that the coordinates are valid is to check they are
  greater than zero. Otherwise <code>null</code> is returned.</div>
@@ -1087,9 +1093,9 @@ int&nbsp;y)</span></div>
 <dd><code>x</code> - X coordinate</dd>
 <dd><code>y</code> - Y coordinate</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>A ChipLocation based on X and Y with possible wrap around, or
-         <code>null</code> if either coordinate is less than zero or greater
-         than the dimensions of the machine.</dd>
+<dd>A location based on <em>x</em> and <em>y</em> with possible
+         wrap around, or <code>null</code> if either coordinate is less than
+         zero or greater than the dimensions of the machine.</dd>
 </dl>
 </section>
 </li>
@@ -1104,10 +1110,10 @@ int&nbsp;y)</span></div>
  No check is done to see if there is actually a chip at that location.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>source</code> - the original x and y coordinates.</dd>
+<dd><code>source</code> - the original coordinates.</dd>
 <dd><code>direction</code> - which way to move.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>A ChipLocation based on a move in this direction with possible
+<dd>A location based on a move in this direction with possible
          wrap around, or <code>null</code> if either coordinate is less than
          zero or greater than the dimensions of the machine.</dd>
 </dl>
@@ -1124,7 +1130,7 @@ int&nbsp;y)</span></div>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>location</code> - A location which may need to be corrected for wrap-arounds.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>A ChipLocation based on a move in this direction with possible
+<dd>A location based on a move in this direction with possible
          wrap around, or <code>null</code> if either coordinate is less than
          zero or greater than the dimensions of the machine.</dd>
 </dl>
@@ -1152,10 +1158,9 @@ int&nbsp;fpgaLinkId,
 <section class="detail">
 <h3><a id="getFpgaLinks()">getFpgaLinks</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://spinnakermanchester.github.io/SpiNNaker-utils/apidocs/uk/ac/manchester/spinnaker/utils/MappableIterable.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.utils" class="externalLink">MappableIterable</a>&lt;<a href="datalinks/FPGALinkData.html" title="class in uk.ac.manchester.spinnaker.machine.datalinks">FPGALinkData</a>&gt;</span>&nbsp;<span class="memberName">getFpgaLinks</span>()</div>
-<div class="block">An iterable over all the added FPGA link data items. The Iterable may be
- empty.
+<div class="block">The added FPGA link data items. The iterable may be empty.
  <p>
- No Guarantee of order is provided.</div>
+ No guarantee of order is provided.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>All added FPGA link data items.</dd>
@@ -1166,10 +1171,10 @@ int&nbsp;fpgaLinkId,
 <section class="detail">
 <h3><a id="getFpgaLinks(java.net.InetAddress)">getFpgaLinks</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://spinnakermanchester.github.io/SpiNNaker-utils/apidocs/uk/ac/manchester/spinnaker/utils/MappableIterable.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.utils" class="externalLink">MappableIterable</a>&lt;<a href="datalinks/FPGALinkData.html" title="class in uk.ac.manchester.spinnaker.machine.datalinks">FPGALinkData</a>&gt;</span>&nbsp;<span class="memberName">getFpgaLinks</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;address)</span></div>
-<div class="block">An iterable over all the added FPGA link data items for this address. The
- Iterable may be empty.
+<div class="block">The added FPGA link data items for the given address. The
+ iterable may be empty.
  <p>
- No Guarantee of order is provided.</div>
+ No guarantee of order is provided.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>address</code> - The board address that this FPGA link is associated with.</dd>
@@ -1185,8 +1190,8 @@ int&nbsp;fpgaLinkId,
 <div class="block">Add FPGA links that are on a given machine depending on the version of
  the board.
  <p>
- Note: This implementation assumes the Ethernet Chip is the 0, 0 chip on
- each board</div>
+ <strong>Note:</strong> This implementation assumes the Ethernet-enabled
+ chip is the 0, 0 chip on each board.</div>
 </section>
 </li>
 <li class="blockList">
@@ -1195,8 +1200,8 @@ int&nbsp;fpgaLinkId,
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">coresAndLinkOutputString</span>()</div>
 <div class="block">Get a string detailing the number of cores and links.
  <p>
- Warning: the current implementation makes the simplification assumption
- that every link exists in both directions.</div>
+ <strong>Warning:</strong> the current implementation makes the
+ simplification assumption that every link exists in both directions.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A quick description of the machine.</dd>
@@ -1208,14 +1213,15 @@ int&nbsp;fpgaLinkId,
 <h3><a id="bootChip()">bootChip</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></span>&nbsp;<span class="memberName">bootChip</span>()</div>
 <div class="block">The coordinates of the chip used to boot the machine. This is typically
- Chip (zero, zero), and will typically have an associated InetAddress, but
- there is no guarantee of either of these facts.
+ the Chip at <a href="ChipLocation.html#ZERO_ZERO"><em>(0, 0)</em></a>, and will
+ typically have an associated <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink"><code>InetAddress</code></a>, but there is no
+ guarantee of either of these facts.
  <p>
- If not Chip has been added to the machine at the boot location this
+ If no chip has been added to the machine at the boot, location this
  method returns <code>null</code>.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The Chip at the location specified as boot or <code>null</code>.</dd>
+<dd>The chip at the location specified as boot, or <code>null</code>.</dd>
 </dl>
 </section>
 </li>
@@ -1223,15 +1229,13 @@ int&nbsp;fpgaLinkId,
 <section class="detail">
 <h3><a id="iterChipsOnBoard(uk.ac.manchester.spinnaker.machine.Chip)">iterChipsOnBoard</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://spinnakermanchester.github.io/SpiNNaker-utils/apidocs/uk/ac/manchester/spinnaker/utils/MappableIterable.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.utils" class="externalLink">MappableIterable</a>&lt;<a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a>&gt;</span>&nbsp;<span class="memberName">iterChipsOnBoard</span>&#8203;(<span class="arguments"><a href="Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a>&nbsp;chip)</span></div>
-<div class="block">Iterable over the destinations of each link.
- <p>
- There will be exactly one destination for each Link. While normally all
- destinations will be unique the is no guarantee.</div>
+<div class="block">The chips on the same board as the given chip.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>chip</code> - x and y coordinates for any chip on the board</dd>
+<dd><code>chip</code> - The exemplar chip from the board of interest</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>A Stream over the destination locations.</dd>
+<dd>Iterable of chips on the board. Not expected to be empty; the
+         exemplar should be present.</dd>
 </dl>
 </section>
 </li>
@@ -1255,7 +1259,7 @@ int&nbsp;fpgaLinkId,
 <div class="block">The total number of cores on the machine which are not monitor cores.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The number of user cores over all Chips.</dd>
+<dd>The number of user cores over all chips.</dd>
 </dl>
 </section>
 </li>
@@ -1317,8 +1321,8 @@ int&nbsp;fpgaLinkId,
  Future implementations may add other tests for abnormal Chips.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>A Map of ChipLocations to Direction (hopefully empty) which
-         identifies links to remove</dd>
+<dd>A map of locations to sets of directions (hopefully empty) which
+         identify links to remove</dd>
 </dl>
 </section>
 </li>
@@ -1326,15 +1330,14 @@ int&nbsp;fpgaLinkId,
 <section class="detail">
 <h3><a id="findAbnormalChips()">findAbnormalChips</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&gt;</span>&nbsp;<span class="memberName">findAbnormalChips</span>()</div>
-<div class="block">Returns a list of the abnormal Chips that are recommended for removal.
+<div class="block">Returns a list of the abnormal chips that are recommended for removal.
  <p>
- The current implementation identifies Chips with no outgoing links as
+ The current implementation identifies chips with no outgoing links as
  abnormal.
- <p>
- Future implementations may add other tests for abnormal Chips.</div>
+ Future implementations may add other tests for abnormal chips.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>A set (hopefully empty) of ChipLocations to remove.</dd>
+<dd>A set (hopefully empty) of locations of chips to remove.</dd>
 </dl>
 </section>
 </li>
@@ -1365,24 +1368,23 @@ int&nbsp;fpgaLinkId,
 <div class="block">Describes one difference found between this machine and another machine.
  <p>
  This method will always return <code>null</code> if no difference is found
- between the two machines. So semantically is the same as Equals except
- that this works if other is a super class of machine in which case only
- the share variables are compared.
+ between the two machines. So semantically is the same as equals except
+ that this works if other is a superclass of machine in which case only
+ the shared variables are compared.
  <p>
  This method returns as soon as it has found a difference so there may be
  other not specified differences.
  <p>
- Warning: This method could change over time, so there is no implied
- guarantee to the order that variables are checked or to the message that
- is returned.
- <p>
+ <strong>Warning:</strong> This method could change over time, so there is
+ no implied guarantee to the order that variables are checked or to the
+ message that is returned.
  The only guarantee is that <code>null</code> is returned if no difference is
  detected.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>other</code> - Another machine to check if it has the same variables.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd><code>null</code> if no difference is detected otherwise a string.</dd>
+<dd><code>null</code> if no difference is detected, otherwise a string.</dd>
 </dl>
 </section>
 </li>
@@ -1396,13 +1398,13 @@ int&nbsp;fpgaLinkId,
  expected difference between the two chip locations so will always return
  a message
  <p>
- Warning: As this method is mainly a support method for
+ <strong>Warning:</strong> As this method is mainly a support method for
  <a href="#difference(uk.ac.manchester.spinnaker.machine.Machine)"><code>difference(Machine)</code></a>, the returned result can be changed at any
  time.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>that</code> - Another machine with suspected difference in the location of
-            Chips.</dd>
+            chips.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Some useful human readable information.</dd>
 </dl>
