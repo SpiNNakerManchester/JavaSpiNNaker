@@ -13,5 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** Describes IPtags and reverse IPtags. */
+/**
+ * Describes IPtags and reverse IPtags. These are used to handle the routing of
+ * messages from Ethernet packets (i.e., UDP messages) to SpiNNaker and <em>vice
+ * versa</em>.
+ */
 package uk.ac.manchester.spinnaker.machine.tags;

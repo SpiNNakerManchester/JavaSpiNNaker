@@ -20,7 +20,6 @@ import static java.util.Collections.unmodifiableSet;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -28,11 +27,13 @@ import java.util.TreeMap;
 
 import javax.validation.Valid;
 
-import uk.ac.manchester.spinnaker.utils.DoubleMapIterator;
+import uk.ac.manchester.spinnaker.utils.DoubleMapIterable;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
- * Represents a set of of {@link CoreLocation}s organized by Chip.
+ * Represents a set of of {@link CoreLocation}s organised by chip. Each chip
+ * location conceptually has a subset of cores that are members of this overall
+ * {@code CoreSubsets}.
  *
  * @see <a href=
  *      "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/core_subsets.py">
@@ -76,16 +77,16 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	}
 
 	/**
-	 * Adds the Core Location.
+	 * Adds the core Location.
 	 * <p>
-	 * This method uses set semantics so attempts to add a Core/Processor that
+	 * This method uses set semantics so attempts to add a core/processor that
 	 * is already in the subset are silently ignored.
 	 *
 	 * @param core
 	 *            Location (x, y, p) to add.
 	 * @throws IllegalStateException
 	 *             If the subsets have been set immutable. For example because a
-	 *             hashcode has been generated,
+	 *             hash-code has been generated,
 	 */
 	public void addCore(CoreLocation core) {
 		if (immutable) {
@@ -96,20 +97,20 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	}
 
 	/**
-	 * Adds the Core Location, creating a new subset if required.
+	 * Adds the core location, creating a new subset if required.
 	 * <p>
-	 * This method uses set semantics so attempts to add a Core/Processor that
+	 * This method uses set semantics so attempts to add a core/processor that
 	 * is already in the subset are silently ignored.
 	 *
 	 * @param x
-	 *            x coordinate of chip
+	 *            X coordinate of chip
 	 * @param y
-	 *            y coordinate of chip
+	 *            Y coordinate of chip
 	 * @param p
-	 *            p coordinate/ processor id
+	 *            P coordinate/ processor ID
 	 * @throws IllegalStateException
 	 *             If the subsets have been set immutable. For example because a
-	 *             hashcode has been generated,
+	 *             hash-code has been generated,
 	 */
 	public void addCore(int x, int y, int p) {
 		addCore(new ChipLocation(x, y), p);
@@ -118,13 +119,13 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	/**
 	 * Adds the processor for this chip, creating a new subset if required.
 	 * <p>
-	 * This method uses set semantics so attempts to add a Core/Processor that
+	 * This method uses set semantics so attempts to add a core/processor that
 	 * is already in the subset are silently ignored.
 	 *
 	 * @param chip
 	 *            Chip key of CoreSubset to add to.
 	 * @param p
-	 *            p coordinate/ processor id.
+	 *            P coordinate/ processor ID.
 	 * @throws IllegalStateException
 	 *             If the subsets have been set immutable. For example because a
 	 *             hashcode has been generated,
@@ -140,7 +141,7 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	/**
 	 * Adds the processors for this chip, creating a new subset if required.
 	 * <p>
-	 * This method uses set semantics so attempts to add a Core/Processor that
+	 * This method uses set semantics so attempts to add a core/processor that
 	 * is already in the subset are silently ignored.
 	 *
 	 * @param chip
@@ -149,7 +150,7 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	 *            p coordinates/ processor IDs.
 	 * @throws IllegalStateException
 	 *             If the subsets have been set immutable. For example because a
-	 *             hashcode has been generated,
+	 *             hash-code has been generated,
 	 */
 	public void addCores(ChipLocation chip, Iterable<Integer> processors) {
 		if (immutable) {
@@ -165,7 +166,7 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	/**
 	 * Adds the processors for this chip, creating a new subset if required.
 	 * <p>
-	 * This method uses set semantics so attempts to add a Core/Processor that
+	 * This method uses set semantics so attempts to add a core/processor that
 	 * is already in the subset are silently ignored.
 	 *
 	 * @param x
@@ -176,7 +177,7 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	 *            p coordinates/ processor IDs.
 	 * @throws IllegalStateException
 	 *             If the subsets have been set immutable. For example because a
-	 *             hashcode has been generated,
+	 *             hash-code has been generated,
 	 */
 	public void addCores(int x, int y, Iterable<Integer> processors) {
 		addCores(new ChipLocation(x, y), processors);
@@ -185,7 +186,7 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	/**
 	 * Adds the locations into this one.
 	 * <p>
-	 * This method uses set semantics so attempts to add a Core/Processor that
+	 * This method uses set semantics so attempts to add a core/processor that
 	 * is already in the subset are silently ignored.
 	 *
 	 * @param locations
@@ -198,11 +199,12 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	}
 
 	/**
-	 * Obtain the CoreSubset for this Chip.
+	 * Obtain the set of processor IDs for a given chip.
 	 *
 	 * @param chip
 	 *            Coordinates of a chip
-	 * @return The core subset of a chip or {@code null} if there is no subset.
+	 * @return The subset of a chip or {@code null} if there is no subset.
+	 *         Modifiable!
 	 */
 	private Map<Integer, CoreLocation> getOrCreate(ChipLocation chip) {
 		return locations.computeIfAbsent(chip, __ -> new TreeMap<>());
@@ -211,7 +213,7 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	/**
 	 * The total number of processors that are in these core subsets.
 	 *
-	 * @return The sum of the individual CoreSubset sizes.
+	 * @return The sum of the individual subset sizes.
 	 */
 	public int size() {
 		return locations.values().stream().mapToInt(Map::size).sum();
@@ -220,7 +222,7 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	/**
 	 * Whether there are any processors in these core subsets.
 	 *
-	 * @return {@code true} when the core subsets are empty.
+	 * @return {@code true} when all the subsets are empty.
 	 */
 	public boolean isEmpty() {
 		return locations.values().stream().allMatch(Map::isEmpty);
@@ -229,7 +231,7 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	/**
 	 * Determine if the chip with coordinates (x, y) is in the subset.
 	 * <p>
-	 * Note: An empty subset mapped to the Chip is ignored.
+	 * <strong>Note:</strong> An empty subset mapped to the chip is ignored.
 	 *
 	 * @param chip
 	 *            Coordinates to check
@@ -241,7 +243,7 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 
 	/**
 	 * Determine if there is a chip with coordinates (x, y) in the subset, which
-	 * has a core with the given id in the subset.
+	 * has a core with the given ID in the subset.
 	 *
 	 * @param core
 	 *            x, y and p coordinates
@@ -253,16 +255,16 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	}
 
 	/**
-	 * Generate a hashcode for these subsets.
+	 * Generate a hash-code for these subsets.
 	 * <p>
-	 * Two CoreSubsets that have the same subsets (and are therefore considered
-	 * equals) will generate the same hashcode.
+	 * Two {@code CoreSubsets} that have the same subsets (and are therefore
+	 * considered equals) will generate the same hash-code.
 	 * <p>
-	 * To guarantee consistency over time, once a hashcode is requested the
-	 * CoreSubsets and all its subsets will be made immutable and any further
-	 * add calls will raise an exception.
+	 * To guarantee consistency over time, once a hash-code is requested the
+	 * {@code CoreSubsets} and all its subsets will be made immutable and any
+	 * further add calls will raise an exception.
 	 *
-	 * @return integer to use as the hashcode.
+	 * @return integer to use as the hash-code.
 	 */
 	@Override
 	public int hashCode() {
@@ -285,9 +287,9 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	 * mutability.
 	 *
 	 * @param obj
-	 *            Other Object to compare to.
-	 * @return True if and only if {@code obj} is another CoreSubsets with
-	 *         exactly the same subsets.
+	 *            Other object to compare to.
+	 * @return True if and only if {@code obj} is another {@code CoreSubsets}
+	 *         with exactly the same subsets.
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -304,12 +306,13 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	}
 
 	/**
-	 * Returns a new CoreSubsets which is an intersect of this and the other.
+	 * Returns a new {@code CoreSubsets} which is an intersect of this and the
+	 * other.
 	 *
 	 * @param other
-	 *            A second CoreSubsets with possibly overlapping cores.
-	 * @return A new CoreSubsets object with only the cores present in both.
-	 *         Therefore the result may be empty.
+	 *            A second {@code CoreSubsets} with possibly overlapping cores.
+	 * @return A new {@code CoreSubsets} object with only the cores present in
+	 *         both. Therefore the result may be empty.
 	 */
 	public CoreSubsets intersection(CoreSubsets other) {
 		var results = new CoreSubsets();
@@ -327,8 +330,8 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	}
 
 	/**
-	 * Returns the ChipLocations for which there is at least one CoreLocations
-	 * in the Subsets.
+	 * Returns the {@link ChipLocation}s for which there is at least one
+	 * {@link CoreLocation} in the subsets.
 	 * <p>
 	 * The order of the locations is guaranteed to be the natural order.
 	 *
@@ -340,11 +343,11 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 
 	@Override
 	public Iterator<CoreLocation> iterator() {
-		return new DoubleMapIterator<>(locations);
+		return new DoubleMapIterable<>(locations).iterator();
 	}
 
 	/**
-	 * Provides the CoreLocations for just a single Chip.
+	 * Provides the {@link CoreLocation}s for just a single chip.
 	 * <p>
 	 * This will be an empty list when {@link #isChip(ChipLocation)} returns
 	 * {@code false}.
@@ -354,16 +357,12 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	 * @return Unmodifiable (possibly empty) collection of CoreLocation
 	 */
 	public Collection<CoreLocation> coreByChip(ChipLocation chip) {
-		var l = locations.get(chip);
-		if (l != null) {
-			return unmodifiableCollection(l.values());
-		} else {
-			return List.of();
-		}
+		var l = locations.getOrDefault(chip, Map.of());
+		return unmodifiableCollection(l.values());
 	}
 
 	/**
-	 * Provides the processor identifiers for just a single Chip.
+	 * Provides the processor identifiers for just a single chip.
 	 * <p>
 	 * This will be an empty list when {@link #isChip(ChipLocation)} returns
 	 * {@code false}.
@@ -373,11 +372,7 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	 * @return Unmodifiable (possibly empty) collection of processor identifiers
 	 */
 	public Set<Integer> pByChip(ChipLocation chip) {
-		var l = locations.get(chip);
-		if (l != null) {
-			return unmodifiableSet(l.keySet());
-		} else {
-			return Set.of();
-		}
+		var l = locations.getOrDefault(chip, Map.of());
+		return unmodifiableSet(l.keySet());
 	}
 }
