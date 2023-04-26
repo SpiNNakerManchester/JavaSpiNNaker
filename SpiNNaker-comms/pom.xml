@@ -21,7 +21,7 @@ limitations under the License.
 	<parent>
 		<groupId>uk.ac.manchester.spinnaker</groupId>
 		<artifactId>SpiNNaker</artifactId>
-		<version>7.0.0-SNAPSHOT</version>
+		<version>7.0.0-a5</version>
 	</parent>
 	<artifactId>SpiNNaker-comms</artifactId>
 	<description>How to actually talk to a SpiNNaker machine and to Spalloc, the allocation service.</description>
