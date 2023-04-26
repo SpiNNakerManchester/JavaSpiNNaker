@@ -20,7 +20,7 @@ limitations under the License.
 	<parent>
 		<groupId>uk.ac.manchester.spinnaker</groupId>
 		<artifactId>SpiNNaker</artifactId>
-		<version>7.0.0-SNAPSHOT</version>
+		<version>7.0.0-a5</version>
 	</parent>
 	<artifactId>SpiNNaker-pacman</artifactId>
 	<description>Implementation of the Partitioning and Configuration Manager (PACMAN).</description>
