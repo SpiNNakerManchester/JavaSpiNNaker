@@ -251,8 +251,10 @@ public class SpallocServiceImpl extends BackgroundSupport
 
 		// Ensure we only have at most one "group" specifier (0 also fine).
 		var nonNullGroups = 0;
-		for (Object item : new Object[]{req.group, req.nmpiCollab,
-				req.nmpiJobId}) {
+		var items = new Object[] {
+			req.group, req.nmpiCollab, req.nmpiJobId
+		};
+		for (Object item : items) {
 			if (!isNull(item)) {
 				nonNullGroups += 1;
 			}
