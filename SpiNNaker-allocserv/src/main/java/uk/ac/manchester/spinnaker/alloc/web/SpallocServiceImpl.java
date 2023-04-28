@@ -251,8 +251,8 @@ public class SpallocServiceImpl extends BackgroundSupport
 
 		// Ensure we only have at most one "group" specifier (0 also fine).
 		var nonNullGroups = 0;
-		for (Object item : new Object[]{
-				req.group, req.nmpiCollab, req.nmpiJobId}) {
+		for (Object item : new Object[]{req.group, req.nmpiCollab,
+				req.nmpiJobId}) {
 			if (!isNull(item)) {
 				nonNullGroups += 1;
 			}
@@ -260,14 +260,14 @@ public class SpallocServiceImpl extends BackgroundSupport
 		if (nonNullGroups > 1) {
 			response.resume(status(BAD_REQUEST).type(TEXT_PLAIN).entity(
 					"At most one of group, nmpiCollabId or nmpiJobId"
-			        + " can be specified").build());
+					+ " can be specified").build());
 		}
 		// Async because it involves getting a write lock
 		bgAction(response, () -> ifElse(
 				createJob(req, crds),
 				job -> created(ui.getRequestUriBuilder().path("{id}")
 						.build(job.getId()))
-				        		.entity(new CreateJobResponse(job, ui)).build(),
+						.entity(new CreateJobResponse(job, ui)).build(),
 				() -> status(BAD_REQUEST).type(TEXT_PLAIN)
 						// Most likely reason for failure
 						.entity("out of quota").build()));
