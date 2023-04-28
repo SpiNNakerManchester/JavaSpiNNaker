@@ -1031,10 +1031,10 @@ class DQLTest extends SimpleDBTestBase {
 
 	@Test
 	void getGroupsAndQuotasOfUser() {
-		try (var q = c.query(GET_GROUPS_AND_QUOTAS_OF_USER)) {
+		try (var q = c.query(GET_GROUP_NAMES_OF_USER)) {
 			c.transaction(() -> {
 				assertEquals(List.of("user_name"), q.getParameters());
-				assertEquals(List.of("group_id", "quota"), q.getColumns());
+				assertEquals(List.of("group_name"), q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, NO_NAME));
 			});
 		}

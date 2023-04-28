@@ -1278,16 +1278,13 @@ public abstract class SQLQueries {
 	 * @see Spalloc
 	 */
 	@Parameter("user_name")
-	@ResultColumn("group_id")
-	@ResultColumn("quota")
-	protected static final String GET_GROUPS_AND_QUOTAS_OF_USER =
-			"SELECT user_groups.group_id, user_groups.quota "
+	@ResultColumn("group_name")
+	protected static final String GET_GROUP_NAMES_OF_USER =
+			"SELECT user_groups.group_name "
 					+ "FROM group_memberships "
 					+ "JOIN user_info USING (user_id) "
 					+ "JOIN user_groups USING (group_id) "
-					+ "WHERE user_name = :user_name "
-					+ "AND (quota > 0 OR quota IS NULL)"
-					+ "ORDER BY user_groups.quota DESC";
+					+ "WHERE user_name = :user_name";
 
 	/**
 	 * List the members of a group.

@@ -57,7 +57,6 @@ import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
 import uk.ac.manchester.spinnaker.alloc.admin.ReportMailSender;
-import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.Epoch;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Query;
@@ -600,9 +599,10 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	private String getOnlyGroup(Connection conn, String user) {
-		try (var listGroups = conn.query(GET_MEMBERSHIPS_OF_USER)) {
+		try (var listGroups = conn.query(GET_GROUP_NAMES_OF_USER)) {
 			// No name given; need to guess.
-			var groups = listGroups.call(UserControl::member, user);
+			var groups = listGroups.call(row -> row.getString("group_name"),
+					user);
 			if (groups.size() > 1) {
 				throw new NoSuchGroupException(
 						"User is a member of more than one group, so the group"
@@ -612,7 +612,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				throw new NoSuchGroupException(
 						"User is not a member of any group!");
 			}
-			return groups.get(0).getGroupName();
+			return groups.get(0);
 		}
 	}
 

@@ -273,7 +273,7 @@ CREATE TABLE IF NOT EXISTS job_nmpi_collab (
     UNIQUE INDEX (job_id ASC, collab ASC)
 );
 
---STMT
+-- STMT
 CREATE TABLE IF NOT EXISTS job_nmpi_job (
     job_id INTEGER,
         FOREIGN KEY (job_id)

@@ -282,7 +282,7 @@ public class UserControl extends DatabaseAwareBean {
 		}
 	}
 
-	public static MemberRecord member(Row row) {
+	private static MemberRecord member(Row row) {
 		var m = new MemberRecord();
 		m.setId(row.getInt("membership_id"));
 		m.setGroupId(row.getInt("group_id"));
