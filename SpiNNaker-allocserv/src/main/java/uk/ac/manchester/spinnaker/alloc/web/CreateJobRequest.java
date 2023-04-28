@@ -57,8 +57,8 @@ public class CreateJobRequest {
 	 * What group will the job be accounted against; the owner <em>must</em> be
 	 * a member of the group. If {@code null}, the single group that the owner
 	 * is a member of will be used (with it being an error for that to not exist
-	 * or not be unique).  Only one of {@link #group}, {@link nmpiCollabId} or
-	 * {@link nmpiJobId} must be {@code non-null}, but all can be {@code null}.
+	 * or not be unique).  Only one of group, {@link #nmpiCollab} or
+	 * {@link #nmpiJobId} must be {@code non-null}, but all can be {@code null}.
 	 */
 	public String group;
 
@@ -66,7 +66,7 @@ public class CreateJobRequest {
 	 * Which NMPI Collab the job will be accounted against; the owner
 	 * <em>must</em> be a member of the Collab. A session will be created in
 	 * the Collab and this will be accounted against. Only one of
-	 * {@link #group}, {@link nmpiCollabId} or {@link nmpiJobId} must be
+	 * {@link #group}, nmpiCollab or {@link #nmpiJobId} must be
 	 * {@code non-null}, but all can be {@code null}.
 	 */
 	public String nmpiCollab;
@@ -75,8 +75,8 @@ public class CreateJobRequest {
 	 * Which NMPI Job the job will be accounted against; the owner <em>must</em>
 	 * be able to update the NMPI Job.  Only the quota of the NMPI Job will be
 	 * updated at the end of the job, as will the local quota of the Collab of
-	 * the NMPI Job.  Only one of {@link #group}, {@link nmpiCollabId} or
-	 * {@link nmpiJobId} must be {@code non-null}, but all can be {@code null}.
+	 * the NMPI Job.  Only one of {@link #group}, {@link #nmpiCollab} or
+	 * nmpiJobId must be {@code non-null}, but all can be {@code null}.
 	 */
 	public Integer nmpiJobId;
 
