@@ -36,6 +36,7 @@ import static uk.ac.manchester.spinnaker.utils.OptionalUtils.ifElse;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
@@ -50,6 +51,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
@@ -206,19 +208,66 @@ public class SpallocServiceImpl extends BackgroundSupport
 		return str.strip();
 	}
 
+	/**
+	 * Select one of the ways to create a job based on the request parameters.
+	 * Note this will pick the first non-null of (group, nmpiCollabId,
+	 * nmpiJobId) from req to determine the spalloc call to make (also
+	 * acceptable if all are null).
+	 *
+	 * @param req The request details.
+	 * @param crds The request credentials.
+	 * @return The job created.
+	 * @throws JsonProcessingException If there is an error converting the
+	 *     request into bytes.
+	 */
+	private Optional<SpallocAPI.Job> createJob(CreateJobRequest req,
+			CreateDescriptor crds) throws JsonProcessingException {
+		if (!isNull(req.group)) {
+			return core.createJobInGroup(trim(req.owner), trim(req.group), crds,
+					req.machineName, req.tags, req.keepaliveInterval,
+					mapper.writeValueAsBytes(req));
+		}
+		if (!isNull(req.nmpiCollab)) {
+			return core.createJobInCollabSession(trim(req.owner),
+					trim(req.nmpiCollab), crds,
+					req.machineName, req.tags, req.keepaliveInterval,
+					mapper.writeValueAsBytes(req));
+		}
+		if (!isNull(req.nmpiJobId)) {
+			return core.createJobForNMPIJob(trim(req.owner),
+					req.nmpiJobId, crds,
+					req.machineName, req.tags, req.keepaliveInterval,
+					mapper.writeValueAsBytes(req));
+		}
+		return core.createJob(trim(req.owner), crds,
+				req.machineName, req.tags, req.keepaliveInterval,
+				mapper.writeValueAsBytes(req));
+	}
+
 	@Override
 	public void createJob(CreateJobRequest req, UriInfo ui,
 			SecurityContext security, AsyncResponse response) {
 		var crds = validateAndApplyDefaultsToJobRequest(req, security);
 
+		// Ensure we only have at most one "group" specifier (0 also fine).
+		var nonNullGroups = 0;
+		for (Object item : new Object[]{
+				req.group, req.nmpiCollab, req.nmpiJobId}) {
+			if (!isNull(item)) {
+				nonNullGroups += 1;
+			}
+		}
+		if (nonNullGroups > 1) {
+			response.resume(status(BAD_REQUEST).type(TEXT_PLAIN).entity(
+					"At most one of group, nmpiCollabId or nmpiJobId"
+			        + " can be specified").build());
+		}
 		// Async because it involves getting a write lock
 		bgAction(response, () -> ifElse(
-				core.createJob(trim(req.owner), trim(req.group), crds,
-						req.machineName, req.tags, req.keepaliveInterval,
-						mapper.writeValueAsBytes(req)),
+				createJob(req, crds),
 				job -> created(ui.getRequestUriBuilder().path("{id}")
 						.build(job.getId()))
-								.entity(new CreateJobResponse(job, ui)).build(),
+				        		.entity(new CreateJobResponse(job, ui)).build(),
 				() -> status(BAD_REQUEST).type(TEXT_PLAIN)
 						// Most likely reason for failure
 						.entity("out of quota").build()));

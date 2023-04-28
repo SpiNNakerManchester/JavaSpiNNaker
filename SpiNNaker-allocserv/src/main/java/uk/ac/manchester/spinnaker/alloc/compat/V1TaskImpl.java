@@ -298,8 +298,9 @@ class V1TaskImpl extends V1CompatTask {
 		var keepalive = parseKeepalive((Number) kwargs.get("keepalive"));
 		var machineName = (String) kwargs.get("machine");
 		var ts = tags(kwargs.get("tags"), isNull(machineName));
-		var result = permit.authorize(() -> spalloc.createJob(permit.name,
-				groupName, create, machineName, ts, keepalive, cmd));
+		var result = permit.authorize(() -> spalloc.createJobInGroup(
+				permit.name, groupName, create, machineName, ts, keepalive,
+				cmd));
 		result.ifPresent(
 				j -> log.info(
 						"made compatibility-mode job {} "

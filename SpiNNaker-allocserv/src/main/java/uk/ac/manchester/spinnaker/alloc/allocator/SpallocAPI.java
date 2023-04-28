@@ -168,19 +168,13 @@ public interface SpallocAPI {
 	Optional<JobDescription> getJobInfo(Permit permit, int id);
 
 	/**
-	 * Create a job. Note that jobs <em>cannot</em> be created on machines that
+	 * Create a job for a user that is only in one group.
+	 * Note that jobs <em>cannot</em> be created on machines that
 	 * are out of service, but marking a machine as out of service does not stop
 	 * the jobs that are already running on it.
 	 *
 	 * @param owner
 	 *            Who is making this job.
-	 * @param group
-	 *            What group is associated with this job for accounting
-	 *            purposes. If {@code null} then a guess is made based on the
-	 *            owner's memberships (i.e., if the owner is a member of a
-	 *            single group, with it being an error for a job to be submitted
-	 *            where there is a choice of groups available yet the job
-	 *            doesn't say which to use).
 	 * @param descriptor
 	 *            What sort of allocation is desired?
 	 * @param machineName
@@ -197,8 +191,105 @@ public interface SpallocAPI {
 	 *            database for later retrieval.
 	 * @return Handle to the job, or {@code empty} if the job couldn't be made.
 	 */
-	Optional<Job> createJob(@NotNull String owner, String group,
+	Optional<Job> createJob(@NotNull String owner,
 			@Valid CreateDescriptor descriptor, String machineName,
+			List<String> tags, Duration keepaliveInterval,
+			byte[] originalRequest);
+
+	/**
+	 * Create a job for a user in a specific local group.
+	 * Note that jobs <em>cannot</em> be created on machines that
+	 * are out of service, but marking a machine as out of service does not stop
+	 * the jobs that are already running on it.
+	 *
+	 * @param owner
+	 *            Who is making this job.
+	 * @param group
+	 *            What group is associated with this job for accounting
+	 *            purposes.
+	 * @param descriptor
+	 *            What sort of allocation is desired?
+	 * @param machineName
+	 *            The name of the machine the user wants to allocate on, or
+	 *            {@code null} if they want to select by tags.
+	 * @param tags
+	 *            The tags of the machine the user wants to allocate on, or
+	 *            {@code null} if they want to select by name.
+	 * @param keepaliveInterval
+	 *            The maximum interval between keepalive requests or the job
+	 *            becomes eligible for automated deletion.
+	 * @param originalRequest
+	 *            The serialized original request, which will be stored in the
+	 *            database for later retrieval.
+	 * @return Handle to the job, or {@code empty} if the job couldn't be made.
+	 */
+	Optional<Job> createJobInGroup(@NotNull String owner, @NotNull String group,
+			@Valid CreateDescriptor descriptor, String machineName,
+			List<String> tags, Duration keepaliveInterval,
+			byte[] originalRequest);
+
+	/**
+	 * Create a job for interactive use in an NMPI Collab Session.
+	 * Note that jobs <em>cannot</em> be created on machines that
+	 * are out of service, but marking a machine as out of service does not stop
+	 * the jobs that are already running on it.
+	 *
+	 * @param owner
+	 *            Who is making this job.
+	 * @param nmpiCollab
+	 *            The NMPI Collab to manage a session in, and from which the
+	 *            quota will be used.
+	 * @param descriptor
+	 *            What sort of allocation is desired?
+	 * @param machineName
+	 *            The name of the machine the user wants to allocate on, or
+	 *            {@code null} if they want to select by tags.
+	 * @param tags
+	 *            The tags of the machine the user wants to allocate on, or
+	 *            {@code null} if they want to select by name.
+	 * @param keepaliveInterval
+	 *            The maximum interval between keepalive requests or the job
+	 *            becomes eligible for automated deletion.
+	 * @param originalRequest
+	 *            The serialized original request, which will be stored in the
+	 *            database for later retrieval.
+	 * @return Handle to the job, or {@code empty} if the job couldn't be made.
+	 */
+	Optional<Job> createJobInCollabSession(@NotNull String owner,
+			@NotNull String nmpiCollab,
+			@Valid CreateDescriptor descriptor, String machineName,
+			List<String> tags, Duration keepaliveInterval,
+			byte[] originalRequest);
+
+	/**
+	 * Create a job for interactive use in an NMPI Collab Session.
+	 * Note that jobs <em>cannot</em> be created on machines that
+	 * are out of service, but marking a machine as out of service does not stop
+	 * the jobs that are already running on it.
+	 *
+	 * @param owner
+	 *            Who is making this job.
+	 * @param nmpiJobId
+	 *            The NMPI Job to allocate the quota used to.  The collab of
+	 *            the Job will be used for internal accounting purposes.
+	 * @param descriptor
+	 *            What sort of allocation is desired?
+	 * @param machineName
+	 *            The name of the machine the user wants to allocate on, or
+	 *            {@code null} if they want to select by tags.
+	 * @param tags
+	 *            The tags of the machine the user wants to allocate on, or
+	 *            {@code null} if they want to select by name.
+	 * @param keepaliveInterval
+	 *            The maximum interval between keepalive requests or the job
+	 *            becomes eligible for automated deletion.
+	 * @param originalRequest
+	 *            The serialized original request, which will be stored in the
+	 *            database for later retrieval.
+	 * @return Handle to the job, or {@code empty} if the job couldn't be made.
+	 */
+	Optional<Job> createJobForNMPIJob(@NotNull String owner, int nmpiJobId,
+			@Valid CreateDescriptor descriptor,	String machineName,
 			List<String> tags, Duration keepaliveInterval,
 			byte[] originalRequest);
 

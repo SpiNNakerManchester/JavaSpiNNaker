@@ -773,10 +773,11 @@ class SpallocCoreTest extends TestSupport {
 	}
 
 	@Test
-	public void createJob() {
+	public void createJobInGroup() {
 		var job = spalloc
-				.createJob(USER_NAME, GROUP_NAME, CreateBoard.triad(0, 0, 0),
-						MACHINE_NAME, List.of(), Duration.ofSeconds(1), null)
+				.createJobInGroup(USER_NAME, GROUP_NAME,
+						CreateBoard.triad(0, 0, 0),	MACHINE_NAME, List.of(),
+						Duration.ofSeconds(1), null)
 				.orElseThrow();
 		try {
 			job.access("0.0.0.0");
@@ -786,8 +787,9 @@ class SpallocCoreTest extends TestSupport {
 		}
 
 		job = spalloc
-				.createJob(USER_NAME, GROUP_NAME, new CreateDimensions(1, 1, 1),
-						MACHINE_NAME, List.of(), Duration.ofSeconds(1), null)
+				.createJobInGroup(USER_NAME, GROUP_NAME,
+						new CreateDimensions(1, 1, 1), MACHINE_NAME, List.of(),
+						Duration.ofSeconds(1), null)
 				.orElseThrow();
 		try {
 			assertEquals(QUEUED, job.getState());
@@ -795,7 +797,7 @@ class SpallocCoreTest extends TestSupport {
 			nukeJob(job.getId());
 		}
 
-		job = spalloc.createJob(USER_NAME, GROUP_NAME,
+		job = spalloc.createJobInGroup(USER_NAME, GROUP_NAME,
 				new CreateDimensionsAt(1, 1, BOARD_ADDR, null), MACHINE_NAME,
 				List.of(), Duration.ofSeconds(1), null).orElseThrow();
 		try {
@@ -805,8 +807,9 @@ class SpallocCoreTest extends TestSupport {
 		}
 
 		job = spalloc
-				.createJob(USER_NAME, GROUP_NAME, new CreateNumBoards(1, 0),
-						MACHINE_NAME, List.of(), Duration.ofSeconds(1), null)
+				.createJobInGroup(USER_NAME, GROUP_NAME,
+						new CreateNumBoards(1, 0),	MACHINE_NAME, List.of(),
+						Duration.ofSeconds(1), null)
 				.orElseThrow();
 		try {
 			assertEquals(QUEUED, job.getState());
@@ -814,9 +817,9 @@ class SpallocCoreTest extends TestSupport {
 			nukeJob(job.getId());
 		}
 
-		// Should be able to guess what group...
+		// Should be able to guess what group when only one...
 		job = spalloc
-				.createJob(USER_NAME, null, new CreateNumBoards(1, 0),
+				.createJob(USER_NAME, new CreateNumBoards(1, 0),
 						MACHINE_NAME, List.of(), Duration.ofSeconds(1), null)
 				.orElseThrow();
 		try {

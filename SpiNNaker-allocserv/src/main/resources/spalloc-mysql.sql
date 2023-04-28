@@ -265,6 +265,24 @@ CREATE TABLE IF NOT EXISTS jobs (
 );
 
 -- STMT
+CREATE TABLE IF NOT EXISTS job_nmpi_collab (
+    job_id INTEGER,
+        FOREIGN KEY (job_id)
+        REFERENCES jobs(job_id),
+    collab VARCHAR(255) NOT NULL,
+    UNIQUE INDEX (job_id ASC, collab ASC)
+);
+
+--STMT
+CREATE TABLE IF NOT EXISTS job_nmpi_job (
+    job_id INTEGER,
+        FOREIGN KEY (job_id)
+        REFERENCES jobs(job_id),
+    nmpi_job_id INTEGER NOT NULL,
+    UNIQUE INDEX (job_id ASC, nmpi_job_id ASC)
+);
+
+-- STMT
 -- Reports of problems with boards
 CREATE TABLE IF NOT EXISTS board_reports(
 	report_id INTEGER PRIMARY KEY AUTO_INCREMENT,
