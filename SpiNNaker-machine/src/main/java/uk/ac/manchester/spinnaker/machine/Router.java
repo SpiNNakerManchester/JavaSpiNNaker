@@ -47,7 +47,7 @@ public final class Router implements MappableIterable<Link> {
 	// TODO convert_routing_table_entry_to_spinnaker_route
 
 	/**
-	 * Default Constructor to add links later.
+	 * Default constructor allowing links to be added later.
 	 *
 	 * @param nAvailableMulticastEntries
 	 *            The number of entries available in the routing table.
@@ -57,17 +57,18 @@ public final class Router implements MappableIterable<Link> {
 	}
 
 	/**
-	 * Default Constructor to add links later using default values.
+	 * Default constructor allowing links to be added later. The router will be
+	 * of standard size.
 	 */
 	public Router() {
 		this(ROUTER_AVAILABLE_ENTRIES);
 	}
 
 	/**
-	 * Main Constructor that allows setting of all values.
+	 * Main constructor that allows setting of all values.
 	 *
 	 * @param links
-	 *            Known Link(s) to add. All must have unique
+	 *            Known link(s) to add. All must have unique
 	 *            {@code sourceLinkDirection}(s).
 	 * @param nAvailableMulticastEntries
 	 *            The number of entries available in the routing table.
@@ -82,10 +83,10 @@ public final class Router implements MappableIterable<Link> {
 	}
 
 	/**
-	 * Main Constructor that allows setting of all values.
+	 * Main constructor that allows setting of all values.
 	 *
 	 * @param links
-	 *            Known Link(s) to add. All must have unique
+	 *            Known link(s) to add. All must have unique
 	 *            {@code sourceLinkDirection}(s).
 	 * @param nAvailableMulticastEntries
 	 *            The number of entries available in the routing table.
@@ -100,10 +101,10 @@ public final class Router implements MappableIterable<Link> {
 	}
 
 	/**
-	 * Pass through Constructor that uses default values.
+	 * Pass-through constructor that uses default values.
 	 *
 	 * @param links
-	 *            Known Link(s) to add. All must have unique
+	 *            Known link(s) to add. All must have unique
 	 *            {@code sourceLinkDirection}(s).
 	 * @throws IllegalArgumentException
 	 *             Indicates that there are two Links with the same
@@ -114,7 +115,7 @@ public final class Router implements MappableIterable<Link> {
 	}
 
 	/**
-	 * Pass through Constructor that uses default values.
+	 * Pass-through constructor that uses default values.
 	 *
 	 * @param links
 	 *            Known Link(s) to add. All must have unique
@@ -133,7 +134,7 @@ public final class Router implements MappableIterable<Link> {
 	 * @param router
 	 *            original to copy other parameters from.
 	 * @param links
-	 *            Known Link(s) to add. All must have unique
+	 *            Known link(s) to add. All must have unique
 	 *            {@code sourceLinkDirection}(s).
 	 * @throws IllegalArgumentException
 	 *             Indicates that there are two Links with the same
@@ -144,7 +145,7 @@ public final class Router implements MappableIterable<Link> {
 	}
 
 	/**
-	 * Creates a new Router from this source with links in all but the missing
+	 * Creates a new router from this source with links in all but the missing
 	 * directions. Used to build a router object from JSON.
 	 *
 	 * @param source
@@ -191,7 +192,7 @@ public final class Router implements MappableIterable<Link> {
 	}
 
 	/**
-	 * Indicates if there is a Link going in this direction.
+	 * Indicates if there is a link going in this direction.
 	 *
 	 * @param direction
 	 *            Direction to find link for.
@@ -202,7 +203,7 @@ public final class Router implements MappableIterable<Link> {
 	}
 
 	/**
-	 * Obtains a Link going in this direction.
+	 * Obtains a link going in this direction.
 	 * <p>
 	 * {@code null} is returned if no link found.
 	 *
@@ -215,9 +216,9 @@ public final class Router implements MappableIterable<Link> {
 	}
 
 	/**
-	 * Return a View over the links.
+	 * Return a view over the links.
 	 * <p>
-	 * Each Link is guaranteed to differ in at least the
+	 * Each link is guaranteed to differ in at least the
 	 * {@code sourceLinkDirection}.
 	 *
 	 * @return An unmodifiable collection of Link(s).
@@ -227,10 +228,10 @@ public final class Router implements MappableIterable<Link> {
 	}
 
 	/**
-	 * The size of the Router which is the number of Link(s).
+	 * The size of the router which is the number of link(s) it has.
 	 * <p>
-	 * The number of NeighbouringChipsCoords will always be equal to the number
-	 * of links.
+	 * The number of neighbouring chip coordinates will always be equal to the
+	 * number of links.
 	 *
 	 * @return The number of Link(s) and therefore NeighbouringChipsCoords
 	 */
@@ -241,7 +242,7 @@ public final class Router implements MappableIterable<Link> {
 	/**
 	 * Stream of the destinations of each link.
 	 * <p>
-	 * There will be exactly one destination for each Link. While normally all
+	 * There will be exactly one destination for each link. While normally all
 	 * destinations will be unique the is no guarantee.
 	 *
 	 * @return A Stream over the destination locations.
@@ -253,10 +254,10 @@ public final class Router implements MappableIterable<Link> {
 	/**
 	 * Iterable over the destinations of each link.
 	 * <p>
-	 * There will be exactly one destination for each Link. While normally all
+	 * There will be exactly one destination for each link. While normally all
 	 * destinations will be unique the is no guarantee.
 	 *
-	 * @return A Stream over the destination locations.
+	 * @return The destination locations.
 	 */
 	public MappableIterable<ChipLocation> iterNeighbouringChipsCoords() {
 		return () -> new NeighbourIterator(links.values());

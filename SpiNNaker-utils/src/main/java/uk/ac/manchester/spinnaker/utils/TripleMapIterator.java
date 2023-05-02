@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
  *            class of objects to be supplied by the this iterator.
  * @author Christian-B
  */
-public class TripleMapIterator<V> implements Iterator<V> {
+final class TripleMapIterator<V> implements Iterator<V> {
 	private final Iterator<? extends Map<?, ? extends Map<?, V>>> outer;
 
 	private Iterator<V> inner;
@@ -40,8 +40,7 @@ public class TripleMapIterator<V> implements Iterator<V> {
 	 * @param outerMap
 	 *            A triple map with any type(s) as the keys.
 	 */
-	public TripleMapIterator(
-			Map<?, ? extends Map<?, ? extends Map<?, V>>> outerMap) {
+	TripleMapIterator(Map<?, ? extends Map<?, ? extends Map<?, V>>> outerMap) {
 		this(outerMap.values().iterator());
 	}
 
@@ -51,7 +50,7 @@ public class TripleMapIterator<V> implements Iterator<V> {
 	 * @param outerIterable
 	 *            A triple map with any type(s) as the keys.
 	 */
-	public TripleMapIterator(
+	TripleMapIterator(
 			Iterable<? extends Map<?, ? extends Map<?, V>>> outerIterable) {
 		this(outerIterable.iterator());
 	}
@@ -62,8 +61,7 @@ public class TripleMapIterator<V> implements Iterator<V> {
 	 * @param outer
 	 *            A Iterator of double maps with any type(s) as the keys.
 	 */
-	public TripleMapIterator(
-			Iterator<? extends Map<?, ? extends Map<?, V>>> outer) {
+	TripleMapIterator(Iterator<? extends Map<?, ? extends Map<?, V>>> outer) {
 		this.outer = outer;
 		if (outer.hasNext()) {
 			inner = new DoubleMapIterator<>(outer.next());
@@ -100,5 +98,4 @@ public class TripleMapIterator<V> implements Iterator<V> {
 			}
 		}
 	}
-
 }

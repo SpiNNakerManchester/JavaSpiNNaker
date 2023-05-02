@@ -65,14 +65,14 @@ public final class MachineDefaults {
 	public static final int SIZE_Y_OF_ONE_BOARD = 8;
 
 	/**
-	 * The height of only known Triad in chips. Spalloc arranges boards in
+	 * The height of only known triad in chips. Spalloc arranges boards in
 	 * groups of three &mdash; triads &mdash; that tile out to form a large
 	 * machine.
 	 */
 	public static final int TRIAD_HEIGHT = 12;
 
 	/**
-	 * The width of the Triad in chips. Spalloc arranges boards in groups of
+	 * The width of the triad in chips. Spalloc arranges boards in groups of
 	 * three &mdash; triads &mdash; that tile out to form a large machine.
 	 */
 	public static final int TRIAD_WIDTH = 12;
@@ -86,7 +86,7 @@ public final class MachineDefaults {
 	public static final int NUM_ROUTER_DIAGNOSTIC_COUNTERS = 16;
 
 	/**
-	 * Width of field of hashcode for holding (one dimension of the) chip
+	 * Width of field of hash code for holding (one dimension of the) chip
 	 * coordinate.
 	 */
 	public static final int COORD_SHIFT = 8;
@@ -94,10 +94,10 @@ public final class MachineDefaults {
 	/** The maximum number of cores present on a chip. */
 	public static final int MAX_NUM_CORES = 18;
 
-	/** Width of field of hashcode for holding processor ID. */
+	/** Width of field of hash code for holding processor ID. */
 	public static final int CORE_SHIFT = 5;
 
-	/** Width of field of hashcode for holding region ID. */
+	/** Width of field of hash code for holding region ID. */
 	public static final int REGION_SHIFT = 4;
 
 	/** Ignore Links info for a four chip board. */
@@ -113,15 +113,16 @@ public final class MachineDefaults {
 					new ChipLocation(1, 1), EnumSet.of(EAST, NORTHEAST));
 
 	/**
-	 * Checks the x and y parameter are legal ones regardless of the type of
-	 * machine.
+	 * Checks the X and Y coordinate parameters are legal ones regardless of the
+	 * type of machine.
 	 *
 	 * @param x
-	 *            X part of the chips location
+	 *            X coordinate of the chips location
 	 * @param y
-	 *            Y part of the chips location
+	 *            Y coordinate of the chips location
 	 * @throws IllegalArgumentException
-	 *             Thrown is either x or y is negative or too big.
+	 *             Thrown if either <em>x</em> or <em>y</em> is negative or too
+	 *             big.
 	 */
 	public static void validateChipLocation(int x, int y)
 			throws IllegalArgumentException {
@@ -134,17 +135,18 @@ public final class MachineDefaults {
 	}
 
 	/**
-	 * Checks the x, y and p, parameter are legal ones regardless of the type of
-	 * machine.
+	 * Checks the X, Y, and P coordinate parameters are legal ones regardless of
+	 * the type of machine.
 	 *
 	 * @param x
-	 *            X part of the core/chip's location
+	 *            X coordinate of the core/chip's location
 	 * @param y
-	 *            Y part of the core/chip's location
+	 *            Y coordinate of the core/chip's location
 	 * @param p
-	 *            P part of the core's location
+	 *            P coordinate of the core's location
 	 * @throws IllegalArgumentException
-	 *             Thrown is x, y or p are negative or too big.
+	 *             Thrown if <em>x</em>, <em>y</em>, or <em>p</em> are negative
+	 *             or too big.
 	 */
 	public static void validateCoreLocation(int x, int y, int p)
 			throws IllegalArgumentException {

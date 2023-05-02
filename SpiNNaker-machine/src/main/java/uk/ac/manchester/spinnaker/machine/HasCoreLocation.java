@@ -29,7 +29,8 @@ public interface HasCoreLocation extends HasChipLocation {
 
 	/**
 	 * Check if two locations are co-located at the core level. This does
-	 * <i>not</i> imply that the two are equal.
+	 * <i>not</i> imply that the two are equal (but does imply that the results
+	 * of calling {@link #asCoreLocation()} on each will produce equal objects).
 	 *
 	 * @param other
 	 *            The other location to compare to.

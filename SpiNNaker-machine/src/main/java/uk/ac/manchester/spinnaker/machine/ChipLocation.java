@@ -30,12 +30,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.errorprone.annotations.Immutable;
 
 /**
- * The location of a Chip as an X and Y tuple.
+ * The location of a {@link Chip} as an X and Y tuple.
  * <p>
  * This class is final as it is used a key in maps.
  *
- * @author alan
- * @author dkf
+ * @author Alan Stokes
+ * @author Donal Fellows
  */
 @Immutable
 @JsonFormat(shape = ARRAY)
@@ -58,7 +58,8 @@ public final class ChipLocation
 
 	/**
 	 * The location (0,0), which is in the bottom/left corner and typically the
-	 * ethernet chip for the lead board of an allocation.
+	 * Ethernet-enabled chip for the lead board of an allocation. It is also
+	 * typically the boot board of an allocation.
 	 */
 	public static final ChipLocation ZERO_ZERO = new ChipLocation(0, 0);
 
