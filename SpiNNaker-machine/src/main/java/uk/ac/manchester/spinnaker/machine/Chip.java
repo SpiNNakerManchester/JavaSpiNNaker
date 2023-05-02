@@ -61,13 +61,16 @@ public class Chip implements HasChipLocation {
 	/** The size of the SDRAM. */
 	public final int sdram;
 
-	/** The IP address of the chip or None if no Ethernet attached. */
+	/** The IP address of the chip or {@code null} if no Ethernet attached. */
 	public final InetAddress ipAddress;
 
 	/** List of SDP identifiers available. */
 	private final List<@TagID Integer> tagIds;
 
-	/** The nearest Ethernet coordinates, or {@code null} if none known. */
+	/**
+	 * The nearest Ethernet-enabled chip coordinates, or {@code null} if none
+	 * known. ("Nearest" here means "on the same board".)
+	 */
 	@Valid
 	public final ChipLocation nearestEthernet;
 
@@ -87,7 +90,7 @@ public class Chip implements HasChipLocation {
 	 * Main constructor which sets all parameters.
 	 *
 	 * @param location
-	 *            The x and y coordinates of the chip's position in the
+	 *            The coordinates of the chip's position in the
 	 *            two-dimensional grid of chips.
 	 * @param processors
 	 *            An iterable of processor objects.
@@ -96,17 +99,18 @@ public class Chip implements HasChipLocation {
 	 * @param sdram
 	 *            The size of the SDRAM.
 	 * @param ipAddress
-	 *            The IP address of the chip or {@code null} if no Ethernet
-	 *            attached.
+	 *            The IP address of the chip's Ethernet connection, or
+	 *            {@code null} if no Ethernet attached.
 	 * @param tagIds
 	 *            List of SDP identifiers available. Can be empty to force
-	 *            empty. If {@code null}, will use the default list for Ethernet
-	 *            Chips and empty for non-ethernet Chips
+	 *            empty. If {@code null}, will use the default list for
+	 *            Ethernet-enabled chips and empty for non-Ethernet-enabled
+	 *            chips
 	 * @param nearestEthernet
-	 *            The nearest Ethernet coordinates or {@code null} if none
-	 *            known.
+	 *            The nearest Ethernet-enabled chip coordinates or {@code null}
+	 *            if none known.
 	 * @throws IllegalArgumentException
-	 *             Thrown if multiple chips share the same id.
+	 *             Thrown if multiple chips share the same ID.
 	 */
 	public Chip(ChipLocation location, Iterable<Processor> processors,
 			Router router, int sdram, InetAddress ipAddress,
@@ -147,7 +151,7 @@ public class Chip implements HasChipLocation {
 	 * Constructor which fills in some default values.
 	 *
 	 * @param location
-	 *            The x and y coordinates of the chip's position in the
+	 *            The coordinates of the chip's position in the
 	 *            two-dimensional grid of chips.
 	 * @param processors
 	 *            An iterable of processor objects.
@@ -156,15 +160,15 @@ public class Chip implements HasChipLocation {
 	 * @param sdram
 	 *            The size of the SDRAM.
 	 * @param ipAddress
-	 *            The IP address of the chip or {@code null} if no Ethernet
-	 *            attached.
+	 *            The IP address of the chip's attached Ethernet connection, or
+	 *            {@code null} if no Ethernet attached.
 	 * @param nearestEthernet
-	 *            The nearest Ethernet coordinates or {@code null} if none
-	 *            known.
+	 *            The nearest Ethernet-enabled chip coordinates, or {@code null}
+	 *            if none known.
 	 * @throws IllegalArgumentException
-	 *             Thrown if multiple Links share the same
-	 *             {@code sourceLinkDirection}. Thrown if multiple chips share
-	 *             the same id.
+	 *             Thrown if multiple links share the same
+	 *             {@code sourceLinkDirection}, or if multiple chips share
+	 *             the same ID.
 	 */
 	public Chip(ChipLocation location, Iterable<Processor> processors,
 			Router router, int sdram, InetAddress ipAddress,
@@ -174,12 +178,10 @@ public class Chip implements HasChipLocation {
 	}
 
 	/**
-	 * Constructor for a Chip with the non-default processors.
-	 * <p>
-	 * Creates the Router on the fly based on the links.
+	 * Constructor for a chip with non-default processors.
 	 *
 	 * @param location
-	 *            The x and y coordinates of the chip's position in the
+	 *            The coordinates of the chip's position in the
 	 *            two-dimensional grid of chips.
 	 * @param processors
 	 *            An iterable of processor objects.
@@ -203,23 +205,21 @@ public class Chip implements HasChipLocation {
 	}
 
 	/**
-	 * Constructor for a Chip with the default processors.
-	 * <p>
-	 * Creates the Router on the fly based on the links.
+	 * Constructor for a chip with the default processors.
 	 *
 	 * @param location
-	 *            The x and y coordinates of the chip's position in the
-	 *            two-dimensional grid of chips.
+	 *            The coordinates of the chip's position in the two-dimensional
+	 *            grid of chips.
 	 * @param router
 	 *            A router for the chip.
 	 * @param ipAddress
 	 *            The IP address of the chip or {@code null} if no Ethernet
 	 *            attached.
 	 * @param nearestEthernet
-	 *            The nearest Ethernet coordinates or {@code null} if none
-	 *            known.
+	 *            The nearest Ethernet-connected chip's coordinates or
+	 *            {@code null} if none known.
 	 * @throws IllegalArgumentException
-	 *             Indicates another Link with this {@code sourceLinkDirection}
+	 *             Indicates another link with this {@code sourceLinkDirection}
 	 *             has already been added.
 	 */
 	public Chip(ChipLocation location, Router router, InetAddress ipAddress,
@@ -324,11 +324,11 @@ public class Chip implements HasChipLocation {
 	/**
 	 * Determines if a user processor with the given ID exists in the chip.
 	 * <p>
-	 * Warning: If a Monitor processor exists with this ID this method will
-	 * return false.
+	 * <strong>Warning:</strong> If a monitor processor exists with this ID,
+	 * this method will return {@code false}.
 	 *
 	 * @param processorId
-	 *            Id of the potential processor.
+	 *            ID of the potential processor.
 	 * @return True if and only if there is a user processor for this ID.
 	 */
 	public boolean hasUserProcessor(int processorId) {
@@ -336,29 +336,28 @@ public class Chip implements HasChipLocation {
 	}
 
 	/**
-	 * Obtains the User Processor with this ID, or returns {@code null}.
+	 * Obtains the user processor with this ID, or returns {@code null}.
 	 * <p>
 	 * This method will only check user processors so will return {@code null}
-	 * even if a monitor processor exists with this id.
+	 * even if a monitor processor exists with this ID.
 	 *
 	 * @param processorId
-	 *            Id of the potential processor.
-	 * @return The Processor or {@code null} if not is found.
+	 *            ID of the potential processor.
+	 * @return The processor, or {@code null} if not is found.
 	 */
 	public Processor getUserProcessor(int processorId) {
 		return userProcessors.get(processorId);
 	}
 
 	/**
-	 * Return a list off all the Processors on this Chip
-	 * <p>
+	 * Return a list off all the processors on this chip.
 	 * This method will check both the user and monitor processors.
 	 * <p>
-	 * The Processors will be ordered by ProcessorID which are guaranteed to all
+	 * The processors will be ordered by their ID, which are guaranteed to all
 	 * be different.
 	 * <p>
 	 * The current implementation builds a new list on the fly so this list is
-	 * mutable without affecting the Chip. Future implementations could return
+	 * mutable without affecting the chip. Future implementations could return
 	 * an unmodifiable list.
 	 *
 	 * @return A list of all the processors including both monitor and user.
@@ -371,15 +370,14 @@ public class Chip implements HasChipLocation {
 	}
 
 	/**
-	 * Return a view over the User Processors on this Chip
-	 * <p>
-	 * Monitor processors are not included so every Processor in the list is
+	 * Return a view over the user processors on this chip.
+	 * Monitor processors are not included so every processor in the list is
 	 * guaranteed to have the property {@code isMonitor == false}!
 	 * <p>
-	 * The Processors will be ordered by ProcessorID which are guaranteed to all
+	 * The processors will be ordered by their ID, which are guaranteed to all
 	 * be different.
 	 *
-	 * @return A unmodifiable View over the processors.
+	 * @return A unmodifiable view over the processors.
 	 */
 	public Collection<Processor> userProcessors() {
 		return unmodifiableCollection(userProcessors.values());
@@ -388,7 +386,7 @@ public class Chip implements HasChipLocation {
 	/**
 	 * The total number of processors.
 	 *
-	 * @return The size of the Processor Collection
+	 * @return The size of the processor collection.
 	 */
 	public int nProcessors() {
 		return userProcessors.size() + monitorProcessors.size();
@@ -408,7 +406,7 @@ public class Chip implements HasChipLocation {
 	/**
 	 * Get the first processor in the list which is not a monitor core.
 	 *
-	 * @return A Processor
+	 * @return A processor
 	 * @throws NoSuchElementException
 	 *             If all the Processor(s) are monitors.
 	 */
@@ -417,7 +415,9 @@ public class Chip implements HasChipLocation {
 	}
 
 	/**
-	 * @return the tagIds
+	 * Get the IDs of the tags of the chip.
+	 *
+	 * @return the tag IDs
 	 */
 	public List<Integer> getTagIds() {
 		return tagIds;
@@ -447,15 +447,12 @@ public class Chip implements HasChipLocation {
 	}
 
 	/**
-	 * Describes one difference found between this machine and another machine.
-	 * <p>
+	 * Describes one difference found between this chip and another chip.
 	 * This method will always return {@code null} if no difference is found
-	 * between the two machines. So semantically is the same as Equals except
-	 * that this works if other is a super class of machine in which case only
-	 * the share variables are compared.
+	 * between the two machines.
 	 * <p>
-	 * This method returns as soon as it has found a difference so there may be
-	 * other not specified differences.
+	 * This method returns as soon as it has found a difference; there may be
+	 * other unspecified differences.
 	 * <p>
 	 * <strong>Warning:</strong> This method could change over time, so there is
 	 * no implied guarantee to the order that variables are checked or to the

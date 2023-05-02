@@ -41,7 +41,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 public record LinkBean(@Valid ChipLocation destination,
 		@NotNull Direction sourceDirection) {
 	/**
-	 * Create a link description.
+	 * Make an instance.
 	 *
 	 * @param sourceLinkId
 	 *            What is the direction of the link?

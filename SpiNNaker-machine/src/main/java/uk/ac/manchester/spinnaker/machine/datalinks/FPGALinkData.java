@@ -42,13 +42,13 @@ public final class FPGALinkData extends AbstractDataLink {
 	 * @param fpgaLinkId
 	 *            The link ID from the FPGA perspective.
 	 * @param fpgaId
-	 *            The ID if the FPGA port being used.
+	 *            The ID of the FPGA port being used.
 	 * @param location
-	 *            The location/Chip being linked to
+	 *            The location/chip being linked to
 	 * @param linkId
-	 *            The ID/Direction coming out of the Chip
+	 *            The ID/direction coming out of the chip
 	 * @param boardAddress
-	 *            IP address of the Datalink on the board.
+	 *            IP address of the data link on the board.
 	 */
 	public FPGALinkData(int fpgaLinkId, FpgaId fpgaId, HasChipLocation location,
 			Direction linkId, InetAddress boardAddress) {

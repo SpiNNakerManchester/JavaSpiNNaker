@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
  *            Class of the Object to be supplied by the final Iterator.
  * @author Christian-B
  */
-public final class DoubleMapIterator<V> implements Iterator<V> {
+final class DoubleMapIterator<V> implements Iterator<V> {
 	private final Iterator<? extends Map<?, V>> outer;
 
 	private Iterator<V> inner;
@@ -40,7 +40,7 @@ public final class DoubleMapIterator<V> implements Iterator<V> {
 	 * @param outermap
 	 *            A double map with any type(s) as the keys.
 	 */
-	public DoubleMapIterator(Map<?, ? extends Map<?, V>> outermap) {
+	DoubleMapIterator(Map<?, ? extends Map<?, V>> outermap) {
 		this(outermap.values().iterator());
 	}
 
@@ -50,7 +50,7 @@ public final class DoubleMapIterator<V> implements Iterator<V> {
 	 * @param outerIterable
 	 *            A double map with any type(s) as the keys.
 	 */
-	public DoubleMapIterator(Iterable<? extends Map<?, V>> outerIterable) {
+	DoubleMapIterator(Iterable<? extends Map<?, V>> outerIterable) {
 		this(outerIterable.iterator());
 	}
 
@@ -60,7 +60,7 @@ public final class DoubleMapIterator<V> implements Iterator<V> {
 	 * @param outer
 	 *            An iterator of Maps.
 	 */
-	public DoubleMapIterator(Iterator<? extends Map<?, V>> outer) {
+	DoubleMapIterator(Iterator<? extends Map<?, V>> outer) {
 		this.outer = outer;
 		if (outer.hasNext()) {
 			inner = outer.next().values().iterator();
@@ -97,5 +97,4 @@ public final class DoubleMapIterator<V> implements Iterator<V> {
 			}
 		}
 	}
-
 }

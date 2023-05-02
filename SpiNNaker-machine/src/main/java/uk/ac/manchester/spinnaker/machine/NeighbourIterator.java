@@ -18,17 +18,25 @@ package uk.ac.manchester.spinnaker.machine;
 import java.util.Iterator;
 
 /**
+ * Iterates over the coordinates of the neighbours of a chip.
  *
  * @author Christian-B
  */
 class NeighbourIterator implements Iterator<ChipLocation> {
-
 	private Iterator<Link> linksIter;
 
+	/**
+	 * @param linksIter
+	 *            The links from the chip.
+	 */
 	NeighbourIterator(Iterator<Link> linksIter) {
 		this.linksIter = linksIter;
 	}
 
+	/**
+	 * @param linksIterable
+	 *            The links from the chip.
+	 */
 	NeighbourIterator(Iterable<Link> linksIterable) {
 		this.linksIter = linksIterable.iterator();
 	}
@@ -42,5 +50,4 @@ class NeighbourIterator implements Iterator<ChipLocation> {
 	public ChipLocation next() {
 		return linksIter.next().destination();
 	}
-
 }

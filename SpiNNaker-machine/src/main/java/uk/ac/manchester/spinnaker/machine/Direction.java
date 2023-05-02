@@ -21,7 +21,6 @@ package uk.ac.manchester.spinnaker.machine;
  * @author Christian-B
  */
 public enum Direction {
-
 	/** Direction 0 typically towards a location x + 1, y. */
 	EAST(0, +1, 0, "east"),
 	/** Direction 1 typically towards a location x + 1, y +1. */
@@ -39,33 +38,31 @@ public enum Direction {
 		EAST, NORTHEAST, NORTH, WEST, SOUTHWEST, SOUTH
 	};
 
-	/** The Id of this direction when it is expressed as an Integer. */
+	/** The ID of this direction when it is expressed as an {@code int}. */
 	public final int id;
 
 	/**
-	 * The typical change to x when moving in this direction.
+	 * The typical change to X when moving in this direction.
 	 */
 	public final int xChange;
 
 	/**
-	 * The typical change to x when moving in this Direction.
+	 * The typical change to Y when moving in this direction.
 	 */
 	public final int yChange;
 
 	/**
-	 * The String representation for example used in JSON.
+	 * The string representation, for example used in JSON.
 	 */
 	public final String label;
 
 	/**
-	 * Constructs an element of the Enum.
-	 *
 	 * @param id
-	 *            ID of this Direction.
+	 *            ID of this direction.
 	 * @param xChange
-	 *            Typical change to X if moving in this Direction.
+	 *            Typical change to X if moving in this direction.
 	 * @param yChange
-	 *            Typical change to Y if moving in this Direction.
+	 *            Typical change to Y if moving in this direction.
 	 */
 	Direction(int id, int xChange, int yChange, String label) {
 		this.id = id;
@@ -91,7 +88,7 @@ public enum Direction {
 	}
 
 	/**
-	 * The Direction with this ID when expressed as an int.
+	 * The Direction with this ID when expressed as an {@code int}.
 	 *
 	 * @param id
 	 *            ID of this Direction
@@ -110,12 +107,12 @@ public enum Direction {
 	/**
 	 * The Direction with this label
 	 * <p>
-	 * The current implementation assumes the labels are lowercase and words are
-	 * separated by underscore (e.g., {@code north_east}).
+	 * The current implementation assumes the labels are lower-case and words
+	 * are separated by underscore (e.g., {@code north_east}).
 	 *
 	 * @param label
-	 *            Label of a Direction
-	 * @return A valid Direction
+	 *            Label of a direction
+	 * @return A valid direction
 	 * @throws IllegalArgumentException
 	 *             If no direction is found.
 	 */

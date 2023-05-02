@@ -100,5 +100,4 @@ public record MachineBean(//
 		}
 		return builder.toString();
 	}
-
 }

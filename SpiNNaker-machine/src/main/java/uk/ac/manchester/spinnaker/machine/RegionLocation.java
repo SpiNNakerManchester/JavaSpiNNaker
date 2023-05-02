@@ -22,9 +22,9 @@ import java.util.Comparator;
 import com.google.errorprone.annotations.Immutable;
 
 /**
- * Holding case for a CoreLocation (X, Y and P) and the recording region ID.
+ * Container for a CoreLocation (X, Y and P) and the recording region ID.
  *
- * @author Christian
+ * @author Christian-B
  * @param x
  *            The Chip / Core's X value.
  * @param y
@@ -32,19 +32,19 @@ import com.google.errorprone.annotations.Immutable;
  * @param p
  *            The Core's P value.
  * @param region
- *            The recording Region.
+ *            The recording region ID.
  */
 @Immutable
 public record RegionLocation(//
 		@ValidX int x, @ValidY int y, @ValidP int p, int region)
 		implements HasCoreLocation, Comparable<RegionLocation> {
 	/**
-	 * Creates the Region based on a Core and a region.
+	 * Creates the region based on a core and a region.
 	 *
 	 * @param core
-	 *            The Core to use
+	 *            The core to use
 	 * @param region
-	 *            The Region to use.
+	 *            The ID of the region to use.
 	 */
 	public RegionLocation(HasCoreLocation core, int region) {
 		this(core.getX(), core.getY(), core.getP(), region);
@@ -67,10 +67,10 @@ public record RegionLocation(//
 
 	/** Comparator for region locations. */
 	public static final Comparator<RegionLocation> COMPARATOR =
-			comparing(RegionLocation::getX) //
-					.thenComparing(RegionLocation::getY)
-					.thenComparing(RegionLocation::getP)
-					.thenComparing(rl -> rl.region);
+			comparing(RegionLocation::x) //
+					.thenComparing(RegionLocation::y)
+					.thenComparing(RegionLocation::p)
+					.thenComparing(RegionLocation::region);
 
 	@Override
 	public int compareTo(RegionLocation o) {

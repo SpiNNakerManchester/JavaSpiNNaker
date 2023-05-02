@@ -29,7 +29,8 @@ import com.google.errorprone.annotations.Immutable;
 /**
  * A processor object included in a SpiNNaker chip.
  * <p>
- * Note: There is No public Constructor instead use a static factory method.
+ * <strong>Note:</strong> There is no public constructor; instead use a static
+ * factory method.
  *
  * @see <a href=
  *      "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/processor.py">
@@ -163,14 +164,14 @@ public final class Processor implements Comparable<Processor> {
 	}
 
 	/**
-	 * Obtain a Processor object for this ID and with these properties.
+	 * Obtain a processor for this ID and with these properties.
 	 *
 	 * @param processorId
 	 *            ID of the processor in the chip.
 	 * @param clockSpeed
 	 *            The number of CPU cycles per second of the processor.
 	 * @param dtcmAvailable
-	 *            Data Tightly Coupled Memory available.
+	 *            Data Tightly Coupled Memory (DTCM) available.
 	 * @param isMonitor
 	 *            Determines if the processor is considered the monitor
 	 *            processor, and so should not be otherwise allocated.
@@ -196,14 +197,14 @@ public final class Processor implements Comparable<Processor> {
 	}
 
 	/**
-	 * Obtain a Processor object for this ID which could be a monitor.
+	 * Obtain a processor object for this ID, which could be a monitor.
 	 *
 	 * @param processorId
 	 *            ID of the processor in the chip.
 	 * @param isMonitor
 	 *            Determines if the processor is considered the monitor
 	 *            processor, and so should not be otherwise allocated.
-	 * @return A default Processor object with this ID and monitor state
+	 * @return A default processor object with this ID and monitor state
 	 */
 	public static Processor factory(int processorId, boolean isMonitor) {
 		try {
@@ -227,11 +228,11 @@ public final class Processor implements Comparable<Processor> {
 	}
 
 	/**
-	 * Obtain a non-monitor Processor object for this ID.
+	 * Obtain a non-monitor processor object for this ID.
 	 *
 	 * @param processorId
 	 *            ID of the processor in the chip.
-	 * @return A default Processor object with this ID and monitor state
+	 * @return A default processor object with this ID
 	 */
 	public static Processor factory(int processorId) {
 		return factory(processorId, false);

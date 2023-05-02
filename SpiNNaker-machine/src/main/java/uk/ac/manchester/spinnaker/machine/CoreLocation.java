@@ -23,10 +23,10 @@ import java.io.Serializable;
 import com.google.errorprone.annotations.Immutable;
 
 /**
- * The location of a Core as an X, Y, P tuple.
+ * The location of a {@link Processor} on a {@link Chip} as an X, Y, P tuple.
  *
- * @author alan
- * @author dkf
+ * @author Alan Stokes
+ * @author Donal Fellows
  * @param x
  *            The X coordinate, in range 0..255
  * @param y

@@ -30,14 +30,15 @@ public interface HasChipLocation {
 	int getX();
 
 	/**
-	 * @return The X coordinate of the chip.
+	 * @return The Y coordinate of the chip.
 	 */
 	@ValidY
 	int getY();
 
 	/**
-	 * Check if two locations are colocated at the chip level. This does
-	 * <i>not</i> imply that the two are equal.
+	 * Check if two locations are co-located at the chip level. This does
+	 * <i>not</i> imply that the two are equal (but does imply that the results
+	 * of calling {@link #asChipLocation()} on each will produce equal objects).
 	 *
 	 * @param other
 	 *            The other location to compare to.

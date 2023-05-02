@@ -29,6 +29,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * Used to hold data that is contained within a Reverse IP tag. Reverse IP tags
  * allow data to flow at runtime from the outside world into SpiNNaker; they are
  * the SpiNNaker equivalent of a {@linkplain ServerSocket server socket}.
+ * Such packets <em>must</em> include an SDP header.
  */
 @UsedInJavadocOnly(ServerSocket.class)
 public final class ReverseIPTag extends Tag {
