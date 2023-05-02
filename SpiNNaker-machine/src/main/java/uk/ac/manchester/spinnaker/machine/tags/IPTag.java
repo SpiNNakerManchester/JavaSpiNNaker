@@ -29,7 +29,9 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 /**
  * Used to hold data that is contained within an IP tag. IP tags allow data to
- * flow at runtime from SpiNNaker to the outside world.
+ * flow at runtime from SpiNNaker to the outside world via UDP packets. Those
+ * UDP packets may have an SDP header, or that may be removed; this is one of
+ * the configuration options for the tag.
  */
 public final class IPTag extends Tag {
 	/** Default traffic identifier. */

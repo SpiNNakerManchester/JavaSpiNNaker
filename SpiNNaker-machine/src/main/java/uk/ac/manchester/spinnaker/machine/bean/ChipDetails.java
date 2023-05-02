@@ -61,22 +61,22 @@ public class ChipDetails {
 	private final List<@Valid LinkBean> links;
 
 	/**
-	 * Creates a Chip Details bean with the required fields leaving optional
-	 * ones form setters.
+	 * Make an instance.
 	 *
 	 * @param cores
 	 *            Total number of cores working cores including monitors.
 	 * @param ipAddress
-	 *            the ipAddress to set
+	 *            the IP address to set
 	 * @param ethernet
-	 *            Location of the nearest Ethernet Chip.
+	 *            Location of the nearest Ethernet-enabled chip.
 	 * @param links
 	 *            Description of link information (only present when the links
 	 *            are not a complete default set).
 	 * @param deadLinks
-	 *            the deadLinks to set
+	 *            the dead links of the chip
 	 * @throws UnknownHostException
-	 *             If the ipAddress can not be converted to an InetAddress
+	 *             If the {@code ipAddress} can not be converted to an
+	 *             {@link InetAddress}
 	 */
 	public ChipDetails(
 			@JsonProperty(value = "cores", required = true) int cores,
@@ -109,21 +109,21 @@ public class ChipDetails {
 	}
 
 	/**
-	 * @return the ethernet
+	 * @return the location of the board's Ethernet-enabled chip
 	 */
 	public ChipLocation getEthernet() {
 		return ethernet;
 	}
 
 	/**
-	 * @return the ipAddress
+	 * @return the IP address
 	 */
 	public InetAddress getIpAddress() {
 		return ipAddress;
 	}
 
 	/**
-	 * @return the deadLinks
+	 * @return the dead links of the chip
 	 */
 	@JsonIgnore
 	public Set<Direction> getDeadDirections() {

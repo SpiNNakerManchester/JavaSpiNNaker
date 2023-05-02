@@ -57,7 +57,7 @@ public class MulticastRoutingEntry extends RoutingEntry {
 	 *            The IDs of the processors that this entry routes to. The
 	 *            Duplicate IDs are ignored.
 	 * @param linkIDs
-	 *            The IDs of the links that this entry routes to. The Duplicate
+	 *            The IDs of the links that this entry routes to. The duplicate
 	 *            IDs are ignored.
 	 * @param defaultable
 	 *            Whether this entry is default routable.

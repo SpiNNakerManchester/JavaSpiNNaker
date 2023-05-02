@@ -66,7 +66,7 @@ public class RoutingEntry {
 	 *            The IDs of the processors that this entry routes to. The
 	 *            Duplicate IDs are ignored.
 	 * @param linkIDs
-	 *            The IDs of the links that this entry routes to. The Duplicate
+	 *            The IDs of the links that this entry routes to. The duplicate
 	 *            IDs are ignored.
 	 * @throws IllegalArgumentException
 	 *             If a bad processor ID is given (i.e., one that doesn't match
@@ -90,7 +90,7 @@ public class RoutingEntry {
 	}
 
 	/**
-	 * gets the Entry as a single word.
+	 * Gets the entry as a single word.
 	 *
 	 * @return The word-encoded form of the routing entry.
 	 */
@@ -108,22 +108,22 @@ public class RoutingEntry {
 	/**
 	 * The IDs of the processors that this entry routes to.
 	 * <p>
-	 * If the RoutingEntry was created from its encoded form and unmodified
-	 * after that, the list is guaranteed to be sorted in natural order and
-	 * contain no duplicates.
+	 * If the {@code RoutingEntry} was created from its encoded form and
+	 * unmodified after that, the list is guaranteed to be sorted in natural
+	 * order and contain no duplicates.
 	 *
-	 * @return An unmodifiable over the processor IDs.
+	 * @return An unmodifiable collection over the processor IDs.
 	 */
 	public Collection<Direction> getLinkIDs() {
 		return linkIDs;
 	}
 
 	/**
-	 * The ID/Directions of the links that this entry routes to.
+	 * The ID/directions of the links that this entry routes to.
 	 * <p>
-	 * If the RoutingEntry was created from its encoded form and unmodified
-	 * after that, the list is guaranteed to be sorted in natural order and
-	 * contain no duplicates.
+	 * If the {@code RoutingEntry} was created from its encoded form and
+	 * unmodified after that, the list is guaranteed to be sorted in natural
+	 * order and contain no duplicates.
 	 *
 	 * @return An unmodifiable view over the link IDs in natural order.
 	 */

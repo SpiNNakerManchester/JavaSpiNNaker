@@ -65,7 +65,7 @@ import uk.ac.manchester.spinnaker.utils.TripleMapIterable;
  * @author Christian-B
  */
 public class Machine implements MappableIterable<Chip> {
-	/** Size of the machine along the x and y axes in Chips. */
+	/** Size of the machine along the X and Y axes, in chips. */
 	@Valid
 	public final MachineDimensions machineDimensions;
 
@@ -92,14 +92,14 @@ public class Machine implements MappableIterable<Chip> {
 	private final TreeMap<@Valid ChipLocation, @Valid Chip> chips;
 	// private final Chip[][] chipArray;
 
-	/** The version of the Machine based on its height and Width. */
+	/** The version of the machine based on its height and width. */
 	public final MachineVersion version;
 
 	/**
 	 * Creates an empty machine.
 	 *
 	 * @param machineDimensions
-	 *            Size of the machine along the x and y axes, in Chips.
+	 *            Size of the machine along the X and Y axes, in chips.
 	 * @param boot
 	 *            The coordinates of the chip used to boot the machine.
 	 */
@@ -123,13 +123,14 @@ public class Machine implements MappableIterable<Chip> {
 	 * Creates a machine starting with the supplied chips.
 	 *
 	 * @param machineDimensions
-	 *            Size of the machine along the x and y axes, in Chips.
+	 *            Size of the machine along the X and Y axes, in chips.
 	 * @param chips
-	 *            An iterable of chips in the machine.
+	 *            The chips in the machine.
 	 * @param boot
 	 *            The coordinates of the chip used to boot the machine.
 	 * @throws IllegalArgumentException
-	 *             On an attempt to add a second Chip with the same location.
+	 *             On an attempt to add a chip with a duplicate location of a
+	 *             chip already in the machine.
 	 */
 	public Machine(MachineDimensions machineDimensions, Iterable<Chip> chips,
 			HasChipLocation boot) {
@@ -138,10 +139,10 @@ public class Machine implements MappableIterable<Chip> {
 	}
 
 	/**
-	 * Creates a Machine from a Bean.
+	 * Creates a machine from a (serializable) descriptor.
 	 *
 	 * @param bean
-	 *            Bean holding the Values to set.
+	 *            Descriptor holding the values to set.
 	 */
 	public Machine(MachineBean bean) {
 		this(bean.getMachineDimensions(), bean.getRoot());
@@ -156,19 +157,20 @@ public class Machine implements MappableIterable<Chip> {
 	/**
 	 * Provides a machine without abnormal chips or links.
 	 * <p>
-	 * This may be the original machine or it may be a shallow near copy.
+	 * This may be the original machine or it may be a shallow near-copy.
 	 * <p>
-	 * Once this method is run it is expected that the original Machine is no
-	 * longer used. The original internal objects are reused whenever possible.
-	 * Changes made to the original Machine may or may not effect the new
-	 * Machine. This includes changes made to the chips, their routers or their
-	 * processors.
+	 * Once this method is run it is expected that the original {@link Machine}
+	 * is no longer used. The original internal objects are reused whenever
+	 * possible. Changes made to the original {@link Machine} may or may not
+	 * effect the new {@link Machine}. This includes changes made to the chips,
+	 * their routers or their processors.
 	 * <p>
 	 * For what makes up an abnormal link see {@link #findAbnormalLinks()}.
 	 * <p>
 	 * For what makes up an abnormal chip see {@link #findAbnormalChips()}.
 	 *
-	 * @return A Machine (possibly the original one) without the abnormal bits.
+	 * @return A {@code Machine} (possibly the original one) without the
+	 *         abnormal bits.
 	 */
 	public Machine rebuild() {
 		return rebuild(null, null);
@@ -179,24 +181,24 @@ public class Machine implements MappableIterable<Chip> {
 	 * <p>
 	 * This may be the original machine or it may be a shallow near copy.
 	 * <p>
-	 * Once this method is run it is expected that the original Machine is no
-	 * longer used. The original internal objects are reused whenever possible.
-	 * Changes made to the original Machine may or may not effect the new
-	 * Machine. This includes changes made to the chips, their routers or their
-	 * processors.
+	 * Once this method is run it is expected that the original {@link Machine}
+	 * is no longer used. The original internal objects are reused whenever
+	 * possible. Changes made to the original {@link Machine} may or may not
+	 * effect the new {@link Machine}. This includes changes made to the chips,
+	 * their routers or their processors.
 	 *
 	 * @param ignoreChips
 	 *            The locations of the chips (if any) that should not be in the
-	 *            rebuilt machine. Chips not specified to be ignore or not
+	 *            rebuilt machine. Chips not specified to be ignored are not
 	 *            checked in any way. If this parameter is {@code null} the
 	 *            result of {@link #findAbnormalLinks()} is used. If this
 	 *            parameter is empty it is ignored as are any location that do
 	 *            not represent a chip in the machine.
 	 * @param ignoreLinks
-	 *            A mapping of Locations to Directions of links that should be
-	 *            in the rebuilt machine. Links not specified to be ignored are
-	 *            not checked in any way. If this parameter is {@code null} the
-	 *            result of {@link #findAbnormalChips()} is used. If this
+	 *            A mapping of locations to directions of links that should not
+	 *            be in the rebuilt machine. Links not specified to be ignored
+	 *            are not checked in any way. If this parameter is {@code null}
+	 *            the result of {@link #findAbnormalChips()} is used. If this
 	 *            parameter is empty it is ignored as are any location that do
 	 *            not represent a chip in the machine, or direction that do not
 	 *            represent an existing link.
@@ -246,7 +248,8 @@ public class Machine implements MappableIterable<Chip> {
 	 * @param chip
 	 *            The chip to add to the machine.
 	 * @throws IllegalArgumentException
-	 *             On an attempt to add a second Chip with the same location.
+	 *             On an attempt to add a chip with a duplicate location of a
+	 *             chip already in the machine.
 	 */
 	public final void addChip(Chip chip) {
 		var location = chip.asChipLocation();
@@ -282,7 +285,10 @@ public class Machine implements MappableIterable<Chip> {
 	 * Add some chips to the machine.
 	 *
 	 * @param chips
-	 *            an iterable of chips.
+	 *           The chips to add.
+	 * @throws IllegalArgumentException
+	 *             On an attempt to add a chip with a duplicate location of a
+	 *             chip already in the machine.
 	 */
 	public final void addChips(Iterable<Chip> chips) {
 		for (var chip : chips) {
@@ -291,22 +297,22 @@ public class Machine implements MappableIterable<Chip> {
 	}
 
 	/**
-	 * The chips in the machine.
-	 * <p>
-	 * The Chips will be returned in the natural order of their ChipLocation.
+	 * Get the chips in the machine.
+	 * The chips will be returned in the natural order of their
+	 * {@link ChipLocation}.
 	 *
-	 * @return An Unmodifiable Ordered Collection of the chips.
+	 * @return An unmodifiable ordered collection of the chips.
 	 */
 	public final Collection<Chip> chips() {
 		return unmodifiableCollection(chips.values());
 	}
 
 	/**
-	 * Returns an iterator over the Chips in this Machine.
-	 * <p>
-	 * The Chips will be returned in the natural order of their ChipLocation.
+	 * Get an iterator over the chips in this machine.
+	 * The chips will be returned in the natural order of their
+	 * {@link ChipLocation}.
 	 *
-	 * @return An iterator over the Chips in this Machine.
+	 * @return An iterator over the chips in this machine.
 	 */
 	@Override
 	public final Iterator<Chip> iterator() {
@@ -314,77 +320,75 @@ public class Machine implements MappableIterable<Chip> {
 	}
 
 	/**
-	 * The number of Chips on this Machine.
+	 * The number of chips on this machine.
 	 *
-	 * @return The number of Chips on this Machine.
+	 * @return The number of chips on this machine.
 	 */
 	public final int nChips() {
 		return chips.size();
 	}
 
 	/**
-	 * A Set of all the Locations of the Chips.
-	 * <p>
+	 * A set of all the locations of the chips in this machine.
 	 * This set is guaranteed to iterate in the natural order of the locations.
 	 *
-	 * @return (ordered) set of the locations of each chip in the Machine.
+	 * @return The (ordered) set of the locations of each chip in the machine.
 	 */
 	public final Set<ChipLocation> chipCoordinates() {
 		return unmodifiableSet(chips.keySet());
 	}
 
 	/**
-	 * An unmodifiable view over the map from ChipLocations to Chips.
-	 * <p>
+	 * An unmodifiable view over the map from locations to chips.
 	 * This map is sorted by the natural order of the locations.
 	 *
-	 * @return An unmodifiable view over the map from ChipLocations to Chips.
+	 * @return An unmodifiable view over the map from locations to chips.
 	 */
 	public final SortedMap<ChipLocation, Chip> chipsMap() {
 		return unmodifiableSortedMap(chips);
 	}
 
 	/**
-	 * Get the chip at a specific (x, y) location.
-	 * <p>
+	 * Get the chip at a specific <em>(x, y)</em> location.
 	 * Will return {@code null} if {@link #hasChipAt(ChipLocation) hasChipAt}
 	 * for the same location returns {@code false}.
 	 *
 	 * @param location
 	 *            coordinates of the requested chip.
-	 * @return A Chip or {@code null} if no Chip found at that location.
+	 * @return A chip, or {@code null} if no chip found at that location.
 	 */
 	public final Chip getChipAt(ChipLocation location) {
 		return chips.get(location);
 	}
 
 	/**
-	 * Get the chip at a specific (x, y) location.
-	 * <p>
+	 * Get the chip at a specific <em>(x, y)</em> location.
 	 * Will return {@code null} if {@link #hasChipAt(ChipLocation) hasChipAt}
 	 * for the same location returns {@code false}.
 	 *
 	 * @param location
 	 *            coordinates of the requested chip.
-	 * @return A Chip or {@code null} if no Chip found at that location.
+	 * @return A chip, or {@code null} if no chip found at that location.
 	 */
 	public final Chip getChipAt(HasChipLocation location) {
 		return chips.get(location.asChipLocation());
 	}
 
 	/**
-	 * Get the chip at a specific (x, y) location.
+	 * Get the chip at a specific <em>(x, y)</em> location.
 	 * <p>
 	 * Will return {@code null} if {@link #hasChipAt(ChipLocation) hasChipAt}
 	 * for the same location returns {@code false}.
 	 *
 	 * @param x
-	 *            The x-coordinate of the requested chip
+	 *            The X-coordinate of the requested chip
 	 * @param y
-	 *            The y-coordinate of the requested chip
-	 * @return A Chip or {@code null} if no Chip found at that location.
+	 *            The Y-coordinate of the requested chip
+	 * @return A chip, or {@code null} if no Chip found at that location.
 	 * @throws IllegalArgumentException
-	 *             Thrown is either x or y is negative or too big.
+	 *             Thrown is either <em>x</em> or <em>y</em> is negative or too
+	 *             big (see
+	 *             {@link MachineDefaults#validateChipLocation(int, int)}).
 	 */
 	public final Chip getChipAt(int x, int y) {
 		var location = new ChipLocation(x, y);
@@ -396,7 +400,7 @@ public class Machine implements MappableIterable<Chip> {
 	 *
 	 * @param location
 	 *            coordinates of the requested chip.
-	 * @return True if and only if the machine has a Chip at that location.
+	 * @return True if and only if the machine has a chip at that location.
 	 */
 	public final boolean hasChipAt(ChipLocation location) {
 		if (location == null) {
@@ -410,7 +414,7 @@ public class Machine implements MappableIterable<Chip> {
 	 *
 	 * @param location
 	 *            coordinates of the requested chip.
-	 * @return True if and only if the machine has a Chip at that location.
+	 * @return True if and only if the machine has a chip at that location.
 	 */
 	public final boolean hasChipAt(HasChipLocation location) {
 		if (location == null) {
@@ -423,12 +427,14 @@ public class Machine implements MappableIterable<Chip> {
 	 * Determine if a chip exists at the given coordinates.
 	 *
 	 * @param x
-	 *            The x-coordinate of the requested chip
+	 *            The X-coordinate of the requested chip
 	 * @param y
-	 *            The y-coordinate of the requested chip
+	 *            The Y-coordinate of the requested chip
 	 * @return True if and only if the machine has a Chip at that location.
 	 * @throws IllegalArgumentException
-	 *             Thrown is either x or y is negative or too big.
+	 *             Thrown is either <em>x</em> or <em>y</em> is negative or too
+	 *             big (see
+	 *             {@link MachineDefaults#validateChipLocation(int, int)}).
 	 */
 	public final boolean hasChipAt(int x, int y) {
 		var location = new ChipLocation(x, y);
@@ -454,16 +460,15 @@ public class Machine implements MappableIterable<Chip> {
 
 	/**
 	 * Get the coordinates of a possible chip over the given link.
-	 * <p>
 	 * This method will take wrap-arounds into account if appropriate.
 	 * <p>
-	 * This method intentionally <em>does not</em> check if a Chip at the
+	 * This method intentionally <em>does not</em> check if a chip at the
 	 * resulting location already exists.
 	 *
 	 * @param source
 	 *            The coordinates of the source of the link.
 	 * @param direction
-	 *            The Direction of the link to traverse
+	 *            The direction of the link to traverse
 	 * @return Location of a possible chip that would be connected by this link.
 	 */
 	public final ChipLocation getLocationOverLink(HasChipLocation source,
@@ -473,20 +478,20 @@ public class Machine implements MappableIterable<Chip> {
 	}
 
 	/**
-	 * Get the existing Chip over the given link.
+	 * Get the existing chip over the given link.
+	 * This method returns the destination chip <em>without</em> checking if the
+	 * physical link is active.
 	 * <p>
-	 * This method is just a combination of getLocationOverLink and getChipAt.
-	 * It therefore takes wrap-around into account and does check for the
-	 * existence of the destination chip.
-	 * <p>
-	 * This method returns the destination chip WITHOUT checking if the physical
-	 * link is active.
+	 * This method is just a combination of
+	 * {@link #getLocationOverLink(HasChipLocation, Direction)} and
+	 * {@link #getChipAt(ChipLocation)}. It therefore takes wrap-around into
+	 * account and does check for the existence of the destination chip.
 	 *
 	 * @param source
 	 *            The coordinates of the source of the link.
 	 * @param direction
-	 *            The Direction of the link to traverse
-	 * @return The Destination Chip connected by this (possible) link. or
+	 *            The direction of the link to traverse
+	 * @return The destination chip connected by this (possible) link. or
 	 *         {@code null} if it does not exist.
 	 */
 	public final Chip getChipOverLink(HasChipLocation source,
@@ -495,48 +500,47 @@ public class Machine implements MappableIterable<Chip> {
 	}
 
 	/**
-	 * The maximum possible x-coordinate of any chip in the board.
+	 * The maximum possible X-coordinate of any chip in the board.
 	 * <p>
 	 * Currently no check is carried out to guarantee there is actually a Chip
-	 * with this x value.
+	 * with this X value.
 	 *
-	 * @return The maximum possible x-coordinate.
+	 * @return The maximum possible X-coordinate.
 	 */
 	public final int maxChipX() {
 		return machineDimensions.width - 1;
 	}
 
 	/**
-	 * The maximum possible y-coordinate of any chip in the board.
+	 * The maximum possible Y-coordinate of any chip in the board.
 	 * <p>
 	 * Currently no check is carried out to guarantee there is actually a Chip
-	 * with this y value.
+	 * with this Y value.
 	 *
-	 * @return The maximum possible y-coordinate.
+	 * @return The maximum possible Y-coordinate.
 	 */
 	public final int maxChipY() {
 		return machineDimensions.height - 1;
 	}
 
 	/**
-	 * The chips in the machine that have an Ethernet connection. These are
-	 * defined as the Chip that have a non-{@code null} INET address.
-	 * <p>
-	 * While these are typically the bottom-left Chip of each board, this is not
-	 * guaranteed.
-	 * <p>
+	 * The chips in the machine that have control over an Ethernet connection.
+	 * These are defined as the chip that have a non-{@code null} INET address.
 	 * There is no guarantee regarding the order of the Chips.
+	 * <p>
+	 * While these are typically the bottom-left chip of each board, this is not
+	 * guaranteed.
 	 *
-	 * @return An unmodifiable list of the Chips with an INET address.
+	 * @return An unmodifiable list of the chips with an INET address.
 	 */
 	public List<Chip> ethernetConnectedChips() {
 		return unmodifiableList(ethernetConnectedChips);
 	}
 
 	/**
-	 * Collection of the spinnaker links on this machine.
+	 * Collection of the SpiNNaker links on this machine.
 	 *
-	 * @return An unmodifiable unordered collection of all the spinnaker links
+	 * @return An unmodifiable unordered collection of all the SpiNNaker links
 	 *         on this machine.
 	 */
 	public final Collection<SpinnakerLinkData> spinnakerLinks() {
@@ -551,7 +555,8 @@ public class Machine implements MappableIterable<Chip> {
 	 * @param address
 	 *            The board address that this SpiNNaker link is associated with.
 	 *            If {@code null} the boot INET address will be used.
-	 * @return The associated SpinnakerLink or {@code null} if not found.
+	 * @return The associated SpiNNaker link information, or {@code null} if not
+	 *         found.
 	 */
 	public final SpinnakerLinkData getSpinnakerLink(int id,
 			InetAddress address) {
@@ -569,7 +574,8 @@ public class Machine implements MappableIterable<Chip> {
 	 *
 	 * @param id
 	 *            The ID of the link
-	 * @return The associated SpinnakerLink or {@code null} if not found.
+	 * @return The associated SpiNNaker link information, or {@code null} if not
+	 *         found.
 	 */
 	public final SpinnakerLinkData getBootSpinnakerLink(int id) {
 		var key = new InetIdTuple(bootEthernetAddress, id);
@@ -580,7 +586,7 @@ public class Machine implements MappableIterable<Chip> {
 	 * Add SpiNNaker links that are on a given machine depending on the height
 	 * and width and therefore version of the board.
 	 * <p>
-	 * If a link already exists the original link is retain and that spinnaker
+	 * If a link already exists the original link is retain and that SpiNNaker
 	 * link is not added.
 	 */
 	public final void addSpinnakerLinks() {
@@ -610,8 +616,8 @@ public class Machine implements MappableIterable<Chip> {
 	}
 
 	/**
-	 * Converts x and y to a chip location, if required (and applicable)
-	 * adjusting for wrap around.
+	 * Converts <em>x</em> and <em>y</em> to a chip location, if required (and
+	 * applicable) adjusting for wrap around.
 	 * <p>
 	 * The only check that the coordinates are valid is to check they are
 	 * greater than zero. Otherwise {@code null} is returned.
@@ -620,9 +626,9 @@ public class Machine implements MappableIterable<Chip> {
 	 *            X coordinate
 	 * @param y
 	 *            Y coordinate
-	 * @return A ChipLocation based on X and Y with possible wrap around, or
-	 *         {@code null} if either coordinate is less than zero or greater
-	 *         than the dimensions of the machine.
+	 * @return A location based on <em>x</em> and <em>y</em> with possible
+	 *         wrap around, or {@code null} if either coordinate is less than
+	 *         zero or greater than the dimensions of the machine.
 	 */
 	public final ChipLocation normalizedLocation(int x, int y) {
 		if (version.horizontalWrap) {
@@ -648,10 +654,10 @@ public class Machine implements MappableIterable<Chip> {
 	 * No check is done to see if there is actually a chip at that location.
 	 *
 	 * @param source
-	 *            the original x and y coordinates.
+	 *            the original coordinates.
 	 * @param direction
 	 *            which way to move.
-	 * @return A ChipLocation based on a move in this direction with possible
+	 * @return A location based on a move in this direction with possible
 	 *         wrap around, or {@code null} if either coordinate is less than
 	 *         zero or greater than the dimensions of the machine.
 	 */
@@ -668,7 +674,7 @@ public class Machine implements MappableIterable<Chip> {
 	 *
 	 * @param location
 	 *            A location which may need to be corrected for wrap-arounds.
-	 * @return A ChipLocation based on a move in this direction with possible
+	 * @return A location based on a move in this direction with possible
 	 *         wrap around, or {@code null} if either coordinate is less than
 	 *         zero or greater than the dimensions of the machine.
 	 */
@@ -702,10 +708,9 @@ public class Machine implements MappableIterable<Chip> {
 	}
 
 	/**
-	 * An iterable over all the added FPGA link data items. The Iterable may be
-	 * empty.
+	 * The added FPGA link data items. The iterable may be empty.
 	 * <p>
-	 * No Guarantee of order is provided.
+	 * No guarantee of order is provided.
 	 *
 	 * @return All added FPGA link data items.
 	 */
@@ -714,10 +719,10 @@ public class Machine implements MappableIterable<Chip> {
 	}
 
 	/**
-	 * An iterable over all the added FPGA link data items for this address. The
-	 * Iterable may be empty.
+	 * The added FPGA link data items for the given address. The
+	 * iterable may be empty.
 	 * <p>
-	 * No Guarantee of order is provided.
+	 * No guarantee of order is provided.
 	 *
 	 * @param address
 	 *            The board address that this FPGA link is associated with.
@@ -751,8 +756,8 @@ public class Machine implements MappableIterable<Chip> {
 	 * Add FPGA links that are on a given machine depending on the version of
 	 * the board.
 	 * <p>
-	 * Note: This implementation assumes the Ethernet Chip is the 0, 0 chip on
-	 * each board
+	 * <strong>Note:</strong> This implementation assumes the Ethernet-enabled
+	 * chip is the 0, 0 chip on each board.
 	 */
 	public final void addFpgaLinks() {
 		if (version.isFourChip) {
@@ -768,8 +773,8 @@ public class Machine implements MappableIterable<Chip> {
 	/**
 	 * Get a string detailing the number of cores and links.
 	 * <p>
-	 * Warning: the current implementation makes the simplification assumption
-	 * that every link exists in both directions.
+	 * <strong>Warning:</strong> the current implementation makes the
+	 * simplification assumption that every link exists in both directions.
 	 *
 	 * @return A quick description of the machine.
 	 */
@@ -785,27 +790,26 @@ public class Machine implements MappableIterable<Chip> {
 
 	/**
 	 * The coordinates of the chip used to boot the machine. This is typically
-	 * Chip (zero, zero), and will typically have an associated InetAddress, but
-	 * there is no guarantee of either of these facts.
+	 * the Chip at {@linkplain ChipLocation#ZERO_ZERO <em>(0, 0)</em>}, and will
+	 * typically have an associated {@link InetAddress}, but there is no
+	 * guarantee of either of these facts.
 	 * <p>
-	 * If not Chip has been added to the machine at the boot location this
+	 * If no chip has been added to the machine at the boot, location this
 	 * method returns {@code null}.
 	 *
-	 * @return The Chip at the location specified as boot or {@code null}.
+	 * @return The chip at the location specified as boot, or {@code null}.
 	 */
 	public final Chip bootChip() {
 		return chips.get(boot);
 	}
 
 	/**
-	 * Iterable over the destinations of each link.
-	 * <p>
-	 * There will be exactly one destination for each Link. While normally all
-	 * destinations will be unique the is no guarantee.
+	 * The chips on the same board as the given chip.
 	 *
 	 * @param chip
-	 *            x and y coordinates for any chip on the board
-	 * @return A Stream over the destination locations.
+	 *            The exemplar chip from the board of interest
+	 * @return Iterable of chips on the board. Not expected to be empty; the
+	 *         exemplar should be present.
 	 */
 	public final MappableIterable<Chip> iterChipsOnBoard(Chip chip) {
 		return () -> new ChipOnBoardIterator(chip.nearestEthernet);
@@ -825,7 +829,7 @@ public class Machine implements MappableIterable<Chip> {
 	/**
 	 * The total number of cores on the machine which are not monitor cores.
 	 *
-	 * @return The number of user cores over all Chips.
+	 * @return The number of user cores over all chips.
 	 */
 	public final int totalAvailableUserCores() {
 		int count = 0;
@@ -889,8 +893,8 @@ public class Machine implements MappableIterable<Chip> {
 	 * <p>
 	 * Future implementations may add other tests for abnormal Chips.
 	 *
-	 * @return A Map of ChipLocations to Direction (hopefully empty) which
-	 *         identifies links to remove
+	 * @return A map of locations to sets of directions (hopefully empty) which
+	 *         identify links to remove
 	 */
 	public Map<ChipLocation, EnumSet<Direction>> findAbnormalLinks() {
 		var abnormalLinks = new HashMap<ChipLocation, EnumSet<Direction>>();
@@ -916,14 +920,13 @@ public class Machine implements MappableIterable<Chip> {
 	}
 
 	/**
-	 * Returns a list of the abnormal Chips that are recommended for removal.
+	 * Returns a list of the abnormal chips that are recommended for removal.
 	 * <p>
-	 * The current implementation identifies Chips with no outgoing links as
+	 * The current implementation identifies chips with no outgoing links as
 	 * abnormal.
-	 * <p>
-	 * Future implementations may add other tests for abnormal Chips.
+	 * Future implementations may add other tests for abnormal chips.
 	 *
-	 * @return A set (hopefully empty) of ChipLocations to remove.
+	 * @return A set (hopefully empty) of locations of chips to remove.
 	 */
 	public Set<ChipLocation> findAbnormalChips() {
 		return chips.values().stream().filter(chip -> chip.router.size() == 0)
@@ -949,23 +952,22 @@ public class Machine implements MappableIterable<Chip> {
 	 * Describes one difference found between this machine and another machine.
 	 * <p>
 	 * This method will always return {@code null} if no difference is found
-	 * between the two machines. So semantically is the same as Equals except
-	 * that this works if other is a super class of machine in which case only
-	 * the share variables are compared.
+	 * between the two machines. So semantically is the same as equals except
+	 * that this works if other is a superclass of machine in which case only
+	 * the shared variables are compared.
 	 * <p>
 	 * This method returns as soon as it has found a difference so there may be
 	 * other not specified differences.
 	 * <p>
-	 * Warning: This method could change over time, so there is no implied
-	 * guarantee to the order that variables are checked or to the message that
-	 * is returned.
-	 * <p>
+	 * <strong>Warning:</strong> This method could change over time, so there is
+	 * no implied guarantee to the order that variables are checked or to the
+	 * message that is returned.
 	 * The only guarantee is that {@code null} is returned if no difference is
 	 * detected.
 	 *
 	 * @param other
 	 *            Another machine to check if it has the same variables.
-	 * @return {@code null} if no difference is detected otherwise a string.
+	 * @return {@code null} if no difference is detected, otherwise a string.
 	 */
 	public String difference(Machine other) {
 		if (!machineDimensions.equals(other.machineDimensions)) {
@@ -1028,13 +1030,13 @@ public class Machine implements MappableIterable<Chip> {
 	 * expected difference between the two chip locations so will always return
 	 * a message
 	 * <p>
-	 * Warning: As this method is mainly a support method for
+	 * <strong>Warning:</strong> As this method is mainly a support method for
 	 * {@link #difference(Machine)}, the returned result can be changed at any
 	 * time.
 	 *
 	 * @param that
 	 *            Another machine with suspected difference in the location of
-	 *            Chips.
+	 *            chips.
 	 * @return Some useful human readable information.
 	 */
 	public String chipLocationDifference(Machine that) {

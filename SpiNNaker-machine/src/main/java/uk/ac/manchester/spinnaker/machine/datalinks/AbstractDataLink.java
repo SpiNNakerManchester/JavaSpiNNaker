@@ -32,25 +32,23 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  */
 @Immutable
 public abstract class AbstractDataLink implements HasChipLocation {
-	/** IP address of the Datalink on the board. */
+	/** IP address of the data link on the board. */
 	public final InetAddress boardAddress;
 
-	/** Coordinates of the location/Chip being linked to. */
+	/** Coordinates of the location/chip being linked to. */
 	@Valid
 	public final ChipLocation location;
 
-	/** Direction/id for this link. */
+	/** Direction/ID for this link. */
 	public final Direction direction;
 
 	/**
-	 * Main Constructor of a DataLink.
-	 *
 	 * @param location
-	 *            The location/Chip being linked to
+	 *            The location/chip being linked to
 	 * @param linkId
-	 *            The ID/Direction coming out of the Chip
+	 *            The ID/direction coming out of the chip
 	 * @param boardAddress
-	 *            IP address of the Datalink on the board.
+	 *            IP address of the data link on the board.
 	 */
 	AbstractDataLink(HasChipLocation location, Direction linkId,
 			InetAddress boardAddress) {
@@ -88,16 +86,12 @@ public abstract class AbstractDataLink implements HasChipLocation {
 	public abstract boolean equals(Object obj);
 
 	/**
-	 * Determines if the Objects can be considered the same.
-	 * <p>
-	 * Two links where their locations return onSameChipAs can be considered the
-	 * same even if the location is a different class. This is consistent with
-	 * hashCode that only considers the location's X and Y
+	 * Determines if the objects can be considered the same.
 	 *
 	 * @param other
-	 *            Another DataLink
-	 * @return True if and only if the IDs match, the boardAddress match and the
-	 *         links are on the same chip
+	 *            Another data link
+	 * @return True if and only if the IDs match, the {@link #boardAddress}
+	 *         match and the links are on the same chip
 	 */
 	boolean sameAs(AbstractDataLink other) {
 		return Objects.equals(direction, other.direction)

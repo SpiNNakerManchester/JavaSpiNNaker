@@ -43,7 +43,7 @@ public class LinkBean {
 	public final Direction sourceDirection;
 
 	/**
-	 * Create a link description.
+	 * Make an instance.
 	 *
 	 * @param sourceLinkId
 	 *            What is the direction of the link?
