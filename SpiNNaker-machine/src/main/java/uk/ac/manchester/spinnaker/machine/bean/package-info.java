@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** Beans to describes a SpiNNaker machine. */
+/** Beans used to describe a SpiNNaker machine in JSON. */
 package uk.ac.manchester.spinnaker.machine.bean;

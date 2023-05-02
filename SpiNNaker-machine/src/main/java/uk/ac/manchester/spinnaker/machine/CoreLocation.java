@@ -25,12 +25,12 @@ import java.io.Serializable;
 import com.google.errorprone.annotations.Immutable;
 
 /**
- * The location of a Core as an X, Y, P tuple.
+ * The location of a {@link Processor} on a {@link Chip} as an X, Y, P tuple.
  * <p>
  * This class is final as it is used a key in maps.
  *
- * @author alan
- * @author dkf
+ * @author Alan Stokes
+ * @author Donal Fellows
  */
 @Immutable
 public final class CoreLocation
