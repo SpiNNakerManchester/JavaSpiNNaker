@@ -53,7 +53,7 @@ limitations under the License.
 		  Failure to do this leads to strange misbehaviour in tooltips when
 		  editing application.yml
 		-->
-		<spring.security.version>6.0.2</spring.security.version>
+		<spring.security.version>6.0.3</spring.security.version>
 
 		<cxf.version>4.0.0</cxf.version>
 		<jackson.version>2.15.0</jackson.version>
@@ -89,6 +89,13 @@ limitations under the License.
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-framework-bom</artifactId>
 				<version>${spring.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-bom</artifactId>
+				<version>${spring.security.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -285,16 +292,6 @@ limitations under the License.
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-rt-frontend-jaxrs</artifactId>
 				<version>${cxf.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-core</artifactId>
-				<version>${spring.security.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-config</artifactId>
-				<version>${spring.security.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>jakarta.servlet</groupId>

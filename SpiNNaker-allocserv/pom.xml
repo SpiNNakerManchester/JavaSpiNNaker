@@ -40,6 +40,7 @@ limitations under the License.
 		<truststore.file>${project.build.directory}/generated-resources/truststore.p12</truststore.file>
 		<truststore.pass>hunter2</truststore.pass>
 		<npm.command>build</npm.command>
+		<spring-security.version>${spring.security.version}</spring-security.version>
 	</properties>
 
 	<build>
@@ -264,6 +265,14 @@ limitations under the License.
 
 	<dependencyManagement>
 		<dependencies>
+	    	<dependency>
+				<!-- Redo the import of the Spring Security POM -->
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-bom</artifactId>
+				<version>${spring-security.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 			<dependency>
 				<!-- Redo the import of the Spring POM -->
 				<groupId>org.springframework</groupId>
@@ -287,12 +296,6 @@ limitations under the License.
 				<version>${cxf.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<!-- Spring Boot doesn't say anything about this... -->
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-webmvc</artifactId>
-				<version>${spring.version}</version>
 			</dependency>
 
 			<!-- Something is forcing these to otherwise be wrong -->
