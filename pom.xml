@@ -63,7 +63,7 @@ limitations under the License.
 		<swagger.version>4.18.2</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.3</jython.version>
-		<error-prone.version>2.18.0</error-prone.version>
+		<error-prone.version>2.19.0</error-prone.version>
 		<picocli.version>4.7.3</picocli.version>
 		<mysql.version>8.0.32</mysql.version>
 		<testcontainers.version>1.18.0</testcontainers.version>
