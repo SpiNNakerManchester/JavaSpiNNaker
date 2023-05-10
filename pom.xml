@@ -37,7 +37,7 @@ limitations under the License.
 		<junit.version>5.9.3</junit.version>
 		<checkstyle.version>10.3.3</checkstyle.version>
 		<javadoc.version>3.5.0</javadoc.version>
-		<testing.version>3.0.0</testing.version>
+		<testing.version>3.1.0</testing.version>
 
 		<slf4j.version>2.0.7</slf4j.version>
 		<log4j.version>2.20.0</log4j.version>
@@ -65,7 +65,7 @@ limitations under the License.
 		<jython.version>2.7.3</jython.version>
 		<error-prone.version>2.18.0</error-prone.version>
 		<picocli.version>4.7.3</picocli.version>
-		<mysql.version>8.0.32</mysql.version>
+		<mysql.version>8.0.33</mysql.version>
 		<testcontainers.version>1.18.0</testcontainers.version>
 	</properties>
 
