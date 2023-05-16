@@ -28,9 +28,8 @@ import uk.ac.manchester.spinnaker.messages.model.TagInfo;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * A request to set the transient timeout for future SCP requests. The
- * response payload is the {@linkplain TagInfo tag <em>system</em>
- * information}.
+ * A request to set the transient timeout for future SCP requests. The response
+ * payload is the {@linkplain TagInfo tag <em>system</em> information}.
  * <p>
  * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},
  * if sent to a BMP).
