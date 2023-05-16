@@ -35,7 +35,7 @@ limitations under the License.
 		<spinnaker.version>7.0.0-SNAPSHOT</spinnaker.version>
 
 		<junit.version>5.9.3</junit.version>
-		<checkstyle.version>10.3.3</checkstyle.version>
+		<checkstyle.version>10.11.0</checkstyle.version>
 		<javadoc.version>3.5.0</javadoc.version>
 		<testing.version>3.1.0</testing.version>
 
