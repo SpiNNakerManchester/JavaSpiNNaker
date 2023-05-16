@@ -53,6 +53,7 @@ public class IPTagSetTTO extends SCPRequest<IPTagSetTTO.Response> {
 		return new Response(buffer);
 	}
 
+	/** An SCP response to a request to set the tag timeout. */
 	protected final class Response
 			extends PayloadedResponse<TagInfo, RuntimeException> {
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
