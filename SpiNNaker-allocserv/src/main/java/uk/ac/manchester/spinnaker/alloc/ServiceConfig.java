@@ -122,30 +122,59 @@ public class ServiceConfig extends Application {
 	private static final Logger log = getLogger(ServiceConfig.class);
 
 	@Bean(name = "mainDatasource")
+	@Role(ROLE_INFRASTRUCTURE)
 	@ConfigurationProperties(prefix = "spalloc.datasource")
-	public DataSource mainDatasource() {
+	DataSource mainDatasource() {
 		return DataSourceBuilder.create().build();
 	}
 
 	@Bean(name = "historicalDatasource")
+	@Role(ROLE_INFRASTRUCTURE)
 	@ConfigurationProperties(prefix = "spalloc.historical-data.datasource")
-	public DataSource historicalDatasource() {
+	DataSource historicalDatasource() {
 		return DataSourceBuilder.create().build();
 	}
 
+	/**
+	 * The access to the main database.
+	 *
+	 * @param ds
+	 *            Information from application configuration. (Key:
+	 *            {@code spalloc.datasource}).
+	 * @return Database access API
+	 */
 	@Bean(name = "mainDatabase")
+	@Role(ROLE_SUPPORT)
 	public JdbcTemplate mainDatabase(
 			@Qualifier("mainDatasource") DataSource ds) {
 		return new JdbcTemplate(ds);
 	}
 
+	/**
+	 * The access to the tombstone database.
+	 *
+	 * @param ds
+	 *            Information from application configuration. (Key:
+	 *            {@code spalloc.historical-data.datasource}).
+	 * @return Database access API
+	 */
 	@Bean(name = "historicalDatabase")
+	@Role(ROLE_SUPPORT)
 	public JdbcTemplate historicalDatabase(
 			@Qualifier("historicalDatasource") DataSource ds) {
 		return new JdbcTemplate(ds);
 	}
 
+	/**
+	 * The access to the main database's transaction manager.
+	 *
+	 * @param ds
+	 *            Information from application configuration. (Key:
+	 *            {@code spalloc.datasource}).
+	 * @return Database transaction API
+	 */
 	@Bean(name = "mainTransactionManager")
+	@Role(ROLE_SUPPORT)
 	public PlatformTransactionManager mainTransactionManager(
 			@Qualifier("mainDatasource") DataSource ds) {
 		return new JdbcTransactionManager(ds);
