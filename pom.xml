@@ -638,7 +638,7 @@ limitations under the License.
 				<plugin>
 					<groupId>io.leonard.maven.plugins</groupId>
 					<artifactId>jspc-maven-plugin</artifactId>
-					<version>4.0.1</version>
+					<version>4.1.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.rat</groupId>
