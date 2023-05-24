@@ -409,6 +409,11 @@ limitations under the License.
 			<artifactId>cxf-rt-rs-service-description-openapi-v3</artifactId>
 		</dependency>
 		<dependency>
+			<!-- Needed for swagger support to work because of how feature binding works. -->
+			<groupId>jakarta.xml.ws</groupId>
+			<artifactId>jakarta.xml.ws-api</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>swagger-ui</artifactId>
 			<scope>runtime</scope>

@@ -34,16 +34,16 @@ limitations under the License.
 
 		<spinnaker.version>7.0.0-SNAPSHOT</spinnaker.version>
 
-		<junit.version>5.9.2</junit.version>
+		<junit.version>5.9.3</junit.version>
 		<checkstyle.version>10.3.3</checkstyle.version>
 		<javadoc.version>3.5.0</javadoc.version>
-		<testing.version>3.0.0</testing.version>
+		<testing.version>3.1.0</testing.version>
 
 		<slf4j.version>2.0.7</slf4j.version>
 		<log4j.version>2.20.0</log4j.version>
 
 		<spring.version>5.3.27</spring.version>
-		<spring.boot.version>2.7.11</spring.boot.version>
+		<spring.boot.version>2.7.12</spring.boot.version>
 		<!--
 		DKF: if you update spring.boot.version, also update the annotation
 		  processor binding in Eclipse for SpiNNaker-allocserv:
@@ -53,20 +53,20 @@ limitations under the License.
 		  Failure to do this leads to strange misbehaviour in tooltips when
 		  editing application.yml
 		-->
-		<spring.security.version>5.8.2</spring.security.version>
+		<spring.security.version>5.8.3</spring.security.version>
 
-		<cxf.version>3.5.5</cxf.version>
-		<jackson.version>2.15.0</jackson.version>
+		<cxf.version>3.6.0</cxf.version>
+		<jackson.version>2.15.1</jackson.version>
 		<jackson.doc.version>2.14</jackson.doc.version>
-		<sqlite.version>3.41.2.1</sqlite.version>
-		<keycloak.version>21.1.0</keycloak.version>
+		<sqlite.version>3.42.0.0</sqlite.version>
+		<keycloak.version>21.1.1</keycloak.version>
 		<swagger.version>4.18.2</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.3</jython.version>
 		<error-prone.version>2.18.0</error-prone.version>
 		<picocli.version>4.7.3</picocli.version>
-		<mysql.version>8.0.32</mysql.version>
-		<testcontainers.version>1.18.0</testcontainers.version>
+		<mysql.version>8.0.33</mysql.version>
+		<testcontainers.version>1.18.1</testcontainers.version>
 	</properties>
 
 	<dependencyManagement>
@@ -244,7 +244,7 @@ limitations under the License.
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
-				<version>2.11.0</version>
+				<version>2.12.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -588,7 +588,7 @@ limitations under the License.
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.9</version>
+					<version>0.8.10</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -598,7 +598,7 @@ limitations under the License.
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>3.3.0</version>
+					<version>3.4.0</version>
 				</plugin>
 				<plugin>
 					<groupId>uk.co.automatictester</groupId>
@@ -927,7 +927,7 @@ limitations under the License.
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>3.4.2</version>
+				<version>3.4.3</version>
 				<reportSets>
 					<reportSet>
 						<reports><!-- select reports -->
