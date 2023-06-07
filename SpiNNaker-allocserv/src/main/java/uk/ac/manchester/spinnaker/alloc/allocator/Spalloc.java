@@ -529,8 +529,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			String nmpiCollab, CreateDescriptor descriptor,
 			String machineName, List<String> tags, Duration keepaliveInterval,
 			byte[] originalRequest) {
-		// TODO: Update the Collab quota from NMPI Quota Service; fail if user
-		// does not have a quota
+		if (!quotaManager.mayCreateNMPISession(nmpiCollab)) {
+			return Optional.empty();
+		}
 
 		// Use the Collab name as the group, as it should exist
 		var job = execute(conn -> createJobInGroup(
@@ -542,10 +543,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			return job;
 		}
 
-		// TODO: Create a Collab session in NMPI Quota Service and
-		//       store it against the Job in the DB.
-		// NOTE: On failure, we might have to terminate the Job, though this
-		//       shouldn't happen because we checked above!
+		quotaManager.associateNMPISession(job.get().getId(), owner, nmpiCollab);
 
 		// Return the job created
 		return job;
@@ -555,12 +553,13 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	public Optional<Job> createJobForNMPIJob(String owner, int nmpiJobId,
 			CreateDescriptor descriptor, String machineName, List<String> tags,
 			Duration keepaliveInterval,	byte[] originalRequest) {
-		// TODO: Get the NMPI Job and update the quota from the collab; fail if
-		// user does not have quota
-		String nmpiCollab = null;
+		var collab = quotaManager.mayUseNMPIJob(nmpiJobId);
+		if (collab.isEmpty()) {
+			return Optional.empty();
+		}
 
 		var job = execute(conn -> createJobInGroup(
-				owner, nmpiCollab, descriptor, machineName,
+				owner, collab.get(), descriptor, machineName,
 				tags, keepaliveInterval, originalRequest));
 		// On failure to get job, just return; shouldn't happen as quota checked
 		// earlier, but just in case!
@@ -568,7 +567,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			return job;
 		}
 
-		// TODO: Associate NMPI Job with Spalloc Job in the DB.
+		quotaManager.associateNMPIJob(job.get().getId(), nmpiJobId);
 
 		// Return the job created
 		return job;

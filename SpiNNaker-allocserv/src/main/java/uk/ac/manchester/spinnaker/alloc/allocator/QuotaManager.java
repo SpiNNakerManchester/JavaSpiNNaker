@@ -22,6 +22,8 @@ import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -32,11 +34,13 @@ import com.google.errorprone.annotations.RestrictedApi;
 
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Update;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
+import uk.ac.manchester.spinnaker.alloc.nmpi.NMPIv3API;
 
 /**
  * Manages user quotas.
@@ -49,6 +53,19 @@ public class QuotaManager extends DatabaseAwareBean {
 
 	@Autowired
 	private ServiceMasterControl control;
+
+	@Autowired
+	private QuotaProperties quotaProps;
+
+	private NMPIv3API nmpiProxy = null;
+
+	@PostConstruct
+	public void createProxy() {
+		String nmpiUrl = quotaProps.getNMPIUrl();
+		if (!nmpiUrl.isEmpty()) {
+		    nmpiProxy = NMPIv3API.createClient(quotaProps.getNMPIUrl());
+		}
+	}
 
 	/**
 	 * Can the user (in a specific group) create another job at this point? If
@@ -270,6 +287,45 @@ public class QuotaManager extends DatabaseAwareBean {
 				jobId = row.getInt("job_id");
 			}
 		}
+	}
+
+	boolean mayCreateNMPISession(String collab) {
+		// TODO: Read collab from NMPI; fail if not there
+
+		// TODO: Update quota in group for collab from NMPI
+
+		return false;
+	}
+
+	void associateNMPISession(int jobId, String user, String collab) {
+		// TODO: Create an NMPI session
+
+		// TODO: Associate NMPI session with Job in the database
+
+	}
+
+	Optional<String> mayUseNMPIJob(int nmpiJobId) {
+		// TODO: Read job from NMPI to get collab ID; fail if not there
+		String collab = null;
+
+		if (!mayCreateNMPISession(collab)) {
+			return Optional.empty();
+		}
+
+		// TODO: Replace with Collab
+		return Optional.of(null);
+	}
+
+	void associateNMPIJob(int jobId, int nmpiJobId) {
+		// TODO: Associate NMPI Job with job in database
+	}
+
+	void finishJob(int jobId) {
+		// TODO: Get job details
+
+		// TODO: If job has associated session, update quota in session
+
+		// TODO: If job has associated NMPI job, update quota on NMPI job
 	}
 
 	/**

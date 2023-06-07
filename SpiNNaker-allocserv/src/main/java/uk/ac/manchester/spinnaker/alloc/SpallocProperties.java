@@ -1400,6 +1400,21 @@ public class SpallocProperties {
 		private String consolidationSchedule;
 
 		/**
+		 * The URL of the NMPI service which maintains quotas.
+		 */
+		private String nmpiUrl;
+
+		/**
+		 * The API Key to use to access the NMPI service.
+		 */
+		private String nmpiApiKey;
+
+		/**
+		 * The name of the platform to use to read quota.
+		 */
+		private String nmpiPlatform;
+
+		/**
 		 * @param defaultQuota
 		 *            Default user quota in board-seconds.
 		 * @param defaultOrgQuota
@@ -1415,11 +1430,17 @@ public class SpallocProperties {
 		public QuotaProperties(@DefaultValue("100") int defaultQuota,
 				@DefaultValue("0") long defaultOrgQuota,
 				@DefaultValue("3600000") long defaultCollabQuota,
-				@DefaultValue("0 0 * * * *") String consolidationSchedule) {
+				@DefaultValue("0 0 * * * *") String consolidationSchedule,
+				@DefaultValue("") String nmpiUrl,
+				@DefaultValue("") String nmpiApiKey,
+				@DefaultValue("SpiNNaker") String nmpiPlatform) {
 			this.defaultQuota = defaultQuota;
 			this.orgQuota = defaultOrgQuota;
 			this.collabQuota = defaultCollabQuota;
 			this.consolidationSchedule = consolidationSchedule;
+			this.nmpiUrl = nmpiUrl;
+			this.nmpiApiKey = nmpiApiKey;
+			this.nmpiPlatform = nmpiPlatform;
 		}
 
 		/**
@@ -1476,6 +1497,41 @@ public class SpallocProperties {
 		void setConsolidationSchedule(String consolidationSchedule) {
 			this.consolidationSchedule = consolidationSchedule;
 		}
+
+		/**
+		 * @return The URL of an NMPI server that deals with quota.
+		 *         May be blank, meaning there isn't one.
+		 */
+	    public String getNMPIUrl() {
+	    	return nmpiUrl;
+	    }
+
+	    void setNMPIUrl(String nmpiUrl) {
+	    	this.nmpiUrl = nmpiUrl;
+	    }
+
+	    /**
+	     * @return The API Key to use to access the NMPI server.
+	     *         May be blank if @linkplain(#nmpiUrl) is blank.
+	     */
+	    public String getNMPIApiKey() {
+	    	return nmpiApiKey;
+	    }
+
+	    void setNMPIApiKey(String nmpiApiKey) {
+	    	this.nmpiApiKey = nmpiApiKey;
+	    }
+
+	    /**
+	     * @return The platform to look for on the NMPI server.
+	     */
+	    public String getNMPIPlaform() {
+	    	return nmpiPlatform;
+	    }
+
+	    void setNMPIPlatform(String nmpiPlatform) {
+	    	this.nmpiPlatform = nmpiPlatform;
+	    }
 	}
 
 	/** Controls how Spalloc talks to BMPs on machines. */
