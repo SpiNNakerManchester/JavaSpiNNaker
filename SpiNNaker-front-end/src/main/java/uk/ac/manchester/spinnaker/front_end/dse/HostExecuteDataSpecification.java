@@ -89,39 +89,6 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	}
 
 	/**
-	 * Execute all data specifications that a particular connection knows about,
-	 * storing back in the database the information collected about those
-	 * executions.
-	 *
-	 * @throws StorageException
-	 *             If the database can't be talked to.
-	 * @throws IOException
-	 *             If the transceiver can't talk to its sockets.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws DataSpecificationException
-	 *             If a data specification in the database is invalid.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 * @throws IllegalStateException
-	 *             If an unexpected exception occurs in any of the parallel
-	 *             tasks.
-	 */
-	public void loadAllCores()
-			throws StorageException, IOException, ProcessException,
-			DataSpecificationException, InterruptedException {
-		var storage = db.getStorageInterface();
-		var ethernets = storage.listEthernetsToLoad();
-		int opsToRun = storage.countWorkRequired();
-		try (var bar = new Progress(opsToRun, LOADING_MSG);
-				var context = new ExecutionContext(txrx)) {
-			processTasksInParallel(ethernets, board -> {
-				return () -> loadBoard(board, storage, bar, context);
-			});
-		}
-	}
-
-	/**
 	 * Execute all application data specifications that a particular connection
 	 * knows about, storing back in the database the information collected about
 	 * those executions.
@@ -184,17 +151,6 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 			processTasksInParallel(ethernets, board -> {
 				return () -> loadBoard(board, storage, bar, true, context);
 			});
-		}
-	}
-
-	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar,
-			ExecutionContext context) throws IOException, ProcessException,
-			DataSpecificationException, StorageException, InterruptedException {
-		try (var c = new BoardLocal(board.location)) {
-			var worker = new BoardWorker(board, storage, bar, context);
-			for (var ctl : storage.listCoresToLoad(board)) {
-				worker.loadCore(ctl);
-			}
 		}
 	}
 

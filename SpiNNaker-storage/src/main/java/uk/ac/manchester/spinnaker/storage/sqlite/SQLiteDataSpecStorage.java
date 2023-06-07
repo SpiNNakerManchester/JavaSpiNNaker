@@ -25,7 +25,6 @@ import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.THIRD;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_LOADING_METADATA;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.COUNT_WORK;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_CORE_DATA_SPEC;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_CORES_TO_LOAD;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_CORES_TO_LOAD_FILTERED;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_ETHERNETS;
 
@@ -109,32 +108,6 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 					"can only " + desc + " for cores described by this class");
 		}
 		return (CoreToLoadImpl) core;
-	}
-
-	@Override
-	public List<CoreToLoad> listCoresToLoad(Ethernet ethernet)
-			throws StorageException {
-		return callR(conn -> listCoresToLoad(conn, sanitise(ethernet)),
-				"listing cores to load data onto");
-	}
-
-	private List<CoreToLoad> listCoresToLoad(Connection conn,
-			EthernetImpl ethernet) throws SQLException {
-		try (var s = conn.prepareStatement(LIST_CORES_TO_LOAD)) {
-			// ethernet_id
-			s.setInt(FIRST, ethernet.id);
-			try (var rs = s.executeQuery()) {
-				var result = new ArrayList<CoreToLoad>();
-				while (rs.next()) {
-					// core_id, x, y, processor, content
-					result.add(new CoreToLoadImpl(rs.getInt(FIRST),
-							rs.getInt(SECOND), rs.getInt(THIRD),
-							rs.getInt(FOURTH), rs.getInt(FIFTH),
-							rs.getInt(SIXTH)));
-				}
-				return result;
-			}
-		}
 	}
 
 	@Override

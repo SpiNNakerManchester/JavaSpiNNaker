@@ -179,20 +179,6 @@ abstract class SQL {
 
 	/** List the cores of a ethernets with a data specification to run. */
 	@Parameter("ethernet_id")
-	@ResultColumn("core_id")
-	@ResultColumn("x")
-	@ResultColumn("y")
-	@ResultColumn("processor")
-	@ResultColumn("app_id")
-	@ResultColumn("memory_used")
-	static final String LIST_CORES_TO_LOAD =
-			"SELECT core_id, x, y, processor, app_id, memory_used "
-					+ "FROM core_view "
-					+ "WHERE ethernet_id = ? AND app_id IS NOT NULL "
-					+ "AND content IS NOT NULL";
-
-	/** List the cores of a ethernets with a data specification to run. */
-	@Parameter("ethernet_id")
 	@Parameter("is_system")
 	@ResultColumn("core_id")
 	@ResultColumn("x")

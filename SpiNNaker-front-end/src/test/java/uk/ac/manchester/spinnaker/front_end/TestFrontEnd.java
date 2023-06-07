@@ -120,7 +120,7 @@ class TestFrontEnd {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"dse", "dse_sys", "dse_app"})
+	@ValueSource(strings = {"dse_sys", "dse_app"})
 	@SuppressWarnings("MustBeClosed")
 	void testSimpleDSE(String cmd) throws Exception {
 		var machineFile = getClass().getResource("/machine.json").getFile();
@@ -143,10 +143,6 @@ class TestFrontEnd {
 							called.setValue("dse_app");
 						}
 
-						@Override
-						public void loadAllCores() {
-							called.setValue("dse");
-						}
 					};
 
 			var msg = tapSystemErrNormalized(() -> {

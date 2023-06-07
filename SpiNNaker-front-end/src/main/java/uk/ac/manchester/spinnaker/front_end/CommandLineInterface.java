@@ -157,16 +157,6 @@ public final class CommandLineInterface {
 		return new CommandLine(new CommandLineInterface()).getCommandSpec();
 	}
 
-	// Wrappers because of three configurations varying in one parameter
-	@Command(name = "dse", description = DSE_DESC)
-	private void dseAllCores(@Mixin MachineParam machine,
-			@Mixin DsFileParam dsFile,
-			@Mixin RunFolderParam runFolder)
-			throws Exception {
-		runDSEUploadingViaClassicTransfer(machine.get(), dsFile.get(),
-				runFolder.get(), null);
-	}
-
 	@Command(name = "dse_sys", description = DSE_SYS_DESC)
 	private void dseSystemCores(
 			@Mixin MachineParam machine,
@@ -255,9 +245,7 @@ public final class CommandLineInterface {
 
 		try (var txrx = getTransceiver(machine, job);
 				var dseExec = hostFactory.create(txrx, machine, db)) {
-			if (filterSystemCores == null) {
-				dseExec.loadAllCores();
-			} else if (filterSystemCores) {
+			if (filterSystemCores) {
 				dseExec.loadApplicationCores();
 			} else {
 				dseExec.loadSystemCores();
