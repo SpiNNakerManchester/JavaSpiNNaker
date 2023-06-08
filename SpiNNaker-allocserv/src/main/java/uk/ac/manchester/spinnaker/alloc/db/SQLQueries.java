@@ -1163,6 +1163,17 @@ public abstract class SQLQueries {
 					+ "WHERE group_id = :group_id AND quota IS NOT NULL";
 
 	/**
+	 * Set a quota. Used when the system is aligning quota with NMPI data.
+	 *
+	 * @see QuotaManager
+	 */
+	@Parameter("new_quota")
+	@Parameter("group_id")
+	protected static final String SET_QUOTA =
+			"UPDATE user_groups SET quota = GREATEST(0, :new_quota) "
+					+ "WHERE group_id = :group_id AND quota IS NOT NULL";
+
+	/**
 	 * Get details about a user. This is pretty much everything except their
 	 * password.
 	 *
@@ -2222,6 +2233,30 @@ public abstract class SQLQueries {
 			+ ":death_reason, :death_timestamp, "
 			+ ":original_request, :allocation_timestamp, :allocation_size, "
 			+ ":machine_name, :owner_name, :group_id, :group_name)";
+
+	@Parameter("job_id")
+	@Parameter("session_id")
+	protected static final String SET_JOB_SESSION =
+			"INSERT IGNORE INTO job_nmpi_session ( "
+			+ "job_id, session_id) "
+			+ "VALUES(:job_id, :session_id)";
+
+	@Parameter("job_id")
+	@Parameter("nmpi_job_id")
+	protected static final String SET_JOB_NMPI_JOB =
+			"INSERT IGNORE INTO job_nmpi_job ( "
+			+ "job_id, nmpi_job_id) "
+			+ "VALUES(:job_id, :nmpi_job_id)";
+
+	@Parameter("job_id")
+	@ResultColumn("session_id")
+	protected static final String GET_JOB_SESSION =
+			"SELECT session_id FROM job_nmpi_session WHERE job_id=:job_id";
+
+	@Parameter("job_id")
+	@ResultColumn("nmpi_job_id")
+	protected static final String GET_JOB_NMPI_JOB =
+			"SELECT nmpi_job_id FROM job_nmpi_job WHERE job_id=:job_id";
 
 	// SQL loaded from files because it is too complicated otherwise!
 

@@ -40,7 +40,12 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Update;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
+import uk.ac.manchester.spinnaker.alloc.nmpi.JobResourceUpdate;
 import uk.ac.manchester.spinnaker.alloc.nmpi.NMPIv3API;
+import uk.ac.manchester.spinnaker.alloc.nmpi.ResourceUsage;
+import uk.ac.manchester.spinnaker.alloc.nmpi.SessionRequest;
+import uk.ac.manchester.spinnaker.alloc.nmpi.SessionResourceUpdate;
+import uk.ac.manchester.spinnaker.alloc.nmpi.SessionResponse;
 
 /**
  * Manages user quotas.
@@ -50,6 +55,8 @@ import uk.ac.manchester.spinnaker.alloc.nmpi.NMPIv3API;
 @Service
 public class QuotaManager extends DatabaseAwareBean {
 	private static final Logger log = getLogger(QuotaManager.class);
+
+	private static final String STATUS_ACCEPTED = "accepted";
 
 	@Autowired
 	private ServiceMasterControl control;
@@ -290,42 +297,92 @@ public class QuotaManager extends DatabaseAwareBean {
 	}
 
 	boolean mayCreateNMPISession(String collab) {
-		// TODO: Read collab from NMPI; fail if not there
+		// Read collab from NMPI; fail if not there
+		var projects = nmpiProxy.getProjects(quotaProps.getNMPIApiKey(),
+				STATUS_ACCEPTED, collab);
+		double totalBoardSeconds = 0.0;
+		for (var project : projects) {
+			for (var quota : project.getQuotas()) {
+				if (quota.getPlatform().equals(quotaProps.getNMPIPlaform())) {
+					totalBoardSeconds += quota.getLimit() - quota.getUsage();
+				}
+			}
+		}
 
-		// TODO: Update quota in group for collab from NMPI
+		// Update quota in group for collab from NMPI, flooring off
+		try (var c = getConnection();
+				Update setQuota = c.update(SET_QUOTA)){
+			setQuota.call((long) totalBoardSeconds);
+		}
 
 		return false;
 	}
 
 	void associateNMPISession(int jobId, String user, String collab) {
-		// TODO: Create an NMPI session
+		SessionRequest request = new SessionRequest();
+		request.setCollab(collab);
+		request.setHardwarePlatform(quotaProps.getNMPIPlaform());
+		request.setUserId(user);
+		SessionResponse session = nmpiProxy.createSession(
+				quotaProps.getNMPIApiKey(), request);
 
-		// TODO: Associate NMPI session with Job in the database
-
+		// Associate NMPI session with Job in the database
+		try (var c = getConnection();
+				var setSession = c.update(SET_JOB_SESSION)) {
+			setSession.call(jobId, session.getId());
+		}
 	}
 
 	Optional<String> mayUseNMPIJob(int nmpiJobId) {
-		// TODO: Read job from NMPI to get collab ID; fail if not there
-		String collab = null;
+		// Read job from NMPI to get collab ID
+		var job = nmpiProxy.getJob(quotaProps.getNMPIApiKey(), nmpiJobId);
 
-		if (!mayCreateNMPISession(collab)) {
+		// This is now a collab so check there instead
+		if (!mayCreateNMPISession(job.getCollab())) {
 			return Optional.empty();
 		}
-
-		// TODO: Replace with Collab
-		return Optional.of(null);
+		return Optional.of(job.getCollab());
 	}
 
 	void associateNMPIJob(int jobId, int nmpiJobId) {
-		// TODO: Associate NMPI Job with job in database
+		// Associate NMPI Job with job in database
+		try (var c = getConnection();
+				var setNMPIJob = c.update(SET_JOB_NMPI_JOB)) {
+			setNMPIJob.call(jobId, nmpiJobId);
+		}
 	}
 
 	void finishJob(int jobId) {
-		// TODO: Get job details
+		try (var c = getConnection();
+				var getSession = c.query(GET_JOB_SESSION);
+				var getNMPIJob = c.query(GET_JOB_NMPI_JOB);
+				var getUsage = c.query(GET_JOB_USAGE_AND_QUOTA)) {
 
-		// TODO: If job has associated session, update quota in session
+			// Get the quota used
+			var quota = getUsage.call1(
+					r -> r.getLong("quota_used"), jobId).get();
+			var resourceUsage = new ResourceUsage();
+			resourceUsage.setUnits(ResourceUsage.BOARD_SECONDS);
+			resourceUsage.setValue(quota);
+			// If job has associated session, update quota in session
+			getSession.call1(r -> r.getInt("sesion_id"), jobId).ifPresent(
+					sessionId -> {
+						var update = new SessionResourceUpdate();
+						update.setStatus("finished");
+						update.setResourceUsage(resourceUsage);
+						nmpiProxy.setSessionStatusAndResources(
+								quotaProps.getNMPIApiKey(), sessionId, update);
+					});
 
-		// TODO: If job has associated NMPI job, update quota on NMPI job
+			// If job has associated NMPI job, update quota on NMPI job
+			getNMPIJob.call1(r -> r.getInt("nmpi_job_id"), jobId).ifPresent(
+					nmpiJobId -> {
+						var update = new JobResourceUpdate();
+						update.setResourceUsage(resourceUsage);
+						nmpiProxy.setJobResources(
+								quotaProps.getNMPIApiKey(), nmpiJobId, update);
+					});
+		}
 	}
 
 	/**

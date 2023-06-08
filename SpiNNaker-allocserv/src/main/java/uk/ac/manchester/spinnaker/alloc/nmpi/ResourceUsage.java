@@ -21,7 +21,7 @@ package uk.ac.manchester.spinnaker.alloc.nmpi;
  */
 public class ResourceUsage {
 
-	public static final String CORE_HOURS = "core-hours";
+	public static final String BOARD_SECONDS = "board-seconds";
 
 	private double value;
 

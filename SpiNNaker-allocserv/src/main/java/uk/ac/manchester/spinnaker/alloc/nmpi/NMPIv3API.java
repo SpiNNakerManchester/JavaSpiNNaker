@@ -63,16 +63,16 @@ public interface NMPIv3API {
     		JobResourceUpdate resources);
 
     /**
-     * Get a list of collabs that match the parameters.
+     * Get a list of projects that match the parameters.
      *
      * @param apiKey The API key to authenticate with.
-     * @param status The status of the collab to get.
-     * @param collab The name of the collab to get.
-     * @return A list of matching collabs.
+     * @param status The status of the project to get.
+     * @param collab The name of the collab of the project.
+     * @return A list of matching projects.
      */
     @GET
-    @Path("collabs")
-    List<Collab> getCollabs(@HeaderParam("x-api-key") String apiKey,
+    @Path("projects")
+    List<Project> getProjects(@HeaderParam("x-api-key") String apiKey,
     		@QueryParam("status") String status,
     		@QueryParam("collab") String collab);
 

@@ -265,11 +265,11 @@ CREATE TABLE IF NOT EXISTS jobs (
 );
 
 -- STMT
-CREATE TABLE IF NOT EXISTS job_nmpi_collab (
+CREATE TABLE IF NOT EXISTS job_nmpi_session (
     job_id INTEGER,
         FOREIGN KEY (job_id)
         REFERENCES jobs(job_id),
-    collab VARCHAR(255) NOT NULL,
+    session_id INTEGER NOT NULL,
     UNIQUE INDEX (job_id ASC, collab ASC)
 );
 

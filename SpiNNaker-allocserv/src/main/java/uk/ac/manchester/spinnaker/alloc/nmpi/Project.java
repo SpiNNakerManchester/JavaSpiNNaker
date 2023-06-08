@@ -21,12 +21,12 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 /**
- * A NMPI collab.
+ * A NMPI project.
  */
-public class Collab {
+public class Project {
 
     /**
-     * The quotas of the collab.
+     * The quotas of the project.
      */
     private List<Quota> quotas;
 
