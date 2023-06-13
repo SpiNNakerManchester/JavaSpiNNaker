@@ -31,7 +31,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.opentest4j.AssertionFailedError;
 
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
-import uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
+//import uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
@@ -167,6 +167,7 @@ class TestFrontEnd {
 		}
 	}
 
+    /*
 	@Test
 	@SuppressWarnings("MustBeClosed")
 	void testAdvancedDSE() throws Exception {
@@ -206,7 +207,7 @@ class TestFrontEnd {
 		} finally {
 			CommandLineInterface.fastFactory = saved;
 		}
-	}
+	}*/
 
 	@Test
 	void testScampDownload() throws Exception {

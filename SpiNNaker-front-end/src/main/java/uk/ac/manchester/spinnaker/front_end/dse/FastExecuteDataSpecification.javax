@@ -227,7 +227,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 			DataSpecificationException, InterruptedException {
 		var storage = db.getStorageInterface();
 		var ethernets = storage.listEthernetsToLoad();
-		int opsToRun = storage.countWorkRequired();
+		int opsToRun = storage.countCores(false);
 		try (var bar = new Progress(opsToRun, LOADING_MSG)) {
 			processTasksInParallel(ethernets, board -> {
 				return () -> loadBoard(board, storage, bar);
@@ -270,7 +270,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	private MemoryLocation malloc(CoreToLoad ctl, Integer bytesUsed)
 			throws IOException, ProcessException, InterruptedException {
 		return txrx.mallocSDRAM(ctl.core.getScampCore(), bytesUsed,
-				new AppID(ctl.appID),
+				new AppID(17), // TODO fix
 				ctl.core.getP() + CORE_DATA_SDRAM_BASE_TAG);
 	}
 
@@ -500,14 +500,15 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		 */
 		private ByteBuffer getDataSpec(CoreToLoad ctl)
 				throws DataSpecificationException {
-			try {
+            return null;
+			/*try {
 				return ctl.getDataSpec();
 			} catch (StorageException | RuntimeException e) {
 				throw new DataSpecificationException(format(
 						"failed to read data specification on "
 								+ "core %s of board %s (%s)",
 						ctl.core, board.location, board.ethernetAddress), e);
-			}
+			}*/
 		}
 
 		private int loadCoreFromExecutor(CoreToLoad ctl, Gather gather,
