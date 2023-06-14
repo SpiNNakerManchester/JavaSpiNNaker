@@ -78,7 +78,6 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 			// ethernet_id
 			s.setBoolean(FIRST, loadSystemCores);
 			try (var rs = s.executeQuery()) {
-				var result = new ArrayList<CoreToLoad>();
 				while (rs.next()) {
         				// count_content
             		return rs.getInt(FIRST);
@@ -116,14 +115,6 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 		return (EthernetImpl) ethernet;
 	}
 
-	private static CoreToLoadImpl sanitise(CoreToLoad core, String desc) {
-		if (!(core instanceof CoreToLoadImpl)) {
-			throw new IllegalArgumentException(
-					"can only " + desc + " for cores described by this class");
-		}
-		return (CoreToLoadImpl) core;
-	}
-
 	@Override
 	public List<CoreLocation> listCoresToLoad(Ethernet ethernet,
 			boolean loadSystemCores) throws StorageException {
@@ -151,6 +142,7 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 		}
 	}
     
+    @Override
     public LinkedHashMap<Integer, Integer> getRegionSizes(CoreLocation core) 
             throws StorageException{
  		return callR(conn -> getRegionSizes(conn, core), 
@@ -158,12 +150,12 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
     }
 
 	private LinkedHashMap<Integer, Integer> getRegionSizes(
-            Connection conn, CoreLocation core) throws SQLException {
+            Connection conn, CoreLocation xyp) throws SQLException {
 		try (var s = conn.prepareStatement(GET_REGION_SIZES)) {
 			// ethernet_id
-			s.setInt(FIRST, core.getX());
-			s.setInt(SECOND, core.getY());
-			s.setInt(THIRD, core.getP());
+			s.setInt(FIRST, xyp.getX());
+			s.setInt(SECOND, xyp.getY());
+			s.setInt(THIRD, xyp.getP());
 			try (var rs = s.executeQuery()) {
 				var result = new LinkedHashMap<Integer, Integer>();
 				while (rs.next()) {
@@ -249,6 +241,7 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 
 	}
 
+    @Override
     public void setRegionPointer(CoreLocation xyp, int region_num, 
             int next_pointer) throws StorageException{
 		callV(conn -> setRegionPointer(conn, xyp, region_num, next_pointer),
@@ -268,6 +261,7 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 		}
 	}
 
+    @Override
     public int getAppId() throws StorageException{
  		return callR(conn ->getAppId(conn), "getting app id");   
     }
@@ -284,26 +278,6 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
         throw new IllegalStateException("could not ge app id");
     }
         
-    @Override
-	public void saveLoadingMetadata(CoreToLoad core, MemoryLocation start,
-			int memoryUsed, int memoryWritten) throws StorageException {
-		callV(conn -> saveLoadingMetadata(conn, sanitise(core, "save metadata"),
-				start, memoryUsed, memoryWritten),
-				"saving data loading metadata");
-	}
-
-	private static void saveLoadingMetadata(Connection conn,
-			CoreToLoadImpl core, MemoryLocation start, int memoryUsed,
-			int memoryWritten) throws SQLException {
-		try (var s = conn.prepareStatement(ADD_LOADING_METADATA)) {
-			s.setInt(FIRST, start.address);
-			s.setInt(SECOND, memoryUsed);
-			s.setInt(THIRD, memoryWritten);
-			s.setInt(FOURTH, 1000); // TODO 
-			s.executeUpdate();
-		}
-	}
-
 	private static final class EthernetImpl extends Ethernet {
 
 		private EthernetImpl(int etherx, int ethery, String addr) {
@@ -325,24 +299,4 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 		}
 	}
 
-	private final class CoreToLoadImpl extends CoreToLoad {
-
-		private CoreToLoadImpl(int x, int y, int p, int sizeToWrite) {
-			super(x, y, p, sizeToWrite);
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (!(other instanceof CoreToLoadImpl)) {
-				return false;
-			}
-			var c = (CoreToLoadImpl) other;
-			return core == c.core;
-		}
-
-		@Override
-		public int hashCode() {
-			return core.hashCode();
-		}
-	}
 }

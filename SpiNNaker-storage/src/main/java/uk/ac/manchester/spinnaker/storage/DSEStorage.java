@@ -15,13 +15,11 @@
  */
 package uk.ac.manchester.spinnaker.storage;
 
-import java.nio.ByteBuffer;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Positive;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
@@ -34,21 +32,21 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  * @author Donal Fellows
  */
 public interface DSEStorage extends ProxyAwareStorage {
+    
 	/**
 	 * See how many DSE loading actions have to be done.
-	 *
-	 * @return The number of data specifications remaining to be executed.
-	 * @throws StorageException
-	 *             If the database access fails.
-	 */
+     * 
+	 * @param loadSystemCores
+	 *            If {@code true}, just count system cores. If {@code false},
+	 *            just count application (non-system) cores.
+     * @return The count of the cores which match the is loadSystemCores
+     * @throws StorageException 
+     */
 	int countCores(boolean loadSystemCores) throws StorageException;
 
 	/**
 	 * Get a list of all ethernets that need to have DSE loading done on them.
 	 *
-	 * @param loadSystemCores
-	 *            If {@code true}, just count system cores. If {@code false},
-	 *            just count application (non-system) cores.
 	 * @return The list of ethernets.
 	 * @throws StorageException
 	 *             If the database access fails.
@@ -56,15 +54,14 @@ public interface DSEStorage extends ProxyAwareStorage {
 	List<Ethernet> listEthernetsToLoad() throws StorageException;
 
 	/**
-	 * Get a list of all DSE loading actions that need to be done for a
-	 * particular ethernet.
+	 * Get a list of all cores that need to be done for a particular ethernet.
 	 *
 	 * @param ethernet
 	 *            The ethernet we're loading onto.
 	 * @param loadSystemCores
 	 *            If {@code true}, just list system cores. If {@code false},
 	 *            just list application (non-system) cores.
-	 * @return The list of actions.
+	 * @return The list of core locations.
 	 * @throws StorageException
 	 *             If the database access fails.
 	 */
@@ -73,21 +70,23 @@ public interface DSEStorage extends ProxyAwareStorage {
 
     /**
      * 
-     * @param cores
-	 *            cores to get the region sizes for
-     * @return Map of Region number to size. 
+     * Get a map of region id to size for regions with a none zero size
+     * 
+     * @param xyp 
+	 *      Coordinates to get the region sizes for
+     * @return Sorted Map of Region number to size. 
 *           For the regions with a none zero size
      * @throws StorageException 
 	 *             If the database access fails.
      */
-    LinkedHashMap<Integer, Integer> getRegionSizes(CoreLocation core) 
+    LinkedHashMap<Integer, Integer> getRegionSizes(CoreLocation xyp) 
             throws StorageException;
     
 	/**
-	 * Record the results of loading a core.
+	 * Record the start address for the metadata on this core
 	 *
-	 * @param coreToLoad
-	 *            The instruction to load a particular core.
+	 * @param xyp
+	 *            Coordinates for the core 
 	 * @param startAddress
 	 *            Where the load metadata starts.
 	 * @throws StorageException
@@ -96,33 +95,54 @@ public interface DSEStorage extends ProxyAwareStorage {
 	void setStartAddress(CoreLocation xyp, MemoryLocation start)
             throws StorageException;
 
+    /**
+	 * Gets the start address for the metadata on this core
+	 *
+	 * @param xyp
+	 *            Coordinates for the core 
+     * @return The location of the start of the metadata region
+     * 
+     * @throws StorageException 
+     */
     MemoryLocation getStartAddress(CoreLocation xyp) throws StorageException;
        
+    /**
+     * Get the system wide app id
+     * 
+     * @return the app id
+     * @throws StorageException 
+     */
     int getAppId() throws StorageException;
  
-    void setRegionPointer(CoreLocation xyp, int region_num, int next_pointer)
+    /**
+     * Set the pointer for where to write the region data to
+     * 
+     * @param xyp
+	 *            Coordinates for the core 
+     * @param region_num
+     *            region number for thsi pointer
+     * @param pointer
+     *            start address for this regions metadata
+     * @throws StorageException 
+     */
+    void setRegionPointer(CoreLocation xyp, int region_num, int pointer)
             throws StorageException;
     
+    /**
+     * Gets a map of region ids to pointers and content
+     * 
+     * Maps only regions with a none zero size.
+     * 
+     * The content may be null is no data added
+     * 
+     * @param xyp
+	 *            Coordinates for the core 
+     * @return map of region number to object holding pointer and content
+     * @throws StorageException 
+     */
     Map<Integer,RegionInfo> getRegionPointersAndContent(CoreLocation xyp)
            throws StorageException;
     
-    /**
-	 * Record the results of loading a core.
-	 *
-	 * @param coreToLoad
-	 *            The instruction to load a particular core.
-	 * @param startAddress
-	 *            Where the load metadata starts.
-	 * @param memoryUsed
-	 *            How much memory was allocated by loading.
-	 * @param memoryWritten
-	 *            How much memory was written by loading.
-	 * @throws StorageException
-	 *             If the database access fails.
-	 */
-	void saveLoadingMetadata(CoreToLoad coreToLoad, MemoryLocation startAddress,
-			int memoryUsed, int memoryWritten) throws StorageException;
-
 	/**
 	 * A ethernet which allows data specifications to be loaded.
 	 *
@@ -156,41 +176,4 @@ public interface DSEStorage extends ProxyAwareStorage {
 			this.ethernetAddress = address;
 		}
 	}
-
-	/**
-	 * A core with a data specification to load.
-	 *
-	 * @author Donal Fellows
-	 */
-	abstract class CoreToLoad {
-		/**
-		 * The core that the load is to be done on.
-		 */
-		@Valid
-		public final CoreLocation core;
-
-		/**
-		 * The size of region to allocate and write into.
-		 */
-		@Positive
-		public final int sizeToWrite;
-
-		/**
-		 * Create an instance.
-		 *
-		 * @param x
-		 *            The X coordinate of the core.
-		 * @param y
-		 *            The Y coordinate of the core.
-		 * @param p
-		 *            The application identifier.
-		 * @param sizeToWrite
-		 *            Number of bytes to be written, as computed by DSG.
-		 */
-		protected CoreToLoad(int x, int y, int p, int sizeToWrite) {
-			this.core = new CoreLocation(x, y, p);
-			this.sizeToWrite = sizeToWrite;
-		}
-	}
-    
 }
