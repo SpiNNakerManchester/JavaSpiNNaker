@@ -20,28 +20,18 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 
 import org.slf4j.Logger;
 
-import com.google.errorprone.annotations.MustBeClosed;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import java.util.LinkedHashMap;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.APPDATA_MAGIC_NUM;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.DSE_VERSION;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.INT_SIZE;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 
-import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
-import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.storage.StorageException;
@@ -53,7 +43,7 @@ import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 public class BoardWorker {
 	private static final Logger log =getLogger(BoardWorker.class);
     
-	/** The transceiver for talking to the SpiNNaker machine. */
+    /** The transceiver for talking to the SpiNNaker machine. */
 	protected final TransceiverInterface txrx;
 
     protected final Ethernet board;
@@ -64,8 +54,47 @@ public class BoardWorker {
 
     protected final int appId;
 
+	/**
+	 * Data spec magic number. This marks the start of a block of memory in
+	 * SpiNNaker's SDRAM that has been allocated by the Data Specification.
+	 */
+	public static final int DSG_MAGIC_NUM = 0x5B7CA17E;
+
+	/** Application data magic number. */
+	public static final int APPDATA_MAGIC_NUM = 0xAD130AD6;
+
+	/** Version of the file produced by the DSE. */
+	public static final int DSE_VERSION = 0x00010000;
+
+	/** The number of memory regions in the DSE model. */
+	public static final int MAX_MEM_REGIONS = 32;
+
 	private static final long UNSIGNED_INT = 0xFFFFFFFFL;
 
+	/** Bytes per int/word. */
+	public static final int INT_SIZE = 4;
+
+	/**
+	 * The size of the Data Specification table header, in bytes.
+	 * Note that the header consists of 2 uint32_t variables
+	 * (magic number, version).
+	 */
+	public static final int APP_PTR_TABLE_HEADER_SIZE = INT_SIZE * 2;
+
+	/**
+	 * The size of a Data Specification region description, in bytes.
+	 * Note that each description consists of a pointer and 2 uint32_t variables
+	 * (pointer, checksum, n_words).
+	 */
+	public static final int APP_PTR_TABLE_REGION_SIZE = INT_SIZE * 3;
+
+	/**
+	 * The size of the Data Specification table, in bytes.
+	 */
+	public static final int APP_PTR_TABLE_BYTE_SIZE =
+			APP_PTR_TABLE_HEADER_SIZE
+			+ (MAX_MEM_REGIONS * APP_PTR_TABLE_REGION_SIZE);
+    
     BoardWorker(TransceiverInterface txrx, Ethernet board, DSEStorage storage, 
             Progress bar) throws StorageException {
         this.board = board;
@@ -93,8 +122,7 @@ public class BoardWorker {
      *             If communications are interrupted.
      */
     void mallocCore(CoreLocation xyp) throws 
-            IOException, ProcessException,
-            DataSpecificationException, StorageException,
+            IOException, ProcessException,StorageException,
             InterruptedException {
         LinkedHashMap<Integer, Integer> region_sizes = 
                 storage.getRegionSizes(xyp);
@@ -129,10 +157,8 @@ public class BoardWorker {
      * @throws InterruptedException
      *             If communications are interrupted.
      */
-    void loadCore(CoreLocation xyp) 
-            throws IOException, ProcessException,
-            DataSpecificationException, StorageException,
-            InterruptedException {
+    void loadCore(CoreLocation xyp) throws IOException, ProcessException,
+            StorageException, InterruptedException {
         int totalWritten = APP_PTR_TABLE_BYTE_SIZE;
         var pointer_table = allocate(APP_PTR_TABLE_BYTE_SIZE).order(LITTLE_ENDIAN);
         //header

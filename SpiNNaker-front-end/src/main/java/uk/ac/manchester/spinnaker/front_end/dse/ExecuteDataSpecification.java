@@ -24,7 +24,6 @@ import java.util.function.Function;
 
 import com.google.errorprone.annotations.MustBeClosed;
 
-import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor.SimpleCallable;
@@ -102,8 +101,6 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 	 *             If the transceiver can't talk to its sockets.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
-	 * @throws DataSpecificationException
-	 *             If a data specification in the database is invalid.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
 	 * @throws IllegalStateException
@@ -112,13 +109,11 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 	 */
 	protected final void processTasksInParallel(List<Ethernet> tasks,
 			Function<Ethernet, SimpleCallable> mapper) throws StorageException,
-			IOException, ProcessException, DataSpecificationException,
-			InterruptedException {
+			IOException, ProcessException, InterruptedException {
 		try {
 			executor.submitTasks(tasks, mapper).awaitAndCombineExceptions();
 		} catch (StorageException | IOException | ProcessException
-				| DataSpecificationException | InterruptedException
-				| RuntimeException e) {
+				| InterruptedException | RuntimeException e) {
 			throw e;
 		} catch (Exception e) {
 			throw new IllegalStateException("unexpected exception", e);

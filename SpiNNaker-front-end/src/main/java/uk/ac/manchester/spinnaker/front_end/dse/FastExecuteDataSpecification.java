@@ -25,8 +25,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
-import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInProtocol.computeNumPackets;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
 import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
@@ -57,28 +55,18 @@ import difflib.ChangeDelta;
 import difflib.Chunk;
 import difflib.DeleteDelta;
 import difflib.InsertDelta;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
-import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
-import uk.ac.manchester.spinnaker.data_spec.Executor;
-import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
-import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReal;
 import uk.ac.manchester.spinnaker.front_end.NoDropPacketContext;
 import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Monitor;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
-import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
-import uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
@@ -218,8 +206,6 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             If the transceiver can't talk to its sockets.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
-	 * @throws DataSpecificationException
-	 *             If a data specification in the database is invalid.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
 	 * @throws IllegalStateException
@@ -228,7 +214,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 */
 	public void loadCores()
 			throws StorageException, IOException, ProcessException,
-			DataSpecificationException, InterruptedException {
+			InterruptedException {
 		var storage = db.getStorageInterface();
 		var ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countCores(false);
@@ -240,8 +226,8 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	}
 
 	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar)
-			throws IOException, ProcessException,
-			DataSpecificationException, StorageException, InterruptedException {
+			throws IOException, ProcessException, StorageException,
+            InterruptedException {
 		var cores = storage.listCoresToLoad(board, false);
 		if (cores.isEmpty()) {
 			log.info("no cores need loading on board; skipping");
@@ -267,17 +253,6 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		}
 	}
     
-	private static MemoryRegionReal getRealRegionOrNull(MemoryRegion reg) {
-		if (!(reg instanceof MemoryRegionReal)) {
-			return null;
-		}
-		var r = (MemoryRegionReal) reg;
-		if (r.isUnfilled() || r.getMaxWritePointer() <= 0) {
-			return null;
-		}
-		return r;
-	}
-
 	/**
 	 * Opens a file for writing text.
 	 *
@@ -397,8 +372,6 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 
 		private BoardLocal logContext;
 
-		private ExecutionContext execContext;
-        
         private Gather gather;
         
 		@MustBeClosed
@@ -409,43 +382,17 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
                 StorageException {
             super(txrx, board, storage, bar);
 			this.logContext = new BoardLocal(board.location);
-			this.execContext = new ExecutionContext(txrx);
 			this.connection = new ThrottledConnection(txrx, board,
 					gather.getIptag());
             this.gather = gather;
 		}
 
 		@Override
-		public void close() throws IOException, ProcessException,
-				DataSpecificationException, InterruptedException {
-			execContext.close();
+		public void close() throws IOException, ProcessException, 
+                InterruptedException {
 			logContext.close();
 			connection.close();
 		}
-
-		/**
-		 * Wrap {@link CoreToLoad#getDataSpec()} with core location info on
-		 * failure.
-		 *
-		 * @param ctl
-		 *            Record from the database describing a core to be loaded.
-		 * @return The data specification for the given core.
-		 * @throws DataSpecificationException
-		 *             If something goes wrong.
-		 */
-		private ByteBuffer getDataSpec(CoreToLoad ctl)
-				throws DataSpecificationException {
-            return null;
-			/*try {
-				return ctl.getDataSpec();
-			} catch (StorageException | RuntimeException e) {
-				throw new DataSpecificationException(format(
-						"failed to read data specification on "
-								+ "core %s of board %s (%s)",
-						ctl.core, board.location, board.ethernetAddress), e);
-			}*/
-		}
-
 
 		/**
 		 * A list of bitfields. Knows how to install and uninstall itself from

@@ -68,7 +68,6 @@ import picocli.CommandLine.TypeConversionException;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
 import uk.ac.manchester.spinnaker.connections.LocateConnectedMachineIPAddress;
 import uk.ac.manchester.spinnaker.connections.MachineAware;
-import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.front_end.download.DataReceiver;
 import uk.ac.manchester.spinnaker.front_end.download.RecordingRegionDataGatherer;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
@@ -237,16 +236,13 @@ public final class CommandLineInterface {
 	 *             If there was a problem in the parallel queue.
 	 * @throws InterruptedException
 	 *             If the wait for everything to complete is interrupted.
-	 * @throws DataSpecificationException
-	 *             If an invalid data specification file is executed.
 	 * @throws URISyntaxException
 	 *             If the proxy URI is provided but not valid.
 	 */
 	public void runDSEUploadingViaClassicTransfer(Machine machine,
 			File dsFile, File runFolder, Boolean filterSystemCores)
 			throws IOException, SpinnmanException, StorageException,
-			ExecutionException, InterruptedException,
-			DataSpecificationException, URISyntaxException {
+			ExecutionException, InterruptedException, URISyntaxException {
 		setLoggerDir(runFolder);
 		var db = getDataSpecDB(dsFile);
 		var job = getJob(db);
@@ -288,8 +284,6 @@ public final class CommandLineInterface {
 	 *             If there was a problem in the parallel queue.
 	 * @throws InterruptedException
 	 *             If the wait for everything to complete is interrupted.
-	 * @throws DataSpecificationException
-	 *             If an invalid data specification file is executed.
 	 * @throws URISyntaxException
 	 *             If a proxy URI is provided but invalid.
 	 */
@@ -302,8 +296,7 @@ public final class CommandLineInterface {
 			@Parameters(description = REPORT, arity = "0..1", index = "3")
 			Optional<File> reportFolder)
 			throws IOException, SpinnmanException, StorageException,
-			ExecutionException, InterruptedException,
-			DataSpecificationException, URISyntaxException {
+			ExecutionException, InterruptedException, URISyntaxException {
 		setLoggerDir(runFolder.get());
 		var db = getDataSpecDB(dsFile.get());
 		var job = getJob(db);

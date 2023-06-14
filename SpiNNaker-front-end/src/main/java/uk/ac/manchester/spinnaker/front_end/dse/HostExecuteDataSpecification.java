@@ -16,8 +16,6 @@
 package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
-import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -26,28 +24,17 @@ import java.nio.ByteBuffer;
 import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.MustBeClosed;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import java.util.LinkedHashMap;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.APPDATA_MAGIC_NUM;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.DSE_VERSION;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.INT_SIZE;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 
-import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
-import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
-import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 /**
  * Executes the host based data specification.
@@ -113,7 +100,7 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 */
 	public void loadCores(boolean system)
 			throws StorageException, IOException, ProcessException,
-			DataSpecificationException, InterruptedException {
+			InterruptedException {
         log.info("host with " + system);
 		var storage = db.getStorageInterface();
 		var ethernets = storage.listEthernetsToLoad();
@@ -127,8 +114,8 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 
 	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar,
 			boolean system)
-			throws IOException, ProcessException, DataSpecificationException,
-			StorageException, InterruptedException {
+			throws IOException, ProcessException, StorageException,
+            InterruptedException {
 		try (var c = new BoardLocal(board.location)) {
 			var worker = new HostBoardWorker(txrx, board, storage, bar);
 			for (var xyp : storage.listCoresToLoad(board, system)) {
