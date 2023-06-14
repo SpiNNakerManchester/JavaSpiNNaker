@@ -73,6 +73,7 @@ import uk.ac.manchester.spinnaker.front_end.download.DataReceiver;
 import uk.ac.manchester.spinnaker.front_end.download.RecordingRegionDataGatherer;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
+import uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
 //import uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.iobuf.IobufRequest;
@@ -198,20 +199,20 @@ public final class CommandLineInterface {
 	 */
 	static HostDSEFactory hostFactory = HostExecuteDataSpecification::new;
 
-	//@FunctionalInterface
-	//interface FastDSEFactory {
-	//	FastExecuteDataSpecification create(TransceiverInterface txrx,
-	//			Machine machine, List<Gather> gatherers, File reportDir,
-	//			DSEDatabaseEngine db)
-	//			throws IOException, SpinnmanException, StorageException,
-	//			ExecutionException, InterruptedException, URISyntaxException;
-	//}
+	@FunctionalInterface
+	interface FastDSEFactory {
+		FastExecuteDataSpecification create(TransceiverInterface txrx,
+				Machine machine, List<Gather> gatherers, File reportDir,
+				DSEDatabaseEngine db)
+				throws IOException, SpinnmanException, StorageException,
+				ExecutionException, InterruptedException, URISyntaxException;
+	}
 
 	/**
 	 * Makes {@link FastExecuteDataSpecification} instances. Allows for
 	 * injection of debugging tooling.
 	 */
-	//static FastDSEFactory fastFactory = FastExecuteDataSpecification::new;
+	static FastDSEFactory fastFactory = FastExecuteDataSpecification::new;
     
 	/**
 	 * Run the data specifications in parallel.
@@ -253,9 +254,9 @@ public final class CommandLineInterface {
 		try (var txrx = getTransceiver(machine, job);
 				var dseExec = hostFactory.create(txrx, machine, db)) {
 			if (filterSystemCores) {
-				dseExec.loadApplicationCores();
+				dseExec.loadCores(false);
 			} else {
-				dseExec.loadSystemCores();
+				dseExec.loadCores(true);
 			}
 		} catch (Exception ex) {
             log.error("DSE load failed", ex);
@@ -307,11 +308,11 @@ public final class CommandLineInterface {
 		var db = getDataSpecDB(dsFile.get());
 		var job = getJob(db);
 
-		//try (var txrx = getTransceiver(machine.get(), job);
-		//		var dseExec = fastFactory.create(txrx, machine.get(),
-	    //					gatherers.get(), reportFolder.orElse(null), db)) {
-		//	dseExec.loadCores();
-		//}
+		try (var txrx = getTransceiver(machine.get(), job);
+				var dseExec = fastFactory.create(txrx, machine.get(),
+	    					gatherers.get(), reportFolder.orElse(null), db)) {
+			dseExec.loadCores();
+		}
 	}
 
 	/**
