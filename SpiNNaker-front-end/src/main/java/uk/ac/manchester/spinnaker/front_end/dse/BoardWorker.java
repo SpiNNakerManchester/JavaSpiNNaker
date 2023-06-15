@@ -42,7 +42,7 @@ import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 public class BoardWorker {
 	private static final Logger log =getLogger(BoardWorker.class);
-    
+
     /** The transceiver for talking to the SpiNNaker machine. */
 	protected final TransceiverInterface txrx;
 
@@ -94,8 +94,8 @@ public class BoardWorker {
 	public static final int APP_PTR_TABLE_BYTE_SIZE =
 			APP_PTR_TABLE_HEADER_SIZE
 			+ (MAX_MEM_REGIONS * APP_PTR_TABLE_REGION_SIZE);
-    
-    BoardWorker(TransceiverInterface txrx, Ethernet board, DSEStorage storage, 
+
+    BoardWorker(TransceiverInterface txrx, Ethernet board, DSEStorage storage,
             Progress bar) throws StorageException {
         this.board = board;
         this.storage = storage;
@@ -121,10 +121,10 @@ public class BoardWorker {
      * @throws InterruptedException
      *             If communications are interrupted.
      */
-    void mallocCore(CoreLocation xyp) throws 
+    void mallocCore(CoreLocation xyp) throws
             IOException, ProcessException,StorageException,
             InterruptedException {
-        LinkedHashMap<Integer, Integer> region_sizes = 
+        LinkedHashMap<Integer, Integer> region_sizes =
                 storage.getRegionSizes(xyp);
         int total_size = region_sizes.values().stream().mapToInt(
                 Integer::intValue).sum();
@@ -174,7 +174,7 @@ public class BoardWorker {
                 var regionInfo = regionInfos.get(region);
                 pointer_table.putInt(regionInfo.pointer.address);
                 if (regionInfo.content != null) {
-                    log.info(""  +regionInfo.content.position() + " " + regionInfo.content.limit() + " " +  regionInfo.content.capacity());
+                    //log.info(""  +regionInfo.content.position() + " " + regionInfo.content.limit() + " " +  regionInfo.content.capacity());
                     var written = writeRegion(
                             xyp, regionInfo.content, regionInfo.pointer);
                     // Work out the checksum
@@ -185,7 +185,7 @@ public class BoardWorker {
                             .order(LITTLE_ENDIAN).rewind().asIntBuffer();
                     long sum = 0;
                     for (int i = 0; i < nWords; i++) {
-                        sum = (sum + (buf.get() & UNSIGNED_INT)) 
+                        sum = (sum + (buf.get() & UNSIGNED_INT))
                                 & UNSIGNED_INT;
                     }
                     // Write the checksum and number of words
