@@ -32,16 +32,16 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  * @author Donal Fellows
  */
 public interface DSEStorage extends ProxyAwareStorage {
-    
+
 	/**
 	 * See how many DSE loading actions have to be done.
-     * 
+	 *
 	 * @param loadSystemCores
 	 *            If {@code true}, just count system cores. If {@code false},
 	 *            just count application (non-system) cores.
-     * @return The count of the cores which match the is loadSystemCores
-     * @throws StorageException 
-     */
+	 * @return The count of the cores which match the is loadSystemCores
+	 * @throws StorageException
+	 */
 	int countCores(boolean loadSystemCores) throws StorageException;
 
 	/**
@@ -68,81 +68,80 @@ public interface DSEStorage extends ProxyAwareStorage {
 	List<CoreLocation> listCoresToLoad(Ethernet ethernet, boolean loadSystemCores)
 			throws StorageException;
 
-    /**
-     * 
-     * Get a map of region id to size for regions with a none zero size
-     * 
-     * @param xyp 
+	/**
+	 *
+	 * Get a map of region id to size for regions with a none zero size
+	 *
+	 * @param xyp
 	 *      Coordinates to get the region sizes for
-     * @return Sorted Map of Region number to size. 
-*           For the regions with a none zero size
-     * @throws StorageException 
+	 * @return Sorted Map of Region number to size.
+	 *           For the regions with a none zero size
+     * @throws StorageException
 	 *             If the database access fails.
-     */
-    LinkedHashMap<Integer, Integer> getRegionSizes(CoreLocation xyp) 
-            throws StorageException;
-    
+	 */
+	 LinkedHashMap<Integer, Integer> getRegionSizes(CoreLocation xyp)
+			 throws StorageException;
+
 	/**
 	 * Record the start address for the metadata on this core
 	 *
 	 * @param xyp
-	 *            Coordinates for the core 
+	 *            Coordinates for the core
 	 * @param startAddress
 	 *            Where the load metadata starts.
 	 * @throws StorageException
 	 *             If the database access fails.
 	 */
 	void setStartAddress(CoreLocation xyp, MemoryLocation start)
-            throws StorageException;
-
-    /**
+			throws StorageException;
+	/**
 	 * Gets the start address for the metadata on this core
 	 *
 	 * @param xyp
-	 *            Coordinates for the core 
-     * @return The location of the start of the metadata region
-     * 
-     * @throws StorageException 
-     */
-    MemoryLocation getStartAddress(CoreLocation xyp) throws StorageException;
-       
-    /**
-     * Get the system wide app id
-     * 
-     * @return the app id
-     * @throws StorageException 
-     */
-    int getAppId() throws StorageException;
- 
-    /**
-     * Set the pointer for where to write the region data to
-     * 
-     * @param xyp
-	 *            Coordinates for the core 
-     * @param region_num
-     *            region number for thsi pointer
-     * @param pointer
-     *            start address for this regions metadata
-     * @throws StorageException 
-     */
-    void setRegionPointer(CoreLocation xyp, int region_num, int pointer)
-            throws StorageException;
-    
-    /**
-     * Gets a map of region ids to pointers and content
-     * 
-     * Maps only regions with a none zero size.
-     * 
-     * The content may be null is no data added
-     * 
-     * @param xyp
-	 *            Coordinates for the core 
-     * @return map of region number to object holding pointer and content
-     * @throws StorageException 
-     */
-    Map<Integer,RegionInfo> getRegionPointersAndContent(CoreLocation xyp)
-           throws StorageException;
-    
+	 *            Coordinates for the core
+	 * @return The location of the start of the metadata region
+	 *
+	 * @throws StorageException
+	 */
+	MemoryLocation getStartAddress(CoreLocation xyp) throws StorageException;
+
+	/**
+	 * Get the system wide app id
+	 *
+	 * @return the app id
+	 * @throws StorageException
+	 */
+	int getAppId() throws StorageException;
+
+	/**
+	 * Set the pointer for where to write the region data to
+	 *
+	 * @param xyp
+	 *            Coordinates for the core
+	 * @param region_num
+	 *            region number for thsi pointer
+	 * @param pointer
+	 *            start address for this regions metadata
+	 * @throws StorageException
+	 */
+	void setRegionPointer(CoreLocation xyp, int region_num, int pointer)
+			throws StorageException;
+
+	/**
+	 * Gets a map of region ids to pointers and content
+	 *
+	 * Maps only regions with a none zero size.
+	 *
+	 * The content may be null is no data added
+	 *
+	 * @param xyp
+	 *            Coordinates for the core
+	 * @return map of region number to object holding pointer and content
+	 * @throws StorageException
+	 */
+	Map<Integer,RegionInfo> getRegionPointersAndContent(CoreLocation xyp)
+			throws StorageException;
+
 	/**
 	 * A ethernet which allows data specifications to be loaded.
 	 *

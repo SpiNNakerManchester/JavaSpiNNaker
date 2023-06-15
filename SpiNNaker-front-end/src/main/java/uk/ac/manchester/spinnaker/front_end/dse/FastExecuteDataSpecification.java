@@ -372,24 +372,24 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 
 		private BoardLocal logContext;
 
-        private Gather gather;
+		private Gather gather;
 
 		@MustBeClosed
 		@SuppressWarnings("MustBeClosed")
 		FastBoardWorker(TransceiverInterface txrx, Ethernet board,
-                DSEStorage storage, Gather gather, Progress bar)
+				DSEStorage storage, Gather gather, Progress bar)
 				throws IOException, ProcessException, InterruptedException,
-                StorageException {
-            super(txrx, board, storage, bar);
+				StorageException {
+			super(txrx, board, storage, bar);
 			this.logContext = new BoardLocal(board.location);
 			this.connection = new ThrottledConnection(txrx, board,
 					gather.getIptag());
-            this.gather = gather;
+			this.gather = gather;
 		}
 
 		@Override
 		public void close() throws IOException, ProcessException,
-                InterruptedException {
+				InterruptedException {
 			logContext.close();
 			connection.close();
 		}
@@ -468,9 +468,9 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		 * @throws InterruptedException
 		 *             If communications are interrupted.
 		 */
-        @Override
-    protected int writeRegion(HasCoreLocation core, ByteBuffer content,
-            MemoryLocation baseAddress)
+		@Override
+		protected int writeRegion(HasCoreLocation core, ByteBuffer content,
+				MemoryLocation baseAddress)
 				throws IOException, ProcessException, InterruptedException {
 			int written = content.remaining();
 			try (var recorder = new MissingRecorder()) {
@@ -479,11 +479,11 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 				long end = nanoTime();
 				recorder.report(core, end - start, content.limit(), baseAddress);
 			}
-            if (SPINNAKER_COMPARE_UPLOAD != null) {
-                var readBack = txrx.readMemory(core,
-                        baseAddress, content.remaining());
+			if (SPINNAKER_COMPARE_UPLOAD != null) {
+				var readBack = txrx.readMemory(core,
+						baseAddress, content.remaining());
 					compareBuffers(content, readBack);
-            }
+			}
 			return written;
 		}
 

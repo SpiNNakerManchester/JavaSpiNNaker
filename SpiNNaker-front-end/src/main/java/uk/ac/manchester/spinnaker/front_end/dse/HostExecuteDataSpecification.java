@@ -101,7 +101,6 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	public void loadCores(boolean system)
 			throws StorageException, IOException, ProcessException,
 			InterruptedException {
-        log.info("host with " + system);
 		var storage = db.getStorageInterface();
 		var ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countCores(system);
@@ -115,7 +114,7 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar,
 			boolean system)
 			throws IOException, ProcessException, StorageException,
-            InterruptedException {
+			InterruptedException {
 		try (var c = new BoardLocal(board.location)) {
 			var worker = new HostBoardWorker(txrx, board, storage, bar);
 			for (var xyp : storage.listCoresToLoad(board, system)) {
@@ -126,24 +125,21 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 			}
 		}
 	}
-      
-    private class HostBoardWorker extends BoardWorker{
-        
-        HostBoardWorker(TransceiverInterface txrx, Ethernet board,
-                DSEStorage storage, Progress bar) throws StorageException {
-            super(txrx, board, storage, bar);
-        }
 
-        @Override
-        protected int writeRegion(HasCoreLocation core, ByteBuffer content,
-            MemoryLocation baseAddress)
-            throws IOException, ProcessException, InterruptedException {
-        var data = content.duplicate();
+	private class HostBoardWorker extends BoardWorker{
+		HostBoardWorker(TransceiverInterface txrx, Ethernet board,
+				DSEStorage storage, Progress bar) throws StorageException {
+			super(txrx, board, storage, bar);
+		}
 
-        int written = data.remaining();
-        txrx.writeMemory(core.getScampCore(), baseAddress, data);
-        return written;
-    }
-
-    }
+		@Override
+		protected int writeRegion(HasCoreLocation core, ByteBuffer content,
+				MemoryLocation baseAddress)
+				throws IOException, ProcessException, InterruptedException {
+			var data = content.duplicate();
+			int written = data.remaining();
+			txrx.writeMemory(core.getScampCore(), baseAddress, data);
+			return written;
+		}
+	}
 }

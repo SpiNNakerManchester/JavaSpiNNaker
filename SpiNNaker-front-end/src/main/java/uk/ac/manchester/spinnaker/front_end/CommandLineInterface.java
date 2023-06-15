@@ -73,7 +73,6 @@ import uk.ac.manchester.spinnaker.front_end.download.RecordingRegionDataGatherer
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
-//import uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.iobuf.IobufRequest;
 import uk.ac.manchester.spinnaker.front_end.iobuf.IobufRetriever;
@@ -100,7 +99,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
 		mixinStandardHelpOptions = true, //
 		modelTransformer = CommandLineInterface.BuildPropsLoader.class)
 public final class CommandLineInterface {
-    
+
     private static final Logger log =
         getLogger(CommandLineInterface.class);
 
@@ -212,7 +211,7 @@ public final class CommandLineInterface {
 	 * injection of debugging tooling.
 	 */
 	static FastDSEFactory fastFactory = FastExecuteDataSpecification::new;
-    
+
 	/**
 	 * Run the data specifications in parallel.
 	 *
@@ -255,9 +254,9 @@ public final class CommandLineInterface {
 				dseExec.loadCores(true);
 			}
 		} catch (Exception ex) {
-            log.error("DSE load failed", ex);
-            throw ex;
-        }
+			log.error("DSE load failed", ex);
+			throw ex;
+		}
 	}
 
 	/**
