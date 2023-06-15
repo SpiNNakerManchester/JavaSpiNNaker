@@ -227,21 +227,21 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 
 	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar)
 			throws IOException, ProcessException, StorageException,
-            InterruptedException {
+			InterruptedException {
 		var cores = storage.listCoresToLoad(board, false);
 		if (cores.isEmpty()) {
 			log.info("no cores need loading on board; skipping");
 			return;
 		}
 		log.info("loading data onto {} cores on board", cores.size());
-        var gather = gathererForChip.get(board.location);
+		var gather = gathererForChip.get(board.location);
 		try (var worker =  new FastBoardWorker(
-                txrx, board, storage, gather, bar)) {
+				txrx, board, storage, gather, bar)) {
 			for (var xyp : cores) {
 				worker.mallocCore(xyp);
 			}
-
-			try (var context = worker.dontDropPackets(gather)) {
+			try (var routers = worker.systemRouterTables();
+					var context = worker.dontDropPackets(gather)) {
 				for (var xyp : cores) {
 					worker.loadCore(xyp);
 				}
@@ -252,7 +252,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 			}
 		}
 	}
-    
+
 	/**
 	 * Opens a file for writing text.
 	 *
@@ -373,12 +373,12 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		private BoardLocal logContext;
 
         private Gather gather;
-        
+
 		@MustBeClosed
 		@SuppressWarnings("MustBeClosed")
-		FastBoardWorker(TransceiverInterface txrx, Ethernet board, 
+		FastBoardWorker(TransceiverInterface txrx, Ethernet board,
                 DSEStorage storage, Gather gather, Progress bar)
-				throws IOException, ProcessException, InterruptedException, 
+				throws IOException, ProcessException, InterruptedException,
                 StorageException {
             super(txrx, board, storage, bar);
 			this.logContext = new BoardLocal(board.location);
@@ -388,7 +388,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		}
 
 		@Override
-		public void close() throws IOException, ProcessException, 
+		public void close() throws IOException, ProcessException,
                 InterruptedException {
 			logContext.close();
 			connection.close();
