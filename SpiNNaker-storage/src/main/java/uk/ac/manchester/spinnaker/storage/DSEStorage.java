@@ -80,7 +80,7 @@ public interface DSEStorage extends ProxyAwareStorage {
 	 *             If the database access fails.
 	 */
 	LinkedHashMap<Integer, Integer> getRegionSizes(CoreLocation xyp)
-			 throws StorageException;
+			throws StorageException;
 
 	/**
 	 * Record the start address for the metadata on this core.
@@ -96,7 +96,7 @@ public interface DSEStorage extends ProxyAwareStorage {
 			throws StorageException;
 
 	/**
-	 * Gets the start address for the metadata on this core
+	 * Gets the start address for the metadata on this core.
 	 *
 	 * @param xyp
 	 *            Coordinates for the core
