@@ -45,7 +45,7 @@ abstract class BoardWorker {
 	/** The transceiver for talking to the SpiNNaker machine. */
 	protected final TransceiverInterface txrx;
 
-	/** The Ethernet data for this board */
+	/** The Ethernet data for this board.*/
 	protected final Ethernet board;
 
 	/** The database holding the DS data.*/
