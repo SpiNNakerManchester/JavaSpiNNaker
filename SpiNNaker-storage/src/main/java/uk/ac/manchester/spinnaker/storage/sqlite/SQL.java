@@ -159,12 +159,6 @@ abstract class SQL {
 	// Data loading ----------------------------------------------------
 	// -----------------------------------------------------------------
 
-	/** Count the data specifications in the DB that are still to be run. */
-    @Parameter("is_system")
-	@ResultColumn("count_core")
-	static final String COUNT_CORES =
-			"SELECT count(*) AS count_core FROM core_view ";
-
 	/** List the ethernets described in the database. */
 	@Parameters({})
 	@ResultColumn("ethernet_x")

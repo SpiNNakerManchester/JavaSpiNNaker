@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2032 The University of Manchester
+ * Copyright (c) 2023 The University of Manchester
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,31 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /**
+ * Used to group a MemoryLocation and a ByteBuffer object together
  *
  * @author Christian
  */
 public class RegionInfo {
-    public final MemoryLocation pointer;
 
-    public final ByteBuffer  content;
+	/**
+	 * The address where the region will be start
+	*/
+	public final MemoryLocation pointer;
 
-    public RegionInfo(ByteBuffer content, MemoryLocation pointer){
-        this. content =  content;
-        this.pointer = pointer;
-    }
+	/**
+	 * The content of the region. May be null
+	 */
+	public final ByteBuffer  content;
 
-}    
+	/**
+	 * @param content
+	 *           The metadata to be written to the region or null
+	 * @param pointer
+	 *           The address the region metadata starts at
+	 */
+	public RegionInfo(ByteBuffer content, MemoryLocation pointer) {
+		this.content =  content;
+		this.pointer = pointer;
+	}
+
+}

@@ -15,8 +15,18 @@
  */
 package uk.ac.manchester.spinnaker.storage.sqlite;
 
+import java.nio.ByteBuffer;
 import static java.nio.ByteBuffer.wrap;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+
 import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FIFTH;
 import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FIRST;
 import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FOURTH;
@@ -31,18 +41,8 @@ import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_START_ADDRESS;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_ETHERNETS;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.SET_REGION_POINTER;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.SET_START_ADDRESS;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.COUNT_CORES;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_CORES_TO_LOAD;
 
-import java.nio.ByteBuffer;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-
-import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
 import uk.ac.manchester.spinnaker.storage.RegionInfo;
@@ -145,7 +145,7 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 
 	@Override
 	public LinkedHashMap<Integer, Integer> getRegionSizes(CoreLocation core)
-			throws StorageException{
+			throws StorageException {
  		return callR(conn -> getRegionSizes(conn, core),
 				"getting region sizes");
 	}
@@ -169,16 +169,17 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 	}
 
 	@Override
-	public HashMap<Integer,RegionInfo> getRegionPointersAndContent(
-			CoreLocation xyp) throws StorageException{
+	public HashMap<Integer, RegionInfo> getRegionPointersAndContent(
+			CoreLocation xyp) throws StorageException {
 		return callR(
 				conn -> getRegionPointersAndContent(conn, xyp),
 				"reading data specification for region");
-}
+	}
 
-	private static HashMap<Integer,RegionInfo> getRegionPointersAndContent(
+	private static HashMap<Integer, RegionInfo> getRegionPointersAndContent(
 			Connection conn, CoreLocation xyp) throws SQLException {
-		HashMap<Integer,RegionInfo> results = new HashMap<Integer,RegionInfo>();
+		HashMap<Integer, RegionInfo> results =
+				new HashMap<Integer, RegionInfo>();
 		try (var s = conn.prepareStatement(GET_REGION_POINTER_AND_CONTEXT)) {
 			s.setInt(FIRST, xyp.getX());
 			s.setInt(SECOND, xyp.getY());
@@ -186,7 +187,7 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
 					ByteBuffer content = null;
-					if (rs.getBytes(SECOND) != null){
+					if (rs.getBytes(SECOND) != null) {
 						content = wrap(rs.getBytes(SECOND)).asReadOnlyBuffer();
 					}
 					RegionInfo info = new RegionInfo(
@@ -200,7 +201,7 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 
 	@Override
 	public void setStartAddress(CoreLocation xyp,
-			MemoryLocation start) throws StorageException{
+			MemoryLocation start) throws StorageException {
 		callV(conn -> setStartAddres(conn, xyp, start),
 				"saving data loading metadata");
 	}
@@ -219,9 +220,10 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 	@Override
 	public MemoryLocation getStartAddress(CoreLocation xyp)
 			throws StorageException {
- 		return callR(conn -> getStartAddress(conn, xyp),
+		return callR(conn -> getStartAddress(conn, xyp),
 				"getting start address");
 	}
+
 	private MemoryLocation getStartAddress(Connection conn, CoreLocation xyp)
 			throws SQLException {
 		try (var s = conn.prepareStatement(GET_START_ADDRESS)) {
@@ -245,16 +247,16 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 
 	@Override
 	public void setRegionPointer(CoreLocation xyp, int region_num,
-			int next_pointer) throws StorageException{
-		callV(conn -> setRegionPointer(conn, xyp, region_num, next_pointer),
+			int pointer) throws StorageException {
+		callV(conn -> setRegionPointer(conn, xyp, region_num, pointer),
 				"saving data loading metadata");
 	}
 
 	private static void setRegionPointer(Connection conn,
-			CoreLocation xyp, int region_num,int next_pointer)
+			CoreLocation xyp, int region_num, int pointer)
 			throws SQLException {
 		try (var s = conn.prepareStatement(SET_REGION_POINTER)) {
-			s.setInt(FIRST, next_pointer);
+			s.setInt(FIRST, pointer);
 			s.setInt(SECOND, xyp.getX());
 			s.setInt(THIRD, xyp.getY());
 			s.setInt(FOURTH, xyp.getP());
@@ -264,8 +266,8 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 	}
 
 	@Override
-	public int getAppId() throws StorageException{
-		return callR(conn ->getAppId(conn), "getting app id");
+	public int getAppId() throws StorageException {
+		return callR(conn -> getAppId(conn), "getting app id");
 	}
 
 	private int getAppId(Connection conn)
