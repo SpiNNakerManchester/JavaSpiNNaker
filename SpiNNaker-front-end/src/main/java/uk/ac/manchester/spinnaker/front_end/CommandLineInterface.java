@@ -299,7 +299,7 @@ public final class CommandLineInterface {
 
 		try (var txrx = getTransceiver(machine.get(), job);
 				var dseExec = fastFactory.create(txrx, machine.get(),
-	    					gatherers.get(), reportFolder.orElse(null), db)) {
+						gatherers.get(), reportFolder.orElse(null), db)) {
 			dseExec.loadCores();
 		}
 	}

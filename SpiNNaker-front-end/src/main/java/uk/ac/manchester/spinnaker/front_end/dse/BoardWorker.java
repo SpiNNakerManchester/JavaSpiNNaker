@@ -39,9 +39,8 @@ import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
-
 abstract class BoardWorker {
-	private static final Logger log =getLogger(BoardWorker.class);
+	private static final Logger log = getLogger(BoardWorker.class);
 
 	/** The transceiver for talking to the SpiNNaker machine. */
 	protected final TransceiverInterface txrx;
@@ -49,13 +48,13 @@ abstract class BoardWorker {
 	/* The Ethernet data for this board */
 	protected final Ethernet board;
 
-	/** The database holding the DS data */
+	/** The database holding the DS data.*/
 	private final DSEStorage storage;
 
-	/* The bar to print out if possible */
+	/* The bar to print out if possible.*/
 	private final Progress bar;
 
-	/** The system wide app id */
+	/** The system wide app id.*/
 	private final int appId;
 
 	/**
@@ -99,6 +98,18 @@ abstract class BoardWorker {
 			APP_PTR_TABLE_HEADER_SIZE
 			+ (MAX_MEM_REGIONS * APP_PTR_TABLE_REGION_SIZE);
 
+	/**
+	 * Create the base/Shared Board worker.
+	 *
+	 * @param txrx
+	 *           The transceiver for talking to the SpiNNaker machine.
+	 * @param board
+	 *           The Ethernet data for this board
+	 * @param storage
+	 *           The database holding the DS data
+	 * @throws StorageException
+	 *             If the database access fails.
+	 */
 	protected BoardWorker(TransceiverInterface txrx, Ethernet board,
 			DSEStorage storage, Progress bar) throws StorageException {
 		this.board = board;
@@ -131,7 +142,10 @@ abstract class BoardWorker {
 				storage.getRegionSizes(xyp);
 		int totalSize = regionSizes.values().stream().mapToInt(
 				Integer::intValue).sum();
-		var start = malloc(xyp, totalSize + APP_PTR_TABLE_BYTE_SIZE);
+		var start = txrx.mallocSDRAM(xyp.getScampCore(),
+				totalSize + APP_PTR_TABLE_BYTE_SIZE, new AppID(this.appId),
+				xyp.getP() + CORE_DATA_SDRAM_BASE_TAG);
+
 		txrx.writeUser0(xyp, start);
 		storage.setStartAddress(xyp, start);
 
@@ -146,9 +160,8 @@ abstract class BoardWorker {
 	 /**
 	 * Execute a data specification and load the results onto a core.
 	 *
-	 * @param ctl
-	 *            The definition of what to run and where to send the
-	 *            results.
+	 * @param xyp
+	 *            the coordinates of the core to load.
 	 * @throws IOException
 	 *             If anything goes wrong with I/O.
 	 * @throws ProcessException
@@ -206,23 +219,14 @@ abstract class BoardWorker {
 		txrx.writeMemory(xyp.getScampCore(), startAddress, pointerTable);
 	}
 
-	private MemoryLocation malloc(CoreLocation xyp, int bytesUsed)
-			throws IOException, ProcessException, InterruptedException {
-		return txrx.mallocSDRAM(xyp.getScampCore(), bytesUsed,
-				new AppID(this.appId),
-				xyp.getP() + CORE_DATA_SDRAM_BASE_TAG);
-	}
-
 	/**
 	 * Writes the contents of a region. Caller is responsible for ensuring
 	 * this method has work to do.
 	 *
 	 * @param core
 	 *            Which core to write to.
-	 * @pama content
+	 * @pamam content
 	 *            Data to write
-	 * @param region
-	 *            The region to write.
 	 * @param baseAddress
 	 *            Where to write the region.
 	 * @return How many bytes were actually written.
@@ -233,7 +237,7 @@ abstract class BoardWorker {
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
 	 */
-	abstract protected int writeRegion(HasCoreLocation core,
+	protected abstract int writeRegion(HasCoreLocation core,
 			ByteBuffer content, MemoryLocation baseAddress)
 			throws IOException, ProcessException, InterruptedException;
 }
