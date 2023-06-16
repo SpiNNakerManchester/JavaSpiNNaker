@@ -46,13 +46,17 @@ abstract class BoardWorker {
 	/** The transceiver for talking to the SpiNNaker machine. */
 	protected final TransceiverInterface txrx;
 
+	/* The Ethernet data for this board */
 	protected final Ethernet board;
 
-	protected final DSEStorage storage;
+	/** The database holding the DS data */
+	private final DSEStorage storage;
 
-	protected final Progress bar;
+	/* The bar to print out if possible */
+	private final Progress bar;
 
-	protected final int appId;
+	/** The system wide app id */
+	private final int appId;
 
 	/**
 	 * Data spec magic number. This marks the start of a block of memory in
@@ -101,15 +105,14 @@ abstract class BoardWorker {
 		this.storage = storage;
 		this.bar = bar;
 		this.appId = storage.getAppId();
-	this.txrx = txrx;
+		this.txrx = txrx;
 	}
 
 	/**
 	 * Execute a data specification and load the results onto a core.
 	 *
-	 * @param ctl
-	 *            The definition of what to run and where to send the
-	 *            results.
+	 * @param xyp
+	 *            The coordinates of the core to malloc on.
 	 * @throws IOException
 	 *             If anything goes wrong with I/O.
 	 * @throws ProcessException
@@ -122,21 +125,21 @@ abstract class BoardWorker {
 	 *             If communications are interrupted.
 	 */
 	protected void mallocCore(CoreLocation xyp) throws
-			IOException, ProcessException,StorageException,
+			IOException, ProcessException, StorageException,
 			InterruptedException {
-		LinkedHashMap<Integer, Integer> region_sizes =
+		LinkedHashMap<Integer, Integer> regionSizes =
 				storage.getRegionSizes(xyp);
-		int total_size = region_sizes.values().stream().mapToInt(
+		int totalSize = regionSizes.values().stream().mapToInt(
 				Integer::intValue).sum();
-		var start = malloc(xyp, total_size + APP_PTR_TABLE_BYTE_SIZE);
+		var start = malloc(xyp, totalSize + APP_PTR_TABLE_BYTE_SIZE);
 		txrx.writeUser0(xyp, start);
 		storage.setStartAddress(xyp, start);
 
-		int next_pointer = start.address + + APP_PTR_TABLE_BYTE_SIZE;
-		for (var region_num : region_sizes.keySet()) {
-			var size = region_sizes.get(region_num);
-			storage.setRegionPointer(xyp, region_num, next_pointer);
-			next_pointer += size;
+		int nextPointer = start.address + APP_PTR_TABLE_BYTE_SIZE;
+		for (var regionNum : regionSizes.keySet()) {
+			var size = regionSizes.get(regionNum);
+			storage.setRegionPointer(xyp, regionNum, nextPointer);
+			nextPointer += size;
 		}
 	}
 
@@ -160,16 +163,17 @@ abstract class BoardWorker {
 	protected void loadCore(CoreLocation xyp) throws IOException,
 			ProcessException, StorageException, InterruptedException {
 		int totalWritten = APP_PTR_TABLE_BYTE_SIZE;
-		var pointer_table = allocate(APP_PTR_TABLE_BYTE_SIZE).order(LITTLE_ENDIAN);
+		var pointerTable =
+				allocate(APP_PTR_TABLE_BYTE_SIZE).order(LITTLE_ENDIAN);
 		//header
-		pointer_table.putInt(APPDATA_MAGIC_NUM);
-		pointer_table.putInt(DSE_VERSION);
+		pointerTable.putInt(APPDATA_MAGIC_NUM);
+		pointerTable.putInt(DSE_VERSION);
 
 		var regionInfos = storage.getRegionPointersAndContent(xyp);
 		for (int region = 0; region < MAX_MEM_REGIONS; region++) {
 			if (regionInfos.containsKey(region)){
 				var regionInfo = regionInfos.get(region);
-				pointer_table.putInt(regionInfo.pointer.address);
+				pointerTable.putInt(regionInfo.pointer.address);
 				if (regionInfo.content != null) {
 					var written = writeRegion(
 							xyp, regionInfo.content, regionInfo.pointer);
@@ -182,24 +186,24 @@ abstract class BoardWorker {
 						sum = (sum + (buf.get() & UNSIGNED_INT)) & UNSIGNED_INT;
 					}
 					// Write the checksum and number of words
-					pointer_table.putInt((int) (sum & UNSIGNED_INT));
-					pointer_table.putInt(nWords);
+					pointerTable.putInt((int) (sum & UNSIGNED_INT));
+					pointerTable.putInt(nWords);
 				} else {
 					// Don't checksum references
-					pointer_table.putInt(0);
-					pointer_table.putInt(0);
+					pointerTable.putInt(0);
+					pointerTable.putInt(0);
 				}
 			} else {
 				// There is no data for non-regions
-				pointer_table.putInt(0);
-				pointer_table.putInt(0);
-				pointer_table.putInt(0);
+				pointerTable.putInt(0);
+				pointerTable.putInt(0);
+				pointerTable.putInt(0);
 			}
 		}
 
 		var startAddress = storage.getStartAddress(xyp);
-		pointer_table.flip();
-		txrx.writeMemory(xyp.getScampCore(), startAddress, pointer_table);
+		pointerTable.flip();
+		txrx.writeMemory(xyp.getScampCore(), startAddress, pointerTable);
 	}
 
 	private MemoryLocation malloc(CoreLocation xyp, int bytesUsed)
@@ -215,6 +219,8 @@ abstract class BoardWorker {
 	 *
 	 * @param core
 	 *            Which core to write to.
+	 * @pama content
+	 *            Data to write
 	 * @param region
 	 *            The region to write.
 	 * @param baseAddress
@@ -227,7 +233,7 @@ abstract class BoardWorker {
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
 	 */
-	abstract protected int writeRegion(HasCoreLocation core, ByteBuffer content,
-			MemoryLocation baseAddress)
+	abstract protected int writeRegion(HasCoreLocation core,
+			ByteBuffer content, MemoryLocation baseAddress)
 			throws IOException, ProcessException, InterruptedException;
 }

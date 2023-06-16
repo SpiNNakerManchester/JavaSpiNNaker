@@ -17,6 +17,7 @@ package uk.ac.manchester.spinnaker.front_end;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
+import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 import static picocli.CommandLine.ExitCode.USAGE;
 import static uk.ac.manchester.spinnaker.alloc.client.SpallocClientFactory.getJobFromProxyInfo;
@@ -53,8 +54,6 @@ import java.util.function.Supplier;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.errorprone.annotations.MustBeClosed;
-import org.slf4j.Logger;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import picocli.CommandLine;
 import picocli.CommandLine.ArgGroup;
@@ -100,8 +99,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
 		modelTransformer = CommandLineInterface.BuildPropsLoader.class)
 public final class CommandLineInterface {
 
-    private static final Logger log =
-        getLogger(CommandLineInterface.class);
+	private static final Logger log = getLogger(CommandLineInterface.class);
 
 	private CommandLineInterface() {
 	}
@@ -181,7 +179,6 @@ public final class CommandLineInterface {
 		runDSEUploadingViaClassicTransfer(machine.get(), dsFile.get(),
 				runFolder.get(), true);
 	}
-
 
 	@FunctionalInterface
 	interface HostDSEFactory {

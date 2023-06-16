@@ -85,7 +85,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 			getLogger(FastExecuteDataSpecification.class);
 
 	private static final String SPINNAKER_COMPARE_UPLOAD =
-            getProperty("spinnaker.compare.upload");
+			getProperty("spinnaker.compare.upload");
 
 	private static final String LOADING_MSG =
 			"loading data specifications onto SpiNNaker";
@@ -358,7 +358,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 				.collect(toList());
 	}
 
-  	/**
+	/**
 	 * The worker class that handles a particular board of a SpiNNaker machine.
 	 * Instances of this class are only ever used from a single thread.
 	 *
@@ -477,12 +477,13 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 				long start = nanoTime();
 				fastWrite(core, baseAddress, content);
 				long end = nanoTime();
-				recorder.report(core, end - start, content.limit(), baseAddress);
+				recorder.report(
+						core, end - start, content.limit(), baseAddress);
 			}
 			if (SPINNAKER_COMPARE_UPLOAD != null) {
-				var readBack = txrx.readMemory(core,
-						baseAddress, content.remaining());
-					compareBuffers(content, readBack);
+				var readBack = txrx.readMemory(
+						core, baseAddress, content.remaining());
+				compareBuffers(content, readBack);
 			}
 			return written;
 		}

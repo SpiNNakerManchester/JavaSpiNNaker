@@ -83,7 +83,11 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 * Execute all application data specifications that a particular connection
 	 * knows about, storing back in the database the information collected about
 	 * those executions.
-
+	 *
+	 * @param system
+	 *             Flag if True loads system cores
+	 *             if False loads none system (Application) cores
+	 *
 	 * @throws StorageException
 	 *             If the database can't be talked to.
 	 * @throws IOException
@@ -126,7 +130,7 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 		}
 	}
 
-	private class HostBoardWorker extends BoardWorker{
+	private class HostBoardWorker extends BoardWorker {
 		HostBoardWorker(TransceiverInterface txrx, Ethernet board,
 				DSEStorage storage, Progress bar) throws StorageException {
 			super(txrx, board, storage, bar);
