@@ -41,6 +41,7 @@ public interface DSEStorage extends ProxyAwareStorage {
 	 *            just count application (non-system) cores.
 	 * @return The count of the cores which match the is loadSystemCores
 	 * @throws StorageException
+	 *             If the database access fails.
 	 */
 	int countCores(boolean loadSystemCores) throws StorageException;
 
@@ -76,7 +77,7 @@ public interface DSEStorage extends ProxyAwareStorage {
 	 *      Coordinates to get the region sizes for
 	 * @return Sorted Map of Region number to size.
 	 *           For the regions with a none zero size
-     * @throws StorageException
+	 * @throws StorageException
 	 *             If the database access fails.
 	 */
 	LinkedHashMap<Integer, Integer> getRegionSizes(CoreLocation xyp)
@@ -101,8 +102,8 @@ public interface DSEStorage extends ProxyAwareStorage {
 	 * @param xyp
 	 *            Coordinates for the core
 	 * @return The location of the start of the metadata region
-	 *
 	 * @throws StorageException
+	 *             If the database access fails.
 	 */
 	MemoryLocation getStartAddress(CoreLocation xyp) throws StorageException;
 
@@ -111,6 +112,7 @@ public interface DSEStorage extends ProxyAwareStorage {
 	 *
 	 * @return the app id
 	 * @throws StorageException
+	 *             If the database access fails.
 	 */
 	int getAppId() throws StorageException;
 
@@ -124,6 +126,7 @@ public interface DSEStorage extends ProxyAwareStorage {
 	 * @param pointer
 	 *            start address for this regions metadata
 	 * @throws StorageException
+	 *             If the database access fails.
 	 */
 	void setRegionPointer(CoreLocation xyp, int regionNum, int pointer)
 			throws StorageException;
@@ -139,6 +142,7 @@ public interface DSEStorage extends ProxyAwareStorage {
 	 *            Coordinates for the core
 	 * @return map of region number to object holding pointer and content
 	 * @throws StorageException
+	 *             If the database access fails.
 	 */
 	Map<Integer, RegionInfo> getRegionPointersAndContent(CoreLocation xyp)
 			throws StorageException;

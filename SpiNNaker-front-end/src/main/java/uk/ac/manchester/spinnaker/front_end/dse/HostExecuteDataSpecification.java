@@ -94,8 +94,6 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             If the transceiver can't talk to its sockets.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
-	 * @throws DataSpecificationException
-	 *             If a data specification in the database is invalid.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
 	 * @throws IllegalStateException
