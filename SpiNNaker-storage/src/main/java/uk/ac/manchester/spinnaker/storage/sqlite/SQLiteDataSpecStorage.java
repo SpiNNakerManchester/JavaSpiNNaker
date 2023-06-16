@@ -31,7 +31,6 @@ import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FIFTH;
 import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FIRST;
 import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FOURTH;
 import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.SECOND;
-import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.SIXTH;
 import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.THIRD;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_LOADING_METADATA;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_APP_ID;
@@ -146,7 +145,7 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 	@Override
 	public LinkedHashMap<Integer, Integer> getRegionSizes(CoreLocation core)
 			throws StorageException {
- 		return callR(conn -> getRegionSizes(conn, core),
+		return callR(conn -> getRegionSizes(conn, core),
 				"getting region sizes");
 	}
 
@@ -246,21 +245,21 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 	}
 
 	@Override
-	public void setRegionPointer(CoreLocation xyp, int region_num,
+	public void setRegionPointer(CoreLocation xyp, int regionNum,
 			int pointer) throws StorageException {
-		callV(conn -> setRegionPointer(conn, xyp, region_num, pointer),
+		callV(conn -> setRegionPointer(conn, xyp, regionNum, pointer),
 				"saving data loading metadata");
 	}
 
 	private static void setRegionPointer(Connection conn,
-			CoreLocation xyp, int region_num, int pointer)
+			CoreLocation xyp, int regionNum, int pointer)
 			throws SQLException {
 		try (var s = conn.prepareStatement(SET_REGION_POINTER)) {
 			s.setInt(FIRST, pointer);
 			s.setInt(SECOND, xyp.getX());
 			s.setInt(THIRD, xyp.getY());
 			s.setInt(FOURTH, xyp.getP());
-			s.setInt(FIFTH, region_num);
+			s.setInt(FIFTH, regionNum);
 			s.executeUpdate();
 		}
 	}

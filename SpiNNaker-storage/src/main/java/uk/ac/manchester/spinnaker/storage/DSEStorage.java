@@ -65,12 +65,12 @@ public interface DSEStorage extends ProxyAwareStorage {
 	 * @throws StorageException
 	 *             If the database access fails.
 	 */
-	List<CoreLocation> listCoresToLoad(Ethernet ethernet, boolean loadSystemCores)
-			throws StorageException;
+	List<CoreLocation> listCoresToLoad(Ethernet ethernet,
+			boolean loadSystemCores) throws StorageException;
 
 	/**
 	 *
-	 * Get a map of region id to size for regions with a none zero size
+	 * Get a map of region id to size for regions with a none zero size.
 	 *
 	 * @param xyp
 	 *      Coordinates to get the region sizes for
@@ -79,21 +79,22 @@ public interface DSEStorage extends ProxyAwareStorage {
      * @throws StorageException
 	 *             If the database access fails.
 	 */
-	 LinkedHashMap<Integer, Integer> getRegionSizes(CoreLocation xyp)
+	LinkedHashMap<Integer, Integer> getRegionSizes(CoreLocation xyp)
 			 throws StorageException;
 
 	/**
-	 * Record the start address for the metadata on this core
+	 * Record the start address for the metadata on this core.
 	 *
 	 * @param xyp
 	 *            Coordinates for the core
-	 * @param startAddress
+	 * @param start
 	 *            Where the load metadata starts.
 	 * @throws StorageException
 	 *             If the database access fails.
 	 */
 	void setStartAddress(CoreLocation xyp, MemoryLocation start)
 			throws StorageException;
+
 	/**
 	 * Gets the start address for the metadata on this core
 	 *
@@ -106,7 +107,7 @@ public interface DSEStorage extends ProxyAwareStorage {
 	MemoryLocation getStartAddress(CoreLocation xyp) throws StorageException;
 
 	/**
-	 * Get the system wide app id
+	 * Get the system wide app id.
 	 *
 	 * @return the app id
 	 * @throws StorageException
@@ -114,17 +115,17 @@ public interface DSEStorage extends ProxyAwareStorage {
 	int getAppId() throws StorageException;
 
 	/**
-	 * Set the pointer for where to write the region data to
+	 * Set the pointer for where to write the region data to.
 	 *
 	 * @param xyp
 	 *            Coordinates for the core
-	 * @param region_num
-	 *            region number for thsi pointer
+	 * @param regionNum
+	 *            region number for this pointer
 	 * @param pointer
 	 *            start address for this regions metadata
 	 * @throws StorageException
 	 */
-	void setRegionPointer(CoreLocation xyp, int region_num, int pointer)
+	void setRegionPointer(CoreLocation xyp, int regionNum, int pointer)
 			throws StorageException;
 
 	/**
@@ -139,7 +140,7 @@ public interface DSEStorage extends ProxyAwareStorage {
 	 * @return map of region number to object holding pointer and content
 	 * @throws StorageException
 	 */
-	Map<Integer,RegionInfo> getRegionPointersAndContent(CoreLocation xyp)
+	Map<Integer, RegionInfo> getRegionPointersAndContent(CoreLocation xyp)
 			throws StorageException;
 
 	/**

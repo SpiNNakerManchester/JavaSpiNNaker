@@ -19,14 +19,14 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /**
- * Used to group a MemoryLocation and a ByteBuffer object together
+ * Used to group a MemoryLocation and a ByteBuffer object together.
  *
  * @author Christian
  */
 public class RegionInfo {
 
 	/**
-	 * The address where the region will be start
+	 * The address where the region will be start.
 	*/
 	public final MemoryLocation pointer;
 
