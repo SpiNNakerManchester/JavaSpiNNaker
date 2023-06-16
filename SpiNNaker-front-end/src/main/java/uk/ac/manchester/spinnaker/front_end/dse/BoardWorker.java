@@ -45,7 +45,7 @@ abstract class BoardWorker {
 	/** The transceiver for talking to the SpiNNaker machine. */
 	protected final TransceiverInterface txrx;
 
-	/* The Ethernet data for this board */
+	/** The Ethernet data for this board */
 	protected final Ethernet board;
 
 	/** The database holding the DS data.*/
@@ -157,7 +157,7 @@ abstract class BoardWorker {
 		}
 	}
 
-	 /**
+	/**
 	 * Execute a data specification and load the results onto a core.
 	 *
 	 * @param xyp
@@ -184,7 +184,7 @@ abstract class BoardWorker {
 
 		var regionInfos = storage.getRegionPointersAndContent(xyp);
 		for (int region = 0; region < MAX_MEM_REGIONS; region++) {
-			if (regionInfos.containsKey(region)){
+			if (regionInfos.containsKey(region)) {
 				var regionInfo = regionInfos.get(region);
 				pointerTable.putInt(regionInfo.pointer.address);
 				if (regionInfo.content != null) {
@@ -225,7 +225,7 @@ abstract class BoardWorker {
 	 *
 	 * @param core
 	 *            Which core to write to.
-	 * @pamam content
+	 * @param content
 	 *            Data to write
 	 * @param baseAddress
 	 *            Where to write the region.
