@@ -32,7 +32,6 @@ import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FIRST;
 import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FOURTH;
 import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.SECOND;
 import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.THIRD;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_LOADING_METADATA;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_APP_ID;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION_POINTER_AND_CONTEXT;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION_SIZES;
