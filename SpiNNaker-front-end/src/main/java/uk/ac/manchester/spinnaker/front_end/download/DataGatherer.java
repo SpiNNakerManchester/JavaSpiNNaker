@@ -717,12 +717,15 @@ public abstract class DataGatherer extends BoardLocalSupport
 			}
 			if (data.hasRemaining()) {
 				int offset = seqNum * DATA_WORDS_PER_PACKET * WORD_SIZE;
-				if (log.isDebugEnabled()) {
-					log.debug("storing {} bytes at position {} of {}",
-							data.remaining(), offset, dataReceiver.limit());
-				}
 				dataReceiver.position(offset);
-				dataReceiver.put(data);
+				int rem = data.remaining();
+				try {
+					dataReceiver.put(data);
+				} catch (java.nio.BufferOverflowException e) {
+					log.error("failed to store {} bytes at position {} of {}",
+							rem, offset, dataReceiver.limit());
+					throw e;
+				}
 				expectedSeqNums.clear(seqNum);
 			}
 			if (!isEndOfStream) {
