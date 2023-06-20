@@ -140,11 +140,6 @@ limitations under the License.
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>uk.ac.manchester.spinnaker</groupId>
-				<artifactId>SpiNNaker-data-specification</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
 				<version>${slf4j.version}</version>
@@ -403,7 +398,7 @@ limitations under the License.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-clean-plugin</artifactId>
-					<version>3.2.0</version>
+					<version>3.3.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -797,7 +792,6 @@ limitations under the License.
 		<module>SpiNNaker-storage</module>
 		<module>SpiNNaker-comms</module>
 		<module>SpiNNaker-pacman</module>
-		<module>SpiNNaker-data-specification</module>
 		<module>SpiNNaker-front-end</module>
 		<module>SpiNNaker-allocserv</module>
 		<module>SpiNNaker-py2json</module>

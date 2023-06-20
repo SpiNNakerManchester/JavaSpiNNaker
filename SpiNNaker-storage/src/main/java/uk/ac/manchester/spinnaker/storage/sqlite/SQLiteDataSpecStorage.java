@@ -15,29 +15,35 @@
  */
 package uk.ac.manchester.spinnaker.storage.sqlite;
 
+import java.nio.ByteBuffer;
 import static java.nio.ByteBuffer.wrap;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+
 import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FIFTH;
 import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FIRST;
 import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FOURTH;
 import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.SECOND;
-import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.SIXTH;
 import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.THIRD;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_LOADING_METADATA;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.COUNT_WORK;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_CORE_DATA_SPEC;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_CORES_TO_LOAD;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_CORES_TO_LOAD_FILTERED;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_APP_ID;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION_POINTER_AND_CONTEXT;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION_SIZES;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_START_ADDRESS;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_ETHERNETS;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.SET_REGION_POINTER;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.SET_START_ADDRESS;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_CORES_TO_LOAD;
 
-import java.nio.ByteBuffer;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
-import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
+import uk.ac.manchester.spinnaker.storage.RegionInfo;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 
 /**
@@ -47,6 +53,7 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  */
 public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 		implements DSEStorage {
+
 	/**
 	 * Create an instance.
 	 *
@@ -59,17 +66,21 @@ public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 	}
 
 	@Override
-	public int countWorkRequired() throws StorageException {
-		return callR(SQLiteDataSpecStorage::countWorkRequired,
-				"listing ethernets");
+	public int countCores(boolean loadSystemCores) throws StorageException {
+		return callR(conn -> countCores(conn, loadSystemCores),
+				"Counting cores");
 	}
 
-	private static int countWorkRequired(Connection conn) throws SQLException {
-		try (var s = conn.prepareStatement(COUNT_WORK);
-				var rs = s.executeQuery()) {
-			while (rs.next()) {
-				// count_content
-				return rs.getInt(FIRST);
+	private static int countCores(Connection conn, boolean loadSystemCores)
+			throws SQLException {
+		try (var s = conn.prepareStatement(LIST_CORES_TO_LOAD)) {
+			// ethernet_id
+			s.setBoolean(FIRST, loadSystemCores);
+			try (var rs = s.executeQuery()) {
+				while (rs.next()) {
+					// count_content
+					return rs.getInt(FIRST);
+				}
 			}
 		}
 		return 0; // If we get here, nothing to count
@@ -89,7 +100,7 @@ public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 			while (rs.next()) {
 				// ethernet_id, ethernet_x, ethernet_y, ip_address
 				result.add(new EthernetImpl(rs.getInt(FIRST), rs.getInt(SECOND),
-						rs.getInt(THIRD), rs.getString(FOURTH)));
+						rs.getString(THIRD)));
 			}
 			return result;
 		}
@@ -103,161 +114,191 @@ public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 				+ " for ethernets described by this class");
 	}
 
-	private static CoreToLoadImpl sanitise(CoreToLoad core, String desc) {
-		if (core instanceof CoreToLoadImpl ctl) {
-			return ctl;
-		}
-		throw new IllegalArgumentException(
-				"can only " + desc + " for cores described by this class");
-	}
-
 	@Override
-	public List<CoreToLoad> listCoresToLoad(Ethernet ethernet)
-			throws StorageException {
-		return callR(conn -> listCoresToLoad(conn, sanitise(ethernet)),
-				"listing cores to load data onto");
-	}
-
-	private List<CoreToLoad> listCoresToLoad(Connection conn,
-			EthernetImpl ethernet) throws SQLException {
-		try (var s = conn.prepareStatement(LIST_CORES_TO_LOAD)) {
-			// ethernet_id
-			s.setInt(FIRST, ethernet.id);
-			try (var rs = s.executeQuery()) {
-				var result = new ArrayList<CoreToLoad>();
-				while (rs.next()) {
-					// core_id, x, y, processor, content
-					result.add(new CoreToLoadImpl(rs.getInt(FIRST),
-							rs.getInt(SECOND), rs.getInt(THIRD),
-							rs.getInt(FOURTH), rs.getInt(FIFTH),
-							rs.getInt(SIXTH)));
-				}
-				return result;
-			}
-		}
-	}
-
-	@Override
-	public List<CoreToLoad> listCoresToLoad(Ethernet ethernet,
+	public List<CoreLocation> listCoresToLoad(Ethernet ethernet,
 			boolean loadSystemCores) throws StorageException {
 		return callR(conn -> listCoresToLoad(conn, sanitise(ethernet),
 				loadSystemCores), "listing cores to load data onto");
 	}
 
-	private List<CoreToLoad> listCoresToLoad(Connection conn,
+	private List<CoreLocation> listCoresToLoad(Connection conn,
 			EthernetImpl ethernet, boolean loadSystemCores)
 			throws SQLException {
-		try (var s = conn.prepareStatement(LIST_CORES_TO_LOAD_FILTERED)) {
+		try (var s = conn.prepareStatement(LIST_CORES_TO_LOAD)) {
 			// ethernet_id
-			s.setInt(FIRST, ethernet.id);
-			s.setBoolean(SECOND, loadSystemCores);
+			s.setInt(FIRST, ethernet.location.getX());
+			s.setInt(SECOND, ethernet.location.getY());
+			s.setBoolean(THIRD, loadSystemCores);
 			try (var rs = s.executeQuery()) {
-				var result = new ArrayList<CoreToLoad>();
+				var result = new ArrayList<CoreLocation>();
 				while (rs.next()) {
 					// core_id, x, y, processor, content
-					result.add(new CoreToLoadImpl(rs.getInt(FIRST),
-							rs.getInt(SECOND), rs.getInt(THIRD),
-							rs.getInt(FOURTH), rs.getInt(FIFTH),
-							rs.getInt(SIXTH)));
+					result.add(new CoreLocation(rs.getInt(FIRST),
+							rs.getInt(SECOND), rs.getInt(THIRD)));
 				}
 				return result;
 			}
 		}
 	}
 
-	/**
-	 * Gets the actual data specification data.
-	 *
-	 * @param core
-	 *            What core to load from.
-	 * @return The contents of the data spec.
-	 * @throws StorageException
-	 *             If anything fails with the database, or if the core doesn't
-	 *             have a data spec.
-	 */
-	ByteBuffer getDataSpec(CoreToLoad core) throws StorageException {
-		return callR(
-				conn -> getDataSpec(conn, sanitise(core, "read data specs")),
-				"reading data specification for core");
+	@Override
+	public LinkedHashMap<Integer, Integer> getRegionSizes(CoreLocation core)
+			throws StorageException {
+		return callR(conn -> getRegionSizes(conn, core),
+				"getting region sizes");
 	}
 
-	private static ByteBuffer getDataSpec(Connection conn, CoreToLoadImpl core)
-			throws SQLException {
-		try (var s = conn.prepareStatement(GET_CORE_DATA_SPEC)) {
-			s.setInt(FIRST, core.id);
+	private LinkedHashMap<Integer, Integer> getRegionSizes(
+			Connection conn, CoreLocation xyp) throws SQLException {
+		try (var s = conn.prepareStatement(GET_REGION_SIZES)) {
+			// ethernet_id
+			s.setInt(FIRST, xyp.getX());
+			s.setInt(SECOND, xyp.getY());
+			s.setInt(THIRD, xyp.getP());
 			try (var rs = s.executeQuery()) {
+				var result = new LinkedHashMap<Integer, Integer>();
 				while (rs.next()) {
-					return wrap(rs.getBytes(FIRST)).asReadOnlyBuffer();
+					// core_id, x, y, processor, content
+					result.put(rs.getInt(FIRST), rs.getInt(SECOND));
 				}
+				return result;
 			}
-			throw new IllegalStateException(
-					"could not read data spec for core known to have one");
 		}
 	}
 
 	@Override
-	public void saveLoadingMetadata(CoreToLoad core, MemoryLocation start,
-			int memoryUsed, int memoryWritten) throws StorageException {
-		callV(conn -> saveLoadingMetadata(conn, sanitise(core, "save metadata"),
-				start, memoryUsed, memoryWritten),
+	public HashMap<Integer, RegionInfo> getRegionPointersAndContent(
+			CoreLocation xyp) throws StorageException {
+		return callR(
+				conn -> getRegionPointersAndContent(conn, xyp),
+				"reading data specification for region");
+	}
+
+	private static HashMap<Integer, RegionInfo> getRegionPointersAndContent(
+			Connection conn, CoreLocation xyp) throws SQLException {
+		HashMap<Integer, RegionInfo> results =
+				new HashMap<Integer, RegionInfo>();
+		try (var s = conn.prepareStatement(GET_REGION_POINTER_AND_CONTEXT)) {
+			s.setInt(FIRST, xyp.getX());
+			s.setInt(SECOND, xyp.getY());
+			s.setInt(THIRD, xyp.getP());
+			try (var rs = s.executeQuery()) {
+				while (rs.next()) {
+					ByteBuffer content = null;
+					if (rs.getBytes(SECOND) != null) {
+						content = wrap(rs.getBytes(SECOND)).asReadOnlyBuffer();
+					}
+					RegionInfo info = new RegionInfo(
+							content, new MemoryLocation(rs.getInt(THIRD)));
+					results.put(rs.getInt(FIRST), info);
+				}
+			}
+			return results;
+		}
+	}
+
+	@Override
+	public void setStartAddress(CoreLocation xyp,
+			MemoryLocation start) throws StorageException {
+		callV(conn -> setStartAddres(conn, xyp, start),
 				"saving data loading metadata");
 	}
 
-	private static void saveLoadingMetadata(Connection conn,
-			CoreToLoadImpl core, MemoryLocation start, int memoryUsed,
-			int memoryWritten) throws SQLException {
-		try (var s = conn.prepareStatement(ADD_LOADING_METADATA)) {
+	private static void setStartAddres(Connection conn,
+			CoreLocation xyp, MemoryLocation start) throws SQLException {
+		try (var s = conn.prepareStatement(SET_START_ADDRESS)) {
 			s.setInt(FIRST, start.address());
-			s.setInt(SECOND, memoryUsed);
-			s.setInt(THIRD, memoryWritten);
-			s.setInt(FOURTH, core.id);
+			s.setInt(SECOND, xyp.getX());
+			s.setInt(THIRD, xyp.getY());
+			s.setInt(FOURTH, xyp.getP());
 			s.executeUpdate();
 		}
 	}
 
+	@Override
+	public MemoryLocation getStartAddress(CoreLocation xyp)
+			throws StorageException {
+		return callR(conn -> getStartAddress(conn, xyp),
+				"getting start address");
+	}
+
+	private MemoryLocation getStartAddress(Connection conn, CoreLocation xyp)
+			throws SQLException {
+		try (var s = conn.prepareStatement(GET_START_ADDRESS)) {
+			// ethernet_id
+			s.setInt(FIRST, xyp.getX());
+			s.setInt(SECOND, xyp.getY());
+			s.setInt(THIRD, xyp.getP());
+			try (var rs = s.executeQuery()) {
+				while (rs.next()) {
+					// core_id, x, y, processor, content
+					return new MemoryLocation(rs.getInt(FIRST));
+				}
+			}
+		}
+		throw new IllegalStateException(
+				"could not get_start_address for core "
+						+  xyp.getX() + ":" + xyp.getY() + ":" + xyp.getP()
+						+ " known to have one");
+
+	}
+
+	@Override
+	public void setRegionPointer(CoreLocation xyp, int regionNum,
+			int pointer) throws StorageException {
+		callV(conn -> setRegionPointer(conn, xyp, regionNum, pointer),
+				"saving data loading metadata");
+	}
+
+	private static void setRegionPointer(Connection conn,
+			CoreLocation xyp, int regionNum, int pointer)
+			throws SQLException {
+		try (var s = conn.prepareStatement(SET_REGION_POINTER)) {
+			s.setInt(FIRST, pointer);
+			s.setInt(SECOND, xyp.getX());
+			s.setInt(THIRD, xyp.getY());
+			s.setInt(FOURTH, xyp.getP());
+			s.setInt(FIFTH, regionNum);
+			s.executeUpdate();
+		}
+	}
+
+	@Override
+	public int getAppId() throws StorageException {
+		return callR(conn -> getAppId(conn), "getting app id");
+	}
+
+	private int getAppId(Connection conn)
+			throws SQLException {
+		try (var s = conn.prepareStatement(GET_APP_ID)) {
+			try (var rs = s.executeQuery()) {
+				while (rs.next()) {
+					return rs.getInt(FIRST);
+				}
+			}
+		}
+		throw new IllegalStateException("could not ge app id");
+	}
+
 	private static final class EthernetImpl extends Ethernet {
-		/** The primary key. */
-		final int id;
 
-		private EthernetImpl(int id, int etherx, int ethery, String addr) {
+		private EthernetImpl(int etherx, int ethery, String addr) {
 			super(etherx, ethery, addr);
-			this.id = id;
 		}
 
 		@Override
 		public boolean equals(Object other) {
-			return (other instanceof EthernetImpl b) && id == b.id;
+			if (!(other instanceof EthernetImpl)) {
+				return false;
+			}
+			var b = (EthernetImpl) other;
+			return location == b.location;
 		}
 
 		@Override
 		public int hashCode() {
-			return id ^ 444113;
+			return location.hashCode();
 		}
 	}
 
-	private final class CoreToLoadImpl extends CoreToLoad {
-		/** The primary key. */
-		final int id;
-
-		private CoreToLoadImpl(int id, int x, int y, int p, int appID,
-				int sizeToWrite) {
-			super(x, y, p, appID, sizeToWrite);
-			this.id = id;
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			return (other instanceof CoreToLoadImpl c) && id == c.id;
-		}
-
-		@Override
-		public int hashCode() {
-			return id ^ 187043;
-		}
-
-		@Override
-		public ByteBuffer getDataSpec() throws StorageException {
-			return SQLiteDataSpecStorage.this.getDataSpec(this);
-		}
-	}
 }
