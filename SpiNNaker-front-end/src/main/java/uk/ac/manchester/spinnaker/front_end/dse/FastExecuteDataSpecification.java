@@ -25,8 +25,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
-import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInProtocol.computeNumPackets;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
 import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
@@ -58,24 +56,18 @@ import difflib.ChangeDelta;
 import difflib.Chunk;
 import difflib.DeleteDelta;
 import difflib.InsertDelta;
-import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
-import uk.ac.manchester.spinnaker.data_spec.Executor;
-import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
-import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReal;
 import uk.ac.manchester.spinnaker.front_end.NoDropPacketContext;
 import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Monitor;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
-import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
-import uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
@@ -212,8 +204,6 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             If the transceiver can't talk to its sockets.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
-	 * @throws DataSpecificationException
-	 *             If a data specification in the database is invalid.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
 	 * @throws IllegalStateException
@@ -222,10 +212,10 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 */
 	public void loadCores()
 			throws StorageException, IOException, ProcessException,
-			DataSpecificationException, InterruptedException {
+			InterruptedException {
 		var storage = db.getStorageInterface();
 		var ethernets = storage.listEthernetsToLoad();
-		int opsToRun = storage.countWorkRequired();
+		int opsToRun = storage.countCores(false);
 		try (var bar = new Progress(opsToRun, LOADING_MSG)) {
 			processTasksInParallel(ethernets, board -> {
 				return () -> loadBoard(board, storage, bar);
@@ -234,28 +224,24 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	}
 
 	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar)
-			throws IOException, ProcessException,
-			DataSpecificationException, StorageException, InterruptedException {
+			throws IOException, ProcessException, StorageException,
+			InterruptedException {
 		var cores = storage.listCoresToLoad(board, false);
 		if (cores.isEmpty()) {
 			log.info("no cores need loading on board; skipping");
 			return;
 		}
 		log.info("loading data onto {} cores on board", cores.size());
-		try (var worker = new BoardWorker(board, storage, bar)) {
-			var addresses = new HashMap<CoreToLoad, MemoryLocation>();
-			for (var ctl : cores) {
-				var start = malloc(ctl, ctl.sizeToWrite);
-				txrx.writeUser0(ctl.core, start.address);
-				addresses.put(ctl, start);
+		var gather = gathererForChip.get(board.location);
+		try (var worker =  new FastBoardWorker(
+				txrx, board, storage, gather, bar)) {
+			for (var xyp : cores) {
+				worker.mallocCore(xyp);
 			}
-
 			try (var routers = worker.systemRouterTables();
-					var context = worker.dontDropPackets(
-							gathererForChip.get(board.location))) {
-				for (var ctl : cores) {
-					worker.loadCore(ctl, gathererForChip.get(board.location),
-							addresses.get(ctl));
+					var context = worker.dontDropPackets(gather)) {
+				for (var xyp : cores) {
+					worker.loadCore(xyp);
 				}
 				log.info("finished sending data in for this board");
 			} catch (Exception e) {
@@ -263,24 +249,6 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 				throw e;
 			}
 		}
-	}
-
-	private MemoryLocation malloc(CoreToLoad ctl, Integer bytesUsed)
-			throws IOException, ProcessException, InterruptedException {
-		return txrx.mallocSDRAM(ctl.core.getScampCore(), bytesUsed,
-				new AppID(ctl.appID),
-				ctl.core.getP() + CORE_DATA_SDRAM_BASE_TAG);
-	}
-
-	private static MemoryRegionReal getRealRegionOrNull(MemoryRegion reg) {
-		if (!(reg instanceof MemoryRegionReal)) {
-			return null;
-		}
-		var r = (MemoryRegionReal) reg;
-		if (r.isUnfilled() || r.getMaxWritePointer() <= 0) {
-			return null;
-		}
-		return r;
 	}
 
 	/**
@@ -395,149 +363,33 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 * @author Donal Fellows
 	 * @author Alan Stokes
 	 */
-	private class BoardWorker implements AutoCloseable {
-		private Ethernet board;
-
-		private DSEStorage storage;
-
-		private Progress bar;
-
+	private class FastBoardWorker extends BoardWorker implements AutoCloseable {
 		private ThrottledConnection connection;
 
 		private MissingRecorder missingSequenceNumbers;
 
 		private BoardLocal logContext;
 
-		private ExecutionContext execContext;
+		private Gather gather;
 
 		@MustBeClosed
 		@SuppressWarnings("MustBeClosed")
-		BoardWorker(Ethernet board, DSEStorage storage, Progress bar)
-				throws IOException, ProcessException, InterruptedException {
-			this.board = board;
+		FastBoardWorker(TransceiverInterface txrx, Ethernet board,
+				DSEStorage storage, Gather gather, Progress bar)
+				throws IOException, ProcessException, InterruptedException,
+				StorageException {
+			super(txrx, board, storage, bar);
 			this.logContext = new BoardLocal(board.location);
-			this.storage = storage;
-			this.bar = bar;
-			this.execContext = new ExecutionContext(txrx);
 			this.connection = new ThrottledConnection(txrx, board,
-					gathererForChip.get(board.location).getIptag());
+					gather.getIptag());
+			this.gather = gather;
 		}
 
 		@Override
 		public void close() throws IOException, ProcessException,
-				DataSpecificationException, InterruptedException {
-			execContext.close();
+				InterruptedException {
 			logContext.close();
 			connection.close();
-		}
-
-		/**
-		 * Execute a data specification and load the results onto a core.
-		 *
-		 * @param ctl
-		 *            The definition of what to run and where to send the
-		 *            results.
-		 * @param gather
-		 *            Where the relevant packet gatherer is that we will be
-		 *            routing data via.
-		 * @param start
-		 *            Start of the memory chunk to put the data in.
-		 * @throws IOException
-		 *             If anything goes wrong with I/O.
-		 * @throws ProcessException
-		 *             If SCAMP rejects the request.
-		 * @throws DataSpecificationException
-		 *             If the instructions to build the data are wrong.
-		 * @throws StorageException
-		 *             If the database access fails.
-		 * @throws InterruptedException
-		 *             If communications are interrupted.
-		 */
-		protected void loadCore(CoreToLoad ctl, Gather gather,
-				MemoryLocation start) throws IOException, ProcessException,
-				DataSpecificationException, StorageException,
-				InterruptedException {
-			// Get what we're going to run...
-			var dataSpec = getDataSpec(ctl);
-
-			try (var executor = new Executor(dataSpec,
-					machine.getChipAt(ctl.core).sdram)) {
-				// ... run it...
-				execContext.execute(executor, ctl.core, start);
-				// ... and write the results to the machine
-				int writes = loadCoreFromExecutor(ctl, gather, start, executor);
-				log.info("loaded {} memory regions (including metadata "
-						+ "pseudoregion) for {}", writes, ctl.core);
-			} catch (DataSpecificationException e) {
-				throw new DataSpecificationException(format(
-						"failed to execute data specification on "
-								+ "core %s of board %s (%s)",
-						ctl.core, board.location, board.ethernetAddress), e);
-			} catch (IOException e) {
-				throw new IOException(format(
-						"failed to upload built data to "
-								+ "core %s of board %s (%s)",
-						ctl.core, board.location, board.ethernetAddress), e);
-			} catch (StorageException e) {
-				throw new StorageException(format(
-						"failed to record results of data specification for "
-								+ "core %s of board %s (%s)",
-						ctl.core, board.location, board.ethernetAddress), e);
-			}
-		}
-
-		/**
-		 * Wrap {@link CoreToLoad#getDataSpec()} with core location info on
-		 * failure.
-		 *
-		 * @param ctl
-		 *            Record from the database describing a core to be loaded.
-		 * @return The data specification for the given core.
-		 * @throws DataSpecificationException
-		 *             If something goes wrong.
-		 */
-		private ByteBuffer getDataSpec(CoreToLoad ctl)
-				throws DataSpecificationException {
-			try {
-				return ctl.getDataSpec();
-			} catch (StorageException | RuntimeException e) {
-				throw new DataSpecificationException(format(
-						"failed to read data specification on "
-								+ "core %s of board %s (%s)",
-						ctl.core, board.location, board.ethernetAddress), e);
-			}
-		}
-
-		private int loadCoreFromExecutor(CoreToLoad ctl, Gather gather,
-				MemoryLocation start, Executor executor) throws IOException,
-				ProcessException, StorageException, InterruptedException {
-			int size = executor.getConstructedDataSize();
-			if (log.isInfoEnabled()) {
-				log.info("generated {} bytes to load onto {} into memory "
-						+ "starting at {}",
-						size, ctl.core, start);
-			}
-			int written = APP_PTR_TABLE_BYTE_SIZE;
-			int writeCount = 1;
-
-			for (var reg : executor.regions()) {
-				var r = getRealRegionOrNull(reg);
-				if (r == null) {
-					continue;
-				}
-
-				written += writeRegion(ctl.core, r, r.getRegionBase(), gather);
-				writeCount++;
-				if (SPINNAKER_COMPARE_UPLOAD != null) {
-					var readBack = txrx.readMemory(ctl.core,
-							r.getRegionBase(), r.getRegionData().remaining());
-					compareBuffers(r.getRegionData(), readBack);
-				}
-			}
-
-			bar.update();
-			storage.saveLoadingMetadata(ctl, start, size, written);
-			return writeCount;
 		}
 
 		/**
@@ -585,7 +437,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 			 * @throws IOException
 			 *             If anything goes wrong with writing.
 			 */
-			void report(CoreLocation core, long time, int size,
+			void report(HasCoreLocation core, long time, int size,
 					MemoryLocation addr) throws IOException {
 				if (writeReports) {
 					writeReport(core, time, size, addr, this);
@@ -614,18 +466,22 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		 * @throws InterruptedException
 		 *             If communications are interrupted.
 		 */
-		private int writeRegion(CoreLocation core, MemoryRegionReal region,
-				MemoryLocation baseAddress, Gather gather)
+		@Override
+		protected int writeRegion(HasCoreLocation core, ByteBuffer content,
+				MemoryLocation baseAddress)
 				throws IOException, ProcessException, InterruptedException {
-			var data = region.getRegionData().duplicate();
-
-			data.flip();
-			int written = data.remaining();
+			int written = content.remaining();
 			try (var recorder = new MissingRecorder()) {
 				long start = nanoTime();
-				fastWrite(core, baseAddress, data, gather);
+				fastWrite(core, baseAddress, content);
 				long end = nanoTime();
-				recorder.report(core, end - start, data.limit(), baseAddress);
+				recorder.report(
+						core, end - start, content.limit(), baseAddress);
+			}
+			if (SPINNAKER_COMPARE_UPLOAD != null) {
+				var readBack = txrx.readMemory(
+						core, baseAddress, content.remaining());
+				compareBuffers(content, readBack);
 			}
 			return written;
 		}
@@ -680,16 +536,13 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		 *            Whether the data will be written.
 		 * @param data
 		 *            The data to be written.
-		 * @param gather
-		 *            The information about packet routing. In particular,
-		 *            responsible for Fast Data In transaction ID issuing.
 		 * @throws IOException
 		 *             If IO fails.
 		 * @throws InterruptedException
 		 *            If communications are interrupted.
 		 */
-		private void fastWrite(CoreLocation core, MemoryLocation baseAddress,
-				ByteBuffer data, Gather gather)
+		private void fastWrite(HasCoreLocation core, MemoryLocation baseAddress,
+				ByteBuffer data)
 						throws IOException, InterruptedException {
 			int timeoutCount = 0;
 			int numPackets = computeNumPackets(data);
