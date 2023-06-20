@@ -27,11 +27,6 @@ import java.util.List;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
-import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FIFTH;
-import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FIRST;
-import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FOURTH;
-import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.SECOND;
-import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.THIRD;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.COUNT_CORES_TO_LOAD;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_APP_ID;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION_POINTER_AND_CONTEXT;
@@ -76,7 +71,7 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 			throws SQLException {
 		try (var s = conn.prepareStatement(COUNT_CORES_TO_LOAD)) {
 			// is_system
-			s.setBoolean(FIRST, loadSystemCores);
+			setArguments(s, loadSystemCores);
 			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
 					return rs.getInt("num_cores");
@@ -125,9 +120,8 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 			throws SQLException {
 		try (var s = conn.prepareStatement(LIST_CORES_TO_LOAD)) {
 			// ethernet_x, ethernet_y, is_system
-			s.setInt(FIRST, ethernet.location.getX());
-			s.setInt(SECOND, ethernet.location.getY());
-			s.setBoolean(THIRD, loadSystemCores);
+			setArguments(s, ethernet.location.getX(), ethernet.location.getY(),
+					loadSystemCores);
 			try (var rs = s.executeQuery()) {
 				var result = new ArrayList<CoreLocation>();
 				while (rs.next()) {
@@ -150,9 +144,7 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 			Connection conn, CoreLocation xyp) throws SQLException {
 		try (var s = conn.prepareStatement(GET_REGION_SIZES)) {
 			// x, y, p
-			s.setInt(FIRST, xyp.getX());
-			s.setInt(SECOND, xyp.getY());
-			s.setInt(THIRD, xyp.getP());
+			setArguments(s, xyp.getX(), xyp.getY(), xyp.getP());
 			try (var rs = s.executeQuery()) {
 				var result = new LinkedHashMap<Integer, Integer>();
 				while (rs.next()) {
@@ -177,9 +169,7 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 				new HashMap<Integer, RegionInfo>();
 		try (var s = conn.prepareStatement(GET_REGION_POINTER_AND_CONTEXT)) {
 			// x, y, p
-			s.setInt(FIRST, xyp.getX());
-			s.setInt(SECOND, xyp.getY());
-			s.setInt(THIRD, xyp.getP());
+			setArguments(s, xyp.getX(), xyp.getY(), xyp.getP());
 			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
 					ByteBuffer content = null;
@@ -207,10 +197,7 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 			CoreLocation xyp, MemoryLocation start) throws SQLException {
 		try (var s = conn.prepareStatement(SET_START_ADDRESS)) {
 			// start_address, x, y, p
-			s.setInt(FIRST, start.address);
-			s.setInt(SECOND, xyp.getX());
-			s.setInt(THIRD, xyp.getY());
-			s.setInt(FOURTH, xyp.getP());
+			setArguments(s, start.address, xyp.getX(), xyp.getY(), xyp.getP());
 			s.executeUpdate();
 		}
 	}
@@ -226,9 +213,7 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 			throws SQLException {
 		try (var s = conn.prepareStatement(GET_START_ADDRESS)) {
 			// x, y, p
-			s.setInt(FIRST, xyp.getX());
-			s.setInt(SECOND, xyp.getY());
-			s.setInt(THIRD, xyp.getP());
+			setArguments(s, xyp.getX(), xyp.getY(), xyp.getP());
 			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
 					return new MemoryLocation(rs.getInt("start_address"));
@@ -239,7 +224,6 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 				"could not get_start_address for core "
 						+  xyp.getX() + ":" + xyp.getY() + ":" + xyp.getP()
 						+ " known to have one");
-
 	}
 
 	@Override
@@ -254,11 +238,8 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 			throws SQLException {
 		try (var s = conn.prepareStatement(SET_REGION_POINTER)) {
 			// pointer, x, y, p, region_num
-			s.setInt(FIRST, pointer);
-			s.setInt(SECOND, xyp.getX());
-			s.setInt(THIRD, xyp.getY());
-			s.setInt(FOURTH, xyp.getP());
-			s.setInt(FIFTH, regionNum);
+			setArguments(s, pointer, xyp.getX(), xyp.getY(), xyp.getP(),
+					regionNum);
 			s.executeUpdate();
 		}
 	}
