@@ -32,9 +32,7 @@ import org.opentest4j.AssertionFailedError;
 
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
-//import uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
-import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 class TestFrontEnd {
@@ -137,11 +135,11 @@ class TestFrontEnd {
 					(t, m, db) -> new HostExecuteDataSpecification(t, m, null) {
 						@Override
 						public void loadCores(boolean system) {
-                            if (system) {
-                                called.setValue("dse_sys");
-                            } else {
-                                called.setValue("dse_app");
-                            }
+							if (system) {
+								called.setValue("dse_sys");
+							} else {
+								called.setValue("dse_app");
+							}
 						}
 					};
 
