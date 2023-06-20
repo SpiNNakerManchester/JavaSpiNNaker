@@ -224,8 +224,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		}
 		log.info("loading data onto {} cores on board", cores.size());
 		var gather = gathererForChip.get(board.location);
-		try (var worker =  new FastBoardWorker(
-				txrx, board, storage, gather)) {
+		try (var worker = new FastBoardWorker(txrx, board, storage, gather)) {
 			for (var xyp : cores) {
 				worker.mallocCore(xyp);
 			}

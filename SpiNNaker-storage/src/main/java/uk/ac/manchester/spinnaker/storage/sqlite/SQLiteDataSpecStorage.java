@@ -15,8 +15,18 @@
  */
 package uk.ac.manchester.spinnaker.storage.sqlite;
 
-import java.nio.ByteBuffer;
 import static java.nio.ByteBuffer.wrap;
+import static java.util.Objects.nonNull;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_APP_ID;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION_POINTER_AND_CONTEXT;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION_SIZES;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_START_ADDRESS;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_CORES_TO_LOAD;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_ETHERNETS;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.SET_REGION_POINTER;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.SET_START_ADDRESS;
+
+import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -26,16 +36,6 @@ import java.util.List;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
-
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_APP_ID;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION_POINTER_AND_CONTEXT;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION_SIZES;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_START_ADDRESS;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_ETHERNETS;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.SET_REGION_POINTER;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.SET_START_ADDRESS;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_CORES_TO_LOAD;
-
 import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
 import uk.ac.manchester.spinnaker.storage.RegionInfo;
@@ -143,35 +143,37 @@ public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 
 	private static HashMap<Integer, RegionInfo> getRegionPointersAndContent(
 			Connection conn, CoreLocation xyp) throws SQLException {
-		HashMap<Integer, RegionInfo> results =
-				new HashMap<Integer, RegionInfo>();
 		try (var s = conn.prepareStatement(GET_REGION_POINTER_AND_CONTEXT)) {
 			// x, y, p
 			setArguments(s, xyp.getX(), xyp.getY(), xyp.getP());
 			try (var rs = s.executeQuery()) {
+				var results = new HashMap<Integer, RegionInfo>();
 				while (rs.next()) {
-					ByteBuffer content = null;
-					if (rs.getBytes("content") != null) {
-						content =
-								wrap(rs.getBytes("content")).asReadOnlyBuffer();
-					}
-					var info = new RegionInfo(
-							content, new MemoryLocation(rs.getInt("pointer")));
-					results.put(rs.getInt("region_num"), info);
+					results.put(rs.getInt("region_num"),
+							new RegionInfo(
+									wrapIfNotNull(rs.getBytes("content")),
+									new MemoryLocation(rs.getInt("pointer"))));
 				}
+				return results;
 			}
-			return results;
 		}
+	}
+
+	private static ByteBuffer wrapIfNotNull(byte[] buffer) {
+		if (nonNull(buffer)) {
+			return wrap(buffer).asReadOnlyBuffer();
+		}
+		return null;
 	}
 
 	@Override
 	public void setStartAddress(CoreLocation xyp,
 			MemoryLocation start) throws StorageException {
-		callV(conn -> setStartAddres(conn, xyp, start),
+		callV(conn -> setStartAddress(conn, xyp, start),
 				"saving data loading metadata");
 	}
 
-	private static void setStartAddres(Connection conn,
+	private static void setStartAddress(Connection conn,
 			CoreLocation xyp, MemoryLocation start) throws SQLException {
 		try (var s = conn.prepareStatement(SET_START_ADDRESS)) {
 			// start_address, x, y, p
@@ -247,11 +249,8 @@ public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 
 		@Override
 		public boolean equals(Object other) {
-			if (!(other instanceof EthernetImpl)) {
-				return false;
-			}
-			var b = (EthernetImpl) other;
-			return location == b.location;
+			return (other instanceof EthernetImpl b)
+					&& (location == b.location);
 		}
 
 		@Override
