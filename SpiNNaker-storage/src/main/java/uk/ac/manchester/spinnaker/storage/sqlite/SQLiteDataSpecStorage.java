@@ -27,11 +27,6 @@ import java.util.List;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
-import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FIFTH;
-import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FIRST;
-import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FOURTH;
-import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.SECOND;
-import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.THIRD;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_APP_ID;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION_POINTER_AND_CONTEXT;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION_SIZES;
@@ -53,7 +48,6 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  */
 public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 		implements DSEStorage {
-
 	/**
 	 * Create an instance.
 	 *
@@ -63,27 +57,6 @@ public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 	 */
 	public SQLiteDataSpecStorage(DSEDatabaseEngine db) {
 		super(db);
-	}
-
-	@Override
-	public int countCores(boolean loadSystemCores) throws StorageException {
-		return callR(conn -> countCores(conn, loadSystemCores),
-				"Counting cores");
-	}
-
-	private static int countCores(Connection conn, boolean loadSystemCores)
-			throws SQLException {
-		try (var s = conn.prepareStatement(LIST_CORES_TO_LOAD)) {
-			// ethernet_id
-			s.setBoolean(FIRST, loadSystemCores);
-			try (var rs = s.executeQuery()) {
-				while (rs.next()) {
-					// count_content
-					return rs.getInt(FIRST);
-				}
-			}
-		}
-		return 0; // If we get here, nothing to count
 	}
 
 	@Override
@@ -98,9 +71,8 @@ public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 				var rs = s.executeQuery()) {
 			var result = new ArrayList<Ethernet>();
 			while (rs.next()) {
-				// ethernet_id, ethernet_x, ethernet_y, ip_address
-				result.add(new EthernetImpl(rs.getInt(FIRST), rs.getInt(SECOND),
-						rs.getString(THIRD)));
+				result.add(new EthernetImpl(rs.getInt("ethernet_x"),
+						rs.getInt("ethernet_y"), rs.getString("ip_address")));
 			}
 			return result;
 		}
@@ -125,16 +97,14 @@ public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 			EthernetImpl ethernet, boolean loadSystemCores)
 			throws SQLException {
 		try (var s = conn.prepareStatement(LIST_CORES_TO_LOAD)) {
-			// ethernet_id
-			s.setInt(FIRST, ethernet.location.getX());
-			s.setInt(SECOND, ethernet.location.getY());
-			s.setBoolean(THIRD, loadSystemCores);
+			// ethernet_x, ethernet_y, is_system
+			setArguments(s, ethernet.location.getX(), ethernet.location.getY(),
+					loadSystemCores);
 			try (var rs = s.executeQuery()) {
 				var result = new ArrayList<CoreLocation>();
 				while (rs.next()) {
-					// core_id, x, y, processor, content
-					result.add(new CoreLocation(rs.getInt(FIRST),
-							rs.getInt(SECOND), rs.getInt(THIRD)));
+					result.add(new CoreLocation(rs.getInt("x"),
+							rs.getInt("y"), rs.getInt("p")));
 				}
 				return result;
 			}
@@ -151,15 +121,12 @@ public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 	private LinkedHashMap<Integer, Integer> getRegionSizes(
 			Connection conn, CoreLocation xyp) throws SQLException {
 		try (var s = conn.prepareStatement(GET_REGION_SIZES)) {
-			// ethernet_id
-			s.setInt(FIRST, xyp.getX());
-			s.setInt(SECOND, xyp.getY());
-			s.setInt(THIRD, xyp.getP());
+			// x, y, p
+			setArguments(s, xyp.getX(), xyp.getY(), xyp.getP());
 			try (var rs = s.executeQuery()) {
 				var result = new LinkedHashMap<Integer, Integer>();
 				while (rs.next()) {
-					// core_id, x, y, processor, content
-					result.put(rs.getInt(FIRST), rs.getInt(SECOND));
+					result.put(rs.getInt("region_num"), rs.getInt("size"));
 				}
 				return result;
 			}
@@ -179,18 +146,18 @@ public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 		HashMap<Integer, RegionInfo> results =
 				new HashMap<Integer, RegionInfo>();
 		try (var s = conn.prepareStatement(GET_REGION_POINTER_AND_CONTEXT)) {
-			s.setInt(FIRST, xyp.getX());
-			s.setInt(SECOND, xyp.getY());
-			s.setInt(THIRD, xyp.getP());
+			// x, y, p
+			setArguments(s, xyp.getX(), xyp.getY(), xyp.getP());
 			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
 					ByteBuffer content = null;
-					if (rs.getBytes(SECOND) != null) {
-						content = wrap(rs.getBytes(SECOND)).asReadOnlyBuffer();
+					if (rs.getBytes("content") != null) {
+						content =
+								wrap(rs.getBytes("content")).asReadOnlyBuffer();
 					}
-					RegionInfo info = new RegionInfo(
-							content, new MemoryLocation(rs.getInt(THIRD)));
-					results.put(rs.getInt(FIRST), info);
+					var info = new RegionInfo(
+							content, new MemoryLocation(rs.getInt("pointer")));
+					results.put(rs.getInt("region_num"), info);
 				}
 			}
 			return results;
@@ -207,10 +174,9 @@ public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 	private static void setStartAddres(Connection conn,
 			CoreLocation xyp, MemoryLocation start) throws SQLException {
 		try (var s = conn.prepareStatement(SET_START_ADDRESS)) {
-			s.setInt(FIRST, start.address());
-			s.setInt(SECOND, xyp.getX());
-			s.setInt(THIRD, xyp.getY());
-			s.setInt(FOURTH, xyp.getP());
+			// start_address, x, y, p
+			setArguments(s, start.address(), xyp.getX(), xyp.getY(),
+					xyp.getP());
 			s.executeUpdate();
 		}
 	}
@@ -225,14 +191,11 @@ public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 	private MemoryLocation getStartAddress(Connection conn, CoreLocation xyp)
 			throws SQLException {
 		try (var s = conn.prepareStatement(GET_START_ADDRESS)) {
-			// ethernet_id
-			s.setInt(FIRST, xyp.getX());
-			s.setInt(SECOND, xyp.getY());
-			s.setInt(THIRD, xyp.getP());
+			// x, y, p
+			setArguments(s, xyp.getX(), xyp.getY(), xyp.getP());
 			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
-					// core_id, x, y, processor, content
-					return new MemoryLocation(rs.getInt(FIRST));
+					return new MemoryLocation(rs.getInt("start_address"));
 				}
 			}
 		}
@@ -240,7 +203,6 @@ public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 				"could not get_start_address for core "
 						+  xyp.getX() + ":" + xyp.getY() + ":" + xyp.getP()
 						+ " known to have one");
-
 	}
 
 	@Override
@@ -254,11 +216,9 @@ public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 			CoreLocation xyp, int regionNum, int pointer)
 			throws SQLException {
 		try (var s = conn.prepareStatement(SET_REGION_POINTER)) {
-			s.setInt(FIRST, pointer);
-			s.setInt(SECOND, xyp.getX());
-			s.setInt(THIRD, xyp.getY());
-			s.setInt(FOURTH, xyp.getP());
-			s.setInt(FIFTH, regionNum);
+			// pointer, x, y, p, region_num
+			setArguments(s, pointer, xyp.getX(), xyp.getY(), xyp.getP(),
+					regionNum);
 			s.executeUpdate();
 		}
 	}
@@ -273,7 +233,7 @@ public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 		try (var s = conn.prepareStatement(GET_APP_ID)) {
 			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
-					return rs.getInt(FIRST);
+					return rs.getInt("app_id");
 				}
 			}
 		}
@@ -281,7 +241,6 @@ public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 	}
 
 	private static final class EthernetImpl extends Ethernet {
-
 		private EthernetImpl(int etherx, int ethery, String addr) {
 			super(etherx, ethery, addr);
 		}
@@ -300,5 +259,4 @@ public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 			return location.hashCode();
 		}
 	}
-
 }

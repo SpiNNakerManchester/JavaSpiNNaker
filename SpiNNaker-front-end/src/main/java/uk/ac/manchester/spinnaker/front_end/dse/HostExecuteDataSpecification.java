@@ -74,9 +74,8 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 * those executions.
 	 *
 	 * @param system
-	 *             Flag if True loads system cores
-	 *             if False loads none system (Application) cores
-	 *
+	 *            If {@code true}, loads system cores. If {@code false}, loads
+	 *            non-system (i.e., application) cores.
 	 * @throws StorageException
 	 *             If the database can't be talked to.
 	 * @throws IOException
@@ -93,8 +92,7 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 			throws StorageException, IOException, ProcessException,
 			InterruptedException {
 		var storage = db.getStorageInterface();
-		var ethernets = storage.listEthernetsToLoad();
-		processTasksInParallel(ethernets, board -> {
+		processTasksInParallel(storage.listEthernetsToLoad(), board -> {
 			return () -> loadBoard(board, storage, system);
 		});
 	}

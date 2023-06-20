@@ -189,6 +189,9 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 * Execute all application data specifications that a particular connection
 	 * knows about, storing back in the database the information collected about
 	 * those executions. Data is transferred using the Fast Data In protocol.
+	 * <p>
+	 * Cannot load data for system cores; those are used by the implementation
+	 * of this protocol.
 	 *
 	 * @throws StorageException
 	 *             If the database can't be talked to.
@@ -206,8 +209,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 			throws StorageException, IOException, ProcessException,
 			InterruptedException {
 		var storage = db.getStorageInterface();
-		var ethernets = storage.listEthernetsToLoad();
-		processTasksInParallel(ethernets, board -> {
+		processTasksInParallel(storage.listEthernetsToLoad(), board -> {
 			return () -> loadBoard(board, storage);
 		});
 	}
