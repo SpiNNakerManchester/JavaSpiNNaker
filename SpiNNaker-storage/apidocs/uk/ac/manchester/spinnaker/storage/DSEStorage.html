@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6};
+<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -126,13 +126,6 @@ extends <a href="ProxyAwareStorage.html" title="interface in uk.ac.manchester.sp
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a></span></code></th>
-<td class="colLast">
-<div class="block">A core with a data specification to load.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a></span></code></th>
 <td class="colLast">
 <div class="block">A ethernet which allows data specifications to be loaded.</div>
@@ -163,43 +156,71 @@ extends <a href="ProxyAwareStorage.html" title="interface in uk.ac.manchester.sp
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#countWorkRequired()">countWorkRequired</a></span>()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#countCores(boolean)">countCores</a></span>&#8203;(boolean&nbsp;loadSystemCores)</code></th>
 <td class="colLast">
 <div class="block">See how many DSE loading actions have to be done.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i1">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listCoresToLoad(uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet)">listCoresToLoad</a></span>&#8203;(<a href="DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a>&nbsp;ethernet)</code></th>
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getAppId()">getAppId</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Get a list of all DSE loading actions that need to be done for a
- particular ethernet.</div>
+<div class="block">Get the system wide app id.</div>
 </td>
 </tr>
 <tr class="altColor" id="i2">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listCoresToLoad(uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet,boolean)">listCoresToLoad</a></span>&#8203;(<a href="DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a>&nbsp;ethernet,
-boolean&nbsp;loadSystemCores)</code></th>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>,&#8203;<a href="RegionInfo.html" title="class in uk.ac.manchester.spinnaker.storage">RegionInfo</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRegionPointersAndContent(uk.ac.manchester.spinnaker.machine.CoreLocation)">getRegionPointersAndContent</a></span>&#8203;(<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a>&nbsp;xyp)</code></th>
 <td class="colLast">
-<div class="block">Get a list of all DSE loading actions that need to be done for a
- particular ethernet.</div>
+<div class="block">Gets a map of region ids to pointers and content
+
+ Maps only regions with a none zero size.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i3">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/LinkedHashMap.html?is-external=true" title="class or interface in java.util" class="externalLink">LinkedHashMap</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRegionSizes(uk.ac.manchester.spinnaker.machine.CoreLocation)">getRegionSizes</a></span>&#8203;(<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a>&nbsp;xyp)</code></th>
+<td class="colLast">
+<div class="block">Get a map of region id to size for regions with a none zero size.</div>
+</td>
+</tr>
+<tr class="altColor" id="i4">
+<td class="colFirst"><code><a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getStartAddress(uk.ac.manchester.spinnaker.machine.CoreLocation)">getStartAddress</a></span>&#8203;(<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a>&nbsp;xyp)</code></th>
+<td class="colLast">
+<div class="block">Gets the start address for the metadata on this core.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i5">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listCoresToLoad(uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet,boolean)">listCoresToLoad</a></span>&#8203;(<a href="DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a>&nbsp;ethernet,
+boolean&nbsp;loadSystemCores)</code></th>
+<td class="colLast">
+<div class="block">Get a list of all cores that need to be done for a particular ethernet.</div>
+</td>
+</tr>
+<tr class="altColor" id="i6">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listEthernetsToLoad()">listEthernetsToLoad</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get a list of all ethernets that need to have DSE loading done on them.</div>
 </td>
 </tr>
-<tr class="altColor" id="i4">
+<tr class="rowColor" id="i7">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#saveLoadingMetadata(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,int)">saveLoadingMetadata</a></span>&#8203;(<a href="DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a>&nbsp;coreToLoad,
-<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;startAddress,
-int&nbsp;memoryUsed,
-int&nbsp;memoryWritten)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setRegionPointer(uk.ac.manchester.spinnaker.machine.CoreLocation,int,int)">setRegionPointer</a></span>&#8203;(<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a>&nbsp;xyp,
+int&nbsp;regionNum,
+int&nbsp;pointer)</code></th>
 <td class="colLast">
-<div class="block">Record the results of loading a core.</div>
+<div class="block">Set the pointer for where to write the region data to.</div>
+</td>
+</tr>
+<tr class="altColor" id="i8">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setStartAddress(uk.ac.manchester.spinnaker.machine.CoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation)">setStartAddress</a></span>&#8203;(<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a>&nbsp;xyp,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;start)</code></th>
+<td class="colLast">
+<div class="block">Record the start address for the metadata on this core.</div>
 </td>
 </tr>
 </tbody>
@@ -226,13 +247,16 @@ int&nbsp;memoryWritten)</code></th>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="countWorkRequired()">countWorkRequired</a></h3>
-<div class="memberSignature"><span class="returnType">int</span>&nbsp;<span class="memberName">countWorkRequired</span>()
-               throws <span class="exceptions"><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></span></div>
+<h3><a id="countCores(boolean)">countCores</a></h3>
+<div class="memberSignature"><span class="returnType">int</span>&nbsp;<span class="memberName">countCores</span>&#8203;(<span class="arguments">boolean&nbsp;loadSystemCores)</span>
+        throws <span class="exceptions"><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></span></div>
 <div class="block">See how many DSE loading actions have to be done.</div>
 <dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>loadSystemCores</code> - If <code>true</code>, just count system cores. If <code>false</code>,
+            just count application (non-system) cores.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The number of data specifications remaining to be executed.</dd>
+<dd>The count of the cores which match the is loadSystemCores</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If the database access fails.</dd>
 </dl>
@@ -254,36 +278,18 @@ int&nbsp;memoryWritten)</code></th>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="listCoresToLoad(uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet)">listCoresToLoad</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a>&gt;</span>&nbsp;<span class="memberName">listCoresToLoad</span>&#8203;(<span class="arguments"><a href="DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a>&nbsp;ethernet)</span>
-                                     throws <span class="exceptions"><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></span></div>
-<div class="block">Get a list of all DSE loading actions that need to be done for a
- particular ethernet.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>ethernet</code> - The ethernet we're loading onto.</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The list of actions.</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If the database access fails.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="listCoresToLoad(uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet,boolean)">listCoresToLoad</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a>&gt;</span>&nbsp;<span class="memberName">listCoresToLoad</span>&#8203;(<span class="arguments"><a href="DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a>&nbsp;ethernet,
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a>&gt;</span>&nbsp;<span class="memberName">listCoresToLoad</span>&#8203;(<span class="arguments"><a href="DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a>&nbsp;ethernet,
 boolean&nbsp;loadSystemCores)</span>
-                                     throws <span class="exceptions"><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></span></div>
-<div class="block">Get a list of all DSE loading actions that need to be done for a
- particular ethernet.</div>
+                            throws <span class="exceptions"><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></span></div>
+<div class="block">Get a list of all cores that need to be done for a particular ethernet.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>ethernet</code> - The ethernet we're loading onto.</dd>
 <dd><code>loadSystemCores</code> - If <code>true</code>, just list system cores. If <code>false</code>,
             just list application (non-system) cores.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The list of actions.</dd>
+<dd>The list of core locations.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If the database access fails.</dd>
 </dl>
@@ -291,19 +297,100 @@ boolean&nbsp;loadSystemCores)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="saveLoadingMetadata(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,int)">saveLoadingMetadata</a></h3>
-<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">saveLoadingMetadata</span>&#8203;(<span class="arguments"><a href="DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a>&nbsp;coreToLoad,
-<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;startAddress,
-int&nbsp;memoryUsed,
-int&nbsp;memoryWritten)</span>
-                  throws <span class="exceptions"><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></span></div>
-<div class="block">Record the results of loading a core.</div>
+<h3><a id="getRegionSizes(uk.ac.manchester.spinnaker.machine.CoreLocation)">getRegionSizes</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/LinkedHashMap.html?is-external=true" title="class or interface in java.util" class="externalLink">LinkedHashMap</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</span>&nbsp;<span class="memberName">getRegionSizes</span>&#8203;(<span class="arguments"><a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a>&nbsp;xyp)</span>
+                                       throws <span class="exceptions"><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></span></div>
+<div class="block">Get a map of region id to size for regions with a none zero size.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>coreToLoad</code> - The instruction to load a particular core.</dd>
-<dd><code>startAddress</code> - Where the load metadata starts.</dd>
-<dd><code>memoryUsed</code> - How much memory was allocated by loading.</dd>
-<dd><code>memoryWritten</code> - How much memory was written by loading.</dd>
+<dd><code>xyp</code> - Coordinates to get the region sizes for</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>Sorted Map of Region number to size.
+           For the regions with a none zero size</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If the database access fails.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="setStartAddress(uk.ac.manchester.spinnaker.machine.CoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation)">setStartAddress</a></h3>
+<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">setStartAddress</span>&#8203;(<span class="arguments"><a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a>&nbsp;xyp,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;start)</span>
+              throws <span class="exceptions"><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></span></div>
+<div class="block">Record the start address for the metadata on this core.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>xyp</code> - Coordinates for the core</dd>
+<dd><code>start</code> - Where the load metadata starts.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If the database access fails.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getStartAddress(uk.ac.manchester.spinnaker.machine.CoreLocation)">getStartAddress</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a></span>&nbsp;<span class="memberName">getStartAddress</span>&#8203;(<span class="arguments"><a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a>&nbsp;xyp)</span>
+                        throws <span class="exceptions"><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></span></div>
+<div class="block">Gets the start address for the metadata on this core.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>xyp</code> - Coordinates for the core</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The location of the start of the metadata region</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If the database access fails.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getAppId()">getAppId</a></h3>
+<div class="memberSignature"><span class="returnType">int</span>&nbsp;<span class="memberName">getAppId</span>()
+      throws <span class="exceptions"><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></span></div>
+<div class="block">Get the system wide app id.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the app id</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If the database access fails.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="setRegionPointer(uk.ac.manchester.spinnaker.machine.CoreLocation,int,int)">setRegionPointer</a></h3>
+<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">setRegionPointer</span>&#8203;(<span class="arguments"><a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a>&nbsp;xyp,
+int&nbsp;regionNum,
+int&nbsp;pointer)</span>
+               throws <span class="exceptions"><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></span></div>
+<div class="block">Set the pointer for where to write the region data to.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>xyp</code> - Coordinates for the core</dd>
+<dd><code>regionNum</code> - region number for this pointer</dd>
+<dd><code>pointer</code> - start address for this regions metadata</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If the database access fails.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getRegionPointersAndContent(uk.ac.manchester.spinnaker.machine.CoreLocation)">getRegionPointersAndContent</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>,&#8203;<a href="RegionInfo.html" title="class in uk.ac.manchester.spinnaker.storage">RegionInfo</a>&gt;</span>&nbsp;<span class="memberName">getRegionPointersAndContent</span>&#8203;(<span class="arguments"><a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a>&nbsp;xyp)</span>
+                                             throws <span class="exceptions"><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></span></div>
+<div class="block">Gets a map of region ids to pointers and content
+
+ Maps only regions with a none zero size.
+
+ The content may be null is no data added</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>xyp</code> - Coordinates for the core</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>map of region number to object holding pointer and content</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If the database access fails.</dd>
 </dl>

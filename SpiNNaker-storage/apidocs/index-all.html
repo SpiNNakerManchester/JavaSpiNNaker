@@ -78,10 +78,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Adds some bytes to the database.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.CoreToLoad.html#appID">appID</a></span> - Variable in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a></dt>
-<dd>
-<div class="block">The application identifier associated with a core.</div>
-</dd>
 </dl>
 <a id="I:B">
 <!--   -->
@@ -119,6 +115,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Indicates a class that can provide database connections to
  suitably-configured databases.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/RegionInfo.html#content">content</a></span> - Variable in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/RegionInfo.html" title="class in uk.ac.manchester.spinnaker.storage">RegionInfo</a></dt>
+<dd>
+<div class="block">The content of the region.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html#cookies">cookies</a></span> - Variable in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html" title="class in uk.ac.manchester.spinnaker.storage">ProxyInformation</a></dt>
 <dd>
 <div class="block">The cookies to use for authentication.</div>
@@ -128,19 +128,11 @@ loadScripts(document, 'script');</script>
 <div class="block">What core owned the region? Note that the region might be retrieved
  from another core of the same chip.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.CoreToLoad.html#core">core</a></span> - Variable in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a></dt>
-<dd>
-<div class="block">The core that the load is to be done on.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.CoreToLoad.html#%3Cinit%3E(int,int,int,int,int)">CoreToLoad(int, int, int, int, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a></dt>
-<dd>
-<div class="block">Create an instance.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html#countWorkRequired()">countWorkRequired()</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html#countCores(boolean)">countCores(boolean)</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a></dt>
 <dd>
 <div class="block">See how many DSE loading actions have to be done.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html#countWorkRequired()">countWorkRequired()</a></span> - Method in class uk.ac.manchester.spinnaker.storage.sqlite.<a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite">SQLiteDataSpecStorage</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html#countCores(boolean)">countCores(boolean)</a></span> - Method in class uk.ac.manchester.spinnaker.storage.sqlite.<a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite">SQLiteDataSpecStorage</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <a id="I:D">
@@ -186,10 +178,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">The interface supported by the DSE part of the storage system.</div>
 </dd>
-<dt><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage"><span class="typeNameLink">DSEStorage.CoreToLoad</span></a> - Class in <a href="uk/ac/manchester/spinnaker/storage/package-summary.html">uk.ac.manchester.spinnaker.storage</a></dt>
-<dd>
-<div class="block">A core with a data specification to load.</div>
-</dd>
 <dt><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage"><span class="typeNameLink">DSEStorage.Ethernet</span></a> - Class in <a href="uk/ac/manchester/spinnaker/storage/package-summary.html">uk.ac.manchester.spinnaker.storage</a></dt>
 <dd>
 <div class="block">A ethernet which allows data specifications to be loaded.</div>
@@ -229,6 +217,12 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Used to document that some DML is expected to generate an ID.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html#getAppId()">getAppId()</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a></dt>
+<dd>
+<div class="block">Get the system wide app id.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html#getAppId()">getAppId()</a></span> - Method in class uk.ac.manchester.spinnaker.storage.sqlite.<a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite">SQLiteDataSpecStorage</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/ConnectionProvider.html#getConnection()">getConnection()</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/ConnectionProvider.html" title="interface in uk.ac.manchester.spinnaker.storage">ConnectionProvider</a></dt>
 <dd>
 <div class="block">Get a connection to a database, creating it if needed.</div>
@@ -240,8 +234,6 @@ loadScripts(document, 'script');</script>
 <div class="block">Get a list of all cores that have data stored in the database.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteBufferStorage.html#getCoresWithStorage()">getCoresWithStorage()</a></span> - Method in class uk.ac.manchester.spinnaker.storage.sqlite.<a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteBufferStorage.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite">SQLiteBufferStorage</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.CoreToLoad.html#getDataSpec()">getDataSpec()</a></span> - Method in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerDatabaseEngine.html#getDDL()">getDDL()</a></span> - Method in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/BufferManagerDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerDatabaseEngine</a></dt>
 <dd>&nbsp;</dd>
@@ -265,12 +257,32 @@ loadScripts(document, 'script');</script>
 <div class="deprecationComment">Currently unsupported; underlying database structure absent</div>
 </div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html#getRegionPointersAndContent(uk.ac.manchester.spinnaker.machine.CoreLocation)">getRegionPointersAndContent(CoreLocation)</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a></dt>
+<dd>
+<div class="block">Gets a map of region ids to pointers and content
+
+ Maps only regions with a none zero size.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html#getRegionPointersAndContent(uk.ac.manchester.spinnaker.machine.CoreLocation)">getRegionPointersAndContent(CoreLocation)</a></span> - Method in class uk.ac.manchester.spinnaker.storage.sqlite.<a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite">SQLiteDataSpecStorage</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html#getRegionSizes(uk.ac.manchester.spinnaker.machine.CoreLocation)">getRegionSizes(CoreLocation)</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a></dt>
+<dd>
+<div class="block">Get a map of region id to size for regions with a none zero size.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html#getRegionSizes(uk.ac.manchester.spinnaker.machine.CoreLocation)">getRegionSizes(CoreLocation)</a></span> - Method in class uk.ac.manchester.spinnaker.storage.sqlite.<a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite">SQLiteDataSpecStorage</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html#getRegionsWithStorage(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">getRegionsWithStorage(HasCoreLocation)</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a></dt>
 <dd>
 <div class="block">Get a list of all regions for a particular core that have data stored in
  the database.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteBufferStorage.html#getRegionsWithStorage(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">getRegionsWithStorage(HasCoreLocation)</a></span> - Method in class uk.ac.manchester.spinnaker.storage.sqlite.<a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteBufferStorage.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite">SQLiteBufferStorage</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html#getStartAddress(uk.ac.manchester.spinnaker.machine.CoreLocation)">getStartAddress(CoreLocation)</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a></dt>
+<dd>
+<div class="block">Gets the start address for the metadata on this core.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html#getStartAddress(uk.ac.manchester.spinnaker.machine.CoreLocation)">getStartAddress(CoreLocation)</a></span> - Method in class uk.ac.manchester.spinnaker.storage.sqlite.<a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite">SQLiteDataSpecStorage</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerDatabaseEngine.html#getStorageInterface()">getStorageInterface()</a></span> - Method in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/BufferManagerDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerDatabaseEngine</a></dt>
 <dd>&nbsp;</dd>
@@ -319,17 +331,9 @@ loadScripts(document, 'script');</script>
 </a>
 <h2 class="title">L</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html#listCoresToLoad(uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet)">listCoresToLoad(DSEStorage.Ethernet)</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a></dt>
-<dd>
-<div class="block">Get a list of all DSE loading actions that need to be done for a
- particular ethernet.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html#listCoresToLoad(uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet)">listCoresToLoad(DSEStorage.Ethernet)</a></span> - Method in class uk.ac.manchester.spinnaker.storage.sqlite.<a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite">SQLiteDataSpecStorage</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html#listCoresToLoad(uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet,boolean)">listCoresToLoad(DSEStorage.Ethernet, boolean)</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a></dt>
 <dd>
-<div class="block">Get a list of all DSE loading actions that need to be done for a
- particular ethernet.</div>
+<div class="block">Get a list of all cores that need to be done for a particular ethernet.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html#listCoresToLoad(uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet,boolean)">listCoresToLoad(DSEStorage.Ethernet, boolean)</a></span> - Method in class uk.ac.manchester.spinnaker.storage.sqlite.<a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite">SQLiteDataSpecStorage</a></dt>
 <dd>&nbsp;</dd>
@@ -372,6 +376,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Used to document what parameters are present in the DQL/DML.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/RegionInfo.html#pointer">pointer</a></span> - Variable in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/RegionInfo.html" title="class in uk.ac.manchester.spinnaker.storage">RegionInfo</a></dt>
+<dd>
+<div class="block">The address where the region will be start.</div>
+</dd>
 <dt><a href="uk/ac/manchester/spinnaker/storage/ProxyAwareStorage.html" title="interface in uk.ac.manchester.spinnaker.storage"><span class="typeNameLink">ProxyAwareStorage</span></a> - Interface in <a href="uk/ac/manchester/spinnaker/storage/package-summary.html">uk.ac.manchester.spinnaker.storage</a></dt>
 <dd>
 <div class="block">Storage interface that knows how to get information about the proxy system
@@ -404,6 +412,12 @@ loadScripts(document, 'script');</script>
 <div class="block">What was the index of the region in the table of regions for the
  core?</div>
 </dd>
+<dt><a href="uk/ac/manchester/spinnaker/storage/RegionInfo.html" title="class in uk.ac.manchester.spinnaker.storage"><span class="typeNameLink">RegionInfo</span></a> - Class in <a href="uk/ac/manchester/spinnaker/storage/package-summary.html">uk.ac.manchester.spinnaker.storage</a></dt>
+<dd>
+<div class="block">Used to group a MemoryLocation and a ByteBuffer object together.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/RegionInfo.html#%3Cinit%3E(java.nio.ByteBuffer,uk.ac.manchester.spinnaker.machine.MemoryLocation)">RegionInfo(ByteBuffer, MemoryLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/RegionInfo.html" title="class in uk.ac.manchester.spinnaker.storage">RegionInfo</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/storage/sqlite/ResourceLoader.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite"><span class="typeNameLink">ResourceLoader</span></a> - Class in <a href="uk/ac/manchester/spinnaker/storage/sqlite/package-summary.html">uk.ac.manchester.spinnaker.storage.sqlite</a></dt>
 <dd>
 <div class="block">Factoring out of correct resource loading pattern.</div>
@@ -422,11 +436,17 @@ loadScripts(document, 'script');</script>
 </a>
 <h2 class="title">S</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html#saveLoadingMetadata(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,int)">saveLoadingMetadata(DSEStorage.CoreToLoad, MemoryLocation, int, int)</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html#setRegionPointer(uk.ac.manchester.spinnaker.machine.CoreLocation,int,int)">setRegionPointer(CoreLocation, int, int)</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a></dt>
 <dd>
-<div class="block">Record the results of loading a core.</div>
+<div class="block">Set the pointer for where to write the region data to.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html#saveLoadingMetadata(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,int)">saveLoadingMetadata(DSEStorage.CoreToLoad, MemoryLocation, int, int)</a></span> - Method in class uk.ac.manchester.spinnaker.storage.sqlite.<a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite">SQLiteDataSpecStorage</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html#setRegionPointer(uk.ac.manchester.spinnaker.machine.CoreLocation,int,int)">setRegionPointer(CoreLocation, int, int)</a></span> - Method in class uk.ac.manchester.spinnaker.storage.sqlite.<a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite">SQLiteDataSpecStorage</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html#setStartAddress(uk.ac.manchester.spinnaker.machine.CoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation)">setStartAddress(CoreLocation, MemoryLocation)</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a></dt>
+<dd>
+<div class="block">Record the start address for the metadata on this core.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html#setStartAddress(uk.ac.manchester.spinnaker.machine.CoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation)">setStartAddress(CoreLocation, MemoryLocation)</a></span> - Method in class uk.ac.manchester.spinnaker.storage.sqlite.<a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite">SQLiteDataSpecStorage</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/storage/SingleRowResult.html" title="annotation in uk.ac.manchester.spinnaker.storage"><span class="typeNameLink">SingleRowResult</span></a> - Annotation Type in <a href="uk/ac/manchester/spinnaker/storage/package-summary.html">uk.ac.manchester.spinnaker.storage</a></dt>
 <dd>
@@ -436,10 +456,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">How much data should be downloaded? <em>This is not necessarily the
  size of the region.</em></div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.CoreToLoad.html#sizeToWrite">sizeToWrite</a></span> - Variable in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a></dt>
-<dd>
-<div class="block">The size of region to allocate and write into.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html#spallocUrl">spallocUrl</a></span> - Variable in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/ProxyInformation.html" title="class in uk.ac.manchester.spinnaker.storage">ProxyInformation</a></dt>
 <dd>

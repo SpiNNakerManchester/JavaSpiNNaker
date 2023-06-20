@@ -167,105 +167,125 @@
 <a class="jxr_linenumber" name="L159" href="#L159">159</a> 	<em class="jxr_comment">// Data loading ----------------------------------------------------</em>
 <a class="jxr_linenumber" name="L160" href="#L160">160</a> 	<em class="jxr_comment">// -----------------------------------------------------------------</em>
 <a class="jxr_linenumber" name="L161" href="#L161">161</a> 
-<a class="jxr_linenumber" name="L162" href="#L162">162</a> 	<em class="jxr_javadoccomment">/** Count the data specifications in the DB that are still to be run. */</em>
+<a class="jxr_linenumber" name="L162" href="#L162">162</a> 	<em class="jxr_javadoccomment">/** List the ethernets described in the database. */</em>
 <a class="jxr_linenumber" name="L163" href="#L163">163</a> 	@Parameters({})
-<a class="jxr_linenumber" name="L164" href="#L164">164</a> 	@ResultColumn(<span class="jxr_string">"count_content"</span>)
-<a class="jxr_linenumber" name="L165" href="#L165">165</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String COUNT_WORK =
-<a class="jxr_linenumber" name="L166" href="#L166">166</a> 			<span class="jxr_string">"SELECT count(content) AS count_content FROM core_view "</span>
-<a class="jxr_linenumber" name="L167" href="#L167">167</a> 					+ <span class="jxr_string">"WHERE start_address IS NULL AND "</span>
-<a class="jxr_linenumber" name="L168" href="#L168">168</a> 					+ <span class="jxr_string">"app_id IS NOT NULL AND content IS NOT NULL"</span>;
-<a class="jxr_linenumber" name="L169" href="#L169">169</a> 
-<a class="jxr_linenumber" name="L170" href="#L170">170</a> 	<em class="jxr_javadoccomment">/** List the ethernets described in the database. */</em>
-<a class="jxr_linenumber" name="L171" href="#L171">171</a> 	@Parameters({})
-<a class="jxr_linenumber" name="L172" href="#L172">172</a> 	@ResultColumn(<span class="jxr_string">"ethernet_id"</span>)
-<a class="jxr_linenumber" name="L173" href="#L173">173</a> 	@ResultColumn(<span class="jxr_string">"ethernet_x"</span>)
-<a class="jxr_linenumber" name="L174" href="#L174">174</a> 	@ResultColumn(<span class="jxr_string">"ethernet_y"</span>)
-<a class="jxr_linenumber" name="L175" href="#L175">175</a> 	@ResultColumn(<span class="jxr_string">"ip_address"</span>)
-<a class="jxr_linenumber" name="L176" href="#L176">176</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String LIST_ETHERNETS =
-<a class="jxr_linenumber" name="L177" href="#L177">177</a> 			<span class="jxr_string">"SELECT DISTINCT ethernet_id, ethernet_x, ethernet_y, ip_address"</span>
-<a class="jxr_linenumber" name="L178" href="#L178">178</a> 					+ <span class="jxr_string">" FROM core_view"</span>;
-<a class="jxr_linenumber" name="L179" href="#L179">179</a> 
-<a class="jxr_linenumber" name="L180" href="#L180">180</a> 	<em class="jxr_javadoccomment">/** List the cores of a ethernets with a data specification to run. */</em>
-<a class="jxr_linenumber" name="L181" href="#L181">181</a> 	@Parameter(<span class="jxr_string">"ethernet_id"</span>)
-<a class="jxr_linenumber" name="L182" href="#L182">182</a> 	@ResultColumn(<span class="jxr_string">"core_id"</span>)
-<a class="jxr_linenumber" name="L183" href="#L183">183</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
-<a class="jxr_linenumber" name="L184" href="#L184">184</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
-<a class="jxr_linenumber" name="L185" href="#L185">185</a> 	@ResultColumn(<span class="jxr_string">"processor"</span>)
-<a class="jxr_linenumber" name="L186" href="#L186">186</a> 	@ResultColumn(<span class="jxr_string">"app_id"</span>)
-<a class="jxr_linenumber" name="L187" href="#L187">187</a> 	@ResultColumn(<span class="jxr_string">"memory_used"</span>)
-<a class="jxr_linenumber" name="L188" href="#L188">188</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String LIST_CORES_TO_LOAD =
-<a class="jxr_linenumber" name="L189" href="#L189">189</a> 			<span class="jxr_string">"SELECT core_id, x, y, processor, app_id, memory_used "</span>
-<a class="jxr_linenumber" name="L190" href="#L190">190</a> 					+ <span class="jxr_string">"FROM core_view "</span>
-<a class="jxr_linenumber" name="L191" href="#L191">191</a> 					+ <span class="jxr_string">"WHERE ethernet_id = ? AND app_id IS NOT NULL "</span>
-<a class="jxr_linenumber" name="L192" href="#L192">192</a> 					+ <span class="jxr_string">"AND content IS NOT NULL"</span>;
-<a class="jxr_linenumber" name="L193" href="#L193">193</a> 
-<a class="jxr_linenumber" name="L194" href="#L194">194</a> 	<em class="jxr_javadoccomment">/** List the cores of a ethernets with a data specification to run. */</em>
-<a class="jxr_linenumber" name="L195" href="#L195">195</a> 	@Parameter(<span class="jxr_string">"ethernet_id"</span>)
-<a class="jxr_linenumber" name="L196" href="#L196">196</a> 	@Parameter(<span class="jxr_string">"is_system"</span>)
-<a class="jxr_linenumber" name="L197" href="#L197">197</a> 	@ResultColumn(<span class="jxr_string">"core_id"</span>)
-<a class="jxr_linenumber" name="L198" href="#L198">198</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
-<a class="jxr_linenumber" name="L199" href="#L199">199</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
-<a class="jxr_linenumber" name="L200" href="#L200">200</a> 	@ResultColumn(<span class="jxr_string">"processor"</span>)
-<a class="jxr_linenumber" name="L201" href="#L201">201</a> 	@ResultColumn(<span class="jxr_string">"app_id"</span>)
-<a class="jxr_linenumber" name="L202" href="#L202">202</a> 	@ResultColumn(<span class="jxr_string">"memory_used"</span>)
-<a class="jxr_linenumber" name="L203" href="#L203">203</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String LIST_CORES_TO_LOAD_FILTERED =
-<a class="jxr_linenumber" name="L204" href="#L204">204</a> 			<span class="jxr_string">"SELECT core_id, x, y, processor, app_id, memory_used "</span>
-<a class="jxr_linenumber" name="L205" href="#L205">205</a> 					+ <span class="jxr_string">"FROM core_view "</span>
-<a class="jxr_linenumber" name="L206" href="#L206">206</a> 					+ <span class="jxr_string">"WHERE ethernet_id = ? AND is_system = ? "</span>
-<a class="jxr_linenumber" name="L207" href="#L207">207</a> 					+ <span class="jxr_string">"AND app_id IS NOT NULL AND content IS NOT NULL"</span>;
-<a class="jxr_linenumber" name="L208" href="#L208">208</a> 
-<a class="jxr_linenumber" name="L209" href="#L209">209</a> 	<em class="jxr_javadoccomment">/** Get the data specification to run for a particular core. */</em>
-<a class="jxr_linenumber" name="L210" href="#L210">210</a> 	@Parameter(<span class="jxr_string">"core_id"</span>)
-<a class="jxr_linenumber" name="L211" href="#L211">211</a> 	@ResultColumn(<span class="jxr_string">"content"</span>)
-<a class="jxr_linenumber" name="L212" href="#L212">212</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String GET_CORE_DATA_SPEC =
-<a class="jxr_linenumber" name="L213" href="#L213">213</a> 			<span class="jxr_string">"SELECT content FROM core_view WHERE core_id = ? LIMIT 1"</span>;
-<a class="jxr_linenumber" name="L214" href="#L214">214</a> 
-<a class="jxr_linenumber" name="L215" href="#L215">215</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L216" href="#L216">216</a> <em class="jxr_javadoccomment">	 * Store the metadata about the loaded data generated by data specification</em>
-<a class="jxr_linenumber" name="L217" href="#L217">217</a> <em class="jxr_javadoccomment">	 * execution.</em>
-<a class="jxr_linenumber" name="L218" href="#L218">218</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L219" href="#L219">219</a> 	@Parameter(<span class="jxr_string">"start_address"</span>)
-<a class="jxr_linenumber" name="L220" href="#L220">220</a> 	@Parameter(<span class="jxr_string">"memory_used"</span>)
-<a class="jxr_linenumber" name="L221" href="#L221">221</a> 	@Parameter(<span class="jxr_string">"memory_written"</span>)
-<a class="jxr_linenumber" name="L222" href="#L222">222</a> 	@Parameter(<span class="jxr_string">"core_id"</span>)
-<a class="jxr_linenumber" name="L223" href="#L223">223</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String ADD_LOADING_METADATA = <span class="jxr_string">"UPDATE core "</span>
-<a class="jxr_linenumber" name="L224" href="#L224">224</a> 			+ <span class="jxr_string">"SET start_address = ?, memory_used = ?, memory_written = ? "</span>
-<a class="jxr_linenumber" name="L225" href="#L225">225</a> 			+ <span class="jxr_string">"WHERE core_id = ?"</span>;
-<a class="jxr_linenumber" name="L226" href="#L226">226</a> 
-<a class="jxr_linenumber" name="L227" href="#L227">227</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L228" href="#L228">228</a> <em class="jxr_javadoccomment">	 * The name of the result containing the spalloc URI.</em>
-<a class="jxr_linenumber" name="L229" href="#L229">229</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L230" href="#L230">230</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String SPALLOC_URI = <span class="jxr_string">"service uri"</span>;
-<a class="jxr_linenumber" name="L231" href="#L231">231</a> 
-<a class="jxr_linenumber" name="L232" href="#L232">232</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L233" href="#L233">233</a> <em class="jxr_javadoccomment">	 * The name of the result containing the proxy URI.</em>
-<a class="jxr_linenumber" name="L234" href="#L234">234</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L235" href="#L235">235</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String PROXY_URI = <span class="jxr_string">"job uri"</span>;
-<a class="jxr_linenumber" name="L236" href="#L236">236</a> 
-<a class="jxr_linenumber" name="L237" href="#L237">237</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_javadoccomment">	 * The kind of the result containing a proxy cookie.</em>
-<a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L240" href="#L240">240</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String COOKIE = <span class="jxr_string">"COOKIE"</span>;
-<a class="jxr_linenumber" name="L241" href="#L241">241</a> 
-<a class="jxr_linenumber" name="L242" href="#L242">242</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L243" href="#L243">243</a> <em class="jxr_javadoccomment">	 * The kind of the result containing a proxy header.</em>
-<a class="jxr_linenumber" name="L244" href="#L244">244</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L245" href="#L245">245</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String HEADER = <span class="jxr_string">"HEADER"</span>;
+<a class="jxr_linenumber" name="L164" href="#L164">164</a> 	@ResultColumn(<span class="jxr_string">"ethernet_x"</span>)
+<a class="jxr_linenumber" name="L165" href="#L165">165</a> 	@ResultColumn(<span class="jxr_string">"ethernet_y"</span>)
+<a class="jxr_linenumber" name="L166" href="#L166">166</a> 	@ResultColumn(<span class="jxr_string">"ip_address"</span>)
+<a class="jxr_linenumber" name="L167" href="#L167">167</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String LIST_ETHERNETS =
+<a class="jxr_linenumber" name="L168" href="#L168">168</a> 			<span class="jxr_string">"SELECT DISTINCT ethernet_x, ethernet_y, ip_address"</span>
+<a class="jxr_linenumber" name="L169" href="#L169">169</a> 					+ <span class="jxr_string">" FROM core_view"</span>;
+<a class="jxr_linenumber" name="L170" href="#L170">170</a> 
+<a class="jxr_linenumber" name="L171" href="#L171">171</a> 	<em class="jxr_javadoccomment">/** List the cores of a ethernets with a data specification to run. */</em>
+<a class="jxr_linenumber" name="L172" href="#L172">172</a> 	@Parameter(<span class="jxr_string">"ethernet_x"</span>)
+<a class="jxr_linenumber" name="L173" href="#L173">173</a> 	@Parameter(<span class="jxr_string">"ethernet_y"</span>)
+<a class="jxr_linenumber" name="L174" href="#L174">174</a> 	@Parameter(<span class="jxr_string">"is_system"</span>)
+<a class="jxr_linenumber" name="L175" href="#L175">175</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
+<a class="jxr_linenumber" name="L177" href="#L177">177</a> 	@ResultColumn(<span class="jxr_string">"p"</span>)
+<a class="jxr_linenumber" name="L178" href="#L178">178</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String LIST_CORES_TO_LOAD =
+<a class="jxr_linenumber" name="L179" href="#L179">179</a> 			<span class="jxr_string">"SELECT x, y, p "</span>
+<a class="jxr_linenumber" name="L180" href="#L180">180</a> 					+ <span class="jxr_string">"FROM core_view "</span>
+<a class="jxr_linenumber" name="L181" href="#L181">181</a> 					+ <span class="jxr_string">"WHERE ethernet_x = ? AND ethernet_y = ? "</span>
+<a class="jxr_linenumber" name="L182" href="#L182">182</a> 					+ <span class="jxr_string">"AND is_system = ? "</span>;
+<a class="jxr_linenumber" name="L183" href="#L183">183</a> 
+<a class="jxr_linenumber" name="L184" href="#L184">184</a> 	<em class="jxr_javadoccomment">/** List the cores of a ethernets with a data specification to run. */</em>
+<a class="jxr_linenumber" name="L185" href="#L185">185</a> 	@Parameter(<span class="jxr_string">"x"</span>)
+<a class="jxr_linenumber" name="L186" href="#L186">186</a> 	@Parameter(<span class="jxr_string">"y"</span>)
+<a class="jxr_linenumber" name="L187" href="#L187">187</a> 	@Parameter(<span class="jxr_string">"p"</span>)
+<a class="jxr_linenumber" name="L188" href="#L188">188</a> 	@ResultColumn(<span class="jxr_string">"region_num"</span>)
+<a class="jxr_linenumber" name="L189" href="#L189">189</a> 	@ResultColumn(<span class="jxr_string">"size"</span>)
+<a class="jxr_linenumber" name="L190" href="#L190">190</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String GET_REGION_SIZES =
+<a class="jxr_linenumber" name="L191" href="#L191">191</a> 			<span class="jxr_string">"SELECT region_num, size "</span>
+<a class="jxr_linenumber" name="L192" href="#L192">192</a> 					+ <span class="jxr_string">"FROM region "</span>
+<a class="jxr_linenumber" name="L193" href="#L193">193</a> 					+ <span class="jxr_string">"WHERE x = ? AND y = ? AND p = ? "</span>
+<a class="jxr_linenumber" name="L194" href="#L194">194</a> 					+ <span class="jxr_string">"ORDER BY region_num"</span>;
+<a class="jxr_linenumber" name="L195" href="#L195">195</a> 
+<a class="jxr_linenumber" name="L196" href="#L196">196</a> 	<em class="jxr_javadoccomment">/** Get the data specification to run for a particular core. */</em>
+<a class="jxr_linenumber" name="L197" href="#L197">197</a> 	@Parameter(<span class="jxr_string">"x"</span>)
+<a class="jxr_linenumber" name="L198" href="#L198">198</a> 	@Parameter(<span class="jxr_string">"y"</span>)
+<a class="jxr_linenumber" name="L199" href="#L199">199</a> 	@Parameter(<span class="jxr_string">"p"</span>)
+<a class="jxr_linenumber" name="L200" href="#L200">200</a> 	@ResultColumn(<span class="jxr_string">"content"</span>)
+<a class="jxr_linenumber" name="L201" href="#L201">201</a> 	@ResultColumn(<span class="jxr_string">"pointer"</span>)
+<a class="jxr_linenumber" name="L202" href="#L202">202</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String GET_REGION_POINTER_AND_CONTEXT =
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> 			<span class="jxr_string">"SELECT region_num, content, pointer "</span>
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> 					+ <span class="jxr_string">"FROM pointer_content_view "</span>
+<a class="jxr_linenumber" name="L205" href="#L205">205</a> 					+ <span class="jxr_string">"WHERE x = ? AND y = ? AND p = ? "</span>
+<a class="jxr_linenumber" name="L206" href="#L206">206</a> 					+ <span class="jxr_string">"ORDER BY region_num"</span>;
+<a class="jxr_linenumber" name="L207" href="#L207">207</a> 
+<a class="jxr_linenumber" name="L208" href="#L208">208</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L209" href="#L209">209</a> <em class="jxr_javadoccomment">	 * Store the start_address for the core.</em>
+<a class="jxr_linenumber" name="L210" href="#L210">210</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L211" href="#L211">211</a> 	@Parameter(<span class="jxr_string">"start_address"</span>)
+<a class="jxr_linenumber" name="L212" href="#L212">212</a> 	@Parameter(<span class="jxr_string">"x"</span>)
+<a class="jxr_linenumber" name="L213" href="#L213">213</a> 	@Parameter(<span class="jxr_string">"y"</span>)
+<a class="jxr_linenumber" name="L214" href="#L214">214</a> 	@Parameter(<span class="jxr_string">"p"</span>)
+<a class="jxr_linenumber" name="L215" href="#L215">215</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String SET_START_ADDRESS = <span class="jxr_string">"UPDATE core "</span>
+<a class="jxr_linenumber" name="L216" href="#L216">216</a> 			+ <span class="jxr_string">"SET start_address = ? "</span>
+<a class="jxr_linenumber" name="L217" href="#L217">217</a> 			+ <span class="jxr_string">"WHERE x = ? AND y = ? AND p = ?"</span>;
+<a class="jxr_linenumber" name="L218" href="#L218">218</a> 
+<a class="jxr_linenumber" name="L219" href="#L219">219</a> 	<em class="jxr_javadoccomment">/** Get the start address for this core. */</em>
+<a class="jxr_linenumber" name="L220" href="#L220">220</a> 	@Parameter(<span class="jxr_string">"x"</span>)
+<a class="jxr_linenumber" name="L221" href="#L221">221</a> 	@Parameter(<span class="jxr_string">"y"</span>)
+<a class="jxr_linenumber" name="L222" href="#L222">222</a> 	@Parameter(<span class="jxr_string">"p"</span>)
+<a class="jxr_linenumber" name="L223" href="#L223">223</a> 	@ResultColumn(<span class="jxr_string">"start_address"</span>)
+<a class="jxr_linenumber" name="L224" href="#L224">224</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String GET_START_ADDRESS =
+<a class="jxr_linenumber" name="L225" href="#L225">225</a> 			<span class="jxr_string">"SELECT start_address "</span>
+<a class="jxr_linenumber" name="L226" href="#L226">226</a> 					+ <span class="jxr_string">"FROM core "</span>
+<a class="jxr_linenumber" name="L227" href="#L227">227</a> 					+ <span class="jxr_string">"WHERE x = ? AND y = ? AND p = ? "</span>;
+<a class="jxr_linenumber" name="L228" href="#L228">228</a> 
+<a class="jxr_linenumber" name="L229" href="#L229">229</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L230" href="#L230">230</a> <em class="jxr_javadoccomment">	 * Store the pointer for this reason.</em>
+<a class="jxr_linenumber" name="L231" href="#L231">231</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L232" href="#L232">232</a> 	@Parameter(<span class="jxr_string">"pointer"</span>)
+<a class="jxr_linenumber" name="L233" href="#L233">233</a> 	@Parameter(<span class="jxr_string">"x"</span>)
+<a class="jxr_linenumber" name="L234" href="#L234">234</a> 	@Parameter(<span class="jxr_string">"y"</span>)
+<a class="jxr_linenumber" name="L235" href="#L235">235</a> 	@Parameter(<span class="jxr_string">"p"</span>)
+<a class="jxr_linenumber" name="L236" href="#L236">236</a> 	@Parameter(<span class="jxr_string">"region_num"</span>)
+<a class="jxr_linenumber" name="L237" href="#L237">237</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String SET_REGION_POINTER = <span class="jxr_string">"UPDATE region "</span>
+<a class="jxr_linenumber" name="L238" href="#L238">238</a> 			+ <span class="jxr_string">"SET pointer = ?"</span>
+<a class="jxr_linenumber" name="L239" href="#L239">239</a> 			+ <span class="jxr_string">"WHERE x = ? AND y = ? and p = ? and region_num = ?"</span>;
+<a class="jxr_linenumber" name="L240" href="#L240">240</a> 
+<a class="jxr_linenumber" name="L241" href="#L241">241</a> 	<em class="jxr_javadoccomment">/** Get the app_id. */</em>
+<a class="jxr_linenumber" name="L242" href="#L242">242</a> 	@ResultColumn(<span class="jxr_string">"app_id"</span>)
+<a class="jxr_linenumber" name="L243" href="#L243">243</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String GET_APP_ID =
+<a class="jxr_linenumber" name="L244" href="#L244">244</a> 			<span class="jxr_string">"SELECT app_id "</span>
+<a class="jxr_linenumber" name="L245" href="#L245">245</a> 					+ <span class="jxr_string">"FROM app_id "</span>;
 <a class="jxr_linenumber" name="L246" href="#L246">246</a> 
 <a class="jxr_linenumber" name="L247" href="#L247">247</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L248" href="#L248">248</a> <em class="jxr_javadoccomment">	 * The kind of the result containing a spalloc information.</em>
+<a class="jxr_linenumber" name="L248" href="#L248">248</a> <em class="jxr_javadoccomment">	 * The name of the result containing the spalloc URI.</em>
 <a class="jxr_linenumber" name="L249" href="#L249">249</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L250" href="#L250">250</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String SPALLOC = <span class="jxr_string">"SPALLOC"</span>;
+<a class="jxr_linenumber" name="L250" href="#L250">250</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String SPALLOC_URI = <span class="jxr_string">"service uri"</span>;
 <a class="jxr_linenumber" name="L251" href="#L251">251</a> 
 <a class="jxr_linenumber" name="L252" href="#L252">252</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L253" href="#L253">253</a> <em class="jxr_javadoccomment">	 * Get information about the proxy.</em>
+<a class="jxr_linenumber" name="L253" href="#L253">253</a> <em class="jxr_javadoccomment">	 * The name of the result containing the proxy URI.</em>
 <a class="jxr_linenumber" name="L254" href="#L254">254</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L255" href="#L255">255</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String GET_PROXY_INFORMATION =
-<a class="jxr_linenumber" name="L256" href="#L256">256</a> 			<span class="jxr_string">"SELECT kind, name, value FROM proxy_configuration WHERE "</span>
-<a class="jxr_linenumber" name="L257" href="#L257">257</a> 			+ <span class="jxr_string">"((kind = '"</span> + SPALLOC + <span class="jxr_string">"' AND name = '"</span> + PROXY_URI + <span class="jxr_string">"') OR"</span>
-<a class="jxr_linenumber" name="L258" href="#L258">258</a> 			+ <span class="jxr_string">" (kind = '"</span> + HEADER +  <span class="jxr_string">"') OR (kind = '"</span> + COOKIE + <span class="jxr_string">"') OR"</span>
-<a class="jxr_linenumber" name="L259" href="#L259">259</a> 			+ <span class="jxr_string">" (kind = '"</span> + SPALLOC + <span class="jxr_string">"' AND name = '"</span> + SPALLOC_URI + <span class="jxr_string">"'))"</span>;
-<a class="jxr_linenumber" name="L260" href="#L260">260</a> }
+<a class="jxr_linenumber" name="L255" href="#L255">255</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String PROXY_URI = <span class="jxr_string">"job uri"</span>;
+<a class="jxr_linenumber" name="L256" href="#L256">256</a> 
+<a class="jxr_linenumber" name="L257" href="#L257">257</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L258" href="#L258">258</a> <em class="jxr_javadoccomment">	 * The kind of the result containing a proxy cookie.</em>
+<a class="jxr_linenumber" name="L259" href="#L259">259</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L260" href="#L260">260</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String COOKIE = <span class="jxr_string">"COOKIE"</span>;
+<a class="jxr_linenumber" name="L261" href="#L261">261</a> 
+<a class="jxr_linenumber" name="L262" href="#L262">262</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L263" href="#L263">263</a> <em class="jxr_javadoccomment">	 * The kind of the result containing a proxy header.</em>
+<a class="jxr_linenumber" name="L264" href="#L264">264</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L265" href="#L265">265</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String HEADER = <span class="jxr_string">"HEADER"</span>;
+<a class="jxr_linenumber" name="L266" href="#L266">266</a> 
+<a class="jxr_linenumber" name="L267" href="#L267">267</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L268" href="#L268">268</a> <em class="jxr_javadoccomment">	 * The kind of the result containing a spalloc information.</em>
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L270" href="#L270">270</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String SPALLOC = <span class="jxr_string">"SPALLOC"</span>;
+<a class="jxr_linenumber" name="L271" href="#L271">271</a> 
+<a class="jxr_linenumber" name="L272" href="#L272">272</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L273" href="#L273">273</a> <em class="jxr_javadoccomment">	 * Get information about the proxy.</em>
+<a class="jxr_linenumber" name="L274" href="#L274">274</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L275" href="#L275">275</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String GET_PROXY_INFORMATION =
+<a class="jxr_linenumber" name="L276" href="#L276">276</a> 			<span class="jxr_string">"SELECT kind, name, value FROM proxy_configuration WHERE "</span>
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> 			+ <span class="jxr_string">"((kind = '"</span> + SPALLOC + <span class="jxr_string">"' AND name = '"</span> + PROXY_URI + <span class="jxr_string">"') OR"</span>
+<a class="jxr_linenumber" name="L278" href="#L278">278</a> 			+ <span class="jxr_string">" (kind = '"</span> + HEADER +  <span class="jxr_string">"') OR (kind = '"</span> + COOKIE + <span class="jxr_string">"') OR"</span>
+<a class="jxr_linenumber" name="L279" href="#L279">279</a> 			+ <span class="jxr_string">" (kind = '"</span> + SPALLOC + <span class="jxr_string">"' AND name = '"</span> + SPALLOC_URI + <span class="jxr_string">"'))"</span>;
+<a class="jxr_linenumber" name="L280" href="#L280">280</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2023 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

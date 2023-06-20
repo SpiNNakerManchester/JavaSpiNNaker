@@ -11,7 +11,6 @@ uk.ac.manchester.spinnaker.alloc.security
 uk.ac.manchester.spinnaker.alloc.web
 uk.ac.manchester.spinnaker.connections
 uk.ac.manchester.spinnaker.connections.model
-uk.ac.manchester.spinnaker.data_spec
 uk.ac.manchester.spinnaker.front_end
 uk.ac.manchester.spinnaker.front_end.download
 uk.ac.manchester.spinnaker.front_end.download.request
