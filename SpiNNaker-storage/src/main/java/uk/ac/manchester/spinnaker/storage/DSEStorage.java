@@ -31,19 +31,6 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  * @author Donal Fellows
  */
 public interface DSEStorage extends ProxyAwareStorage {
-
-	/**
-	 * See how many DSE loading actions have to be done.
-	 *
-	 * @param loadSystemCores
-	 *            If {@code true}, just count system cores. If {@code false},
-	 *            just count application (non-system) cores.
-	 * @return The count of the cores which match the is loadSystemCores
-	 * @throws StorageException
-	 *             If the database access fails.
-	 */
-	int countCores(boolean loadSystemCores) throws StorageException;
-
 	/**
 	 * Get a list of all ethernets that need to have DSE loading done on them.
 	 *
