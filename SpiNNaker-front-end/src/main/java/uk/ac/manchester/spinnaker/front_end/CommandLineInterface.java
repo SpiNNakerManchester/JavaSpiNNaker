@@ -17,6 +17,7 @@ package uk.ac.manchester.spinnaker.front_end;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
+import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 import static picocli.CommandLine.ExitCode.USAGE;
 import static uk.ac.manchester.spinnaker.alloc.client.SpallocClientFactory.getJobFromProxyInfo;
@@ -66,7 +67,6 @@ import picocli.CommandLine.TypeConversionException;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
 import uk.ac.manchester.spinnaker.connections.LocateConnectedMachineIPAddress;
 import uk.ac.manchester.spinnaker.connections.MachineAware;
-import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.front_end.download.DataReceiver;
 import uk.ac.manchester.spinnaker.front_end.download.RecordingRegionDataGatherer;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
@@ -98,6 +98,9 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
 		mixinStandardHelpOptions = true, //
 		modelTransformer = CommandLineInterface.BuildPropsLoader.class)
 public final class CommandLineInterface {
+
+	private static final Logger log = getLogger(CommandLineInterface.class);
+
 	private CommandLineInterface() {
 	}
 
@@ -155,16 +158,6 @@ public final class CommandLineInterface {
 
 	static CommandSpec getSpec() {
 		return new CommandLine(new CommandLineInterface()).getCommandSpec();
-	}
-
-	// Wrappers because of three configurations varying in one parameter
-	@Command(name = "dse", description = DSE_DESC)
-	private void dseAllCores(@Mixin MachineParam machine,
-			@Mixin DsFileParam dsFile,
-			@Mixin RunFolderParam runFolder)
-			throws Exception {
-		runDSEUploadingViaClassicTransfer(machine.get(), dsFile.get(),
-				runFolder.get(), null);
 	}
 
 	@Command(name = "dse_sys", description = DSE_SYS_DESC)
@@ -239,29 +232,27 @@ public final class CommandLineInterface {
 	 *             If there was a problem in the parallel queue.
 	 * @throws InterruptedException
 	 *             If the wait for everything to complete is interrupted.
-	 * @throws DataSpecificationException
-	 *             If an invalid data specification file is executed.
 	 * @throws URISyntaxException
 	 *             If the proxy URI is provided but not valid.
 	 */
 	public void runDSEUploadingViaClassicTransfer(Machine machine,
 			File dsFile, File runFolder, Boolean filterSystemCores)
 			throws IOException, SpinnmanException, StorageException,
-			ExecutionException, InterruptedException,
-			DataSpecificationException, URISyntaxException {
+			ExecutionException, InterruptedException, URISyntaxException {
 		setLoggerDir(runFolder);
 		var db = getDataSpecDB(dsFile);
 		var job = getJob(db);
 
 		try (var txrx = getTransceiver(machine, job);
 				var dseExec = hostFactory.create(txrx, machine, db)) {
-			if (filterSystemCores == null) {
-				dseExec.loadAllCores();
-			} else if (filterSystemCores) {
-				dseExec.loadApplicationCores();
+			if (filterSystemCores) {
+				dseExec.loadCores(false);
 			} else {
-				dseExec.loadSystemCores();
+				dseExec.loadCores(true);
 			}
+		} catch (Exception ex) {
+			log.error("DSE load failed", ex);
+			throw ex;
 		}
 	}
 
@@ -289,8 +280,6 @@ public final class CommandLineInterface {
 	 *             If there was a problem in the parallel queue.
 	 * @throws InterruptedException
 	 *             If the wait for everything to complete is interrupted.
-	 * @throws DataSpecificationException
-	 *             If an invalid data specification file is executed.
 	 * @throws URISyntaxException
 	 *             If a proxy URI is provided but invalid.
 	 */
@@ -303,8 +292,7 @@ public final class CommandLineInterface {
 			@Parameters(description = REPORT, arity = "0..1", index = "3")
 			Optional<File> reportFolder)
 			throws IOException, SpinnmanException, StorageException,
-			ExecutionException, InterruptedException,
-			DataSpecificationException, URISyntaxException {
+			ExecutionException, InterruptedException, URISyntaxException {
 		setLoggerDir(runFolder.get());
 		var db = getDataSpecDB(dsFile.get());
 		var job = getJob(db);
