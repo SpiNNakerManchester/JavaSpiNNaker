@@ -136,6 +136,12 @@ extends <a href="DatabaseEngine.html" title="class in uk.ac.manchester.spinnaker
 <div class="block">Create an engine interface for a particular database.</div>
 </td>
 </tr>
+<tr class="altColor">
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.net.URI)">BufferManagerDatabaseEngine</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URI.html?is-external=true" title="class or interface in java.net" class="externalLink">URI</a>&nbsp;dbUri)</code></th>
+<td class="colLast">
+<div class="block">Create an engine interface for a particular database.</div>
+</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -211,6 +217,19 @@ extends <a href="DatabaseEngine.html" title="class in uk.ac.manchester.spinnaker
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>dbFile</code> - The file containing the database.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="&lt;init&gt;(java.net.URI)">BufferManagerDatabaseEngine</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">BufferManagerDatabaseEngine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URI.html?is-external=true" title="class or interface in java.net" class="externalLink">URI</a>&nbsp;dbUri)</span></div>
+<div class="block">Create an engine interface for a particular database.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>dbUri</code> - The <em>absolute</em> URI to the file containing the database.
+            May contain query parameters
+            <a href="https://www.sqlite.org/uri.html">as documented</a>.</dd>
 </dl>
 </section>
 </li>

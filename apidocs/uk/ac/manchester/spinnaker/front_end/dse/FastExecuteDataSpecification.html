@@ -318,7 +318,10 @@ int&nbsp;size,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Execute all application data specifications that a particular connection
  knows about, storing back in the database the information collected about
- those executions. Data is transferred using the Fast Data In protocol.</div>
+ those executions. Data is transferred using the Fast Data In protocol.
+ <p>
+ Cannot load data for system cores; those are used by the implementation
+ of this protocol.</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If the database can't be talked to.</dd>

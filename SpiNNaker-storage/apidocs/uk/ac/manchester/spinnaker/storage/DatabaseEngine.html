@@ -108,7 +108,12 @@ loadScripts(document, 'script');</script>
 <pre>public abstract class <span class="typeNameLabel">DatabaseEngine&lt;APIType extends <a href="DatabaseAPI.html" title="interface in uk.ac.manchester.spinnaker.storage">DatabaseAPI</a>&gt;</span>
 extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>
 implements <a href="ConnectionProvider.html" title="interface in uk.ac.manchester.spinnaker.storage">ConnectionProvider</a>&lt;APIType&gt;</pre>
-<div class="block">The database engine interface. Based on SQLite.</div>
+<div class="block">The database engine interface. Based on SQLite.
+ <p>
+ Note that these database interfaces have their synchronisation mode set to
+ <code>OFF</code>; they are <em>not</em> resistant to system crashes in any way,
+ but they are faster when dealing with write-heavy workloads (particularly
+ important for the <a href="BufferManagerDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage"><code>BufferManagerDatabaseEngine</code></a>).</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
 <dd>Donal Fellows</dd>
@@ -127,19 +132,29 @@ implements <a href="ConnectionProvider.html" title="interface in uk.ac.mancheste
 <caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
 <thead>
 <tr>
-<th class="colFirst" scope="col">Constructor</th>
+<th class="colFirst" scope="col">Modifier</th>
+<th class="colSecond" scope="col">Constructor</th>
 <th class="colLast" scope="col">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="altColor">
+<td class="colFirst"><code>protected </code></td>
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E()">DatabaseEngine</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Create an engine interface for an in-memory database.</div>
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>protected </code></td>
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.io.File)">DatabaseEngine</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;dbFile)</code></th>
+<td class="colLast">
+<div class="block">Create an engine interface for a particular database.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected </code></td>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.net.URI)">DatabaseEngine</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URI.html?is-external=true" title="class or interface in java.net" class="externalLink">URI</a>&nbsp;dbUri)</code></th>
 <td class="colLast">
 <div class="block">Create an engine interface for a particular database.</div>
 </td>
@@ -209,18 +224,33 @@ implements <a href="ConnectionProvider.html" title="interface in uk.ac.mancheste
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;()">DatabaseEngine</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">DatabaseEngine</span>()</div>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="memberName">DatabaseEngine</span>()</div>
 <div class="block">Create an engine interface for an in-memory database.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(java.io.File)">DatabaseEngine</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">DatabaseEngine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;dbFile)</span></div>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="memberName">DatabaseEngine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;dbFile)</span></div>
 <div class="block">Create an engine interface for a particular database.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>dbFile</code> - The file containing the database.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="&lt;init&gt;(java.net.URI)">DatabaseEngine</a></h3>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="memberName">DatabaseEngine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URI.html?is-external=true" title="class or interface in java.net" class="externalLink">URI</a>&nbsp;dbUri)</span></div>
+<div class="block">Create an engine interface for a particular database.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>dbUri</code> - The <em>absolute</em> URI to the file containing the database.
+            May contain query parameters
+            <a href="https://www.sqlite.org/uri.html">as documented</a>.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If the URI is of an unsupported type.</dd>
 </dl>
 </section>
 </li>
