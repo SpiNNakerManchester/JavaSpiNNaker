@@ -15,3 +15,4 @@ SpiNNaker-py2json/src/main/python/enum.py linguist-vendored
 *.png binary
 *.jpg binary
 */package-list linguist-generated
+*.sqlite3 binary
