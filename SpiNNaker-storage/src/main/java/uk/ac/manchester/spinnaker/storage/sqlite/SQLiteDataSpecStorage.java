@@ -27,7 +27,6 @@ import java.util.List;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.COUNT_CORES_TO_LOAD;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_APP_ID;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION_POINTER_AND_CONTEXT;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION_SIZES;
@@ -49,7 +48,6 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  */
 public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 		implements DSEStorage {
-
 	/**
 	 * Create an instance.
 	 *
@@ -59,26 +57,6 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 	 */
 	public SQLiteDataSpecStorage(DSEDatabaseEngine connectionProvider) {
 		super(connectionProvider);
-	}
-
-	@Override
-	public int countCores(boolean loadSystemCores) throws StorageException {
-		return callR(conn -> countCores(conn, loadSystemCores),
-				"Counting cores");
-	}
-
-	private static int countCores(Connection conn, boolean loadSystemCores)
-			throws SQLException {
-		try (var s = conn.prepareStatement(COUNT_CORES_TO_LOAD)) {
-			// is_system
-			setArguments(s, loadSystemCores);
-			try (var rs = s.executeQuery()) {
-				while (rs.next()) {
-					return rs.getInt("num_cores");
-				}
-			}
-		}
-		return 0; // If we get here, nothing to count
 	}
 
 	@Override

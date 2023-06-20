@@ -172,17 +172,6 @@ abstract class SQL {
 					+ " FROM core_view";
 
 	/**
-	 * Count of cores with data to load. This picks either system or application
-	 * cores.
-	 */
-	@Parameter("is_system")
-	@ResultColumn("num_cores")
-	static final String COUNT_CORES_TO_LOAD =
-			"SELECT COUNT(*) AS num_cores "
-					+ "FROM core_view "
-					+ "WHERE is_system = ? ";
-
-	/**
 	 * List the cores of a board (by its Ethernet-enabled chip location) with
 	 * data to load. This picks either system or application cores.
 	 */
