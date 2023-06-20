@@ -32,7 +32,9 @@ import org.opentest4j.AssertionFailedError;
 
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
+//import uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
+import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 class TestFrontEnd {
@@ -120,7 +122,7 @@ class TestFrontEnd {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"dse", "dse_sys", "dse_app"})
+	@ValueSource(strings = {"dse_sys", "dse_app"})
 	@SuppressWarnings("MustBeClosed")
 	void testSimpleDSE(String cmd) throws Exception {
 		var machineFile = getClass().getResource("/machine.json").getFile();
@@ -134,18 +136,12 @@ class TestFrontEnd {
 			CommandLineInterface.hostFactory =
 					(t, m, db) -> new HostExecuteDataSpecification(t, m, null) {
 						@Override
-						public void loadSystemCores() {
-							called.setValue("dse_sys");
-						}
-
-						@Override
-						public void loadApplicationCores() {
-							called.setValue("dse_app");
-						}
-
-						@Override
-						public void loadAllCores() {
-							called.setValue("dse");
+						public void loadCores(boolean system) {
+                            if (system) {
+                                called.setValue("dse_sys");
+                            } else {
+                                called.setValue("dse_app");
+                            }
 						}
 					};
 

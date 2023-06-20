@@ -92,8 +92,6 @@ public final class LogControl {
 		/** Low-level logging domain. */
 		String UDP_CONN = BASE + "connections.UDPConnection";
 
-		/** Low-level logging domain. */
-		String EXEC_CORE = BASE + "data_spec.Executor";
 	}
 
 	/** The names of various attributes of logger components. */
@@ -175,7 +173,6 @@ public final class LogControl {
 				.add(parallelLog(Classes.FAST_EXEC))
 				.add(parallelLog(Classes.BASE_EXEC))
 				.add(basicLog(Classes.UDP_CONN, Props.UDP_LOGGING))
-				.add(basicLog(Classes.EXEC_CORE, Props.EXECUTOR_LOGGING))
 				.add(builder
 						.newAppender(Loggers.CON, ConsoleAppender.PLUGIN_NAME)
 						.addAttribute(Attrs.TARGET, SYSTEM_ERR)
