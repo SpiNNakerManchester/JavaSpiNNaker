@@ -15,17 +15,12 @@
  */
 package uk.ac.manchester.spinnaker.front_end.dse;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 
-import org.slf4j.Logger;
-
 import com.google.errorprone.annotations.MustBeClosed;
 
-import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
@@ -42,12 +37,6 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  * @author Donal Fellows
  */
 public class HostExecuteDataSpecification extends ExecuteDataSpecification {
-	private static final String LOADING_MSG =
-			"loading data specifications onto SpiNNaker";
-
-	private static final Logger log =
-			getLogger(HostExecuteDataSpecification.class);
-
 	/**
 	 * Create a high-level DSE interface.
 	 *
@@ -105,20 +94,16 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 			InterruptedException {
 		var storage = db.getStorageInterface();
 		var ethernets = storage.listEthernetsToLoad();
-		int opsToRun = storage.countCores(system);
-		try (var bar = new Progress(opsToRun, LOADING_MSG)) {
-			processTasksInParallel(ethernets, board -> {
-				return () -> loadBoard(board, storage, bar, system);
-			});
-		}
+		processTasksInParallel(ethernets, board -> {
+			return () -> loadBoard(board, storage, system);
+		});
 	}
 
-	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar,
-			boolean system)
+	private void loadBoard(Ethernet board, DSEStorage storage, boolean system)
 			throws IOException, ProcessException, StorageException,
 			InterruptedException {
 		try (var c = new BoardLocal(board.location)) {
-			var worker = new HostBoardWorker(txrx, board, storage, bar);
+			var worker = new HostBoardWorker(txrx, board, storage);
 			for (var xyp : storage.listCoresToLoad(board, system)) {
 				worker.mallocCore(xyp);
 			}
@@ -130,8 +115,8 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 
 	private class HostBoardWorker extends BoardWorker {
 		HostBoardWorker(TransceiverInterface txrx, Ethernet board,
-				DSEStorage storage, Progress bar) throws StorageException {
-			super(txrx, board, storage, bar);
+				DSEStorage storage) throws StorageException {
+			super(txrx, board, storage);
 		}
 
 		@Override

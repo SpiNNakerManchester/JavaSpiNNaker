@@ -24,7 +24,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
 import static uk.ac.manchester.spinnaker.front_end.DebuggingUtils.compareBuffers;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInProtocol.computeNumPackets;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
@@ -51,12 +50,7 @@ import org.slf4j.Logger;
 import com.google.errorprone.annotations.CheckReturnValue;
 import com.google.errorprone.annotations.MustBeClosed;
 
-import difflib.ChangeDelta;
-import difflib.Chunk;
-import difflib.DeleteDelta;
-import difflib.InsertDelta;
 import uk.ac.manchester.spinnaker.front_end.NoDropPacketContext;
-import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Monitor;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -85,9 +79,6 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 
 	private static final String SPINNAKER_COMPARE_UPLOAD =
 			getProperty("spinnaker.compare.upload");
-
-	private static final String LOADING_MSG =
-			"loading data specifications onto SpiNNaker";
 
 	private static final String IN_REPORT_NAME =
 			"speeds_gained_in_speed_up_process.tsv";
@@ -216,15 +207,12 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 			InterruptedException {
 		var storage = db.getStorageInterface();
 		var ethernets = storage.listEthernetsToLoad();
-		int opsToRun = storage.countCores(false);
-		try (var bar = new Progress(opsToRun, LOADING_MSG)) {
-			processTasksInParallel(ethernets, board -> {
-				return () -> loadBoard(board, storage, bar);
-			});
-		}
+		processTasksInParallel(ethernets, board -> {
+			return () -> loadBoard(board, storage);
+		});
 	}
 
-	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar)
+	private void loadBoard(Ethernet board, DSEStorage storage)
 			throws IOException, ProcessException, StorageException,
 			InterruptedException {
 		var cores = storage.listCoresToLoad(board, false);
@@ -235,7 +223,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		log.info("loading data onto {} cores on board", cores.size());
 		var gather = gathererForChip.get(board.location);
 		try (var worker =  new FastBoardWorker(
-				txrx, board, storage, gather, bar)) {
+				txrx, board, storage, gather)) {
 			for (var xyp : cores) {
 				worker.mallocCore(xyp);
 			}
@@ -332,10 +320,10 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		@MustBeClosed
 		@SuppressWarnings("MustBeClosed")
 		FastBoardWorker(TransceiverInterface txrx, Ethernet board,
-				DSEStorage storage, Gather gather, Progress bar)
+				DSEStorage storage, Gather gather)
 				throws IOException, ProcessException, InterruptedException,
 				StorageException {
-			super(txrx, board, storage, bar);
+			super(txrx, board, storage);
 			this.logContext = new BoardLocal(board.location);
 			this.connection = new ThrottledConnection(txrx, board,
 					gather.getIptag());
@@ -438,7 +426,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 			if (SPINNAKER_COMPARE_UPLOAD != null) {
 				var readBack = txrx.readMemory(
 						core, baseAddress, content.remaining());
-				compareBuffers(content, readBack);
+				compareBuffers(content, readBack, log);
 			}
 			return written;
 		}

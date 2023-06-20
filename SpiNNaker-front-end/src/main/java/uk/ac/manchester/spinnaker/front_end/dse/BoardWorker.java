@@ -15,20 +15,16 @@
  */
 package uk.ac.manchester.spinnaker.front_end.dse;
 
-import static org.slf4j.LoggerFactory.getLogger;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.slf4j.Logger;
-
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import java.util.LinkedHashMap;
 
-import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
@@ -40,8 +36,6 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 abstract class BoardWorker {
-	private static final Logger log = getLogger(BoardWorker.class);
-
 	/** The transceiver for talking to the SpiNNaker machine. */
 	protected final TransceiverInterface txrx;
 
@@ -51,17 +45,8 @@ abstract class BoardWorker {
 	/** The database holding the DS data.*/
 	private final DSEStorage storage;
 
-	/* The bar to print out if possible.*/
-	private final Progress bar;
-
 	/** The system wide app id.*/
 	private final int appId;
-
-	/**
-	 * Data spec magic number. This marks the start of a block of memory in
-	 * SpiNNaker's SDRAM that has been allocated by the Data Specification.
-	 */
-	private static final int DSG_MAGIC_NUM = 0x5B7CA17E;
 
 	/** Application data magic number. */
 	private static final int APPDATA_MAGIC_NUM = 0xAD130AD6;
@@ -111,10 +96,9 @@ abstract class BoardWorker {
 	 *             If the database access fails.
 	 */
 	protected BoardWorker(TransceiverInterface txrx, Ethernet board,
-			DSEStorage storage, Progress bar) throws StorageException {
+			DSEStorage storage) throws StorageException {
 		this.board = board;
 		this.storage = storage;
-		this.bar = bar;
 		this.appId = storage.getAppId();
 		this.txrx = txrx;
 	}
@@ -149,7 +133,7 @@ abstract class BoardWorker {
 		txrx.writeUser0(xyp, start);
 		storage.setStartAddress(xyp, start);
 
-		int nextPointer = start.address + APP_PTR_TABLE_BYTE_SIZE;
+		int nextPointer = start.address() + APP_PTR_TABLE_BYTE_SIZE;
 		for (var regionNum : regionSizes.keySet()) {
 			var size = regionSizes.get(regionNum);
 			storage.setRegionPointer(xyp, regionNum, nextPointer);
@@ -175,7 +159,6 @@ abstract class BoardWorker {
 	 */
 	protected void loadCore(CoreLocation xyp) throws IOException,
 			ProcessException, StorageException, InterruptedException {
-		int totalWritten = APP_PTR_TABLE_BYTE_SIZE;
 		var pointerTable =
 				allocate(APP_PTR_TABLE_BYTE_SIZE).order(LITTLE_ENDIAN);
 		//header
@@ -186,7 +169,7 @@ abstract class BoardWorker {
 		for (int region = 0; region < MAX_MEM_REGIONS; region++) {
 			if (regionInfos.containsKey(region)) {
 				var regionInfo = regionInfos.get(region);
-				pointerTable.putInt(regionInfo.pointer.address);
+				pointerTable.putInt(regionInfo.pointer.address());
 				if (regionInfo.content != null) {
 					var written = writeRegion(
 							xyp, regionInfo.content, regionInfo.pointer);
