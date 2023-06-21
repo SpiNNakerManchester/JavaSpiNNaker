@@ -28,6 +28,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInProtocol.computeNumPackets;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
 import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGABYTE;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
 
 import java.io.BufferedWriter;
@@ -56,7 +57,6 @@ import difflib.Chunk;
 import difflib.DeleteDelta;
 import difflib.InsertDelta;
 import uk.ac.manchester.spinnaker.front_end.NoDropPacketContext;
-import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Monitor;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -87,14 +87,8 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	private static final String SPINNAKER_COMPARE_UPLOAD =
 			getProperty("spinnaker.compare.upload");
 
-	private static final String LOADING_MSG =
-			"loading data specifications onto SpiNNaker";
-
 	private static final String IN_REPORT_NAME =
 			"speeds_gained_in_speed_up_process.tsv";
-
-	/** One kilo-binary unit multiplier. */
-	private static final int ONE_KI = 1024;
 
 	private static final int TIMEOUT_RETRY_LIMIT = 100;
 
@@ -199,6 +193,9 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 * Execute all application data specifications that a particular connection
 	 * knows about, storing back in the database the information collected about
 	 * those executions. Data is transferred using the Fast Data In protocol.
+	 * <p>
+	 * Cannot load data for system cores; those are used by the implementation
+	 * of this protocol.
 	 *
 	 * @throws StorageException
 	 *             If the database can't be talked to.
@@ -216,16 +213,12 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 			throws StorageException, IOException, ProcessException,
 			InterruptedException {
 		var storage = db.getStorageInterface();
-		var ethernets = storage.listEthernetsToLoad();
-		int opsToRun = storage.countCores(false);
-		try (var bar = new Progress(opsToRun, LOADING_MSG)) {
-			processTasksInParallel(ethernets, board -> {
-				return () -> loadBoard(board, storage, bar);
-			});
-		}
+		processTasksInParallel(storage.listEthernetsToLoad(), board -> {
+			return () -> loadBoard(board, storage);
+		});
 	}
 
-	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar)
+	private void loadBoard(Ethernet board, DSEStorage storage)
 			throws IOException, ProcessException, StorageException,
 			InterruptedException {
 		var cores = storage.listCoresToLoad(board, false);
@@ -236,7 +229,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		log.info("loading data onto {} cores on board", cores.size());
 		var gather = gathererForChip.get(board.location);
 		try (var worker =  new FastBoardWorker(
-				txrx, board, storage, gather, bar)) {
+				txrx, board, storage, gather)) {
 			for (var xyp : cores) {
 				worker.mallocCore(xyp);
 			}
@@ -300,7 +293,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		}
 
 		float timeTaken = timeDiff / (float) NSEC_PER_SEC;
-		float megabits = (size * (long) NBBY) / (float) (ONE_KI * ONE_KI);
+		float megabits = (size * (long) NBBY) / (float) MEGABYTE;
 		String mbs;
 		if (timeDiff == 0) {
 			mbs = "unknown, below threshold";
@@ -377,10 +370,10 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		@MustBeClosed
 		@SuppressWarnings("MustBeClosed")
 		FastBoardWorker(TransceiverInterface txrx, Ethernet board,
-				DSEStorage storage, Gather gather, Progress bar)
+				DSEStorage storage, Gather gather)
 				throws IOException, ProcessException, InterruptedException,
 				StorageException {
-			super(txrx, board, storage, bar);
+			super(txrx, board, storage);
 			this.logContext = new BoardLocal(board.location);
 			this.connection = new ThrottledConnection(txrx, board,
 					gather.getIptag());

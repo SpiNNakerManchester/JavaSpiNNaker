@@ -15,7 +15,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.client;
 
-import static java.lang.Thread.sleep;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -58,7 +57,6 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient.SpallocException;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.utils.Daemon;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -227,8 +225,6 @@ final class ClientSession implements Session {
 
 		private Exception failure;
 
-		private volatile boolean closed;
-
 		/**
 		 * @param uri
 		 *            The address of the websocket.
@@ -237,35 +233,6 @@ final class ClientSession implements Session {
 			super(uri);
 			replyHandlers = new HashMap<>();
 			channels = new HashMap<>();
-		}
-
-		/**
-		 * Arrange for a ping message to be sent regularly while the websocket
-		 * is open. <em>The websocket must be open or this method will do
-		 * nothing!</em>
-		 *
-		 * @param pingDelay
-		 *            How long between pings, in milliseconds.
-		 */
-		void scheduleRegularPing(long pingDelay) {
-			if (isOpen()) {
-				new Daemon(() -> doPing(pingDelay), "WS ping daemon").start();
-			}
-		}
-
-		private void doPing(long pingDelay) {
-			while (isOpen()) {
-				try {
-					sleep(pingDelay);
-				} catch (InterruptedException e) {
-					log.warn("ping interrupted");
-					return;
-				}
-				if (closed) {
-					return;
-				}
-				sendPing();
-			}
 		}
 
 		@Override
@@ -330,6 +297,12 @@ final class ClientSession implements Session {
 			log.warn("Unexpected text message on websocket: {}", message);
 		}
 
+		private IOException manufactureException(ByteBuffer message) {
+			var bytes = new byte[message.remaining()];
+			message.get(bytes);
+			return new IOException(new String(bytes, UTF_8));
+		}
+
 		@Override
 		public void onMessage(ByteBuffer message) {
 			message.order(LITTLE_ENDIAN);
@@ -344,6 +317,11 @@ final class ClientSession implements Session {
 			case MSG:
 				requireNonNull(channels.get(message.getInt()),
 						"unrecognised channel").receive(message);
+				break;
+			case ERR:
+				requireNonNull(replyHandlers.remove(message.getInt()),
+						"uncorrelated response")
+						.completeExceptionally(manufactureException(message));
 				break;
 			// case MSG_TO: // Never sent
 			default:
@@ -392,13 +370,22 @@ final class ClientSession implements Session {
 		@Override
 		public void onClose(int code, String reason, boolean remote) {
 			log.info("websocket connection closed: {}", reason);
-			closed = true;
 		}
 
 		@Override
 		public void onError(Exception ex) {
 			log.error("Failure on websocket", ex);
 			failure = ex;
+		}
+
+		private void rethrowFailure() throws IOException, InterruptedException {
+			try {
+				throw failure;
+			} catch (IOException | InterruptedException | RuntimeException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new IOException("unexpected exception", e);
+			}
 		}
 
 		/** Base class for channels routed via the proxy. */
@@ -576,8 +563,8 @@ final class ClientSession implements Session {
 		}
 	}
 
-	/** Time between pings of the websocket. 30s in ms. */
-	private static final int PING_DELAY = 30000;
+	/** Time between pings of the websocket. 30s. */
+	private static final int PING_DELAY = 30;
 
 	@Override
 	public ProxyProtocolClient websocket(URI url)
@@ -591,21 +578,14 @@ final class ClientSession implements Session {
 			log.debug("Marking websocket with token {}={}", csrfHeader, csrf);
 			wsc.addHeader(csrfHeader, csrf);
 		}
-		try {
-			if (!wsc.connectBlocking()) {
-				if (nonNull(wsc.failure)) {
-					throw wsc.failure;
-				}
-				// Don't know what went wrong! Log might say
-				throw new IOException("undiagnosed connection failure");
+		if (!wsc.connectBlocking()) {
+			if (nonNull(wsc.failure)) {
+				wsc.rethrowFailure();
 			}
-		} catch (IOException | InterruptedException | RuntimeException
-				| Error e) {
-			throw e;
-		} catch (Exception e) {
-			throw new IOException("unexpected exception", e);
+			// Don't know what went wrong! Log might say
+			throw new IOException("undiagnosed connection failure");
 		}
-		wsc.scheduleRegularPing(PING_DELAY);
+		wsc.setConnectionLostTimeout(PING_DELAY);
 		return wsc;
 	}
 

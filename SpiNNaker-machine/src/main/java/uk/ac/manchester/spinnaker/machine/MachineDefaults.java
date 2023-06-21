@@ -19,6 +19,7 @@ import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
 import static uk.ac.manchester.spinnaker.machine.Direction.NORTHEAST;
 import static uk.ac.manchester.spinnaker.machine.Direction.SOUTHWEST;
 import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGABYTE;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGAHERTZ_PER_HERTZ;
 
 import java.util.EnumSet;
@@ -35,7 +36,7 @@ public final class MachineDefaults {
 	}
 
 	/** Default SDRAM per chip after SCAMP has reserved space for itself. */
-	public static final int SDRAM_PER_CHIP = 117 * 1024 * 1024;
+	public static final int SDRAM_PER_CHIP = 117 * MEGABYTE;
 
 	/** Clock speed in MHz of a standard Processor. */
 	public static final int PROCESSOR_CLOCK_SPEED = 200 * MEGAHERTZ_PER_HERTZ;

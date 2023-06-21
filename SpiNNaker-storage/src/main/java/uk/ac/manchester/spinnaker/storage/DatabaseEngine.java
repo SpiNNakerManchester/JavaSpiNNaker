@@ -20,8 +20,8 @@ import static org.sqlite.SQLiteConfig.SynchronousMode.OFF;
 import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
 
 import java.io.File;
+import java.net.URI;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import org.slf4j.Logger;
@@ -31,6 +31,11 @@ import com.google.errorprone.annotations.MustBeClosed;
 
 /**
  * The database engine interface. Based on SQLite.
+ * <p>
+ * Note that these database interfaces have their synchronisation mode set to
+ * {@code OFF}; they are <em>not</em> resistant to system crashes in any way,
+ * but they are faster when dealing with write-heavy workloads (particularly
+ * important for the {@link BufferManagerDatabaseEngine}).
  *
  * @author Donal Fellows
  * @param <APIType>
@@ -49,7 +54,7 @@ public abstract class DatabaseEngine<APIType extends DatabaseAPI>
 	/**
 	 * Create an engine interface for an in-memory database.
 	 */
-	public DatabaseEngine() {
+	protected DatabaseEngine() {
 		this.dbConnectionUrl = "jdbc:sqlite::memory:";
 		log.info("will manage database in memory");
 	}
@@ -60,9 +65,31 @@ public abstract class DatabaseEngine<APIType extends DatabaseAPI>
 	 * @param dbFile
 	 *            The file containing the database.
 	 */
-	public DatabaseEngine(File dbFile) {
+	protected DatabaseEngine(File dbFile) {
 		this.dbConnectionUrl = "jdbc:sqlite:" + dbFile.getAbsolutePath();
 		log.info("will manage database at {}", dbFile.getAbsolutePath());
+	}
+
+	/**
+	 * Create an engine interface for a particular database.
+	 *
+	 * @param dbUri
+	 *            The <em>absolute</em> URI to the file containing the database.
+	 *            May contain query parameters
+	 *            <a href="https://www.sqlite.org/uri.html">as documented</a>.
+	 * @throws IllegalArgumentException
+	 *             If the URI is of an unsupported type.
+	 */
+	protected DatabaseEngine(URI dbUri) {
+		if (!dbUri.getScheme().equals("file")) {
+			throw new IllegalArgumentException(
+					"only file: URIs are supported, not " + dbUri);
+		} else if (!dbUri.getPath().startsWith("/")) {
+			throw new IllegalArgumentException(
+					"file: URIs must be absolute, not " + dbUri);
+		}
+		this.dbConnectionUrl = "jdbc:sqlite:" + dbUri.toASCIIString();
+		log.info("will manage database at {}", dbUri);
 	}
 
 	@Override
@@ -76,8 +103,7 @@ public abstract class DatabaseEngine<APIType extends DatabaseAPI>
 		config.setSynchronous(OFF);
 		config.setBusyTimeout(BUSY_TIMEOUT);
 		config.setTransactionMode(IMMEDIATE);
-		var conn = DriverManager.getConnection(dbConnectionUrl,
-				config.toProperties());
+		var conn = config.createConnection(dbConnectionUrl);
 		try (var statement = conn.createStatement()) {
 			statement.executeUpdate(getDDL());
 		}
