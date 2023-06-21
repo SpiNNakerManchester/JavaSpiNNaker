@@ -202,7 +202,7 @@ public abstract sealed class BMPRequest<T extends BMPRequest.BMPResponse>
 	 */
 	@UsedInJavadocOnly(CheckOKResponse.class)
 	public static sealed class BMPResponse extends SCPResponse
-			permits PayloadedResponse<?> {
+			permits PayloadedResponse {
 		/**
 		 * Make a response object.
 		 *
