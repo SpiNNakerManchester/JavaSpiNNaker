@@ -16,7 +16,6 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Integer.parseInt;
-import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -38,6 +37,8 @@ import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_X_OF_ONE_B
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_Y_OF_ONE_BOARD;
 import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn5Geometry;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.readOnly;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.OR;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.toEnumSet;
 
@@ -159,8 +160,7 @@ public final class Blacklist implements Serializable {
 	}
 
 	private ByteBuffer encodeBlacklist() {
-		var buf = allocate((SPINN5_CHIPS_PER_BOARD + 1) * WORD_SIZE)
-				.order(LITTLE_ENDIAN);
+		var buf = alloc((SPINN5_CHIPS_PER_BOARD + 1) * WORD_SIZE);
 		buf.putInt(0); // Size; filled in later
 		int count = 0;
 		for (int x = 0; x < SIZE_X_OF_ONE_BOARD; x++) {
@@ -487,7 +487,7 @@ public final class Blacklist implements Serializable {
 
 	/** @return The raw blacklist data in little-endian form. Read only. */
 	public ByteBuffer getRawData() {
-		return rawData.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		return readOnly(rawData);
 	}
 
 	@Override

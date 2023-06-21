@@ -16,12 +16,11 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.min;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_IOBUF_ADDRESS_OFFSET;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -262,7 +261,7 @@ final class RuntimeControlProcess extends TxrxProcess {
 	private int saveIOBufHead(NextRead read, ByteBuffer bytes,
 			int bytesToRead) {
 		// Create a buffer for the data
-		var buffer = allocate(bytesToRead).order(LITTLE_ENDIAN);
+		var buffer = alloc(bytesToRead);
 		// Put the data from this packet into the buffer
 		int packetBytes = min(bytes.remaining(), bytesToRead);
 		if (packetBytes > 0) {

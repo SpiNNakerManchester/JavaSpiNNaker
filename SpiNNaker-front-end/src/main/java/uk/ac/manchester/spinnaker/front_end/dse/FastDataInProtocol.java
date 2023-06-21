@@ -18,8 +18,6 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 import static java.lang.Integer.toUnsignedLong;
 import static java.lang.Math.min;
 import static java.lang.String.format;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_DATA_TO_LOCATION;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_SEQ_DATA;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_TELL_DATA_IN;
@@ -27,6 +25,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.GATHERER_DATA_SPEED_UP;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.nio.ByteBuffer;
@@ -121,7 +120,7 @@ class FastDataInProtocol {
 	 */
 	SDPMessage dataToLocation(MemoryLocation baseAddress, int numPackets,
 			int transactionId) {
-		var payload = allocate(BYTES_FOR_LOCATION_PACKET).order(LITTLE_ENDIAN);
+		var payload = alloc(BYTES_FOR_LOCATION_PACKET);
 		payload.putInt(SEND_DATA_TO_LOCATION.value);
 		payload.putInt(transactionId);
 		payload.putInt(baseAddress.address());
@@ -145,7 +144,7 @@ class FastDataInProtocol {
 	 *             If the sequence number is nonsense.
 	 */
 	SDPMessage seqData(ByteBuffer data, int seqNum, int transactionId) {
-		var payload = allocate(BYTES_PER_FULL_PACKET).order(LITTLE_ENDIAN);
+		var payload = alloc(BYTES_PER_FULL_PACKET);
 		int position = calculatePositionFromSequenceNumber(seqNum);
 		if (position >= data.limit()) {
 			throw new RuntimeException(format(
@@ -181,7 +180,7 @@ class FastDataInProtocol {
 	 * @return The message indicating the end of the data.
 	 */
 	SDPMessage tellDataIn(int transactionId) {
-		var payload = allocate(BYTES_FOR_TELL_PACKET).order(LITTLE_ENDIAN);
+		var payload = alloc(BYTES_FOR_TELL_PACKET);
 		payload.putInt(SEND_TELL_DATA_IN.value);
 		payload.putInt(transactionId);
 		payload.flip();

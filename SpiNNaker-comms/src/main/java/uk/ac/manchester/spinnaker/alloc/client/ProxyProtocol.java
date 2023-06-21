@@ -15,7 +15,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.client;
 
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
 
 import java.nio.ByteBuffer;
 
@@ -51,7 +51,7 @@ enum ProxyProtocol {
 	 *         first word.
 	 */
 	ByteBuffer allocate() {
-		var b = ByteBuffer.allocate(size).order(LITTLE_ENDIAN);
+		var b = alloc(size);
 		b.putInt(ordinal());
 		return b;
 	}

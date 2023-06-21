@@ -19,11 +19,11 @@ import static java.lang.Integer.toUnsignedLong;
 import static java.lang.Math.floorDiv;
 import static java.lang.Short.toUnsignedInt;
 import static java.lang.String.format;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.emptyIterator;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOPrefix.LOWER_HALF_WORD;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.readOnly;
 
 import java.nio.ByteBuffer;
 import java.util.Iterator;
@@ -65,7 +65,7 @@ public final class EIEIODataMessage
 	EIEIODataMessage(ByteBuffer data) {
 		this.header = new Header(data);
 		this.elements = null;
-		this.data = data.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		this.data = readOnly(data);
 	}
 
 	/**
@@ -168,7 +168,7 @@ public final class EIEIODataMessage
 
 	/** @return The raw data of this message. */
 	public ByteBuffer getData() {
-		return data.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		return readOnly(data);
 	}
 
 	/**
@@ -204,7 +204,7 @@ public final class EIEIODataMessage
 			return emptyIterator();
 		}
 
-		final var d = data.duplicate().order(LITTLE_ENDIAN);
+		final var d = readOnly(data);
 		return new Iterator<AbstractDataElement>() {
 			private int elementsRead = 0;
 
@@ -251,7 +251,7 @@ public final class EIEIODataMessage
 	}
 
 	/** EIEIO header for data packets. */
-	public static class Header implements EIEIOHeader {
+	public static final class Header implements EIEIOHeader {
 		/** The type of packet (size of various fields). */
 		public final EIEIOType eieioType;
 

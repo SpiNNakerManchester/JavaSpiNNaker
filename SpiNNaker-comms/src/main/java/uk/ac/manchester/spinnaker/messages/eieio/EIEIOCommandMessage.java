@@ -27,8 +27,11 @@ import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
  * @author Sergio Davies
  * @author Donal Fellows
  */
-public class EIEIOCommandMessage
-		implements EIEIOMessage<EIEIOCommandMessage.Header> {
+public sealed class EIEIOCommandMessage
+		implements EIEIOMessage<EIEIOCommandMessage.Header>
+		permits EventStopRequest, HostDataRead, HostDataReadAck,
+		HostSendSequencedData, PaddingRequest, SpinnakerRequestBuffers,
+		SpinnakerRequestReadData, StartRequests, StopRequests {
 	// Must be power of 2 (minus 1)
 	private static final int MAX_COMMAND = 0x3FFF;
 
@@ -75,7 +78,7 @@ public class EIEIOCommandMessage
 	}
 
 	/** EIEIO header for command packets. */
-	public static class Header implements EIEIOHeader {
+	public static final class Header implements EIEIOHeader {
 		/** The command ID in this header. */
 		public final EIEIOCommand command;
 

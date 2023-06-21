@@ -21,7 +21,6 @@ import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.BIG_ENDIAN;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.stream.IntStream.range;
 import static java.util.stream.Stream.concat;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
@@ -29,6 +28,7 @@ import static uk.ac.manchester.spinnaker.messages.boot.SystemVariableBootValues.
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.boot_signature;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.is_root_chip;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.unix_timestamp;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.KILOBYTE;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
@@ -93,7 +93,7 @@ public class BootMessages {
 	private void injectBootVariableBlock(
 			SystemVariableBootValues bootVariables) {
 		// NB: Endian shenanigans!
-		var buffer = allocate(BOOT_VARIABLE_SIZE).order(LITTLE_ENDIAN);
+		var buffer = alloc(BOOT_VARIABLE_SIZE);
 		bootVariables.addToBuffer(buffer);
 		buffer.position(0);
 		for (int i = 0; i < BOOT_STRUCT_REPLACE_LENGTH / WORD_SIZE; i++) {

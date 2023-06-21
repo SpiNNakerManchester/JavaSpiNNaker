@@ -15,13 +15,13 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
-import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.unmodifiableMap;
 import static org.apache.commons.io.IOUtils.readFully;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGABYTE;
 
 import java.io.IOException;
@@ -119,7 +119,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 	 */
 	private static ByteBuffer syntheticVersionData(short versionCode) {
 		byte zero = 0;
-		var b = allocate(VERSION_INFO_SIZE).order(LITTLE_ENDIAN);
+		var b = alloc(VERSION_INFO_SIZE);
 		b.put(zero);
 		b.put(zero);
 		b.put(zero);
@@ -184,7 +184,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 	private static final int MEM_SIZE = 8 * MEGABYTE;
 
 	private static ByteBuffer allocateMemory() {
-		var buf = allocate(MEM_SIZE).order(LITTLE_ENDIAN);
+		var buf = alloc(MEM_SIZE);
 		buf.position(0).limit(MEM_SIZE);
 		return buf;
 	}

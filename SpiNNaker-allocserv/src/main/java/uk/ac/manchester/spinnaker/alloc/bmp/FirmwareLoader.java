@@ -35,6 +35,8 @@ import static uk.ac.manchester.spinnaker.messages.model.FPGA.FPGA_SW_W;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.LEDO;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.SCRM;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.SLEN;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.readOnly;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.FileNotFoundException;
@@ -183,8 +185,7 @@ public class FirmwareLoader {
 
 		UpdateFailedException(ByteBuffer data) {
 			super("failed to update flash data correctly!");
-			this.data = data.asReadOnlyBuffer();
-			this.data.order(LITTLE_ENDIAN);
+			this.data = readOnly(data);
 		}
 	}
 
@@ -220,7 +221,7 @@ public class FirmwareLoader {
 		final ByteBuffer buf;
 
 		FlashDataSector() {
-			buf = ByteBuffer.allocate(DATA_SECTOR_LENGTH).order(LITTLE_ENDIAN);
+			buf = alloc(DATA_SECTOR_LENGTH);
 		}
 
 		static FlashDataSector registers(int numItems, List<Integer> data) {

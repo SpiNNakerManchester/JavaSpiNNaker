@@ -20,7 +20,8 @@ import java.nio.ByteBuffer;
 /**
  * A marker interface for possible data elements in the EIEIO data packet.
  */
-public interface AbstractDataElement {
+public sealed interface AbstractDataElement
+		permits KeyDataElement, KeyPayloadDataElement {
 	/**
 	 * Writes this message chunk into the given buffer. This is so that a
 	 * message can be sent.

@@ -15,12 +15,11 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.BufferOverflowException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.ReadOnlyBufferException;
 
 import org.junit.jupiter.api.Test;
@@ -31,10 +30,9 @@ import org.junit.jupiter.api.Test;
  */
 public class TestByteBufferUtils {
 	@Test
-	@SuppressWarnings("removal")
 	public void testSlice() {
-		var bb = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN);
-		var s = ByteBufferUtils.slice(bb, 4, 4);
+		var bb = ByteBufferUtils.alloc(12);
+		var s = bb.slice(4, 4).order(LITTLE_ENDIAN);
 		s.putInt(0x01020304);
 
 		// Check range enforcement
@@ -46,13 +44,13 @@ public class TestByteBufferUtils {
 		assertEquals(0, bb.getInt());
 
 		// Check read-only carried around
-		bb = bb.asReadOnlyBuffer();
-		var r = ByteBufferUtils.slice(bb, 4, 4);
+		bb = ByteBufferUtils.readOnly(bb);
+		var r = bb.slice(4, 4).order(LITTLE_ENDIAN);
 		assertThrows(ReadOnlyBufferException.class, () -> r.putInt(0x5060708));
 		assertEquals(0x01020304, r.getInt());
 
 		// Check range sanity enforced
 		assertThrows(IndexOutOfBoundsException.class,
-				() -> ByteBufferUtils.slice(r, 0, 16));
+				() -> r.slice(0, 16));
 	}
 }

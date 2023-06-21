@@ -15,10 +15,9 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_BYTES;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.CPU_INFO;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -117,7 +116,7 @@ public abstract class Utils {
 	 */
 	public static ByteBuffer newMessageBuffer() {
 		// TODO How big should this buffer be? 256 or (256 + header size)?
-		return allocate(SPINNAKER_MESSAGE_BUFFER_SIZE).order(LITTLE_ENDIAN);
+		return alloc(SPINNAKER_MESSAGE_BUFFER_SIZE);
 	}
 
 	/**

@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.lang.Math.max;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.readOnly;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -109,7 +109,7 @@ interface Accumulator<T> {
 				done = true;
 				buffer.limit(maxpos);
 			}
-			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+			return readOnly(buffer);
 		}
 	}
 

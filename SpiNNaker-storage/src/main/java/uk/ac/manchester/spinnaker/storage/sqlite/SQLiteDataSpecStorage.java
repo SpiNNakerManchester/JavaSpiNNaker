@@ -25,6 +25,7 @@ import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_CORES_TO_LOAD;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_ETHERNETS;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.SET_REGION_POINTER;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.SET_START_ADDRESS;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.readOnly;
 
 import java.nio.ByteBuffer;
 import java.sql.Connection;
@@ -161,7 +162,7 @@ public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 
 	private static ByteBuffer wrapIfNotNull(byte[] buffer) {
 		if (nonNull(buffer)) {
-			return wrap(buffer).asReadOnlyBuffer();
+			return readOnly(wrap(buffer));
 		}
 		return null;
 	}

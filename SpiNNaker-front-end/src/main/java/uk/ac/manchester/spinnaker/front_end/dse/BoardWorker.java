@@ -15,16 +15,16 @@
  */
 package uk.ac.manchester.spinnaker.front_end.dse;
 
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
+import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import java.util.LinkedHashMap;
 
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
@@ -33,7 +33,6 @@ import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
-import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 abstract class BoardWorker {
 	/** The transceiver for talking to the SpiNNaker machine. */
@@ -159,8 +158,7 @@ abstract class BoardWorker {
 	 */
 	protected void loadCore(CoreLocation xyp) throws IOException,
 			ProcessException, StorageException, InterruptedException {
-		var pointerTable =
-				allocate(APP_PTR_TABLE_BYTE_SIZE).order(LITTLE_ENDIAN);
+		var pointerTable = alloc(APP_PTR_TABLE_BYTE_SIZE);
 		//header
 		pointerTable.putInt(APPDATA_MAGIC_NUM);
 		pointerTable.putInt(DSE_VERSION);

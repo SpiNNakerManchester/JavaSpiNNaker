@@ -16,10 +16,9 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -99,7 +98,7 @@ final class FillProcess extends TxrxProcess {
 		}
 
 		// Get a word of data regardless of the type
-		var buffer = allocate(TWO_WORDS).order(LITTLE_ENDIAN);
+		var buffer = alloc(TWO_WORDS);
 		while (buffer.hasRemaining()) {
 			dataType.writeTo(data, buffer);
 		}

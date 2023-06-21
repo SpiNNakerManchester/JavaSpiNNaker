@@ -31,8 +31,13 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * @param <E>
  *            The type of exception thrown by the payload parser.
  */
-public abstract class PayloadedResponse<T, E extends Exception>
-		extends CheckOKResponse implements Supplier<T> {
+public abstract sealed class PayloadedResponse<T, E extends Exception>
+		extends CheckOKResponse implements Supplier<T>
+		permits CountState.Response, FixedRouteRead.Response,
+		GetChipInfo.Response, GetReinjectionStatus.Response,
+		GetVersion.Response, IPTagGet.Response, IPTagGetInfo.Response,
+		IPTagSetTTO.Response, ReadLink.Response, ReadMemory.Response,
+		RouterAlloc.Response, SDRAMAlloc.Response, SDRAMDeAlloc.Response {
 	private final T value;
 
 	PayloadedResponse(String operation, Enum<?> command, ByteBuffer buffer)

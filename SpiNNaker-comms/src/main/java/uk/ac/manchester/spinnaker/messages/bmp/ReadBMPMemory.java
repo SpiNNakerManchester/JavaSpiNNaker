@@ -15,10 +15,10 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.TransferUnit.efficientTransferUnit;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_READ;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.readOnly;
 
 import java.nio.ByteBuffer;
 
@@ -73,7 +73,7 @@ public final class ReadBMPMemory extends BMPRequest<ReadBMPMemory.Response> {
 		/** @return The data read, in a little-endian read-only buffer. */
 		@Override
 		protected ByteBuffer parse(ByteBuffer buffer) {
-			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+			return readOnly(buffer);
 		}
 	}
 }

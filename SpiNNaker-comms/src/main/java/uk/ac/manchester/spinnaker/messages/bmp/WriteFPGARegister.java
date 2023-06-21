@@ -16,8 +16,8 @@
 package uk.ac.manchester.spinnaker.messages.bmp;
 
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-import static uk.ac.manchester.spinnaker.messages.Utils.wordAsBuffer;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_FPGA_WRITE;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.wordAsBuffer;
 
 import java.nio.ByteBuffer;
 

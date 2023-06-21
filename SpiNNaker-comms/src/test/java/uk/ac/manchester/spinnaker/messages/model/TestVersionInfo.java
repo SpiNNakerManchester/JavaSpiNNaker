@@ -15,9 +15,8 @@
  */
 package uk.ac.manchester.spinnaker.messages.model;
 
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.junit.jupiter.api.Assertions.*;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -29,7 +28,7 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
 class TestVersionInfo {
 	private ByteBuffer packVersionData(int arg1, int arg2, int arg3,
 			byte[] data) {
-		var buffer = allocate(25).order(LITTLE_ENDIAN);
+		var buffer = alloc(25);
 		buffer.putInt(arg1).putInt(arg2).putInt(arg3).put(data).flip();
 		return buffer;
 	}
@@ -93,7 +92,7 @@ class TestVersionInfo {
 		var data = "my/spinnaker".getBytes("ASCII");
 
 		// Oh arg3, where art thou?
-		var versionData = allocate(21).order(LITTLE_ENDIAN);
+		var versionData = alloc(21);
 		versionData.putInt(arg1).putInt(arg2)/*.putInt(arg3)*/.put(data).flip();
 
 		assertThrows(IllegalArgumentException.class, () -> {

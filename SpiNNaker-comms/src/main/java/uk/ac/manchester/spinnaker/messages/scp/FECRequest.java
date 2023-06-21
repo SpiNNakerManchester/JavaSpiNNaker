@@ -15,10 +15,10 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static uk.ac.manchester.spinnaker.messages.Utils.wordAsBuffer;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.RUNNING_COMMAND_SDP_PORT;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.wordAsBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;

@@ -430,9 +430,7 @@ final class ClientSession implements Session {
 			 *            The message off the websocket.
 			 */
 			private void receive(ByteBuffer msg) {
-				msg = msg.slice();
-				msg.order(LITTLE_ENDIAN);
-				receiveQueue.add(msg);
+				receiveQueue.add(msg.slice().order(LITTLE_ENDIAN));
 			}
 
 			/**

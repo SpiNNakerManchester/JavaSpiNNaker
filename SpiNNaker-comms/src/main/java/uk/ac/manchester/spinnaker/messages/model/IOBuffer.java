@@ -16,8 +16,8 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.nio.ByteBuffer.wrap;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.US_ASCII;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.readOnly;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -57,7 +57,7 @@ public final class IOBuffer implements HasCoreLocation {
 	public IOBuffer(HasCoreLocation core, ByteBuffer contents) {
 		this.core = core;
 		iobuf = new byte[contents.remaining()];
-		contents.asReadOnlyBuffer().order(LITTLE_ENDIAN).get(iobuf);
+		readOnly(contents).get(iobuf);
 	}
 
 	/**
@@ -108,7 +108,7 @@ public final class IOBuffer implements HasCoreLocation {
 	 *         buffer.
 	 */
 	public ByteBuffer getContentsBuffer() {
-		return wrap(iobuf).asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		return readOnly(wrap(iobuf));
 	}
 
 	/**

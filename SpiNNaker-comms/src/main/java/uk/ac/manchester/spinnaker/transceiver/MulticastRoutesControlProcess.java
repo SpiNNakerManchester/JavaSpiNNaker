@@ -17,11 +17,10 @@ package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Byte.toUnsignedInt;
 import static java.lang.Integer.toUnsignedLong;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.ROUTER_AVAILABLE_ENTRIES;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTING_TABLE_DATA;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -89,7 +88,7 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 	 * @return A buffer big enough to hold everything.
 	 */
 	private static ByteBuffer allocateBuffer(int entries) {
-		return allocate(BYTES_PER_ENTRY * (entries + 1)).order(LITTLE_ENDIAN);
+		return alloc(BYTES_PER_ENTRY * (entries + 1));
 	}
 
 	private static void writeEntryToBuffer(ByteBuffer buffer, short index,

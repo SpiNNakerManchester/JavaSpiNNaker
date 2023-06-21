@@ -15,13 +15,11 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.connections.UDPConnection.TrafficClass.IPTOS_RELIABILITY;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.messages.notification.NotificationMessage;
 
@@ -94,14 +92,6 @@ public class NotificationConnection
 	}
 
 	/**
-	 * @return Get a new little-endian buffer sized suitably for notification
-	 *         messages.
-	 */
-	private static ByteBuffer newMessageBuffer() {
-		return allocate(NOTIFICATION_MESSAGE_BUFFER_SIZE).order(LITTLE_ENDIAN);
-	}
-
-	/**
 	 * Sends a notification message down this connection.
 	 *
 	 * @param notificationMessage
@@ -111,7 +101,7 @@ public class NotificationConnection
 	 */
 	public void sendNotification(NotificationMessage notificationMessage)
 			throws IOException {
-		var b = newMessageBuffer();
+		var b = alloc(NOTIFICATION_MESSAGE_BUFFER_SIZE);
 		notificationMessage.addToBuffer(b);
 		b.flip();
 		send(b);

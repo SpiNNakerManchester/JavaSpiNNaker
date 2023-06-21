@@ -16,8 +16,6 @@
 package uk.ac.manchester.spinnaker.alloc.proxy;
 
 import static java.net.InetAddress.getByName;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.web.socket.CloseStatus.BAD_DATA;
@@ -25,6 +23,7 @@ import static org.springframework.web.socket.CloseStatus.SERVER_ERROR;
 import static uk.ac.manchester.spinnaker.alloc.proxy.ProxyOp.CLOSE;
 import static uk.ac.manchester.spinnaker.alloc.proxy.ProxyOp.OPEN_UNCONNECTED;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.KILOBYTE;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
@@ -184,7 +183,7 @@ public class ProxyCore implements AutoCloseable {
 	private static ByteBuffer response(ProxyOp op, int correlationId,
 			int additionalWords) {
 		int nWords = RESPONSE_WORDS + additionalWords;
-		var msg = allocate(nWords * WORD_SIZE).order(LITTLE_ENDIAN);
+		var msg = alloc(nWords * WORD_SIZE);
 		msg.putInt(op.ordinal());
 		msg.putInt(correlationId);
 		return msg;
@@ -210,8 +209,7 @@ public class ProxyCore implements AutoCloseable {
 				msg = null;
 				continue;
 			}
-			var data = allocate(WORD_SIZE + WORD_SIZE + msgBytes.length);
-			data.order(LITTLE_ENDIAN);
+			var data = alloc(WORD_SIZE + WORD_SIZE + msgBytes.length);
 			data.putInt(ProxyOp.ERROR.ordinal());
 			data.putInt(corId);
 			data.put(msgBytes);

@@ -16,13 +16,12 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.lang.String.join;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.US_ASCII;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_VER;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
 
 import org.junit.jupiter.api.Test;
 
@@ -65,7 +64,7 @@ class TestVersion {
 		byte srcX = 0x7;
 		byte srcY = 0x0;
 
-		var data = allocate(41).order(LITTLE_ENDIAN).putShort(PADDING);
+		var data = alloc(41).putShort(PADDING);
 		data.put(flags).put(tag).put(destPortCPU).put(srcPortCPU);
 		data.put(destY).put(destX).put(srcY).put(srcX);
 		data.putShort(rc).putShort(seq).putShort(p2pAddr);
@@ -106,7 +105,7 @@ class TestVersion {
 		byte srcX = 0x7;
 		byte srcY = 0x0;
 
-		var data = allocate(60).order(LITTLE_ENDIAN).putShort(PADDING);
+		var data = alloc(60).putShort(PADDING);
 		data.put(flags).put(tag).put(destPortCpu).put(srcPortCpu);
 		data.put(destY).put(destX).put(srcY).put(srcX);
 		data.putShort(rc).putShort(seq).putShort(p2pAddr);

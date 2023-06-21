@@ -26,7 +26,6 @@ import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_2_START_ADD
 import static uk.ac.manchester.spinnaker.messages.Constants.NO_ROUTER_DIAGNOSTIC_FILTERS;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-import static uk.ac.manchester.spinnaker.messages.Utils.wordAsBuffer;
 import static uk.ac.manchester.spinnaker.messages.model.AppID.DEFAULT;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.READY;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUN_TIME_EXCEPTION;
@@ -37,6 +36,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.BOOT_CHIP;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.SYS_VARS;
 import static uk.ac.manchester.spinnaker.transceiver.FillDataType.WORD;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.wordAsBuffer;
 
 import java.io.File;
 import java.io.IOException;
