@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.storage;
 import static uk.ac.manchester.spinnaker.storage.sqlite.ResourceLoader.loadResource;
 
 import java.io.File;
+import java.net.URI;
 
 import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteDataSpecStorage;
 
@@ -43,6 +44,18 @@ public class DSEDatabaseEngine extends DatabaseEngine<DSEStorage> {
 	 */
 	public DSEDatabaseEngine(File dbFile) {
 		super(dbFile);
+	}
+
+	/**
+	 * Create an engine interface for a particular database.
+	 *
+	 * @param dbUri
+	 *            The <em>absolute</em> URI to the file containing the database.
+	 *            May contain query parameters
+	 *            <a href="https://www.sqlite.org/uri.html">as documented</a>.
+	 */
+	public DSEDatabaseEngine(URI dbUri) {
+		super(dbUri);
 	}
 
 	@Override
