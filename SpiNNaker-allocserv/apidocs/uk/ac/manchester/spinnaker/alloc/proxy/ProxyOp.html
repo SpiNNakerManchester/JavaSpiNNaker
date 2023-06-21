@@ -132,25 +132,32 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </td>
 </tr>
 <tr class="rowColor">
+<th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#ERROR">ERROR</a></span></code></th>
+<td class="colLast">
+<div class="block">A message, only ever sent in response to <a href="#OPEN"><code>OPEN</code></a>, <a href="#CLOSE"><code>CLOSE</code></a>,
+ or <a href="#OPEN_UNCONNECTED"><code>OPEN_UNCONNECTED</code></a>, that says that an operation failed.</div>
+</td>
+</tr>
+<tr class="altColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#MESSAGE">MESSAGE</a></span></code></th>
 <td class="colLast">
 <div class="block">A message going to or from a board.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#MESSAGE_TO">MESSAGE_TO</a></span></code></th>
 <td class="colLast">
 <div class="block">A message going to a board on a channel which does not have a SpiNNaker
  board target address set up already (<a href="#OPEN_UNCONNECTED"><code>OPEN_UNCONNECTED</code></a>).</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#OPEN">OPEN</a></span></code></th>
 <td class="colLast">
 <div class="block">Ask for a bidirectional channel to a board to be opened.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#OPEN_UNCONNECTED">OPEN_UNCONNECTED</a></span></code></th>
 <td class="colLast">
 <div class="block">Ask for a bidirectional channel from all boards to be opened.</div>
@@ -226,7 +233,7 @@ the order they are declared.</div>
 <h3><a id="OPEN">OPEN</a></h3>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="ProxyOp.html" title="enum in uk.ac.manchester.spinnaker.alloc.proxy">ProxyOp</a></span>&nbsp;<span class="memberName">OPEN</span></div>
 <div class="block">Ask for a bidirectional channel to a board to be opened. Also the
- response to such a request.</div>
+ response to such a request when successful.</div>
 </section>
 </li>
 <li class="blockList">
@@ -235,7 +242,7 @@ the order they are declared.</div>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="ProxyOp.html" title="enum in uk.ac.manchester.spinnaker.alloc.proxy">ProxyOp</a></span>&nbsp;<span class="memberName">CLOSE</span></div>
 <div class="block">Ask for a channel (created with <a href="#OPEN"><code>OPEN</code></a> or
  <a href="#OPEN_UNCONNECTED"><code>OPEN_UNCONNECTED</code></a>) to be closed. Also the response to such a
- request.</div>
+ request when successful.</div>
 </section>
 </li>
 <li class="blockList">
@@ -251,12 +258,12 @@ the order they are declared.</div>
 <section class="detail">
 <h3><a id="OPEN_UNCONNECTED">OPEN_UNCONNECTED</a></h3>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="ProxyOp.html" title="enum in uk.ac.manchester.spinnaker.alloc.proxy">ProxyOp</a></span>&nbsp;<span class="memberName">OPEN_UNCONNECTED</span></div>
-<div class="block">Ask for a bidirectional channel from all boards to be opened. Also
- the response to such a request. The difference is that this reports the
- real listening IP address and port in the response message. (This is
- closed with a <a href="#CLOSE"><code>CLOSE</code></a> message.) Sending is only possible on this
- channel with <a href="#MESSAGE_TO"><code>MESSAGE_TO</code></a> (because no target address is set by
- default).</div>
+<div class="block">Ask for a bidirectional channel from all boards to be opened. Also the
+ response to such a request when successful. The difference is that this
+ reports the real listening IP address and port in the response message.
+ (This is closed with a <a href="#CLOSE"><code>CLOSE</code></a> message.) Sending is only possible
+ on this channel with <a href="#MESSAGE_TO"><code>MESSAGE_TO</code></a> (because no target address is
+ set by default).</div>
 </section>
 </li>
 <li class="blockList">
@@ -265,6 +272,14 @@ the order they are declared.</div>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="ProxyOp.html" title="enum in uk.ac.manchester.spinnaker.alloc.proxy">ProxyOp</a></span>&nbsp;<span class="memberName">MESSAGE_TO</span></div>
 <div class="block">A message going to a board on a channel which does not have a SpiNNaker
  board target address set up already (<a href="#OPEN_UNCONNECTED"><code>OPEN_UNCONNECTED</code></a>).</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="ERROR">ERROR</a></h3>
+<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="ProxyOp.html" title="enum in uk.ac.manchester.spinnaker.alloc.proxy">ProxyOp</a></span>&nbsp;<span class="memberName">ERROR</span></div>
+<div class="block">A message, only ever sent in response to <a href="#OPEN"><code>OPEN</code></a>, <a href="#CLOSE"><code>CLOSE</code></a>,
+ or <a href="#OPEN_UNCONNECTED"><code>OPEN_UNCONNECTED</code></a>, that says that an operation failed.</div>
 </section>
 </li>
 </ul>
