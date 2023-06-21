@@ -189,6 +189,31 @@
  * Channel</em>. Any responses come back as standard messages; if doing calls
  * with this, it is advised to only have one in flight at a time.</td>
  * </tr>
+ * <tr>
+ * <td rowspan=2>Error</td>
+ * <td>N/A</td>
+ * <td>
+ * <table border="1" class="protocolresponse">
+ * <caption style="display:none">Response</caption>
+ * <tr>
+ * <td>{@link ProxyOp#ERROR 5}
+ * <td>Correlation&nbsp;ID
+ * <td>UTF-8&nbsp;error&nbsp;message&nbsp;bytes...
+ * </tr>
+ * </table>
+ * </td>
+ * </tr>
+ * <tr>
+ * <td colspan=2>A response that may be given to <em>Open Connected
+ * Channel</em>, <em>Close Channel</em>, or <em>Open Unconnected Channel</em>.
+ * This indicates that a failure to perform an operation occurred. The
+ * correlation ID is whatever ID was provided in the request message that this
+ * is a response to. The remainder of the message is UTF-8 text that provides
+ * some human-readable description of what the problem was, if the server
+ * chooses to provide one.
+ * Note that the server is never required to send this message; it may summarily
+ * close the websocket instead.</td>
+ * </tr>
  * </table>
  * <p>
  * <em>Protocol-level errors</em> (such as not following the protocol!) may be

@@ -23,13 +23,13 @@ package uk.ac.manchester.spinnaker.alloc.proxy;
 public enum ProxyOp {
 	/**
 	 * Ask for a bidirectional channel to a board to be opened. Also the
-	 * response to such a request.
+	 * response to such a request when successful.
 	 */
 	OPEN,
 	/**
 	 * Ask for a channel (created with {@link #OPEN} or
 	 * {@link #OPEN_UNCONNECTED}) to be closed. Also the response to such a
-	 * request.
+	 * request when successful.
 	 */
 	CLOSE,
 	/**
@@ -39,17 +39,22 @@ public enum ProxyOp {
 	 */
 	MESSAGE,
 	/**
-	 * Ask for a bidirectional channel from all boards to be opened. Also
-	 * the response to such a request. The difference is that this reports the
-	 * real listening IP address and port in the response message. (This is
-	 * closed with a {@link #CLOSE} message.) Sending is only possible on this
-	 * channel with {@link #MESSAGE_TO} (because no target address is set by
-	 * default).
+	 * Ask for a bidirectional channel from all boards to be opened. Also the
+	 * response to such a request when successful. The difference is that this
+	 * reports the real listening IP address and port in the response message.
+	 * (This is closed with a {@link #CLOSE} message.) Sending is only possible
+	 * on this channel with {@link #MESSAGE_TO} (because no target address is
+	 * set by default).
 	 */
 	OPEN_UNCONNECTED,
 	/**
 	 * A message going to a board on a channel which does not have a SpiNNaker
 	 * board target address set up already ({@link #OPEN_UNCONNECTED}).
 	 */
-	MESSAGE_TO
+	MESSAGE_TO,
+	/**
+	 * A message, only ever sent in response to {@link #OPEN}, {@link #CLOSE},
+	 * or {@link #OPEN_UNCONNECTED}, that says that an operation failed.
+	 */
+	ERROR
 }

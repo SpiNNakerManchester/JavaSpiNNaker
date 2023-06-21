@@ -22,6 +22,7 @@ import static java.util.Collections.unmodifiableMap;
 import static org.apache.commons.io.IOUtils.readFully;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGABYTE;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -180,7 +181,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 		return SERIAL_NUMBER;
 	}
 
-	private static final int MEM_SIZE = 8 * 1024 * 1024;
+	private static final int MEM_SIZE = 8 * MEGABYTE;
 
 	private static ByteBuffer allocateMemory() {
 		var buf = allocate(MEM_SIZE).order(LITTLE_ENDIAN);

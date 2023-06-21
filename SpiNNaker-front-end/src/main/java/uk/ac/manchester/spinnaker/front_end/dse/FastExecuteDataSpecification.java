@@ -27,6 +27,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.DebuggingUtils.compareBuffers;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInProtocol.computeNumPackets;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGABYTE;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
 
 import java.io.BufferedWriter;
@@ -82,9 +83,6 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 
 	private static final String IN_REPORT_NAME =
 			"speeds_gained_in_speed_up_process.tsv";
-
-	/** One kilo-binary unit multiplier. */
-	private static final int ONE_KI = 1024;
 
 	private static final int TIMEOUT_RETRY_LIMIT = 100;
 
@@ -288,7 +286,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		}
 
 		float timeTaken = timeDiff / (float) NSEC_PER_SEC;
-		float megabits = (size * (long) NBBY) / (float) (ONE_KI * ONE_KI);
+		float megabits = (size * (long) NBBY) / (float) MEGABYTE;
 		String mbs;
 		if (timeDiff == 0) {
 			mbs = "unknown, below threshold";

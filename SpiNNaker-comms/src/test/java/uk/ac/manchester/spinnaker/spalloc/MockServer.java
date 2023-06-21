@@ -17,6 +17,7 @@ package uk.ac.manchester.spinnaker.spalloc;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.KILOBYTE;
 
 import java.io.BufferedReader;
 import java.io.EOFException;
@@ -44,8 +45,6 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 class MockServer implements SupportUtils.IServer {
 	private static final Logger log = getLogger(MockServer.class);
-
-	private static final int BUFFER_SIZE = 1024;
 
 	private static final int QUEUE_LENGTH = 1;
 
@@ -90,7 +89,7 @@ class MockServer implements SupportUtils.IServer {
 					new OutputStreamWriter(sock.getOutputStream(), UTF_8));
 			in = new BufferedReader(
 					new InputStreamReader(sock.getInputStream(), UTF_8),
-					BUFFER_SIZE);
+					KILOBYTE);
 		}
 
 		@Override
