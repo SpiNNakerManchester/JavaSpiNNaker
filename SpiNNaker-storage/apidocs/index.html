@@ -19,13 +19,7 @@
 <script type="text/javascript" src="script-dir/jquery-ui.js"></script>
 </head>
 <body class="package-index">
-<script type="text/javascript">var data = {"i0":1,"i1":2,"i2":2};
-var tabs = {65535:["t0","All Packages"],1:["t1","Data Management"],2:["t2","Utilities"]};
-var altColor = "altColor";
-var rowColor = "rowColor";
-var tableTab = "tableTab";
-var activeTableTab = "activeTableTab";
-var pathtoroot = "./";
+<script type="text/javascript">var pathtoroot = "./";
 loadScripts(document, 'script');</script>
 <noscript>
 <div>JavaScript is disabled on your browser.</div>
@@ -71,9 +65,8 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="contentContainer">
 <div class="overviewSummary">
-<div role="tablist" aria-orientation="horizontal"><button role="tab" aria-selected="true" aria-controls="overviewSummary_tabpanel" tabindex="0" onkeydown="switchTab(event)" id="t0" class="activeTableTab">All Packages</button><button role="tab" aria-selected="false" aria-controls="overviewSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t1" class="tableTab" onclick="show(1);">Data Management</button><button role="tab" aria-selected="false" aria-controls="overviewSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t2" class="tableTab" onclick="show(2);">Utilities</button></div>
-<div id="overviewSummary_tabpanel" role="tabpanel">
-<table aria-labelledby="t0">
+<table>
+<caption><span>Utilities</span><span class="tabEnd">&nbsp;</span></caption>
 <thead>
 <tr>
 <th class="colFirst" scope="col">Package</th>
@@ -101,7 +94,6 @@ loadScripts(document, 'script');</script>
 </tr>
 </tbody>
 </table>
-</div>
 </div>
 </div>
 </main>
