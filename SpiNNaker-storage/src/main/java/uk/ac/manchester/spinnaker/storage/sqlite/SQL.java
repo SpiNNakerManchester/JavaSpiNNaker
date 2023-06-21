@@ -159,7 +159,10 @@ abstract class SQL {
 	// Data loading ----------------------------------------------------
 	// -----------------------------------------------------------------
 
-	/** List the ethernets described in the database. */
+	/**
+	 * List the Ethernet-enabled chips described in the database. This is
+	 * effectively the list of boards.
+	 */
 	@Parameters({})
 	@ResultColumn("ethernet_x")
 	@ResultColumn("ethernet_y")
@@ -168,7 +171,10 @@ abstract class SQL {
 			"SELECT DISTINCT ethernet_x, ethernet_y, ip_address"
 					+ " FROM core_view";
 
-	/** List the cores of a ethernets with a data specification to run. */
+	/**
+	 * List the cores of a board (by its Ethernet-enabled chip location) with
+	 * data to load. This picks either system or application cores.
+	 */
 	@Parameter("ethernet_x")
 	@Parameter("ethernet_y")
 	@Parameter("is_system")
@@ -181,7 +187,7 @@ abstract class SQL {
 					+ "WHERE ethernet_x = ? AND ethernet_y = ? "
 					+ "AND is_system = ? ";
 
-	/** List the cores of a ethernets with a data specification to run. */
+	/** List the regions and sizes of a chip with data to load. */
 	@Parameter("x")
 	@Parameter("y")
 	@Parameter("p")
@@ -193,10 +199,11 @@ abstract class SQL {
 					+ "WHERE x = ? AND y = ? AND p = ? "
 					+ "ORDER BY region_num";
 
-	/** Get the data specification to run for a particular core. */
+	/** Get the data to load for a particular core. */
 	@Parameter("x")
 	@Parameter("y")
 	@Parameter("p")
+	@ResultColumn("region_num")
 	@ResultColumn("content")
 	@ResultColumn("pointer")
 	static final String GET_REGION_POINTER_AND_CONTEXT =

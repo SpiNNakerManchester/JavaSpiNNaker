@@ -31,6 +31,7 @@ import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.io.IOException;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -54,7 +55,6 @@ import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor.SimpleCallable;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.front_end.NoDropPacketContext;
-import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Monitor;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
@@ -68,7 +68,6 @@ import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import uk.ac.manchester.spinnaker.utils.MathUtils;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
-import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
  * Implementation of the SpiNNaker Fast Data Download Protocol.
@@ -159,10 +158,6 @@ public abstract class DataGatherer extends BoardLocalSupport
 		pool.close();
 	}
 
-	private static final String META_LABEL = "reading region metadata";
-
-	private static final String FAST_LABEL = "high-speed transfers";
-
 	/**
 	 * Download he contents of the regions that are described through the data
 	 * gatherers.
@@ -183,23 +178,18 @@ public abstract class DataGatherer extends BoardLocalSupport
 	public int gather(List<Gather> gatherers) throws IOException,
 			ProcessException, StorageException, InterruptedException {
 		sanityCheck(gatherers);
-		var workSize = new ValueHolder<>(0);
-		Map<ChipLocation, List<WorkItems>> work;
-		try (var bar = new Progress(countPlacements(gatherers), META_LABEL)) {
-			work = discoverActualWork(gatherers, workSize, bar);
-		}
+		var work = discoverActualWork(gatherers);
 		var conns = createConnections(gatherers, work);
 		try (var s = new SystemRouterTableContext(txrx,
 				gatherers.stream().flatMap(g -> g.getMonitors().stream()));
 				var p = new NoDropPacketContext(txrx,
 						gatherers.stream()
 								.flatMap(g -> g.getMonitors().stream()),
-						gatherers.stream());
-				var bar = new Progress(workSize.getValue(), FAST_LABEL)) {
+						gatherers.stream())) {
 			log.info("launching {} parallel high-speed download tasks",
 					work.size());
 			parallel(work.keySet().stream().map(key -> {
-				return () -> fastDownload(work.get(key), conns.get(key), bar);
+				return () -> fastDownload(work.get(key), conns.get(key));
 			}));
 		} finally {
 			log.info("shutting down high-speed download connections");
@@ -208,12 +198,6 @@ public abstract class DataGatherer extends BoardLocalSupport
 			}
 		}
 		return missCount;
-	}
-
-	private int countPlacements(List<Gather> gatherers) {
-		var gaths = gatherers.parallelStream();
-		var mons = gaths.flatMap(g -> g.getMonitors().stream());
-		return mons.mapToInt(m -> m.getPlacements().size()).sum();
 	}
 
 	/**
@@ -250,10 +234,6 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *
 	 * @param gatherers
 	 *            The gatherer information.
-	 * @param workSize
-	 *            Where to write how much work there is to actually do.
-	 * @param bar
-	 *            The progress bar.
 	 * @return What each board (as represented by the chip location of its data
 	 *         speed up packet gatherer) has to be downloaded.
 	 * @throws IOException
@@ -266,9 +246,8 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *             If communications are interrupted.
 	 */
 	private Map<ChipLocation, List<WorkItems>> discoverActualWork(
-			List<Gather> gatherers, ValueHolder<Integer> workSize, Progress bar)
-			throws IOException, ProcessException, StorageException,
-			InterruptedException {
+			List<Gather> gatherers) throws IOException, ProcessException,
+			StorageException, InterruptedException {
 		log.info("discovering regions to download");
 		var work = new HashMap<ChipLocation, List<WorkItems>>();
 		int count = 0;
@@ -289,7 +268,6 @@ public abstract class DataGatherer extends BoardLocalSupport
 					if (!regions.isEmpty()) {
 						workitems.add(new WorkItems(m, regions));
 					}
-					bar.update();
 				}
 
 			}
@@ -299,7 +277,6 @@ public abstract class DataGatherer extends BoardLocalSupport
 			}
 		}
 		log.info("found {} regions to download", count);
-		workSize.setValue(count);
 		return work;
 	}
 
@@ -373,8 +350,6 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *            The items to be downloaded for that board.
 	 * @param conn
 	 *            The connection for talking to the board.
-	 * @param bar
-	 *            The progress bar.
 	 * @throws IOException
 	 *             If IO fails.
 	 * @throws StorageException
@@ -387,7 +362,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *             If communications are interrupted.
 	 */
 	private void fastDownload(List<WorkItems> work,
-			GatherDownloadConnection conn, Progress bar)
+			GatherDownloadConnection conn)
 			throws IOException, StorageException, TimeoutException,
 			ProcessException, InterruptedException {
 		try (var c = new BoardLocal(conn.getChip())) {
@@ -406,7 +381,6 @@ public abstract class DataGatherer extends BoardLocalSupport
 							compareDownloadWithSCP(region, data);
 						}
 						storeData(region, data);
-						bar.update();
 					}
 				}
 			}
@@ -717,12 +691,20 @@ public abstract class DataGatherer extends BoardLocalSupport
 			}
 			if (data.hasRemaining()) {
 				int offset = seqNum * DATA_WORDS_PER_PACKET * WORD_SIZE;
-				if (log.isDebugEnabled()) {
-					log.debug("storing {} bytes at position {} of {}",
-							data.remaining(), offset, dataReceiver.limit());
+				if (offset < 0) {
+					// Off the start!
+					throw new ReceivingBufferOverflowedException(
+							len, offset, dataReceiver.limit());
 				}
+				// The IllegalArgumentException on failure here is useful
 				dataReceiver.position(offset);
-				dataReceiver.put(data);
+				try {
+					dataReceiver.put(data);
+				} catch (BufferOverflowException ignored) {
+					// There's no info in that exception
+					throw new ReceivingBufferOverflowedException(
+							len, offset, dataReceiver.limit());
+				}
 				expectedSeqNums.clear(seqNum);
 			}
 			if (!isEndOfStream) {
@@ -836,5 +818,24 @@ final class InsaneSequenceNumberException extends IllegalStateException {
 	InsaneSequenceNumberException(int maxNum, int seqNum) {
 		super(format("got insane sequence number %d: expected maximum %d (%s)",
 				seqNum, maxNum, (maxNum == seqNum ? END : MID)));
+	}
+}
+
+/**
+ * Exception that indicates a download tried to write off the end of the
+ * receiving buffer or otherwise misbehave. Don't use the standard exceptions
+ * for this; they don't have any useful info at all.
+ *
+ * @see BufferOverflowException
+ * @author Donal Fellows
+ */
+final class ReceivingBufferOverflowedException extends RuntimeException {
+	private static final long serialVersionUID = 3L;
+
+	ReceivingBufferOverflowedException(int len, int start, int limit) {
+		super(format(
+				"failed to store %d bytes at position %d of %d "
+						+ "(overflow = %d bytes)",
+				len, start, limit, start + len - limit));
 	}
 }

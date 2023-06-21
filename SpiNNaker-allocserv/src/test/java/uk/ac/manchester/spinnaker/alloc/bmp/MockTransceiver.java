@@ -24,6 +24,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 // TODO use ByteBuffer.slice(int,int) from Java 14 onwards
 import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.slice;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGABYTE;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -182,7 +183,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 		return SERIAL_NUMBER;
 	}
 
-	private static final int MEM_SIZE = 8 * 1024 * 1024;
+	private static final int MEM_SIZE = 8 * MEGABYTE;
 
 	private static ByteBuffer allocateMemory() {
 		var buf = allocate(MEM_SIZE).order(LITTLE_ENDIAN);
