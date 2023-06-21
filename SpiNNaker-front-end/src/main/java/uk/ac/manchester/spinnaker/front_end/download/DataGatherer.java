@@ -31,6 +31,7 @@ import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.io.IOException;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -690,12 +691,20 @@ public abstract class DataGatherer extends BoardLocalSupport
 			}
 			if (data.hasRemaining()) {
 				int offset = seqNum * DATA_WORDS_PER_PACKET * WORD_SIZE;
-				if (log.isDebugEnabled()) {
-					log.debug("storing {} bytes at position {} of {}",
-							data.remaining(), offset, dataReceiver.limit());
+				if (offset < 0) {
+					// Off the start!
+					throw new ReceivingBufferOverflowedException(
+							len, offset, dataReceiver.limit());
 				}
+				// The IllegalArgumentException on failure here is useful
 				dataReceiver.position(offset);
-				dataReceiver.put(data);
+				try {
+					dataReceiver.put(data);
+				} catch (BufferOverflowException ignored) {
+					// There's no info in that exception
+					throw new ReceivingBufferOverflowedException(
+							len, offset, dataReceiver.limit());
+				}
 				expectedSeqNums.clear(seqNum);
 			}
 			if (!isEndOfStream) {
@@ -809,5 +818,24 @@ final class InsaneSequenceNumberException extends IllegalStateException {
 	InsaneSequenceNumberException(int maxNum, int seqNum) {
 		super(format("got insane sequence number %d: expected maximum %d (%s)",
 				seqNum, maxNum, (maxNum == seqNum ? END : MID)));
+	}
+}
+
+/**
+ * Exception that indicates a download tried to write off the end of the
+ * receiving buffer or otherwise misbehave. Don't use the standard exceptions
+ * for this; they don't have any useful info at all.
+ *
+ * @see BufferOverflowException
+ * @author Donal Fellows
+ */
+final class ReceivingBufferOverflowedException extends RuntimeException {
+	private static final long serialVersionUID = 3L;
+
+	ReceivingBufferOverflowedException(int len, int start, int limit) {
+		super(format(
+				"failed to store %d bytes at position %d of %d "
+						+ "(overflow = %d bytes)",
+				len, start, limit, start + len - limit));
 	}
 }
