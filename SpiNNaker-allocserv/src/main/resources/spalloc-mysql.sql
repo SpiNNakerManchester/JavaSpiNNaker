@@ -270,7 +270,7 @@ CREATE TABLE IF NOT EXISTS job_nmpi_session (
         FOREIGN KEY (job_id)
         REFERENCES jobs(job_id),
     session_id INTEGER NOT NULL,
-    UNIQUE INDEX (job_id ASC, collab ASC)
+    UNIQUE INDEX (job_id ASC, session_id ASC)
 );
 
 -- STMT
