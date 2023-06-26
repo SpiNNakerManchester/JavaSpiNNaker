@@ -609,7 +609,7 @@ limitations under the License.
 				<plugin>
 					<groupId>com.github.eirslett</groupId>
 					<artifactId>frontend-maven-plugin</artifactId>
-					<version>1.12.1</version>
+					<version>1.13.3</version>
 				</plugin>
 				<plugin>
 					<groupId>com.github.blutorange</groupId>
