@@ -113,26 +113,32 @@ public interface AdminController {
 	/**
 	 * Get supported ops.
 	 *
+	 * @param model
+	 *            Overall model
 	 * @return the view
 	 */
 	@GetMapping("/")
-	ModelAndView mainUI();
+	ModelAndView mainUI(ModelMap model);
 
 	/**
 	 * List all users.
 	 *
+	 * @param model
+	 *            Overall model
 	 * @return the model and view
 	 */
 	@GetMapping(USERS_PATH)
-	ModelAndView listUsers();
+	ModelAndView listUsers(ModelMap model);
 
 	/**
 	 * Get the form for creating a user.
 	 *
+	 * @param model
+	 *            Overall model
 	 * @return the model and view
 	 */
 	@GetMapping(CREATE_USER_PATH)
-	ModelAndView getUserCreationForm();
+	ModelAndView getUserCreationForm(ModelMap model);
 
 	/**
 	 * Create a user.
@@ -197,10 +203,12 @@ public interface AdminController {
 	/**
 	 * List all groups.
 	 *
+	 * @param model
+	 *            Overall model
 	 * @return the model and view
 	 */
 	@GetMapping(GROUPS_PATH)
-	ModelAndView listGroups();
+	ModelAndView listGroups(ModelMap model);
 
 	/**
 	 * Get info about a particular group.
@@ -215,10 +223,12 @@ public interface AdminController {
 	/**
 	 * Get the form for creating a group.
 	 *
+	 * @param model
+	 *            Overall model
 	 * @return the model (a {@link CreateGroupModel}) and view
 	 */
 	@GetMapping(CREATE_GROUP_PATH)
-	ModelAndView getGroupCreationForm();
+	ModelAndView getGroupCreationForm(ModelMap model);
 
 	/**
 	 * Create a group.
@@ -372,10 +382,12 @@ public interface AdminController {
 	/**
 	 * UI for boards.
 	 *
+	 * @param model
+	 *            Overall model
 	 * @return the model and view
 	 */
 	@GetMapping(BOARDS_PATH)
-	ModelAndView boards();
+	ModelAndView boards(ModelMap model);
 
 	/**
 	 * Manipulate a board.
@@ -437,10 +449,12 @@ public interface AdminController {
 	/**
 	 * Provide the form for uploading a machine definition.
 	 *
+	 * @param model
+	 *            Overall model
 	 * @return the model and view
 	 */
 	@GetMapping(MACHINE_PATH)
-	ModelAndView machineManagement();
+	ModelAndView machineManagement(ModelMap model);
 
 	/**
 	 * Handle the change of the tags of a machine.
