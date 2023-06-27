@@ -1047,7 +1047,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				log.info("login failure for {}", username, e);
 				throw e;
 			}
-		}, username).get();
+		}, username).isPresent();
 
 		if (ok) {
 			return true;
