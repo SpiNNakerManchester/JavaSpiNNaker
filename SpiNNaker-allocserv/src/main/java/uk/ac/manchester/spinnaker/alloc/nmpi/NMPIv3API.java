@@ -71,7 +71,7 @@ public interface NMPIv3API {
      * @return A list of matching projects.
      */
     @GET
-    @Path("projects")
+    @Path("projects/")
     List<Project> getProjects(@HeaderParam("x-api-key") String apiKey,
     		@QueryParam("status") String status,
     		@QueryParam("collab") String collab);
@@ -84,7 +84,7 @@ public interface NMPIv3API {
      * @return The created session details.
      */
     @POST
-    @Path("sessions")
+    @Path("sessions/")
     @Consumes("application/json")
     @Produces("application/json")
     SessionResponse createSession(@HeaderParam("x-api-key") String apiKey,
