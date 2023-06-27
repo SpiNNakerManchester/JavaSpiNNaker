@@ -130,6 +130,15 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	/** One board-hour in board-seconds. */
 	private static final int BOARD_HOUR = 3600;
 
+	/** Dummy map. */
+	private static final ModelMap NULL_MAP = null;
+
+	/** Dummy user. */
+	private static final Principal NULL_USER = null;
+
+	/** Dummy attributes. */
+	private static final RedirectAttributes NULL_ATTR = null;
+
 	@Autowired
 	private UserControl userManager;
 
@@ -196,12 +205,13 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 		model.put(BASE_URI, fromCurrentRequestUri().toUriString());
 		model.put(TRUST_LEVELS, TrustLevel.values());
-		model.put(USERS_URI, uri(admin().listUsers()));
-		model.put(CREATE_USER_URI, uri(admin().getUserCreationForm()));
-		model.put(CREATE_GROUP_URI, uri(admin().getGroupCreationForm()));
-		model.put(GROUPS_URI, uri(admin().listGroups()));
-		model.put(BOARDS_URI, uri(admin().boards()));
-		model.put(MACHINE_URI, uri(admin().machineManagement()));
+		model.put(USERS_URI, uri(admin().listUsers(NULL_MAP)));
+		model.put(CREATE_USER_URI, uri(admin().getUserCreationForm(NULL_MAP)));
+		model.put(CREATE_GROUP_URI,
+				uri(admin().getGroupCreationForm(NULL_MAP)));
+		model.put(GROUPS_URI, uri(admin().listGroups(NULL_MAP)));
+		model.put(BOARDS_URI, uri(admin().boards(NULL_MAP)));
+		model.put(MACHINE_URI, uri(admin().machineManagement(NULL_MAP)));
 		model.put(USER_MAY_CHANGE_PASSWORD, mayChangePassword);
 	}
 
@@ -359,13 +369,13 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Override
 	@Action("getting the main admin UI")
-	public ModelAndView mainUI() {
+	public ModelAndView mainUI(ModelMap ignored) {
 		return addStandardContext(MAIN_VIEW.view());
 	}
 
 	@Override
 	@Action("listing the users")
-	public ModelAndView listUsers() {
+	public ModelAndView listUsers(ModelMap ignored) {
 		var mav = USER_LIST_VIEW.view();
 		addLocalUserList(mav,
 				userManager.listUsers(true, this::showUserFormUrl));
@@ -376,7 +386,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Override
 	@Action("getting the user-creation UI")
-	public ModelAndView getUserCreationForm() {
+	public ModelAndView getUserCreationForm(ModelMap ignored) {
 		var userForm = new UserRecord();
 		userForm.setInternal(true);
 		return addStandardContext(
@@ -465,7 +475,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 				() -> new AdminException("could not delete that user"));
 		log.info("deleted user ID={} username={}", id, deletedUsername);
 		// Not sure that these are the correct place
-		var mav = redirectTo(uri(admin().listUsers()), attrs);
+		var mav = redirectTo(uri(admin().listUsers(NULL_MAP)), attrs);
 		addNotice(attrs, "deleted " + deletedUsername);
 		addUser(attrs, new UserRecord());
 		return mav;
@@ -481,12 +491,12 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 * @return URL
 	 */
 	private URI deleteUserUrl(int id) {
-		return uri(admin().deleteUser(id, null, null));
+		return uri(admin().deleteUser(id, NULL_USER, NULL_ATTR));
 	}
 
 	@Override
 	@Action("listing the groups")
-	public ModelAndView listGroups() {
+	public ModelAndView listGroups(ModelMap ignored) {
 		var mav = GROUP_LIST_VIEW.view();
 		addLocalGroupList(mav,
 				userManager.listGroups(INTERNAL, this::showGroupInfoUrl));
@@ -504,12 +514,15 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		var userLocations = new HashMap<String, URI>();
 		addGroup(mav, userManager.getGroup(id, m -> {
 			userLocations.put(m.getUserName(), showUserFormUrl(m));
-			return uri(admin().removeUserFromGroup(id, m.getUserId(), null));
+			return uri(
+					admin().removeUserFromGroup(id, m.getUserId(), NULL_ATTR));
 		}).orElseThrow(NoGroup::new));
 		addUserList(mav, userLocations);
-		addUrl(mav, "deleteUri", uri(admin().deleteGroup(id, null)));
-		addUrl(mav, "addUserUri", uri(admin().addUserToGroup(id, null, null)));
-		addUrl(mav, "addQuotaUri", uri(admin().adjustGroupQuota(id, 0, null)));
+		addUrl(mav, "deleteUri", uri(admin().deleteGroup(id, NULL_ATTR)));
+		addUrl(mav, "addUserUri",
+				uri(admin().addUserToGroup(id, null, NULL_ATTR)));
+		addUrl(mav, "addQuotaUri",
+				uri(admin().adjustGroupQuota(id, 0, NULL_ATTR)));
 		return addStandardContext(mav);
 	}
 
@@ -548,7 +561,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Override
 	@Action("getting the group-creation UI")
-	public ModelAndView getGroupCreationForm() {
+	public ModelAndView getGroupCreationForm(ModelMap ignored) {
 		return addStandardContext(
 				CREATE_GROUP_VIEW.view(GROUP_OBJ, new CreateGroupModel()));
 	}
@@ -623,12 +636,12 @@ public class AdminControllerImpl extends DatabaseAwareBean
 				userManager.deleteGroup(id).orElseThrow(NoGroup::new);
 		log.info("deleted group ID={} groupname={}", id, deletedGroupName);
 		addNotice(attrs, "deleted " + deletedGroupName);
-		return redirectTo(uri(admin().listGroups()), attrs);
+		return redirectTo(uri(admin().listGroups(NULL_MAP)), attrs);
 	}
 
 	@Override
 	@Action("getting the UI for finding boards")
-	public ModelAndView boards() {
+	public ModelAndView boards(ModelMap ignored) {
 		var mav = BOARD_VIEW.view();
 		addBoard(mav, new BoardRecord());
 		addMachineList(mav, getMachineNames(true));
@@ -816,7 +829,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 */
 	@Override
 	@Action("getting a machine's configuration")
-	public ModelAndView machineManagement() {
+	public ModelAndView machineManagement(ModelMap ignored) {
 		var mav = MACHINE_VIEW.view();
 		addMachineList(mav, getMachineNames(true));
 		var tagging = machineController.getMachineTagging();
@@ -834,7 +847,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 				stream(newTags.split(",")).map(String::strip).collect(toSet());
 		machineController.updateTags(machineName, tags);
 		log.info("retagged {} to have tags {}", machineName, tags);
-		return machineManagement();
+		return machineManagement(NULL_MAP);
 	}
 
 	@Override
@@ -842,7 +855,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	public ModelAndView disableMachine(String machineName) {
 		machineController.setMachineState(machineName, false);
 		log.info("marked {} as out of service", machineName);
-		return machineManagement();
+		return machineManagement(NULL_MAP);
 	}
 
 	@Override
@@ -850,7 +863,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	public ModelAndView enableMachine(String machineName) {
 		machineController.setMachineState(machineName, true);
 		log.info("marked {} as in service", machineName);
-		return machineManagement();
+		return machineManagement(NULL_MAP);
 	}
 
 	@Override
@@ -861,7 +874,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			machineDefiner.loadMachineDefinition(m);
 			log.info("defined machine {}", m.getName());
 		}
-		var mav = machineManagement();
+		var mav = machineManagement(NULL_MAP);
 		// Tailor with extra objects here
 		mav.addObject(DEFINED_MACHINES_OBJ, machines);
 		return mav;
