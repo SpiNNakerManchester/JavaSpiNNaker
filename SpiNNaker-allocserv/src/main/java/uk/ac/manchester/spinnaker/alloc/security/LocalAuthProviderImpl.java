@@ -486,6 +486,16 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		public Optional<OAuth2User> getOpenIdUser() {
 			return Optional.ofNullable(credential.user);
 		}
+
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @return The bearer token.
+		 */
+		@Override
+		public Optional<OAuth2AccessToken> getBearerToken() {
+			return Optional.ofNullable(credential.token);
+		}
 	}
 
 	/**

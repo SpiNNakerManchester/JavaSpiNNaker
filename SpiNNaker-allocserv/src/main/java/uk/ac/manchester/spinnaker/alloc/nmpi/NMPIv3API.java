@@ -65,14 +65,14 @@ public interface NMPIv3API {
     /**
      * Get a list of projects that match the parameters.
      *
-     * @param apiKey The API key to authenticate with.
+     * @param auth The Authorization header value
      * @param status The status of the project to get.
      * @param collab The name of the collab of the project.
      * @return A list of matching projects.
      */
     @GET
     @Path("projects/")
-    List<Project> getProjects(@HeaderParam("x-api-key") String apiKey,
+    List<Project> getProjects(@HeaderParam("Authorization") String auth,
     		@QueryParam("status") String status,
     		@QueryParam("collab") String collab);
 
