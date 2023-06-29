@@ -14,10 +14,13 @@
 
 version: 2
 updates:
+  # Packages used by Java code: primary branch
   - package-ecosystem: maven
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
     labels:
       - "bug"
       - "dependabot"
@@ -31,7 +34,8 @@ updates:
   - package-ecosystem: maven
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: weekly
+      day: tuesday
     labels:
       - "bug"
       - "dependabot"
@@ -41,17 +45,22 @@ updates:
   - package-ecosystem: maven
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: weekly
+      day: tuesday
     labels:
       - "bug"
       - "dependabot"
     target-branch: "spring-6"
     assignees:
       - "dkfellows"
+      
+  # Actions are only checked on primary branch
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
     labels:
       - "bug"
       - "dependabot"
