@@ -28,8 +28,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.google.errorprone.annotations.RestrictedApi;
@@ -48,7 +46,6 @@ import uk.ac.manchester.spinnaker.alloc.nmpi.ResourceUsage;
 import uk.ac.manchester.spinnaker.alloc.nmpi.SessionRequest;
 import uk.ac.manchester.spinnaker.alloc.nmpi.SessionResourceUpdate;
 import uk.ac.manchester.spinnaker.alloc.nmpi.SessionResponse;
-import uk.ac.manchester.spinnaker.alloc.security.OpenIDUserAware;
 
 /**
  * Manages user quotas.
@@ -301,17 +298,8 @@ public class QuotaManager extends DatabaseAwareBean {
 
 	boolean mayCreateNMPISession(String collab) {
 		// Read collab from NMPI; fail if not there
-		Authentication auth =
-				SecurityContextHolder.getContext().getAuthentication();
-		if (!(auth instanceof OpenIDUserAware)) {
-			throw new RuntimeException("Not authenticated with OpenID");
-		}
-		OpenIDUserAware openIdAuth = (OpenIDUserAware) auth;
-		if (!openIdAuth.getBearerToken().isPresent()) {
-			throw new RuntimeException("Not authenticated with a Bearer Token");
-		}
-		String token = openIdAuth.getBearerToken().get().getTokenValue();
-		var projects = nmpiProxy.getProjects(token, STATUS_ACCEPTED, collab);
+		var projects = nmpiProxy.getProjects(quotaProps.getNMPIApiKey(),
+				STATUS_ACCEPTED, collab);
 		double totalBoardSeconds = 0.0;
 		for (var project : projects) {
 			for (var quota : project.getQuotas()) {

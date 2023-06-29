@@ -72,7 +72,7 @@ public interface NMPIv3API {
      */
     @GET
     @Path("projects/")
-    List<Project> getProjects(@HeaderParam("Authorization") String auth,
+    List<Project> getProjects(@HeaderParam("x-api-key") String apiKey,
     		@QueryParam("status") String status,
     		@QueryParam("collab") String collab);
 
