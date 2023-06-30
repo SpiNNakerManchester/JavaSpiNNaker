@@ -369,7 +369,7 @@ public class QuotaManager extends DatabaseAwareBean {
 			resourceUsage.setUnits(ResourceUsage.BOARD_SECONDS);
 			resourceUsage.setValue(quota);
 			// If job has associated session, update quota in session
-			getSession.call1(r -> r.getInt("sesion_id"), jobId).ifPresent(
+			getSession.call1(r -> r.getInt("session_id"), jobId).ifPresent(
 					sessionId -> {
 						var update = new SessionResourceUpdate();
 						update.setStatus("finished");

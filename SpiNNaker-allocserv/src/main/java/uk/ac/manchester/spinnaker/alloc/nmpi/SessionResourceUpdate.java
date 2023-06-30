@@ -16,9 +16,13 @@
 
 package uk.ac.manchester.spinnaker.alloc.nmpi;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 /**
  * A NMPI job with only resources to be updated.
  */
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SessionResourceUpdate {
 
     /**
