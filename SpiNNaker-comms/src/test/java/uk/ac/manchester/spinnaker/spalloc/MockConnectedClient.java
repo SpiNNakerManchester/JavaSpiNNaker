@@ -161,13 +161,18 @@ public class MockConnectedClient extends SpallocClient {
 
 	@MustBeClosed
 	public MockConnectedClient(int timeout) {
+		this(timeout, true);
+	}
+
+	@MustBeClosed
+	public MockConnectedClient(int timeout, boolean actual) {
 		// Main
 		//super("spinnaker.cs.man.ac.uk", 22244, timeout);
 		// Spin2
 		super("spinnaker.cs.man.ac.uk", PORT, timeout);
 		// Bad
 		// super("127.0.0.0", 22244, timeout);
-		actual = true;
+		this.actual = actual;
 	}
 
 	@Override
