@@ -62,7 +62,7 @@ public class TestMockClient {
 	@BeforeAll
 	@SuppressWarnings("MustBeClosed")
 	static void makeMockClient() {
-		client = new MockConnectedClient(timeout);
+		client = new MockConnectedClient(timeout, false);
 	}
 
 	@AfterAll
