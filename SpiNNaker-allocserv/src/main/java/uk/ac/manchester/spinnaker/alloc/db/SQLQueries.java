@@ -2236,27 +2236,33 @@ public abstract class SQLQueries {
 
 	@Parameter("job_id")
 	@Parameter("session_id")
+	@Parameter("quota_units")
 	protected static final String SET_JOB_SESSION =
 			"INSERT IGNORE INTO job_nmpi_session ( "
-			+ "job_id, session_id) "
-			+ "VALUES(:job_id, :session_id)";
+			+ "job_id, session_id, quota_units) "
+			+ "VALUES(:job_id, :session_id, :quota_units)";
 
 	@Parameter("job_id")
 	@Parameter("nmpi_job_id")
+	@Parameter("quota_units")
 	protected static final String SET_JOB_NMPI_JOB =
 			"INSERT IGNORE INTO job_nmpi_job ( "
-			+ "job_id, nmpi_job_id) "
-			+ "VALUES(:job_id, :nmpi_job_id)";
+			+ "job_id, nmpi_job_id, quota_units) "
+			+ "VALUES(:job_id, :nmpi_job_id, :quota_units)";
 
 	@Parameter("job_id")
 	@ResultColumn("session_id")
+	@ResultColumn("quota_units")
 	protected static final String GET_JOB_SESSION =
-			"SELECT session_id FROM job_nmpi_session WHERE job_id=:job_id";
+			"SELECT session_id, quota_units FROM job_nmpi_session "
+			+ "WHERE job_id=:job_id";
 
 	@Parameter("job_id")
 	@ResultColumn("nmpi_job_id")
+	@ResultColumn("quota_units")
 	protected static final String GET_JOB_NMPI_JOB =
-			"SELECT nmpi_job_id FROM job_nmpi_job WHERE job_id=:job_id";
+			"SELECT nmpi_job_id, quota_units FROM job_nmpi_job "
+			+ "WHERE job_id=:job_id";
 
 	// SQL loaded from files because it is too complicated otherwise!
 

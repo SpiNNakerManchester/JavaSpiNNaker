@@ -270,6 +270,7 @@ CREATE TABLE IF NOT EXISTS job_nmpi_session (
         FOREIGN KEY (job_id)
         REFERENCES jobs(job_id),
     session_id INTEGER NOT NULL,
+    quota_units VARCHAR(50) NOT NULL,
     UNIQUE INDEX (job_id ASC, session_id ASC)
 );
 
@@ -279,6 +280,7 @@ CREATE TABLE IF NOT EXISTS job_nmpi_job (
         FOREIGN KEY (job_id)
         REFERENCES jobs(job_id),
     nmpi_job_id INTEGER NOT NULL,
+    quota_units VARCHAR(50) NOT NULL,
     UNIQUE INDEX (job_id ASC, nmpi_job_id ASC)
 );
 

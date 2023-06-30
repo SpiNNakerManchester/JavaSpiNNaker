@@ -529,7 +529,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			String nmpiCollab, CreateDescriptor descriptor,
 			String machineName, List<String> tags, Duration keepaliveInterval,
 			byte[] originalRequest) {
-		if (!quotaManager.mayCreateNMPISession(nmpiCollab)) {
+		var quotaUnits = quotaManager.mayCreateNMPISession(nmpiCollab);
+		if (quotaUnits.isEmpty()) {
 			return Optional.empty();
 		}
 
@@ -543,7 +544,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			return job;
 		}
 
-		quotaManager.associateNMPISession(job.get().getId(), owner, nmpiCollab);
+		quotaManager.associateNMPISession(
+				job.get().getId(), owner, nmpiCollab, quotaUnits.get());
 
 		// Return the job created
 		return job;
@@ -557,9 +559,10 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		if (collab.isEmpty()) {
 			return Optional.empty();
 		}
+		var quotaDetails = collab.get();
 
 		var job = execute(conn -> createJobInGroup(
-				owner, collab.get(), descriptor, machineName,
+				owner, quotaDetails.collabId, descriptor, machineName,
 				tags, keepaliveInterval, originalRequest));
 		// On failure to get job, just return; shouldn't happen as quota checked
 		// earlier, but just in case!
@@ -567,7 +570,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			return job;
 		}
 
-		quotaManager.associateNMPIJob(job.get().getId(), nmpiJobId);
+		quotaManager.associateNMPIJob(job.get().getId(), nmpiJobId,
+				quotaDetails.quotaUnits);
 
 		// Return the job created
 		return job;
