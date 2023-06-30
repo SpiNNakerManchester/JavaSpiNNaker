@@ -62,7 +62,7 @@ public interface NMPIv3API {
      */
     @PUT
     @Path("jobs/{job_id}")
-    @Consumes("application/josn")
+    @Consumes("application/json")
     void setJobResources(@HeaderParam("x-api-key") String apiKey,
     		@PathParam("job_id") int jobId,
     		JobResourceUpdate resources);
@@ -77,6 +77,7 @@ public interface NMPIv3API {
      */
     @GET
     @Path("projects/")
+    @Produces("application/json")
     List<Project> getProjects(@HeaderParam("x-api-key") String apiKey,
     		@QueryParam("status") String status,
     		@QueryParam("collab") String collab);
