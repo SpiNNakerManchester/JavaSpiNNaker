@@ -23,6 +23,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
+import javax.ws.rs.BadRequestException;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -371,11 +372,17 @@ public class QuotaManager extends DatabaseAwareBean {
 			// If job has associated session, update quota in session
 			getSession.call1(r -> r.getInt("session_id"), jobId).ifPresent(
 					sessionId -> {
-						var update = new SessionResourceUpdate();
-						update.setStatus("finished");
-						update.setResourceUsage(resourceUsage);
-						nmpiProxy.setSessionStatusAndResources(
-								quotaProps.getNMPIApiKey(), sessionId, update);
+						try {
+							var update = new SessionResourceUpdate();
+							update.setStatus("finished");
+							update.setResourceUsage(resourceUsage);
+							nmpiProxy.setSessionStatusAndResources(
+									quotaProps.getNMPIApiKey(), sessionId,
+									update);
+						} catch (BadRequestException e) {
+							log.error(e.getResponse().getEntity().toString());
+							throw e;
+						}
 					});
 
 			// If job has associated NMPI job, update quota on NMPI job
