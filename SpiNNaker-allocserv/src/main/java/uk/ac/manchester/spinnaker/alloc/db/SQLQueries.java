@@ -1168,10 +1168,10 @@ public abstract class SQLQueries {
 	 * @see QuotaManager
 	 */
 	@Parameter("new_quota")
-	@Parameter("group_id")
-	protected static final String SET_QUOTA =
+	@Parameter("group_name")
+	protected static final String SET_COLLAB_QUOTA =
 			"UPDATE user_groups SET quota = GREATEST(0, :new_quota) "
-					+ "WHERE group_id = :group_id AND quota IS NOT NULL";
+					+ "WHERE group_name = :group_name AND quota IS NOT NULL";
 
 	/**
 	 * Get details about a user. This is pretty much everything except their
