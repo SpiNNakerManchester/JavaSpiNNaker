@@ -380,7 +380,7 @@ public class QuotaManager extends DatabaseAwareBean {
 									quotaProps.getNMPIApiKey(), sessionId,
 									update);
 						} catch (BadRequestException e) {
-							log.error(e.getResponse().getEntity().toString());
+							log.error(e.getResponse().readEntity(String.class));
 							throw e;
 						}
 					});
