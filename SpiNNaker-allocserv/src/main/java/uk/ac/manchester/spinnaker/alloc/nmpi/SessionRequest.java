@@ -20,10 +20,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 /**
  * A NMPI create session request.
  */
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SessionRequest {
 
     /**
