@@ -15,6 +15,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.nmpi;
 
+import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE;
+
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -29,6 +31,7 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
@@ -112,6 +115,8 @@ public interface NMPIv3API {
      * @return A proxy of the API.
      */
     static NMPIv3API createClient(String url) {
+    	ObjectMapper mapper = new ObjectMapper();
+    	mapper.setPropertyNamingStrategy(SNAKE_CASE);
     	return JAXRSClientFactory.create(url, NMPIv3API.class,
     			List.of(new JacksonJsonProvider()));
     }
