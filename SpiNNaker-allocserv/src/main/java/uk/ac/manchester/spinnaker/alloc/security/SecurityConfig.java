@@ -97,6 +97,9 @@ public class SecurityConfig {
 	/** How to assert that a user must be an admin. */
 	public static final String IS_ADMIN = "hasRole('ADMIN')";
 
+	/** How to assert that a user must be an admin. */
+	public static final String IS_NMPI_EXEC = "hasRole('NMPI_EXEC')";
+
 	/** How to assert that a user must be able to read summaries. */
 	public static final String IS_READER = "hasRole('READER')";
 

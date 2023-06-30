@@ -19,6 +19,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
+import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_NMPI_EXEC;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
 
 import java.time.Duration;
@@ -36,6 +37,7 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
 import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.google.errorprone.annotations.Keep;
 
@@ -288,6 +290,7 @@ public interface SpallocAPI {
 	 *            database for later retrieval.
 	 * @return Handle to the job, or {@code empty} if the job couldn't be made.
 	 */
+	@PreAuthorize(IS_NMPI_EXEC)
 	Optional<Job> createJobForNMPIJob(@NotNull String owner, int nmpiJobId,
 			@Valid CreateDescriptor descriptor,	String machineName,
 			List<String> tags, Duration keepaliveInterval,

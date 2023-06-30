@@ -21,6 +21,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 import static uk.ac.manchester.spinnaker.alloc.nmpi.ResourceUsage.BOARD_SECONDS;
 import static uk.ac.manchester.spinnaker.alloc.nmpi.ResourceUsage.CORE_HOURS;
+import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.COLLABRATORY;
 
 import java.util.Optional;
 
@@ -346,9 +347,9 @@ public class QuotaManager extends DatabaseAwareBean {
 
 		log.info("Setting quota of collab {} to {}", collab, totalBoardSeconds);
 
-		// Update quota in group for collab from NMPI, flooring off
+		// Update quota in group for collab from NMPI
 		try (var c = getConnection();
-				Update setQuota = c.update(SET_COLLAB_QUOTA)){
+				Update setQuota = c.update(SET_COLLAB_QUOTA)) {
 			setQuota.call(totalBoardSeconds, collab);
 		}
 
@@ -374,15 +375,30 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 	}
 
-	Optional<NMPIJobQuotaDetails> mayUseNMPIJob(int nmpiJobId) {
+	Optional<NMPIJobQuotaDetails> mayUseNMPIJob(String user, int nmpiJobId) {
 		// Read job from NMPI to get collab ID
 		var job = nmpiProxy.getJob(quotaProps.getNMPIApiKey(), nmpiJobId);
+
+		// If it is possible to run this job, we need to associate the user
+		// with it because only special users can run jobs like this.
+		try (var c = getConnection();
+				Query getUserByName = c.query(GET_USER_DETAILS_BY_NAME);
+				Query getGroupByName = c.query(GET_GROUP_BY_NAME);
+				Update createGroup = c.update(CREATE_GROUP_IF_NOT_EXISTS);
+				Update addUserToGroup = c.update(ADD_USER_TO_GROUP)) {
+			createGroup.call(job.getCollab(), 0.0, COLLABRATORY);
+			var userId = getUserByName.call1(r -> r.getInt("user_id"), user);
+			var groupId = getGroupByName.call1(r-> r.getInt("group_id"),
+					job.getCollab());
+			addUserToGroup.call(userId.get(), groupId);
+		}
 
 		// This is now a collab so check there instead
 		var quotaUnits = mayCreateNMPISession(job.getCollab());
 		if (quotaUnits.isEmpty()) {
 			return Optional.empty();
 		}
+
 		return Optional.of(
 				new NMPIJobQuotaDetails(job.getCollab(), quotaUnits.get()));
 	}

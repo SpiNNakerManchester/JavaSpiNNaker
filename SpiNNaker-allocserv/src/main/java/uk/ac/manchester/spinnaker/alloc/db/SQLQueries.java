@@ -1411,7 +1411,7 @@ public abstract class SQLQueries {
 	@Parameter("group_id")
 	@GeneratesID
 	protected static final String ADD_USER_TO_GROUP =
-			"INSERT INTO group_memberships(user_id, group_id) "
+			"INSERT IGNORE INTO group_memberships(user_id, group_id) "
 					+ "VALUES (:user_id, :group_id)";
 
 	/**

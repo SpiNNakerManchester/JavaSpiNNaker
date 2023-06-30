@@ -555,7 +555,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	public Optional<Job> createJobForNMPIJob(String owner, int nmpiJobId,
 			CreateDescriptor descriptor, String machineName, List<String> tags,
 			Duration keepaliveInterval,	byte[] originalRequest) {
-		var collab = quotaManager.mayUseNMPIJob(nmpiJobId);
+		var collab = quotaManager.mayUseNMPIJob(owner, nmpiJobId);
 		if (collab.isEmpty()) {
 			return Optional.empty();
 		}

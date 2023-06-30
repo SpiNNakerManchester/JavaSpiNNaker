@@ -19,6 +19,7 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_READER;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_USER;
+import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_NMPI_EXEC;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 
 import java.io.NotSerializableException;
@@ -47,7 +48,7 @@ public final class Permit {
 	private final List<GrantedAuthority> authorities;
 
 	private static final List<String> STDAUTH =
-			List.of(GRANT_ADMIN, GRANT_READER, GRANT_USER);
+			List.of(GRANT_ADMIN, GRANT_READER, GRANT_USER, GRANT_NMPI_EXEC);
 
 	/**
 	 * Build a permit.
@@ -58,13 +59,13 @@ public final class Permit {
 	public Permit(javax.ws.rs.core.SecurityContext context) {
 		authorities = STDAUTH.stream().filter(context::isUserInRole)
 				.map(SimpleGrantedAuthority::new).collect(toUnmodifiableList());
-		admin = isAdmin(authorities);
+		admin = is(authorities, GRANT_ADMIN);
 		name = context.getUserPrincipal().getName();
 	}
 
-	private static boolean isAdmin(List<GrantedAuthority> auths) {
+	private static boolean is(List<GrantedAuthority> auths, String grant) {
 		return auths.stream().map(GrantedAuthority::getAuthority)
-				.anyMatch(GRANT_ADMIN::equals);
+				.anyMatch(grant::equals);
 	}
 
 	/**
@@ -76,7 +77,7 @@ public final class Permit {
 	public Permit(SecurityContext context) {
 		authorities = context.getAuthentication().getAuthorities().stream()
 				.collect(toUnmodifiableList());
-		admin = isAdmin(authorities);
+		admin = is(authorities, GRANT_ADMIN);
 		name = context.getAuthentication().getName();
 	}
 

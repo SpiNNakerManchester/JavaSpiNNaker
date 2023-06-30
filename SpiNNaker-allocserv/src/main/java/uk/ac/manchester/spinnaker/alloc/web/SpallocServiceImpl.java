@@ -264,8 +264,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 					"At most one of group, nmpiCollabId or nmpiJobId"
 					+ " can be specified").build());
 		}
-		// Async because it involves getting a write lock
-		bgAction(response, () -> ifElse(
+		fgAction(response, () -> ifElse(
 				createJob(req, crds),
 				job -> created(ui.getRequestUriBuilder().path("{id}")
 						.build(job.getId()))
