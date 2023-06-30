@@ -19,6 +19,8 @@ import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
+import static uk.ac.manchester.spinnaker.alloc.nmpi.ResourceUsage.BOARD_SECONDS;
+import static uk.ac.manchester.spinnaker.alloc.nmpi.ResourceUsage.CORE_HOURS;
 
 import java.util.Optional;
 
@@ -57,7 +59,20 @@ import uk.ac.manchester.spinnaker.alloc.nmpi.SessionResponse;
 public class QuotaManager extends DatabaseAwareBean {
 	private static final Logger log = getLogger(QuotaManager.class);
 
+	/**
+	 * The status of the quote to request from the NMPI service.
+	 */
 	private static final String STATUS_ACCEPTED = "accepted";
+
+	/**
+	 * An approximation of cores per board.
+	 */
+	private static final int APPROX_CORES_PER_BOARD = 48 * 16;
+
+	/**
+	 * The number of seconds per hour.
+	 */
+	private static final int SECONDS_PER_HOUR = 60 * 60;
 
 	@Autowired
 	private ServiceMasterControl control;
@@ -303,11 +318,20 @@ public class QuotaManager extends DatabaseAwareBean {
 		// Read collab from NMPI; fail if not there
 		var projects = nmpiProxy.getProjects(quotaProps.getNMPIApiKey(),
 				STATUS_ACCEPTED, collab);
-		double totalBoardSeconds = 0.0;
+		long totalBoardSeconds = 0L;
 		for (var project : projects) {
 			for (var quota : project.getQuotas()) {
 				if (quota.getPlatform().equals(quotaProps.getNMPIPlaform())) {
-					totalBoardSeconds += quota.getLimit() - quota.getUsage();
+					long limitBoardSeconds = (long) quota.getLimit();
+					long usageBoardSeconds = (long) quota.getUsage();
+					if (quota.getUnits().equals(CORE_HOURS)) {
+						limitBoardSeconds = toBoardSeconds(quota.getLimit());
+						usageBoardSeconds = toBoardSeconds(quota.getUsage());
+					} else if (!quota.getUnits().equals(BOARD_SECONDS)) {
+					    throw new RuntimeException("Unknown Quota units: "
+					    		+ quota.getUnits());
+					}
+					totalBoardSeconds += limitBoardSeconds - usageBoardSeconds;
 				}
 			}
 		}
@@ -317,7 +341,7 @@ public class QuotaManager extends DatabaseAwareBean {
 		// Update quota in group for collab from NMPI, flooring off
 		try (var c = getConnection();
 				Update setQuota = c.update(SET_COLLAB_QUOTA)){
-			setQuota.call((long) totalBoardSeconds, collab);
+			setQuota.call(totalBoardSeconds, collab);
 		}
 
 		return totalBoardSeconds > 0;
@@ -367,8 +391,10 @@ public class QuotaManager extends DatabaseAwareBean {
 			var quota = getUsage.call1(
 					r -> r.getLong("quota_used"), jobId).get();
 			var resourceUsage = new ResourceUsage();
-			resourceUsage.setUnits(ResourceUsage.BOARD_SECONDS);
-			resourceUsage.setValue(quota);
+
+			// TODO: Change to board-seconds when supported by API
+			resourceUsage.setUnits(CORE_HOURS);
+			resourceUsage.setValue(toCoreHours(quota));
 			// If job has associated session, update quota in session
 			getSession.call1(r -> r.getInt("session_id"), jobId).ifPresent(
 					sessionId -> {
@@ -394,6 +420,25 @@ public class QuotaManager extends DatabaseAwareBean {
 								quotaProps.getNMPIApiKey(), nmpiJobId, update);
 					});
 		}
+	}
+
+	/**
+	 * Convert board-seconds to core-hours (approximately).
+	 * @param boardSeconds The number of board-seconds to convert.
+	 * @return The number of board-hours, which may have fractional values.
+	 */
+	private static double toCoreHours(long boardSeconds) {
+		return ((double) (boardSeconds * APPROX_CORES_PER_BOARD)) /
+				SECONDS_PER_HOUR;
+	}
+
+	/**
+	 * Convert core-hours to board-seconds (approximately).
+	 * @param coreHours The number of core-hours to convert.
+	 * @return The integer number of board seconds.
+	 */
+	private static long toBoardSeconds(double coreHours) {
+		return (long) ((coreHours * SECONDS_PER_HOUR) / APPROX_CORES_PER_BOARD);
 	}
 
 	/**
