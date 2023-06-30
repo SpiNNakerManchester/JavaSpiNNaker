@@ -739,7 +739,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	private static final Pattern COLLAB_MATCHER =
-			Pattern.compile("^collab-(.*)-(admin|editor|viewer)$");
+			Pattern.compile("^collab-(.*)-(administrator|editor|viewer)$");
 
 	/**
 	 * Convert a list of claimed collabs into authorities.
