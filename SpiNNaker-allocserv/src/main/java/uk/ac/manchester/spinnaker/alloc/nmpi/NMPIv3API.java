@@ -29,6 +29,8 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+
 /**
  * The REST API for the NMPI Service.
  */
@@ -110,6 +112,7 @@ public interface NMPIv3API {
      * @return A proxy of the API.
      */
     static NMPIv3API createClient(String url) {
-    	return JAXRSClientFactory.create(url, NMPIv3API.class);
+    	return JAXRSClientFactory.create(url, NMPIv3API.class,
+    			List.of(new JacksonJsonProvider()));
     }
 }
