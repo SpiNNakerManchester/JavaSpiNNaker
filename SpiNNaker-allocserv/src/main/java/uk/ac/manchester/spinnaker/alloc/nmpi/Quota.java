@@ -23,27 +23,27 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  */
 public class Quota {
 
-    /**
-     * The total amount of quota assigned.
-     */
-    private double limit;
+	/**
+	 * The total amount of quota assigned.
+	 */
+	private double limit;
 
-    /**
-     * The usage of the quota assigned.
-     */
-    private double usage;
+	/**
+	 * The usage of the quota assigned.
+	 */
+	private double usage;
 
-    /**
-     * The platform that the quota is assigned to.
-     */
-    private String platform;
+	/**
+	 * The platform that the quota is assigned to.
+	 */
+	private String platform;
 
-    /**
-     * The units in which the quota is measured.
-     */
-    private String units;
+	/**
+	 * The units in which the quota is measured.
+	 */
+	private String units;
 
-    /**
+	/**
 	 * @return the limit.
 	 */
 	public double getLimit() {
@@ -100,16 +100,16 @@ public class Quota {
 	}
 
 	/**
-     * Used for JSON serialisation;
-     * ignores other properties we don't care about.
-     *
-     * @param name
-     *            The parameter to set.
-     * @param value
-     *            The value to set it to.
-     */
-    @JsonAnySetter
-    public void set(final String name, final Object value) {
-        // Ignore any other values
-    }
+	 * Used for JSON serialisation;
+	 * ignores other properties we don't care about.
+	 *
+	 * @param name
+	 *            The parameter to set.
+	 * @param value
+	 *            The value to set it to.
+	 */
+	@JsonAnySetter
+	public void set(final String name, final Object value) {
+		// Ignore any other values
+	}
 }

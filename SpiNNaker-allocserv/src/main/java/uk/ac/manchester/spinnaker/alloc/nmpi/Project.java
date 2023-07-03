@@ -25,12 +25,12 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  */
 public class Project {
 
-    /**
-     * The quotas of the project.
-     */
-    private List<Quota> quotas;
+	/**
+	 * The quotas of the project.
+	 */
+	private List<Quota> quotas;
 
-    /**
+	/**
 	 * @return the quotas.
 	 */
 	public List<Quota> getQuotas() {
@@ -45,16 +45,16 @@ public class Project {
 	}
 
 	/**
-     * Used for JSON serialisation;
-     * ignores other properties we don't care about.
-     *
-     * @param name
-     *            The parameter to set.
-     * @param value
-     *            The value to set it to.
-     */
-    @JsonAnySetter
-    public void set(final String name, final Object value) {
-        // Ignore any other values
-    }
+	 * Used for JSON serialisation;
+	 * ignores other properties we don't care about.
+	 *
+	 * @param name
+	 *            The parameter to set.
+	 * @param value
+	 *            The value to set it to.
+	 */
+	@JsonAnySetter
+	public void set(final String name, final Object value) {
+		// Ignore any other values
+	}
 }

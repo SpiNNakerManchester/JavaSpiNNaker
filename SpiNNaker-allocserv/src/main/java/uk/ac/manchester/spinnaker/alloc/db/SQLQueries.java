@@ -1411,8 +1411,9 @@ public abstract class SQLQueries {
 	@Parameter("group_id")
 	@GeneratesID
 	protected static final String ADD_USER_TO_GROUP =
-			"INSERT IGNORE INTO group_memberships(user_id, group_id) "
-					+ "VALUES (:user_id, :group_id)";
+			"INSERT INTO group_memberships(user_id, group_id) "
+					+ "VALUES (:user_id, :group_id) "
+					+ "ON DUPLICATE KEY UPDATE user_id=user_id;";
 
 	/**
 	 * Removes a user from a group.
@@ -2234,6 +2235,9 @@ public abstract class SQLQueries {
 			+ ":original_request, :allocation_timestamp, :allocation_size, "
 			+ ":machine_name, :owner_name, :group_id, :group_name)";
 
+	/**
+	 * Set the NMPI session for a Job.
+	 */
 	@Parameter("job_id")
 	@Parameter("session_id")
 	@Parameter("quota_units")
@@ -2242,6 +2246,9 @@ public abstract class SQLQueries {
 			+ "job_id, session_id, quota_units) "
 			+ "VALUES(:job_id, :session_id, :quota_units)";
 
+	/**
+	 * Set the NMPI Job for a Job.
+	 */
 	@Parameter("job_id")
 	@Parameter("nmpi_job_id")
 	@Parameter("quota_units")
@@ -2250,6 +2257,9 @@ public abstract class SQLQueries {
 			+ "job_id, nmpi_job_id, quota_units) "
 			+ "VALUES(:job_id, :nmpi_job_id, :quota_units)";
 
+	/**
+	 * Get the NMPI Session for a Job.
+	 */
 	@Parameter("job_id")
 	@ResultColumn("session_id")
 	@ResultColumn("quota_units")
@@ -2257,6 +2267,9 @@ public abstract class SQLQueries {
 			"SELECT session_id, quota_units FROM job_nmpi_session "
 			+ "WHERE job_id=:job_id";
 
+	/**
+	 * Get the NMPI Job for a Job.
+	 */
 	@Parameter("job_id")
 	@ResultColumn("nmpi_job_id")
 	@ResultColumn("quota_units")

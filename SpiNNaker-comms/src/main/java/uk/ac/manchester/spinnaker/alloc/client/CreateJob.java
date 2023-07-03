@@ -497,11 +497,11 @@ public final class CreateJob {
 		return nmpiCollab;
 	}
 
-    /**
-     *
-     * @param nmpiCollab The collaboratory that the quota for the job should be
-     *                   allocated against.
-     */
+	/**
+	 *
+	 * @param nmpiCollab The collaboratory that the quota for the job should be
+	 *                   allocated against.
+	 */
 	public void setNmpiCollab(String nmpiCollab) {
 		this.nmpiCollab = nmpiCollab;
 	}

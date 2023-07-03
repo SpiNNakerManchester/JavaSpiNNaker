@@ -25,26 +25,26 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class JobResourceUpdate {
 
-    /**
-     * A count of how much resource has been used by the job.
-     */
-    private ResourceUsage resourceUsage;
+	/**
+	 * A count of how much resource has been used by the job.
+	 */
+	private ResourceUsage resourceUsage;
 
-    /**
-     * Get the resourceUsage.
-     *
-     * @return the resourceUsage
-     */
-    public ResourceUsage getResourceUsage() {
-        return resourceUsage;
-    }
+	/**
+	 * Get the resourceUsage.
+	 *
+	 * @return the resourceUsage
+	 */
+	public ResourceUsage getResourceUsage() {
+		return resourceUsage;
+	}
 
-    /**
-     * Sets the resourceUsage.
-     *
-     * @param resourceUsageParam the resourceUsage to set
-     */
-    public void setResourceUsage(final ResourceUsage resourceUsageParam) {
-        this.resourceUsage = resourceUsageParam;
-    }
+	/**
+	 * Sets the resourceUsage.
+	 *
+	 * @param resourceUsageParam the resourceUsage to set
+	 */
+	public void setResourceUsage(final ResourceUsage resourceUsageParam) {
+		this.resourceUsage = resourceUsageParam;
+	}
 }

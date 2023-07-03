@@ -25,49 +25,49 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SessionResourceUpdate {
 
-    /**
-     * The status of the job.
-     */
-    private String status;
+	/**
+	 * The status of the job.
+	 */
+	private String status;
 
-    /**
-     * A count of how much resource has been used by the job.
-     */
-    private ResourceUsage resourceUsage;
+	/**
+	 * A count of how much resource has been used by the job.
+	 */
+	private ResourceUsage resourceUsage;
 
-    /**
-     * Get the status.
-     *
-     * @return the status
-     */
-    public String getStatus() {
-        return status;
-    }
+	/**
+	 * Get the status.
+	 *
+	 * @return the status
+	 */
+	public String getStatus() {
+		return status;
+	}
 
-    /**
-     * Sets the status.
-     *
-     * @param statusParam the status to set
-     */
-    public void setStatus(final String statusParam) {
-        this.status = statusParam;
-    }
+	/**
+	 * Sets the status.
+	 *
+	 * @param statusParam the status to set
+	 */
+	public void setStatus(final String statusParam) {
+		this.status = statusParam;
+	}
 
-    /**
-     * Get the resourceUsage.
-     *
-     * @return the resourceUsage
-     */
-    public ResourceUsage getResourceUsage() {
-        return resourceUsage;
-    }
+	/**
+	 * Get the resourceUsage.
+	 *
+	 * @return the resourceUsage
+	 */
+	public ResourceUsage getResourceUsage() {
+		return resourceUsage;
+	}
 
-    /**
-     * Sets the resourceUsage.
-     *
-     * @param resourceUsageParam the resourceUsage to set
-     */
-    public void setResourceUsage(final ResourceUsage resourceUsageParam) {
-        this.resourceUsage = resourceUsageParam;
-    }
+	/**
+	 * Sets the resourceUsage.
+	 *
+	 * @param resourceUsageParam the resourceUsage to set
+	 */
+	public void setResourceUsage(final ResourceUsage resourceUsageParam) {
+		this.resourceUsage = resourceUsageParam;
+	}
 }

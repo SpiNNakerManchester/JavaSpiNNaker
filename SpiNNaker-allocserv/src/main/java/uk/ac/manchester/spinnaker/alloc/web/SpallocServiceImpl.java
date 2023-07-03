@@ -280,9 +280,9 @@ public class SpallocServiceImpl extends BackgroundSupport
 			throw new BadArgs("request must be supplied");
 		}
 
-		if (!security.isUserInRole("ADMIN") &&
-				!security.isUserInRole("NMPI_USER") &&
-				!isNull(req.owner) && !req.owner.isBlank()) {
+		if (!security.isUserInRole("ADMIN")
+				&& !security.isUserInRole("NMPI_USER")
+				&& !isNull(req.owner) && !req.owner.isBlank()) {
 			throw new BadArgs("Only admin and NMPI users can specify an owner");
 		}
 

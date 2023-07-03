@@ -41,84 +41,84 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 public interface NMPIv3API {
 
 	/**
-     * Get an NMPI Job.
-     *
-     * @param apiKey The API key to authenticate with.
-     * @param jobId The job id.
-     * @return The job.
-     */
-    @GET
-    @Path("jobs/{job_id}")
-    @Produces("application/json")
-    Job getJob(@HeaderParam("x-api-key") String apiKey,
-    		@PathParam("job_id") int jobId);
+	 * Get an NMPI Job.
+	 *
+	 * @param apiKey The API key to authenticate with.
+	 * @param jobId The job id.
+	 * @return The job.
+	 */
+	@GET
+	@Path("jobs/{job_id}")
+	@Produces("application/json")
+	Job getJob(@HeaderParam("x-api-key") String apiKey,
+			@PathParam("job_id") int jobId);
 
-    /**
-     * Update the resources of a Job.
-     *
-     * @param apiKey The API key to authenticate with.
-     * @param jobId The job id.
-     * @param resources The resources to set.
-     */
-    @PUT
-    @Path("jobs/{job_id}")
-    @Consumes("application/json")
-    void setJobResources(@HeaderParam("x-api-key") String apiKey,
-    		@PathParam("job_id") int jobId,
-    		JobResourceUpdate resources);
+	/**
+	 * Update the resources of a Job.
+	 *
+	 * @param apiKey The API key to authenticate with.
+	 * @param jobId The job id.
+	 * @param resources The resources to set.
+	 */
+	@PUT
+	@Path("jobs/{job_id}")
+	@Consumes("application/json")
+	void setJobResources(@HeaderParam("x-api-key") String apiKey,
+			@PathParam("job_id") int jobId,
+			JobResourceUpdate resources);
 
-    /**
-     * Get a list of projects that match the parameters.
-     *
-     * @param auth The Authorization header value
-     * @param status The status of the project to get.
-     * @param collab The name of the collab of the project.
-     * @return A list of matching projects.
-     */
-    @GET
-    @Path("projects/")
-    @Produces("application/json")
-    List<Project> getProjects(@HeaderParam("x-api-key") String apiKey,
-    		@QueryParam("status") String status,
-    		@QueryParam("collab") String collab);
+	/**
+	 * Get a list of projects that match the parameters.
+	 *
+	 * @param apiKey The API key to authenticate with.
+	 * @param status The status of the project to get.
+	 * @param collab The name of the collab of the project.
+	 * @return A list of matching projects.
+	 */
+	@GET
+	@Path("projects/")
+	@Produces("application/json")
+	List<Project> getProjects(@HeaderParam("x-api-key") String apiKey,
+			@QueryParam("status") String status,
+			@QueryParam("collab") String collab);
 
-    /**
-     * Create a new session.
-     *
-     * @param apiKey The API key to authenticate with.
-     * @param session The session details.
-     * @return The created session details.
-     */
-    @POST
-    @Path("sessions/")
-    @Consumes("application/json")
-    @Produces("application/json")
-    SessionResponse createSession(@HeaderParam("x-api-key") String apiKey,
-    		SessionRequest session);
+	/**
+	 * Create a new session.
+	 *
+	 * @param apiKey The API key to authenticate with.
+	 * @param session The session details.
+	 * @return The created session details.
+	 */
+	@POST
+	@Path("sessions/")
+	@Consumes("application/json")
+	@Produces("application/json")
+	SessionResponse createSession(@HeaderParam("x-api-key") String apiKey,
+			SessionRequest session);
 
-    /**
-     * Update a session.
-     *
-     * @param apiKey The API key to authenticate with.
-     * @param sessionId The identifier of the session.
-     * @param resources The resources to set.
-     */
-    @PUT
-    @Path("sessions/{session_id}")
-    @Consumes("application/json")
-    void setSessionStatusAndResources(@HeaderParam("x-api-key") String apiKey,
-    		@PathParam("session_id") int sessionId,
-    		SessionResourceUpdate resources);
+	/**
+	 * Update a session.
+	 *
+	 * @param apiKey The API key to authenticate with.
+	 * @param sessionId The identifier of the session.
+	 * @param resources The resources to set.
+	 */
+	@PUT
+	@Path("sessions/{session_id}")
+	@Consumes("application/json")
+	void setSessionStatusAndResources(@HeaderParam("x-api-key") String apiKey,
+			@PathParam("session_id") int sessionId,
+			SessionResourceUpdate resources);
 
-    /**
-     * Get a client for the API.
-     * @param url The URL to connect to.
-     * @return A proxy of the API.
-     */
-    static NMPIv3API createClient(String url) {
-    	ObjectMapper mapper = new ObjectMapper();
-    	mapper.setPropertyNamingStrategy(SNAKE_CASE);
-    	return JAXRSClientFactory.create(url, NMPIv3API.class,
-    			List.of(new JacksonJsonProvider()));
-    }
+	/**
+	 * Get a client for the API.
+	 * @param url The URL to connect to.
+	 * @return A proxy of the API.
+	 */
+	static NMPIv3API createClient(String url) {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.setPropertyNamingStrategy(SNAKE_CASE);
+		return JAXRSClientFactory.create(url, NMPIv3API.class,
+				List.of(new JacksonJsonProvider()));
+	}
 }

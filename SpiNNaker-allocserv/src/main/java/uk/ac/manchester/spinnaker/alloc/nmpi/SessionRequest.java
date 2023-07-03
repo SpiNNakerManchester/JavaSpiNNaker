@@ -29,64 +29,63 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SessionRequest {
 
-    /**
-     * The ID of the collaboratory to create the session in.
-     */
-    private String collab;
+	/**
+	 * The ID of the collaboratory to create the session in.
+	 */
+	private String collab;
 
-    /**
-     * The ID of the user who is requesting the creation.
-     */
-    private String userId;
+	/**
+	 * The ID of the user who is requesting the creation.
+	 */
+	private String userId;
 
-    /**
-     * The hardware platform to create the session in.
-     */
-    private String hardwarePlatform;
+	/**
+	 * The hardware platform to create the session in.
+	 */
+	private String hardwarePlatform;
 
-    /**
-     * The specified configuration of the hardware to use.
-     */
-    private Map<String, String> hardwareConfig = new HashMap<>();
+	/**
+	 * The specified configuration of the hardware to use.
+	 */
+	private Map<String, String> hardwareConfig = new HashMap<>();
 
+	/**
+	 * Get the collab.
+	 *
+	 * @return the collab.
+	 */
+	public String getCollab() {
+		return collab;
+	}
 
-    /**
-     * Get the collab.
-     *
-     * @return the collab.
-     */
-    public String getCollab() {
-        return collab;
-    }
+	/**
+	 * Sets the collab.
+	 *
+	 * @param collab the collab to set
+	 */
+	public void setCollab(final String collab) {
+		this.collab = collab;
+	}
 
-    /**
-     * Sets the collab.
-     *
-     * @param collab the collab to set
-     */
-    public void setCollab(final String collab) {
-        this.collab = collab;
-    }
+	/**
+	 * Get the userId.
+	 *
+	 * @return the userId
+	 */
+	public String getUserId() {
+		return userId;
+	}
 
-    /**
-     * Get the userId.
-     *
-     * @return the userId
-     */
-    public String getUserId() {
-        return userId;
-    }
+	/**
+	 * Sets the userId.
+	 *
+	 * @param userIdParam the userId to set
+	 */
+	public void setUserId(final String userIdParam) {
+		this.userId = userIdParam;
+	}
 
-    /**
-     * Sets the userId.
-     *
-     * @param userIdParam the userId to set
-     */
-    public void setUserId(final String userIdParam) {
-        this.userId = userIdParam;
-    }
-
-    /**
+	/**
 	 * @return the Hardware Platform
 	 */
 	public String getHardwarePlatform() {
@@ -115,16 +114,16 @@ public class SessionRequest {
 	}
 
 	/**
-     * Used for JSON serialisation;
-     * ignores other properties we don't care about.
-     *
-     * @param name
-     *            The parameter to set.
-     * @param value
-     *            The value to set it to.
-     */
-    @JsonAnySetter
-    public void set(final String name, final Object value) {
-        // Ignore any other values
-    }
+	 * Used for JSON serialisation;
+	 * ignores other properties we don't care about.
+	 *
+	 * @param name
+	 *            The parameter to set.
+	 * @param value
+	 *            The value to set it to.
+	 */
+	@JsonAnySetter
+	public void set(final String name, final Object value) {
+		// Ignore any other values
+	}
 }

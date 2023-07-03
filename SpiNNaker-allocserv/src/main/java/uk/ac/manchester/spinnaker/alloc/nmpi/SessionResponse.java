@@ -23,41 +23,40 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  */
 public class SessionResponse {
 
-    /**
-     * The ID of the session.
-     */
-    private Integer id;
+	/**
+	 * The ID of the session.
+	 */
+	private Integer id;
 
+	/**
+	 * Get the id.
+	 *
+	 * @return the id
+	 */
+	public Integer getId() {
+		return id;
+	}
 
-    /**
-     * Get the id.
-     *
-     * @return the id
-     */
-    public Integer getId() {
-        return id;
-    }
+	/**
+	 * Sets the id.
+	 *
+	 * @param idParam the id to set
+	 */
+	public void setId(final Integer idParam) {
+		this.id = idParam;
+	}
 
-    /**
-     * Sets the id.
-     *
-     * @param idParam the id to set
-     */
-    public void setId(final Integer idParam) {
-        this.id = idParam;
-    }
-
-    /**
-     * Used for JSON serialisation;
-     * ignores other properties we don't care about.
-     *
-     * @param name
-     *            The parameter to set.
-     * @param value
-     *            The value to set it to.
-     */
-    @JsonAnySetter
-    public void set(final String name, final Object value) {
-        // Ignore any other values
-    }
+	/**
+	 * Used for JSON serialisation;
+	 * ignores other properties we don't care about.
+	 *
+	 * @param name
+	 *            The parameter to set.
+	 * @param value
+	 *            The value to set it to.
+	 */
+	@JsonAnySetter
+	public void set(final String name, final Object value) {
+		// Ignore any other values
+	}
 }

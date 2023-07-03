@@ -87,7 +87,7 @@ public class QuotaManager extends DatabaseAwareBean {
 	public void createProxy() {
 		String nmpiUrl = quotaProps.getNMPIUrl();
 		if (!nmpiUrl.isEmpty()) {
-		    nmpiProxy = NMPIv3API.createClient(quotaProps.getNMPIUrl());
+			nmpiProxy = NMPIv3API.createClient(quotaProps.getNMPIUrl());
 		}
 	}
 
@@ -337,8 +337,8 @@ public class QuotaManager extends DatabaseAwareBean {
 						limitBoardSeconds = toBoardSeconds(quota.getLimit());
 						usageBoardSeconds = toBoardSeconds(quota.getUsage());
 					} else if (!quota.getUnits().equals(BOARD_SECONDS)) {
-					    throw new RuntimeException("Unknown Quota units: "
-					    		+ quota.getUnits());
+						throw new RuntimeException("Unknown Quota units: "
+								+ quota.getUnits());
 					}
 					totalBoardSeconds += limitBoardSeconds - usageBoardSeconds;
 				}
@@ -388,7 +388,7 @@ public class QuotaManager extends DatabaseAwareBean {
 				Update addUserToGroup = c.update(ADD_USER_TO_GROUP)) {
 			createGroup.call(job.getCollab(), 0.0, COLLABRATORY);
 			var userId = getUserByName.call1(r -> r.getInt("user_id"), user);
-			var groupId = getGroupByName.call1(r-> r.getInt("group_id"),
+			var groupId = getGroupByName.call1(r -> r.getInt("group_id"),
 					job.getCollab());
 			addUserToGroup.call(userId.get(), groupId);
 		}
@@ -403,8 +403,15 @@ public class QuotaManager extends DatabaseAwareBean {
 				new NMPIJobQuotaDetails(job.getCollab(), quotaUnits.get()));
 	}
 
-	class NMPIJobQuotaDetails {
+	final class NMPIJobQuotaDetails {
+		/**
+		 * The collaboratory ID.
+		 */
 		final String collabId;
+
+		/**
+		 * The units of the Quota.
+		 */
 		final String quotaUnits;
 
 		private NMPIJobQuotaDetails(String collabId, String quotaUnits) {
@@ -434,19 +441,20 @@ public class QuotaManager extends DatabaseAwareBean {
 			getSession.call1(
 					r -> new Session(r), jobId).ifPresent(
 					session -> {
-						try {
-							var update = new SessionResourceUpdate();
-							update.setStatus("finished");
-							update.setResourceUsage(getResourceUsage(quota,
-									session.quotaUnits));
-							nmpiProxy.setSessionStatusAndResources(
-									quotaProps.getNMPIApiKey(), session.id,
-									update);
-						} catch (BadRequestException e) {
-							log.error(e.getResponse().readEntity(String.class));
-							throw e;
-						}
-					});
+							try {
+								var update = new SessionResourceUpdate();
+								update.setStatus("finished");
+								update.setResourceUsage(getResourceUsage(quota,
+										session.quotaUnits));
+								nmpiProxy.setSessionStatusAndResources(
+										quotaProps.getNMPIApiKey(), session.id,
+										update);
+							} catch (BadRequestException e) {
+								log.error(e.getResponse().readEntity(
+										String.class));
+								throw e;
+							}
+						});
 
 			// If job has associated NMPI job, update quota on NMPI job
 			getNMPIJob.call1(r -> new NMPIJob(r), jobId).ifPresent(
@@ -466,8 +474,9 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 	}
 
-	private class Session {
+	private final class Session {
 		private int id;
+
 		private String quotaUnits;
 
 		private Session(Row r) {
@@ -476,8 +485,9 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 	}
 
-	private class NMPIJob {
+	private final class NMPIJob {
 		private int id;
+
 		private String quotaUnits;
 
 		private NMPIJob(Row r) {
@@ -506,8 +516,8 @@ public class QuotaManager extends DatabaseAwareBean {
 	 * @return The number of board-hours, which may have fractional values.
 	 */
 	private static double toCoreHours(long boardSeconds) {
-		return ((double) (boardSeconds * APPROX_CORES_PER_BOARD)) /
-				SECONDS_PER_HOUR;
+		return ((double) (boardSeconds * APPROX_CORES_PER_BOARD))
+				/ SECONDS_PER_HOUR;
 	}
 
 	/**
