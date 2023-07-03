@@ -59,7 +59,7 @@ limitations under the License.
 		<jackson.version>2.15.2</jackson.version>
 		<jackson.doc.version>2.14</jackson.doc.version>
 		<sqlite.version>3.42.0.0</sqlite.version>
-		<keycloak.version>21.1.1</keycloak.version>
+		<keycloak.version>21.1.2</keycloak.version>
 		<swagger.version>5.1.0</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.3</jython.version>
@@ -599,7 +599,7 @@ limitations under the License.
 				<plugin>
 					<groupId>com.github.eirslett</groupId>
 					<artifactId>frontend-maven-plugin</artifactId>
-					<version>1.13.3</version>
+					<version>1.13.4</version>
 				</plugin>
 				<plugin>
 					<groupId>com.github.blutorange</groupId>
