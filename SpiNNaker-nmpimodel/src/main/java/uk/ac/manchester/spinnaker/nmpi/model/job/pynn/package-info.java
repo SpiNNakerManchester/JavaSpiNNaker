@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * The NMPI service classes.
+ * The description of parameters for SpiNNaker jobs that use PyNN.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+package uk.ac.manchester.spinnaker.nmpi.model.job.pynn;

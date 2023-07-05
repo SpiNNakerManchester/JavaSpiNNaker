@@ -13,7 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpiexec.job_parameters;
+
 /**
- * The NMPI service classes.
+ * Indicates that the job is unsupported.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+public class UnsupportedJobException extends Exception {
+
+	/**
+	 * Serial Version UID.
+	 */
+	private static final long serialVersionUID = 1L;
+
+}

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * The NMPI service classes.
+ * Utilities used to support the REST interface.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+package uk.ac.manchester.spinnaker.nmpi.rest.utils;

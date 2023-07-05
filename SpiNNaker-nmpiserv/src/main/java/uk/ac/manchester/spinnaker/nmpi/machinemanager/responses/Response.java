@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpi.machinemanager.responses;
+
 /**
- * The NMPI service classes.
+ * An (abstract) response from the machine manager. Responses are all POJOs.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+public interface Response {
+	// Does Nothing
+}

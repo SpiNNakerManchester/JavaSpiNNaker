@@ -13,7 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpi.model.job;
+
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 /**
- * The NMPI service classes.
+ * Identifies the unique type name of a {@link JobParameters} implementation.
+ * Required if the parameters are to be serialised or de-serialised.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+@Retention(RUNTIME)
+@Target(TYPE)
+public @interface JobParametersTypeName {
+
+	/**
+	 * The type name.
+	 *
+	 * @return The type name
+	 */
+	String value();
+}

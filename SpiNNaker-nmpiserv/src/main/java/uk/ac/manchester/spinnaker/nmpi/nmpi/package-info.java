@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * The NMPI service classes.
+ * Implementation of the HBP NMPI back-end protocol.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+package uk.ac.manchester.spinnaker.nmpi.nmpi;

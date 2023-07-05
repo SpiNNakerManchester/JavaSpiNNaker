@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * The NMPI service classes.
+ * The main job process manager code.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+package uk.ac.manchester.spinnaker.nmpiexec.jobprocessmanager;

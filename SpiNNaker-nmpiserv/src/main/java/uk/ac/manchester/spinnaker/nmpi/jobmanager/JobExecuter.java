@@ -13,7 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpi.jobmanager;
+
 /**
- * The NMPI service classes.
+ * Executes jobs in an external process.
+ *
+ * @see LocalJobExecuterFactory.Executer
+ * @see XenVMExecuterFactory.Executer
  */
-package uk.ac.manchester.spinnaker.nmpi;
+public interface JobExecuter {
+	/**
+	 * Gets the id of the executer.
+	 *
+	 * @return The id
+	 */
+	String getExecuterId();
+
+	/**
+	 * Starts the external job. Expected to launch a thread and/or process
+	 * immediately.
+	 */
+	void startExecuter();
+}

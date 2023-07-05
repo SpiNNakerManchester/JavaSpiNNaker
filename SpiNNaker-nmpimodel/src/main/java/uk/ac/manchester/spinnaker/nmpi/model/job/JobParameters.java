@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpi.model.job;
+
 /**
- * The NMPI service classes.
+ * A type of Job to be executed. Note that the implementation must be annotated
+ * with {@link JobParametersTypeName} if it is to be serialized or deserialized.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+public interface JobParameters {
+	// No methods defined
+}

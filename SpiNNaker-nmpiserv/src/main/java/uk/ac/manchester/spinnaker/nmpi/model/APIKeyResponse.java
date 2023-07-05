@@ -13,7 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpi.model;
+
 /**
- * The NMPI service classes.
+ * POJO holding the response for a query for an API key.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+public class APIKeyResponse {
+
+	/**
+	 * The API Key.
+	 */
+	private String key;
+
+	/**
+	 * Get the API Key.
+	 *
+	 * @return the key
+	 */
+	public String getKey() {
+		return key;
+	}
+
+	/**
+	 * Set the API key.
+	 *
+	 * @param keyParam The key to set
+	 */
+	public void setKey(final String keyParam) {
+		this.key = keyParam;
+	}
+}

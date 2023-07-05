@@ -13,7 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpi.machinemanager.commands;
+
 /**
- * The NMPI service classes.
+ * Request to get notifications about a job.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+public class NotifyJobCommand extends Command<Integer> {
+	/**
+	 * Create a request to be notified of changes in job state.
+	 *
+	 * @param jobId
+	 *            The job to request about.
+	 */
+	public NotifyJobCommand(final int jobId) {
+		super("notify_job");
+		addArg(jobId);
+	}
+}

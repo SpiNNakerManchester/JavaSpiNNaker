@@ -13,7 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpi.machinemanager.commands;
+
 /**
- * The NMPI service classes.
+ * Request to create a job.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+public class CreateJobCommand extends Command<Integer> {
+	/**
+	 * Create a request to create a job.
+	 *
+	 * @param numBoards
+	 *            The number of boards to request.
+	 * @param owner
+	 *            The owner of the job to create.
+	 */
+	public CreateJobCommand(final int numBoards, final String owner) {
+		super("create_job");
+		addArg(numBoards);
+		addKwArg("owner", owner);
+	}
+}

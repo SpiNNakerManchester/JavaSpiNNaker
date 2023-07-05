@@ -13,7 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpiexec.utils;
+
 /**
- * The NMPI service classes.
+ * A very simple-minded logger.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+public abstract class Log {
+
+	/**
+	 * Avoid instantiation.
+	 */
+	private Log() {
+		// Does Nothing
+	}
+
+	/**
+	 * Write a message to the log.
+	 *
+	 * @param message
+	 *            The message to write.
+	 */
+	public static void log(final String message) {
+		System.err.println(message);
+	}
+
+	/**
+	 * Write an exception to the log.
+	 *
+	 * @param exception
+	 *            The exception to write.
+	 */
+	public static void log(final Throwable exception) {
+		exception.printStackTrace(System.err);
+	}
+}

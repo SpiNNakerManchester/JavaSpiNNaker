@@ -13,7 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpi.model.job;
+
 /**
- * The NMPI service classes.
+ * The possible statuses of a process.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+public enum Status {
+	/**
+	 * Indicates that the process is currently running.
+	 */
+	Running,
+	/**
+	 * Indicates that the process has completed successfully.
+	 */
+	Finished,
+	/**
+	 * Indicates that the process has stopped with an error.
+	 */
+	Error
+}

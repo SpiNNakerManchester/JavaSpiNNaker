@@ -13,7 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpi.machinemanager.commands;
+
 /**
- * The NMPI service classes.
+ * Request to keep a job alive.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+public class JobKeepAliveCommand extends Command<Integer> {
+	/**
+	 * Create a request to keep a job alive.
+	 *
+	 * @param jobId
+	 *            The job to ask about.
+	 */
+	public JobKeepAliveCommand(final int jobId) {
+		super("job_keepalive");
+		addArg(jobId);
+	}
+}

@@ -13,7 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpi.machinemanager.commands;
+
 /**
- * The NMPI service classes.
+ * Request to get the known machines from the spalloc service.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+public class ListMachinesCommand extends Command<String> {
+	/** Create a request to list the known SpiNNaker machines. */
+	public ListMachinesCommand() {
+		super("list_machines");
+	}
+}

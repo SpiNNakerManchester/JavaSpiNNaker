@@ -13,7 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpiexec.jobprocess;
+
 /**
- * The NMPI service classes.
+ * Something that logs can be written to.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+public interface LogWriter {
+	/**
+	 * Appends a line to a log.
+	 *
+	 * @param log
+	 *            The line to append. Should include the terminating newline.
+	 */
+	void append(String log);
+}

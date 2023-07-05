@@ -13,7 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpi.machinemanager.commands;
+
 /**
- * The NMPI service classes.
+ * Request to turn on the boards associated with a job.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+public class PowerOnJobBoardsCommand extends Command<Integer> {
+	/**
+	 * Create a request to turn on a job's allocated boards.
+	 *
+	 * @param jobId
+	 *            The job to request about.
+	 */
+	public PowerOnJobBoardsCommand(final int jobId) {
+		super("power_on_job_boards");
+		addArg(jobId);
+	}
+}

@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpi.model.job.nmpi;
+
 /**
- * The NMPI service classes.
+ * A response from the queue; can end up being one of a number of items.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+public interface QueueNextResponse {
+	// Does Nothing
+}

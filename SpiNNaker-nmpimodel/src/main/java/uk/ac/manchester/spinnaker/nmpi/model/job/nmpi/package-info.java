@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 /**
- * The NMPI service classes.
+ * The description of SpiNNaker jobs based on the HBP NMPI. The Human Brain
+ * Project's NeuroMorphic Platform Interface is documented elsewhere.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+package uk.ac.manchester.spinnaker.nmpi.model.job.nmpi;

@@ -13,7 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpi.machinemanager.commands;
+
 /**
- * The NMPI service classes.
+ * Request to not receive notifications about a job.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+public class NoNotifyJobCommand extends Command<Integer> {
+	/**
+	 * Create a request to not be notified of changes in job state.
+	 *
+	 * @param jobId
+	 *            The job to request about.
+	 */
+	public NoNotifyJobCommand(final int jobId) {
+		super("no_notify_job");
+		addArg(jobId);
+	}
+}

@@ -13,7 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpi.machinemanager.commands;
+
 /**
- * The NMPI service classes.
+ * Request to get machine information relating to a job.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+public class GetJobMachineInfoCommand extends Command<Integer> {
+	/**
+	 * Create a request to get information about a job's allocated machine.
+	 *
+	 * @param jobId
+	 *            The job to ask about.
+	 */
+	public GetJobMachineInfoCommand(final int jobId) {
+		super("get_job_machine_info");
+		addArg(jobId);
+	}
+}

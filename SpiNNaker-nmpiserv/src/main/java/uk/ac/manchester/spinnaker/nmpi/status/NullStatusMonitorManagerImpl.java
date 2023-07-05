@@ -13,7 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpi.status;
+
 /**
- * The NMPI service classes.
+ * Status Monitor that does nothing.
+ *
  */
-package uk.ac.manchester.spinnaker.nmpi;
+public class NullStatusMonitorManagerImpl implements StatusMonitorManager {
+	@Override
+	public void updateStatus(final int runningJobs, final int nBoardsInUse) {
+		// Do Nothing
+	}
+}

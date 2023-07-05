@@ -13,7 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpi.machinemanager.commands;
+
 /**
- * The NMPI service classes.
+ * Request to destroy a job.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+public class DestroyJobCommand extends Command<Integer> {
+	/**
+	 * Make a request to destroy a job.
+	 *
+	 * @param jobId
+	 *            The ID of the job.
+	 */
+	public DestroyJobCommand(final int jobId) {
+		super("destroy_job");
+		addArg(jobId);
+	}
+}

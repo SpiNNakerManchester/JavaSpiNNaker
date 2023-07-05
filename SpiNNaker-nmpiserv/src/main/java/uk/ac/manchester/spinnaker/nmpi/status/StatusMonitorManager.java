@@ -13,7 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpi.status;
+
 /**
- * The NMPI service classes.
+ * A service that handles status monitoring.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+public interface StatusMonitorManager {
+
+	/**
+	 * Send a heart beat to the status monitoring service to indicate that we
+	 * are alive.
+	 *
+	 * @param runningJobs The number of running jobs.
+	 * @param nBoardsInUse The number of boards currently allocated.
+	 */
+	void updateStatus(int runningJobs, int nBoardsInUse);
+}

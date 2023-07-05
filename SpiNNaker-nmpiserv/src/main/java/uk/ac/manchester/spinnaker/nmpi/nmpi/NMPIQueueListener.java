@@ -13,7 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.manchester.spinnaker.nmpi.nmpi;
+
+import java.io.IOException;
+
+import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.Job;
+
 /**
- * The NMPI service classes.
+ * An interface for things that listen for new jobs.
  */
-package uk.ac.manchester.spinnaker.nmpi;
+public interface NMPIQueueListener {
+	/**
+	 * Adds a job to the listener.
+	 *
+	 * @param job
+	 *            The job to add.
+	 * @throws IOException
+	 *             If anything goes wrong.
+	 */
+	void addJob(Job job) throws IOException;
+}
