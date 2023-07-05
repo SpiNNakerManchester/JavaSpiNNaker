@@ -20,7 +20,7 @@ import java.util.List;
 import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.DataItem;
 
 /**
- * The output data from a {@link Job}.
+ * The output data from a Job.
  */
 public class OutputData {
 
