@@ -58,7 +58,7 @@ public class JobDone {
 	/**
 	 * Set the status.
 	 *
-	 * @param log The status to set
+	 * @param status The status to set
 	 */
 	public void setStatus(String status) {
 		this.status = status;
