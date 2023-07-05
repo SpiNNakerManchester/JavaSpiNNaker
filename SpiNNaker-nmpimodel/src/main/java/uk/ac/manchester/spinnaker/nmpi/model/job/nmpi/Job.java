@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 /**
  * A NMPI job.
  */
-public class Job implements QueueNextResponse {
+public class Job {
 
 	/**
 	 * Code to be executed.

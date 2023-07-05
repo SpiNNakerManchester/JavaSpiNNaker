@@ -20,8 +20,8 @@ import org.joda.time.DateTime;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.DateTimeSerialiser;
-import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.OutputData;
+import uk.ac.manchester.spinnaker.nmpi.model.DateTimeSerialiser;
+import uk.ac.manchester.spinnaker.nmpi.model.OutputData;
 
 /**
  * A Job where only the parts required for completion are set.

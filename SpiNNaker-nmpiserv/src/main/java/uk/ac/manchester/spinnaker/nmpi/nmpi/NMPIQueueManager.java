@@ -42,9 +42,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.DataItem;
 import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.Job;
-import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.OutputData;
-import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.QueueEmpty;
-import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.QueueNextResponse;
+import uk.ac.manchester.spinnaker.nmpi.model.OutputData;
+import uk.ac.manchester.spinnaker.nmpi.model.QueueEmpty;
+import uk.ac.manchester.spinnaker.nmpi.model.QueueNextResponse;
 import uk.ac.manchester.spinnaker.nmpi.rest.JobDone;
 import uk.ac.manchester.spinnaker.nmpi.rest.JobLogOnly;
 import uk.ac.manchester.spinnaker.nmpi.rest.JobStatusOnly;

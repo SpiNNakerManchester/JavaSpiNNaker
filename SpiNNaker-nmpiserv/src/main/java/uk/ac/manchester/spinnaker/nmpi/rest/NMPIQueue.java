@@ -32,9 +32,9 @@ import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
-import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.Job;
-import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.QueueEmpty;
-import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.QueueNextResponse;
+import uk.ac.manchester.spinnaker.nmpi.model.QueueEmpty;
+import uk.ac.manchester.spinnaker.nmpi.model.QueueJob;
+import uk.ac.manchester.spinnaker.nmpi.model.QueueNextResponse;
 import uk.ac.manchester.spinnaker.nmpi.rest.utils.CustomJacksonJsonProvider;
 import uk.ac.manchester.spinnaker.nmpi.rest.utils.PropertyBasedDeserialiser;
 
@@ -143,7 +143,7 @@ class NMPIQueueResponseDeserialiser
 	 */
 	NMPIQueueResponseDeserialiser() {
 		super(QueueNextResponse.class);
-		register("id", Job.class);
+		register("id", QueueJob.class);
 		register("warning", QueueEmpty.class);
 	}
 }

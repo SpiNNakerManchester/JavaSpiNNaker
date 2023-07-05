@@ -13,33 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.manchester.spinnaker.nmpi.model.job.nmpi;
+package uk.ac.manchester.spinnaker.nmpi.model;
 
 /**
- * A message indicating that the queue is empty.
+ * A response from the queue; can end up being one of a number of items.
  */
-public class QueueEmpty implements QueueNextResponse {
-
-	/**
-	 * Any warning returned.
-	 */
-	private String warning;
-
-	/**
-	 * Get the warning.
-	 *
-	 * @return The warning
-	 */
-	public String getWarning() {
-		return warning;
-	}
-
-	/**
-	 * Set the warning.
-	 *
-	 * @param warningParam The warning to set
-	 */
-	public void setWarning(final String warningParam) {
-		this.warning = warningParam;
-	}
+public interface QueueNextResponse {
+	// Does Nothing
 }
