@@ -35,8 +35,6 @@ import static org.apache.commons.io.FileUtils.forceMkdirParent;
 import static org.apache.commons.io.FileUtils.listFiles;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.nmpi.ThreadUtils.waitfor;
-import static uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManager.STATUS_VALIDATED;
-import static uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManager.STATUS_RUNNING;
 
 import java.io.File;
 import java.io.IOException;
