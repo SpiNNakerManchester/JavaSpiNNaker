@@ -241,7 +241,7 @@ public class JobProcessManager {
 
 			// Read the job
 			job = jobManager.getNextJob(executerId);
-			projectId = new File(job.getCollabId()).getName();
+			projectId = job.getCollab();
 
 			// Create a temporary location for the job
 			final var workingDirectory = createTempDir("job", ".tmp", null);
