@@ -64,7 +64,7 @@ public class Job implements QueueNextResponse {
 	/**
 	 * The ID of the collaboratory in which the job is created.
 	 */
-	private String collabId;
+	private String collab;
 
 	/**
 	 * The URI of the resources of this job.
@@ -218,21 +218,21 @@ public class Job implements QueueNextResponse {
 	}
 
 	/**
-	 * Get the collabId.
+	 * Get the collab.
 	 *
-	 * @return the collabId
+	 * @return the collab
 	 */
-	public String getCollabId() {
-		return collabId;
+	public String getCollab() {
+		return collab;
 	}
 
 	/**
-	 * Sets the collabId.
+	 * Sets the collab.
 	 *
-	 * @param collabIdParam the collabId to set
+	 * @param collabParam the collab to set
 	 */
-	public void setCollabId(final String collabIdParam) {
-		this.collabId = collabIdParam;
+	public void setCollab(final String collabParam) {
+		this.collab = collabParam;
 	}
 
 	/**

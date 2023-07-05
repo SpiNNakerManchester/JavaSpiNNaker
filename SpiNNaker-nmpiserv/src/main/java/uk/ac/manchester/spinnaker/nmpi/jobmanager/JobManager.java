@@ -764,8 +764,7 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 				releaseAllocatedMachines(id);
 				final var prov = getProvenance(id);
 				try {
-					final var projectId =
-							new File(job.getCollabId()).getName();
+					final var projectId = job.getCollab();
 					queueManager.setJobError(id, logToAppend,
 							getOutputFiles(projectId, id, null, null),
 							new Exception("Job did not finish cleanly"), prov);
