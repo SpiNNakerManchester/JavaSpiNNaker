@@ -32,7 +32,6 @@ import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
-import uk.ac.manchester.spinnaker.nmpi.model.NMPILog;
 import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.Job;
 import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.QueueEmpty;
 import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.QueueNextResponse;
@@ -60,51 +59,52 @@ public interface NMPIQueue {
 			@PathParam("hardware") String hardware);
 
 	/**
-	 * Update the status of a queue item.
-	 *
-	 * @param apiKey
-	 *            The API key to use.
-	 * @param id
-	 *            The queue ID
-	 * @param job
-	 *            the Job document.
-	 */
-	@PUT
-	@Path("jobs/{id}")
-	@Consumes("application/json")
-	void updateJob(@HeaderParam("x-api-key") String apiKey,
-			@PathParam("id") int id, Job job);
-
-	/**
-	 * Get the queue status.
-	 *
-	 * @param apiKey
-	 *            The API key to use.
-	 * @param id
-	 *            The queue ID
-	 * @return The job on the queue.
-	 */
-	@GET
-	@Path("jobs/{id}")
-	@Produces("application/json")
-	Job getJob(@HeaderParam("x-api-key") String apiKey,
-			@PathParam("id") int id);
-
-	/**
-	 * Update the log.
+	 * Update the log of a job.
 	 *
 	 * @param apiKey
 	 *            The API key to use.
 	 * @param id
 	 *            The queue ID
 	 * @param log
-	 *            The log entry
+	 *            the Job Log.
 	 */
 	@PUT
-	@Path("jobs/{id}/log")
+	@Path("jobs/{id}")
 	@Consumes("application/json")
-	void updateLog(@HeaderParam("x-api-key") String apiKey,
-			@PathParam("id") int id, NMPILog log);
+	void updateJobLog(@HeaderParam("x-api-key") String apiKey,
+			@PathParam("id") int id, JobLogOnly log);
+
+	/**
+	 * Update the status of a job.
+	 *
+	 * @param apiKey
+	 *            The API key to use.
+	 * @param id
+	 *            The queue ID
+	 * @param status
+	 *            the Job Status.
+	 */
+	@PUT
+	@Path("jobs/{id}")
+	@Consumes("application/json")
+	void updateJobStatus(@HeaderParam("x-api-key") String apiKey,
+			@PathParam("id") int id, JobStatusOnly status);
+
+	/**
+	 * Set a job when done.
+	 *
+	 * @param apiKey
+	 *            The API key to use.
+	 * @param id
+	 *            The queue ID
+	 * @param job
+	 *            The details to update
+	 */
+	@PUT
+	@Path("jobs/{id}")
+	@Consumes("application/json")
+	void finishJob(@HeaderParam("x-api-key") String apiKey,
+			@PathParam("id") int id, JobDone job);
 
 	/**
 	 * Get a client for the API.

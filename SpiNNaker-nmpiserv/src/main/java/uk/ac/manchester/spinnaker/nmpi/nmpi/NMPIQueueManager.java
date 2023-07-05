@@ -40,12 +40,14 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import uk.ac.manchester.spinnaker.nmpi.model.NMPILog;
 import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.DataItem;
 import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.Job;
 import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.OutputData;
 import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.QueueEmpty;
 import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.QueueNextResponse;
+import uk.ac.manchester.spinnaker.nmpi.rest.JobDone;
+import uk.ac.manchester.spinnaker.nmpi.rest.JobLogOnly;
+import uk.ac.manchester.spinnaker.nmpi.rest.JobStatusOnly;
 import uk.ac.manchester.spinnaker.nmpi.rest.NMPIQueue;
 
 /**
@@ -97,7 +99,7 @@ public class NMPIQueueManager {
 	private final Map<Integer, Job> jobCache = new HashMap<>();
 
 	/** The log of the job so far. */
-	private final Map<Integer, NMPILog> jobLog = new HashMap<>();
+	private final Map<Integer, StringBuilder> jobLog = new HashMap<>();
 
 	/**
 	 * Logger.
@@ -122,30 +124,6 @@ public class NMPIQueueManager {
 	@PostConstruct
 	private void initAPIClient() {
 		queue = NMPIQueue.createClient(nmpiUrl.toString());
-	}
-
-	/**
-	 * Gets a job from the server.
-	 *
-	 * @param id The ID of the job.
-	 * @return The job
-	 */
-	private Job getJobFromQueue(final int id) {
-		return queue.getJob(nmpiApiKey, id);
-	}
-
-	/**
-	 * Gets a job from the cache, or from the server if the job is not in the
-	 * cache.
-	 *
-	 * @param id
-	 *            The ID of the job
-	 * @return The job
-	 */
-	private Job getJob(final int id) {
-		synchronized (jobCache) {
-			return jobCache.computeIfAbsent(id, this::getJobFromQueue);
-		}
 	}
 
 	/**
@@ -209,12 +187,9 @@ public class NMPIQueueManager {
 				listener.addJob(job);
 			}
 			logger.debug("Setting job status");
-			job.setTimestampSubmission(
-					job.getTimestampSubmission().withZoneRetainFields(UTC));
-			job.setTimestampCompletion(null);
-			job.setStatus(STATUS_VALIDATED);
 			logger.debug("Updating job status on server");
-			queue.updateJob(nmpiApiKey, job.getId(), job);
+			queue.updateJobStatus(nmpiApiKey, job.getId(),
+					new JobStatusOnly(STATUS_VALIDATED));
 		} catch (final WebApplicationException e) {
 			var body = e.getResponse().readEntity(String.class);
 			logger.error("Error in updating job: " + body, e);
@@ -234,10 +209,12 @@ public class NMPIQueueManager {
 	 *            The messages to append
 	 */
 	public void appendJobLog(final int id, final String logToAppend) {
-		var existingLog = jobLog.computeIfAbsent(id, ignored -> new NMPILog());
-		existingLog.appendContent(logToAppend);
+		var existingLog = jobLog.computeIfAbsent(
+				id, ignored -> new StringBuilder());
+		existingLog.append(logToAppend);
 		logger.debug("Job {} log is being updated", id);
-		queue.updateLog(nmpiApiKey, id, existingLog);
+		queue.updateJobLog(nmpiApiKey, id,
+				new JobLogOnly(existingLog.toString()));
 	}
 
 	/**
@@ -248,10 +225,9 @@ public class NMPIQueueManager {
 	 */
 	public void setJobRunning(final int id) {
 		logger.debug("Job {} is running", id);
-		final var job = getJob(id);
-		job.setStatus(STATUS_RUNNING);
 		logger.debug("Updating job status on server");
-		queue.updateJob(nmpiApiKey, id, job);
+		queue.updateJobStatus(nmpiApiKey, id,
+				new JobStatusOnly(STATUS_RUNNING));
 	}
 
 	/**
@@ -275,16 +251,15 @@ public class NMPIQueueManager {
 			appendJobLog(id, logToAppend);
 		}
 
-		final var job = getJob(id);
 		final var outputData = new OutputData(REPOSITORY);
+		final var job = new JobDone(STATUS_FINISHED);
 		outputData.setFiles(outputs);
-		job.setStatus(STATUS_FINISHED);
 		job.setOutputData(outputData);
 		job.setTimestampCompletion(new DateTime(UTC));
 		job.setProvenance(provenance);
 
 		logger.debug("Updating job status on server");
-		queue.updateJob(nmpiApiKey, id, job);
+		queue.finishJob(nmpiApiKey, id, job);
 
 		jobLog.remove(id);
 		jobCache.remove(id);
@@ -322,16 +297,15 @@ public class NMPIQueueManager {
 		logMessage.append(errors.toString());
 		appendJobLog(id, logMessage.toString());
 
-		final var job = getJob(id);
+		final var job = new JobDone(STATUS_ERROR);
 		final var outputData = new OutputData(REPOSITORY);
 		outputData.setFiles(outputs);
-		job.setStatus(STATUS_ERROR);
 		job.setTimestampCompletion(new DateTime(UTC));
 		job.setOutputData(outputData);
 		job.setProvenance(provenance);
 
 		logger.debug("Updating job on server");
-		queue.updateJob(nmpiApiKey, id, job);
+		queue.finishJob(nmpiApiKey, id, job);
 
 		jobLog.remove(id);
 		jobCache.remove(id);

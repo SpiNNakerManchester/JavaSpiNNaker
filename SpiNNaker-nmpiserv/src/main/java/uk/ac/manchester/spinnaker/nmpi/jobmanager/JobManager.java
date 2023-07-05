@@ -255,15 +255,6 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	public void addJob(final Job job) throws IOException {
 		requireNonNull(job);
 		logger.info("New job {}", job.getId());
-
-		// Add any existing provenance to be updated
-		synchronized (jobProvenance) {
-			var prov = job.getProvenance();
-			if (nonNull(prov)) {
-				jobProvenance.put(job.getId(), prov);
-			}
-		}
-
 		jobOwner.put(job.getId(), job.getUserId());
 
 		// Start an executer for the job
@@ -655,6 +646,7 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 		requireNonNull(logToAppend);
 		requireNonNull(baseDirectory);
 		requireNonNull(outputs);
+		jobOwner.remove(id);
 		logger.info("Marking job {} as finished", id);
 		releaseAllocatedMachines(id);
 
@@ -706,6 +698,8 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 		requireNonNull(outputs);
 		requireNonNull(stackTrace);
 
+		jobOwner.remove(id);
+
 		logger.info("Marking job {} as error", id);
 		releaseAllocatedMachines(id);
 
@@ -755,12 +749,10 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 		}
 		if (nonNull(job)) {
 			final int id = job.getId();
-
-			switch (job.getStatus()) {
-			case STATUS_VALIDATED:
-			case STATUS_RUNNING:
+			if (jobOwner.containsKey(id)) {
 				logger.debug("Executer {} for Job {} has exited, "
 						+ "but job not exited cleanly", executorId, id);
+				jobOwner.remove(id);
 				releaseAllocatedMachines(id);
 				final var prov = getProvenance(id);
 				try {
@@ -774,8 +766,7 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 							new ArrayList<DataItem>(),
 							new Exception("Job did not finish cleanly"), prov);
 				}
-				break;
-			default:
+			} else {
 				logger.debug("Executer {} for Job {} has exited",
 						executorId, id);
 			}

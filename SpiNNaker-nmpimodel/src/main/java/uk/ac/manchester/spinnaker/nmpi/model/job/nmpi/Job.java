@@ -15,16 +15,10 @@
  */
 package uk.ac.manchester.spinnaker.nmpi.model.job.nmpi;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.DateTime;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * A NMPI job.
@@ -57,24 +51,9 @@ public class Job implements QueueNextResponse {
 	private List<DataItem> inputData;
 
 	/**
-	 * The output data items.
-	 */
-	private OutputData outputData;
-
-	/**
 	 * The ID of the collaboratory in which the job is created.
 	 */
 	private String collab;
-
-	/**
-	 * The URI of the resources of this job.
-	 */
-	private String resourceUri;
-
-	/**
-	 * The status of the job.
-	 */
-	private String status;
 
 	/**
 	 * The command used to execute the job.
@@ -85,28 +64,6 @@ public class Job implements QueueNextResponse {
 	 * The ID of the user which created the job.
 	 */
 	private String userId;
-
-	/**
-	 * The timestamp at which the job was completed.
-	 */
-	@JsonSerialize(using = DateTimeSerialiser.class)
-	private DateTime timestampCompletion;
-
-	/**
-	 * The timestamp at which the job was submitted.
-	 */
-	@JsonSerialize(using = DateTimeSerialiser.class)
-	private DateTime timestampSubmission;
-
-	/**
-	 * The provenance information of the job.
-	 */
-	private ObjectNode provenance;
-
-	/**
-	 * Additional fields that are not supported, but don't cause errors.
-	 */
-	private Map<String, Object> others = new HashMap<>();
 
 	/**
 	 * Get the code.
@@ -200,24 +157,6 @@ public class Job implements QueueNextResponse {
 	}
 
 	/**
-	 * Get the outputData.
-	 *
-	 * @return the outputData
-	 */
-	public OutputData getOutputData() {
-		return outputData;
-	}
-
-	/**
-	 * Sets the outputData.
-	 *
-	 * @param outputDataParam the outputData to set
-	 */
-	public void setOutputData(final OutputData outputDataParam) {
-		this.outputData = outputDataParam;
-	}
-
-	/**
 	 * Get the collab.
 	 *
 	 * @return the collab
@@ -233,42 +172,6 @@ public class Job implements QueueNextResponse {
 	 */
 	public void setCollab(final String collabParam) {
 		this.collab = collabParam;
-	}
-
-	/**
-	 * Get the resourceUri.
-	 *
-	 * @return the resourceUri
-	 */
-	public String getResourceUri() {
-		return resourceUri;
-	}
-
-	/**
-	 * Sets the resourceUri.
-	 *
-	 * @param resourceUriParam the resourceUri to set
-	 */
-	public void setResourceUri(final String resourceUriParam) {
-		this.resourceUri = resourceUriParam;
-	}
-
-	/**
-	 * Get the status.
-	 *
-	 * @return the status
-	 */
-	public String getStatus() {
-		return status;
-	}
-
-	/**
-	 * Sets the status.
-	 *
-	 * @param statusParam the status to set
-	 */
-	public void setStatus(final String statusParam) {
-		this.status = statusParam;
 	}
 
 	/**
@@ -308,62 +211,6 @@ public class Job implements QueueNextResponse {
 	}
 
 	/**
-	 * Get the timestampCompletion.
-	 *
-	 * @return the timestampCompletion
-	 */
-	public DateTime getTimestampCompletion() {
-		return timestampCompletion;
-	}
-
-	/**
-	 * Sets the timestampCompletion.
-	 *
-	 * @param timestampCompletionParam the timestampCompletion to set
-	 */
-	public void setTimestampCompletion(
-			final DateTime timestampCompletionParam) {
-		this.timestampCompletion = timestampCompletionParam;
-	}
-
-	/**
-	 * Get the timestampSubmission.
-	 *
-	 * @return the timestampSubmission
-	 */
-	public DateTime getTimestampSubmission() {
-		return timestampSubmission;
-	}
-
-	/**
-	 * Sets the timestampSubmission.
-	 *
-	 * @param timestampSubmissionParam the timestampSubmission to set
-	 */
-	public void setTimestampSubmission(
-			final DateTime timestampSubmissionParam) {
-		this.timestampSubmission = timestampSubmissionParam;
-	}
-
-	/**
-	 * Get the provenance.
-	 *
-	 * @return the provenance
-	 */
-	public ObjectNode getProvenance() {
-		return provenance;
-	}
-
-	/**
-	 * Sets the provenance.
-	 *
-	 * @param provenanceParam the provenance to set
-	 */
-	public void setProvenance(final ObjectNode provenanceParam) {
-		this.provenance = provenanceParam;
-	}
-
-	/**
 	 * Used for JSON serialisation.
 	 *
 	 * @param name
@@ -373,16 +220,6 @@ public class Job implements QueueNextResponse {
 	 */
 	@JsonAnySetter
 	public void set(final String name, final Object value) {
-		others.put(name, value);
-	}
-
-	/**
-	 * Get any other parameters that have been saved.
-	 *
-	 * @return The parameters
-	 */
-	@JsonAnyGetter
-	public Map<String, Object> getOthers() {
-		return others;
+		// Ignore
 	}
 }
