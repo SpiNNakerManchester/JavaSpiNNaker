@@ -624,7 +624,7 @@ public class XenVMExecuterFactory implements JobExecuterFactory {
 				waitForHalt(conn);
 				jobManager.setExecutorExited(uuid, null);
 			} catch (final Exception e) {
-				logger.error("Error {}", action, e);
+				logger.error("Error " + action, e);
 				jobManager.setExecutorExited(uuid, e.getMessage());
 			} finally {
 				try {
