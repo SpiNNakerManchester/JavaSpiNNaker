@@ -178,8 +178,9 @@ public class CreateJobRequest {
 		 * Really ought to be validated against config, but we've not got the
 		 * config at this point.
 		 */
-		return keepaliveInterval.compareTo(MAX_KEEPALIVE) <= 0
-				&& keepaliveInterval.compareTo(MIN_KEEPALIVE) >= 0;
+		return keepaliveInterval == null
+				|| (keepaliveInterval.compareTo(MAX_KEEPALIVE) <= 0
+					&& keepaliveInterval.compareTo(MIN_KEEPALIVE) >= 0);
 	}
 
 	/** Describes a request for an allocation of given dimensions. */
