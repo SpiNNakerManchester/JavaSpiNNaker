@@ -28,8 +28,7 @@ import static java.util.UUID.randomUUID;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.nmpi.ThreadUtils.sleep;
 import static uk.ac.manchester.spinnaker.nmpi.ThreadUtils.waitfor;
-import static uk.ac.manchester.spinnaker.nmpi.jobmanager.JobManager.JOB_PROCESS_MANAGER_JAR;
-import static uk.ac.manchester.spinnaker.nmpi.model.job.JobManagerInterface.JOB_PROCESS_MANAGER_ZIP;
+import static uk.ac.manchester.spinnaker.nmpi.model.job.JobManagerInterface.JOB_PROCESS_MANAGER;
 
 import java.io.IOException;
 import java.net.URL;
@@ -507,10 +506,10 @@ public class XenVMExecuterFactory implements JobExecuterFactory {
 			this.jobManager = jobManagerParam;
 			uuid = randomUUID().toString();
 			jobProcessManagerUrl =
-					new URL(baseUrl, "job/" + JOB_PROCESS_MANAGER_ZIP);
+					new URL(baseUrl, "job/" + JOB_PROCESS_MANAGER);
 
 			final var execArgs = new StringBuilder("-jar ");
-			execArgs.append(JOB_PROCESS_MANAGER_JAR);
+			execArgs.append(JOB_PROCESS_MANAGER);
 			execArgs.append(" --serverUrl ");
 			execArgs.append(baseUrl);
 			execArgs.append(" --executerId ");
@@ -556,7 +555,7 @@ public class XenVMExecuterFactory implements JobExecuterFactory {
 			extraVdi = conn.createVDI(vdi);
 			extraDisk = conn.createVBD(clonedVm, extraVdi);
 			conn.addData(clonedVm, "vm-data/nmpiurl", jobProcessManagerUrl);
-			conn.addData(clonedVm, "vm-data/nmpifile", JOB_PROCESS_MANAGER_ZIP);
+			conn.addData(clonedVm, "vm-data/nmpifile", JOB_PROCESS_MANAGER);
 			conn.addData(clonedVm, "vm-data/nmpiargs", args);
 			if (shutdownOnExit) {
 				conn.addData(clonedVm, "vm-data/shutdown", true);

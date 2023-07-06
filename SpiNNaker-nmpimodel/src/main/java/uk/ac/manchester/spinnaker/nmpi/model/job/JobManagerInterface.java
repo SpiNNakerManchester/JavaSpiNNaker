@@ -57,10 +57,10 @@ public interface JobManagerInterface {
 	String TEXT_PLAIN = "text/plain";
 
 	/**
-	 * The name of the ZIP file we like to serve up when giving people a remote
+	 * The name of the file we like to serve up when giving people a remote
 	 * process manager.
 	 */
-	String JOB_PROCESS_MANAGER_ZIP = "SpiNNaker-nmpiexec.zip";
+	String JOB_PROCESS_MANAGER = "SpiNNaker-nmpiexec.jar";
 
 	/**
 	 * The name of the setup script.
@@ -308,8 +308,8 @@ public interface JobManagerInterface {
 	 * @return a response containing the ZIP file.
 	 */
 	@GET
-	@Path(JOB_PROCESS_MANAGER_ZIP)
-	@Produces(APPLICATION_ZIP)
+	@Path(JOB_PROCESS_MANAGER)
+	@Produces(APPLICATION_OCTET_STREAM)
 	Response getJobProcessManager();
 
 	/**

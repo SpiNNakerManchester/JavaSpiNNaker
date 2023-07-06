@@ -37,7 +37,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.codec.binary.Base64;
-import org.jboss.resteasy.util.ParameterParser;
+import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
 
 /**
  * Utilities for downloading a file.
@@ -60,12 +60,7 @@ public abstract class FileDownloader {
 		if (nonNull(contentDisposition)) {
 			final var cdl = contentDisposition.toLowerCase();
 			if (cdl.startsWith("form-data") || cdl.startsWith("attachment")) {
-				final var parser = new ParameterParser();
-				parser.setLowerCaseNames(true);
-				final var params = parser.parse(contentDisposition, ';');
-				if (params.containsKey("filename")) {
-					return params.get("filename").trim();
-				}
+				return new ContentDisposition(cdl).getFilename();
 			}
 		}
 		return null;

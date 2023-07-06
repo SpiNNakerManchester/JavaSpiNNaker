@@ -43,15 +43,12 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
@@ -60,8 +57,6 @@ import org.ini4j.Profile.Section;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
 import uk.ac.manchester.spinnaker.nmpi.model.job.Status;
 import uk.ac.manchester.spinnaker.nmpi.model.job.pynn.PyNNJobParameters;
 import uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine;
@@ -75,11 +70,6 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 	 * The error level that represents a signal.
 	 */
 	private static final int MIN_SIGNAL_OFFSET = 128;
-
-	/**
-	 * The directory containing provenance within the reports.
-	 */
-	private static final String PROVENANCE_DIRECTORY = "provenance_data";
 
 	/**
 	 * The section of the config where the machine is contained.
@@ -421,75 +411,6 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 	}
 
 	/**
-	 * Enter some provenance into the provenance map.
-	 *
-	 * @param items
-	 *            The items to insert.
-	 * @param path
-	 *            Where to insert these items relative to the current node, as a
-	 *            string.
-	 * @param pathList
-	 *            Where to insert these items relative to the current node, as a
-	 *            list.
-	 */
-	private void putProvenanceInMap(final ProvenanceDataItems items,
-			final String path, final LinkedList<String> pathList) {
-
-		// Create a path for this level in the tree
-		final var myPath = path + items.getName();
-		pathList.addLast(items.getName());
-
-		// Add all nested items
-		for (final var subItems : items.getProvenanceDataItems()) {
-			putProvenanceInMap(subItems, myPath + "/", pathList);
-		}
-
-		// Add items from this level
-		for (final var subItem : items.getProvenanceDataItem()) {
-			final var itemPath = myPath + "/" + subItem.getName();
-			pathList.addLast(subItem.getName());
-			for (final var item : PROVENANCE_ITEMS_TO_ADD) {
-				if (itemPath.matches(item)) {
-					provenance.add(new ProvenanceItem(
-							new ArrayList<>(pathList), subItem.getValue()));
-				}
-			}
-			pathList.removeLast();
-		}
-		pathList.removeLast();
-	}
-
-	/**
-	 * Add the provenance contained in the files in the given directory.
-	 *
-	 * @param provenanceDirectory
-	 *            Where to look for XML files.
-	 * @throws JAXBException
-	 *             If things go wrong in deserialisation.
-	 * @throws IOException
-	 *             If anything goes wrong with I/O.
-	 */
-	private void addProvenance(final File provenanceDirectory)
-			throws IOException, JAXBException {
-
-		// Get provenance data from files
-		for (final var file : provenanceDirectory.listFiles()) {
-
-			// Only process XML files
-			if (file.getName().endsWith(".xml")) {
-				final var jaxbContext =
-						JAXBContext.newInstance(ProvenanceDataItems.class);
-				final var jaxbUnmarshaller =
-						jaxbContext.createUnmarshaller();
-				final var source = new StreamSource(file);
-				final var items = (ProvenanceDataItems) jaxbUnmarshaller
-						.unmarshal(source);
-				putProvenanceInMap(items, "", new LinkedList<String>());
-			}
-		}
-	}
-
-	/**
 	 * Used for creating a ZIP of the provenance.
 	 *
 	 * @param reportsZip
@@ -505,17 +426,12 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 	 */
 	private void zipProvenance(final ZipOutputStream reportsZip,
 			final File directory, final String path)
-			throws IOException, JAXBException {
+			throws IOException {
 
 		// Go through the report files and zip them up
 		for (final var file : directory.listFiles()) {
 			if (file.isDirectory()) {
 				zipProvenance(reportsZip, file, path + "/" + file.getName());
-
-				// If the directory is the provenance directory, process it
-				if (file.getName().equals(PROVENANCE_DIRECTORY)) {
-					addProvenance(file);
-				}
 			} else {
 				reportsZip.putNextEntry(
 						new ZipEntry(path + "/" + file.getName()));
@@ -537,7 +453,7 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 	 *             If anything goes wrong with deserialisation of XML.
 	 */
 	private void gatherProvenance(final File workingDirectoryParam)
-			throws IOException, JAXBException {
+			throws IOException {
 
 		// Find the reports folder
 		final var reportsFolder = new File(workingDirectoryParam, "reports");

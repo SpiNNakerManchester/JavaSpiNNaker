@@ -116,12 +116,6 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	public static final int STATUS_UPDATE_PERIOD = 10;
 
 	/**
-	 * The name of the JAR containing the job process manager implementation.
-	 */
-	public static final String JOB_PROCESS_MANAGER_JAR =
-			"SpiNNaker-nmpiexec.jar";
-
-	/**
 	 * The machine manager.
 	 */
 	@Autowired
@@ -782,12 +776,12 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	@Override
 	public Response getJobProcessManager() {
 		final var jobManagerStream =
-				getClass().getResourceAsStream("/" + JOB_PROCESS_MANAGER_ZIP);
+				getClass().getResourceAsStream("/" + JOB_PROCESS_MANAGER);
 		if (isNull(jobManagerStream)) {
 			throw new UnsatisfiedLinkError(
-					JOB_PROCESS_MANAGER_ZIP + " not found in classpath");
+					JOB_PROCESS_MANAGER + " not found in classpath");
 		}
-		return ok(jobManagerStream).type(APPLICATION_ZIP).build();
+		return ok(jobManagerStream).type(APPLICATION_OCTET_STREAM).build();
 	}
 
 	@Override

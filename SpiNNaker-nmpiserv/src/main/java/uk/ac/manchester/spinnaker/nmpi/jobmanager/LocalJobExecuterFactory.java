@@ -16,20 +16,17 @@
 package uk.ac.manchester.spinnaker.nmpi.jobmanager;
 
 import static java.io.File.createTempFile;
-import static java.io.File.pathSeparator;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.joining;
 import static org.apache.commons.io.FileUtils.copyToFile;
-import static org.apache.commons.io.FileUtils.forceDeleteOnExit;
-import static org.apache.commons.io.FileUtils.forceMkdirParent;
+import static org.apache.commons.io.FileUtils.forceMkdir;
 import static org.apache.commons.io.IOUtils.buffer;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copy;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.nmpi.ThreadUtils.waitfor;
-import static uk.ac.manchester.spinnaker.nmpi.model.job.JobManagerInterface.JOB_PROCESS_MANAGER_ZIP;
+import static uk.ac.manchester.spinnaker.nmpi.model.job.JobManagerInterface.JOB_PROCESS_MANAGER;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -44,7 +41,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.zip.ZipInputStream;
 
 import javax.annotation.PostConstruct;
 
@@ -55,13 +51,6 @@ import org.springframework.beans.factory.annotation.Value;
  * An executer that runs its subprocesses on the local machine.
  */
 public class LocalJobExecuterFactory implements JobExecuterFactory {
-
-	/**
-	 * The job process manager main class.
-	 */
-	private static final String JOB_PROCESS_MANAGER_MAIN_CLASS =
-			"uk.ac.manchester.spinnaker.nmpiexec.jobprocessmanager"
-			+ ".JobProcessManager";
 
 	/**
 	 * Get the java executable.
@@ -102,11 +91,6 @@ public class LocalJobExecuterFactory implements JobExecuterFactory {
 	private final ThreadGroup threadGroup;
 
 	/**
-	 * The class path of the process manager.
-	 */
-	private final List<File> jobProcessManagerClasspath = new ArrayList<>();
-
-	/**
 	 * The directory in which the executor should start.
 	 */
 	private File jobExecuterDirectory = null;
@@ -133,10 +117,10 @@ public class LocalJobExecuterFactory implements JobExecuterFactory {
 	private void installJobExecuter() throws IOException {
 		// Find the JobManager resource
 		final var jobManagerStream =
-				getClass().getResourceAsStream("/" + JOB_PROCESS_MANAGER_ZIP);
+				getClass().getResourceAsStream("/" + JOB_PROCESS_MANAGER);
 		if (isNull(jobManagerStream)) {
 			throw new UnsatisfiedLinkError(
-					"/" + JOB_PROCESS_MANAGER_ZIP + " not found in classpath");
+					"/" + JOB_PROCESS_MANAGER + " not found in classpath");
 		}
 
 		// Create a temporary folder
@@ -146,23 +130,9 @@ public class LocalJobExecuterFactory implements JobExecuterFactory {
 		jobExecuterDirectory.deleteOnExit();
 
 		// Extract the JobManager resources
-		try (var input = new ZipInputStream(jobManagerStream)) {
-			for (var entry = input.getNextEntry(); nonNull(entry);
-					entry = input.getNextEntry()) {
-				if (entry.isDirectory()) {
-					continue;
-				}
-				final var entryFile =
-						new File(jobExecuterDirectory, entry.getName());
-				forceMkdirParent(entryFile);
-				copyToFile(input, entryFile);
-				forceDeleteOnExit(entryFile);
-
-				if (entryFile.getName().endsWith(".jar")) {
-					jobProcessManagerClasspath.add(entryFile);
-				}
-			}
-		}
+		forceMkdir(jobExecuterDirectory);
+		copyToFile(jobManagerStream, new File(jobExecuterDirectory,
+				JOB_PROCESS_MANAGER));
 	}
 
 	@Override
@@ -282,15 +252,8 @@ public class LocalJobExecuterFactory implements JobExecuterFactory {
 		private List<String> constructArguments() {
 			final var command = new ArrayList<String>();
 			command.add(javaExec.getAbsolutePath());
-
-			var classPath = jobProcessManagerClasspath.stream()
-					.map(File::toString).collect(joining(pathSeparator));
-			command.add("-cp");
-			command.add(classPath);
-			logger.debug("Classpath: {}", classPath);
-
-			command.add(JOB_PROCESS_MANAGER_MAIN_CLASS);
-			logger.debug("Main command: {}", JOB_PROCESS_MANAGER_MAIN_CLASS);
+			command.add("-jar");
+			command.add(JOB_PROCESS_MANAGER);
 			for (final var argument : arguments) {
 				command.add(argument);
 				logger.debug("Argument: {}", argument);

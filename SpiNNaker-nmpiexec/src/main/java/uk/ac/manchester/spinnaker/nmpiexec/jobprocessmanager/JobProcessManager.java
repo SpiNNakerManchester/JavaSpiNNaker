@@ -15,29 +15,36 @@
  */
 package uk.ac.manchester.spinnaker.nmpiexec.jobprocessmanager;
 
+import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE;
 import static java.lang.String.format;
 import static java.lang.System.exit;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.io.FileUtils.deleteQuietly;
-import static org.apache.commons.io.IOUtils.buffer;
 import static org.eclipse.jgit.util.FileUtils.createTempDir;
-import static uk.ac.manchester.spinnaker.nmpiexec.jobprocessmanager.RemoteSpiNNakerAPI.createJobManager;
 import static uk.ac.manchester.spinnaker.nmpiexec.utils.FileDownloader.downloadFile;
 import static uk.ac.manchester.spinnaker.nmpiexec.utils.Log.log;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.Timer;
+
+import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 import uk.ac.manchester.spinnaker.nmpi.model.job.JobManagerInterface;
 import uk.ac.manchester.spinnaker.nmpi.model.job.JobParameters;
@@ -56,7 +63,70 @@ import uk.ac.manchester.spinnaker.nmpiexec.jobprocess.PyNNJobProcess;
  * Manages a running job process. This is run as a separate process from the
  * command line, and it assumes input is passed via {@link System#in}.
  */
-public class JobProcessManager {
+@SpringBootApplication
+public class JobProcessManager implements CommandLineRunner {
+
+
+	public static void main(String[] args) {
+		SpringApplication.run(JobProcessManager.class, args);
+	}
+
+	/**
+	 * How to run a Job Process Manager. This is the execution entry point for
+	 * this Maven module.
+	 *
+	 * @param args
+	 *            The command line arguments.
+	 * @throws IllegalArgumentException
+	 *            If an unrecognized argument is found.
+	 * @throws IOException
+	 *            If an authentication token can't be read.
+	 */
+	public void run(String ... args) throws IOException {
+		String serverUrl = null;
+		boolean deleteOnExit = false;
+		boolean isLocal = false;
+		String executerId = null;
+		boolean liveUploadOutput = false;
+		boolean requestMachine = false;
+
+		for (int i = 0; i < args.length; i++) {
+			switch (args[i]) {
+			case "--serverUrl" :
+				serverUrl = args[++i];
+				break;
+			case "--executerId" :
+				executerId = args[++i];
+				break;
+			case "--deleteOnExit" :
+				deleteOnExit = true;
+				break;
+			case "--local" :
+				isLocal = true;
+				break;
+			case "--liveUploadOutput" :
+				liveUploadOutput = true;
+				break;
+			case "--requestMachine" :
+				requestMachine = true;
+				break;
+			default :
+				throw new IllegalArgumentException(
+						"unknown option: " + args[i]);
+			}
+		}
+
+		new JobProcessRunner(serverUrl, deleteOnExit, isLocal, executerId,
+				liveUploadOutput, requestMachine).runJob();
+		exit(0);
+	}
+}
+
+/**
+ * Actually runs the job.
+ */
+class JobProcessRunner {
+
 
 	/**
 	 * The interval at which the log is updated.
@@ -175,11 +245,6 @@ public class JobProcessManager {
 	private final boolean requestMachine;
 
 	/**
-	 * The authorisation token of this job on the server.
-	 */
-	private final String authToken;
-
-	/**
 	 * The connection to the Job Manager.
 	 */
 	private JobManagerInterface jobManager;
@@ -217,10 +282,10 @@ public class JobProcessManager {
 	 * @param authTokenParam
 	 *            The authorisation token for the server.
 	 */
-	public JobProcessManager(final String serverUrlParam,
+	public JobProcessRunner(final String serverUrlParam,
 			final boolean deleteOnExitParam, final boolean isLocalParam,
 			final String executerIdParam, final boolean liveUploadOutputParam,
-			final boolean requestMachineParam, final String authTokenParam) {
+			final boolean requestMachineParam) {
 		this.serverUrl = requireNonNull(
 				serverUrlParam, "--serverUrl must be specified");
 		this.executerId = requireNonNull(
@@ -229,7 +294,6 @@ public class JobProcessManager {
 		this.isLocal = isLocalParam;
 		this.liveUploadOutput = liveUploadOutputParam;
 		this.requestMachine = requestMachineParam;
-		this.authToken = authTokenParam;
 	}
 
 	/**
@@ -237,7 +301,11 @@ public class JobProcessManager {
 	 */
 	public void runJob() {
 		try {
-			jobManager = createJobManager(serverUrl, authToken);
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.setPropertyNamingStrategy(SNAKE_CASE);
+			jobManager = JAXRSClientFactory.create(serverUrl,
+					JobManagerInterface.class,
+					List.of(new JacksonJsonProvider()));
 
 			// Read the job
 			job = jobManager.getNextJob(executerId);
@@ -309,64 +377,6 @@ public class JobProcessManager {
 			log(error);
 			exit(2);
 		}
-	}
-
-	/**
-	 * How to run a Job Process Manager. This is the execution entry point for
-	 * this Maven module.
-	 *
-	 * @param args
-	 *            The command line arguments.
-	 * @throws IllegalArgumentException
-	 *            If an unrecognized argument is found.
-	 * @throws IOException
-	 *            If an authentication token can't be read.
-	 */
-	public static void main(final String[] args)
-			throws IllegalArgumentException, IOException {
-		String serverUrl = null;
-		boolean deleteOnExit = false;
-		boolean isLocal = false;
-		String executerId = null;
-		boolean liveUploadOutput = false;
-		boolean requestMachine = false;
-		String authToken = null;
-
-		for (int i = 0; i < args.length; i++) {
-			switch (args[i]) {
-			case "--serverUrl" :
-				serverUrl = args[++i];
-				break;
-			case "--executerId" :
-				executerId = args[++i];
-				break;
-			case "--deleteOnExit" :
-				deleteOnExit = true;
-				break;
-			case "--local" :
-				isLocal = true;
-				break;
-			case "--liveUploadOutput" :
-				liveUploadOutput = true;
-				break;
-			case "--requestMachine" :
-				requestMachine = true;
-				break;
-			case "--authToken" :
-				try (var r = buffer(
-						new InputStreamReader(System.in))) {
-					authToken = r.readLine();
-				}
-				break;
-			default :
-				throw new IllegalArgumentException(
-						"unknown option: " + args[i]);
-			}
-		}
-
-		new JobProcessManager(serverUrl, deleteOnExit, isLocal, executerId,
-				liveUploadOutput, requestMachine, authToken).runJob();
-		exit(0);
 	}
 
 	/**
