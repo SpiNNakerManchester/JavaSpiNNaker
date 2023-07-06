@@ -280,6 +280,8 @@ public class SpallocServiceImpl extends BackgroundSupport
 			throw new BadArgs("request must be supplied");
 		}
 
+		log.info("Security: {}", security);
+
 		if (!security.isUserInRole("ADMIN")
 				&& !security.isUserInRole("NMPI_USER")
 				&& !isNull(req.owner) && !req.owner.isBlank()) {
