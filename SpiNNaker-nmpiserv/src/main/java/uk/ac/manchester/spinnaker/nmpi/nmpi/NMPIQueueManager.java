@@ -150,6 +150,7 @@ public class NMPIQueueManager {
 			} catch (final WebApplicationException e) {
 				var body = e.getResponse().readEntity(String.class);
 				logger.error("Error in getting next job: " + body, e);
+				sleep(EMPTY_QUEUE_SLEEP_MS);
 			} catch (final Exception e) {
 				logger.error("Error in getting next job", e);
 				sleep(EMPTY_QUEUE_SLEEP_MS);
@@ -213,8 +214,13 @@ public class NMPIQueueManager {
 				id, ignored -> new StringBuilder());
 		existingLog.append(logToAppend);
 		logger.debug("Job {} log is being updated", id);
-		queue.updateJobLog(nmpiApiKey, id,
-				new JobLogOnly(existingLog.toString()));
+		try {
+			queue.updateJobLog(nmpiApiKey, id,
+					new JobLogOnly(existingLog.toString()));
+		} catch (WebApplicationException e) {
+			var body = e.getResponse().readEntity(String.class);
+			logger.error("Error in updating job log: " + body, e);
+		}
 	}
 
 	/**
@@ -226,8 +232,13 @@ public class NMPIQueueManager {
 	public void setJobRunning(final int id) {
 		logger.debug("Job {} is running", id);
 		logger.debug("Updating job status on server");
-		queue.updateJobStatus(nmpiApiKey, id,
-				new JobStatusOnly(STATUS_RUNNING));
+		try {
+			queue.updateJobStatus(nmpiApiKey, id,
+					new JobStatusOnly(STATUS_RUNNING));
+		} catch (WebApplicationException e) {
+			var body = e.getResponse().readEntity(String.class);
+			logger.error("Error in setting job status: " + body, e);
+		}
 	}
 
 	/**
@@ -258,9 +269,13 @@ public class NMPIQueueManager {
 		job.setTimestampCompletion(new DateTime(UTC));
 		job.setProvenance(provenance);
 
-		logger.debug("Updating job status on server");
-		queue.finishJob(nmpiApiKey, id, job);
-
+		try {
+			logger.debug("Updating job status on server");
+			queue.finishJob(nmpiApiKey, id, job);
+		} catch (WebApplicationException e) {
+			String msg = e.getResponse().readEntity(String.class);
+			logger.error("Coult not finish job, continuing: " + msg, e);
+		}
 		jobLog.remove(id);
 		jobCache.remove(id);
 	}
@@ -304,8 +319,13 @@ public class NMPIQueueManager {
 		job.setOutputData(outputData);
 		job.setProvenance(provenance);
 
-		logger.debug("Updating job on server");
-		queue.finishJob(nmpiApiKey, id, job);
+		try {
+			logger.debug("Updating job on server");
+			queue.finishJob(nmpiApiKey, id, job);
+		} catch (WebApplicationException e) {
+			var body = e.getResponse().readEntity(String.class);
+			logger.error("Could not finish job, continuing: " + body, e);
+		}
 
 		jobLog.remove(id);
 		jobCache.remove(id);
