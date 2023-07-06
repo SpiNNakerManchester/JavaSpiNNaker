@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.time.Duration;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.core.UriBuilder;
@@ -109,6 +110,7 @@ public class SpallocJavaMachineManagerImpl implements MachineManager {
 			var createJob = new CreateJob(nBoards);
 			createJob.setOwner(owner);
 			createJob.setNmpiJobId(jobId);
+			createJob.setKeepaliveInterval(Duration.ofSeconds(30));
 			var job = client.createJob(createJob);
 			job.waitForPower();
 			var m = job.machine();
