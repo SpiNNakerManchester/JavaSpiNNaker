@@ -281,7 +281,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 		}
 
 		if (!security.isUserInRole("ADMIN")
-				&& !security.isUserInRole("NMPI_USER")
+				&& !security.isUserInRole("NMPI_EXEC")
 				&& !isNull(req.owner) && !req.owner.isBlank()) {
 			throw new BadArgs("Only admin and NMPI users can specify an owner");
 		}
