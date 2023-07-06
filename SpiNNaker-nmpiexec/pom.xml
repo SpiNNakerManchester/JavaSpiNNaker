@@ -19,7 +19,7 @@
 	<name>SpiNNaker NMPI Service Remote Executor</name>
 
 	<properties>
-		<main.class>uk.ac.manchester.spinnaker.nmpiexec.jobprocessmanager.JobProcessManager</main.class>
+		<exec.main.class>uk.ac.manchester.spinnaker.nmpiexec.jobprocessmanager.JobProcessManager</exec.main.class>
 	</properties>
 
 	<build>
@@ -37,61 +37,9 @@
 					</execution>
 				</executions>
 				<configuration>
-					<mainClass>${main.class}</mainClass>
+					<mainClass>${exec.main.class}</mainClass>
 				</configuration>
 			</plugin>
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>${main.class}</mainClass>
-							<addClasspath>true</addClasspath>
-							<classpathPrefix>lib/</classpathPrefix>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<configuration>
-							<appendAssemblyId>false</appendAssemblyId>
-							<descriptors>
-								<descriptor>src/main/assembly/distpkg.xml</descriptor>
-							</descriptors>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-distribution</id>
-						<phase>install</phase>
-						<goals>
-							<goal>attach-artifact</goal>
-						</goals>
-						<configuration>
-							<artifacts>
-								<artifact>
-									<file>target/${project.artifactId}-${project.version}.zip</file>
-									<type>zip</type>
-								</artifact>
-							</artifacts>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>  -->
 		</plugins>
 	</build>
 
@@ -126,8 +74,6 @@
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-rs-client</artifactId>
 		</dependency>
-		<!-- <dependency> <groupId>jakarta.xml.bind</groupId> <artifactId>jakarta.xml.bind-api</artifactId>
-			</dependency> -->
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
@@ -135,6 +81,17 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-to-slf4j</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j2-impl</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 </project>

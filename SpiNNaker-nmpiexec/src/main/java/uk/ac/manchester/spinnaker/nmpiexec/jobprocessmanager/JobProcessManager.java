@@ -308,6 +308,7 @@ class JobProcessRunner {
 					List.of(new JacksonJsonProvider()));
 
 			// Read the job
+			log("Getting job...");
 			job = jobManager.getNextJob(executerId);
 			projectId = job.getCollab();
 

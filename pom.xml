@@ -146,6 +146,11 @@ limitations under the License.
 	            <artifactId>SpiNNaker-nmpimodel</artifactId>
 	            <version>${project.version}</version>
 	        </dependency>
+	        <dependency>
+	            <groupId>uk.ac.manchester.spinnaker</groupId>
+	            <artifactId>SpiNNaker-nmpiexec</artifactId>
+	            <version>${project.version}</version>
+	        </dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
