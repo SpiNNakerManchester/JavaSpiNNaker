@@ -56,6 +56,17 @@ public class SpallocJavaMachineManagerImpl implements MachineManager {
 	private static final String REASON_FINISHED = "Finished";
 
 	/**
+	 * Keepalive interval in seconds.
+	 */
+	private static final int KEEPALIVE_SECONDS = 30;
+
+	/**
+	 * Keepalive interval as a duration.
+	 */
+	private static final Duration KEEPALIVE =
+			Duration.ofSeconds(KEEPALIVE_SECONDS);
+
+	/**
 	 * The URI of the spalloc server.
 	 */
 	@Value("${spalloc.server}")
@@ -110,7 +121,7 @@ public class SpallocJavaMachineManagerImpl implements MachineManager {
 			var createJob = new CreateJob(nBoards);
 			createJob.setOwner(owner);
 			createJob.setNmpiJobId(jobId);
-			createJob.setKeepaliveInterval(Duration.ofSeconds(30));
+			createJob.setKeepaliveInterval(KEEPALIVE);
 			var job = client.createJob(createJob);
 			job.waitForPower();
 			var m = job.machine();
