@@ -66,7 +66,10 @@ import uk.ac.manchester.spinnaker.nmpiexec.jobprocess.PyNNJobProcess;
 @SpringBootApplication
 public class JobProcessManager implements CommandLineRunner {
 
-
+	/**
+	 * The main method.
+	 * @param args Program arguments.
+	 */
 	public static void main(String[] args) {
 		SpringApplication.run(JobProcessManager.class, args);
 	}
@@ -82,7 +85,7 @@ public class JobProcessManager implements CommandLineRunner {
 	 * @throws IOException
 	 *            If an authentication token can't be read.
 	 */
-	public void run(String ... args) throws IOException {
+	public void run(String... args) throws IOException {
 		String serverUrl = null;
 		boolean deleteOnExit = false;
 		boolean isLocal = false;
@@ -126,7 +129,6 @@ public class JobProcessManager implements CommandLineRunner {
  * Actually runs the job.
  */
 class JobProcessRunner {
-
 
 	/**
 	 * The interval at which the log is updated.
@@ -282,7 +284,7 @@ class JobProcessRunner {
 	 * @param authTokenParam
 	 *            The authorisation token for the server.
 	 */
-	public JobProcessRunner(final String serverUrlParam,
+	JobProcessRunner(final String serverUrlParam,
 			final boolean deleteOnExitParam, final boolean isLocalParam,
 			final String executerIdParam, final boolean liveUploadOutputParam,
 			final boolean requestMachineParam) {
