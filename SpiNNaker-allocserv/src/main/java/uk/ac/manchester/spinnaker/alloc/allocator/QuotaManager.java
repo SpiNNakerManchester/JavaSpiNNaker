@@ -22,6 +22,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 import static uk.ac.manchester.spinnaker.alloc.nmpi.ResourceUsage.BOARD_SECONDS;
 import static uk.ac.manchester.spinnaker.alloc.nmpi.ResourceUsage.CORE_HOURS;
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.COLLABRATORY;
+import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 
 import java.util.Optional;
 
@@ -384,10 +385,17 @@ public class QuotaManager extends DatabaseAwareBean {
 		try (var c = getConnection();
 				Query getUserByName = c.query(GET_USER_DETAILS_BY_NAME);
 				Query getGroupByName = c.query(GET_GROUP_BY_NAME);
+				Update createUser = c.update(CREATE_USER);
 				Update createGroup = c.update(CREATE_GROUP_IF_NOT_EXISTS);
 				Update addUserToGroup = c.update(ADD_USER_TO_GROUP)) {
 			createGroup.call(job.getCollab(), 0.0, COLLABRATORY);
 			var userId = getUserByName.call1(r -> r.getInt("user_id"), user);
+
+			// The user has never logged in directly, so we have to create them
+			if (!userId.isPresent()) {
+				createUser.call(user, null, USER, null);
+				userId = getUserByName.call1(r -> r.getInt("user_id"), user);
+			}
 			var groupId = getGroupByName.call1(r -> r.getInt("group_id"),
 					job.getCollab());
 			addUserToGroup.call(userId.get(), groupId);
