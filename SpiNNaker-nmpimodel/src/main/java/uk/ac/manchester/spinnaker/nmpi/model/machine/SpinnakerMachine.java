@@ -146,8 +146,10 @@ public class SpinnakerMachine
 	@Override
 	public String toString() {
 		final var output = new StringBuilder();
-		for (final var potential : List.of(
-				machineName, version, bmpDetails, width, height, bmpDetails)) {
+		// Note: List.of won't work here because things can be null and
+		// List.of doesn't allow null things
+		for (final var potential : new Object[] {
+				machineName, version, bmpDetails, width, height, bmpDetails}) {
 			if (nonNull(potential)) {
 				if (output.length() > 0) {
 					output.append(':');
