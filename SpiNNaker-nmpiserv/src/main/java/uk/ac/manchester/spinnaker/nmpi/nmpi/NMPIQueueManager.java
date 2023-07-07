@@ -136,6 +136,13 @@ public class NMPIQueueManager {
 		listeners.add(listener);
 	}
 
+	private void handleWebAppError(final WebApplicationException e,
+			final String action) {
+		var body = e.getResponse().readEntity(String.class);
+		logger.error("Error {} ({}), continuing: {}", action, e.getMessage(),
+				body);
+	}
+
 	public void processResponsesFromQueue() {
 		while (!done) {
 			try {
@@ -148,8 +155,7 @@ public class NMPIQueueManager {
 				}
 				processResponse(response);
 			} catch (final WebApplicationException e) {
-				var body = e.getResponse().readEntity(String.class);
-				logger.error("Error in getting next job: " + body, e);
+				handleWebAppError(e, "getting next job");
 				sleep(EMPTY_QUEUE_SLEEP_MS);
 			} catch (final Exception e) {
 				logger.error("Error in getting next job", e);
@@ -192,8 +198,7 @@ public class NMPIQueueManager {
 			queue.updateJobStatus(nmpiApiKey, job.getId(),
 					new JobStatusOnly(STATUS_VALIDATED));
 		} catch (final WebApplicationException e) {
-			var body = e.getResponse().readEntity(String.class);
-			logger.error("Error in updating job: " + body, e);
+			handleWebAppError(e, "updating job");
 			setJobError(job.getId(), null, null, e, null);
 		} catch (final IOException e) {
 			logger.error("Error in updating job", e);
@@ -218,8 +223,7 @@ public class NMPIQueueManager {
 			queue.updateJobLog(nmpiApiKey, id,
 					new JobLogOnly(existingLog.toString()));
 		} catch (WebApplicationException e) {
-			var body = e.getResponse().readEntity(String.class);
-			logger.error("Error in updating job log: " + body, e);
+			handleWebAppError(e, "updating job log");
 		}
 	}
 
@@ -236,8 +240,7 @@ public class NMPIQueueManager {
 			queue.updateJobStatus(nmpiApiKey, id,
 					new JobStatusOnly(STATUS_RUNNING));
 		} catch (WebApplicationException e) {
-			var body = e.getResponse().readEntity(String.class);
-			logger.error("Error in setting job status: " + body, e);
+			handleWebAppError(e, "setting job to running");
 		}
 	}
 
@@ -273,8 +276,7 @@ public class NMPIQueueManager {
 			logger.debug("Updating job status on server");
 			queue.finishJob(nmpiApiKey, id, job);
 		} catch (WebApplicationException e) {
-			String msg = e.getResponse().readEntity(String.class);
-			logger.error("Coult not finish job, continuing: " + msg, e);
+			handleWebAppError(e, "finishing job");
 		}
 		jobLog.remove(id);
 		jobCache.remove(id);
@@ -323,8 +325,7 @@ public class NMPIQueueManager {
 			logger.debug("Updating job on server");
 			queue.finishJob(nmpiApiKey, id, job);
 		} catch (WebApplicationException e) {
-			var body = e.getResponse().readEntity(String.class);
-			logger.error("Could not finish job, continuing: " + body, e);
+			handleWebAppError(e, "finishing job on error");
 		}
 
 		jobLog.remove(id);
