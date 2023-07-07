@@ -36,6 +36,7 @@ import org.springframework.core.convert.converter.Converter;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
+import uk.ac.manchester.spinnaker.nmpi.jobmanager.DockerExecutorFactory;
 import uk.ac.manchester.spinnaker.nmpi.jobmanager.JobExecuterFactory;
 import uk.ac.manchester.spinnaker.nmpi.jobmanager.JobManager;
 import uk.ac.manchester.spinnaker.nmpi.jobmanager.LocalJobExecuterFactory;
@@ -132,6 +133,12 @@ public class RemoteSpinnakerBeans {
 	private boolean useXenVms;
 
 	/**
+	 * Determine whether to use docker instead.
+	 */
+	@Value("${docker.server.enabled}")
+	private boolean useDocker;
+
+	/**
 	 * The URL of the server.
 	 */
 	@Value("${baseserver.url}${cxf.path}${cxf.rest.path}/")
@@ -200,10 +207,13 @@ public class RemoteSpinnakerBeans {
 	 */
 	@Bean
 	public JobExecuterFactory jobExecuterFactory() {
-		if (!useXenVms) {
-			return new LocalJobExecuterFactory();
+		if (useXenVms) {
+			return new XenVMExecuterFactory();
 		}
-		return new XenVMExecuterFactory();
+		if (useDocker) {
+			return new DockerExecutorFactory();
+		}
+		return new LocalJobExecuterFactory();
 	}
 
 	/**
