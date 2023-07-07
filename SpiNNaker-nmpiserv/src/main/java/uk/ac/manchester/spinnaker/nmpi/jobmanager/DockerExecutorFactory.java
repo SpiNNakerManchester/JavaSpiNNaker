@@ -70,7 +70,8 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 		return new Executor(manager, baseUrl);
 	}
 
-	protected class Executor implements JobExecuter, ResultCallback<WaitResponse> {
+	protected final class Executor implements JobExecuter,
+			ResultCallback<WaitResponse> {
 
 		private final JobManager manager;
 
