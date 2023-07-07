@@ -393,7 +393,7 @@ public class QuotaManager extends DatabaseAwareBean {
 
 			// The user has never logged in directly, so we have to create them
 			if (!userId.isPresent()) {
-				createUser.call(user, null, USER, null);
+				createUser.call(user, null, USER, false, null);
 				userId = getUserByName.call1(r -> r.getInt("user_id"), user);
 			}
 			var groupId = getGroupByName.call1(r -> r.getInt("group_id"),
