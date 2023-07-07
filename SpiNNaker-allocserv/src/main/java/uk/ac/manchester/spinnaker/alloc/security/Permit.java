@@ -42,6 +42,7 @@ public final class Permit {
 	/** Is the user an admin? */
 	public final boolean admin;
 
+	/** Is the user an nmpi exec user? */
 	public final boolean nmpiexec;
 
 	/** What is the name of the user? */
