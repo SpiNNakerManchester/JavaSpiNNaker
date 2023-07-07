@@ -125,7 +125,8 @@ public class SpallocJavaMachineManagerImpl implements MachineManager {
 			var job = client.createJob(createJob);
 			job.waitForPower();
 			var m = job.machine();
-			var machine = new SpinnakerMachine(m.getMachineName(), VERSION,
+			var machine = new SpinnakerMachine(
+					m.getConnections().get(0).getHostname(), VERSION,
 					m.getWidth(), m.getHeight(), nBoards, null);
 			jobMap.put(machine, job);
 			lastJobState.put(machine, State.READY);
