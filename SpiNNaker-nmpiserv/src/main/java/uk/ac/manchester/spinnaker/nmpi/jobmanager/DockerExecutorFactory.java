@@ -16,6 +16,7 @@
 package uk.ac.manchester.spinnaker.nmpi.jobmanager;
 
 import static java.util.UUID.randomUUID;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.nmpi.model.job.JobManagerInterface.JOB_PROCESS_MANAGER;
 
 import java.io.Closeable;
@@ -24,6 +25,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.github.dockerjava.api.DockerClient;
@@ -31,6 +33,8 @@ import com.github.dockerjava.api.async.ResultCallback;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.WaitResponse;
 import com.github.dockerjava.core.DockerClientBuilder;
+
+import uk.ac.manchester.spinnaker.nmpi.jobmanager.XenVMExecuterFactory.Executer;
 
 public class DockerExecutorFactory implements JobExecuterFactory {
 
@@ -63,6 +67,11 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 	 */
 	private final DockerClient dockerClient =
 			DockerClientBuilder.getInstance().build();
+
+	/**
+	 * Logging.
+	 */
+	private static final Logger logger = getLogger(Executer.class);
 
 	@Override
 	public JobExecuter createJobExecuter(final JobManager manager,
@@ -109,9 +118,14 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 
 		@Override
 		public void startExecuter() {
+			logger.info("Starting docker with image {}", image);
 			containerResponse = dockerClient.createContainerCmd(image)
 					.withCmd(args).exec();
+			logger.info("Created docker container {}, warnings: {}",
+					containerResponse.getId(), containerResponse.getWarnings());
 			dockerClient.startContainerCmd(containerResponse.getId()).exec();
+			logger.info("Started docker container {}",
+					containerResponse.getId());
 			dockerClient.waitContainerCmd(containerResponse.getId()).exec(this);
 		}
 
@@ -127,6 +141,7 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 
 		@Override
 		public void onNext(WaitResponse object) {
+			logger.info("Finished execution of {}", containerResponse.getId());
 			manager.setExecutorExited(uuid, null);
 			if (deleteOnExit) {
 				dockerClient.removeContainerCmd(containerResponse.getId())
@@ -136,6 +151,8 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 
 		@Override
 		public void onError(Throwable throwable) {
+			logger.error("Error on execution of " + containerResponse.getId(),
+					throwable);
 			manager.setExecutorExited(uuid, throwable.getMessage());
 			if (deleteOnExit) {
 				dockerClient.removeContainerCmd(containerResponse.getId())
