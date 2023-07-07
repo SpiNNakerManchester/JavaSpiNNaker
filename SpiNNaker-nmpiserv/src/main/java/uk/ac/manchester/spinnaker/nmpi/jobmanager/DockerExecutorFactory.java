@@ -34,8 +34,6 @@ import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.WaitResponse;
 import com.github.dockerjava.core.DockerClientBuilder;
 
-import uk.ac.manchester.spinnaker.nmpi.jobmanager.XenVMExecuterFactory.Executer;
-
 public class DockerExecutorFactory implements JobExecuterFactory {
 
 	/**
@@ -71,7 +69,7 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 	/**
 	 * Logging.
 	 */
-	private static final Logger logger = getLogger(Executer.class);
+	private static final Logger logger = getLogger(Executor.class);
 
 	@Override
 	public JobExecuter createJobExecuter(final JobManager manager,
