@@ -422,6 +422,11 @@ limitations under the License.
 				<artifactId>spring-boot-starter</artifactId>
 				<version>${spring.boot.version}</version>
 			</dependency>
+			<dependency>
+                <groupId>com.github.docker-java</groupId>
+                <artifactId>docker-java</artifactId>
+                <version>3.0.14</version>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
 
