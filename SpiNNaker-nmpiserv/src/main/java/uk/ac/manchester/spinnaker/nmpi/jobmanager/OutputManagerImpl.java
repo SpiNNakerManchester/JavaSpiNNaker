@@ -264,7 +264,17 @@ public class OutputManagerImpl implements OutputManager {
 
 				final var newOutput = new File(idDirectory, outputPath);
 				newOutput.getParentFile().mkdirs();
-				move(output.toPath(), newOutput.toPath());
+				if (newOutput.exists()) {
+					if (!newOutput.delete()) {
+						logger.warn("Could not delete existing file {};"
+								+ " new file will not be used!", newOutput);
+					} else {
+						logger.warn("Overwriting existing file {}", newOutput);
+					}
+				}
+				if (!newOutput.exists()) {
+					move(output.toPath(), newOutput.toPath());
+				}
 				final var outputUrl = new URL(baseServerUrl,
 						"output/" + pId + "/" + id + "/" + outputPath);
 				outputData.add(new DataItem(outputUrl.toExternalForm()));
