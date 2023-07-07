@@ -105,7 +105,7 @@ public class SecurityConfig {
 
 	/** How to filter out job details that a given user may see (or not). */
 	public static final String MAY_SEE_JOB_DETAILS = "#permit.admin or "
-			+ " #permit.nmpi_exec or "
+			+ " #permit.nmpiexec or "
 			+ " #permit.name == filterObject.owner.orElse(null)";
 
 	private static final ParameterizedTypeReference<

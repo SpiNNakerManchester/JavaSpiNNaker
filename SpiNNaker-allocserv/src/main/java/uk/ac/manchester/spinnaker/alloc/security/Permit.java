@@ -42,7 +42,7 @@ public final class Permit {
 	/** Is the user an admin? */
 	public final boolean admin;
 
-	public final boolean nmpi_exec;
+	public final boolean nmpiexec;
 
 	/** What is the name of the user? */
 	public final String name;
@@ -62,7 +62,7 @@ public final class Permit {
 		authorities = STDAUTH.stream().filter(context::isUserInRole)
 				.map(SimpleGrantedAuthority::new).collect(toUnmodifiableList());
 		admin = is(authorities, GRANT_ADMIN);
-		nmpi_exec = is(authorities, GRANT_NMPI_EXEC);
+		nmpiexec = is(authorities, GRANT_NMPI_EXEC);
 		name = context.getUserPrincipal().getName();
 	}
 
@@ -81,7 +81,7 @@ public final class Permit {
 		authorities = context.getAuthentication().getAuthorities().stream()
 				.collect(toUnmodifiableList());
 		admin = is(authorities, GRANT_ADMIN);
-		nmpi_exec = is(authorities, GRANT_NMPI_EXEC);
+		nmpiexec = is(authorities, GRANT_NMPI_EXEC);
 		name = context.getAuthentication().getName();
 	}
 
@@ -96,7 +96,7 @@ public final class Permit {
 	public Permit(String serviceUser) {
 		authorities = USER.getGrants().collect(toUnmodifiableList());
 		admin = false;
-		nmpi_exec = false;
+		nmpiexec = false;
 		name = serviceUser;
 	}
 
@@ -111,7 +111,7 @@ public final class Permit {
 	public Permit(WebSocketSession session) {
 		authorities = USER.getGrants().collect(toUnmodifiableList());
 		admin = false;
-		nmpi_exec = is(authorities, GRANT_NMPI_EXEC);
+		nmpiexec = is(authorities, GRANT_NMPI_EXEC);
 		name = session.getPrincipal().getName();
 	}
 
