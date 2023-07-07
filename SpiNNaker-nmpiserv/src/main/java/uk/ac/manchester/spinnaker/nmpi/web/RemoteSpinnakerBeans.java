@@ -135,7 +135,7 @@ public class RemoteSpinnakerBeans {
 	/**
 	 * Determine whether to use docker instead.
 	 */
-	@Value("${docker.server.enabled}")
+	@Value("${docker.enabled}")
 	private boolean useDocker;
 
 	/**

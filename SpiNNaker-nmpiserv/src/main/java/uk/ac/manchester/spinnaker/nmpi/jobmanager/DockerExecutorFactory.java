@@ -41,7 +41,7 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 	/**
 	 * The docker image to use.
 	 */
-	@Value("docker.image")
+	@Value("${docker.image}")
 	private String image;
 
 	/**
