@@ -1030,7 +1030,7 @@ class DQLTest extends SimpleDBTestBase {
 	}
 
 	@Test
-	void getGroupsAndQuotasOfUser() {
+	void getGroupsNamesOfUser() {
 		try (var q = c.query(GET_GROUP_NAMES_OF_USER)) {
 			c.transaction(() -> {
 				assertEquals(List.of("user_name"), q.getParameters());
@@ -1206,6 +1206,32 @@ class DQLTest extends SimpleDBTestBase {
 						List.of("board_id", "op", "data", "failure", "failed"),
 						q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, NO_BLACKLIST_OP));
+			});
+		}
+	}
+
+	@Test
+	void getJobSession() {
+		try (var q = c.query(GET_JOB_SESSION)) {
+			c.transaction(() -> {
+				assertEquals(List.of("job_id"), q.getParameters());
+				assertEquals(
+						List.of("session_id", "quota_units"),
+						q.getColumns());
+				assertEquals(empty(), q.call1(Row::toString, NO_JOB));
+			});
+		}
+	}
+
+	@Test
+	void getJobNMPIJob() {
+		try (var q = c.query(GET_JOB_NMPI_JOB)) {
+			c.transaction(() -> {
+				assertEquals(List.of("job_id"), q.getParameters());
+				assertEquals(
+						List.of("nmpi_job_id", "quota_units"),
+						q.getColumns());
+				assertEquals(empty(), q.call1(Row::toString, NO_JOB));
 			});
 		}
 	}
