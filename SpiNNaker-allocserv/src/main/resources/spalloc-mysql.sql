@@ -203,7 +203,7 @@ CREATE TABLE IF NOT EXISTS user_info (
 );
 
 -- STMT
-CREATE TABLE IF NOT EXIST user_tokens (
+CREATE TABLE IF NOT EXISTS user_tokens (
 	user_id INTEGER NOT NULL,
 		FOREIGN KEY (user_id)
 		REFERENCES user_info(user_id) ON DELETE CASCADE,
