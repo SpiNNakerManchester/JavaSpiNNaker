@@ -875,7 +875,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		LocalAuthResult(int u, TrustLevel t, String ep, List<String> tks) {
 			userId = u;
 			trustLevel = requireNonNull(t);
-			passInfo = requireNonNull(ep);
+			passInfo = ep;
 			tokens = List.copyOf(tks);
 		}
 	}
