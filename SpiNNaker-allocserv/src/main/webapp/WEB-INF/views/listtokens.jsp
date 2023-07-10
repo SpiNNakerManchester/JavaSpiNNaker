@@ -41,7 +41,6 @@ limitations under the License.
 						<td class="textColumn">${ token.description }</td>
 						<td class="textColumn">
 							<form method="DELETE" action="${ deleteUri }">
-								<sec:csrfInput />
 								<input type="hidden" name="token" value="${ token.token }" />
 								<input type="submit" class="warningbutton" value="Delete" />
 							</form>
@@ -56,9 +55,7 @@ limitations under the License.
 	</c:otherwise>
 </c:choose>
 <form method="POST" action="${ createUri }">
-	<sec:csrfInput />
-	<form:label path="description">Description: </form:label>
-	<form:input path="description" type="text"/>
+	Description: <input type="text" name="description" />
 	<input type="submit" value="Create a token" />
 </form>
 
