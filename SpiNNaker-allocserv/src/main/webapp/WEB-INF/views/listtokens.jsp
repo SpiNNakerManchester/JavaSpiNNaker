@@ -1,4 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <html>
 <%--
@@ -41,6 +43,7 @@ limitations under the License.
 						<td class="textColumn">${ token.description }</td>
 						<td class="textColumn">
 							<form method="DELETE" action="${ deleteUri }">
+								<sec:csrfInput />
 								<input type="hidden" name="token" value="${ token.token }" />
 								<input type="submit" class="warningbutton" value="Delete" />
 							</form>
@@ -55,6 +58,7 @@ limitations under the License.
 	</c:otherwise>
 </c:choose>
 <form method="POST" action="${ createUri }">
+	<sec:csrfInput />
 	Description: <input type="text" name="description" />
 	<input type="submit" value="Create a token" />
 </form>
