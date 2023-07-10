@@ -858,6 +858,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 		final String passInfo;
 
+		@SuppressWarnings("Immutable")
 		final List<String> tokens;
 
 		/**
