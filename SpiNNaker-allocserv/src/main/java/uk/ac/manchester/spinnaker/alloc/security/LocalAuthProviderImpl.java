@@ -1001,8 +1001,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 */
 	private void checkPassword(String username, String password,
 			LocalAuthResult details, AuthQueries queries) {
-		if (!passServices.matchPassword(password, details.passInfo) &&
-				!checkToken(password, details)) {
+		if (!passServices.matchPassword(password, details.passInfo)
+				&& !checkToken(password, details)) {
 			queries.transaction(() -> {
 				queries.noteLoginFailureForUser(details.userId, username);
 				log.info("login failure for {}: bad password", username);
