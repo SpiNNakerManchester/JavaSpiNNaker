@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.UUID;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
@@ -48,6 +49,7 @@ import uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType;
 import uk.ac.manchester.spinnaker.alloc.model.MemberRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
+import uk.ac.manchester.spinnaker.alloc.model.UserToken;
 import uk.ac.manchester.spinnaker.alloc.security.PasswordServices;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
@@ -913,5 +915,64 @@ public class UserControl extends DatabaseAwareBean {
 			}
 		});
 		return mr;
+	}
+
+	/**
+	 * Get the tokens of a user.
+	 *
+	 * @param principal The user.
+	 * @return A list of tokens.
+	 */
+	public List<UserToken> getTokens(Principal principal) {
+		try (var c = getConnection();
+				var getUser = c.query(GET_USER_DETAILS_BY_NAME);
+				var getTokens = c.query(LIST_USER_TOKENS)) {
+			var uid = getUser.call1(
+					row -> row.getString("user_id"), principal.getName());
+			if (uid.isPresent()) {
+				return getTokens.call(row -> {
+					return new UserToken(row.getString("token"),
+							row.getString("description"));
+				}, uid.get());
+			}
+		}
+		return List.of();
+	}
+
+	/**
+	 * Create a user token.
+	 *
+	 * @param description The token description.
+	 * @param principal The user to create the token for.
+	 */
+	public void createToken(String description, Principal principal) {
+		try (var c = getConnection();
+				var getUser = c.query(GET_USER_DETAILS_BY_NAME);
+				var createToken = c.update(CREATE_USER_TOKEN)) {
+			var uid = getUser.call1(
+					row -> row.getString("user_id"), principal.getName());
+			uid.ifPresent(userId -> {
+				String token = UUID.randomUUID().toString();
+				createToken.call(userId, token, description);
+			});
+		}
+	}
+
+	/**
+	 * Delete a user token.
+	 *
+	 * @param token The token value.
+	 * @param principal The user to delete the token for.
+	 */
+	public void deleteToken(String token, Principal principal) {
+		try (var c = getConnection();
+				var getUser = c.query(GET_USER_DETAILS_BY_NAME);
+				var deleteToken = c.update(DELETE_USER_TOKEN)) {
+			var uid = getUser.call1(
+					row -> row.getString("user_id"), principal.getName());
+			uid.ifPresent(userId -> {
+				deleteToken.call(userId, token);
+			});
+		}
 	}
 }

@@ -1735,6 +1735,41 @@ public abstract class SQLQueries {
 					+ "WHERE group_name = :group_name LIMIT 1";
 
 	/**
+	 * Gets a list of user tokens.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("user_id")
+	@ResultColumn("token")
+	@ResultColumn("description")
+	protected static final String LIST_USER_TOKENS =
+			"SELECT token, description FROM user_tokens "
+					+ "WHERE user_id = :user_id";
+
+	/**
+	 * Creates a user token.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("user_id")
+	@Parameter("token")
+	@Parameter("description")
+	protected static final String CREATE_USER_TOKEN =
+			"INSERT INTO user_tokens (user_id, token, description) "
+					+ "VALUES (:user_id, :token, :description)";
+
+	/**
+	 * Deletes a user token.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("user_id")
+	@Parameter("token")
+	protected static final String DELETE_USER_TOKEN =
+			"DELETE FROM user_tokens "
+					+ "WHERE user_id = :user_id AND token = :token";
+
+	/**
 	 * Create a board issue report.
 	 *
 	 * @see Spalloc

@@ -74,6 +74,9 @@ public class SystemControllerImpl implements SystemController {
 	private static final ViewFactory PASSWORD_CHANGE_VIEW =
 			new ViewFactory("password");
 
+	private static final ViewFactory TOKEN_LIST_VIEW =
+			new ViewFactory("listtokens");
+
 	private static final ViewFactory MACHINE_LIST_VIEW =
 			new ViewFactory("listmachines");
 
@@ -97,6 +100,8 @@ public class SystemControllerImpl implements SystemController {
 	private static final String MACHINES_OBJ = "machineList";
 
 	private static final String ONE_MACHINE_OBJ = "machine";
+
+	private static final String TOKENS_OBJ = "tokenList";
 
 	@Autowired
 	private SpallocAPI spallocCore;
@@ -304,5 +309,26 @@ public class SystemControllerImpl implements SystemController {
 		}
 		mach.setMachineUrl(uri(self().getMachineInfo(mach.getMachine())));
 		return view(JOB_VIEW, ONE_JOB_OBJ, mach);
+	}
+
+	@Override
+	public ModelAndView getTokenList(Principal principal) {
+		var mav = view(TOKEN_LIST_VIEW, TOKENS_OBJ,
+				userManager.getTokens(principal));
+		mav.addObject("deleteUri", uri(self().deleteToken(null, null)));
+		mav.addObject("createUri", uri(self().addToken(null, null)));
+		return mav;
+	}
+
+	@Override
+	public ModelAndView addToken(String description, Principal principal) {
+		userManager.createToken(description, principal);
+		return getTokenList(principal);
+	}
+
+	@Override
+	public ModelAndView deleteToken(String token, Principal principal) {
+		userManager.deleteToken(token, principal);
+		return getTokenList(principal);
 	}
 }
