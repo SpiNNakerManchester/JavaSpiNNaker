@@ -507,6 +507,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 		private final Query userAuthorities = conn.query(GET_USER_AUTHORITIES);
 
+		private final Query userTokens = conn.query(LIST_USER_TOKENS);
+
 		private final Update loginSuccess = conn.update(MARK_LOGIN_SUCCESS);
 
 		private final Update loginFailure = conn.update(MARK_LOGIN_FAILURE);
@@ -527,6 +529,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			userAuthorities.close();
 			getUserBlocked.close();
 			unlock.close();
+			userTokens.close();
 			super.close();
 		}
 
@@ -855,6 +858,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 		final String passInfo;
 
+		final List<String> tokens;
+
 		/**
 		 * Auth succeeded.
 		 *
@@ -864,11 +869,14 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 *            The trust level.
 		 * @param ep
 		 *            The <em>encoded</em> password.
+		 * @param tks
+		 *            The user tokens.
 		 */
-		LocalAuthResult(int u, TrustLevel t, String ep) {
+		LocalAuthResult(int u, TrustLevel t, String ep, List<String> tks) {
 			userId = u;
 			trustLevel = requireNonNull(t);
 			passInfo = requireNonNull(ep);
+			tokens = requireNonNull(tks);
 		}
 	}
 
@@ -956,7 +964,11 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				var authInfo = queries.userAuthorities.call1(AuthInfo::new,
 						userId).get();
 				var encPass = authInfo.encryptedPassword;
-				if (isNull(encPass)) {
+				var userTokens = queries.userTokens.call(r -> {
+					return r.getString("token");
+				}, userId);
+
+				if (isNull(encPass) && userTokens.isEmpty()) {
 					/*
 					 * We know this user, but they can't use this authentication
 					 * method. They'll probably have to use OpenID.
@@ -965,7 +977,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				}
 				var trust = authInfo.trustLevel;
 				log.info("User trust level is " + trust);
-				return new LocalAuthResult(userId, trust, encPass);
+				return new LocalAuthResult(userId, trust, encPass, userTokens);
 			} catch (AuthenticationException e) {
 				queries.noteLoginFailureForUser(userId, username);
 				log.info("login failure for {}", username, e);
@@ -989,13 +1001,18 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 */
 	private void checkPassword(String username, String password,
 			LocalAuthResult details, AuthQueries queries) {
-		if (!passServices.matchPassword(password, details.passInfo)) {
+		if (!passServices.matchPassword(password, details.passInfo) &&
+				!checkToken(password, details)) {
 			queries.transaction(() -> {
 				queries.noteLoginFailureForUser(details.userId, username);
 				log.info("login failure for {}: bad password", username);
 				throw new BadCredentialsException("bad password");
 			});
 		}
+	}
+
+	private boolean checkToken(String password, LocalAuthResult details) {
+		return details.tokens.stream().anyMatch(token -> token == password);
 	}
 
 	/**
