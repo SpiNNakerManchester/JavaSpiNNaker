@@ -1013,7 +1013,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	private boolean checkToken(String password, LocalAuthResult details) {
-		return details.tokens.stream().anyMatch(token -> token == password);
+		return details.tokens.stream().anyMatch(
+				token -> token.equals(password));
 	}
 
 	/**
