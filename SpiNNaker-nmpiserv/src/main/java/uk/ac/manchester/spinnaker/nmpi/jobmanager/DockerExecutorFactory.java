@@ -111,6 +111,7 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 				throws IOException {
 			this.manager = jobManager;
 			uuid = randomUUID().toString();
+			args.add("/home/spinnaker/start_simulation.sh");
 			URL jobProcessManagerUrl =
 					new URL(baseUrl, "job/" + JOB_PROCESS_MANAGER);
 			args.add(jobProcessManagerUrl.toString());
