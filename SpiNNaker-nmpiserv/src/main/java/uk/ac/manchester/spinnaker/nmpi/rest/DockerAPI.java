@@ -53,17 +53,33 @@ public interface DockerAPI {
 	 */
 	int HEADER_UNUSED_BYTES = 4;
 
+	/**
+	 * Options for waiting.
+	 */
 	enum WaitCondition {
+
+		/**
+		 * Wait for any not running state.
+		 */
 		NOT_RUNNING("not-running"),
+
+		/**
+		 * Wait for the next exit.
+		 */
 		NEXT_EXIT("next-exit"),
+
+		/**
+		 * Wait for the container to be removed.
+		 */
 		REMOVED("removed");
 
 		private String value;
 
-		private WaitCondition(String value) {
+		WaitCondition(String value) {
 			this.value = value;
 		}
 
+		@Override
 		public String toString() {
 			return value;
 		}
@@ -99,6 +115,7 @@ public interface DockerAPI {
 	 * Wait for a Docker container to exit.
 	 *
 	 * @param id The identifier of the container.
+	 * @param condition What we are waiting for.
 	 */
 	@POST
 	@Path("/containers/{id}/wait")

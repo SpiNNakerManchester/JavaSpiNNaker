@@ -22,10 +22,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * A response to docker inspect.
  */
-@JsonIgnoreProperties(ignoreUnknown=true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DockerInspectResponse {
 
-	@JsonIgnoreProperties(ignoreUnknown=true)
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public class State {
 
 		@JsonProperty("Running")

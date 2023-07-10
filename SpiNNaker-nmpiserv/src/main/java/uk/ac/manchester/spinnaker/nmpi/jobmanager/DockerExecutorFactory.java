@@ -40,6 +40,11 @@ import uk.ac.manchester.spinnaker.nmpi.rest.DockerInspectResponse;
 public class DockerExecutorFactory implements JobExecuterFactory {
 
 	/**
+	 * Time to wait between docker inspects while waiting for finish.
+	 */
+	private static final int WAIT_SLEEP_TIME_MS = 1000;
+
+	/**
 	 * The docker image to use.
 	 */
 	@Value("${docker.image}")
@@ -151,7 +156,7 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 			DockerInspectResponse res = null;
 			do {
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(WAIT_SLEEP_TIME_MS);
 					res = dockerApi.inspect(id);
 				} catch (NotFoundException e) {
 					// If we can't find it, it isn't running!
