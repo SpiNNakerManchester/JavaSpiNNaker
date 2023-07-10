@@ -28,13 +28,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
-import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
@@ -78,10 +71,6 @@ public abstract class FileDownloader {
 			final String userInfo) throws IOException {
 		var urlConnection = requireNonNull(url).openConnection();
 		urlConnection.setDoInput(true);
-
-		if (urlConnection instanceof HttpsURLConnection) {
-			initVeryTrustingSSLContext((HttpsURLConnection) urlConnection);
-		}
 
 		urlConnection.setRequestProperty("Accept", "*/*");
 		if (nonNull(userInfo) && urlConnection instanceof HttpURLConnection) {
@@ -148,47 +137,6 @@ public abstract class FileDownloader {
 		copy(urlConnection.getInputStream(), output.toPath());
 
 		return output;
-	}
-
-	/**
-	 * Sets the given connection to trust any host for the purposes of HTTPS.
-	 * This is wildly unsafe.
-	 *
-	 * @param connection
-	 *            The connection to configure.
-	 * @throws IOException
-	 *             If anything goes wrong.
-	 */
-	private static void initVeryTrustingSSLContext(
-			final HttpsURLConnection connection) throws IOException {
-		// Set up to trust everyone
-		try {
-			var sc = SSLContext.getInstance("SSL");
-			var tm = new X509TrustManager() {
-					@Override
-					public X509Certificate[] getAcceptedIssuers() {
-						return null;
-					}
-
-					@Override
-					public void checkClientTrusted(
-							final X509Certificate[] certs,
-							final String authType) {
-					}
-
-					@Override
-					public void checkServerTrusted(
-							final X509Certificate[] certs,
-							final String authType) {
-					}
-				};
-			sc.init(null, new TrustManager[] {tm}, new SecureRandom());
-
-			connection.setSSLSocketFactory(sc.getSocketFactory());
-			connection.setHostnameVerifier((hostname, session) -> true);
-		} catch (Exception e) {
-			throw new IOException("Error processing HTTPS request", e);
-		}
 	}
 
 	/**
