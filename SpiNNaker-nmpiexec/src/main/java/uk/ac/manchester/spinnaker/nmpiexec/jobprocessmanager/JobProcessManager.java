@@ -313,9 +313,11 @@ class JobProcessRunner {
 			log("Getting job...");
 			job = jobManager.getNextJob(executerId);
 			projectId = job.getCollab();
+			log("Going to run job " + job.getId() + " in collab " + projectId);
 
 			// Create a temporary location for the job
 			final var workingDirectory = createTempDir("job", ".tmp", null);
+			log("Running in temporary directory " + workingDirectory);
 
 			// Download the setup script
 			var downloadUrl = serverUrl + JobManagerInterface.PATH

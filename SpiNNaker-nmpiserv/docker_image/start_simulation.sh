@@ -12,6 +12,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+if [ -f "already_run" ]; then
+	echo "Not running again"
+	while :
+	do
+		sleep 3600
+	done
+fi
+
+echo "run" >> already_run
 url=$1
 shift
 echo "URL is $url"

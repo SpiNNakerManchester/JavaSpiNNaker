@@ -25,12 +25,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.ws.rs.NotFoundException;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 
 import uk.ac.manchester.spinnaker.nmpi.rest.DockerAPI;
 import uk.ac.manchester.spinnaker.nmpi.rest.DockerCreateRequest;
+import uk.ac.manchester.spinnaker.nmpi.rest.DockerInspectResponse;
 
 /**
  * Executor factory that uses Docker to run jobs.
@@ -111,7 +113,6 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 				throws IOException {
 			this.manager = jobManager;
 			uuid = randomUUID().toString();
-			args.add("/home/spinnaker/start_simulation.sh");
 			URL jobProcessManagerUrl =
 					new URL(baseUrl, "job/" + JOB_PROCESS_MANAGER);
 			args.add(jobProcessManagerUrl.toString());
@@ -146,8 +147,26 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 					"Docker Executer (" + uuid + ")").start();
 		}
 
+		private void waitForRunning(boolean running) {
+			DockerInspectResponse res = null;
+			do {
+				try {
+					Thread.sleep(1000);
+					res = dockerApi.inspect(id);
+				} catch (NotFoundException e) {
+					// If we can't find it, it isn't running!
+					if (!running) {
+						return;
+					}
+				} catch (InterruptedException e) {
+					return;
+				}
+			} while (res.getState().isRunning() == running);
+		}
+
 		public void waitForExit() {
-			dockerApi.wait(id);
+			waitForRunning(true);
+			waitForRunning(false);
 			logger.info("Finished execution of {}", id);
 			try {
 				manager.setExecutorExited(uuid, DockerAPI.readLog(

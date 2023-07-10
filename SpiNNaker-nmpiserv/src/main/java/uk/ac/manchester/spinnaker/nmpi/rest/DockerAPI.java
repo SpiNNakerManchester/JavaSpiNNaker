@@ -53,6 +53,22 @@ public interface DockerAPI {
 	 */
 	int HEADER_UNUSED_BYTES = 4;
 
+	enum WaitCondition {
+		NOT_RUNNING("not-running"),
+		NEXT_EXIT("next-exit"),
+		REMOVED("removed");
+
+		private String value;
+
+		private WaitCondition(String value) {
+			this.value = value;
+		}
+
+		public String toString() {
+			return value;
+		}
+	}
+
 	/**
 	 * Create a new Docker container.
 	 *
@@ -74,6 +90,11 @@ public interface DockerAPI {
 	@Path("/containers/{id}/start")
 	void start(@PathParam("id") String id);
 
+	@GET
+	@Produces(APPLICATION_JSON)
+	@Path("/containers/{id}/json")
+	DockerInspectResponse inspect(@PathParam("id") String id);
+
 	/**
 	 * Wait for a Docker container to exit.
 	 *
@@ -81,7 +102,8 @@ public interface DockerAPI {
 	 */
 	@POST
 	@Path("/containers/{id}/wait")
-	void wait(@PathParam("id") String id);
+	void wait(@PathParam("id") String id,
+			@QueryParam("condition") WaitCondition condition);
 
 	/**
 	 * Delete a Docker container.

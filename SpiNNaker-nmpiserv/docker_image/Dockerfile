@@ -57,5 +57,7 @@ RUN mvn -f JavaSpiNNaker -pl -SpiNNaker-allocserv -DskipTests package
 
 ADD --chown=spinnaker:spinnaker --chmod=0755 run_executor.sh /home/spinnaker/run_executor.sh
 ADD --chown=spinnaker:spinnaker --chmod=0755 start_simulation.sh /home/spinnaker/start_simulation.sh
+ADD --chown=spinnaker:spinnaker --chmod=0644 .spynnaker.cfg /home/spinnaker/.spynnaker.cfg
 
 WORKDIR /home/spinnaker
+ENTRYPOINT [ "/home/spinnaker/start_simulation.sh" ]
