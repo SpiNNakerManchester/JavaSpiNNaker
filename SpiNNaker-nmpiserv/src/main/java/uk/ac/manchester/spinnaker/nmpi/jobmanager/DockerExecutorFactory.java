@@ -32,6 +32,9 @@ import org.springframework.beans.factory.annotation.Value;
 import uk.ac.manchester.spinnaker.nmpi.rest.DockerAPI;
 import uk.ac.manchester.spinnaker.nmpi.rest.DockerCreateRequest;
 
+/**
+ * Executor factory that uses Docker to run jobs.
+ */
 public class DockerExecutorFactory implements JobExecuterFactory {
 
 	/**
@@ -71,12 +74,14 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 	 */
 	private final ThreadGroup threadGroup;
 
-
 	/**
 	 * Logging.
 	 */
 	private static final Logger logger = getLogger(Executor.class);
 
+	/**
+	 * Create a new docker factory.
+	 */
 	public DockerExecutorFactory() {
 		this.threadGroup = new ThreadGroup("Docker");
 	}
@@ -131,7 +136,8 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 		@Override
 		public void startExecuter() {
 			logger.info("Starting docker with image {}", image);
-			var response = dockerApi.create(new DockerCreateRequest(image, args));
+			var response = dockerApi.create(
+					new DockerCreateRequest(image, args));
 			id = response.getId();
 			logger.info("Created docker container {}, warnings: {}", id);
 			dockerApi.start(id);

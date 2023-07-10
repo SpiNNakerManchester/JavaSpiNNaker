@@ -57,7 +57,4 @@ public class DockerCreateResponse {
 	public void setWarnings(List<String> warnings) {
 		this.warnings = warnings;
 	}
-
-
-
 }
