@@ -25,14 +25,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.async.ResultCallback;
-import com.github.dockerjava.api.command.CreateContainerResponse;
-import com.github.dockerjava.api.model.WaitResponse;
-import com.github.dockerjava.core.DockerClientBuilder;
+import uk.ac.manchester.spinnaker.nmpi.rest.DockerAPI;
+import uk.ac.manchester.spinnaker.nmpi.rest.DockerCreateRequest;
 
 public class DockerExecutorFactory implements JobExecuterFactory {
 
@@ -60,16 +59,33 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 	@Value("${requestSpiNNakerMachine}")
 	private boolean requestSpiNNakerMachine;
 
+	@Value("${docker.uri}")
+	private String dockerUri;
+
 	/**
 	 * The docker client.
 	 */
-	private final DockerClient dockerClient =
-			DockerClientBuilder.getInstance().build();
+	private DockerAPI dockerApi;
+
+	/**
+	 * The thread group of any threads.
+	 */
+	private final ThreadGroup threadGroup;
+
 
 	/**
 	 * Logging.
 	 */
 	private static final Logger logger = getLogger(Executor.class);
+
+	public DockerExecutorFactory() {
+		this.threadGroup = new ThreadGroup("Docker");
+	}
+
+	@PostConstruct
+	private void init() {
+		dockerApi = DockerAPI.createClient(dockerUri);
+	}
 
 	@Override
 	public JobExecuter createJobExecuter(final JobManager manager,
@@ -77,8 +93,7 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 		return new Executor(manager, baseUrl);
 	}
 
-	protected final class Executor implements JobExecuter,
-			ResultCallback<WaitResponse> {
+	protected final class Executor implements JobExecuter {
 
 		private final JobManager manager;
 
@@ -86,7 +101,7 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 
 		private final List<String> args = new ArrayList<>();
 
-		private CreateContainerResponse containerResponse;
+		private String id;
 
 		private Executor(final JobManager jobManager, final URL baseUrl)
 				throws IOException {
@@ -117,50 +132,26 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 		@Override
 		public void startExecuter() {
 			logger.info("Starting docker with image {}", image);
-			containerResponse = dockerClient.createContainerCmd(image)
-					.withCmd(args).exec();
-			logger.info("Created docker container {}, warnings: {}",
-					containerResponse.getId(), containerResponse.getWarnings());
-			dockerClient.startContainerCmd(containerResponse.getId()).exec();
-			logger.info("Started docker container {}",
-					containerResponse.getId());
-			dockerClient.waitContainerCmd(containerResponse.getId()).exec(this);
+			var response = dockerApi.create(new DockerCreateRequest(image, args));
+			id = response.getId();
+			logger.info("Created docker container {}, warnings: {}", id);
+			dockerApi.start(id);
+			new Thread(threadGroup, this::waitForExit,
+					"Docker Executer (" + uuid + ")").start();
 		}
 
-		@Override
-		public void close() throws IOException {
-			// Does Nothing
-		}
-
-		@Override
-		public void onStart(Closeable closeable) {
-			// Does Nothing
-		}
-
-		@Override
-		public void onNext(WaitResponse object) {
-			logger.info("Finished execution of {}", containerResponse.getId());
-			manager.setExecutorExited(uuid, null);
-			if (deleteOnExit) {
-				dockerClient.removeContainerCmd(containerResponse.getId())
-						.exec();
+		public void waitForExit() {
+			dockerApi.wait(id);
+			logger.info("Finished execution of {}", id);
+			try {
+				manager.setExecutorExited(uuid, DockerAPI.readLog(
+						dockerApi.getLog(id, true, true)));
+			} catch (IOException e) {
+				logger.error("Error reading log", e);
 			}
-		}
-
-		@Override
-		public void onError(Throwable throwable) {
-			logger.error("Error on execution of " + containerResponse.getId(),
-					throwable);
-			manager.setExecutorExited(uuid, throwable.getMessage());
 			if (deleteOnExit) {
-				dockerClient.removeContainerCmd(containerResponse.getId())
-						.exec();
+				dockerApi.delete(id);
 			}
-		}
-
-		@Override
-		public void onComplete() {
-			// Does Nothing
 		}
 	}
 

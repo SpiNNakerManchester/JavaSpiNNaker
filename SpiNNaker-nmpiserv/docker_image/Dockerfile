@@ -59,4 +59,4 @@ ADD --chown=spinnaker:spinnaker --chmod=0755 run_executor.sh /home/spinnaker/run
 ADD --chown=spinnaker:spinnaker --chmod=0755 start_simulation.sh /home/spinnaker/start_simulation.sh
 
 WORKDIR /home/spinnaker
-ENTRYPOINT /home/spinnaker/start_simulation.sh
+ENTRYPOINT [ "/home/spinnaker/start_simulation.sh" ]

@@ -14,6 +14,7 @@
 # limitations under the License.
 url=$1
 shift
+echo "URL is $url"
 
 if [ $url ]
 then

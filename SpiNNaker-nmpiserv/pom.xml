@@ -334,10 +334,6 @@ limitations under the License.
 			<groupId>net.java.dev.vcc.thirdparty</groupId>
 			<artifactId>xen-api</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.github.docker-java</groupId>
-			<artifactId>docker-java</artifactId>
-		</dependency>
 	</dependencies>
 
 
