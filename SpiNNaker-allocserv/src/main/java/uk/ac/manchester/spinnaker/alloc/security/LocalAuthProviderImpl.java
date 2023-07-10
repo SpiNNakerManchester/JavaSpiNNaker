@@ -967,6 +967,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				var userTokens = queries.userTokens.call(r -> {
 					return r.getString("token");
 				}, userId);
+				log.info("User {} has tokens: {}", username, userTokens);
 
 				if (isNull(encPass) && userTokens.isEmpty()) {
 					/*

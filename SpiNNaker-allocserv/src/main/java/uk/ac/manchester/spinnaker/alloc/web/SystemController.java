@@ -181,7 +181,7 @@ public interface SystemController {
 	ModelAndView addToken(@RequestParam("description") String description,
 			Principal principal);
 
-	@DeleteMapping("/tokens")
+	@PostMapping("/tokens/delete")
 	ModelAndView deleteToken(@RequestParam("token") String token,
 			Principal principal);
 }

@@ -42,7 +42,7 @@ limitations under the License.
 						<td class="textColumn">${ token.token }</td>
 						<td class="textColumn">${ token.description }</td>
 						<td class="textColumn">
-							<form method="DELETE" action="${ deleteUri }">
+							<form method="POST" action="${ deleteUri }">
 								<sec:csrfInput />
 								<input type="hidden" name="token" value="${ token.token }" />
 								<input type="submit" class="warningbutton" value="Delete" />
