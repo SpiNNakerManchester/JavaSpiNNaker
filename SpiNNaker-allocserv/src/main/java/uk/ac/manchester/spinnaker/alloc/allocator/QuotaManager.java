@@ -445,7 +445,7 @@ public class QuotaManager extends DatabaseAwareBean {
 
 			// Get the quota used
 			var quota = getUsage.call1(
-					r -> r.getLong("quota_used"), jobId).get();
+					r -> r.getLong("quota_used"), jobId);
 			// If job has associated session, update quota in session
 			getSession.call1(
 					r -> new Session(r), jobId).ifPresent(
@@ -453,8 +453,8 @@ public class QuotaManager extends DatabaseAwareBean {
 							try {
 								var update = new SessionResourceUpdate();
 								update.setStatus("finished");
-								update.setResourceUsage(getResourceUsage(quota,
-										session.quotaUnits));
+								update.setResourceUsage(getResourceUsage(
+										quota.get(), session.quotaUnits));
 								nmpiProxy.setSessionStatusAndResources(
 										quotaProps.getNMPIApiKey(), session.id,
 										update);
@@ -470,8 +470,8 @@ public class QuotaManager extends DatabaseAwareBean {
 					nmpiJob -> {
 						try {
 							var update = new JobResourceUpdate();
-							update.setResourceUsage(getResourceUsage(quota,
-									nmpiJob.quotaUnits));
+							update.setResourceUsage(getResourceUsage(
+									quota.get(), nmpiJob.quotaUnits));
 							nmpiProxy.setJobResources(
 									quotaProps.getNMPIApiKey(), nmpiJob.id,
 									update);
