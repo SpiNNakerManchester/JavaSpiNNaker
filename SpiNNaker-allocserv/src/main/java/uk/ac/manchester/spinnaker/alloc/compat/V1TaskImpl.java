@@ -99,9 +99,10 @@ class V1TaskImpl extends V1CompatTask {
 
 	private final Map<String, Future<Void>> machNotifiers = new HashMap<>();
 
-	/** The service version information. */
-	@Autowired
-	private ServiceVersion version;
+	/**
+	 * We are compatible with spalloc-server release version 5.0.0.
+	 */
+	private static final String VERSION = "5.0.0";
 
 	/** The overall service properties. */
 	@Autowired
@@ -151,7 +152,7 @@ class V1TaskImpl extends V1CompatTask {
 
 	@Override
 	protected final String version() {
-		return version.getVersion().toString();
+		return VERSION;
 	}
 
 	@Override
