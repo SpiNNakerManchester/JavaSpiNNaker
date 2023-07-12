@@ -53,7 +53,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
-import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
@@ -91,6 +90,12 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 @Component
 @Prototype
 class V1TaskImpl extends V1CompatTask {
+
+	/**
+	 * We are compatible with spalloc-server release version 5.0.0.
+	 */
+	public static final String VERSION = "5.0.0";
+
 	private static final int LOTS = 10000;
 
 	private static final Logger log = getLogger(V1CompatService.class);
@@ -98,11 +103,6 @@ class V1TaskImpl extends V1CompatTask {
 	private final Map<Integer, Future<Void>> jobNotifiers = new HashMap<>();
 
 	private final Map<String, Future<Void>> machNotifiers = new HashMap<>();
-
-	/**
-	 * We are compatible with spalloc-server release version 5.0.0.
-	 */
-	private static final String VERSION = "5.0.0";
 
 	/** The overall service properties. */
 	@Autowired

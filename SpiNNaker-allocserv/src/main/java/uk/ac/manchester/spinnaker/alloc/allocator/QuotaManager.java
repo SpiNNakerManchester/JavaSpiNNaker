@@ -346,7 +346,8 @@ public class QuotaManager extends DatabaseAwareBean {
 			}
 		}
 
-		log.debug("Setting quota of collab {} to {}", collab, totalBoardSeconds);
+		log.debug("Setting quota of collab {} to {}", collab,
+				totalBoardSeconds);
 
 		// Update quota in group for collab from NMPI
 		try (var c = getConnection();
