@@ -1019,7 +1019,7 @@ class DMLTest extends SimpleDBTestBase {
 				assertEquals(List.of("job_id", "session_id", "quota_units"),
 						u.getParameters());
 				// No such job
-				assertThrowsFK(() -> u.call(0, 0, ""));
+				assertEquals(0, u.call(0, 0, ""));
 			});
 		}
 	}
@@ -1032,7 +1032,7 @@ class DMLTest extends SimpleDBTestBase {
 				assertEquals(List.of("job_id", "nmpi_job_id", "quota_units"),
 						u.getParameters());
 				// No such job
-				assertThrowsFK(() -> u.call(0, 0, ""));
+				assertEquals(0, u.call(0, 0, ""));
 			});
 		}
 	}
