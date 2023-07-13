@@ -751,18 +751,6 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		 */
 		sql.setMaxCoords.call(maxX + TRIAD_CHIP_SIZE - 1,
 				maxY + TRIAD_CHIP_SIZE - 1, machineId);
-		var rootPhys = machine.boardLocations.get(new TriadCoords(0, 0, 0));
-		for (var triad : machine.deadBoards) {
-			// Fake with the machine root if no real coords available
-			var phys = machine.boardLocations.getOrDefault(triad, rootPhys);
-			int bmpID = bmpIds.get(phys.getBmpCoords());
-			var root = triad.asChipLocation();
-			log.debug("making {} board {}", "dead", triad);
-			sql.makeBoard
-					.key(machineId, null, bmpID, null, triad.x, triad.y,
-							triad.z, root.getX(), root.getY(), false)
-					.ifPresent(id -> boardIds.put(triad, id));
-		}
 		return boardIds;
 	}
 
