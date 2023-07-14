@@ -486,6 +486,16 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		public Optional<OAuth2User> getOpenIdUser() {
 			return Optional.ofNullable(credential.user);
 		}
+
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @return The bearer token.
+		 */
+		@Override
+		public Optional<OAuth2AccessToken> getBearerToken() {
+			return Optional.ofNullable(credential.token);
+		}
 	}
 
 	/**
@@ -729,7 +739,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	private static final Pattern COLLAB_MATCHER =
-			Pattern.compile("^collab-(.*)-(admin|editor|viewer)$");
+			Pattern.compile("^collab-(.*)-(administrator|editor|viewer)$");
 
 	/**
 	 * Convert a list of claimed collabs into authorities.
@@ -1047,7 +1057,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				log.info("login failure for {}", username, e);
 				throw e;
 			}
-		}, username).get();
+		}, username).isPresent();
 
 		if (ok) {
 			return true;

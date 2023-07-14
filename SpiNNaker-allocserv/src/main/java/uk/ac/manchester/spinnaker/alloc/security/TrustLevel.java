@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.security;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_READER;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_USER;
+import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_NMPI_EXEC;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -48,7 +49,13 @@ public enum TrustLevel {
 	 *
 	 * @see Grants#GRANT_ADMIN
 	 */
-	ADMIN(GRANT_READER, GRANT_USER, GRANT_ADMIN);
+	ADMIN(GRANT_READER, GRANT_USER, GRANT_ADMIN),
+	/**
+	 * Grants ability to run NMPI jobs, in addition to {@link #USER}.
+	 *
+	 * @see Grants#GRANT_NMPI_EXEC
+	 */
+	NMPI_EXEC(GRANT_READER, GRANT_USER, GRANT_NMPI_EXEC);
 
 	@SuppressWarnings("ImmutableEnumChecker")
 	private final List<String> grants;

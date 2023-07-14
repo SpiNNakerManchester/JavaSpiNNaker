@@ -24,6 +24,9 @@ import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MIN_RATIO_PROPERTY
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.REQUIRE_TORUS_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.TAGS_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.USER_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.GROUP_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.COLLAB_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.NMPI_JOB_PROPERTY;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
 
 import java.time.Duration;
@@ -65,6 +68,8 @@ public class CreateJob {
 	private boolean setMachine = false;
 
 	private boolean setOwner = false;
+
+	private boolean setGroupOrCollabOrJob = false;
 
 	/**
 	 * Build a request for a single board.
@@ -313,5 +318,52 @@ public class CreateJob {
 	public Double getKeepAlive() {
 		return (Double) kwargs.getOrDefault(KEEPALIVE_PROPERTY,
 				KEEPALIVE_DEFAULT);
+	}
+
+	private void checkAndSetGroupOrCollabOrJob() {
+		if (setGroupOrCollabOrJob) {
+			throw new IllegalStateException(
+					"Can only set one of group or collab or job id");
+		}
+		setGroupOrCollabOrJob = true;
+	}
+
+	/**
+	 * Set the group of the request.
+	 *
+	 * @param group The group to set.
+	 * @return {@code this} (fluent interface)
+	 */
+	@CanIgnoreReturnValue
+	public CreateJob group(String group) {
+		checkAndSetGroupOrCollabOrJob();
+		kwargs.put(GROUP_PROPERTY, group);
+		return this;
+	}
+
+	/**
+	 * Set the collab of the request.
+	 *
+	 * @param collab The collab to set.
+	 * @return {@code this} (fluent interface)
+	 */
+	@CanIgnoreReturnValue
+	public CreateJob collab(int collab) {
+		checkAndSetGroupOrCollabOrJob();
+		kwargs.put(COLLAB_PROPERTY, collab);
+		return this;
+	}
+
+	/**
+	 * Set the NMPI Job of the request.
+	 *
+	 * @param nmpiJob The NMPI Job to set.
+	 * @return {@code this} (fluent interface)
+	 */
+	@CanIgnoreReturnValue
+	public CreateJob nmpiJob(int nmpiJob) {
+		checkAndSetGroupOrCollabOrJob();
+		kwargs.put(NMPI_JOB_PROPERTY, nmpiJob);
+		return this;
 	}
 }

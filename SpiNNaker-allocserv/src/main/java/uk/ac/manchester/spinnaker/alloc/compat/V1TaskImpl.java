@@ -53,7 +53,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
-import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
@@ -91,6 +90,12 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 @Component
 @Prototype
 class V1TaskImpl extends V1CompatTask {
+
+	/**
+	 * We are compatible with spalloc-server release version 5.0.0.
+	 */
+	public static final String VERSION = "5.0.0";
+
 	private static final int LOTS = 10000;
 
 	private static final Logger log = getLogger(V1CompatService.class);
@@ -98,10 +103,6 @@ class V1TaskImpl extends V1CompatTask {
 	private final Map<Integer, Future<Void>> jobNotifiers = new HashMap<>();
 
 	private final Map<String, Future<Void>> machNotifiers = new HashMap<>();
-
-	/** The service version information. */
-	@Autowired
-	private ServiceVersion version;
 
 	/** The overall service properties. */
 	@Autowired
@@ -151,7 +152,7 @@ class V1TaskImpl extends V1CompatTask {
 
 	@Override
 	protected final String version() {
-		return version.getVersion().toString();
+		return VERSION;
 	}
 
 	@Override
@@ -298,8 +299,9 @@ class V1TaskImpl extends V1CompatTask {
 		var keepalive = parseKeepalive((Number) kwargs.get("keepalive"));
 		var machineName = (String) kwargs.get("machine");
 		var ts = tags(kwargs.get("tags"), isNull(machineName));
-		var result = permit.authorize(() -> spalloc.createJob(permit.name,
-				groupName, create, machineName, ts, keepalive, cmd));
+		var result = permit.authorize(() -> spalloc.createJobInGroup(
+				permit.name, groupName, create, machineName, ts, keepalive,
+				cmd));
 		result.ifPresent(
 				j -> log.info(
 						"made compatibility-mode job {} "

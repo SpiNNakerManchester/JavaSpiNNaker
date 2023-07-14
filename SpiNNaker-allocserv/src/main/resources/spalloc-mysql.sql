@@ -188,7 +188,7 @@ CREATE TABLE IF NOT EXISTS user_info (
 	last_successful_login_timestamp INTEGER, -- If NULL, never logged in
 	-- Roles; see SecurityConfig.TrustLevel
 	trust_level INTEGER NOT NULL
-		CONSTRAINT trust_level_check CHECK (trust_level IN (0, 1, 2, 3)),
+		CONSTRAINT trust_level_check CHECK (trust_level IN (0, 1, 2, 3, 4)),
 	-- Automatic disablement support
 	failure_count INTEGER NOT NULL DEFAULT (0),
 	locked INTEGER NOT NULL DEFAULT (0)
@@ -199,7 +199,7 @@ CREATE TABLE IF NOT EXISTS user_info (
 		CONSTRAINT disabled_check CHECK (disabled IN (0, 1)),
 	openid_subject CHAR(100) UNIQUE,
 	is_internal INTEGER GENERATED ALWAYS AS ( -- generated COLUMN
-		encrypted_password IS NOT NULL) VIRTUAL
+		encrypted_password IS NOT NULL AND trust_level != 4) VIRTUAL
 );
 
 -- STMT
@@ -262,6 +262,26 @@ CREATE TABLE IF NOT EXISTS jobs (
 	-- is *by design*; users may leave groups, but their jobs do not.
 	INDEX (root_id),
 	INDEX (machine_id)
+);
+
+-- STMT
+CREATE TABLE IF NOT EXISTS job_nmpi_session (
+    job_id INTEGER,
+        FOREIGN KEY (job_id)
+        REFERENCES jobs(job_id),
+    session_id INTEGER NOT NULL,
+    quota_units VARCHAR(50) NOT NULL,
+    UNIQUE INDEX (job_id ASC, session_id ASC)
+);
+
+-- STMT
+CREATE TABLE IF NOT EXISTS job_nmpi_job (
+    job_id INTEGER,
+        FOREIGN KEY (job_id)
+        REFERENCES jobs(job_id),
+    nmpi_job_id INTEGER NOT NULL,
+    quota_units VARCHAR(50) NOT NULL,
+    UNIQUE INDEX (job_id ASC, nmpi_job_id ASC)
 );
 
 -- STMT

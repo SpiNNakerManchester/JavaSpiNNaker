@@ -416,7 +416,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	@Override
-	public Optional<Job> createJob(String owner, String groupName,
+	public Optional<Job> createJobInGroup(String owner, String groupName,
 			CreateDescriptor descriptor, String machineName, List<String> tags,
 			Duration keepaliveInterval, byte[] req) {
 		return execute(conn -> {
@@ -515,20 +515,70 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		});
 	}
 
-	private class UserQuota {
-		Long quota;
+	@Override
+	public Optional<Job> createJob(String owner, CreateDescriptor descriptor,
+			String machineName, List<String> tags, Duration keepaliveInterval,
+			byte[] originalRequest) {
+		return execute(conn -> createJobInGroup(
+				owner, getOnlyGroup(conn, owner), descriptor, machineName,
+				tags, keepaliveInterval, originalRequest));
+	}
 
-		int groupId;
-
-		UserQuota(Row row) {
-			quota = row.getLong("quota");
-			groupId = row.getInt("group_id");
+	@Override
+	public Optional<Job> createJobInCollabSession(String owner,
+			String nmpiCollab, CreateDescriptor descriptor,
+			String machineName, List<String> tags, Duration keepaliveInterval,
+			byte[] originalRequest) {
+		var quotaUnits = quotaManager.mayCreateNMPISession(nmpiCollab);
+		if (quotaUnits.isEmpty()) {
+			return Optional.empty();
 		}
+
+		// Use the Collab name as the group, as it should exist
+		var job = execute(conn -> createJobInGroup(
+				owner, nmpiCollab, descriptor, machineName,
+				tags, keepaliveInterval, originalRequest));
+		// On failure to get job, just return; shouldn't happen as quota checked
+		// earlier, but just in case!
+		if (job.isEmpty()) {
+			return job;
+		}
+
+		quotaManager.associateNMPISession(
+				job.get().getId(), owner, nmpiCollab, quotaUnits.get());
+
+		// Return the job created
+		return job;
+	}
+
+	@Override
+	public Optional<Job> createJobForNMPIJob(String owner, int nmpiJobId,
+			CreateDescriptor descriptor, String machineName, List<String> tags,
+			Duration keepaliveInterval,	byte[] originalRequest) {
+		var collab = quotaManager.mayUseNMPIJob(owner, nmpiJobId);
+		if (collab.isEmpty()) {
+			return Optional.empty();
+		}
+		var quotaDetails = collab.get();
+
+		var job = execute(conn -> createJobInGroup(
+				owner, quotaDetails.collabId, descriptor, machineName,
+				tags, keepaliveInterval, originalRequest));
+		// On failure to get job, just return; shouldn't happen as quota checked
+		// earlier, but just in case!
+		if (job.isEmpty()) {
+			return job;
+		}
+
+		quotaManager.associateNMPIJob(job.get().getId(), nmpiJobId,
+				quotaDetails.quotaUnits);
+
+		// Return the job created
+		return job;
 	}
 
 	/**
-	 * Work out what the ID of the group that a job will be accounted against
-	 * is.
+	 * Get the specified group.
 	 *
 	 * @param conn
 	 *            DB connection
@@ -542,25 +592,30 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	 *             If we can't get a definite group to account against.
 	 */
 	private int selectGroup(Connection conn, String user, String groupName) {
-		if (nonNull(groupName)) {
-			try (var getGroup = conn.query(GET_GROUP_BY_NAME_AND_MEMBER)) {
-				return getGroup.call1(integer("group_id"), user, groupName)
-						.orElseThrow(() -> new NoSuchGroupException(
-								"group %s does not exist or %s "
-										+ "is not a member of it",
-								groupName, user));
-			}
-		}
-		try (var listGroups = conn.query(GET_GROUPS_AND_QUOTAS_OF_USER)) {
-			// No name given; need to guess.
-			return Row.stream(listGroups.call(UserQuota::new, user))
-					.filter(q -> isNull(q.quota)
-							|| q.quota > 0L)
-					.map(q -> q.groupId).first()
+		try (var getGroup = conn.query(GET_GROUP_BY_NAME_AND_MEMBER)) {
+			return getGroup.call1(integer("group_id"), user, groupName)
 					.orElseThrow(() -> new NoSuchGroupException(
-							"user %s is not a member of any "
-									+ "groups with quota left",
-							user));
+							"group %s does not exist or %s "
+									+ "is not a member of it",
+							groupName, user));
+		}
+	}
+
+	private String getOnlyGroup(Connection conn, String user) {
+		try (var listGroups = conn.query(GET_GROUP_NAMES_OF_USER)) {
+			// No name given; need to guess.
+			var groups = listGroups.call(row -> row.getString("group_name"),
+					user);
+			if (groups.size() > 1) {
+				throw new NoSuchGroupException(
+						"User is a member of more than one group, so the group"
+						+ " must be selected in the request");
+			}
+			if (groups.size() == 0) {
+				throw new NoSuchGroupException(
+						"User is not a member of any group!");
+			}
+			return groups.get(0);
 		}
 	}
 

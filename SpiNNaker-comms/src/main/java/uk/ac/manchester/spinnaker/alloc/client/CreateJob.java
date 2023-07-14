@@ -65,6 +65,15 @@ public final class CreateJob {
 	@PositiveOrZero
 	private Integer maxDeadBoards;
 
+	private String owner;
+
+	private String group;
+
+	private String nmpiCollab;
+
+	@Positive
+	private Integer nmpiJobId;
+
 	/**
 	 * Used when asking for a rectangle of boards.
 	 */
@@ -445,5 +454,70 @@ public final class CreateJob {
 	 */
 	public void setMaxDeadBoards(Integer maxDeadBoards) {
 		this.maxDeadBoards = maxDeadBoards;
+	}
+
+	/**
+	 * @return The owner; only works when the user is admin or NMPI.
+	 */
+	public String getOwner() {
+		return owner;
+	}
+
+	/**
+	 * Set the owner of the job to something other than the user requesting.
+	 * Only works when the user has this permission.
+	 * @param owner The new owner.
+	 */
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+
+	/**
+	 *
+	 * @return The group the quota for the job should be allocated against.
+	 */
+	public String getGroup() {
+		return group;
+	}
+
+	/**
+	 *
+	 * @param group The group the quota for the job should be allocated against.
+	 */
+	public void setGroup(String group) {
+		this.group = group;
+	}
+
+	/**
+	 *
+	 * @return The collaboratory that the quota for the job should be allocated
+	 *         against.
+	 */
+	public String getNmpiCollab() {
+		return nmpiCollab;
+	}
+
+	/**
+	 *
+	 * @param nmpiCollab The collaboratory that the quota for the job should be
+	 *                   allocated against.
+	 */
+	public void setNmpiCollab(String nmpiCollab) {
+		this.nmpiCollab = nmpiCollab;
+	}
+
+	/**
+	 * @return The NMPI job that the quota should be allocated against.
+	 */
+	public Integer getNmpiJobId() {
+		return nmpiJobId;
+	}
+
+	/**
+	 *
+	 * @param nmpiJobId The NMPI job that the quota should be allocated against.
+	 */
+	public void setNmpiJobId(Integer nmpiJobId) {
+		this.nmpiJobId = nmpiJobId;
 	}
 }
