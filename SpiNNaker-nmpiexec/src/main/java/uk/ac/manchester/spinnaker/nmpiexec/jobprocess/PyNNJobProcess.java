@@ -318,15 +318,18 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 		builder.directory(workingDirectory);
 		builder.redirectErrorStream(true);
 		var mapper = new ObjectMapper();
-		for (var entry: parameters.getHardwareConfiguration().entrySet()) {
-			String stringValue = null;
-			var value = entry.getValue();
-			if (value instanceof String) {
-				stringValue = (String) value;
-			} else {
-				stringValue = mapper.writeValueAsString(value);
+		var hardwareConfig = parameters.getHardwareConfiguration();
+		if (hardwareConfig != null) {
+			for (var entry: parameters.getHardwareConfiguration().entrySet()) {
+				String stringValue = null;
+				var value = entry.getValue();
+				if (value instanceof String) {
+					stringValue = (String) value;
+				} else {
+					stringValue = mapper.writeValueAsString(value);
+				}
+				builder.environment().put(entry.getKey(), stringValue);
 			}
-			builder.environment().put(entry.getKey(), stringValue);
 		}
 		final var process = builder.start();
 
