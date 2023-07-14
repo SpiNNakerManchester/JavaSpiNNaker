@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -119,10 +119,13 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(int,long,long,java.lang.String)">QuotaProperties</a></span>&#8203;(int&nbsp;defaultQuota,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(int,long,long,java.lang.String,java.lang.String,java.lang.String,java.lang.String)">QuotaProperties</a></span>&#8203;(int&nbsp;defaultQuota,
 long&nbsp;defaultOrgQuota,
 long&nbsp;defaultCollabQuota,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;consolidationSchedule)</code></th>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;consolidationSchedule,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;nmpiUrl,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;nmpiApiKey,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;nmpiPlatform)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
@@ -174,6 +177,21 @@ long&nbsp;defaultCollabQuota,
 <div class="block">Default user quota in board-seconds.</div>
 </td>
 </tr>
+<tr class="altColor" id="i4">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getNMPIApiKey()">getNMPIApiKey</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor" id="i5">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getNMPIPlaform()">getNMPIPlaform</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor" id="i6">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getNMPIUrl()">getNMPIUrl</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -198,7 +216,7 @@ long&nbsp;defaultCollabQuota,
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(int,long,long,java.lang.String)">QuotaProperties</a></h3>
+<h3><a id="&lt;init&gt;(int,long,long,java.lang.String,java.lang.String,java.lang.String,java.lang.String)">QuotaProperties</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">QuotaProperties</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("100")
 int&nbsp;defaultQuota,
 <a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("0")
@@ -206,7 +224,13 @@ long&nbsp;defaultOrgQuota,
 <a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("3600000")
 long&nbsp;defaultCollabQuota,
 <a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("0 0 * * * *")
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;consolidationSchedule)</span></div>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;consolidationSchedule,
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("")
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;nmpiUrl,
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("")
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;nmpiApiKey,
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("SpiNNaker")
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;nmpiPlatform)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>defaultQuota</code> - Default user quota in board-seconds.</dd>
@@ -216,6 +240,10 @@ long&nbsp;defaultCollabQuota,
             board-seconds.</dd>
 <dd><code>consolidationSchedule</code> - Cron expression that says when we consolidate job quotas
             into the main quota table.</dd>
+<dd><code>nmpiUrl</code> - The NMPI service URL to communicate with for quotas.</dd>
+<dd><code>nmpiApiKey</code> - The API key to use to authenticate with the NMPI service.</dd>
+<dd><code>nmpiPlatform</code> - The platform to use when creating session on the NMPI
+            service.</dd>
 </dl>
 </section>
 </li>
@@ -274,6 +302,38 @@ long&nbsp;defaultCollabQuota,
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Cron expression that says when we consolidate job quotas into
          the main quota table.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getNMPIUrl()">getNMPIUrl</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getNMPIUrl</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The URL of an NMPI server that deals with quota.
+         May be blank, meaning there isn't one.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getNMPIApiKey()">getNMPIApiKey</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getNMPIApiKey</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The API Key to use to access the NMPI server.
+         May be blank if @linkplain(#nmpiUrl) is blank.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getNMPIPlaform()">getNMPIPlaform</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getNMPIPlaform</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The platform to look for on the NMPI server.</dd>
 </dl>
 </section>
 </li>

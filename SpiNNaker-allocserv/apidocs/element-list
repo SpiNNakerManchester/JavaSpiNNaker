@@ -5,6 +5,7 @@ uk.ac.manchester.spinnaker.alloc.bmp
 uk.ac.manchester.spinnaker.alloc.compat
 uk.ac.manchester.spinnaker.alloc.db
 uk.ac.manchester.spinnaker.alloc.model
+uk.ac.manchester.spinnaker.alloc.nmpi
 uk.ac.manchester.spinnaker.alloc.proxy
 uk.ac.manchester.spinnaker.alloc.security
 uk.ac.manchester.spinnaker.alloc.web

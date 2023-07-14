@@ -119,13 +119,21 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GRANT_NMPI_EXEC">GRANT_NMPI_EXEC</a></span></code></th>
+<td class="colLast">
+<div class="block">The authority used to grant a user permission to run NMPI jobs only on
+ behalf of other users.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GRANT_READER">GRANT_READER</a></span></code></th>
 <td class="colLast">
 <div class="block">The authority used to grant a user permission to get general machine
  information and summaries of jobs.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GRANT_USER">GRANT_USER</a></span></code></th>
 <td class="colLast">
@@ -185,6 +193,19 @@ loadScripts(document, 'script');</script>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_ADMIN">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="GRANT_NMPI_EXEC">GRANT_NMPI_EXEC</a></h3>
+<div class="memberSignature"><span class="modifiers">static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GRANT_NMPI_EXEC</span></div>
+<div class="block">The authority used to grant a user permission to run NMPI jobs only on
+ behalf of other users.  This is equivalent to <a href="#GRANT_USER"><code>GRANT_USER</code></a> but
+ with this additional benefit.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_NMPI_EXEC">Constant Field Values</a></dd>
 </dl>
 </section>
 </li>

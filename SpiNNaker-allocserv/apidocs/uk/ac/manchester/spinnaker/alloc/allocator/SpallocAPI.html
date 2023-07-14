@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6};
+<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6,"i13":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -235,18 +235,56 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Job</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJob(java.lang.String,java.lang.String,uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDescriptor,java.lang.String,java.util.List,java.time.Duration,byte%5B%5D)">createJob</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;group,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJob(java.lang.String,uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDescriptor,java.lang.String,java.util.List,java.time.Duration,byte%5B%5D)">createJob</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="SpallocAPI.CreateDescriptor.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.CreateDescriptor</a>&nbsp;descriptor,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;&nbsp;tags,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;keepaliveInterval,
 byte[]&nbsp;originalRequest)</code></th>
 <td class="colLast">
-<div class="block">Create a job.</div>
+<div class="block">Create a job for a user that is only in one group.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i1">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Job</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJobForNMPIJob(java.lang.String,int,uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDescriptor,java.lang.String,java.util.List,java.time.Duration,byte%5B%5D)">createJobForNMPIJob</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner,
+int&nbsp;nmpiJobId,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="SpallocAPI.CreateDescriptor.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.CreateDescriptor</a>&nbsp;descriptor,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;&nbsp;tags,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;keepaliveInterval,
+byte[]&nbsp;originalRequest)</code></th>
+<td class="colLast">
+<div class="block">Create a job for interactive use in an NMPI Collab Session.</div>
+</td>
+</tr>
+<tr class="altColor" id="i2">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Job</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJobInCollabSession(java.lang.String,java.lang.String,uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDescriptor,java.lang.String,java.util.List,java.time.Duration,byte%5B%5D)">createJobInCollabSession</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;nmpiCollab,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="SpallocAPI.CreateDescriptor.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.CreateDescriptor</a>&nbsp;descriptor,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;&nbsp;tags,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;keepaliveInterval,
+byte[]&nbsp;originalRequest)</code></th>
+<td class="colLast">
+<div class="block">Create a job for interactive use in an NMPI Collab Session.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i3">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Job</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJobInGroup(java.lang.String,java.lang.String,uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDescriptor,java.lang.String,java.util.List,java.time.Duration,byte%5B%5D)">createJobInGroup</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;group,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="SpallocAPI.CreateDescriptor.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.CreateDescriptor</a>&nbsp;descriptor,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;&nbsp;tags,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;keepaliveInterval,
+byte[]&nbsp;originalRequest)</code></th>
+<td class="colLast">
+<div class="block">Create a job for a user in a specific local group.</div>
+</td>
+</tr>
+<tr class="altColor" id="i4">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Job</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getJob(uk.ac.manchester.spinnaker.alloc.security.Permit,int)">getJob</a></span>&#8203;(<a href="../security/Permit.html" title="class in uk.ac.manchester.spinnaker.alloc.security">Permit</a>&nbsp;permit,
 int&nbsp;id)</code></th>
@@ -254,7 +292,7 @@ int&nbsp;id)</code></th>
 <div class="block">Get a specific job.</div>
 </td>
 </tr>
-<tr class="altColor" id="i2">
+<tr class="rowColor" id="i5">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../model/JobDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model">JobDescription</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getJobInfo(uk.ac.manchester.spinnaker.alloc.security.Permit,int)">getJobInfo</a></span>&#8203;(<a href="../security/Permit.html" title="class in uk.ac.manchester.spinnaker.alloc.security">Permit</a>&nbsp;permit,
 int&nbsp;id)</code></th>
@@ -262,7 +300,7 @@ int&nbsp;id)</code></th>
 <div class="block">Get a specific job.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="altColor" id="i6">
 <td class="colFirst"><code><a href="SpallocAPI.Jobs.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Jobs</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getJobs(boolean,int,int)">getJobs</a></span>&#8203;(boolean&nbsp;deleted,
 int&nbsp;limit,
@@ -271,7 +309,7 @@ int&nbsp;start)</code></th>
 <div class="block">List the jobs.</div>
 </td>
 </tr>
-<tr class="altColor" id="i4">
+<tr class="rowColor" id="i7">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.Machine.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Machine</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMachine(java.lang.String,boolean)">getMachine</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
 boolean&nbsp;allowOutOfService)</code></th>
@@ -279,7 +317,7 @@ boolean&nbsp;allowOutOfService)</code></th>
 <div class="block">Get a specific machine.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i5">
+<tr class="altColor" id="i8">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../model/MachineDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model">MachineDescription</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMachineInfo(java.lang.String,boolean,uk.ac.manchester.spinnaker.alloc.security.Permit)">getMachineInfo</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
 boolean&nbsp;allowOutOfService,
@@ -288,35 +326,35 @@ boolean&nbsp;allowOutOfService,
 <div class="block">Get info about a specific machine.</div>
 </td>
 </tr>
-<tr class="altColor" id="i6">
+<tr class="rowColor" id="i9">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;<a href="SpallocAPI.Machine.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Machine</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMachines(boolean)">getMachines</a></span>&#8203;(boolean&nbsp;allowOutOfService)</code></th>
 <td class="colLast">
 <div class="block">List the machines.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i7">
+<tr class="altColor" id="i10">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../model/JobListEntryRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">JobListEntryRecord</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listJobs(uk.ac.manchester.spinnaker.alloc.security.Permit)">listJobs</a></span>&#8203;(<a href="../security/Permit.html" title="class in uk.ac.manchester.spinnaker.alloc.security">Permit</a>&nbsp;permit)</code></th>
 <td class="colLast">
 <div class="block">List the active jobs.</div>
 </td>
 </tr>
-<tr class="altColor" id="i8">
+<tr class="rowColor" id="i11">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../model/MachineListEntryRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">MachineListEntryRecord</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listMachines(boolean)">listMachines</a></span>&#8203;(boolean&nbsp;allowOutOfService)</code></th>
 <td class="colLast">
 <div class="block">List the machines.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i9">
+<tr class="altColor" id="i12">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#purgeDownCache()">purgeDownCache</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Purge the cache of what boards are down.</div>
 </td>
 </tr>
-<tr class="altColor" id="i10">
+<tr class="rowColor" id="i13">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#reportProblem(java.lang.String,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.String,uk.ac.manchester.spinnaker.alloc.security.Permit)">reportProblem</a></span>&#8203;(@IPAddress <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address,
 uk.ac.manchester.spinnaker.machine.HasChipLocation&nbsp;coreLocation,
@@ -437,7 +475,7 @@ int&nbsp;start)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getJob(uk.ac.manchester.spinnaker.alloc.security.Permit,int)">getJob</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/access/prepost/PostFilter.html?is-external=true" title="class or interface in org.springframework.security.access.prepost" class="externalLink">@PostFilter</a>("#permit.admin or  #permit.name == filterObject.owner.orElse(null)")
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/access/prepost/PostFilter.html?is-external=true" title="class or interface in org.springframework.security.access.prepost" class="externalLink">@PostFilter</a>("#permit.admin or  #permit.nmpiexec or  #permit.name == filterObject.owner.orElse(null)")
 </span><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Job</a>&gt;</span>&nbsp;<span class="memberName">getJob</span>&#8203;(<span class="arguments"><a href="../security/Permit.html" title="class in uk.ac.manchester.spinnaker.alloc.security">Permit</a>&nbsp;permit,
 int&nbsp;id)</span></div>
 <div class="block">Get a specific job. Only owners or admins can see full job details or
@@ -455,7 +493,7 @@ int&nbsp;id)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getJobInfo(uk.ac.manchester.spinnaker.alloc.security.Permit,int)">getJobInfo</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/access/prepost/PostFilter.html?is-external=true" title="class or interface in org.springframework.security.access.prepost" class="externalLink">@PostFilter</a>("#permit.admin or  #permit.name == filterObject.owner.orElse(null)")
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/access/prepost/PostFilter.html?is-external=true" title="class or interface in org.springframework.security.access.prepost" class="externalLink">@PostFilter</a>("#permit.admin or  #permit.nmpiexec or  #permit.name == filterObject.owner.orElse(null)")
 </span><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../model/JobDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model">JobDescription</a>&gt;</span>&nbsp;<span class="memberName">getJobInfo</span>&#8203;(<span class="arguments"><a href="../security/Permit.html" title="class in uk.ac.manchester.spinnaker.alloc.security">Permit</a>&nbsp;permit,
 int&nbsp;id)</span></div>
 <div class="block">Get a specific job. Only owners or admins can see full job details or
@@ -472,28 +510,130 @@ int&nbsp;id)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="createJob(java.lang.String,java.lang.String,uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDescriptor,java.lang.String,java.util.List,java.time.Duration,byte[])">createJob</a></h3>
+<h3><a id="createJob(java.lang.String,uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDescriptor,java.lang.String,java.util.List,java.time.Duration,byte[])">createJob</a></h3>
 <div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Job</a>&gt;</span>&nbsp;<span class="memberName">createJob</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;group,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="SpallocAPI.CreateDescriptor.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.CreateDescriptor</a>&nbsp;descriptor,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;&nbsp;tags,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;keepaliveInterval,
 byte[]&nbsp;originalRequest)</span></div>
-<div class="block">Create a job. Note that jobs <em>cannot</em> be created on machines that
+<div class="block">Create a job for a user that is only in one group.
+ Note that jobs <em>cannot</em> be created on machines that
+ are out of service, but marking a machine as out of service does not stop
+ the jobs that are already running on it.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>owner</code> - Who is making this job.</dd>
+<dd><code>descriptor</code> - What sort of allocation is desired?</dd>
+<dd><code>machineName</code> - The name of the machine the user wants to allocate on, or
+            <code>null</code> if they want to select by tags.</dd>
+<dd><code>tags</code> - The tags of the machine the user wants to allocate on, or
+            <code>null</code> if they want to select by name.</dd>
+<dd><code>keepaliveInterval</code> - The maximum interval between keepalive requests or the job
+            becomes eligible for automated deletion.</dd>
+<dd><code>originalRequest</code> - The serialized original request, which will be stored in the
+            database for later retrieval.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>Handle to the job, or <code>empty</code> if the job couldn't be made.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="createJobInGroup(java.lang.String,java.lang.String,uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDescriptor,java.lang.String,java.util.List,java.time.Duration,byte[])">createJobInGroup</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Job</a>&gt;</span>&nbsp;<span class="memberName">createJobInGroup</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;group,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="SpallocAPI.CreateDescriptor.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.CreateDescriptor</a>&nbsp;descriptor,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;&nbsp;tags,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;keepaliveInterval,
+byte[]&nbsp;originalRequest)</span></div>
+<div class="block">Create a job for a user in a specific local group.
+ Note that jobs <em>cannot</em> be created on machines that
  are out of service, but marking a machine as out of service does not stop
  the jobs that are already running on it.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>owner</code> - Who is making this job.</dd>
 <dd><code>group</code> - What group is associated with this job for accounting
-            purposes. If <code>null</code> then a guess is made based on the
-            owner's memberships (i.e., if the owner is a member of a
-            single group, with it being an error for a job to be submitted
-            where there is a choice of groups available yet the job
-            doesn't say which to use).</dd>
+            purposes.</dd>
+<dd><code>descriptor</code> - What sort of allocation is desired?</dd>
+<dd><code>machineName</code> - The name of the machine the user wants to allocate on, or
+            <code>null</code> if they want to select by tags.</dd>
+<dd><code>tags</code> - The tags of the machine the user wants to allocate on, or
+            <code>null</code> if they want to select by name.</dd>
+<dd><code>keepaliveInterval</code> - The maximum interval between keepalive requests or the job
+            becomes eligible for automated deletion.</dd>
+<dd><code>originalRequest</code> - The serialized original request, which will be stored in the
+            database for later retrieval.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>Handle to the job, or <code>empty</code> if the job couldn't be made.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="createJobInCollabSession(java.lang.String,java.lang.String,uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDescriptor,java.lang.String,java.util.List,java.time.Duration,byte[])">createJobInCollabSession</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Job</a>&gt;</span>&nbsp;<span class="memberName">createJobInCollabSession</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;nmpiCollab,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="SpallocAPI.CreateDescriptor.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.CreateDescriptor</a>&nbsp;descriptor,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;&nbsp;tags,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;keepaliveInterval,
+byte[]&nbsp;originalRequest)</span></div>
+<div class="block">Create a job for interactive use in an NMPI Collab Session.
+ Note that jobs <em>cannot</em> be created on machines that
+ are out of service, but marking a machine as out of service does not stop
+ the jobs that are already running on it.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>owner</code> - Who is making this job.</dd>
+<dd><code>nmpiCollab</code> - The NMPI Collab to manage a session in, and from which the
+            quota will be used.</dd>
+<dd><code>descriptor</code> - What sort of allocation is desired?</dd>
+<dd><code>machineName</code> - The name of the machine the user wants to allocate on, or
+            <code>null</code> if they want to select by tags.</dd>
+<dd><code>tags</code> - The tags of the machine the user wants to allocate on, or
+            <code>null</code> if they want to select by name.</dd>
+<dd><code>keepaliveInterval</code> - The maximum interval between keepalive requests or the job
+            becomes eligible for automated deletion.</dd>
+<dd><code>originalRequest</code> - The serialized original request, which will be stored in the
+            database for later retrieval.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>Handle to the job, or <code>empty</code> if the job couldn't be made.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="createJobForNMPIJob(java.lang.String,int,uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDescriptor,java.lang.String,java.util.List,java.time.Duration,byte[])">createJobForNMPIJob</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/access/prepost/PreAuthorize.html?is-external=true" title="class or interface in org.springframework.security.access.prepost" class="externalLink">@PreAuthorize</a>("hasRole(\'NMPI_EXEC\')")
+</span><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Job</a>&gt;</span>&nbsp;<span class="memberName">createJobForNMPIJob</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner,
+int&nbsp;nmpiJobId,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="SpallocAPI.CreateDescriptor.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.CreateDescriptor</a>&nbsp;descriptor,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;&nbsp;tags,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;keepaliveInterval,
+byte[]&nbsp;originalRequest)</span></div>
+<div class="block">Create a job for interactive use in an NMPI Collab Session.
+ Note that jobs <em>cannot</em> be created on machines that
+ are out of service, but marking a machine as out of service does not stop
+ the jobs that are already running on it.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>owner</code> - Who is making this job.</dd>
+<dd><code>nmpiJobId</code> - The NMPI Job to allocate the quota used to.  The collab of
+            the Job will be used for internal accounting purposes.</dd>
 <dd><code>descriptor</code> - What sort of allocation is desired?</dd>
 <dd><code>machineName</code> - The name of the machine the user wants to allocate on, or
             <code>null</code> if they want to select by tags.</dd>

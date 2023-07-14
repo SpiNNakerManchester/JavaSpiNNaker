@@ -680,16 +680,16 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_GROUP_QUOTA">GET_GROUP_QUOTA</a></span></code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_GROUP_NAMES_OF_USER">GET_GROUP_NAMES_OF_USER</a></span></code></th>
 <td class="colLast">
-<div class="block">Get the quota for a group.</div>
+<div class="block">List all the groups that a user is a member of and that have quota left.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_GROUPS_AND_QUOTAS_OF_USER">GET_GROUPS_AND_QUOTAS_OF_USER</a></span></code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_GROUP_QUOTA">GET_GROUP_QUOTA</a></span></code></th>
 <td class="colLast">
-<div class="block">List all the groups that a user is a member of and that have quota left.</div>
+<div class="block">Get the quota for a group.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -725,6 +725,20 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_JOB_IDS">GET_JOB_IDS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get basic information about jobs.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_JOB_NMPI_JOB">GET_JOB_NMPI_JOB</a></span></code></th>
+<td class="colLast">
+<div class="block">Get the NMPI Job for a Job.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_JOB_SESSION">GET_JOB_SESSION</a></span></code></th>
+<td class="colLast">
+<div class="block">Get the NMPI Session for a Job.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -1218,12 +1232,19 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SET_COLLAB_QUOTA">SET_COLLAB_QUOTA</a></span></code></th>
+<td class="colLast">
+<div class="block">Set a quota.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SET_FUNCTIONING_FIELD">SET_FUNCTIONING_FIELD</a></span></code></th>
 <td class="colLast">
 <div class="block">Set the value of a board's <code>functioning</code> column.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SET_IN_PROGRESS">SET_IN_PROGRESS</a></span></code></th>
 <td class="colLast">
@@ -1231,14 +1252,28 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  board.</div>
 </td>
 </tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SET_JOB_NMPI_JOB">SET_JOB_NMPI_JOB</a></span></code></th>
+<td class="colLast">
+<div class="block">Set the NMPI Job for a Job.</div>
+</td>
+</tr>
 <tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SET_JOB_SESSION">SET_JOB_SESSION</a></span></code></th>
+<td class="colLast">
+<div class="block">Set the NMPI session for a Job.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SET_MACHINE_STATE">SET_MACHINE_STATE</a></span></code></th>
 <td class="colLast">
 <div class="block">Set the in-service flag for a machine.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SET_MAX_COORDS">SET_MAX_COORDS</a></span></code></th>
 <td class="colLast">
@@ -1246,84 +1281,84 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  correctly.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SET_STATE_DESTROYED">SET_STATE_DESTROYED</a></span></code></th>
 <td class="colLast">
 <div class="block">Set the state destroyed and number of pending changes for a job.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SET_STATE_PENDING">SET_STATE_PENDING</a></span></code></th>
 <td class="colLast">
 <div class="block">Set the state and number of pending changes for a job.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SET_USER_DISABLED">SET_USER_DISABLED</a></span></code></th>
 <td class="colLast">
 <div class="block">Set whether a user is administratively disabled.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SET_USER_LOCKED">SET_USER_LOCKED</a></span></code></th>
 <td class="colLast">
 <div class="block">Set whether a user is locked.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SET_USER_NAME">SET_USER_NAME</a></span></code></th>
 <td class="colLast">
 <div class="block">Set a user's name.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SET_USER_PASS">SET_USER_PASS</a></span></code></th>
 <td class="colLast">
 <div class="block">Set a user's password.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SET_USER_TRUST">SET_USER_TRUST</a></span></code></th>
 <td class="colLast">
 <div class="block">Set the amount a user is trusted.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#UNLOCK_LOCKED_USERS">UNLOCK_LOCKED_USERS</a></span></code></th>
 <td class="colLast">
 <div class="block">Unlock accounts.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#UPDATE_GROUP">UPDATE_GROUP</a></span></code></th>
 <td class="colLast">
 <div class="block">Update a single group record's name and quota.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#UPDATE_KEEPALIVE">UPDATE_KEEPALIVE</a></span></code></th>
 <td class="colLast">
 <div class="block">Update the keepalive timestamp.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#WRITE_HISTORICAL_ALLOCS">WRITE_HISTORICAL_ALLOCS</a></span></code></th>
 <td class="colLast">
 <div class="block">Write to the historical allocations database.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#WRITE_HISTORICAL_JOBS">WRITE_HISTORICAL_JOBS</a></span></code></th>
 <td class="colLast">
@@ -2494,6 +2529,19 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
+<h3><a id="SET_COLLAB_QUOTA">SET_COLLAB_QUOTA</a></h3>
+<div class="memberSignature"><span class="annotations">@Parameter("new_quota") @Parameter("group_name")
+</span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">SET_COLLAB_QUOTA</span></div>
+<div class="block">Set a quota. Used when the system is aligning quota with NMPI data.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../allocator/QuotaManager.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator"><code>QuotaManager</code></a>, 
+<a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_COLLAB_QUOTA">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
 <h3><a id="GET_USER_DETAILS">GET_USER_DETAILS</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("user_id")
 @ResultColumn("user_id") @ResultColumn("user_name") @ResultColumn("has_password") @ResultColumn("trust_level") @ResultColumn("locked") @ResultColumn("disabled") @ResultColumn("last_successful_login_timestamp") @ResultColumn("last_fail_timestamp") @ResultColumn("openid_subject") @ResultColumn("is_internal")
@@ -2573,15 +2621,15 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="GET_GROUPS_AND_QUOTAS_OF_USER">GET_GROUPS_AND_QUOTAS_OF_USER</a></h3>
+<h3><a id="GET_GROUP_NAMES_OF_USER">GET_GROUP_NAMES_OF_USER</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("user_name")
-@ResultColumn("group_id") @ResultColumn("quota")
-</span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GET_GROUPS_AND_QUOTAS_OF_USER</span></div>
+@ResultColumn("group_name")
+</span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GET_GROUP_NAMES_OF_USER</span></div>
 <div class="block">List all the groups that a user is a member of and that have quota left.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../allocator/Spalloc.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator"><code>Spalloc</code></a>, 
-<a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_GROUPS_AND_QUOTAS_OF_USER">Constant Field Values</a></dd>
+<a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_GROUP_NAMES_OF_USER">Constant Field Values</a></dd>
 </dl>
 </section>
 </li>
@@ -3510,6 +3558,56 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.WRITE_HISTORICAL_JOBS">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="SET_JOB_SESSION">SET_JOB_SESSION</a></h3>
+<div class="memberSignature"><span class="annotations">@Parameter("job_id") @Parameter("session_id") @Parameter("quota_units")
+</span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">SET_JOB_SESSION</span></div>
+<div class="block">Set the NMPI session for a Job.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_JOB_SESSION">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="SET_JOB_NMPI_JOB">SET_JOB_NMPI_JOB</a></h3>
+<div class="memberSignature"><span class="annotations">@Parameter("job_id") @Parameter("nmpi_job_id") @Parameter("quota_units")
+</span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">SET_JOB_NMPI_JOB</span></div>
+<div class="block">Set the NMPI Job for a Job.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.SET_JOB_NMPI_JOB">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="GET_JOB_SESSION">GET_JOB_SESSION</a></h3>
+<div class="memberSignature"><span class="annotations">@Parameter("job_id")
+@ResultColumn("session_id") @ResultColumn("quota_units")
+</span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GET_JOB_SESSION</span></div>
+<div class="block">Get the NMPI Session for a Job.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_JOB_SESSION">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="GET_JOB_NMPI_JOB">GET_JOB_NMPI_JOB</a></h3>
+<div class="memberSignature"><span class="annotations">@Parameter("job_id")
+@ResultColumn("nmpi_job_id") @ResultColumn("quota_units")
+</span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GET_JOB_NMPI_JOB</span></div>
+<div class="block">Get the NMPI Job for a Job.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_JOB_NMPI_JOB">Constant Field Values</a></dd>
 </dl>
 </section>
 </li>

@@ -759,100 +759,88 @@
 <a class="jxr_linenumber" name="L751" href="#L751">751</a> <em class="jxr_comment">		 */</em>
 <a class="jxr_linenumber" name="L752" href="#L752">752</a> 		sql.setMaxCoords.call(maxX + TRIAD_CHIP_SIZE - 1,
 <a class="jxr_linenumber" name="L753" href="#L753">753</a> 				maxY + TRIAD_CHIP_SIZE - 1, machineId);
-<a class="jxr_linenumber" name="L754" href="#L754">754</a> 		<strong class="jxr_keyword">var</strong> rootPhys = machine.boardLocations.get(<strong class="jxr_keyword">new</strong> TriadCoords(0, 0, 0));
-<a class="jxr_linenumber" name="L755" href="#L755">755</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> triad : machine.deadBoards) {
-<a class="jxr_linenumber" name="L756" href="#L756">756</a> 			<em class="jxr_comment">// Fake with the machine root if no real coords available</em>
-<a class="jxr_linenumber" name="L757" href="#L757">757</a> 			<strong class="jxr_keyword">var</strong> phys = machine.boardLocations.getOrDefault(triad, rootPhys);
-<a class="jxr_linenumber" name="L758" href="#L758">758</a> 			<strong class="jxr_keyword">int</strong> bmpID = bmpIds.get(phys.getBmpCoords());
-<a class="jxr_linenumber" name="L759" href="#L759">759</a> 			<strong class="jxr_keyword">var</strong> root = triad.asChipLocation();
-<a class="jxr_linenumber" name="L760" href="#L760">760</a> 			log.debug(<span class="jxr_string">"making {} board {}"</span>, <span class="jxr_string">"dead"</span>, triad);
-<a class="jxr_linenumber" name="L761" href="#L761">761</a> 			sql.makeBoard
-<a class="jxr_linenumber" name="L762" href="#L762">762</a> 					.key(machineId, <strong class="jxr_keyword">null</strong>, bmpID, <strong class="jxr_keyword">null</strong>, triad.x, triad.y,
-<a class="jxr_linenumber" name="L763" href="#L763">763</a> 							triad.z, root.getX(), root.getY(), false)
-<a class="jxr_linenumber" name="L764" href="#L764">764</a> 					.ifPresent(id -&gt; boardIds.put(triad, id));
-<a class="jxr_linenumber" name="L765" href="#L765">765</a> 		}
-<a class="jxr_linenumber" name="L766" href="#L766">766</a> 		<strong class="jxr_keyword">return</strong> boardIds;
-<a class="jxr_linenumber" name="L767" href="#L767">767</a> 	}
-<a class="jxr_linenumber" name="L768" href="#L768">768</a> 
-<a class="jxr_linenumber" name="L769" href="#L769">769</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> makeLinks(Updates sql, Machine machine,
-<a class="jxr_linenumber" name="L770" href="#L770">770</a> 			Map&lt;TriadCoords, Integer&gt; boardIds) {
-<a class="jxr_linenumber" name="L771" href="#L771">771</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> here : boardIds.keySet()) {
-<a class="jxr_linenumber" name="L772" href="#L772">772</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> d : Direction.values()) {
-<a class="jxr_linenumber" name="L773" href="#L773">773</a> 				<strong class="jxr_keyword">var</strong> there = machine.move(here, d);
-<a class="jxr_linenumber" name="L774" href="#L774">774</a> 				<strong class="jxr_keyword">if</strong> (boardIds.containsKey(there)) {
-<a class="jxr_linenumber" name="L775" href="#L775">775</a> 					makeLink(sql, machine, boardIds, here, d, there,
-<a class="jxr_linenumber" name="L776" href="#L776">776</a> 							d.opposite());
-<a class="jxr_linenumber" name="L777" href="#L777">777</a> 				}
-<a class="jxr_linenumber" name="L778" href="#L778">778</a> 			}
-<a class="jxr_linenumber" name="L779" href="#L779">779</a> 		}
-<a class="jxr_linenumber" name="L780" href="#L780">780</a> 	}
-<a class="jxr_linenumber" name="L781" href="#L781">781</a> 
-<a class="jxr_linenumber" name="L782" href="#L782">782</a> 	<strong class="jxr_keyword">private</strong> Optional&lt;Integer&gt; makeLink(Updates sql, Machine machine,
-<a class="jxr_linenumber" name="L783" href="#L783">783</a> 			Map&lt;TriadCoords, Integer&gt; boardIds, TriadCoords here, <a name="Direction" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/Direction.html#Direction">Direction</a> d1,
-<a class="jxr_linenumber" name="L784" href="#L784">784</a> 			TriadCoords there, <a name="Direction" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/Direction.html#Direction">Direction</a> d2) {
-<a class="jxr_linenumber" name="L785" href="#L785">785</a> 		<strong class="jxr_keyword">var</strong> b1 = boardIds.get(here);
-<a class="jxr_linenumber" name="L786" href="#L786">786</a> 		<strong class="jxr_keyword">var</strong> b2 = boardIds.get(there);
-<a class="jxr_linenumber" name="L787" href="#L787">787</a> 		<strong class="jxr_keyword">if</strong> (isNull(b1) || isNull(b2)) {
-<a class="jxr_linenumber" name="L788" href="#L788">788</a> 			<em class="jxr_comment">// No such board? Oh well</em>
-<a class="jxr_linenumber" name="L789" href="#L789">789</a> 			<strong class="jxr_keyword">return</strong> Optional.empty();
-<a class="jxr_linenumber" name="L790" href="#L790">790</a> 		}
-<a class="jxr_linenumber" name="L791" href="#L791">791</a> 
-<a class="jxr_linenumber" name="L792" href="#L792">792</a> 		<em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="L793" href="#L793">793</a> <em class="jxr_comment">		 * A link is dead if it is dead in either direction or if either board</em>
-<a class="jxr_linenumber" name="L794" href="#L794">794</a> <em class="jxr_comment">		 * is dead.</em>
-<a class="jxr_linenumber" name="L795" href="#L795">795</a> <em class="jxr_comment">		 */</em>
-<a class="jxr_linenumber" name="L796" href="#L796">796</a> 		<strong class="jxr_keyword">boolean</strong> dead = machine.deadBoards.contains(here)
-<a class="jxr_linenumber" name="L797" href="#L797">797</a> 				|| machine.hasDeadLinkAt(here, d1)
-<a class="jxr_linenumber" name="L798" href="#L798">798</a> 				|| machine.deadBoards.contains(there)
-<a class="jxr_linenumber" name="L799" href="#L799">799</a> 				|| machine.hasDeadLinkAt(there, d2);
-<a class="jxr_linenumber" name="L800" href="#L800">800</a> 		log.debug(<span class="jxr_string">"making {}:{} &lt;-{}-&gt; {}:{}"</span>, here, d1, dead ? <span class="jxr_string">"/"</span> : <span class="jxr_string">"-"</span>,
-<a class="jxr_linenumber" name="L801" href="#L801">801</a> 				there, d2);
-<a class="jxr_linenumber" name="L802" href="#L802">802</a> 		<strong class="jxr_keyword">return</strong> sql.makeLink.key(b1, d1, b2, d2, !dead);
-<a class="jxr_linenumber" name="L803" href="#L803">803</a> 	}
-<a class="jxr_linenumber" name="L804" href="#L804">804</a> 
-<a class="jxr_linenumber" name="L805" href="#L805">805</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L806" href="#L806">806</a> <em class="jxr_javadoccomment">	 * Operations for testing only.</em>
-<a class="jxr_linenumber" name="L807" href="#L807">807</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L808" href="#L808">808</a> <em class="jxr_javadoccomment">	 * @hidden</em>
-<a class="jxr_linenumber" name="L809" href="#L809">809</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L810" href="#L810">810</a> 	@ForTestingOnly
-<a class="jxr_linenumber" name="L811" href="#L811">811</a> 	<strong class="jxr_keyword">interface</strong> TestAPI {
-<a class="jxr_linenumber" name="L812" href="#L812">812</a> 		<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L813" href="#L813">813</a> <em class="jxr_javadoccomment">		 * Add a machine definition using the SQL update profile.</em>
-<a class="jxr_linenumber" name="L814" href="#L814">814</a> <em class="jxr_javadoccomment">		 *</em>
-<a class="jxr_linenumber" name="L815" href="#L815">815</a> <em class="jxr_javadoccomment">		 * @param machine</em>
-<a class="jxr_linenumber" name="L816" href="#L816">816</a> <em class="jxr_javadoccomment">		 *            The description of the machine to add.</em>
-<a class="jxr_linenumber" name="L817" href="#L817">817</a> <em class="jxr_javadoccomment">		 * @return The ID of the created machine.</em>
-<a class="jxr_linenumber" name="L818" href="#L818">818</a> <em class="jxr_javadoccomment">		 * @throws InsertFailedException</em>
-<a class="jxr_linenumber" name="L819" href="#L819">819</a> <em class="jxr_javadoccomment">		 *             If the machine couldn't be created.</em>
-<a class="jxr_linenumber" name="L820" href="#L820">820</a> <em class="jxr_javadoccomment">		 */</em>
-<a class="jxr_linenumber" name="L821" href="#L821">821</a> 		Integer loadMachineDefinition(Machine machine);
-<a class="jxr_linenumber" name="L822" href="#L822">822</a> 	}
-<a class="jxr_linenumber" name="L823" href="#L823">823</a> 
-<a class="jxr_linenumber" name="L824" href="#L824">824</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L825" href="#L825">825</a> <em class="jxr_javadoccomment">	 * @param c</em>
-<a class="jxr_linenumber" name="L826" href="#L826">826</a> <em class="jxr_javadoccomment">	 *            How to talk to the DB.</em>
-<a class="jxr_linenumber" name="L827" href="#L827">827</a> <em class="jxr_javadoccomment">	 * @return The test interface.</em>
-<a class="jxr_linenumber" name="L828" href="#L828">828</a> <em class="jxr_javadoccomment">	 * @deprecated This interface is just for testing.</em>
-<a class="jxr_linenumber" name="L829" href="#L829">829</a> <em class="jxr_javadoccomment">	 * @hidden</em>
-<a class="jxr_linenumber" name="L830" href="#L830">830</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L831" href="#L831">831</a> 	@RestrictedApi(explanation = <span class="jxr_string">"just for testing"</span>, link = <span class="jxr_string">"index.html"</span>,
-<a class="jxr_linenumber" name="L832" href="#L832">832</a> 			allowedOnPath = <span class="jxr_string">".*/src/test/java/.*"</span>)
-<a class="jxr_linenumber" name="L833" href="#L833">833</a> 	@Deprecated
-<a class="jxr_linenumber" name="L834" href="#L834">834</a> 	@ForTestingOnly
-<a class="jxr_linenumber" name="L835" href="#L835">835</a> 	TestAPI getTestAPI(Connection c) {
-<a class="jxr_linenumber" name="L836" href="#L836">836</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
-<a class="jxr_linenumber" name="L837" href="#L837">837</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TestAPI() {
-<a class="jxr_linenumber" name="L838" href="#L838">838</a> 			@Override
-<a class="jxr_linenumber" name="L839" href="#L839">839</a> 			<strong class="jxr_keyword">public</strong> Integer loadMachineDefinition(Machine machine) {
-<a class="jxr_linenumber" name="L840" href="#L840">840</a> 				<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> updates = <strong class="jxr_keyword">new</strong> Updates(c)) {
-<a class="jxr_linenumber" name="L841" href="#L841">841</a> 					<strong class="jxr_keyword">return</strong> MachineDefinitionLoader.<strong class="jxr_keyword">this</strong>
-<a class="jxr_linenumber" name="L842" href="#L842">842</a> 							.loadMachineDefinition(updates, machine);
-<a class="jxr_linenumber" name="L843" href="#L843">843</a> 				}
-<a class="jxr_linenumber" name="L844" href="#L844">844</a> 			}
-<a class="jxr_linenumber" name="L845" href="#L845">845</a> 		};
-<a class="jxr_linenumber" name="L846" href="#L846">846</a> 	}
-<a class="jxr_linenumber" name="L847" href="#L847">847</a> }
+<a class="jxr_linenumber" name="L754" href="#L754">754</a> 		<strong class="jxr_keyword">return</strong> boardIds;
+<a class="jxr_linenumber" name="L755" href="#L755">755</a> 	}
+<a class="jxr_linenumber" name="L756" href="#L756">756</a> 
+<a class="jxr_linenumber" name="L757" href="#L757">757</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> makeLinks(Updates sql, Machine machine,
+<a class="jxr_linenumber" name="L758" href="#L758">758</a> 			Map&lt;TriadCoords, Integer&gt; boardIds) {
+<a class="jxr_linenumber" name="L759" href="#L759">759</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> here : boardIds.keySet()) {
+<a class="jxr_linenumber" name="L760" href="#L760">760</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> d : Direction.values()) {
+<a class="jxr_linenumber" name="L761" href="#L761">761</a> 				<strong class="jxr_keyword">var</strong> there = machine.move(here, d);
+<a class="jxr_linenumber" name="L762" href="#L762">762</a> 				<strong class="jxr_keyword">if</strong> (boardIds.containsKey(there)) {
+<a class="jxr_linenumber" name="L763" href="#L763">763</a> 					makeLink(sql, machine, boardIds, here, d, there,
+<a class="jxr_linenumber" name="L764" href="#L764">764</a> 							d.opposite());
+<a class="jxr_linenumber" name="L765" href="#L765">765</a> 				}
+<a class="jxr_linenumber" name="L766" href="#L766">766</a> 			}
+<a class="jxr_linenumber" name="L767" href="#L767">767</a> 		}
+<a class="jxr_linenumber" name="L768" href="#L768">768</a> 	}
+<a class="jxr_linenumber" name="L769" href="#L769">769</a> 
+<a class="jxr_linenumber" name="L770" href="#L770">770</a> 	<strong class="jxr_keyword">private</strong> Optional&lt;Integer&gt; makeLink(Updates sql, Machine machine,
+<a class="jxr_linenumber" name="L771" href="#L771">771</a> 			Map&lt;TriadCoords, Integer&gt; boardIds, TriadCoords here, <a name="Direction" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/Direction.html#Direction">Direction</a> d1,
+<a class="jxr_linenumber" name="L772" href="#L772">772</a> 			TriadCoords there, <a name="Direction" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/Direction.html#Direction">Direction</a> d2) {
+<a class="jxr_linenumber" name="L773" href="#L773">773</a> 		<strong class="jxr_keyword">var</strong> b1 = boardIds.get(here);
+<a class="jxr_linenumber" name="L774" href="#L774">774</a> 		<strong class="jxr_keyword">var</strong> b2 = boardIds.get(there);
+<a class="jxr_linenumber" name="L775" href="#L775">775</a> 		<strong class="jxr_keyword">if</strong> (isNull(b1) || isNull(b2)) {
+<a class="jxr_linenumber" name="L776" href="#L776">776</a> 			<em class="jxr_comment">// No such board? Oh well</em>
+<a class="jxr_linenumber" name="L777" href="#L777">777</a> 			<strong class="jxr_keyword">return</strong> Optional.empty();
+<a class="jxr_linenumber" name="L778" href="#L778">778</a> 		}
+<a class="jxr_linenumber" name="L779" href="#L779">779</a> 
+<a class="jxr_linenumber" name="L780" href="#L780">780</a> 		<em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L781" href="#L781">781</a> <em class="jxr_comment">		 * A link is dead if it is dead in either direction or if either board</em>
+<a class="jxr_linenumber" name="L782" href="#L782">782</a> <em class="jxr_comment">		 * is dead.</em>
+<a class="jxr_linenumber" name="L783" href="#L783">783</a> <em class="jxr_comment">		 */</em>
+<a class="jxr_linenumber" name="L784" href="#L784">784</a> 		<strong class="jxr_keyword">boolean</strong> dead = machine.deadBoards.contains(here)
+<a class="jxr_linenumber" name="L785" href="#L785">785</a> 				|| machine.hasDeadLinkAt(here, d1)
+<a class="jxr_linenumber" name="L786" href="#L786">786</a> 				|| machine.deadBoards.contains(there)
+<a class="jxr_linenumber" name="L787" href="#L787">787</a> 				|| machine.hasDeadLinkAt(there, d2);
+<a class="jxr_linenumber" name="L788" href="#L788">788</a> 		log.debug(<span class="jxr_string">"making {}:{} &lt;-{}-&gt; {}:{}"</span>, here, d1, dead ? <span class="jxr_string">"/"</span> : <span class="jxr_string">"-"</span>,
+<a class="jxr_linenumber" name="L789" href="#L789">789</a> 				there, d2);
+<a class="jxr_linenumber" name="L790" href="#L790">790</a> 		<strong class="jxr_keyword">return</strong> sql.makeLink.key(b1, d1, b2, d2, !dead);
+<a class="jxr_linenumber" name="L791" href="#L791">791</a> 	}
+<a class="jxr_linenumber" name="L792" href="#L792">792</a> 
+<a class="jxr_linenumber" name="L793" href="#L793">793</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L794" href="#L794">794</a> <em class="jxr_javadoccomment">	 * Operations for testing only.</em>
+<a class="jxr_linenumber" name="L795" href="#L795">795</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L796" href="#L796">796</a> <em class="jxr_javadoccomment">	 * @hidden</em>
+<a class="jxr_linenumber" name="L797" href="#L797">797</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L798" href="#L798">798</a> 	@ForTestingOnly
+<a class="jxr_linenumber" name="L799" href="#L799">799</a> 	<strong class="jxr_keyword">interface</strong> TestAPI {
+<a class="jxr_linenumber" name="L800" href="#L800">800</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L801" href="#L801">801</a> <em class="jxr_javadoccomment">		 * Add a machine definition using the SQL update profile.</em>
+<a class="jxr_linenumber" name="L802" href="#L802">802</a> <em class="jxr_javadoccomment">		 *</em>
+<a class="jxr_linenumber" name="L803" href="#L803">803</a> <em class="jxr_javadoccomment">		 * @param machine</em>
+<a class="jxr_linenumber" name="L804" href="#L804">804</a> <em class="jxr_javadoccomment">		 *            The description of the machine to add.</em>
+<a class="jxr_linenumber" name="L805" href="#L805">805</a> <em class="jxr_javadoccomment">		 * @return The ID of the created machine.</em>
+<a class="jxr_linenumber" name="L806" href="#L806">806</a> <em class="jxr_javadoccomment">		 * @throws InsertFailedException</em>
+<a class="jxr_linenumber" name="L807" href="#L807">807</a> <em class="jxr_javadoccomment">		 *             If the machine couldn't be created.</em>
+<a class="jxr_linenumber" name="L808" href="#L808">808</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L809" href="#L809">809</a> 		Integer loadMachineDefinition(Machine machine);
+<a class="jxr_linenumber" name="L810" href="#L810">810</a> 	}
+<a class="jxr_linenumber" name="L811" href="#L811">811</a> 
+<a class="jxr_linenumber" name="L812" href="#L812">812</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L813" href="#L813">813</a> <em class="jxr_javadoccomment">	 * @param c</em>
+<a class="jxr_linenumber" name="L814" href="#L814">814</a> <em class="jxr_javadoccomment">	 *            How to talk to the DB.</em>
+<a class="jxr_linenumber" name="L815" href="#L815">815</a> <em class="jxr_javadoccomment">	 * @return The test interface.</em>
+<a class="jxr_linenumber" name="L816" href="#L816">816</a> <em class="jxr_javadoccomment">	 * @deprecated This interface is just for testing.</em>
+<a class="jxr_linenumber" name="L817" href="#L817">817</a> <em class="jxr_javadoccomment">	 * @hidden</em>
+<a class="jxr_linenumber" name="L818" href="#L818">818</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L819" href="#L819">819</a> 	@RestrictedApi(explanation = <span class="jxr_string">"just for testing"</span>, link = <span class="jxr_string">"index.html"</span>,
+<a class="jxr_linenumber" name="L820" href="#L820">820</a> 			allowedOnPath = <span class="jxr_string">".*/src/test/java/.*"</span>)
+<a class="jxr_linenumber" name="L821" href="#L821">821</a> 	@Deprecated
+<a class="jxr_linenumber" name="L822" href="#L822">822</a> 	@ForTestingOnly
+<a class="jxr_linenumber" name="L823" href="#L823">823</a> 	TestAPI getTestAPI(Connection c) {
+<a class="jxr_linenumber" name="L824" href="#L824">824</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
+<a class="jxr_linenumber" name="L825" href="#L825">825</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TestAPI() {
+<a class="jxr_linenumber" name="L826" href="#L826">826</a> 			@Override
+<a class="jxr_linenumber" name="L827" href="#L827">827</a> 			<strong class="jxr_keyword">public</strong> Integer loadMachineDefinition(Machine machine) {
+<a class="jxr_linenumber" name="L828" href="#L828">828</a> 				<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> updates = <strong class="jxr_keyword">new</strong> Updates(c)) {
+<a class="jxr_linenumber" name="L829" href="#L829">829</a> 					<strong class="jxr_keyword">return</strong> MachineDefinitionLoader.<strong class="jxr_keyword">this</strong>
+<a class="jxr_linenumber" name="L830" href="#L830">830</a> 							.loadMachineDefinition(updates, machine);
+<a class="jxr_linenumber" name="L831" href="#L831">831</a> 				}
+<a class="jxr_linenumber" name="L832" href="#L832">832</a> 			}
+<a class="jxr_linenumber" name="L833" href="#L833">833</a> 		};
+<a class="jxr_linenumber" name="L834" href="#L834">834</a> 	}
+<a class="jxr_linenumber" name="L835" href="#L835">835</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2023 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

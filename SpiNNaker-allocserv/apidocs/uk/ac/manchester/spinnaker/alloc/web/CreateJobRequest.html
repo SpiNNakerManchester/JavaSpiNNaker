@@ -194,6 +194,22 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#nmpiCollab">nmpiCollab</a></span></code></th>
+<td class="colLast">
+<div class="block">Which NMPI Collab the job will be accounted against; the owner
+ <em>must</em> be a member of the Collab.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#nmpiJobId">nmpiJobId</a></span></code></th>
+<td class="colLast">
+<div class="block">Which NMPI Job the job will be accounted against; the owner <em>must</em>
+ be able to update the NMPI Job.</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/Positive.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="number of boards must be at least 1 if given") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#numBoards">numBoards</a></span></code></th>
 <td class="colLast">
@@ -282,7 +298,30 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="block">What group will the job be accounted against; the owner <em>must</em> be
  a member of the group. If <code>null</code>, the single group that the owner
  is a member of will be used (with it being an error for that to not exist
- or not be unique).</div>
+ or not be unique).  Only one of group, <a href="#nmpiCollab"><code>nmpiCollab</code></a> or
+ <a href="#nmpiJobId"><code>nmpiJobId</code></a> must be <code>non-null</code>, but all can be <code>null</code>.</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="nmpiCollab">nmpiCollab</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">nmpiCollab</span></div>
+<div class="block">Which NMPI Collab the job will be accounted against; the owner
+ <em>must</em> be a member of the Collab. A session will be created in
+ the Collab and this will be accounted against. Only one of
+ <a href="#group"><code>group</code></a>, nmpiCollab or <a href="#nmpiJobId"><code>nmpiJobId</code></a> must be
+ <code>non-null</code>, but all can be <code>null</code>.</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="nmpiJobId">nmpiJobId</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></span>&nbsp;<span class="memberName">nmpiJobId</span></div>
+<div class="block">Which NMPI Job the job will be accounted against; the owner <em>must</em>
+ be able to update the NMPI Job.  Only the quota of the NMPI Job will be
+ updated at the end of the job, as will the local quota of the Collab of
+ the NMPI Job.  Only one of <a href="#group"><code>group</code></a>, <a href="#nmpiCollab"><code>nmpiCollab</code></a> or
+ nmpiJobId must be <code>non-null</code>, but all can be <code>null</code>.</div>
 </section>
 </li>
 <li class="blockList">
