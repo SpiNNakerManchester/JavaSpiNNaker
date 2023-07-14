@@ -252,8 +252,11 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 
 			// Get a lifetime if there is one
 			var hwConfig = parameters.getHardwareConfiguration();
-			int lifetimeHours = (Integer) hwConfig.getOrDefault(
-					TIMEOUT_PARAMETER, RUN_TIMEOUT);
+			int lifetimeHours = RUN_TIMEOUT;
+			if (hwConfig != null) {
+				lifetimeHours = (Integer) hwConfig.getOrDefault(
+						TIMEOUT_PARAMETER, RUN_TIMEOUT);
+			}
 
 			// Execute the program
 			final int exitValue = runSubprocess(
@@ -320,7 +323,7 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 		var mapper = new ObjectMapper();
 		var hardwareConfig = parameters.getHardwareConfiguration();
 		if (hardwareConfig != null) {
-			for (var entry: parameters.getHardwareConfiguration().entrySet()) {
+			for (var entry: hardwareConfig.entrySet()) {
 				String stringValue = null;
 				var value = entry.getValue();
 				if (value instanceof String) {
