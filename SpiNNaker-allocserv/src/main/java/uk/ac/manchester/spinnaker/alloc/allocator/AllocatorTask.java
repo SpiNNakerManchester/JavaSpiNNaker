@@ -744,6 +744,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			sql.killAlloc.call(id);
 			return sql.markAsDestroyed.call(reason, id) > 0;
 		} finally {
+			quotaManager.finishJob(id);
 			rememberer.killProxies(id);
 		}
 	}

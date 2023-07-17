@@ -23,6 +23,7 @@ import static java.util.regex.Pattern.compile;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
+import static uk.ac.manchester.spinnaker.alloc.compat.V1TaskImpl.VERSION;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,7 +44,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
-import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
 import uk.ac.manchester.spinnaker.alloc.TestSupport;
 
 @SpringBootTest
@@ -139,8 +139,8 @@ class V1CompatTest extends TestSupport {
 	@Nested
 	class WithoutJob {
 		@Test
-		void version(@Autowired ServiceVersion version) throws Exception {
-			var response = "{\"return\":\"" + version.getVersion() + "\"}";
+		void version() throws Exception {
+			var response = "{\"return\":\"" + VERSION + "\"}";
 			withInstance((to, from) -> {
 				to.println("{\"command\":\"version\"}");
 				assertEquals(response, from.readLine());

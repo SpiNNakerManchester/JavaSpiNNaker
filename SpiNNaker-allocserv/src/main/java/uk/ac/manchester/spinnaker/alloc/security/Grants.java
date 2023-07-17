@@ -41,4 +41,11 @@ public interface Grants {
 	 * {@link #GRANT_READER}.
 	 */
 	String GRANT_ADMIN = "ROLE_ADMIN";
+
+	/**
+	 * The authority used to grant a user permission to run NMPI jobs only on
+	 * behalf of other users.  This is equivalent to {@link #GRANT_USER} but
+	 * with this additional benefit.
+	 */
+	String GRANT_NMPI_EXEC = "ROLE_NMPI_EXEC";
 }

@@ -89,4 +89,13 @@ public abstract class JobConstants {
 
 	/** Name of property/parameter. */
 	public static final String TIMEOUT_PROPERTY = "timeout";
+
+	/** Name of property/parameter. */
+	public static final String GROUP_PROPERTY = "group";
+
+	/** Name of property/parameter. */
+	public static final String COLLAB_PROPERTY = "nmpi_collab";
+
+	/** Name of property/parameter. */
+	public static final String NMPI_JOB_PROPERTY = "nmpi_job_id";
 }
