@@ -47,6 +47,7 @@ WORKDIR /home/spinnaker/spinnaker
 RUN git clone https://github.com/SpiNNakerManchester/SupportScripts.git support
 RUN support/install.sh 8 -y
 RUN git clone https://github.com/SpiNNakerManchester/JavaSpiNNaker
+RUN support/gitcheckout.sh quota_remotespinnaker_docker
 RUN /bin/bash -c "source bin/activate && pip install 'numpy == 1.21.6' 'scipy == 1.10.0'"
 RUN /bin/bash -c "source bin/activate && cd SpiNNUtils && python setup.py develop"
 RUN /bin/bash -c "source bin/activate && pip install matplotlib"
