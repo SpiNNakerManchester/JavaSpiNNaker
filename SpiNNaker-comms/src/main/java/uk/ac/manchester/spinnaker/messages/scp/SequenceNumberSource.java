@@ -36,9 +36,9 @@ public abstract class SequenceNumberSource {
 	 * @return the next sequence number; these loop between 0 and 65535
 	 *         (unsigned).
 	 */
-	static synchronized short getNextSequenceNumber() {
+	static synchronized int getNextSequenceNumber() {
 		int seq = nextSequence;
 		nextSequence = (nextSequence + 1) % SEQUENCE_LENGTH;
-		return (short) seq;
+		return seq;
 	}
 }
