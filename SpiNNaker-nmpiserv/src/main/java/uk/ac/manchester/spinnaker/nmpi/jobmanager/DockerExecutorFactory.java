@@ -166,7 +166,7 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 				} catch (InterruptedException e) {
 					return;
 				}
-			} while (res.getState().isRunning() == running);
+			} while (res.getState().isRunning() != running);
 		}
 
 		public void waitForExit() {
