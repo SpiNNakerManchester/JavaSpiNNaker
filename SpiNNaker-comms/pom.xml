@@ -71,6 +71,10 @@ limitations under the License.
 			<groupId>org.java-websocket</groupId>
 			<artifactId>Java-WebSocket</artifactId>
 		</dependency>
+		<dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpclient</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
