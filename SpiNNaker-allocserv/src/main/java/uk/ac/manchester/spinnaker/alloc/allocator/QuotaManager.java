@@ -50,7 +50,6 @@ import uk.ac.manchester.spinnaker.alloc.nmpi.NMPIv3API;
 import uk.ac.manchester.spinnaker.alloc.nmpi.ResourceUsage;
 import uk.ac.manchester.spinnaker.alloc.nmpi.SessionRequest;
 import uk.ac.manchester.spinnaker.alloc.nmpi.SessionResourceUpdate;
-import uk.ac.manchester.spinnaker.alloc.nmpi.SessionResponse;
 
 /**
  * Manages user quotas.
@@ -82,11 +81,11 @@ public class QuotaManager extends DatabaseAwareBean {
 	@Autowired
 	private QuotaProperties quotaProps;
 
-	private NMPIv3API nmpiProxy = null;
+	private NMPIv3API nmpiProxy;
 
 	@PostConstruct
 	public void createProxy() {
-		String nmpiUrl = quotaProps.getNMPIUrl();
+		var nmpiUrl = quotaProps.getNMPIUrl();
 		if (!nmpiUrl.isEmpty()) {
 			nmpiProxy = NMPIv3API.createClient(quotaProps.getNMPIUrl());
 		}
@@ -341,7 +340,7 @@ public class QuotaManager extends DatabaseAwareBean {
 
 		// Update quota in group for collab from NMPI
 		try (var c = getConnection();
-				Update setQuota = c.update(SET_COLLAB_QUOTA)) {
+				var setQuota = c.update(SET_COLLAB_QUOTA)) {
 			setQuota.call(totalBoardSeconds, collab);
 		}
 
@@ -353,11 +352,11 @@ public class QuotaManager extends DatabaseAwareBean {
 
 	void associateNMPISession(int jobId, String user, String collab,
 			String quotaUnits) {
-		SessionRequest request = new SessionRequest();
+		var request = new SessionRequest();
 		request.setCollab(collab);
 		request.setHardwarePlatform(quotaProps.getNMPIPlaform());
 		request.setUserId(user);
-		SessionResponse session = nmpiProxy.createSession(
+		var session = nmpiProxy.createSession(
 				quotaProps.getNMPIApiKey(), request);
 
 		// Associate NMPI session with Job in the database
@@ -374,11 +373,11 @@ public class QuotaManager extends DatabaseAwareBean {
 		// If it is possible to run this job, we need to associate the user
 		// with it because only special users can run jobs like this.
 		try (var c = getConnection();
-				Query getUserByName = c.query(GET_USER_DETAILS_BY_NAME);
-				Query getGroupByName = c.query(GET_GROUP_BY_NAME);
-				Update createUser = c.update(CREATE_USER);
-				Update createGroup = c.update(CREATE_GROUP_IF_NOT_EXISTS);
-				Update addUserToGroup = c.update(ADD_USER_TO_GROUP)) {
+				var getUserByName = c.query(GET_USER_DETAILS_BY_NAME);
+				var getGroupByName = c.query(GET_GROUP_BY_NAME);
+				var createUser = c.update(CREATE_USER);
+				var createGroup = c.update(CREATE_GROUP_IF_NOT_EXISTS);
+				var addUserToGroup = c.update(ADD_USER_TO_GROUP)) {
 			createGroup.call(job.getCollab(), 0.0, COLLABRATORY);
 			var userId = getUserByName.call1(r -> r.getInt("user_id"), user);
 
@@ -432,7 +431,6 @@ public class QuotaManager extends DatabaseAwareBean {
 				var getSession = c.query(GET_JOB_SESSION);
 				var getNMPIJob = c.query(GET_JOB_NMPI_JOB);
 				var getUsage = c.query(GET_JOB_USAGE_AND_QUOTA)) {
-
 			// Get the quota used
 			var quota = getUsage.call1(
 					r -> r.getLong("quota_used"), jobId);
@@ -497,7 +495,7 @@ public class QuotaManager extends DatabaseAwareBean {
 
 	private static ResourceUsage getResourceUsage(long boardSeconds,
 			String units) {
-		ResourceUsage resourceUsage = new ResourceUsage();
+		var resourceUsage = new ResourceUsage();
 		resourceUsage.setUnits(units);
 		if (units.equals(BOARD_SECONDS)) {
 			resourceUsage.setValue(boardSeconds);

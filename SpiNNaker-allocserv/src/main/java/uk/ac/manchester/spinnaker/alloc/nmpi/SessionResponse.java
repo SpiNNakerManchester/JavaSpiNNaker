@@ -22,14 +22,11 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  * A NMPI session response.
  */
 public class SessionResponse {
-
-	/**
-	 * The ID of the session.
-	 */
+	/** The ID of the session. */
 	private Integer id;
 
 	/**
-	 * Get the id.
+	 * Get the ID of the session.
 	 *
 	 * @return the id
 	 */
@@ -38,17 +35,18 @@ public class SessionResponse {
 	}
 
 	/**
-	 * Sets the id.
+	 * Sets the ID.
 	 *
-	 * @param idParam the id to set
+	 * @param id
+	 *            the id to set
 	 */
-	public void setId(final Integer idParam) {
-		this.id = idParam;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	/**
-	 * Used for JSON serialisation;
-	 * ignores other properties we don't care about.
+	 * Used for JSON serialisation; ignores other properties we don't care
+	 * about.
 	 *
 	 * @param name
 	 *            The parameter to set.
@@ -56,7 +54,7 @@ public class SessionResponse {
 	 *            The value to set it to.
 	 */
 	@JsonAnySetter
-	public void set(final String name, final Object value) {
+	void set(String name, Object value) {
 		// Ignore any other values
 	}
 }

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * Interaction with the NMPI interface.
+ * Model classes for interaction with the NMPI interface.
  */
 package uk.ac.manchester.spinnaker.alloc.nmpi;

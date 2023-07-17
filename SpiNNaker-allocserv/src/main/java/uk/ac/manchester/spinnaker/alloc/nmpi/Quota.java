@@ -51,7 +51,8 @@ public class Quota {
 	}
 
 	/**
-	 * @param limit the limit to set.
+	 * @param limit
+	 *            the limit to set.
 	 */
 	public void setLimit(double limit) {
 		this.limit = limit;
@@ -65,7 +66,8 @@ public class Quota {
 	}
 
 	/**
-	 * @param usage the usage to set.
+	 * @param usage
+	 *            the usage to set.
 	 */
 	public void setUsage(double usage) {
 		this.usage = usage;
@@ -79,7 +81,8 @@ public class Quota {
 	}
 
 	/**
-	 * @param platform the platform to set.
+	 * @param platform
+	 *            the platform to set.
 	 */
 	public void setPlatform(String platform) {
 		this.platform = platform;
@@ -93,15 +96,16 @@ public class Quota {
 	}
 
 	/**
-	 * @param units the units to set.
+	 * @param units
+	 *            the units to set.
 	 */
 	public void setUnits(String units) {
 		this.units = units;
 	}
 
 	/**
-	 * Used for JSON serialisation;
-	 * ignores other properties we don't care about.
+	 * Used for JSON serialisation; ignores other properties we don't care
+	 * about.
 	 *
 	 * @param name
 	 *            The parameter to set.
@@ -109,7 +113,7 @@ public class Quota {
 	 *            The value to set it to.
 	 */
 	@JsonAnySetter
-	public void set(final String name, final Object value) {
+	void set(String name, Object value) {
 		// Ignore any other values
 	}
 }

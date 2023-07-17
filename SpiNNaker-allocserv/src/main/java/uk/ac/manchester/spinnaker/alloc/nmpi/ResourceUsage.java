@@ -20,7 +20,6 @@ package uk.ac.manchester.spinnaker.alloc.nmpi;
  * An NMPI Resource Usage object.
  */
 public class ResourceUsage {
-
 	/**
 	 * The resource usage in board seconds.
 	 */

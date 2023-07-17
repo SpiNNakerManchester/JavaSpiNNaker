@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  * A NMPI job.
  */
 public class Job {
-
 	/**
 	 * The ID of the job.
 	 */
@@ -60,9 +59,10 @@ public class Job {
 	/**
 	 * Sets the id.
 	 *
-	 * @param idParam the id to set
+	 * @param idParam
+	 *            the id to set
 	 */
-	public void setId(final Integer idParam) {
+	public void setId(Integer idParam) {
 		this.id = idParam;
 	}
 
@@ -78,9 +78,10 @@ public class Job {
 	/**
 	 * Sets the collab.
 	 *
-	 * @param collab the collab to set
+	 * @param collab
+	 *            the collab to set
 	 */
-	public void setCollab(final String collab) {
+	public void setCollab(String collab) {
 		this.collab = collab;
 	}
 
@@ -96,9 +97,10 @@ public class Job {
 	/**
 	 * Sets the status.
 	 *
-	 * @param statusParam the status to set
+	 * @param statusParam
+	 *            the status to set
 	 */
-	public void setStatus(final String statusParam) {
+	public void setStatus(String statusParam) {
 		this.status = statusParam;
 	}
 
@@ -114,9 +116,10 @@ public class Job {
 	/**
 	 * Sets the userId.
 	 *
-	 * @param userIdParam the userId to set
+	 * @param userIdParam
+	 *            the userId to set
 	 */
-	public void setUserId(final String userIdParam) {
+	public void setUserId(String userIdParam) {
 		this.userId = userIdParam;
 	}
 
@@ -132,15 +135,16 @@ public class Job {
 	/**
 	 * Sets the resourceUsage.
 	 *
-	 * @param resourceUsageParam the resourceUsage to set
+	 * @param resourceUsageParam
+	 *            the resourceUsage to set
 	 */
-	public void setResourceUsage(final ResourceUsage resourceUsageParam) {
+	public void setResourceUsage(ResourceUsage resourceUsageParam) {
 		this.resourceUsage = resourceUsageParam;
 	}
 
 	/**
-	 * Used for JSON serialisation;
-	 * ignores other properties we don't care about.
+	 * Used for JSON serialisation; ignores other properties we don't care
+	 * about.
 	 *
 	 * @param name
 	 *            The parameter to set.
@@ -148,7 +152,7 @@ public class Job {
 	 *            The value to set it to.
 	 */
 	@JsonAnySetter
-	public void set(final String name, final Object value) {
+	void set(String name, Object value) {
 		// Ignore any other values
 	}
 }

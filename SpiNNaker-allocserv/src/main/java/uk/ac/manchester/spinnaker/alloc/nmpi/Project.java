@@ -24,7 +24,6 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  * A NMPI project.
  */
 public class Project {
-
 	/**
 	 * The quotas of the project.
 	 */
@@ -38,15 +37,16 @@ public class Project {
 	}
 
 	/**
-	 * @param quotas the quotas to set.
+	 * @param quotas
+	 *            the quotas to set.
 	 */
 	public void setQuotas(List<Quota> quotas) {
 		this.quotas = quotas;
 	}
 
 	/**
-	 * Used for JSON serialisation;
-	 * ignores other properties we don't care about.
+	 * Used for JSON serialisation; ignores other properties we don't care
+	 * about.
 	 *
 	 * @param name
 	 *            The parameter to set.
@@ -54,7 +54,7 @@ public class Project {
 	 *            The value to set it to.
 	 */
 	@JsonAnySetter
-	public void set(final String name, final Object value) {
+	void set(String name, Object value) {
 		// Ignore any other values
 	}
 }

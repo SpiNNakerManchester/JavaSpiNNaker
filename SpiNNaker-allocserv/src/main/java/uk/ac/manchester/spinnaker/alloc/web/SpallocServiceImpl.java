@@ -210,9 +210,11 @@ public class SpallocServiceImpl extends BackgroundSupport
 
 	/**
 	 * Select one of the ways to create a job based on the request parameters.
-	 * Note this will pick the first non-null of (group, nmpiCollabId,
-	 * nmpiJobId) from req to determine the spalloc call to make (also
-	 * acceptable if all are null).
+	 * <p>
+	 * <strong>Note</strong> that this will pick the first non-{@code null} of
+	 * (group, nmpiCollabId, nmpiJobId) from req to determine the spalloc call
+	 * to make (also acceptable if all are {@code null}). Validation
+	 * <em>should</em> ensure that at most one of those is non-{@code null}.
 	 *
 	 * @param req
 	 *            The request details.
@@ -249,7 +251,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 		var r = validateCreateJobNonSizeAttrs(req, security);
 		var crds = validateAndApplyDefaultsToJobRequest(r, security);
 
-		fgAction(response, () -> ifElse(
+		bgAction(response, () -> ifElse(
 				createJob(r, crds),
 				job -> created(ui.getRequestUriBuilder().path("{id}")
 						.build(job.getId()))

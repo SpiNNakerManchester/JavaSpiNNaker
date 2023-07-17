@@ -123,7 +123,7 @@ public class SessionRequest {
 	 *            The value to set it to.
 	 */
 	@JsonAnySetter
-	public void set(final String name, final Object value) {
+	void set(final String name, final Object value) {
 		// Ignore any other values
 	}
 }
