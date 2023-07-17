@@ -180,6 +180,7 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 				logger.error("Error reading log", e);
 			}
 			if (deleteOnExit) {
+				logger.info("Deleting {}", id);
 				dockerApi.delete(id);
 			}
 		}
