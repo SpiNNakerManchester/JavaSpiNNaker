@@ -122,14 +122,14 @@ public class QuotaManager extends DatabaseAwareBean {
 		private boolean mayCreateJob(int groupId) {
 			return getQuota.call1(result -> {
 				var quota = result.getInteger("quota");
-				log.info("Group {} has quota {}", groupId, quota);
+				log.debug("Group {} has quota {}", groupId, quota);
 				if (isNull(quota)) {
 					return true;
 				}
 				// Quota is defined; check if current usage exceeds it
 				int usage = getCurrentUsage.call1(
 						integer("current_usage"), groupId).orElse(0);
-				log.info("Group {} has usage {}", groupId, usage);
+				log.debug("Group {} has usage {}", groupId, usage);
 				// If board-seconds are left, we're good to go
 				return (quota > usage);
 			}, groupId).orElse(true);
@@ -346,7 +346,8 @@ public class QuotaManager extends DatabaseAwareBean {
 			}
 		}
 
-		log.info("Setting quota of collab {} to {}", collab, totalBoardSeconds);
+		log.debug("Setting quota of collab {} to {}", collab,
+				totalBoardSeconds);
 
 		// Update quota in group for collab from NMPI
 		try (var c = getConnection();
@@ -444,7 +445,7 @@ public class QuotaManager extends DatabaseAwareBean {
 
 			// Get the quota used
 			var quota = getUsage.call1(
-					r -> r.getLong("quota_used"), jobId).get();
+					r -> r.getLong("quota_used"), jobId);
 			// If job has associated session, update quota in session
 			getSession.call1(
 					r -> new Session(r), jobId).ifPresent(
@@ -452,8 +453,8 @@ public class QuotaManager extends DatabaseAwareBean {
 							try {
 								var update = new SessionResourceUpdate();
 								update.setStatus("finished");
-								update.setResourceUsage(getResourceUsage(quota,
-										session.quotaUnits));
+								update.setResourceUsage(getResourceUsage(
+										quota.get(), session.quotaUnits));
 								nmpiProxy.setSessionStatusAndResources(
 										quotaProps.getNMPIApiKey(), session.id,
 										update);
@@ -469,8 +470,8 @@ public class QuotaManager extends DatabaseAwareBean {
 					nmpiJob -> {
 						try {
 							var update = new JobResourceUpdate();
-							update.setResourceUsage(getResourceUsage(quota,
-									nmpiJob.quotaUnits));
+							update.setResourceUsage(getResourceUsage(
+									quota.get(), nmpiJob.quotaUnits));
 							nmpiProxy.setJobResources(
 									quotaProps.getNMPIApiKey(), nmpiJob.id,
 									update);

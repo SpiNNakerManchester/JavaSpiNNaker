@@ -997,4 +997,43 @@ class DMLTest extends SimpleDBTestBase {
 			});
 		}
 	}
+
+	@Test
+	void setCollabQuota() {
+		assumeWritable(c);
+		try (var u = c.update(SET_COLLAB_QUOTA)) {
+			c.transaction(() -> {
+				assertEquals(List.of("new_quota", "group_name"),
+						u.getParameters());
+				// No such group so no quota set
+				assertEquals(0, u.call(0, NO_NAME));
+			});
+		}
+	}
+
+	@Test
+	void addJobSession() {
+		assumeWritable(c);
+		try (var u = c.update(SET_JOB_SESSION)) {
+			c.transaction(() -> {
+				assertEquals(List.of("job_id", "session_id", "quota_units"),
+						u.getParameters());
+				// No such job
+				assertEquals(0, u.call(0, 0, ""));
+			});
+		}
+	}
+
+	@Test
+	void addJobNmpiJob() {
+		assumeWritable(c);
+		try (var u = c.update(SET_JOB_NMPI_JOB)) {
+			c.transaction(() -> {
+				assertEquals(List.of("job_id", "nmpi_job_id", "quota_units"),
+						u.getParameters());
+				// No such job
+				assertEquals(0, u.call(0, 0, ""));
+			});
+		}
+	}
 }
