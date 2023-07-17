@@ -29,7 +29,6 @@ import java.util.concurrent.BlockingQueue;
 
 import org.apache.http.client.utils.URIBuilder;
 
-
 /** Shared helper because we can't use a superclass. */
 abstract class ClientUtils {
 	private ClientUtils() {

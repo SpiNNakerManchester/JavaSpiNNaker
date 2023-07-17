@@ -32,15 +32,13 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.asDir;
-import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.asSecure;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByNameQuietly;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.Inet4Address;
@@ -106,9 +104,6 @@ public class SpallocClientFactory {
 
 	private static final URI WAIT_FLAG = URI.create("?wait=true");
 
-	// Amount to divide keepalive interval by to get actual keep alive delay
-	private static final int KEEPALIVE_DIVIDER = 2;
-
 	/** Used to convert to/from JSON. */
 	static final JsonMapper JSON_MAPPER = JsonMapper.builder()
 			.findAndAddModules().disable(WRITE_DATES_AS_TIMESTAMPS)
@@ -168,21 +163,7 @@ public class SpallocClientFactory {
 	 *             made into an instance of the given class.
 	 */
 	static <T> T readJson(InputStream is, Class<T> cls) throws IOException {
-		BufferedReader streamReader = new BufferedReader(
-				new InputStreamReader(is, "UTF-8"));
-	    StringBuilder responseStrBuilder = new StringBuilder();
-
-	    String inputStr;
-	    while ((inputStr = streamReader.readLine()) != null)
-	        responseStrBuilder.append(inputStr);
-	    String json = responseStrBuilder.toString();
-
-	    try {
-			return JSON_MAPPER.readValue(json, cls);
-	    } catch (IOException e) {
-	    	log.error("Error while reading json " + json);
-	    	throw e;
-	    }
+		return JSON_MAPPER.readValue(is, cls);
 	}
 
 	/**
@@ -373,12 +354,11 @@ public class SpallocClientFactory {
 
 		private URI machines;
 
-		private ClientImpl(Session s, RootInfo ri) throws IOException {
+		private ClientImpl(Session s, RootInfo ri) {
 			super(null, s);
 			this.v = ri.version;
-			this.jobs = asSecure(asDir(ri.jobsURI));
-			this.machines = asSecure(asDir(ri.machinesURI));
-			log.debug("Job URI = " + this.jobs);
+			this.jobs = ri.jobsURI;
+			this.machines = ri.machinesURI;
 		}
 
 		@Override
@@ -464,21 +444,16 @@ public class SpallocClientFactory {
 				// Get the response entity... and discard it
 				try (var is = checkForError(conn, "job create failed")) {
 					readLines(is, UTF_8);
-					String location = conn.getHeaderField("Location");
 					// But we do want the Location header
-					return asSecure(URI.create(location));
+					return URI.create(conn.getHeaderField("Location"));
 				} finally {
 					s.trackCookie(conn);
 				}
 			});
-			var job = job(uri);
-			job.startKeepalive(
-					createInstructions.getKeepaliveInterval().toMillis()
-					/ KEEPALIVE_DIVIDER);
-			return job;
+			return job(uri);
 		}
 
-		JobImpl job(URI uri) {
+		Job job(URI uri) {
 			return new JobImpl(this, s, asDir(uri));
 		}
 
@@ -516,6 +491,7 @@ public class SpallocClientFactory {
 			super(client, session);
 			this.uri = uri;
 			this.dead = false;
+			startKeepalive();
 		}
 
 		@Override
@@ -546,14 +522,16 @@ public class SpallocClientFactory {
 			});
 		}
 
-		public void startKeepalive(long delayMs) {
+		private static final int DELAY = 20 * MSEC_PER_SEC;
+
+		private void startKeepalive() {
 			if (dead) {
 				throw new IllegalStateException("job is already deleted");
 			}
 			var t = new Daemon(() -> {
 				try {
 					while (true) {
-						sleep(delayMs);
+						sleep(DELAY);
 						if (dead) {
 							break;
 						}
