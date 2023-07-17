@@ -34,7 +34,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.asDir;
 import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.asSecure;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByNameQuietly;
-import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 
 import java.io.BufferedReader;
@@ -106,6 +105,9 @@ public class SpallocClientFactory {
 	private static final URI POWER = URI.create("power");
 
 	private static final URI WAIT_FLAG = URI.create("?wait=true");
+
+	// Amount to divide keepalive interval by to get actual keep alive delay
+	private static final int KEEPALIVE_DIVIDER = 2;
 
 	/** Used to convert to/from JSON. */
 	static final JsonMapper JSON_MAPPER = JsonMapper.builder()
@@ -469,10 +471,14 @@ public class SpallocClientFactory {
 					s.trackCookie(conn);
 				}
 			});
-			return job(uri);
+			var job = job(uri);
+			job.startKeepalive(
+					createInstructions.getKeepaliveInterval().toMillis()
+					/ KEEPALIVE_DIVIDER);
+			return job;
 		}
 
-		Job job(URI uri) {
+		JobImpl job(URI uri) {
 			return new JobImpl(this, s, asDir(uri));
 		}
 
@@ -510,7 +516,6 @@ public class SpallocClientFactory {
 			super(client, session);
 			this.uri = uri;
 			this.dead = false;
-			startKeepalive();
 		}
 
 		@Override
@@ -541,16 +546,14 @@ public class SpallocClientFactory {
 			});
 		}
 
-		private static final int DELAY = 20 * MSEC_PER_SEC;
-
-		private void startKeepalive() {
+		public void startKeepalive(long delayMs) {
 			if (dead) {
 				throw new IllegalStateException("job is already deleted");
 			}
 			var t = new Daemon(() -> {
 				try {
 					while (true) {
-						sleep(DELAY);
+						sleep(delayMs);
 						if (dead) {
 							break;
 						}

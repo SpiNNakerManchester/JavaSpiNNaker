@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.time.Duration;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.core.UriBuilder;
@@ -54,17 +53,6 @@ public class SpallocJavaMachineManagerImpl implements MachineManager {
 	 * The reason to use when a job is finished.
 	 */
 	private static final String REASON_FINISHED = "Finished";
-
-	/**
-	 * Keepalive interval in seconds.
-	 */
-	private static final int KEEPALIVE_SECONDS = 30;
-
-	/**
-	 * Keepalive interval as a duration.
-	 */
-	private static final Duration KEEPALIVE =
-			Duration.ofSeconds(KEEPALIVE_SECONDS);
 
 	/**
 	 * The URI of the spalloc server.
@@ -121,7 +109,6 @@ public class SpallocJavaMachineManagerImpl implements MachineManager {
 			var createJob = new CreateJob(nBoards);
 			createJob.setOwner(owner);
 			createJob.setNmpiJobId(jobId);
-			createJob.setKeepaliveInterval(KEEPALIVE);
 			var job = client.createJob(createJob);
 			job.waitForPower();
 			var m = job.machine();
