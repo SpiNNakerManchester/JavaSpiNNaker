@@ -467,7 +467,7 @@ public class BMPController extends DatabaseAwareBean {
 					postCleanupTasks.add(
 							() -> emailSender.sendServiceMail(fullMessage));
 					return null;
-				});
+				}, boardId);
 			}
 			return result;
 		}
