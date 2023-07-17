@@ -170,19 +170,20 @@ public class SpallocClientFactory {
 	static <T> T readJson(InputStream is, Class<T> cls) throws IOException {
 		BufferedReader streamReader = new BufferedReader(
 				new InputStreamReader(is, "UTF-8"));
-	    StringBuilder responseStrBuilder = new StringBuilder();
+		StringBuilder responseStrBuilder = new StringBuilder();
 
-	    String inputStr;
-	    while ((inputStr = streamReader.readLine()) != null)
-	        responseStrBuilder.append(inputStr);
-	    String json = responseStrBuilder.toString();
+		String inputStr;
+		while ((inputStr = streamReader.readLine()) != null) {
+			responseStrBuilder.append(inputStr);
+		}
+		String json = responseStrBuilder.toString();
 
-	    try {
+		try {
 			return JSON_MAPPER.readValue(json, cls);
-	    } catch (IOException e) {
-	    	log.error("Error while reading json " + json);
-	    	throw e;
-	    }
+		} catch (IOException e) {
+			log.error("Error while reading json " + json);
+			throw e;
+		}
 	}
 
 	/**
