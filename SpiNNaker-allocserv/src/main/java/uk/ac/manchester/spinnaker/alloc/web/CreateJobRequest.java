@@ -53,7 +53,22 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  *            What group will the job be accounted against; the owner
  *            <em>must</em> be a member of the group. If {@code null}, the
  *            single group that the owner is a member of will be used (with it
- *            being an error for that to not exist or not be unique).
+ *            being an error for that to not exist or not be unique). Only one
+ *            of group, {@link #nmpiCollab} or {@link #nmpiJobId} must be
+ *            non-{@code null}, but all can be {@code null}.
+ * @param nmpiCollab
+ *            Which NMPI Collab the job will be accounted against; the owner
+ *            <em>must</em> be a member of the Collab. A session will be created
+ *            in the Collab and this will be accounted against. Only one of
+ *            {@link #group}, nmpiCollab or {@link #nmpiJobId} must be
+ *            non-{@code null}, but all can be {@code null}.
+ * @param nmpiJobId
+ *            Which NMPI Job the job will be accounted against; the owner
+ *            <em>must</em> be able to update the NMPI Job. Only the quota of
+ *            the NMPI Job will be updated at the end of the job, as will the
+ *            local quota of the Collab of the NMPI Job. Only one of
+ *            {@link #group}, {@link #nmpiCollab} or nmpiJobId must be
+ *            non-{@code null}, but all can be {@code null}.
  * @param keepaliveInterval
  *            How long after a keepalive message will the job be auto-deleted?
  *            <em>Required.</em> Must be between 30 and 300 seconds.
@@ -83,6 +98,9 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  */
 public record CreateJobRequest(@JsonProperty String owner,
 		@JsonProperty String group,
+		@JsonProperty("nmpi-collab") String nmpiCollab,
+		@Positive(message = "negative NMPI job IDs are unsupported") //
+		@JsonProperty("nmpi-job-id") Integer nmpiJobId,
 		@JsonProperty("keepalive-interval")
 		@NotNull(message = "keepalive-interval is "
 				+ "required") Duration keepaliveInterval,
@@ -113,6 +131,20 @@ public record CreateJobRequest(@JsonProperty String owner,
 
 	@Keep
 	@JsonIgnore
+	@AssertFalse(message = "group, if given, must be non-blank")
+	private boolean isGroupInsane() {
+		return nonNull(group) && group.isBlank();
+	}
+
+	@Keep
+	@JsonIgnore
+	@AssertFalse(message = "nmpi-collab, if given, must be non-blank")
+	private boolean isCollabInsane() {
+		return nonNull(nmpiCollab) && nmpiCollab.isBlank();
+	}
+
+	@Keep
+	@JsonIgnore
 	@AssertTrue(message = "only at most one of num-boards, dimensions and "
 			+ "board should be given")
 	private boolean isOverLocated() {
@@ -124,6 +156,24 @@ public record CreateJobRequest(@JsonProperty String owner,
 			count++;
 		}
 		if (nonNull(board)) {
+			count++;
+		}
+		return count <= 1;
+	}
+
+	@Keep
+	@JsonIgnore
+	@AssertTrue(message = "only at most one of group, nmpi-collab and "
+			+ "nmpi-job-id can be given")
+	private boolean isGroupLocatableInAtMostOneWayOnly() {
+		int count = 0;
+		if (nonNull(group)) {
+			count++;
+		}
+		if (nonNull(nmpiCollab)) {
+			count++;
+		}
+		if (nonNull(nmpiJobId)) {
 			count++;
 		}
 		return count <= 1;
@@ -141,8 +191,9 @@ public record CreateJobRequest(@JsonProperty String owner,
 		 * Really ought to be validated against config, but we've not got the
 		 * config at this point.
 		 */
-		return keepaliveInterval.compareTo(MAX_KEEPALIVE) <= 0
-				&& keepaliveInterval.compareTo(MIN_KEEPALIVE) >= 0;
+		return keepaliveInterval == null
+				|| (keepaliveInterval.compareTo(MAX_KEEPALIVE) <= 0
+					&& keepaliveInterval.compareTo(MIN_KEEPALIVE) >= 0);
 	}
 
 	/**

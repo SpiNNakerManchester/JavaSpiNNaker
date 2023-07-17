@@ -36,6 +36,7 @@ import static uk.ac.manchester.spinnaker.utils.OptionalUtils.ifElse;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
@@ -50,6 +51,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
@@ -206,20 +208,52 @@ public class SpallocServiceImpl extends BackgroundSupport
 		return str.strip();
 	}
 
+	/**
+	 * Select one of the ways to create a job based on the request parameters.
+	 * Note this will pick the first non-null of (group, nmpiCollabId,
+	 * nmpiJobId) from req to determine the spalloc call to make (also
+	 * acceptable if all are null).
+	 *
+	 * @param req
+	 *            The request details.
+	 * @param crds
+	 *            The request credentials.
+	 * @return The job created.
+	 * @throws JsonProcessingException
+	 *             If there is an error converting the request into bytes.
+	 */
+	private Optional<SpallocAPI.Job> createJob(CreateJobRequest req,
+			CreateDescriptor crds) throws JsonProcessingException {
+		if (!isNull(req.group())) {
+			return core.createJobInGroup(trim(req.owner()), trim(req.group()),
+					crds, req.machineName(), req.tags(),
+					req.keepaliveInterval(), mapper.writeValueAsBytes(req));
+		} else if (!isNull(req.nmpiCollab())) {
+			return core.createJobInCollabSession(trim(req.owner()),
+					trim(req.nmpiCollab()), crds, req.machineName(), req.tags(),
+					req.keepaliveInterval(), mapper.writeValueAsBytes(req));
+		} else if (!isNull(req.nmpiJobId())) {
+			return core.createJobForNMPIJob(trim(req.owner()), req.nmpiJobId(),
+					crds, req.machineName(), req.tags(),
+					req.keepaliveInterval(), mapper.writeValueAsBytes(req));
+		} else {
+			return core.createJob(trim(req.owner()), crds, req.machineName(),
+					req.tags(), req.keepaliveInterval(),
+					mapper.writeValueAsBytes(req));
+		}
+	}
+
 	@Override
 	public void createJob(CreateJobRequest req, UriInfo ui,
 			SecurityContext security, AsyncResponse response) {
 		var r = validateCreateJobNonSizeAttrs(req, security);
 		var crds = validateAndApplyDefaultsToJobRequest(r, security);
 
-		// Async because it involves getting a write lock
-		bgAction(response, () -> ifElse(
-				core.createJob(trim(r.owner()), trim(r.group()), crds,
-						r.machineName(), r.tags(), r.keepaliveInterval(),
-						mapper.writeValueAsBytes(req)),
+		fgAction(response, () -> ifElse(
+				createJob(r, crds),
 				job -> created(ui.getRequestUriBuilder().path("{id}")
 						.build(job.getId()))
-								.entity(new CreateJobResponse(job, ui)).build(),
+						.entity(new CreateJobResponse(job, ui)).build(),
 				() -> status(BAD_REQUEST).type(TEXT_PLAIN)
 						// Most likely reason for failure
 						.entity("out of quota").build()));
@@ -232,8 +266,13 @@ public class SpallocServiceImpl extends BackgroundSupport
 		}
 
 		var owner = req.owner();
-		if (!security.isUserInRole("ADMIN") || isNull(owner)
-				|| owner.isBlank()) {
+		if (!security.isUserInRole("ADMIN")
+				&& !security.isUserInRole("NMPI_EXEC")
+				&& !isNull(owner) && !owner.isBlank()) {
+			throw new BadArgs("Only admin and NMPI users can specify an owner");
+		}
+
+		if (isNull(owner) || owner.isBlank()) {
 			owner = security.getUserPrincipal().getName();
 		}
 		if (isNull(owner) || owner.isBlank()) {
@@ -265,9 +304,10 @@ public class SpallocServiceImpl extends BackgroundSupport
 					"must not specify machine name and tags together");
 		}
 
-		return new CreateJobRequest(owner, req.group(), req.keepaliveInterval(),
-				req.numBoards(), req.dimensions(), req.board(),
-				req.machineName(), tags, req.maxDeadBoards());
+		return new CreateJobRequest(owner, req.group(), req.nmpiCollab(),
+				req.nmpiJobId(), req.keepaliveInterval(), req.numBoards(),
+				req.dimensions(), req.board(), req.machineName(), tags,
+				req.maxDeadBoards());
 	}
 
 	private CreateDescriptor validateAndApplyDefaultsToJobRequest(

@@ -1346,6 +1346,17 @@ public abstract class SQLQueries {
 			""";
 
 	/**
+	 * Set a quota. Used when the system is aligning quota with NMPI data.
+	 *
+	 * @see QuotaManager
+	 */
+	@Parameter("new_quota")
+	@Parameter("group_name")
+	protected static final String SET_COLLAB_QUOTA =
+			"UPDATE user_groups SET quota = GREATEST(0, :new_quota) "
+					+ "WHERE group_name = :group_name AND quota IS NOT NULL";
+
+	/**
 	 * Get details about a user. This is pretty much everything except their
 	 * password.
 	 *
@@ -1475,16 +1486,13 @@ public abstract class SQLQueries {
 	 * @see Spalloc
 	 */
 	@Parameter("user_name")
-	@ResultColumn("group_id")
-	@ResultColumn("quota")
-	protected static final String GET_GROUPS_AND_QUOTAS_OF_USER = """
-			SELECT user_groups.group_id, user_groups.quota
+	@ResultColumn("group_name")
+	protected static final String GET_GROUP_NAMES_OF_USER = """
+			SELECT user_groups.group_name
 			FROM group_memberships
 				JOIN user_info USING (user_id)
 				JOIN user_groups USING (group_id)
 			WHERE user_name = :user_name
-				AND (quota > 0 OR quota IS NULL)
-			ORDER BY user_groups.quota DESC
 			""";
 
 	/**
@@ -1619,6 +1627,7 @@ public abstract class SQLQueries {
 			INSERT INTO group_memberships(
 				user_id, group_id)
 			VALUES (:user_id, :group_id)
+			ON DUPLICATE KEY UPDATE user_id = user_id
 			""";
 
 	/**
@@ -2770,6 +2779,48 @@ public abstract class SQLQueries {
 			+ ":death_reason, :death_timestamp, "
 			+ ":original_request, :allocation_timestamp, :allocation_size, "
 			+ ":machine_name, :owner_name, :group_id, :group_name)";
+
+	/**
+	 * Set the NMPI session for a Job.
+	 */
+	@Parameter("job_id")
+	@Parameter("session_id")
+	@Parameter("quota_units")
+	protected static final String SET_JOB_SESSION =
+			"INSERT IGNORE INTO job_nmpi_session ( "
+			+ "job_id, session_id, quota_units) "
+			+ "VALUES(:job_id, :session_id, :quota_units)";
+
+	/**
+	 * Set the NMPI Job for a Job.
+	 */
+	@Parameter("job_id")
+	@Parameter("nmpi_job_id")
+	@Parameter("quota_units")
+	protected static final String SET_JOB_NMPI_JOB =
+			"INSERT IGNORE INTO job_nmpi_job ( "
+			+ "job_id, nmpi_job_id, quota_units) "
+			+ "VALUES(:job_id, :nmpi_job_id, :quota_units)";
+
+	/**
+	 * Get the NMPI Session for a Job.
+	 */
+	@Parameter("job_id")
+	@ResultColumn("session_id")
+	@ResultColumn("quota_units")
+	protected static final String GET_JOB_SESSION =
+			"SELECT session_id, quota_units FROM job_nmpi_session "
+			+ "WHERE job_id=:job_id";
+
+	/**
+	 * Get the NMPI Job for a Job.
+	 */
+	@Parameter("job_id")
+	@ResultColumn("nmpi_job_id")
+	@ResultColumn("quota_units")
+	protected static final String GET_JOB_NMPI_JOB =
+			"SELECT nmpi_job_id, quota_units FROM job_nmpi_job "
+			+ "WHERE job_id=:job_id";
 
 	// SQL loaded from files because it is too complicated otherwise!
 
