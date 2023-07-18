@@ -150,17 +150,14 @@ public class CreateJobRequest {
 
 	@Keep
 	@JsonIgnore
-	@AssertTrue(message = "only at most one of num-boards, dimensions and "
-			+ "board should be given")
+	@AssertTrue(
+			message = "either specify num-boards or dimensions and/or board")
 	private boolean isOverLocated() {
 		int count = 0;
 		if (nonNull(numBoards)) {
 			count++;
 		}
-		if (nonNull(dimensions)) {
-			count++;
-		}
-		if (nonNull(board)) {
+		if (nonNull(dimensions) || nonNull(board)) {
 			count++;
 		}
 		return count <= 1;
