@@ -15,8 +15,10 @@
  */
 package uk.ac.manchester.spinnaker.nmpi.jobmanager;
 
+import static java.util.Objects.requireNonNull;
 import static java.util.UUID.randomUUID;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.nmpi.ThreadUtils.waitfor;
 import static uk.ac.manchester.spinnaker.nmpi.model.job.JobManagerInterface.JOB_PROCESS_MANAGER;
 
 import java.io.IOException;
@@ -72,6 +74,17 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 	private String dockerUri;
 
 	/**
+	 * The maximum number of VMs to create.
+	 */
+	@Value("${docker.maxVms}")
+	private int maxNVirtualMachines;
+
+	/**
+	 * The current number of VMs.
+	 */
+	private int nVirtualMachines = 0;
+
+	/**
 	 * The docker client.
 	 */
 	private DockerAPI dockerApi;
@@ -80,6 +93,11 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 	 * The thread group of any threads.
 	 */
 	private final ThreadGroup threadGroup;
+
+	/**
+	 * Lock object used for synchronisation.
+	 */
+	private final Object lock = new Object();
 
 	/**
 	 * Logging.
@@ -101,7 +119,37 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 	@Override
 	public JobExecuter createJobExecuter(final JobManager manager,
 			final URL baseUrl) throws IOException {
+		requireNonNull(manager);
+		requireNonNull(baseUrl);
+		waitToClaimVM();
 		return new Executor(manager, baseUrl);
+	}
+
+	/**
+	 * Wait for the VM to come up.
+	 */
+	private void waitToClaimVM() {
+		synchronized (lock) {
+			logger.info("{} of {} in use", nVirtualMachines,
+					maxNVirtualMachines);
+			while (nVirtualMachines >= maxNVirtualMachines) {
+				logger.debug("Waiting for a VM to become available "
+						+ "({} of {} in use)", nVirtualMachines,
+						maxNVirtualMachines);
+				waitfor(lock);
+			}
+			nVirtualMachines++;
+		}
+	}
+
+	/** Callback when the executor is finished. */
+	protected void executorFinished() {
+		synchronized (lock) {
+			nVirtualMachines--;
+			logger.info("{} of {} now in use", nVirtualMachines,
+					maxNVirtualMachines);
+			lock.notifyAll();
+		}
 	}
 
 	protected final class Executor implements JobExecuter {
@@ -170,18 +218,22 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 		}
 
 		public void waitForExit() {
-			waitForRunning(true);
-			waitForRunning(false);
-			logger.info("Finished execution of {}", id);
 			try {
-				manager.setExecutorExited(uuid, DockerAPI.readLog(
-						dockerApi.getLog(id, true, true)));
-			} catch (IOException e) {
-				logger.error("Error reading log", e);
-			}
-			if (deleteOnExit) {
-				logger.info("Deleting {}", id);
-				dockerApi.delete(id);
+				waitForRunning(true);
+				waitForRunning(false);
+				logger.info("Finished execution of {}", id);
+				try {
+					manager.setExecutorExited(uuid, DockerAPI.readLog(
+							dockerApi.getLog(id, true, true)));
+				} catch (IOException e) {
+					logger.error("Error reading log", e);
+				}
+				if (deleteOnExit) {
+					logger.info("Deleting {}", id);
+					dockerApi.delete(id);
+				}
+			} finally {
+				executorFinished();
 			}
 		}
 	}
