@@ -344,7 +344,7 @@ class V1TaskImpl extends V1CompatTask {
 
 		private JobDescription[] listJobs(V1TaskImpl task) {
 			// Messy; hits the database many times
-			return spalloc.getJobs(false, LOTS, 0).jobs().stream()
+			return spalloc.listJobs(task.permit).stream()
 					.map(job -> buildJobDescription(task,
 							// NB: convert partial job description to full
 							spalloc.getJob(task.permit, job.getId())
