@@ -47,7 +47,7 @@ jobs:
         java-version: ${{ matrix.java }}
         cache: 'maven'
     - name: "Set up node cache"
-      uses: actions/cache@3.3.1
+      uses: actions/cache@v3.3.1
       with:
         path: '~/.m2/repository/com/github/eirslett/node'
         key: ${{ runner.os }}-node-${{ hashFiles('SpiNNaker-allocserv/pom.xml') }}
