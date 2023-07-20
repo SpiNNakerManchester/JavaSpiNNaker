@@ -215,15 +215,13 @@ public abstract class SQLQueries {
 					+ "SELECT MAX(x) - MIN(x) + 1 AS width, "
 					+ "MAX(y) - MIN(y) + 1 AS height FROM c LIMIT 1";
 
-	/** Get what boards are allocated to a job (that is queued or ready). */
+	/** Get what boards are allocated to a job. */
 	@Parameter("job_id")
 	@ResultColumn("board_id")
 	protected static final String GET_JOB_BOARDS =
 			"SELECT board_id FROM boards JOIN jobs "
 					+ "ON boards.allocated_job = jobs.job_id "
-					+ "WHERE boards.allocated_job = :job_id "
-					// job is QUEUED or READY
-					+ "AND (jobs.job_state IN (1, 3))";
+					+ "WHERE boards.allocated_job = :job_id";
 
 	/** Gets information about live jobs. */
 	@ResultColumn("job_id")
