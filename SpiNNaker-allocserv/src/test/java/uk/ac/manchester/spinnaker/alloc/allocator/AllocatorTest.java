@@ -69,6 +69,7 @@ class AllocatorTest extends TestSupport {
 		killDB();
 		setupDB3();
 		this.bmpCtrl = bmpCtrl.getTestAPI();
+		this.bmpCtrl.prepare();
 		this.bmpCtrl.clearBmpException();
 	}
 

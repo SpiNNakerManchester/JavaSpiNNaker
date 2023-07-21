@@ -19,7 +19,6 @@ import static java.lang.String.format;
 import static java.lang.Thread.currentThread;
 import static java.time.Instant.now;
 import static java.util.Objects.requireNonNull;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.instant;
@@ -35,7 +34,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Function;
 
@@ -49,6 +47,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.lang.NonNull;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
 import com.google.errorprone.annotations.CompileTimeConstant;
@@ -88,7 +87,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 
 	/** Just for {@link #launchBackground()}. */
 	@Autowired
-	private ScheduledExecutorService executor;
+	private TaskScheduler executor;
 
 	/** Just for {@link #launchBackground()}. */
 	@Autowired
@@ -105,7 +104,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		// After a minute, start retrieving board serial numbers
 		readAllTask =
 				executor.schedule((Runnable) this::readAllBoardSerialNumbers,
-						props.getBlacklistTimeout().getSeconds(), SECONDS);
+						Instant.now().plus(props.getBlacklistTimeout()));
 		// Why can't I pass a Duration directly there?
 	}
 

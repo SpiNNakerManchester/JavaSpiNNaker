@@ -78,6 +78,7 @@ class BlacklistCommsTest extends TestSupport {
 		MockTransceiver.installIntoFactory(txrxFactory);
 		this.txrxFactory = txrxFactory.getTestAPI();
 		exec = newSingleThreadExecutor();
+		this.bmpCtrl.prepare();
 		this.bmpCtrl.clearBmpException();
 	}
 

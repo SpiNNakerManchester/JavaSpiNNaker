@@ -69,6 +69,12 @@ public interface SupportQueries {
 	String TEST_COUNT_POWER_CHANGES =
 			"SELECT COUNT(*) AS cnt FROM pending_changes";
 
+	/** Count the active power change requests. */
+	@ResultColumn("cnt")
+	@SingleRowResult
+	String TEST_COUNT_POWER_ON_CHANGES =
+			"SELECT COUNT(*) AS cnt FROM pending_changes";
+
 	/** Directly set the state of a job. */
 	@Parameter("state")
 	@Parameter("job")

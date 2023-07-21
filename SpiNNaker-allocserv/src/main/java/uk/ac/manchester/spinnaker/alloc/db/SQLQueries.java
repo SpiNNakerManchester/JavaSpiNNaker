@@ -218,8 +218,9 @@ public abstract class SQLQueries {
 	/** Get what boards are allocated to a job. */
 	@Parameter("job_id")
 	@ResultColumn("board_id")
+	@ResultColumn("bmp_id")
 	protected static final String GET_JOB_BOARDS =
-			"SELECT board_id FROM boards JOIN jobs "
+			"SELECT board_id, bmp_id FROM boards JOIN jobs "
 					+ "ON boards.allocated_job = jobs.job_id "
 					+ "WHERE boards.allocated_job = :job_id";
 
@@ -342,6 +343,24 @@ public abstract class SQLQueries {
 	protected static final String GET_BMP_ADDRESS =
 			"SELECT address FROM bmp WHERE machine_id = :machine_id "
 					+ "AND cabinet = :cabinet AND frame = :frame LIMIT 1";
+
+	/** Get all the BMPs **/
+	@ResultColumn("bmp_id")
+	@ResultColumn("machine_name")
+	@ResultColumn("address")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	protected static final String GET_ALL_BMPS =
+			"SELECT bmp_id, machine_name, address, cabinet, frame FROM bmp "
+					+ "JOIN machines on bmp.machine_id = machines.machine_id";
+
+	@Parameter("bmp_id")
+	@ResultColumn("board_id")
+	@ResultColumn("board_num")
+	@ResultColumn("address")
+	protected static final String GET_ALL_BMP_BOARDS =
+			"SELECT board_id, board_num, address FROM boards "
+					+ "WHERE bmp_id = :bmp_id";
 
 	/** Get the address of the root chip of a board. */
 	@Parameter("board_id")
@@ -679,9 +698,10 @@ public abstract class SQLQueries {
 	 * @see BMPController
 	 */
 	@Parameter("job_id")
-	protected static final String DEALLOCATE_BOARDS_JOB =
+	@Parameter("bmp_id")
+	protected static final String DEALLOCATE_BMP_BOARDS_JOB =
 			"UPDATE boards SET allocated_job = NULL "
-					+ "WHERE allocated_job = :job_id";
+					+ "WHERE allocated_job = :job_id AND bmp_id = :bmp_id";
 
 	/**
 	 * Set the power state of a board.
@@ -719,6 +739,16 @@ public abstract class SQLQueries {
 	 * @see AllocatorTask
 	 */
 	@Parameter("job_state")
+	@Parameter("job_id")
+	protected static final String SET_JOB_STATE =
+			"UPDATE jobs SET job_state = :job_state WHERE job_id = :job_id";
+
+	/**
+	 * Set the state and number of pending changes for a job.
+	 *
+	 * @see AllocatorTask
+	 */
+	@Parameter("job_state")
 	@Parameter("num_pending")
 	@Parameter("job_id")
 	protected static final String SET_STATE_PENDING =
@@ -744,11 +774,6 @@ public abstract class SQLQueries {
 	protected static final String KILL_JOB_ALLOC_TASK =
 			"DELETE FROM job_request WHERE job_id = :job_id";
 
-	/** Delete a request to change the power of boards allocated to a job. */
-	@Parameter("job_id")
-	protected static final String KILL_JOB_PENDING =
-			"DELETE FROM pending_changes WHERE job_id = :job_id";
-
 	/**
 	 * Delete a request to change the power of a board. Used once the change has
 	 * been completed.
@@ -771,19 +796,9 @@ public abstract class SQLQueries {
 			"SELECT z, direction, dx, dy, dz FROM movement_directions";
 
 	/**
-	 * Get how many requests to change the power state of a board are currently
-	 * waiting to be processed.
+	 * Get the requests to change the power of boards on a BMP.
 	 */
-	@ResultColumn("c")
-	@SingleRowResult
-	protected static final String COUNT_PENDING_CHANGES =
-			"SELECT count(*) AS c FROM pending_changes";
-
-	/**
-	 * Get the requests (not already being processed) to change the power of a
-	 * board allocated to a job.
-	 */
-	@Parameter("job_id")
+	@Parameter("bmp_id")
 	@ResultColumn("change_id")
 	@ResultColumn("job_id")
 	@ResultColumn("board_id")
@@ -794,7 +809,6 @@ public abstract class SQLQueries {
 	@ResultColumn("fpga_nw")
 	@ResultColumn("fpga_se")
 	@ResultColumn("fpga_sw")
-	@ResultColumn("in_progress")
 	@ResultColumn("from_state")
 	@ResultColumn("to_state")
 	@ResultColumn("board_num")
@@ -804,21 +818,23 @@ public abstract class SQLQueries {
 	protected static final String GET_CHANGES =
 			"SELECT change_id, job_id, pending_changes.board_id, power, "
 					+ "fpga_n, fpga_s, fpga_e, fpga_w, fpga_se, fpga_nw, "
-					+ "in_progress, from_state, to_state, board_num, "
+					+ "from_state, to_state, board_num, "
 					+ "boards.bmp_id, cabinet, frame "
 					+ "FROM pending_changes JOIN boards USING (board_id) "
-					+ "JOIN bmp USING (bmp_id) "
-					+ "WHERE job_id = :job_id AND NOT in_progress";
+					+ "WHERE bmp_id = :bmp_id "
+					+ "ORDER BY change_id";
 
 	/**
-	 * Set the progress status of a request to change the power state of a
-	 * board.
+	 * Get the number of changes that are not completed for a job.
 	 */
-	@Parameter("in_progress")
-	@Parameter("change_id")
-	protected static final String SET_IN_PROGRESS =
-			"UPDATE pending_changes SET in_progress = :in_progress "
-					+ "WHERE change_id = :change_id";
+	@Parameter("job_id")
+	@Parameter("from_state")
+	@Parameter("to_state")
+	@ResultColumn("n_changes")
+	protected static final String COUNT_CHANGES_FOR_JOB =
+			"SELECT COUNT(change_id) as n_changes from pending_changes "
+					+ "WHERE job_id = :job_id AND from_state = :from_state "
+					+ "AND to_state = :to_state";
 
 	/**
 	 * Insert a BMP.
@@ -1771,13 +1787,6 @@ public abstract class SQLQueries {
 			"DELETE FROM old_board_allocations WHERE alloc_id = :alloc_id";
 
 	/**
-	 * Mark all pending changes as eligible for processing. Called once on
-	 * application startup when all internal queues are guaranteed to be empty.
-	 */
-	protected static final String CLEAR_STUCK_PENDING =
-			"UPDATE pending_changes SET in_progress = 0";
-
-	/**
 	 * Read the blacklisted chips for a board.
 	 *
 	 * @see BlacklistStore
@@ -1955,7 +1964,7 @@ public abstract class SQLQueries {
 	 *
 	 * @see BMPController
 	 */
-	@Parameter("machine_id")
+	@Parameter("bmp_id")
 	@ResultColumn("op_id")
 	@ResultColumn("board_id")
 	@ResultColumn("bmp_serial_id")
@@ -1968,14 +1977,14 @@ public abstract class SQLQueries {
 					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
 					+ "LEFT JOIN board_serial USING (board_id) "
 					+ "WHERE op = 1 AND NOT completed "
-					+ "AND boards.machine_id = :machine_id";
+					+ "AND boards.bmp_id = :bmp_id";
 
 	/**
 	 * Get the list of reads (from the machine) of blacklist data to perform.
 	 *
 	 * @see BMPController
 	 */
-	@Parameter("machine_id")
+	@Parameter("bmp_id")
 	@ResultColumn("op_id")
 	@ResultColumn("board_id")
 	@ResultColumn("bmp_serial_id")
@@ -1988,14 +1997,14 @@ public abstract class SQLQueries {
 					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
 					+ "LEFT JOIN board_serial USING (board_id) "
 					+ "WHERE op = 0 AND NOT completed "
-					+ "AND boards.machine_id = :machine_id";
+					+ "AND boards.bmp_id = :bmp_id";
 
 	/**
 	 * Get the list of reads (from the machine) of serial data to perform.
 	 *
 	 * @see BMPController
 	 */
-	@Parameter("machine_id")
+	@Parameter("bmp_id")
 	@ResultColumn("op_id")
 	@ResultColumn("board_id")
 	@ResultColumn("bmp_serial_id")
@@ -2008,7 +2017,7 @@ public abstract class SQLQueries {
 					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
 					+ "LEFT JOIN board_serial USING (board_id) "
 					+ "WHERE op = 2 AND NOT completed "
-					+ "AND boards.machine_id = :machine_id";
+					+ "AND boards.bmp_id = :bmp_id";
 
 	/**
 	 * Set the BMP and physical serial IDs based on the information actually

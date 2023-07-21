@@ -35,15 +35,20 @@ import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
 import com.google.errorprone.annotations.RestrictedApi;
@@ -52,6 +57,8 @@ import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.HistoricalDataProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.KeepaliveProperties;
+import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Update;
@@ -105,10 +112,66 @@ public class AllocatorTask extends DatabaseAwareBean
 	private AllocatorProperties allocProps;
 
 	@Autowired
+	private KeepaliveProperties keepAliveProps;
+
+	@Autowired
 	private HistoricalDataProperties historyProps;
 
 	@Autowired
 	private ProxyRememberer rememberer;
+
+	@Autowired
+	private TaskScheduler scheduler;
+
+	// Note can't be autowired as circular;
+	// instead set by setter in postconstruct of BMPController
+	private BMPController bmpController;
+
+	public void setBMPController(BMPController bmpController) {
+		this.bmpController = bmpController;
+	}
+
+	@PostConstruct
+	private void init() {
+		scheduler.scheduleAtFixedRate(() -> allocate(),	allocProps.getPeriod());
+		scheduler.scheduleAtFixedRate(() -> expireJobs(),
+				keepAliveProps.getExpiryPeriod());
+		scheduler.schedule(() -> tombstone(),
+				new CronTrigger(historyProps.getSchedule()));
+	}
+
+	/**
+	 * Perform update on a job now as a result of a change.
+	 *
+	 * @param jobId The job to update.
+	 * @param sourceState The change source state.
+	 * @param targetState The change target state.
+	 */
+	public void updateJob(int jobId, JobState sourceState, JobState targetState) {
+		scheduler.schedule(() -> {
+			updateJobNow(jobId, sourceState, targetState);
+		}, new Date());
+	}
+
+	private void updateJobNow(int jobId, JobState sourceState,
+			JobState targetState) {
+		try (var c = getConnection();
+				var getNTasks = c.query(COUNT_CHANGES_FOR_JOB);
+				var setJobState = c.update(SET_JOB_STATE)) {
+
+			// Count pending changes for this state change
+			var n = getNTasks.call1(row -> row.getInteger("n_changes"),
+					jobId, sourceState, targetState).orElseThrow(
+							() -> new RuntimeException(
+									"Error counting job tasks"));
+
+			// If there are no more pending changes, set the job state to
+			// the target state
+			if (n == 0) {
+				setJobState.call(targetState);
+			}
+		}
+	}
 
 	/**
 	 * Helper class representing a rectangle of triads.
@@ -147,8 +210,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	/**
 	 * Allocate all current requests for resources.
 	 */
-	@Scheduled(fixedDelayString = "#{allocatorProperties.period}")
-	public void allocate() {
+	public synchronized void allocate() {
 		if (serviceControl.isPaused()) {
 			return;
 		}
@@ -325,17 +387,11 @@ public class AllocatorTask extends DatabaseAwareBean
 		/** Delete a request to allocate resources for a job. */
 		private final Update killAlloc;
 
-		/**
-		 * Delete a request to change the power of boards allocated to a job.
-		 */
-		private final Update killPending;
-
 		DestroySQL(Connection conn) {
 			super(conn);
 			getJob = conn.query(GET_JOB);
 			markAsDestroyed = conn.update(DESTROY_JOB);
 			killAlloc = conn.update(KILL_JOB_ALLOC_TASK);
-			killPending = conn.update(KILL_JOB_PENDING);
 		}
 
 		@Override
@@ -344,7 +400,6 @@ public class AllocatorTask extends DatabaseAwareBean
 			getJob.close();
 			markAsDestroyed.close();
 			killAlloc.close();
-			killPending.close();
 		}
 	}
 
@@ -438,6 +493,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		try (var sql = new AllocSQL(conn)) {
 			int maxImportance = -1;
 			boolean changed = false;
+			log.info("Allocate running");
 			for (AllocTask task : sql.getTasks.call(AllocTask::new, QUEUED)) {
 				if (task.importance > maxImportance) {
 					maxImportance = task.importance;
@@ -448,7 +504,7 @@ public class AllocatorTask extends DatabaseAwareBean
 				}
 				var handled = task.allocate(sql);
 				changed |= handled;
-				log.debug("allocate for {} (job {}): {}", task.id,
+				log.info("allocate for {} (job {}): {}", task.id,
 						task.jobId, handled);
 			}
 			/*
@@ -464,7 +520,6 @@ public class AllocatorTask extends DatabaseAwareBean
 	/**
 	 * Destroy jobs that have missed their keepalive.
 	 */
-	@Scheduled(fixedDelayString = "#{keepaliveProperties.expiryPeriod}")
 	public void expireJobs() {
 		if (serviceControl.isPaused()) {
 			return;
@@ -515,7 +570,6 @@ public class AllocatorTask extends DatabaseAwareBean
 	/**
 	 * Migrates long dead jobs to the historical data DB.
 	 */
-	@Scheduled(cron = "#{historyProperties.schedule}")
 	public void tombstone() {
 		if (serviceControl.isPaused()) {
 			return;
@@ -738,7 +792,6 @@ public class AllocatorTask extends DatabaseAwareBean
 				 */
 				return false;
 			}
-			sql.killPending.call(id);
 			// Inserts into pending_changes; these run after job is dead
 			setPower(sql, id, OFF, DESTROYED);
 			sql.killAlloc.call(id);
@@ -987,12 +1040,13 @@ public class AllocatorTask extends DatabaseAwareBean
 	 */
 	private boolean setAllocation(AllocSQL sql, int jobId, Rectangle rect,
 			int machineId, TriadCoords root) {
-		log.debug("performing allocation for {}: {}x{}x{} at {}:{}:{}", jobId,
+		log.info("performing allocation for {}: {}x{}x{} at {}:{}:{}", jobId,
 				rect.width, rect.height, rect.depth, root.x, root.y, root.z);
 		var boardsToAllocate = sql.getConnectedBoardIDs
 				.call(integer("board_id"), machineId, root.x, root.y, root.z,
 						rect.width, rect.height, rect.depth);
 		if (boardsToAllocate.isEmpty()) {
+			log.info("No boards to allocate");
 			return false;
 		}
 		for (var boardId : boardsToAllocate) {
@@ -1002,7 +1056,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		var board = boardsToAllocate.get(0);
 		sql.allocJob.call(rect.width, rect.height, rect.depth,
 				board, boardsToAllocate.size(), board, jobId);
-		log.debug("allocated {} boards to {}; issuing power up commands",
+		log.info("allocated {} boards to {}; issuing power up commands",
 				boardsToAllocate.size(), jobId);
 		// Any proxies that existed are now defunct; user must make anew
 		rememberer.killProxies(jobId);
@@ -1024,6 +1078,17 @@ public class AllocatorTask extends DatabaseAwareBean
 		return updated;
 	}
 
+	private static class BMPBoard {
+		private int board_id;
+
+		private int bmp_id;
+
+		private BMPBoard(Row result) {
+			this.board_id = result.getInt("board_id");
+			this.bmp_id = result.getInt("bmp_id");
+		}
+	}
+
 	/**
 	 * Issue a request to change the power for the boards of a job.
 	 *
@@ -1041,17 +1106,20 @@ public class AllocatorTask extends DatabaseAwareBean
 			JobState targetState) {
 		var sourceState = sql.getJobState.call1(
 				enumerate("job_state", JobState.class), jobId).orElseThrow();
-		var boards = sql.getJobBoards.call(integer("board_id"), jobId);
+		var boards = sql.getJobBoards.call(BMPBoard::new, jobId);
 		if (boards.isEmpty()) {
+			log.info("No boards for job {}", jobId);
 			if (targetState == DESTROYED) {
 				log.debug("no boards for {} in destroy", jobId);
 			}
 			return false;
 		}
+		log.info("{} boards for job {}", boards.size(), jobId);
 
 		// Number of changes pending, one per board
 		int numPending = 0;
 
+		var bmps = new HashSet<Integer>();
 		if (power == ON) {
 			/*
 			 * This is a bit of a trickier case, as we need to say which links
@@ -1064,10 +1132,10 @@ public class AllocatorTask extends DatabaseAwareBean
 					.toCollectingMap(Direction.class, (p) -> p.boardId,
 							(p) -> p.direction);
 
-			for (var boardId : boards) {
-				var toChange = perimeterLinks.getOrDefault(boardId,
+			for (var board : boards) {
+				var toChange = perimeterLinks.getOrDefault(board.board_id,
 						NO_PERIMETER);
-				numPending += sql.issuePowerChange.call(jobId, boardId,
+				numPending += sql.issuePowerChange.call(jobId, board.board_id,
 						sourceState, targetState, true,
 						!toChange.contains(Direction.N),
 						!toChange.contains(Direction.E),
@@ -1075,13 +1143,15 @@ public class AllocatorTask extends DatabaseAwareBean
 						!toChange.contains(Direction.S),
 						!toChange.contains(Direction.W),
 						!toChange.contains(Direction.NW));
+				bmps.add(board.bmp_id);
 			}
 		} else {
 			// Powering off; all links switch to off so no perimeter check
-			for (var boardId : boards) {
-				numPending += sql.issuePowerChange.call(jobId, boardId,
+			for (var board : boards) {
+				numPending += sql.issuePowerChange.call(jobId, board.board_id,
 						sourceState, targetState, false, false, false, false,
 						false, false, false);
+				bmps.add(board.bmp_id);
 			}
 		}
 
@@ -1089,10 +1159,15 @@ public class AllocatorTask extends DatabaseAwareBean
 			log.debug("num changes for {} in destroy: {}", jobId, numPending);
 			sql.setStateDestroyed.call(numPending, jobId);
 		} else {
+			log.info("Num changes for target {}: {}", targetState, numPending);
 			sql.setStatePending.call(
 				numPending > 0 ? POWER : targetState,
 				numPending, jobId);
 		}
+
+		// Poke the BMP controller to start looking!
+		log.info("Triggering BMPs {}", bmps);
+		bmpController.triggerSearch(bmps);
 
 		return numPending > 0;
 	}
