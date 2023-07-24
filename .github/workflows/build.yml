@@ -46,6 +46,12 @@ jobs:
         distribution: 'zulu'
         java-version: ${{ matrix.java }}
         cache: 'maven'
+    - name: "Set up node cache"
+      uses: actions/cache@v3.3.1
+      with:
+        path: '~/.m2/repository/com/github/eirslett/node'
+        key: ${{ runner.os }}-node-${{ hashFiles('SpiNNaker-allocserv/pom.xml') }}
+        restore-keys: ${{ runner.os }}-node-
 
     - name: Compile
       run: mvn clean install --settings $SETTINGS_FILE -B -DskipTests=true -Dmaven.javadoc.skip=true -P "!jsp-precompile"
@@ -135,4 +141,4 @@ jobs:
     - name: "Check: copyright declarations"
       run: mvn apache-rat:check --settings $SETTINGS_FILE -V || (find . -type f -name 'rat*.txt' -print | xargs grep -l unapproved | xargs cat; exit 1)
     - name: "Check: CITATION.cff validity"
-      uses: dieghernan/cff-validator@v2.3
+      uses: dieghernan/cff-validator@v3
