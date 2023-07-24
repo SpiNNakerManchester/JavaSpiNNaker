@@ -29,6 +29,7 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.batch;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.lmap;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -57,11 +58,13 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.StateControlProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.Epoch;
+import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
 import uk.ac.manchester.spinnaker.alloc.bmp.BlacklistStore;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.RowMapper;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
+import uk.ac.manchester.spinnaker.alloc.model.BoardAndBMP;
 import uk.ac.manchester.spinnaker.alloc.model.BoardIssueReport;
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
 import uk.ac.manchester.spinnaker.alloc.model.MachineTagging;
@@ -92,6 +95,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 	/** Just for {@link #launchBackground()}. */
 	@Autowired
 	private SpallocProperties properties;
+
+	@Autowired
+	private BMPController bmpController;
 
 	private StateControlProperties props;
 
@@ -162,6 +168,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 		/** The physical board serial number, if known. */
 		public final String physicalSerial;
 
+		/** The BMP id. */
+		public final int bmpId;
+
 		private BoardState(Row row) {
 			this.id = row.getInt("board_id");
 			this.x = row.getInt("x");
@@ -174,6 +183,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 			this.machineName = row.getString("machine_name");
 			this.bmpSerial = row.getString("bmp_serial_id");
 			this.physicalSerial = row.getString("physical_serial_id");
+			this.bmpId = row.getInt("bmp_id");
 		}
 
 		/**
@@ -586,9 +596,11 @@ public class MachineStateControl extends DatabaseAwareBean {
 			 * considering how to handle failure modes! This isn't a performance
 			 * sensitive part of the code.
 			 */
-			var ops = lmap(batch, opGenerator);
+			var ops = lmap(batch, board -> opGenerator.apply(board.boardId));
+			var bmps = new HashSet<>(lmap(batch, board -> board.bmpId));
 			boolean stop = false;
 			try {
+				bmpController.triggerSearch(bmps);
 				for (var op : ops) {
 					try {
 						opResultsHandler.accept(op);
@@ -633,16 +645,16 @@ public class MachineStateControl extends DatabaseAwareBean {
 						}));
 	}
 
-	private static List<Integer> listAllBoards(Connection conn,
+	private static List<BoardAndBMP> listAllBoards(Connection conn,
 			String machineName) {
 		try (var machines = conn.query(GET_NAMED_MACHINE);
 				var boards = conn.query(GET_ALL_BOARDS);
 				var all = conn.query(GET_ALL_BOARDS_OF_ALL_MACHINES)) {
 			if (machineName == null) {
-				return all.call(integer("board_id"));
+				return all.call(BoardAndBMP::new);
 			}
 			return machines.call1(integer("machine_id"), machineName).map(
-					mid -> boards.call(integer("board_id"), mid))
+					mid -> boards.call(BoardAndBMP::new, mid))
 					.orElse(List.of());
 		}
 	}
@@ -693,6 +705,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	public Optional<Blacklist> readBlacklistFromMachine(BoardState board)
 			throws InterruptedException {
 		try (var op = new Op(CREATE_BLACKLIST_READ, board.id)) {
+			bmpController.triggerSearch(List.of(board.bmpId));
 			return op.getResult(serial("data", Blacklist.class));
 		}
 	}
@@ -715,6 +728,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	public void writeBlacklistToMachine(BoardState board,
 			@Valid Blacklist blacklist) throws InterruptedException {
 		try (var op = new Op(CREATE_BLACKLIST_WRITE, board.id, blacklist)) {
+			bmpController.triggerSearch(List.of(board.bmpId));
 			op.completed();
 		}
 	}
@@ -735,6 +749,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	public String getSerialNumber(BoardState board)
 			throws InterruptedException {
 		try (var op = new Op(CREATE_SERIAL_READ_REQ, board.id)) {
+			bmpController.triggerSearch(List.of(board.bmpId));
 			op.completed();
 		}
 		// Can now read out of the DB normally
@@ -823,6 +838,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 				if (result.isPresent()) {
 					return result;
 				}
+				log.info("Waiting for blacklist change");
 				epoch.waitForChange(props.getBlacklistPoll());
 			}
 			return Optional.empty();

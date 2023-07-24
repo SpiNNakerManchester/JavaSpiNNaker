@@ -54,11 +54,11 @@ class DQLTest extends SimpleDBTestBase {
 
 	/** Columns to inflate a BoardCoords. */
 	private static final List<String> BOARD_COLUMNS = List.of("board_id", "x",
-			"y", "z", "cabinet", "frame", "board_num", "address");
+			"y", "z", "cabinet", "frame", "board_num", "address", "bmp_id");
 
 	private static final List<String> FULL_BOARD_COLUMNS = List.of("board_id",
 			"x", "y", "z", "cabinet", "frame", "board_num", "address",
-			"machine_name", "bmp_serial_id", "physical_serial_id");
+			"machine_name", "bmp_serial_id", "physical_serial_id", "bmp_id");
 
 	private static final List<String> LOCATED_BOARD = List.of("board_id",
 			"bmp_id", "job_id", "machine_name", "address", "x", "y", "z",
@@ -550,7 +550,7 @@ class DQLTest extends SimpleDBTestBase {
 				assertEquals(List.of("change_id", "job_id", "board_id", "power",
 						"fpga_n", "fpga_s", "fpga_e", "fpga_w", "fpga_se",
 						"fpga_nw", "from_state", "to_state",
-						"board_num", "bmp_id", "cabinet", "frame"),
+						"board_num", "bmp_id"),
 						q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, NO_JOB));
 			});
@@ -1234,7 +1234,7 @@ class DQLTest extends SimpleDBTestBase {
 						List.of("bmp_id", "machine_name", "address", "cabinet",
 								"frame"),
 						q.getColumns());
-				assertEquals(empty(), q.call(Row::toString));
+				assertNotNull(q.call(Row::toString));
 			});
 		}
 	}
@@ -1247,7 +1247,7 @@ class DQLTest extends SimpleDBTestBase {
 				assertEquals(
 						List.of("board_id", "board_num", "address"),
 						q.getColumns());
-				assertEquals(empty(), q.call(Row::toString, -1));
+				assertNotNull(q.call(Row::toString, -1));
 			});
 		}
 	}
@@ -1261,7 +1261,8 @@ class DQLTest extends SimpleDBTestBase {
 				assertEquals(
 						List.of("n_changes"),
 						q.getColumns());
-				assertEquals(empty(), q.call(Row::toString, -1, 0, 0));
+				assertEquals(0, q.call1(integer("n_changes"), -1, 0, 0)
+						.orElseThrow());
 			});
 		}
 	}

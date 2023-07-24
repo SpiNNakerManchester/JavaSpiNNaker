@@ -20,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -74,10 +76,10 @@ class BlacklistCommsTest extends TestSupport {
 		killDB();
 		setupDB1();
 		// Get the test stuff set up
-		this.bmpCtrl = bmpCtrl.getTestAPI();
 		MockTransceiver.installIntoFactory(txrxFactory);
 		this.txrxFactory = txrxFactory.getTestAPI();
 		exec = newSingleThreadExecutor();
+		this.bmpCtrl = bmpCtrl.getTestAPI();
 		this.bmpCtrl.prepare();
 		this.bmpCtrl.clearBmpException();
 	}
@@ -101,14 +103,14 @@ class BlacklistCommsTest extends TestSupport {
 	 *         meaningless, but the exceptions potentially thrown are not.
 	 * @throws InterruptedException If interrupted.
 	 */
-	private Future<String> bmpWorker()
+	private Future<String> bmpWorker(Collection<Integer> bmps)
 			throws InterruptedException {
 		var ready = new OneShotEvent();
 		var future = exec.submit(() -> {
 			ready.fire();
 			// Time to allow main thread to submit the work we'll carry out
 			Thread.sleep(TEST_DELAY);
-			bmpCtrl.processRequests(TEST_DELAY);
+			bmpCtrl.processRequests(TEST_DELAY, bmps);
 			return BMP_DONE_TOKEN;
 		});
 		ready.await();
@@ -119,7 +121,7 @@ class BlacklistCommsTest extends TestSupport {
 	@Timeout(TEST_TIMEOUT)
 	public void getSerialNumber() throws Exception {
 		var bs = stateCtrl.findId(BOARD).orElseThrow();
-		var future = bmpWorker();
+		var future = bmpWorker(Set.of(bs.bmpId));
 
 		var serialNumber = stateCtrl.getSerialNumber(bs);
 
@@ -131,7 +133,7 @@ class BlacklistCommsTest extends TestSupport {
 	@Timeout(TEST_TIMEOUT)
 	public void readBlacklistFromMachine() throws Exception {
 		var bs = stateCtrl.findId(BOARD).orElseThrow();
-		var future = bmpWorker();
+		var future = bmpWorker(Set.of(bs.bmpId));
 
 		var bl = stateCtrl.readBlacklistFromMachine(bs).orElseThrow();
 
@@ -143,7 +145,7 @@ class BlacklistCommsTest extends TestSupport {
 	@Timeout(TEST_TIMEOUT)
 	public void writeBlacklistToMachine() throws Exception {
 		var bs = stateCtrl.findId(BOARD).orElseThrow();
-		var future = bmpWorker();
+		var future = bmpWorker(Set.of(bs.bmpId));
 		assertNotEquals(WRITE_BASELINE, txrxFactory.getCurrentBlacklist());
 
 		stateCtrl.writeBlacklistToMachine(bs,

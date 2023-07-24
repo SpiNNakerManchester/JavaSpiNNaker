@@ -1002,17 +1002,4 @@ class DMLTest extends SimpleDBTestBase {
 			});
 		}
 	}
-
-	@Test
-	void setJobState() {
-		assumeWritable(c);
-		try (var u = c.update(SET_JOB_STATE)) {
-			c.transaction(() -> {
-				assertEquals(List.of("job_state", "job_id"),
-						u.getParameters());
-				// No such job
-				assertEquals(0, u.call(0, 0));
-			});
-		}
-	}
 }

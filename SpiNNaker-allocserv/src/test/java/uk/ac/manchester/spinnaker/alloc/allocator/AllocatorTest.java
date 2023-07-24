@@ -25,6 +25,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -106,8 +107,8 @@ class AllocatorTest extends TestSupport {
 	 */
 	private static final int DELAY_MS = 2000;
 
-	private void processBMPRequests() throws Exception {
-		bmpCtrl.processRequests(DELAY_MS);
+	private void processBMPRequests(Collection<Integer> bmps) throws Exception {
+		bmpCtrl.processRequests(DELAY_MS, bmps);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -143,17 +144,18 @@ class AllocatorTest extends TestSupport {
 
 			assertState(job, QUEUED, 1, 0);
 
-			assertTrue(getAllocTester().allocate());
+			assertTrue(getAllocTester().allocate().size() > 0);
 
 			assertState(job, POWER, 0, 1);
 
-			assertFalse(getAllocTester().allocate());
+			assertFalse(getAllocTester().allocate().size() > 0);
 
 			assertState(job, POWER, 0, 1);
 
 			getAllocTester().destroyJob(job, "test");
 
-			assertState(job, DESTROYED, 0, 0);
+			// Powere requests are not run so expect 2 (one on, one off)
+			assertState(job, DESTROYED, 0, 2);
 		});
 	}
 
@@ -169,17 +171,18 @@ class AllocatorTest extends TestSupport {
 
 			assertState(job, QUEUED, 1, 0);
 
-			assertTrue(getAllocTester().allocate());
+			assertTrue(getAllocTester().allocate().size() > 0);
 
 			assertState(job, POWER, 0, 3);
 
-			assertFalse(getAllocTester().allocate());
+			assertFalse(getAllocTester().allocate().size() > 0);
 
 			assertState(job, POWER, 0, 3);
 
 			getAllocTester().destroyJob(job, "test");
 
-			assertState(job, DESTROYED, 0, 0);
+			// Power not run so 3 x (on then off) = 6
+			assertState(job, DESTROYED, 0, 6);
 		});
 	}
 
@@ -195,17 +198,18 @@ class AllocatorTest extends TestSupport {
 
 			assertState(job, QUEUED, 1, 0);
 
-			assertTrue(getAllocTester().allocate());
+			assertTrue(getAllocTester().allocate().size() > 0);
 
 			assertState(job, POWER, 0, 1);
 
-			assertFalse(getAllocTester().allocate());
+			assertFalse(getAllocTester().allocate().size() > 0);
 
 			assertState(job, POWER, 0, 1);
 
 			getAllocTester().destroyJob(job, "test");
 
-			assertState(job, DESTROYED, 0, 0);
+			// Power requests are not run here, so expect 2 (power on then off)
+			assertState(job, DESTROYED, 0, 2);
 		});
 	}
 
@@ -221,17 +225,18 @@ class AllocatorTest extends TestSupport {
 
 			assertState(job, QUEUED, 1, 0);
 
-			assertTrue(getAllocTester().allocate());
+			assertTrue(getAllocTester().allocate().size() > 0);
 
 			assertState(job, POWER, 0, 3);
 
-			assertFalse(getAllocTester().allocate());
+			assertFalse(getAllocTester().allocate().size() > 0);
 
 			assertState(job, POWER, 0, 3);
 
 			getAllocTester().destroyJob(job, "test");
 
-			assertState(job, DESTROYED, 0, 0);
+			// Power requests not run, so expect 2 on/off each = 6
+			assertState(job, DESTROYED, 0, 6);
 		});
 	}
 
@@ -274,17 +279,18 @@ class AllocatorTest extends TestSupport {
 
 			assertState(job, QUEUED, 1, 0);
 
-			assertTrue(getAllocTester().allocate());
+			assertTrue(getAllocTester().allocate().size() > 0);
 
 			assertState(job, POWER, 0, 1);
 
-			assertFalse(getAllocTester().allocate());
+			assertFalse(getAllocTester().allocate().size() > 0);
 
 			assertState(job, POWER, 0, 1);
 
 			getAllocTester().destroyJob(job, "test");
 
-			assertState(job, DESTROYED, 0, 0);
+			// Power not run so 2 at end (on then off)
+			assertState(job, DESTROYED, 0, 2);
 		});
 	}
 
@@ -349,7 +355,8 @@ class AllocatorTest extends TestSupport {
 
 			getAllocTester().expireJobs();
 
-			assertState(job, DESTROYED, 0, 0);
+			// Power requests haven't run so there should now be 2 (on and off)
+			assertState(job, DESTROYED, 0, 2);
 		});
 	}
 
@@ -364,24 +371,24 @@ class AllocatorTest extends TestSupport {
 			int job = c.transaction(() -> makeQueuedJob(1));
 			try {
 				makeAllocBySizeRequest(job, 1);
-				c.transaction(() -> {
-					getAllocTester().allocate();
+				var bmps = c.transaction(() -> {
+					return getAllocTester().allocate();
 				});
 				snooze1s();
 				snooze1s();
-				processBMPRequests();
+				processBMPRequests(bmps);
 
 				assumeState(job, READY, 0, 0);
 
-				c.transaction(() -> {
-					getAllocTester().expireJobs();
+				bmps = c.transaction(() -> {
+					return getAllocTester().expireJobs();
 				});
 
 				assertState(job, DESTROYED, 0, 1);
 
 				// HACK! Allow immediate switch off (OK because not real BMP)
 				c.transaction(() -> c.update(HACK_POWER_TIMESTAMP).call());
-				processBMPRequests();
+				processBMPRequests(bmps);
 
 				assertState(job, DESTROYED, 0, 0);
 			} finally {
