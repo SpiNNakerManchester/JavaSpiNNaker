@@ -166,14 +166,14 @@ public class BMPController extends DatabaseAwareBean {
 				var coords = new BMPCoords(row.getInt("cabinet"),
 						row.getInt("frame"));
 				var boards = new HashMap<BMPBoard, String>();
-				var bmp_id = row.getInt("bmp_id");
+				var bmpId = row.getInt("bmp_id");
 				getBoards.call(r -> {
 					boards.put(new BMPBoard(r.getInt("board_num")),
 							r.getString("address"));
 					return null;
-				}, bmp_id);
+				}, bmpId);
 				var control = controllerFactory.create(m.get(), coords, boards);
-				var worker = new Worker(control, bmp_id);
+				var worker = new Worker(control, bmpId);
 				scheduler.scheduleAtFixedRate(worker, allocProps.getPeriod());
 				workers.put(row.getInt("bmp_id"), worker);
 				return null;
@@ -1080,6 +1080,8 @@ public class BMPController extends DatabaseAwareBean {
 		 * @param millis
 		 *            How many milliseconds to sleep before doing a rerun of the
 		 *            scheduler. If zero (or less), only one run will be done.
+		 * @param bmps
+		 *            The BMPs to be updated.
 		 * @throws IOException
 		 *             If talking to the network fails
 		 * @throws SpinnmanException

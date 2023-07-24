@@ -164,6 +164,8 @@ public interface SpiNNakerControl {
 		 *            The machine that this will be managing.
 		 * @param coords
 		 *            The coordinates of the BMP that this will manage.
+		 * @param boardAddresses
+		 *            The IP addresses of the boards of the BMP.
 		 * @return The board controller.
 		 */
 		SpiNNakerControl create(Machine machine, BMPCoords coords,

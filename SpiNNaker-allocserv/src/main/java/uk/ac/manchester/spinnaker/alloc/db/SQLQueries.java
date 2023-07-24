@@ -344,7 +344,7 @@ public abstract class SQLQueries {
 			"SELECT address FROM bmp WHERE machine_id = :machine_id "
 					+ "AND cabinet = :cabinet AND frame = :frame LIMIT 1";
 
-	/** Get all the BMPs **/
+	/** Get all the BMPs. */
 	@ResultColumn("bmp_id")
 	@ResultColumn("machine_name")
 	@ResultColumn("address")
@@ -354,6 +354,7 @@ public abstract class SQLQueries {
 			"SELECT bmp_id, machine_name, address, cabinet, frame FROM bmp "
 					+ "JOIN machines on bmp.machine_id = machines.machine_id";
 
+	/** Get all the boards of a BMP. */
 	@Parameter("bmp_id")
 	@ResultColumn("board_id")
 	@ResultColumn("board_num")

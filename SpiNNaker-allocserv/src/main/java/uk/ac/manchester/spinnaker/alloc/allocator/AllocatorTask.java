@@ -1087,7 +1087,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	 * @param jobId The identifier of the job to reset.
 	 */
 	public void resetPowerOnFailure(int jobId) {
-		scheduler.schedule(() -> {setPower(jobId, OFF, QUEUED);}, new Date());
+		scheduler.schedule(() -> setPower(jobId, OFF, QUEUED), new Date());
 	}
 
 	@Override
