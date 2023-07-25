@@ -496,7 +496,7 @@ public class BMPController extends DatabaseAwareBean {
 				int completed = changeIds.stream().mapToInt(
 						deleteChange::call).sum();
 
-				log.info("BMP ACTION SUCCEEDED ({}:{}->{}): on:{} off:{} "
+				log.debug("BMP ACTION SUCCEEDED ({}:{}->{}): on:{} off:{} "
 						+ "completed: {}",
 						jobId, from, to, turnedOn, turnedOff, completed);
 
@@ -690,7 +690,7 @@ public class BMPController extends DatabaseAwareBean {
 		 */
 		private void doneRead(Connection c) {
 			try (var completed = c.update(COMPLETED_BLACKLIST_READ)) {
-				log.info("Completing blacklist read opId {}", opId);
+				log.debug("Completing blacklist read opId {}", opId);
 				completed.call(readBlacklist, opId);
 			}
 		}
@@ -947,7 +947,7 @@ public class BMPController extends DatabaseAwareBean {
 		 * Periodically call to update, or trigger externally.
 		 */
 		public synchronized void run() {
-			log.info("Searching for changes on BMP {}", bmpId);
+			log.debug("Searching for changes on BMP {}", bmpId);
 			try (var c = getConnection();
 					var getRequests = c.query(GET_CHANGES);
 					var getBlacklistReads = c.query(GET_BLACKLIST_READS);
@@ -967,7 +967,7 @@ public class BMPController extends DatabaseAwareBean {
 						jobChanges.add(powerChanges.poll());
 					}
 					if (!jobChanges.isEmpty()) {
-						log.info("Running job changes {}", jobChanges);
+						log.debug("Running job changes {}", jobChanges);
 						changed = true;
 						processPower(new PowerRequest(bmpId, change.jobId,
 								change.from, change.to, jobChanges));

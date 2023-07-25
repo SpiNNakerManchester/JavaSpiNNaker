@@ -168,12 +168,12 @@ public class AllocatorTask extends DatabaseAwareBean
 							() -> new RuntimeException(
 									"Error counting job tasks"));
 
-			log.info("Job {} has {} changes remaining", jobId, n);
+			log.debug("Job {} has {} changes remaining", jobId, n);
 
 			// If there are no more pending changes, set the job state to
 			// the target state
 			if (n == 0) {
-				log.info("Job {} moving to state {}", jobId, targetState);
+				log.debug("Job {} moving to state {}", jobId, targetState);
 				setJobState.call(targetState, 0, jobId);
 			}
 		}
@@ -228,7 +228,7 @@ public class AllocatorTask extends DatabaseAwareBean
 				epochs.nextJobsEpoch();
 
 				// Poke the BMP controller to start looking!
-				log.info("Triggering BMPs {}", bmps);
+				log.debug("Triggering BMPs {}", bmps);
 				bmpController.triggerSearch(bmps);
 			}
 		} catch (DataAccessException e) {
@@ -503,7 +503,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	private Collection<Integer> allocate(Connection conn) {
 		try (var sql = new AllocSQL(conn)) {
 			int maxImportance = -1;
-			log.info("Allocate running");
+			log.trace("Allocate running");
 			var bmps = new HashSet<Integer>();
 			for (AllocTask task : sql.getTasks.call(AllocTask::new, QUEUED)) {
 				if (task.importance > maxImportance) {
@@ -515,7 +515,7 @@ public class AllocatorTask extends DatabaseAwareBean
 				}
 				var handled = task.allocate(sql);
 				bmps.addAll(handled);
-				log.info("allocate for {} (job {}): {}", task.id,
+				log.debug("allocate for {} (job {}): {}", task.id,
 						task.jobId, handled);
 			}
 			/*
@@ -1058,13 +1058,13 @@ public class AllocatorTask extends DatabaseAwareBean
 	 */
 	private Collection<Integer> setAllocation(AllocSQL sql, int jobId,
 			Rectangle rect,	int machineId, TriadCoords root) {
-		log.info("performing allocation for {}: {}x{}x{} at {}:{}:{}", jobId,
+		log.debug("performing allocation for {}: {}x{}x{} at {}:{}:{}", jobId,
 				rect.width, rect.height, rect.depth, root.x, root.y, root.z);
 		var boardsToAllocate = sql.getConnectedBoardIDs
 				.call(integer("board_id"), machineId, root.x, root.y, root.z,
 						rect.width, rect.height, rect.depth);
 		if (boardsToAllocate.isEmpty()) {
-			log.info("No boards to allocate");
+			log.debug("No boards to allocate");
 			return List.of();
 		}
 		for (var boardId : boardsToAllocate) {
@@ -1104,7 +1104,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			epochs.nextJobsEpoch();
 
 			// Poke the BMP controller to start work!
-			log.info("Triggering BMPs {}", bmps);
+			log.debug("Triggering BMPs {}", bmps);
 			bmpController.triggerSearch(bmps);
 			return true;
 		}
@@ -1130,13 +1130,13 @@ public class AllocatorTask extends DatabaseAwareBean
 				enumerate("job_state", JobState.class), jobId).orElseThrow();
 		var boards = sql.getJobBoards.call(BoardAndBMP::new, jobId);
 		if (boards.isEmpty()) {
-			log.info("No boards for job {}", jobId);
+			log.debug("No boards for job {}", jobId);
 			if (targetState == DESTROYED) {
 				log.debug("no boards for {} in destroy", jobId);
 			}
 			return List.of();
 		}
-		log.info("{} boards for job {}", boards.size(), jobId);
+		log.debug("{} boards for job {}", boards.size(), jobId);
 
 		// Number of changes pending, one per board
 		int numPending = 0;
@@ -1182,7 +1182,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			log.debug("num changes for {} in destroy: {}", jobId, numPending);
 			sql.setStateDestroyed.call(numPending, jobId);
 		} else {
-			log.info("Num changes for target {}: {}", targetState, numPending);
+			log.debug("Num changes for target {}: {}", targetState, numPending);
 			sql.setStatePending.call(
 				numPending > 0 ? POWER : targetState,
 				numPending, jobId);
