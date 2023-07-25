@@ -838,7 +838,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 				if (result.isPresent()) {
 					return result;
 				}
-				log.info("Waiting for blacklist change");
+				log.debug("Waiting for blacklist change");
 				epoch.waitForChange(props.getBlacklistPoll());
 			}
 			return Optional.empty();
