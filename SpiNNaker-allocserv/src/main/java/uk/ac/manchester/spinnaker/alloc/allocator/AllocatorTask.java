@@ -36,7 +36,6 @@ import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.time.Instant;
 import java.util.Collection;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -134,6 +133,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	}
 
 	@PostConstruct
+	@SuppressWarnings("FutureReturnValueIgnored")
 	private void init() {
 		scheduler.scheduleAtFixedRate(() -> allocate(),	allocProps.getPeriod());
 		scheduler.scheduleAtFixedRate(() -> expireJobs(),
@@ -153,7 +153,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			JobState targetState) {
 		scheduler.schedule(() -> {
 			updateJobNow(jobId, sourceState, targetState);
-		}, new Date());
+		}, Instant.now());
 	}
 
 	private void updateJobNow(int jobId, JobState sourceState,
@@ -1086,8 +1086,9 @@ public class AllocatorTask extends DatabaseAwareBean
 	 *
 	 * @param jobId The identifier of the job to reset.
 	 */
+	@SuppressWarnings("FutureReturnValueIgnored")
 	public void resetPowerOnFailure(int jobId) {
-		scheduler.schedule(() -> setPower(jobId, OFF, QUEUED), new Date());
+		scheduler.schedule(() -> setPower(jobId, OFF, QUEUED), Instant.now());
 	}
 
 	@Override
