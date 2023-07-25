@@ -482,9 +482,11 @@ public class BMPController extends DatabaseAwareBean {
 					var setBoardPowerOn = c.update(SET_BOARD_POWER_ON);
 					var setBoardPowerOff = c.update(SET_BOARD_POWER_OFF)) {
 				int turnedOn = powerOnBoards.stream().mapToInt(
-						board -> setBoardPowerOn.call(board.board)).sum();
+						board -> setBoardPowerOn.call(
+								getBoardId(board).get())).sum();
 				int turnedOff = powerOffBoards.stream().mapToInt(
-						board -> setBoardPowerOff.call(board.board)).sum();
+						board -> setBoardPowerOff.call(
+								getBoardId(board).get())).sum();
 
 				if (to == DESTROYED || to == QUEUED) {
 					/*
@@ -521,7 +523,8 @@ public class BMPController extends DatabaseAwareBean {
 
 				// We should mark the boards as off
 				int turnedOff = powerOffBoards.stream().mapToInt(
-						board -> setBoardPowerOff.call(board)).sum();
+						board -> setBoardPowerOff.call(
+								getBoardId(board).get())).sum();
 
 				// Deallocate the boards on this bmp from the job;
 				// other boards can be deallocated elsewhere.
@@ -619,6 +622,10 @@ public class BMPController extends DatabaseAwareBean {
 		 */
 		private Optional<Integer> getBoardId(HasCoreLocation addr) {
 			return Optional.ofNullable(boardToId.get(addr.getP()));
+		}
+
+		private Optional<Integer> getBoardId(BMPBoard board) {
+			return Optional.ofNullable(boardToId.get(board.board));
 		}
 	}
 
