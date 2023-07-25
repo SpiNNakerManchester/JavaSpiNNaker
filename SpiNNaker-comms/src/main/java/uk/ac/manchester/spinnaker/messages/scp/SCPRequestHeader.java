@@ -29,11 +29,14 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
  * actual sequence number when the message is sent on a connection.
  */
 public final class SCPRequestHeader implements SerializableMessage {
+
+	private static final int SHORT_MASK = 0xFFFF;
+
 	/** The command of the SCP packet. */
 	public final CommandCode command;
 
 	/** The sequence number of the packet, between 0 and 65535. */
-	private short sequence;
+	private int sequence;
 
 	private boolean sequenceSet;
 
@@ -60,7 +63,7 @@ public final class SCPRequestHeader implements SerializableMessage {
 		if (!sequenceSet) {
 			throw new IllegalStateException("sequence number not set");
 		}
-		buffer.putShort(sequence);
+		buffer.putShort((short) (sequence & SHORT_MASK));
 	}
 
 	/**
@@ -74,20 +77,20 @@ public final class SCPRequestHeader implements SerializableMessage {
 	 * @throws IllegalStateException
 	 *             If an attempt is made to set a sequence number a second time
 	 */
-	public short issueSequenceNumber(Set<Integer> inFlight) {
+	public int issueSequenceNumber(Set<Integer> inFlight) {
 		if (sequenceSet) {
 			throw new IllegalStateException(
 					"a message can only have its sequence number set once");
 		}
 		do {
 			sequence = getNextSequenceNumber();
-		} while (inFlight.contains((int) sequence));
+		} while (inFlight.contains(sequence));
 		sequenceSet = true;
 		return sequence;
 	}
 
 	/** @return The message's sequence number. */
-	public short getSequence() {
+	public int getSequence() {
 		return sequence;
 	}
 }
