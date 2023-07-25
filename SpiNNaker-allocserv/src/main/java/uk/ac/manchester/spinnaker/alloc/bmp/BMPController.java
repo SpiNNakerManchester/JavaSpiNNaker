@@ -336,7 +336,7 @@ public class BMPController extends DatabaseAwareBean {
 								"Marked board at %d,%d,%d of %s (serial: %s) "
 										+ "as dead: %s",
 								row.getInt("x"), row.getInt("y"),
-								row.getInt("z"), row.getString("machineName"),
+								row.getInt("z"), row.getString("machine_name"),
 								ser, msg);
 						emailSender.sendServiceMail(fullMessage);
 						return null;
