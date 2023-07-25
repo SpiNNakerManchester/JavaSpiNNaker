@@ -6,7 +6,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    https://www.apache.org/licenses/LICENSE-2.0
+	https://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,11 +16,11 @@ limitations under the License.
 --%>
 <footer>
 <hr>
-<a href="<c:url value='/spalloc/system/'/>">Main page</a>
+<a href="${ mainUri }">Main page</a>
 <c:if test="${ userMayChangePassword }">
 	&mdash;
-	<a href="<c:url value='/spalloc/system/change_password'/>">Change password</a>
+	<a href="${ changePasswordUri }">Change password</a>
 </c:if>
 &mdash;
-<a href="<c:url value='/spalloc/system/perform_logout'/>">Log out</a>
+<a href="${ logoutUri }">Log out</a>
 </footer>

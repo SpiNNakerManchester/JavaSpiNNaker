@@ -66,6 +66,15 @@ import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.COLLA
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.INTERNAL;
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.ORGANISATION;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.CHANGE_PASSWORD_URI;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGOUT_URI;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.MAIN_URI;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_CSS_URI;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_JS_URI;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.CHANGE_PASSWORD_PATH;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGOUT_PATH;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_CSS_PATH;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_JS_PATH;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.error;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.errorMessage;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.uri;
@@ -95,6 +104,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 import uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager;
@@ -150,6 +160,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Autowired
 	private QuotaManager quotaManager;
 
+	@Autowired
+	private URLPathMaker urlMaker;
+
 	private class MachineName {
 		String name;
 
@@ -194,7 +207,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 *            The base model to add to. This may be the real model or the
 	 *            flash attributes.
 	 */
-	private static void addStandardContextAttrs(Map<String, Object> model) {
+	private void addStandardContextAttrs(Map<String, Object> model) {
 		var auth = getContext().getAuthentication();
 		boolean mayChangePassword =
 				auth instanceof UsernamePasswordAuthenticationToken;
@@ -208,6 +221,12 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		model.put(GROUPS_URI, uri(admin().listGroups(NULL_MAP)));
 		model.put(BOARDS_URI, uri(admin().boards(NULL_MAP)));
 		model.put(MACHINE_URI, uri(admin().machineManagement(NULL_MAP)));
+		model.put(MAIN_URI, uri(system().index()));
+		model.put(CHANGE_PASSWORD_URI, urlMaker.systemUrl(
+				CHANGE_PASSWORD_PATH));
+		model.put(LOGOUT_URI, urlMaker.systemUrl(LOGOUT_PATH));
+		model.put(SPALLOC_CSS_URI, urlMaker.systemUrl(SPALLOC_CSS_PATH));
+		model.put(SPALLOC_JS_URI, urlMaker.systemUrl(SPALLOC_JS_PATH));
 		model.put(USER_MAY_CHANGE_PASSWORD, mayChangePassword);
 	}
 
@@ -222,7 +241,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 *            redirect.
 	 * @return The enhanced model-and-view.
 	 */
-	private static ModelAndView addStandardContext(ModelAndView mav,
+	private ModelAndView addStandardContext(ModelAndView mav,
 			RedirectAttributes attrs) {
 		addStandardContextAttrs(nonNull(attrs)
 				// Real implementation of flash attrs is always a ModelMap
@@ -239,7 +258,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 *            The model-and-view.
 	 * @return The enhanced model-and-view.
 	 */
-	private static ModelAndView addStandardContext(ModelAndView mav) {
+	private ModelAndView addStandardContext(ModelAndView mav) {
 		return addStandardContext(mav, null);
 	}
 
@@ -255,16 +274,16 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 *            redirect.
 	 * @return The model-and-view.
 	 */
-	private static ModelAndView redirectTo(URI uri, RedirectAttributes attrs) {
+	private ModelAndView redirectTo(URI uri, RedirectAttributes attrs) {
 		return addStandardContext(new ModelAndView("redirect:" + uri.getPath()),
 				attrs);
 	}
 
-	private static ModelAndView errors(String message) {
+	private ModelAndView errors(String message) {
 		return addStandardContext(error(message), null);
 	}
 
-	private static ModelAndView errors(DataAccessException exception) {
+	private ModelAndView errors(DataAccessException exception) {
 		return addStandardContext(error("database access failed: "
 				+ exception.getMostSpecificCause().getMessage()), null);
 	}

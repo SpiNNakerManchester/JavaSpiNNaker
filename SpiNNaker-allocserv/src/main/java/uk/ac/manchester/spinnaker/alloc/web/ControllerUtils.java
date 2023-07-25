@@ -64,6 +64,34 @@ public abstract class ControllerUtils {
 	/** The name of the Spring MVC error view. */
 	public static final String MVC_ERROR = "erroroccurred";
 
+	public static final String MAIN_URI = "mainUri";
+
+	public static final String CHANGE_PASSWORD_URI = "changePasswordUri";
+
+	public static final String LOGOUT_URI = "logoutUri";
+
+	public static final String LOGIN_URI = "loginUri";
+
+	public static final String LOGIN_OIDC_URI = "loginOidcUri";
+
+	public static final String SPALLOC_CSS_URI = "spallocCssUri";
+
+	public static final String SPALLOC_JS_URI = "spallocJsUri";
+
+	public static final String LOGIN_PATH = "perform_login";
+
+	public static final String LOGIN_OIDC_PATH =
+			"perform_oidc/auth/hbp-ebrains";
+
+	public static final String CHANGE_PASSWORD_PATH = "change_password";
+
+	public static final String LOGOUT_PATH = "perform_logout";
+
+	public static final String SPALLOC_CSS_PATH = "resources/spalloc.css";
+
+	public static final String SPALLOC_JS_PATH = "resources/spinnaker.js";
+
+
 	/**
 	 * Create a view that shows an error to the user.
 	 *
