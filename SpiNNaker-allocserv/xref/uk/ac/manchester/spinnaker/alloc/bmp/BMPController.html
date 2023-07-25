@@ -470,12 +470,12 @@
 <a class="jxr_linenumber" name="L462" href="#L462">462</a> 							<span class="jxr_string">"Marked board at %d,%d,%d of %s (serial: %s) "</span>
 <a class="jxr_linenumber" name="L463" href="#L463">463</a> 									+ <span class="jxr_string">"as dead: %s"</span>,
 <a class="jxr_linenumber" name="L464" href="#L464">464</a> 							row.getInt(<span class="jxr_string">"x"</span>), row.getInt(<span class="jxr_string">"y"</span>), row.getInt(<span class="jxr_string">"z"</span>),
-<a class="jxr_linenumber" name="L465" href="#L465">465</a> 							row.getString(<span class="jxr_string">"machineName"</span>), ser, msg);
+<a class="jxr_linenumber" name="L465" href="#L465">465</a> 							row.getString(<span class="jxr_string">"machine_name"</span>), ser, msg);
 <a class="jxr_linenumber" name="L466" href="#L466">466</a> 					<em class="jxr_comment">// Postpone email sending until out of transaction</em>
 <a class="jxr_linenumber" name="L467" href="#L467">467</a> 					postCleanupTasks.add(
 <a class="jxr_linenumber" name="L468" href="#L468">468</a> 							() -&gt; emailSender.sendServiceMail(fullMessage));
 <a class="jxr_linenumber" name="L469" href="#L469">469</a> 					<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L470" href="#L470">470</a> 				});
+<a class="jxr_linenumber" name="L470" href="#L470">470</a> 				}, boardId);
 <a class="jxr_linenumber" name="L471" href="#L471">471</a> 			}
 <a class="jxr_linenumber" name="L472" href="#L472">472</a> 			<strong class="jxr_keyword">return</strong> result;
 <a class="jxr_linenumber" name="L473" href="#L473">473</a> 		}
