@@ -32,7 +32,6 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.asDir;
-import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.asSecure;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByNameQuietly;
 import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 
@@ -181,7 +180,7 @@ public class SpallocClientFactory {
 		try {
 			return JSON_MAPPER.readValue(json, cls);
 		} catch (IOException e) {
-			log.error("Error while reading json " + json);
+			log.error("Error while reading json {}", json);
 			throw e;
 		}
 	}
@@ -377,9 +376,8 @@ public class SpallocClientFactory {
 		private ClientImpl(Session s, RootInfo ri) throws IOException {
 			super(null, s);
 			this.v = ri.version;
-			this.jobs = asSecure(asDir(ri.jobsURI));
-			this.machines = asSecure(asDir(ri.machinesURI));
-			log.debug("Job URI = " + this.jobs);
+			this.jobs = asDir(ri.jobsURI);
+			this.machines = asDir(ri.machinesURI);
 		}
 
 		@Override
@@ -465,9 +463,8 @@ public class SpallocClientFactory {
 				// Get the response entity... and discard it
 				try (var is = checkForError(conn, "job create failed")) {
 					readLines(is, UTF_8);
-					String location = conn.getHeaderField("Location");
 					// But we do want the Location header
-					return asSecure(URI.create(location));
+					return URI.create(conn.getHeaderField("Location"));
 				} finally {
 					s.trackCookie(conn);
 				}

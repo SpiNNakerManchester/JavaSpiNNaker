@@ -18,16 +18,12 @@ package uk.ac.manchester.spinnaker.alloc.client;
 import static java.util.Objects.isNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
-
-import org.apache.http.client.utils.URIBuilder;
 
 /** Shared helper because we can't use a superclass. */
 abstract class ClientUtils {
@@ -86,17 +82,5 @@ abstract class ClientUtils {
 	 */
 	static <T> List<T> readOnlyCopy(List<T> list) {
 		return Objects.isNull(list) ? List.of() : List.copyOf(list);
-	}
-
-	static URI asSecure(URI uri) throws IOException {
-		var scheme = uri.getScheme();
-		if (!scheme.equals("https")) {
-			try {
-				uri = new URIBuilder(uri).setScheme("https").build();
-			} catch (URISyntaxException e) {
-				throw new IOException(e);
-			}
-		}
-		return uri;
 	}
 }
