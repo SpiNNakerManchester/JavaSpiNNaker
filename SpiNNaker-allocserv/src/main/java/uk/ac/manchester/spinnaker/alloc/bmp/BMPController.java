@@ -462,12 +462,12 @@ public class BMPController extends DatabaseAwareBean {
 							"Marked board at %d,%d,%d of %s (serial: %s) "
 									+ "as dead: %s",
 							row.getInt("x"), row.getInt("y"), row.getInt("z"),
-							row.getString("machineName"), ser, msg);
+							row.getString("machine_name"), ser, msg);
 					// Postpone email sending until out of transaction
 					postCleanupTasks.add(
 							() -> emailSender.sendServiceMail(fullMessage));
 					return null;
-				});
+				}, boardId);
 			}
 			return result;
 		}
