@@ -70,6 +70,7 @@ import org.springframework.security.oauth2.core.ClaimAccessor;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 import org.springframework.stereotype.Service;
 
@@ -293,7 +294,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	/** The classes that we know what to do about. */
 	private static final Class<?>[] SUPPORTED_AUTH_TOKEN_CLASSES = {
 		UsernamePasswordAuthenticationToken.class,
-		OAuth2AuthenticationToken.class, BearerTokenAuthentication.class,
+		OAuth2AuthenticationToken.class, BearerTokenAuthenticationToken.class,
 		AlreadyDoneMarker.class
 	};
 
