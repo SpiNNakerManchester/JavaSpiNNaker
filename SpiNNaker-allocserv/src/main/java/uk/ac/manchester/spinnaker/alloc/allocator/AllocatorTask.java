@@ -162,19 +162,27 @@ public class AllocatorTask extends DatabaseAwareBean
 				var getNTasks = c.query(COUNT_CHANGES_FOR_JOB);
 				var setJobState = c.update(SET_STATE_PENDING)) {
 
-			// Count pending changes for this state change
-			var n = getNTasks.call1(row -> row.getInteger("n_changes"),
-					jobId, sourceState, targetState).orElseThrow(
-							() -> new RuntimeException(
-									"Error counting job tasks"));
+			var jobChanged = c.transaction(() -> {
 
-			log.debug("Job {} has {} changes remaining", jobId, n);
+				// Count pending changes for this state change
+				var n = getNTasks.call1(row -> row.getInteger("n_changes"),
+						jobId, sourceState, targetState).orElseThrow(
+								() -> new RuntimeException(
+										"Error counting job tasks"));
 
-			// If there are no more pending changes, set the job state to
-			// the target state
-			if (n == 0) {
-				log.debug("Job {} moving to state {}", jobId, targetState);
-				setJobState.call(targetState, 0, jobId);
+				log.debug("Job {} has {} changes remaining", jobId, n);
+
+				// If there are no more pending changes, set the job state to
+				// the target state
+				if (n == 0) {
+					log.debug("Job {} moving to state {}", jobId, targetState);
+					setJobState.call(targetState, 0, jobId);
+					return true;
+				}
+				return false;
+			});
+
+			if (jobChanged) {
 				epochs.nextJobsEpoch();
 			}
 		}
