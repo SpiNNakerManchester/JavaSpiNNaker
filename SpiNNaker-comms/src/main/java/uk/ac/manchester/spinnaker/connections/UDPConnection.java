@@ -219,6 +219,7 @@ public abstract class UDPConnection<T> implements Connection {
 			remoteAddress = new InetSocketAddress(remoteIPAddress, remotePort);
 			sock.connect(remoteAddress);
 		}
+		log.info("Socket local address: {}", sock.getLocalAddress());
 		return sock;
 	}
 
@@ -238,6 +239,7 @@ public abstract class UDPConnection<T> implements Connection {
 		} catch (ClassCastException e) {
 			throw new UnknownHostException("SpiNNaker only talks IPv4");
 		}
+		log.info("Local address: {}", localAddr);
 		return new InetSocketAddress(localAddr, localPort);
 	}
 
