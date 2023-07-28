@@ -21,8 +21,6 @@ import java.time.Duration;
 
 import javax.annotation.PreDestroy;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.google.errorprone.annotations.concurrent.GuardedBy;
@@ -34,8 +32,6 @@ import com.google.errorprone.annotations.concurrent.GuardedBy;
  */
 @Service
 public class Epochs {
-	private final Logger log = LoggerFactory.getLogger(Epochs.class);
-
 	@GuardedBy("this")
 	private long jobsEpoch = 0L;
 
@@ -71,7 +67,6 @@ public class Epochs {
 			jobsEpoch++;
 		} finally {
 			notifyAll();
-			log.info("Updated job epoch to {} and notifyed", jobsEpoch);
 		}
 	}
 
@@ -178,7 +173,6 @@ public class Epochs {
 			long expiry = expiry(timeout);
 			synchronized (Epochs.this) {
 				while (jobsEpoch <= epoch && waiting(expiry)) {
-					log.info("Waiting until jobsEpoch {} > {}", jobsEpoch, epoch);
 					waitUntil(expiry);
 				}
 			}
