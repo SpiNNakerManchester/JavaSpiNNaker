@@ -185,6 +185,7 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 						// Refresh the handle
 						var nj = core.getJob(permit, j.getId())
 								.orElseThrow(() -> new ItsGone("no such job"));
+						log.debug("job state now {}", nj.getState());
 						return new JobStateResponse(nj, ui, mapper, sp);
 					});
 				} else {
