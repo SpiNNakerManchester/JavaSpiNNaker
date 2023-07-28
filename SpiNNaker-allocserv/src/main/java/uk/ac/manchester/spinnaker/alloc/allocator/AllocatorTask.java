@@ -175,6 +175,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			if (n == 0) {
 				log.debug("Job {} moving to state {}", jobId, targetState);
 				setJobState.call(targetState, 0, jobId);
+				epochs.nextJobsEpoch();
 			}
 		}
 	}
