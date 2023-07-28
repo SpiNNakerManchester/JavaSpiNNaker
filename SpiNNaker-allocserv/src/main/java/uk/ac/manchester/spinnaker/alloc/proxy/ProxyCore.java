@@ -339,7 +339,6 @@ public class ProxyCore implements AutoCloseable {
 	private int openUnconnected(ValueHolder<InetAddress> localAddress,
 			ValueHolder<Integer> localPort) throws IOException {
 		int id = idIssuer.getAsInt();
-		log.info("Making unconnected socket with localHost: {}", localHost);
 		var conn = new ProxyUDPConnection(session, null, 0, id,
 				() -> removeConnection(id), localHost);
 		setConnection(id, conn);
