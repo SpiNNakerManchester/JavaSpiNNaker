@@ -70,10 +70,8 @@ import org.springframework.security.oauth2.core.ClaimAccessor;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
-import org.springframework.security.oauth2.server.resource.authentication.JwtBearerTokenAuthenticationConverter;
 import org.springframework.stereotype.Service;
 
 import com.google.errorprone.annotations.Immutable;
@@ -119,9 +117,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	@Autowired
 	private UserControl userController;
-
-	private JwtBearerTokenAuthenticationConverter bearerConverter =
-			new JwtBearerTokenAuthenticationConverter();
 
 	private static final String DUMMY_USER = "user1";
 
@@ -251,23 +246,19 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 								+ user.getAttribute(PREFERRED_USERNAME),
 						user.getAttribute(SUB), new OriginatingCredential(user),
 						auth.getAuthorities());
-			} else if (auth instanceof BearerTokenAuthenticationToken) {
+			} else if (auth instanceof BearerTokenAuthentication) {
 				/*
 				 * Technically, at this point we're already authenticated as
 				 * we've checked that the token from Keycloak is valid. We still
 				 * have to take an authorization decision though.
 				 */
-				var bearer = (BearerTokenAuthenticationToken) auth;
-				var token = bearer.getToken();
-				var jwt = Jwt.withTokenValue(token);
-				var bearerAuth = (BearerTokenAuthentication)
-						bearerConverter.convert(jwt.build());
+				var bearerAuth = (BearerTokenAuthentication) auth;
+				var token = bearerAuth.getToken();
 				return authorizeOpenId(
 						authProps.getOpenid().getUsernamePrefix()
 								+ bearerAuth.getTokenAttributes().get(
 										PREFERRED_USERNAME),
-						bearerAuth.getName(), new OriginatingCredential(
-								bearerAuth.getToken()),
+						bearerAuth.getName(), new OriginatingCredential(token),
 						auth.getAuthorities());
 			} else {
 				return null;
