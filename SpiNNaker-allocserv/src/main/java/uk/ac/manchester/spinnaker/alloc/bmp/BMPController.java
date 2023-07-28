@@ -955,6 +955,9 @@ public class BMPController extends DatabaseAwareBean {
 		 */
 		public synchronized void run() {
 			log.trace("Searching for changes on BMP {}", bmpId);
+
+			boolean updateBlacklistEpoch = false;
+
 			try (var c = getConnection();
 					var getRequests = c.query(GET_CHANGES);
 					var getBlacklistReads = c.query(GET_BLACKLIST_READS);
@@ -976,8 +979,9 @@ public class BMPController extends DatabaseAwareBean {
 					if (!jobChanges.isEmpty()) {
 						log.debug("Running job changes {}", jobChanges);
 						changed = true;
-						processPower(new PowerRequest(bmpId, change.jobId,
-								change.from, change.to, jobChanges));
+						processPower(new PowerRequest(bmpId,
+								change.jobId, change.from, change.to,
+								jobChanges));
 					}
 				}
 
@@ -986,7 +990,7 @@ public class BMPController extends DatabaseAwareBean {
 					for (var change : getBlacklistReads.call(
 							row -> new BlacklistRequest(bmpId, READ, row),
 							bmpId)) {
-						processBlacklist(change);
+						updateBlacklistEpoch = processBlacklist(change);
 						changed = true;
 					}
 				}
@@ -994,7 +998,7 @@ public class BMPController extends DatabaseAwareBean {
 					for (var change : getBlacklistWrites.call(
 							row -> new BlacklistRequest(bmpId, WRITE, row),
 							bmpId)) {
-						processBlacklist(change);
+						updateBlacklistEpoch = processBlacklist(change);
 						changed = true;
 					}
 				}
@@ -1002,18 +1006,23 @@ public class BMPController extends DatabaseAwareBean {
 					for (var change : getReadSerialInfos.call(
 							row -> new BlacklistRequest(bmpId, GET_SERIAL, row),
 							bmpId)) {
-						processBlacklist(change);
+						updateBlacklistEpoch = processBlacklist(change);
 						changed = true;
 					}
 				}
 			} catch (Exception e) {
 				log.error("unhandled exception for BMP '{}'", bmpId, e);
 			}
+
+			if (updateBlacklistEpoch) {
+				epochs.nextBlacklistEpoch();
+				epochs.nextMachineEpoch();
+			}
 		}
 
-		private void processPower(PowerRequest request) {
+		private boolean processPower(PowerRequest request) {
 			try (var c = getConnection()) {
-				var ok = c.transaction(() -> {
+				boolean ok = c.transaction(() -> {
 					while (request.isRepeat()) {
 						try {
 							if (request.tryChangePowerState(control, c)) {
@@ -1036,15 +1045,13 @@ public class BMPController extends DatabaseAwareBean {
 				if (request.resetJobAlloc) {
 					allocator.resetPowerOnFailure(request.jobId);
 				}
-				if (ok) {
-					epochs.nextJobsEpoch();
-				}
+				return ok;
 			}
 		}
 
-		private void processBlacklist(BlacklistRequest request) {
+		private boolean processBlacklist(BlacklistRequest request) {
 			try (Connection c = getConnection()) {
-				var ok = c.transaction(() -> {
+				return c.transaction(() -> {
 					while (request.isRepeat()) {
 						try {
 							if (request.perform(control, c)) {
@@ -1059,10 +1066,6 @@ public class BMPController extends DatabaseAwareBean {
 					}
 					return false;
 				});
-				if (ok) {
-					epochs.nextBlacklistEpoch();
-					epochs.nextMachineEpoch();
-				}
 			}
 		}
 	}
