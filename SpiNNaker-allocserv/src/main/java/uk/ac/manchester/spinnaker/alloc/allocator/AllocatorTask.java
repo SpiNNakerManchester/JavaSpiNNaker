@@ -158,33 +158,44 @@ public class AllocatorTask extends DatabaseAwareBean
 
 	private void updateJobNow(int jobId, JobState sourceState,
 			JobState targetState) {
-		try (var c = getConnection();
-				var getNTasks = c.query(COUNT_CHANGES_FOR_JOB);
-				var setJobState = c.update(SET_STATE_PENDING)) {
-
-			var jobChanged = c.transaction(() -> {
-
-				// Count pending changes for this state change
-				var n = getNTasks.call1(row -> row.getInteger("n_changes"),
-						jobId, sourceState, targetState).orElseThrow(
-								() -> new RuntimeException(
-										"Error counting job tasks"));
-
-				log.debug("Job {} has {} changes remaining", jobId, n);
-
-				// If there are no more pending changes, set the job state to
-				// the target state
-				if (n == 0) {
-					log.debug("Job {} moving to state {}", jobId, targetState);
-					setJobState.call(targetState, 0, jobId);
-					return true;
-				}
-				return false;
-			});
-
-			if (jobChanged) {
+		try {
+			var updated = execute(
+					conn -> update(jobId, sourceState, targetState, conn));
+			if (updated) {
+				log.debug("advancing job epoch");
 				epochs.nextJobsEpoch();
 			}
+		} catch (DataAccessException e) {
+			if (isBusy(e)) {
+				log.info("database is busy; "
+						+ "will try allocation processing later");
+				return;
+			}
+			throw e;
+		}
+	}
+
+	private boolean update(int jobId, JobState sourceState,
+			JobState targetState, Connection c) {
+		try (var getNTasks = c.query(COUNT_CHANGES_FOR_JOB);
+				var setJobState = c.update(SET_STATE_PENDING)) {
+
+			// Count pending changes for this state change
+			var n = getNTasks.call1(row -> row.getInteger("n_changes"),
+					jobId, sourceState, targetState).orElseThrow(
+							() -> new RuntimeException(
+									"Error counting job tasks"));
+
+			log.debug("Job {} has {} changes remaining", jobId, n);
+
+			// If there are no more pending changes, set the job state to
+			// the target state
+			if (n == 0) {
+				log.debug("Job {} moving to state {}", jobId, targetState);
+				setJobState.call(targetState, 0, jobId);
+				return true;
+			}
+			return false;
 		}
 	}
 
