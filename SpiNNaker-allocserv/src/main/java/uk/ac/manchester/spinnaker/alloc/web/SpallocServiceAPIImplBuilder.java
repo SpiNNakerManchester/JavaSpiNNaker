@@ -179,7 +179,8 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 			@Override
 			public void getState(boolean wait, AsyncResponse response) {
 				if (wait) {
-					bgAction(response, permit, () -> {
+
+					fgAction(response, () -> permit.authorize(() -> {
 						log.debug("starting wait for change of job");
 						j.waitForChange(props.getWait());
 						// Refresh the handle
@@ -187,7 +188,7 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 								.orElseThrow(() -> new ItsGone("no such job"));
 						log.debug("job state now {}", nj.getState());
 						return new JobStateResponse(nj, ui, mapper, sp);
-					});
+					}));
 				} else {
 					fgAction(response, () -> new JobStateResponse(j, ui, mapper,
 							sp));
