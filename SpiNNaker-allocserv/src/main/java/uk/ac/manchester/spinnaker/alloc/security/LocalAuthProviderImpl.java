@@ -32,11 +32,9 @@ import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 import static uk.ac.manchester.spinnaker.utils.OptionalUtils.ifElse;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -80,7 +78,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.errorprone.annotations.Immutable;
 import com.google.errorprone.annotations.RestrictedApi;
-import com.nimbusds.jwt.JWTParser;
 
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
@@ -262,12 +259,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				 */
 				var bearer = (BearerTokenAuthenticationToken) auth;
 				var token = bearer.getToken();
-				var jwtToken = JWTParser.parse(token);
-				var headers = jwtToken.getHeader().toJSONObject();
-				var claims = jwtToken.getJWTClaimsSet().getClaims();
-				var jwt = Jwt.withTokenValue(token)
-						.headers(h -> h.putAll(headers))
-						.claims(c -> c.putAll(claims));
+				var jwt = Jwt.withTokenValue(token);
 				var bearerAuth = (BearerTokenAuthentication)
 						bearerConverter.convert(jwt.build());
 				return authorizeOpenId(
@@ -283,9 +275,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		} catch (DataAccessException e) {
 			throw new InternalAuthenticationServiceException(
 					"database access problem", e);
-		} catch (ParseException e) {
-			throw new InternalAuthenticationServiceException(
-					"error parsing bearer token", e);
 		}
 	}
 
