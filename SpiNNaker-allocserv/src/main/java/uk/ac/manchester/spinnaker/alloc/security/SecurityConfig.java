@@ -49,6 +49,7 @@ import org.springframework.context.annotation.Role;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
+import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -357,6 +358,7 @@ public class SecurityConfig {
 		private Map<String, Object> userinfo(String token) {
 			var headers = new HttpHeaders();
 			headers.setAccept(List.of(APPLICATION_JSON));
+			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 			var fp = Map.of(ACCESS_TOKEN, List.of(token));
 			var request = new RequestEntity<>(new LinkedMultiValueMap<>(fp),
 					headers, POST, URI.create(userInfoUri));
