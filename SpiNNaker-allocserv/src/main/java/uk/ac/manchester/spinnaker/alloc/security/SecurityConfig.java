@@ -37,8 +37,10 @@ import java.util.Map;
 
 import javax.net.ssl.X509TrustManager;
 
+import org.hobsoft.spring.resttemplatelogger.LoggingCustomizer;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.ParameterizedTypeReference;
@@ -355,7 +357,9 @@ public class SecurityConfig {
 			var request = new RequestEntity<>(new LinkedMultiValueMap<>(fp),
 					headers, POST, URI.create(userInfoUri));
 
-			var restTemplate = new RestTemplate();
+			var restTemplate = new RestTemplateBuilder()
+					.customizers(new LoggingCustomizer())
+					.build();
 			restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
 			var response =
 					restTemplate.exchange(request, PARAMETERIZED_RESPONSE_TYPE);
