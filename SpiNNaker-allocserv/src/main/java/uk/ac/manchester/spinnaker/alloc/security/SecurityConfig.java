@@ -378,7 +378,7 @@ public class SecurityConfig {
 	}
 
 	// Used to avoid outputting the charset, which breaks the server!
-	private class SimpleMediaType extends MediaType {
+	private final class SimpleMediaType extends MediaType {
 
 		private static final long serialVersionUID = 1L;
 
