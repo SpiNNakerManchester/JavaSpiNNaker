@@ -358,10 +358,9 @@ public class SecurityConfig {
 		}
 
 		private Map<String, Object> userinfo(String token) {
-			var headers = new HttpHeaders();
-			headers.setAccept(List.of(APPLICATION_JSON));
-			headers.setContentType(new SimpleMediaType(
+			var headers = new SimpleHttpHeaders(new SimpleMediaType(
 					MediaType.APPLICATION_FORM_URLENCODED));
+			headers.setAccept(List.of(APPLICATION_JSON));
 			var fp = Map.of(ACCESS_TOKEN, List.of(token));
 			var request = new RequestEntity<>(new LinkedMultiValueMap<>(fp),
 					headers, POST, URI.create(userInfoUri));
@@ -377,9 +376,32 @@ public class SecurityConfig {
 		}
 	}
 
+	// Used to ensure content type doesn't get a charset, which breaks the
+	// server!
+	private final class SimpleHttpHeaders extends HttpHeaders {
+		private static final long serialVersionUID = 1L;
+
+		private MediaType contentType;
+
+		private SimpleHttpHeaders(SimpleMediaType contentType) {
+			this.contentType = contentType;
+			super.setContentType(contentType);
+		}
+
+		@Override
+		public MediaType getContentType() {
+			return contentType;
+		}
+
+		@Override
+		public void setContentType(MediaType mediaType) {
+			this.contentType = mediaType;
+			super.setContentType(mediaType);
+		}
+	}
+
 	// Used to avoid outputting the charset, which breaks the server!
 	private final class SimpleMediaType extends MediaType {
-
 		private static final long serialVersionUID = 1L;
 
 		private SimpleMediaType(MediaType type) {
