@@ -386,7 +386,6 @@ public class SecurityConfig {
 		public String formatRequest(HttpRequest request, byte[] body) {
 			return String.format(
 					"%s Request to %s:\n"
-					+ "    URI: %s\n"
 					+ "    Headers: %s\n"
 					+ "    Body: %s",
 					request.getMethod(), request.getURI(), request.getHeaders(),
