@@ -358,7 +358,8 @@ public class SecurityConfig {
 		private Map<String, Object> userinfo(String token) {
 			var headers = new HttpHeaders();
 			headers.setAccept(List.of(APPLICATION_JSON));
-			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+			headers.setContentType(new SimpleMediaType(
+					MediaType.APPLICATION_FORM_URLENCODED));
 			var fp = Map.of(ACCESS_TOKEN, List.of(token));
 			var request = new RequestEntity<>(new LinkedMultiValueMap<>(fp),
 					headers, POST, URI.create(userInfoUri));
@@ -372,6 +373,22 @@ public class SecurityConfig {
 
 			return response.getBody();
 		}
+	}
+
+	// Used to avoid outputting the charset, which breaks the server!
+	private class SimpleMediaType extends MediaType {
+
+		private static final long serialVersionUID = 1L;
+
+		private SimpleMediaType(MediaType type) {
+			super(type);
+		}
+
+		@Override
+		public String toString() {
+			return getType() + '/' + getSubtype();
+		}
+
 	}
 
 	private class Formatter implements LogFormatter {
