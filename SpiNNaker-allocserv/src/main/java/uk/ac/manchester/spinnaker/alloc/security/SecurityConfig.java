@@ -19,9 +19,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLICATION;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.security.oauth2.core.OAuth2AccessToken.TokenType.BEARER;
 import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.ACCESS_TOKEN;
 import static uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter.clearToken;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.installInjectableTrustStoreAsDefault;
@@ -45,7 +43,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -56,7 +53,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.oauth2.client.http.OAuth2ErrorResponseErrorHandler;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
@@ -112,9 +108,6 @@ public class SecurityConfig {
 			Map<String, Object>> PARAMETERIZED_RESPONSE_TYPE =
 					new ParameterizedTypeReference<>() {
 					};
-
-	private static final MediaType DEFAULT_CONTENT_TYPE = MediaType
-			.valueOf(APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
 
 	/**
 	 * How to assert that a user must be able to make jobs and read job details
@@ -345,8 +338,7 @@ public class SecurityConfig {
 			Instant issuedAt = authorized.getAttribute("issued-at");
 			Instant expiresAt = authorized.getAttribute("expires-at");
 
-			var userAttributes = userinfo(
-					new OAuth2AccessToken(BEARER, token, issuedAt, expiresAt));
+			var userAttributes = userinfo(token);
 			var authorities = new LinkedHashSet<GrantedAuthority>();
 			var auth = new OidcUserAuthority(
 					new OidcIdToken(token, issuedAt, expiresAt, userAttributes),
@@ -356,11 +348,10 @@ public class SecurityConfig {
 					"preferred_username");
 		}
 
-		private Map<String, Object> userinfo(OAuth2AccessToken reqtoken) {
+		private Map<String, Object> userinfo(String token) {
 			var headers = new HttpHeaders();
 			headers.setAccept(List.of(APPLICATION_JSON));
-			headers.setContentType(DEFAULT_CONTENT_TYPE);
-			var fp = Map.of(ACCESS_TOKEN, List.of(reqtoken.getTokenValue()));
+			var fp = Map.of(ACCESS_TOKEN, List.of(token));
 			var request = new RequestEntity<>(new LinkedMultiValueMap<>(fp),
 					headers, POST, URI.create(userInfoUri));
 
