@@ -29,8 +29,6 @@ import static uk.ac.manchester.spinnaker.alloc.security.Utils.trustManager;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.Collection;
@@ -75,7 +73,6 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.util.LinkedMultiValueMap;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
@@ -358,11 +355,10 @@ public class SecurityConfig {
 		}
 
 		private Map<String, Object> userinfo(String token) {
-			var headers = new SimpleHttpHeaders(new SimpleMediaType(
-					MediaType.APPLICATION_FORM_URLENCODED));
+			var headers = new HttpHeaders();
 			headers.setAccept(List.of(APPLICATION_JSON));
-			var fp = Map.of(ACCESS_TOKEN, List.of(token));
-			var request = new RequestEntity<>(new LinkedMultiValueMap<>(fp),
+			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+			var request = new RequestEntity<>(ACCESS_TOKEN + "=" + token,
 					headers, POST, URI.create(userInfoUri));
 
 			var restLog = LogFactory.getLog(LoggingCustomizer.class);
@@ -374,57 +370,6 @@ public class SecurityConfig {
 
 			return response.getBody();
 		}
-	}
-
-	// Used to ensure content type doesn't get a charset, which breaks the
-	// server!
-	private final class SimpleHttpHeaders extends HttpHeaders {
-		private static final long serialVersionUID = 1L;
-
-		private MediaType contentType;
-
-		private SimpleHttpHeaders(SimpleMediaType contentType) {
-			this.contentType = contentType;
-			super.setContentType(contentType);
-		}
-
-		@Override
-		public MediaType getContentType() {
-			return contentType;
-		}
-
-		@Override
-		public void setContentType(MediaType mediaType) {
-			this.contentType = mediaType;
-			super.setContentType(mediaType);
-		}
-	}
-
-	// Used to avoid outputting the charset, which breaks the server!
-	private final class SimpleMediaType extends MediaType {
-		private static final long serialVersionUID = 1L;
-
-		private SimpleMediaType(MediaType type) {
-			super(type, StandardCharsets.UTF_8);
-		}
-
-		@Override
-		public String toString() {
-			System.err.println("Getting content type from:");
-			Exception e = new Exception("");
-			e.printStackTrace();
-
-			return getType() + '/' + getSubtype();
-		}
-
-		@Override
-		public Charset getCharset() {
-			System.err.println("Getting charset from:");
-			Exception e = new Exception("");
-			e.printStackTrace();
-			return StandardCharsets.UTF_8;
-		}
-
 	}
 
 	private class Formatter implements LogFormatter {
