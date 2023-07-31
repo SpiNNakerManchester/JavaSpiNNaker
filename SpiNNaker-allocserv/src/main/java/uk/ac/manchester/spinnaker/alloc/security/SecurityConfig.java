@@ -29,6 +29,7 @@ import static uk.ac.manchester.spinnaker.alloc.security.Utils.trustManager;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.Collection;
@@ -381,7 +382,7 @@ public class SecurityConfig {
 		private static final long serialVersionUID = 1L;
 
 		private SimpleMediaType(MediaType type) {
-			super(type);
+			super(type, StandardCharsets.UTF_8);
 		}
 
 		@Override
