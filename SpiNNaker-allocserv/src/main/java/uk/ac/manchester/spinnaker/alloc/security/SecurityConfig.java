@@ -21,6 +21,7 @@ import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPO
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.ACCESS_TOKEN;
+import static org.springframework.util.StreamUtils.copyToByteArray;
 import static uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter.clearToken;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.installInjectableTrustStoreAsDefault;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.loadTrustStore;
@@ -37,6 +38,8 @@ import java.util.Map;
 
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.logging.LogFactory;
+import org.hobsoft.spring.resttemplatelogger.LogFormatter;
 import org.hobsoft.spring.resttemplatelogger.LoggingCustomizer;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +48,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.RequestEntity;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -68,7 +73,6 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
@@ -357,14 +361,36 @@ public class SecurityConfig {
 			var request = new RequestEntity<>(new LinkedMultiValueMap<>(fp),
 					headers, POST, URI.create(userInfoUri));
 
-			var restTemplate = new RestTemplateBuilder()
-					.customizers(new LoggingCustomizer())
-					.build();
+			var restLog = LogFactory.getLog(LoggingCustomizer.class);
+			var restTemplate = new RestTemplateBuilder().customizers(
+					new LoggingCustomizer(restLog, new Formatter())).build();
 			restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
 			var response =
 					restTemplate.exchange(request, PARAMETERIZED_RESPONSE_TYPE);
 
 			return response.getBody();
+		}
+	}
+
+	private class Formatter implements LogFormatter {
+
+		@Override
+		public String formatResponse(ClientHttpResponse response)
+				throws IOException {
+			return String.format("Response:\n    Headers: %s\n    Body: %s",
+					response.getHeaders(),
+					new String(copyToByteArray(response.getBody())));
+		}
+
+		@Override
+		public String formatRequest(HttpRequest request, byte[] body) {
+			return String.format(
+					"%s Request to %s:\n"
+					+ "    URI: %s\n"
+					+ "    Headers: %s\n"
+					+ "    Body: %s",
+					request.getMethod(), request.getURI(), request.getHeaders(),
+					new String(body));
 		}
 	}
 
