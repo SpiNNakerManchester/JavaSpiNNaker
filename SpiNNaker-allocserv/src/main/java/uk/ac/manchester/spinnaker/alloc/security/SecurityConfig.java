@@ -29,6 +29,7 @@ import static uk.ac.manchester.spinnaker.alloc.security.Utils.trustManager;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
@@ -388,6 +389,11 @@ public class SecurityConfig {
 		@Override
 		public String toString() {
 			return getType() + '/' + getSubtype();
+		}
+
+		@Override
+		public Charset getCharset() {
+			return StandardCharsets.UTF_8;
 		}
 
 	}
