@@ -388,9 +388,8 @@ public class SecurityConfig {
 
 		@Override
 		public String toString() {
-			System.err.println("Getting content type from " + Thread.currentThread().getStackTrace());
-
-			Exception e = new Exception();
+			System.err.println("Getting content type from:");
+			Exception e = new Exception("");
 			e.printStackTrace();
 
 			return getType() + '/' + getSubtype();
@@ -398,6 +397,9 @@ public class SecurityConfig {
 
 		@Override
 		public Charset getCharset() {
+			System.err.println("Getting charset from:");
+			Exception e = new Exception("");
+			e.printStackTrace();
 			return StandardCharsets.UTF_8;
 		}
 
