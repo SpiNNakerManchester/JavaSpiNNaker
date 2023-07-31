@@ -388,6 +388,11 @@ public class SecurityConfig {
 
 		@Override
 		public String toString() {
+			System.err.println("Getting content type from " + Thread.currentThread().getStackTrace());
+
+			Exception e = new Exception();
+			e.printStackTrace();
+
 			return getType() + '/' + getSubtype();
 		}
 
