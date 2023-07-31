@@ -1,0 +1,11 @@
+uk.ac.manchester.spinnaker.nmpi
+uk.ac.manchester.spinnaker.nmpi.jobmanager
+uk.ac.manchester.spinnaker.nmpi.machinemanager
+uk.ac.manchester.spinnaker.nmpi.machinemanager.commands
+uk.ac.manchester.spinnaker.nmpi.machinemanager.responses
+uk.ac.manchester.spinnaker.nmpi.model
+uk.ac.manchester.spinnaker.nmpi.nmpi
+uk.ac.manchester.spinnaker.nmpi.rest
+uk.ac.manchester.spinnaker.nmpi.rest.utils
+uk.ac.manchester.spinnaker.nmpi.status
+uk.ac.manchester.spinnaker.nmpi.web
