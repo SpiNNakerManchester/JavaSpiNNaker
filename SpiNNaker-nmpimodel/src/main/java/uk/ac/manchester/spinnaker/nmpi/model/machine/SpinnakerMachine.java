@@ -313,14 +313,10 @@ public class SpinnakerMachine
 	 */
 	@Override
 	public boolean equals(final Object o) {
-		if (o instanceof SpinnakerMachine) {
-			// TODO Is this the right way to determine equality?
-			final var m = (SpinnakerMachine) o;
-			return Objects.equals(machineName, m.machineName)
-					&& Objects.equals(version, m.version);
-		} else {
-			return false;
-		}
+		// TODO Is this the right way to determine equality?
+		return (o instanceof SpinnakerMachine m)
+				&& Objects.equals(machineName, m.machineName)
+				&& Objects.equals(version, m.version);
 	}
 
 	/** Null-safe string comparator. */

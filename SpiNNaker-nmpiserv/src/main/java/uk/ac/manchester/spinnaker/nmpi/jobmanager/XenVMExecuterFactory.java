@@ -47,7 +47,7 @@ import com.xensource.xenapi.VM;
 /**
  * Executer factory that uses Xen VMs.
  */
-public class XenVMExecuterFactory implements JobExecuterFactory {
+public final class XenVMExecuterFactory implements JobExecuterFactory {
 
 	/** Bytes in a gigabyte. Well, a gibibyte, but that's a nasty word. */
 	private static final long GB = 1024L * 1024L * 1024L;
@@ -440,7 +440,7 @@ public class XenVMExecuterFactory implements JobExecuterFactory {
 	/**
 	 * The executer core connector.
 	 */
-	protected class Executer implements JobExecuter {
+	protected final class Executer implements JobExecuter {
 		// Parameters from constructor
 		/**
 		 * The Job Manager to report to.

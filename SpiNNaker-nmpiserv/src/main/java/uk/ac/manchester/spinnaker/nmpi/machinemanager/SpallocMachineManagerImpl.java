@@ -81,7 +81,7 @@ import uk.ac.manchester.spinnaker.nmpi.rest.utils.PropertyBasedDeserialiser;
 /**
  * A machine manager that interfaces to the spalloc service.
  */
-public class SpallocMachineManagerImpl implements MachineManager {
+public final class SpallocMachineManagerImpl implements MachineManager {
 
 	/**
 	 * The default version of a machine.
@@ -303,17 +303,14 @@ public class SpallocMachineManagerImpl implements MachineManager {
 			} catch (final InterruptedException e) {
 				return null;
 			}
-			if (response instanceof ExceptionResponse) {
-				throw new IOException(
-						((ExceptionResponse) response).getException());
+			if (response instanceof ExceptionResponse er) {
+				throw new IOException(er.getException());
 			}
-			if (response instanceof ReturnResponse) {
+			if (response instanceof ReturnResponse rr) {
 				if (isNull(responseType)) {
 					return null;
 				}
-				return mapper.readValue(
-						((ReturnResponse) response).getReturnValue(),
-						responseType);
+				return mapper.readValue(rr.getReturnValue(), responseType);
 			}
 			// Should never happen!
 			throw new IOException("Unknown Response " + response);
@@ -366,8 +363,8 @@ public class SpallocMachineManagerImpl implements MachineManager {
 			if (response instanceof ReturnResponse
 					|| response instanceof ExceptionResponse) {
 				responses.offer(response);
-			} else if (response instanceof JobsChangedResponse) {
-				notifications.offer((JobsChangedResponse) response);
+			} else if (response instanceof JobsChangedResponse jc) {
+				notifications.offer(jc);
 			} else {
 				logger.error("Unrecognized response: {}", response);
 			}
@@ -628,12 +625,12 @@ public class SpallocMachineManagerImpl implements MachineManager {
 
 		@Override
 		public int hashCode() {
-			return id | MAGIC;
+			return id ^ MAGIC;
 		}
 
 		@Override
 		public boolean equals(final Object o) {
-			return (o instanceof SpallocJob) && (((SpallocJob) o).id == id);
+			return (o instanceof SpallocJob job) && (job.id == id);
 		}
 	}
 

@@ -39,7 +39,7 @@ import uk.ac.manchester.spinnaker.nmpi.rest.DockerInspectResponse;
 /**
  * Executor factory that uses Docker to run jobs.
  */
-public class DockerExecutorFactory implements JobExecuterFactory {
+public final class DockerExecutorFactory implements JobExecuterFactory {
 
 	/**
 	 * Time to wait between docker inspects while waiting for finish.
@@ -166,7 +166,7 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 				throws IOException {
 			this.manager = jobManager;
 			uuid = randomUUID().toString();
-			URL jobProcessManagerUrl =
+			var jobProcessManagerUrl =
 					new URL(baseUrl, "job/" + JOB_PROCESS_MANAGER);
 			args.add(jobProcessManagerUrl.toString());
 			args.add("-jar");

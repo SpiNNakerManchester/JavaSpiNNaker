@@ -24,7 +24,9 @@ import uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine;
 /**
  * A service for managing SpiNNaker boards in a machine.
  */
-public interface MachineManager extends AutoCloseable {
+public sealed interface MachineManager extends AutoCloseable
+		permits FixedMachineManagerImpl, SpallocJavaMachineManagerImpl,
+		SpallocMachineManagerImpl {
 
 	/**
 	 * Gets the machines that this manager allocates from.

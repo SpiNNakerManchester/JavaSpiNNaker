@@ -39,7 +39,7 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.pynn.PyNNJobParameters;
  * file. The URL must refer to a world-readable URL or the credentials must be
  * present in the URL.
  */
-class ZipPyNNJobParametersFactory extends JobParametersFactory {
+final class ZipPyNNJobParametersFactory extends JobParametersFactory {
 	@Override
 	public JobParameters getJobParameters(final Job job,
 			final File workingDirectory, final String setupScript)

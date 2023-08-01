@@ -16,6 +16,8 @@
 package uk.ac.manchester.spinnaker.nmpiexec.utils;
 
 import static java.io.File.createTempFile;
+import static java.net.HttpURLConnection.HTTP_MOVED_PERM;
+import static java.net.HttpURLConnection.HTTP_MOVED_TEMP;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.copy;
 import static java.util.Objects.isNull;
@@ -36,6 +38,9 @@ import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
  * Utilities for downloading a file.
  */
 public abstract class FileDownloader {
+	/** Max number of HTTP redirects to follow. */
+	private static final int REDIRECT_LIMIT = 5;
+
 	/**
 	 * Stops instantiation.
 	 */
@@ -73,8 +78,8 @@ public abstract class FileDownloader {
 		urlConnection.setDoInput(true);
 
 		urlConnection.setRequestProperty("Accept", "*/*");
-		if (nonNull(userInfo) && urlConnection instanceof HttpURLConnection) {
-			var httpConnection = (HttpURLConnection) urlConnection;
+		if (nonNull(userInfo)
+				&& urlConnection instanceof HttpURLConnection httpConnection) {
 			var basicAuth = "Basic " + Base64.encodeBase64URLSafeString(
 				userInfo.getBytes(UTF_8));
 			httpConnection.setRequestProperty("Authorization", basicAuth);
@@ -107,26 +112,28 @@ public abstract class FileDownloader {
 			userInfo = URLDecoder.decode(url.getUserInfo(), UTF_8);
 		}
 		var urlConnection = createConnectionWithAuth(url, userInfo);
+		int redirectCount = 0;
 
 		if (urlConnection instanceof HttpURLConnection) {
-			boolean redirect = false;
+			boolean redirect;
 			do {
-				redirect = false;
 				var httpConnection = (HttpURLConnection) urlConnection;
 				httpConnection.connect();
 				int responseCode = httpConnection.getResponseCode();
-				if (responseCode == HttpURLConnection.HTTP_MOVED_TEMP
-						|| responseCode == HttpURLConnection.HTTP_MOVED_PERM) {
+				switch (responseCode) {
+				case HTTP_MOVED_TEMP, HTTP_MOVED_PERM:
 					var location = httpConnection.getHeaderField("Location");
 					if (isNull(location)) {
 						location = url.toString();
 					}
-					urlConnection = createConnectionWithAuth(
-						new URL(location), userInfo);
+					urlConnection = createConnectionWithAuth(new URL(location),
+							userInfo);
 					redirect = true;
-
+					break;
+				default:
+					redirect = false;
 				}
-			} while (redirect);
+			} while (redirect && redirectCount++ < REDIRECT_LIMIT);
 		}
 
 		// Work out the output filename

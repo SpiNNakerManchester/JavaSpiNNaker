@@ -19,7 +19,7 @@ package uk.ac.manchester.spinnaker.nmpi.machinemanager.commands;
  * Request to get the location of a chip in a job's allocation relative to a
  * machine.
  */
-public class WhereIsCommand extends Command<Integer> {
+public final class WhereIsCommand extends Command<Integer> {
 	/**
 	 * Create a request to locate a chip within a job's allocation.
 	 *

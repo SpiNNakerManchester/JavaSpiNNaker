@@ -326,8 +326,8 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 			for (var entry: hardwareConfig.entrySet()) {
 				String stringValue = null;
 				var value = entry.getValue();
-				if (value instanceof String) {
-					stringValue = (String) value;
+				if (value instanceof String sv) {
+					stringValue = sv;
 				} else {
 					stringValue = mapper.writeValueAsString(value);
 				}

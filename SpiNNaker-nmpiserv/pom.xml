@@ -49,26 +49,26 @@ limitations under the License.
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<configuration>
-					<artifactItems>
-						<artifactItem>
-							<groupId>${project.groupId}</groupId>
-							<artifactId>SpiNNaker-nmpiexec</artifactId>
-							<version>${project.version}</version>
-							<type>jar</type>
-						</artifactItem>
-					</artifactItems>
-					<stripVersion>true</stripVersion>
-					<outputDirectory>${project.build.outputDirectory}</outputDirectory>
-					<overWriteReleases>true</overWriteReleases>
-					<overWriteSnapshots>true</overWriteSnapshots>
-				</configuration>
 				<executions>
 					<execution>
 						<phase>prepare-package</phase>
 						<goals>
 							<goal>copy</goal>
 						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>SpiNNaker-nmpiexec</artifactId>
+									<version>${project.version}</version>
+									<type>jar</type>
+								</artifactItem>
+							</artifactItems>
+							<stripVersion>true</stripVersion>
+							<outputDirectory>${project.build.outputDirectory}</outputDirectory>
+							<overWriteReleases>true</overWriteReleases>
+							<overWriteSnapshots>true</overWriteSnapshots>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -222,6 +222,10 @@ limitations under the License.
 	</dependencyManagement>
 
 	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>SpiNNaker-machine</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>SpiNNaker-nmpiexec</artifactId>

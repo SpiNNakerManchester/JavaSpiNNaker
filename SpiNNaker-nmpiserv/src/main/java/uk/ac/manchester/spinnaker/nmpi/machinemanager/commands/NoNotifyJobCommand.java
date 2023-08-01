@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.nmpi.machinemanager.commands;
 /**
  * Request to not receive notifications about a job.
  */
-public class NoNotifyJobCommand extends Command<Integer> {
+public final class NoNotifyJobCommand extends Command<Integer> {
 	/**
 	 * Create a request to not be notified of changes in job state.
 	 *

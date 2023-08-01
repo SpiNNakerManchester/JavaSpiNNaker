@@ -597,8 +597,8 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 				}
 
 				// If the item is an ObjectNode, go to the next item
-				if (subNode instanceof ObjectNode) {
-					current = (ObjectNode) subNode;
+				if (subNode instanceof ObjectNode sn) {
+					current = sn;
 
 				// If the item exists and is not an ObjectNode, this is an
 				// error as a non-object can't contain values

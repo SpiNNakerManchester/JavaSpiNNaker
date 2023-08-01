@@ -21,10 +21,12 @@ import java.net.URL;
 /**
  * A factory for creating job executers.
  *
+ * @see DockerExecutorFactory
  * @see LocalJobExecuterFactory
  * @see XenVMExecuterFactory
  */
-public interface JobExecuterFactory {
+public sealed interface JobExecuterFactory permits DockerExecutorFactory,
+		LocalJobExecuterFactory, XenVMExecuterFactory {
 	/**
 	 * Creates a new {@link JobExecuter}.
 	 *

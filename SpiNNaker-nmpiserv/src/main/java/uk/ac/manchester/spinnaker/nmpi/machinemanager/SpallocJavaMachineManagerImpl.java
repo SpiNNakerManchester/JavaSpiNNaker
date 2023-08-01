@@ -37,7 +37,7 @@ import uk.ac.manchester.spinnaker.alloc.client.SpallocClientFactory;
 import uk.ac.manchester.spinnaker.alloc.client.State;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
-public class SpallocJavaMachineManagerImpl implements MachineManager {
+public final class SpallocJavaMachineManagerImpl implements MachineManager {
 
 	/**
 	 * The version to use for the boards.
@@ -55,7 +55,8 @@ public class SpallocJavaMachineManagerImpl implements MachineManager {
 	private static final String REASON_FINISHED = "Finished";
 
 	/**
-	 * The URI of the spalloc server.
+	 * The URI of the spalloc server. <em>Includes user/password
+	 * credentials.</em>
 	 */
 	@Value("${spalloc.server}")
 	private URI spallocUri;
@@ -78,11 +79,11 @@ public class SpallocJavaMachineManagerImpl implements MachineManager {
 
 	@PostConstruct
 	private void setup() throws IOException {
-		String userInfo = spallocUri.getUserInfo();
+		var userInfo = spallocUri.getUserInfo();
 		int splitPoint = userInfo.indexOf(':');
-		String username = userInfo.substring(0, splitPoint);
-		String password = userInfo.substring(splitPoint + 1);
-		URI spalloc = UriBuilder.fromUri(spallocUri).userInfo(null).build();
+		var username = userInfo.substring(0, splitPoint);
+		var password = userInfo.substring(splitPoint + 1);
+		var spalloc = UriBuilder.fromUri(spallocUri).userInfo(null).build();
 		client = new SpallocClientFactory(spalloc).login(username, password);
 	}
 
@@ -187,7 +188,7 @@ public class SpallocJavaMachineManagerImpl implements MachineManager {
 		try {
 			var whereIs = job.whereIs(new ChipLocation(x, y))
 					.getPhysicalCoords();
-			return new ChipCoordinates(whereIs.c, whereIs.f, whereIs.b);
+			return new ChipCoordinates(whereIs.c(), whereIs.f(), whereIs.b());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

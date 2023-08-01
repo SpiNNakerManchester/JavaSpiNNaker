@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.nmpi.machinemanager.commands;
 /**
  * Request to destroy a job.
  */
-public class DestroyJobCommand extends Command<Integer> {
+public final class DestroyJobCommand extends Command<Integer> {
 	/**
 	 * Make a request to destroy a job.
 	 *

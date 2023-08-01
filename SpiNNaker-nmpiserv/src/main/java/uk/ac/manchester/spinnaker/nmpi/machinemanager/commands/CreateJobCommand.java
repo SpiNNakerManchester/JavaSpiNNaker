@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.nmpi.machinemanager.commands;
 /**
  * Request to create a job.
  */
-public class CreateJobCommand extends Command<Integer> {
+public final class CreateJobCommand extends Command<Integer> {
 	/**
 	 * Create a request to create a job.
 	 *

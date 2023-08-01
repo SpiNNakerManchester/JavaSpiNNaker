@@ -22,8 +22,7 @@ import java.util.List;
 /**
  * A response that describes what jobs have changed state.
  */
-public class JobsChangedResponse implements Response {
-
+public final class JobsChangedResponse implements Response {
 	/**
 	 * The list of jobs that have changed.
 	 */

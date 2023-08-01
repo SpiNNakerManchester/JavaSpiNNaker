@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.nmpi.machinemanager.commands;
 /**
  * Request to turn on the boards associated with a job.
  */
-public class PowerOnJobBoardsCommand extends Command<Integer> {
+public final class PowerOnJobBoardsCommand extends Command<Integer> {
 	/**
 	 * Create a request to turn on a job's allocated boards.
 	 *

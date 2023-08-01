@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.nmpi.machinemanager.commands;
 /**
  * Request the state of a job.
  */
-public class GetJobStateCommand extends Command<Integer> {
+public final class GetJobStateCommand extends Command<Integer> {
 	/**
 	 * Create a request to get the state of a job.
 	 *

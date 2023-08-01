@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.pynn.PyNNJobParameters;
  * A {@link JobParametersFactory} that uses the {@code experimentDescription}
  * itself as a PyNN script.
  */
-class DirectPyNNJobParametersFactory extends JobParametersFactory {
+final class DirectPyNNJobParametersFactory extends JobParametersFactory {
 	@Override
 	public JobParameters getJobParameters(final Job job,
 			final File workingDirectory, final String setupScript)

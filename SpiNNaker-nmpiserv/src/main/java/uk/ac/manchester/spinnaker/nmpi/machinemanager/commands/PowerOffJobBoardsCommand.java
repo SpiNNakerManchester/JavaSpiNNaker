@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.nmpi.machinemanager.commands;
 /**
  * Request to turn off the boards associated with a job.
  */
-public class PowerOffJobBoardsCommand extends Command<Integer> {
+public final class PowerOffJobBoardsCommand extends Command<Integer> {
 	/**
 	 * Create a request to turn off a job's allocated boards.
 	 *

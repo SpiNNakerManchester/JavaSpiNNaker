@@ -36,7 +36,7 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.pynn.PyNNJobParameters;
  * repository must be world-readable, or sufficient credentials must be present
  * in the URL.
  */
-class GitPyNNJobParametersFactory extends JobParametersFactory {
+final class GitPyNNJobParametersFactory extends JobParametersFactory {
 	@Override
 	public JobParameters getJobParameters(final Job job,
 			final File workingDirectory, final String setupScript)

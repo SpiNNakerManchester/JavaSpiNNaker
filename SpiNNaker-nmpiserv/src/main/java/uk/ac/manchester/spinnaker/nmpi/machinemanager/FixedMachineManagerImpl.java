@@ -31,7 +31,7 @@ import uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine;
 /**
  * A manager of directly-connected SpiNNaker machines.
  */
-public class FixedMachineManagerImpl implements MachineManager {
+public final class FixedMachineManagerImpl implements MachineManager {
 	/**
 	 * The queue of available machines.
 	 */

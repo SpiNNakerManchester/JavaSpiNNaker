@@ -172,8 +172,8 @@ public class NMPIQueueManager {
 	private void processResponse(final QueueNextResponse response) {
 		if (response instanceof QueueEmpty) {
 			sleep(EMPTY_QUEUE_SLEEP_MS);
-		} else if (response instanceof Job) {
-			processResponse((Job) response);
+		} else if (response instanceof Job job) {
+			processResponse(job);
 		} else {
 			throw new IllegalStateException();
 		}

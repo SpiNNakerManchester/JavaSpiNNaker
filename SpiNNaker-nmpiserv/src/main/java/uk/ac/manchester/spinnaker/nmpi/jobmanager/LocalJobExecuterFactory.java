@@ -50,7 +50,7 @@ import org.springframework.beans.factory.annotation.Value;
 /**
  * An executer that runs its subprocesses on the local machine.
  */
-public class LocalJobExecuterFactory implements JobExecuterFactory {
+public final class LocalJobExecuterFactory implements JobExecuterFactory {
 
 	/**
 	 * Get the java executable.
@@ -161,7 +161,7 @@ public class LocalJobExecuterFactory implements JobExecuterFactory {
 	/**
 	 * The executer thread.
 	 */
-	protected class Executer implements JobExecuter {
+	protected final class Executer implements JobExecuter {
 
 		/**
 		 * The job manager to report to.

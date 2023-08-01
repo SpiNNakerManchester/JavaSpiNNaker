@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.nmpi.machinemanager.commands;
 /**
  * Request to get notifications about a job.
  */
-public class NotifyJobCommand extends Command<Integer> {
+public final class NotifyJobCommand extends Command<Integer> {
 	/**
 	 * Create a request to be notified of changes in job state.
 	 *
