@@ -233,6 +233,7 @@ public abstract class SQLQueries {
 	@ResultColumn("allocation_size")
 	@ResultColumn("keepalive_host")
 	@ResultColumn("user_name")
+	@ResultColumn("machine_name")
 	protected static final String LIST_LIVE_JOBS =
 			"SELECT job_id, jobs.machine_id, create_timestamp, "
 					+ "keepalive_interval, job_state, allocation_size, "

@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -62,6 +63,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateNumBoards;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.compat.Utils.Notifier;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
+import uk.ac.manchester.spinnaker.alloc.model.JobListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
@@ -206,7 +208,7 @@ class V1TaskImpl extends V1CompatTask {
 		}).orElse(false));
 		js.setReason(job.getReason().orElse(""));
 		js.setStartTime(timestamp(job.getStartTime()));
-		js.setState(state(job));
+		js.setState(state(job.getState()));
 		return js.build();
 	}
 
@@ -345,23 +347,21 @@ class V1TaskImpl extends V1CompatTask {
 		private JobDescription[] listJobs(V1TaskImpl task) {
 			// Messy; hits the database many times
 			return spalloc.listJobs(task.permit).stream()
-					.map(job -> buildJobDescription(task,
-							// NB: convert partial job description to full
-							spalloc.getJob(task.permit, job.getId())
-									.orElseThrow(IllegalStateException::new)))
+					.map(job -> buildJobDescription(task, job))
 					.collect(collectToArray(JobDescription[]::new));
 		}
 
 		private static JobDescription buildJobDescription(V1TaskImpl task,
-				Job job) {
+				JobListEntryRecord job) {
 			var jd = new JobDescription.Builder();
 			jd.setJobID(job.getId());
-			jd.setOwner("");
-			jd.setKeepAlive(timestamp(job.getKeepaliveTimestamp()));
-			jd.setKeepAliveHost(job.getKeepaliveHost().orElse(""));
-			jd.setReason(job.getReason().orElse(""));
-			jd.setStartTime(timestamp(job.getStartTime()));
-			jd.setState(state(job));
+			jd.setOwner(job.getOwner().orElse(""));
+			jd.setKeepAlive(job.getKeepaliveInterval().getSeconds());
+			jd.setKeepAliveHost(job.getHost().orElse(""));
+			jd.setReason("");
+			jd.setStartTime(
+					(double) job.getCreationTimestamp().getEpochSecond());
+			jd.setState(state(job.getState()));
 			job.getOriginalRequest().map(task::parseCommand).ifPresent(cmd -> {
 				// In order to get here, this must be safe
 				// Validation was when job was created
@@ -372,11 +372,11 @@ class V1TaskImpl extends V1CompatTask {
 				// Override shrouded owner from above
 				jd.setOwner(cmd.getKwargs().get("owner").toString());
 			});
-			job.getMachine().ifPresent(sm -> {
-				jd.setMachine(sm.getMachine().getName());
-				jd.setBoards(sm.getBoards());
-				jd.setPower(sm.getPower() == ON);
-			});
+			jd.setMachine(job.getMachineName());
+			jd.setPower(job.isPowered());
+			jd.setBoards(job.getBoards().stream().map(
+					b -> new BoardCoordinates(b.getX(), b.getY(), b.getZ()))
+					.collect(Collectors.toList()));
 			return jd.build();
 		}
 
