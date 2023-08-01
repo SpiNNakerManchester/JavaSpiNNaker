@@ -370,7 +370,10 @@ class V1TaskImpl extends V1CompatTask {
 				jd.setArgs(args);
 				jd.setKwargs(cmd.getKwargs());
 				// Override shrouded owner from above
-				jd.setOwner(cmd.getKwargs().get("owner").toString());
+				Object owner = cmd.getKwargs().get("owner");
+				if (owner != null) {
+					jd.setOwner(owner.toString());
+				}
 			});
 			jd.setMachine(job.getMachineName());
 			jd.setPower(job.isPowered());
