@@ -219,8 +219,8 @@ abstract class Utils {
 	/**
 	 * Convert the state of a job.
 	 *
-	 * @param job
-	 *            The job.
+	 * @param state
+	 *            The job state
 	 * @return The converted state.
 	 */
 	static State state(JobState state) {
