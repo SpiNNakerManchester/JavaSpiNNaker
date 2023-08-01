@@ -16,7 +16,6 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Integer.getInteger;
-import static java.lang.Short.toUnsignedInt;
 import static java.lang.String.format;
 import static java.lang.System.nanoTime;
 import static java.lang.Thread.sleep;
@@ -521,7 +520,7 @@ public class TxrxProcess {
 			/** Payload of request in progress. */
 			private final ByteBuffer requestData;
 
-			private short seq;
+			private int seq;
 
 			/** Callback function for response. */
 			private final Consumer<T> callback;
@@ -723,8 +722,8 @@ public class TxrxProcess {
 				cam.setConnection(connection);
 			}
 			synchronized (outstandingRequests) {
-				int sequence = toUnsignedInt(request.scpRequestHeader
-						.issueSequenceNumber(outstandingRequests.keySet()));
+				int sequence = request.scpRequestHeader
+						.issueSequenceNumber(outstandingRequests.keySet());
 
 				var req = new Request<>(request, callback);
 				log.debug("{}: sending message with sequence {}", this,

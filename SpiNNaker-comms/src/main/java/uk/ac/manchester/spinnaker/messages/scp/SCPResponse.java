@@ -32,7 +32,7 @@ public abstract class SCPResponse {
 	public final SCPResult result;
 
 	/** The sequence number of the SCP response, between 0 and 65535. */
-	public final short sequence;
+	public final int sequence;
 
 	/**
 	 * Reads a packet from a bytestring of data. Subclasses must also
@@ -48,7 +48,7 @@ public abstract class SCPResponse {
 		buffer.getShort(); // SKIP TWO PADDING BYTES
 		sdpHeader = new SDPHeader(buffer, false);
 		result = SCPResult.get(buffer.getShort());
-		sequence = buffer.getShort();
+		sequence = Short.toUnsignedInt(buffer.getShort());
 	}
 
 	/**
