@@ -355,9 +355,9 @@ class V1TaskImpl extends V1CompatTask {
 				JobListEntryRecord job) {
 			var jd = new JobDescription.Builder();
 			jd.setJobID(job.getId());
-			jd.setOwner(job.getOwner().orElse(""));
+			jd.setOwner(job.getOwner().orElse("<Hidden>"));
 			jd.setKeepAlive(job.getKeepaliveInterval().getSeconds());
-			jd.setKeepAliveHost(job.getHost().orElse(""));
+			jd.setKeepAliveHost(job.getHost().orElse("<Hidden>"));
 			jd.setReason("");
 			jd.setStartTime(
 					(double) job.getCreationTimestamp().getEpochSecond());
