@@ -46,7 +46,13 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  * @author Donal Fellows
  */
 public final class CreateJob {
-	private Duration keepaliveInterval;
+
+	/**
+	 * The default keep-alive interval.
+	 */
+	public static final Duration DEFAULT_KEEPALIVE = Duration.ofMinutes(1);
+
+	private Duration keepaliveInterval = DEFAULT_KEEPALIVE;
 
 	@Positive
 	private Integer numBoards;
