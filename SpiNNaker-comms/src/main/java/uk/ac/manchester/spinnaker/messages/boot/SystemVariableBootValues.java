@@ -160,7 +160,7 @@ public final class SystemVariableBootValues implements SerializableMessage {
 		unmodifiable = true;
 	}
 
-	private static class BootValues {
+	private static final class BootValues {
 		private static final SystemVariableBootValues[] MAP;
 
 		/**

@@ -97,7 +97,7 @@ public class OutputManagerImpl implements OutputManager {
 	/**
 	 * A lock token. Initially locked.
 	 */
-	private static class LockToken {
+	private static final class LockToken {
 		/**
 		 * True if the token is locked.
 		 */

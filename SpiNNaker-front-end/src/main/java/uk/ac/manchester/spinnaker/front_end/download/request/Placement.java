@@ -53,7 +53,7 @@ public record Placement(
 	 */
 	public static final TypeReference<List<Placement>> LIST = new TR();
 
-	private static class TR extends TypeReference<List<Placement>> {
+	private static final class TR extends TypeReference<List<Placement>> {
 	}
 
 	@Override

@@ -315,7 +315,7 @@ public final class SDPHeader implements SerializableMessage {
 	}
 
 	/** The meanings of individual flag bits in {@link SDPHeader.Flag}. */
-	private static class SCAMP {
+	private static final class SCAMP {
 		/**
 		 * A secret agent's value!
 		 * <p>

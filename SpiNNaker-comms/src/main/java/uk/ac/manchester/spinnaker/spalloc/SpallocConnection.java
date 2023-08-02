@@ -447,7 +447,7 @@ public abstract class SpallocConnection implements Closeable {
 	 * handles all buffering internally, locking that close to the socket
 	 * itself.
 	 */
-	private static class TextSocket extends Socket {
+	private static final class TextSocket extends Socket {
 		private BufferedReader br;
 
 		private PrintWriter pw;
