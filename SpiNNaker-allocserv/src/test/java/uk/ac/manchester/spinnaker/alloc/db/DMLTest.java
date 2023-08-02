@@ -190,10 +190,10 @@ class DMLTest extends SimpleDBTestBase {
 	@Test
 	void deallocateBoardsJob() {
 		assumeWritable(c);
-		try (var u = c.update(DEALLOCATE_BOARDS_JOB)) {
+		try (var u = c.update(DEALLOCATE_BMP_BOARDS_JOB)) {
 			c.transaction(() -> {
-				assertEquals(List.of("job_id"), u.getParameters());
-				assertEquals(0, u.call(NO_JOB));
+				assertEquals(List.of("job_id", "bmp_id"), u.getParameters());
+				assertEquals(0, u.call(NO_JOB, 0));
 			});
 		}
 	}
@@ -252,29 +252,6 @@ class DMLTest extends SimpleDBTestBase {
 			c.transaction(() -> {
 				assertEquals(List.of("job_id"), u.getParameters());
 				assertEquals(0, u.call(NO_JOB));
-			});
-		}
-	}
-
-	@Test
-	void killJobPending() {
-		assumeWritable(c);
-		try (var u = c.update(KILL_JOB_PENDING)) {
-			c.transaction(() -> {
-				assertEquals(List.of("job_id"), u.getParameters());
-				assertEquals(0, u.call(NO_JOB));
-			});
-		}
-	}
-
-	@Test
-	void setInProgress() {
-		assumeWritable(c);
-		try (var u = c.update(SET_IN_PROGRESS)) {
-			c.transaction(() -> {
-				assertEquals(List.of("in_progress", "change_id"),
-						u.getParameters());
-				assertEquals(0, u.call(false, NO_JOB));
 			});
 		}
 	}
@@ -794,17 +771,6 @@ class DMLTest extends SimpleDBTestBase {
 						q.call(0, 0, "", A_LONG_TIME, 0, 0, 0, 0, A_LONG_TIME,
 								"", "", A_LONG_TIME, new byte[] {}, A_LONG_TIME,
 								0, "", "", 0, ""));
-			});
-		}
-	}
-
-	@Test
-	void clearStuckPending() {
-		assumeWritable(c);
-		try (var u = c.update(CLEAR_STUCK_PENDING)) {
-			c.transaction(() -> {
-				assertEquals(List.of(), u.getParameters());
-				assertEquals(0, u.call());
 			});
 		}
 	}

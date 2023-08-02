@@ -16,6 +16,7 @@
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
+import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 
 /**
  * Describes a part of a request that modifies the power of an FPGA-managed
@@ -25,7 +26,7 @@ import uk.ac.manchester.spinnaker.alloc.model.Direction;
  */
 public final class Link {
 	/** The database ID of the board that the FPGA is located on. */
-	private final int board;
+	private final BMPBoard board;
 
 	/** Which link (and hence which FPGA). */
 	private final Direction link;
@@ -39,7 +40,7 @@ public final class Link {
 	 *            Which link (and hence which FPGA).
 	 */
 	Link(int board, Direction link) {
-		this.board = board;
+		this.board = new BMPBoard(board);
 		this.link = link;
 	}
 
@@ -49,7 +50,7 @@ public final class Link {
 	}
 
 	/** @return The database ID of the board that the FPGA is located on. */
-	public int getBoard() {
+	public BMPBoard getBoard() {
 		return board;
 	}
 
