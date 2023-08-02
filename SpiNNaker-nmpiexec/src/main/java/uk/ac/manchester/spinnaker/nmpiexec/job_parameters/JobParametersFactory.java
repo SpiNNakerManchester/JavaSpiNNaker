@@ -27,7 +27,7 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.Job;
 /**
  * A factory that produces job parameters.
  */
-public sealed abstract class JobParametersFactory
+public abstract sealed class JobParametersFactory
 		permits DirectPyNNJobParametersFactory, GitPyNNJobParametersFactory,
 		ZipPyNNJobParametersFactory {
 	/**
