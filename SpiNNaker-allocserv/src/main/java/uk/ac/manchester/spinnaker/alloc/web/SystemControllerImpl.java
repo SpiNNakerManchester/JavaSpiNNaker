@@ -21,13 +21,28 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
+import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_READER;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.error;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.errorMessage;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.uri;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.MAIN_URI;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.CHANGE_PASSWORD_URI;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGOUT_URI;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGIN_URI;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGIN_OIDC_URI;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_CSS_URI;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_JS_URI;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGIN_PATH;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGIN_OIDC_PATH;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.CHANGE_PASSWORD_PATH;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGOUT_PATH;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_CSS_PATH;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_JS_PATH;
 
 import java.security.Principal;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,12 +52,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.errorprone.annotations.Keep;
 
@@ -69,6 +86,8 @@ public class SystemControllerImpl implements SystemController {
 	private static final Logger log = getLogger(SystemControllerImpl.class);
 
 	private static final ViewFactory MAIN_VIEW = new ViewFactory("index");
+
+	private static final ViewFactory LOGIN_VIEW = new ViewFactory("login");
 
 	private static final ViewFactory PASSWORD_CHANGE_VIEW =
 			new ViewFactory("password");
@@ -97,6 +116,8 @@ public class SystemControllerImpl implements SystemController {
 
 	private static final String ONE_MACHINE_OBJ = "machine";
 
+	private static final String BASE_URI = "baseuri";
+
 	@Autowired
 	private SpallocAPI spallocCore;
 
@@ -112,23 +133,85 @@ public class SystemControllerImpl implements SystemController {
 	@Autowired
 	private ServiceVersion version;
 
-	private ModelAndView view(ViewFactory name) {
+	/**
+	 * All models should contain a common set of attributes that describe where
+	 * the view is rendering and where other parts of the admin interface are.
+	 * Only call from
+	 * {@link #addStandardContext(ModelAndView, RedirectAttributes)}.
+	 *
+	 * @param model
+	 *            The base model to add to. This may be the real model or the
+	 *            flash attributes.
+	 */
+	private void addStandardContextAttrs(Map<String, Object> model) {
 		var auth = getContext().getAuthentication();
-		return name.view(USER_MAY_CHANGE_PASSWORD,
-				auth instanceof UsernamePasswordAuthenticationToken);
+		boolean mayChangePassword =
+				auth instanceof UsernamePasswordAuthenticationToken;
+
+		model.put(BASE_URI, fromCurrentRequestUri().toUriString());
+		model.put(MAIN_URI, uri(self().index()));
+		model.put(CHANGE_PASSWORD_URI, urlMaker.systemUrl(
+				CHANGE_PASSWORD_PATH));
+		model.put(LOGOUT_URI, urlMaker.systemUrl(LOGOUT_PATH));
+		model.put(SPALLOC_CSS_URI, urlMaker.systemUrl(SPALLOC_CSS_PATH));
+		model.put(SPALLOC_JS_URI, urlMaker.systemUrl(SPALLOC_JS_PATH));
+		model.put(USER_MAY_CHANGE_PASSWORD, mayChangePassword);
+	}
+
+	/**
+	 * All models should contain a common set of attributes that describe where
+	 * the view is rendering and where other parts of the admin interface are.
+	 *
+	 * @param mav
+	 *            The model-and-view.
+	 * @param attrs
+	 *            The redirect attributes, or {@code null} if this is not a
+	 *            redirect.
+	 * @return The enhanced model-and-view.
+	 */
+	private ModelAndView addStandardContext(ModelAndView mav,
+			RedirectAttributes attrs) {
+		addStandardContextAttrs(nonNull(attrs)
+				// Real implementation of flash attrs is always a ModelMap
+				? (ModelMap) attrs.getFlashAttributes()
+				: mav.getModel());
+		return mav;
+	}
+
+	/**
+	 * All models should contain a common set of attributes that describe where
+	 * the view is rendering and where other parts of the admin interface are.
+	 *
+	 * @param mav
+	 *            The model-and-view.
+	 * @return The enhanced model-and-view.
+	 */
+	private ModelAndView addStandardContext(ModelAndView mav) {
+		return addStandardContext(mav, null);
 	}
 
 	private ModelAndView view(ViewFactory name, String key, Object value) {
 		var mav = name.view();
 		mav.addObject(key, value);
-		return mav;
+		return addStandardContext(mav);
 	}
 
 	@Override
 	@GetMapping("/")
 	public ModelAndView index() {
-		return view(MAIN_VIEW).addObject(VERSION_OBJ, version.getFullVersion())
+		return addStandardContext(MAIN_VIEW.view())
+				.addObject(VERSION_OBJ, version.getFullVersion())
 				.addObject(BUILD_OBJ, version.getBuildTimestamp());
+	}
+
+	@Override
+	@GetMapping("/login.html")
+	public ModelAndView login() {
+		var mav = LOGIN_VIEW.view();
+		var model = mav.getModel();
+		model.put(LOGIN_URI, urlMaker.systemUrl(LOGIN_PATH));
+		model.put(LOGIN_OIDC_URI, urlMaker.systemUrl(LOGIN_OIDC_PATH));
+		return mav;
 	}
 
 	@Override
@@ -204,7 +287,7 @@ public class SystemControllerImpl implements SystemController {
 	}
 
 	@Override
-	@Action("changing password")
+	@Action(CHANGE_PASSWORD_PATH)
 	public ModelAndView postPasswordChangeForm(
 			PasswordChangeRecord user,
 			Principal principal) {

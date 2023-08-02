@@ -15,8 +15,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
-import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters.STOP;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.FLAG;
@@ -43,6 +41,7 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.utils.Ping;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -88,12 +87,12 @@ class SpiNNaker1 implements SpiNNakerControl {
 
 	private final Machine machine;
 
+	private final Map<BMPBoard, String> boardAddresses;
+
 	/**
 	 * The transceiver for talking to the machine.
 	 */
 	private BMPTransceiverInterface txrx;
-
-	private Map<Integer, BMPBoard> idToBoard;
 
 	/**
 	 * Load the FPGA firmware onto a board.
@@ -132,9 +131,11 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 * @param bmp
 	 *            Which BMP on the machine are we really talking to.
 	 */
-	SpiNNaker1(Machine machine, BMPCoords bmp) {
+	SpiNNaker1(Machine machine, BMPCoords bmp,
+			Map<BMPBoard, String> boardAddresses) {
 		this.machine = machine;
 		this.bmp = bmp;
+		this.boardAddresses = boardAddresses;
 	}
 
 	@PostConstruct
@@ -142,15 +143,6 @@ class SpiNNaker1 implements SpiNNakerControl {
 			throws IOException, SpinnmanException, InterruptedException {
 		txrx = txrxFactory.getTransciever(machine, bmp);
 		txrx.bind(ROOT_BMP);
-	}
-
-	@Override
-	public void setIdToBoardMap(Map<Integer, BMPBoard> idToBoard) {
-		this.idToBoard = idToBoard;
-	}
-
-	private List<BMPBoard> remap(List<Integer> boardIds) {
-		return boardIds.stream().map(idToBoard::get).collect(toList());
 	}
 
 	/** Notes that a board probably needs its FPGA definitions reloading. */
@@ -228,7 +220,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	@Override
 	public void setLinkOff(Link link)
 			throws ProcessException, IOException, InterruptedException {
-		var board = requireNonNull(idToBoard.get(link.getBoard()));
+		var board = link.getBoard();
 		var d = link.getLink();
 		// skip FPGA link configuration if old BMP version
 		if (!canBoardManageFPGAs(board)) {
@@ -261,15 +253,15 @@ class SpiNNaker1 implements SpiNNakerControl {
 	}
 
 	@Override
-	public void powerOnAndCheck(List<Integer> boards)
+	public void powerOnAndCheck(List<BMPBoard> boards)
 			throws ProcessException, InterruptedException, IOException {
+		var boardsToPower = boards;
 		log.debug("Power on and check boards {} for BMP {}", boards, bmp);
-		var boardsToPower = remap(boards);
 		boolean reloadDone = false; // so we only do firmware loading once
 		for (int attempt = 1; attempt <= props.getFpgaAttempts(); attempt++) {
 			if (attempt > 1) {
 				log.warn("rebooting {} boards in allocation to "
-						+ "get stability", boardsToPower.size());
+						+ "get stability", boards.size());
 			}
 			txrx.powerOn(boardsToPower);
 
@@ -309,7 +301,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 				loadFirmware(reloadBoards);
 				reloadDone = true;
 				// Need a full retry after that!
-				boardsToPower = remap(boards);
+				boardsToPower = boards;
 				continue;
 			}
 			retryBoards.addAll(reloadBoards); // Might not be empty
@@ -321,9 +313,9 @@ class SpiNNaker1 implements SpiNNakerControl {
 	}
 
 	@Override
-	public void powerOff(List<Integer> boards)
+	public void powerOff(List<BMPBoard> boards)
 			throws ProcessException, InterruptedException, IOException {
-		txrx.powerOff(remap(boards));
+		txrx.powerOff(boards);
 	}
 
 	@Override
@@ -342,5 +334,17 @@ class SpiNNaker1 implements SpiNNakerControl {
 	public void writeBlacklist(BMPBoard board, Blacklist blacklist)
 			throws ProcessException, InterruptedException, IOException {
 		txrx.writeBlacklist(board, blacklist);
+	}
+
+	@Override
+	public void ping(List<BMPBoard> boards) {
+		boards.parallelStream().forEach(id -> {
+			var address = boardAddresses.get(id);
+			if (Ping.ping(address) != 0) {
+				log.warn(
+						"ARP fault? Board with address {} might not have "
+								+ "come up correctly", address);
+			}
+		});
 	}
 }

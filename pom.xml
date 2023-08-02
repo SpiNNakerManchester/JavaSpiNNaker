@@ -384,6 +384,11 @@ limitations under the License.
 			    <version>${mysql.version}</version>
 			</dependency>
 			<dependency>
+			    <groupId>org.hobsoft.spring</groupId>
+			    <artifactId>spring-rest-template-logger</artifactId>
+			    <version>2.0.0</version>
+			</dependency>
+			<dependency>
 				<groupId>com.github.stefanbirkner</groupId>
 				<artifactId>system-lambda</artifactId>
 				<version>1.2.1</version>

@@ -67,6 +67,9 @@ public interface SystemController {
 	@GetMapping("/")
 	ModelAndView index();
 
+	@GetMapping("/login.html")
+	ModelAndView login();
+
 	/**
 	 * Get the view for the general machine list.
 	 *

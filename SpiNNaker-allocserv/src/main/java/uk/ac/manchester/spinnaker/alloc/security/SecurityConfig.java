@@ -19,10 +19,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLICATION;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.security.oauth2.core.OAuth2AccessToken.TokenType.BEARER;
 import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.ACCESS_TOKEN;
+import static org.springframework.util.StreamUtils.copyToByteArray;
 import static uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter.clearToken;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.installInjectableTrustStoreAsDefault;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.loadTrustStore;
@@ -39,14 +38,20 @@ import java.util.Map;
 
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.logging.LogFactory;
+import org.hobsoft.spring.resttemplatelogger.LogFormatter;
+import org.hobsoft.spring.resttemplatelogger.LoggingCustomizer;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -56,7 +61,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.oauth2.client.http.OAuth2ErrorResponseErrorHandler;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
@@ -69,8 +73,6 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
@@ -112,9 +114,6 @@ public class SecurityConfig {
 			Map<String, Object>> PARAMETERIZED_RESPONSE_TYPE =
 					new ParameterizedTypeReference<>() {
 					};
-
-	private static final MediaType DEFAULT_CONTENT_TYPE = MediaType
-			.valueOf(APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
 
 	/**
 	 * How to assert that a user must be able to make jobs and read job details
@@ -345,8 +344,7 @@ public class SecurityConfig {
 			Instant issuedAt = authorized.getAttribute("issued-at");
 			Instant expiresAt = authorized.getAttribute("expires-at");
 
-			var userAttributes = userinfo(
-					new OAuth2AccessToken(BEARER, token, issuedAt, expiresAt));
+			var userAttributes = userinfo(token);
 			var authorities = new LinkedHashSet<GrantedAuthority>();
 			var auth = new OidcUserAuthority(
 					new OidcIdToken(token, issuedAt, expiresAt, userAttributes),
@@ -356,20 +354,42 @@ public class SecurityConfig {
 					"preferred_username");
 		}
 
-		private Map<String, Object> userinfo(OAuth2AccessToken reqtoken) {
+		private Map<String, Object> userinfo(String token) {
 			var headers = new HttpHeaders();
 			headers.setAccept(List.of(APPLICATION_JSON));
-			headers.setContentType(DEFAULT_CONTENT_TYPE);
-			var fp = Map.of(ACCESS_TOKEN, List.of(reqtoken.getTokenValue()));
-			var request = new RequestEntity<>(new LinkedMultiValueMap<>(fp),
+			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+			var request = new RequestEntity<>(ACCESS_TOKEN + "=" + token,
 					headers, POST, URI.create(userInfoUri));
 
-			var restTemplate = new RestTemplate();
+			var restLog = LogFactory.getLog(LoggingCustomizer.class);
+			var restTemplate = new RestTemplateBuilder().customizers(
+					new LoggingCustomizer(restLog, new Formatter())).build();
 			restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
 			var response =
 					restTemplate.exchange(request, PARAMETERIZED_RESPONSE_TYPE);
 
 			return response.getBody();
+		}
+	}
+
+	private class Formatter implements LogFormatter {
+
+		@Override
+		public String formatResponse(ClientHttpResponse response)
+				throws IOException {
+			return String.format("Response:\n    Headers: %s\n    Body: %s",
+					response.getHeaders(),
+					new String(copyToByteArray(response.getBody())));
+		}
+
+		@Override
+		public String formatRequest(HttpRequest request, byte[] body) {
+			return String.format(
+					"%s Request to %s:\n"
+					+ "    Headers: %s\n"
+					+ "    Body: %s",
+					request.getMethod(), request.getURI(), request.getHeaders(),
+					new String(body));
 		}
 	}
 

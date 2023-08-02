@@ -22,7 +22,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
@@ -42,11 +41,6 @@ import uk.ac.manchester.spinnaker.alloc.proxy.SpinWSHandler;
 @Role(ROLE_SUPPORT)
 public class MvcConfig implements WebMvcConfigurer, WebSocketConfigurer {
 	// TODO check if we should use the url path maker bean
-
-	@Override
-	public void addViewControllers(ViewControllerRegistry registry) {
-		registry.addViewController("/system/login.html");
-	}
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
