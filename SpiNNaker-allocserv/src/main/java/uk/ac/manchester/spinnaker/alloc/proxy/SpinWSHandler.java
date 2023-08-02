@@ -336,7 +336,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	 * get the same ID for the connections underneath; that would be just too
 	 * confusing!
 	 */
-	private static class ConnectionIDIssuer {
+	private static final class ConnectionIDIssuer {
 		private int id;
 
 		/**

@@ -137,7 +137,7 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	@Command(name = "py2json", mixinStandardHelpOptions = true, version = {
 		"version 0.1", "NB: this tool is only partially supported; it "
 				+ "exists to support University of Manchester staff only"})
-	private class CmdImpl implements Callable<Integer> {
+	private final class CmdImpl implements Callable<Integer> {
 		@Parameters(index = "0", paramLabel = "source.py",
 				description = "The file to load the configuration Python from.",
 				converter = ExistingFileConverter.class)
@@ -167,7 +167,8 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	/**
 	 * Requires that an argument be an existing plain file.
 	 */
-	private static class ExistingFileConverter implements ITypeConverter<File> {
+	private static final class ExistingFileConverter
+			implements ITypeConverter<File> {
 		@Override
 		public File convert(String value) throws Exception {
 			var f = new File(value);

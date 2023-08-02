@@ -210,7 +210,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 	}
 
-	private class DescribeMachineSQL extends AbstractSQL {
+	private final class DescribeMachineSQL extends AbstractSQL {
 		final Query namedMachine = conn.query(GET_NAMED_MACHINE);
 
 		final Query countMachineThings = conn.query(COUNT_MACHINE_THINGS);

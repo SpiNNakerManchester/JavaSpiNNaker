@@ -106,7 +106,7 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 	}
 
-	private class CreateCheckSQL extends AbstractSQL {
+	private final class CreateCheckSQL extends AbstractSQL {
 		// TODO These should be combined (but one is an aggregate so...)
 		private final Query getQuota = conn.query(GET_GROUP_QUOTA);
 
@@ -162,7 +162,7 @@ public class QuotaManager extends DatabaseAwareBean {
 		return !mayLetJobContinue(jobId);
 	}
 
-	private class ContinueCheckSQL extends AbstractSQL {
+	private final class ContinueCheckSQL extends AbstractSQL {
 		private final Query getUsageAndQuota =
 				conn.query(GET_JOB_USAGE_AND_QUOTA);
 
@@ -226,7 +226,7 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 	}
 
-	private class AdjustQuotaSQL extends AbstractSQL {
+	private final class AdjustQuotaSQL extends AbstractSQL {
 		private final Update adjustQuota = conn.update(ADJUST_QUOTA);
 
 		private final Query getQuota = conn.query(GET_GROUP_QUOTA);

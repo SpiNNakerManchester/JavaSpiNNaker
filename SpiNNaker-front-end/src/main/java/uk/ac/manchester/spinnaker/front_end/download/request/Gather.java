@@ -47,7 +47,7 @@ public class Gather implements HasCoreLocation {
 	 */
 	public static final TypeReference<List<Gather>> LIST = new TR();
 
-	private static class TR extends TypeReference<List<Gather>> {
+	private static final class TR extends TypeReference<List<Gather>> {
 	}
 
 	/** The x value of the core this placement is on. */
