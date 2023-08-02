@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":9,"i2":10,"i3":10};
+<script type="text/javascript">var data = {"i0":10,"i1":9,"i2":10,"i3":10,"i4":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -216,6 +216,13 @@ extends <a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax
 <div class="block">The access to the main database's transaction manager.</div>
 </td>
 </tr>
+<tr class="altColor" id="i4">
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/TaskScheduler.html?is-external=true" title="class or interface in org.springframework.scheduling" class="externalLink">TaskScheduler</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#threadPoolTaskScheduler(int)">threadPoolTaskScheduler</a></span>&#8203;(int&nbsp;numThreads)</code></th>
+<td class="colLast">
+<div class="block">The thread pool.</div>
+</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -307,6 +314,24 @@ extends <a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax
             <code>spalloc.datasource</code>).</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Database transaction API</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="threadPoolTaskScheduler(int)">threadPoolTaskScheduler</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Bean</a>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Primary.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Primary</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/TaskScheduler.html?is-external=true" title="class or interface in org.springframework.scheduling" class="externalLink">TaskScheduler</a></span>&nbsp;<span class="memberName">threadPoolTaskScheduler</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Value.html?is-external=true" title="class or interface in org.springframework.beans.factory.annotation" class="externalLink">@Value</a>("${spring.task.scheduling.pool.size}")
+int&nbsp;numThreads)</span></div>
+<div class="block">The thread pool. The rest of the application expects there to be a single
+ such pool.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>numThreads</code> - The size of the pool. From
+            <code>spring.task.scheduling.pool.size</code> property.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The set up thread pool bean.</dd>
 </dl>
 </section>
 </li>

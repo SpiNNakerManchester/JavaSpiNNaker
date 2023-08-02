@@ -158,6 +158,13 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#COUNT_CHANGES_FOR_JOB">COUNT_CHANGES_FOR_JOB</a></span></code></th>
+<td class="colLast">
+<div class="block">Get the number of changes that are not completed for a job.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>protected <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#countConnected">countConnected</a></span></code></th>
 <td class="colLast">
@@ -166,32 +173,39 @@ loadScripts(document, 'script');</script>
  rectangle of triads.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#CREATE_BLACKLIST_WRITE">CREATE_BLACKLIST_WRITE</a></span></code></th>
 <td class="colLast">
 <div class="block">Insert a request to write a board's blacklist.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#CREATE_GROUP">CREATE_GROUP</a></span></code></th>
 <td class="colLast">
 <div class="block">Create a group record.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#CREATE_GROUP_IF_NOT_EXISTS">CREATE_GROUP_IF_NOT_EXISTS</a></span></code></th>
 <td class="colLast">
 <div class="block">Create a group record.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#CREATE_USER">CREATE_USER</a></span></code></th>
 <td class="colLast">
 <div class="block">Create a user.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#DEALLOCATE_BMP_BOARDS_JOB">DEALLOCATE_BMP_BOARDS_JOB</a></span></code></th>
+<td class="colLast">
+<div class="block">Tell the boards of a job that they're no longer allocated to the job.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -500,34 +514,26 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#SET_IN_PROGRESS">SET_IN_PROGRESS</a></span></code></th>
-<td class="colLast">
-<div class="block">Set the progress status of a request to change the power state of a
- board.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#SET_JOB_NMPI_JOB">SET_JOB_NMPI_JOB</a></span></code></th>
 <td class="colLast">
 <div class="block">Set the NMPI Job for a Job.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#SET_JOB_SESSION">SET_JOB_SESSION</a></span></code></th>
 <td class="colLast">
 <div class="block">Set the NMPI session for a Job.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#SET_MACHINE_STATE">SET_MACHINE_STATE</a></span></code></th>
 <td class="colLast">
 <div class="block">Set the in-service flag for a machine.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#SET_MAX_COORDS">SET_MAX_COORDS</a></span></code></th>
 <td class="colLast">
@@ -535,77 +541,77 @@ loadScripts(document, 'script');</script>
  correctly.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#SET_STATE_DESTROYED">SET_STATE_DESTROYED</a></span></code></th>
 <td class="colLast">
 <div class="block">Set the state destroyed and number of pending changes for a job.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#SET_STATE_PENDING">SET_STATE_PENDING</a></span></code></th>
 <td class="colLast">
 <div class="block">Set the state and number of pending changes for a job.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#SET_USER_DISABLED">SET_USER_DISABLED</a></span></code></th>
 <td class="colLast">
 <div class="block">Set whether a user is administratively disabled.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#SET_USER_LOCKED">SET_USER_LOCKED</a></span></code></th>
 <td class="colLast">
 <div class="block">Set whether a user is locked.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#SET_USER_NAME">SET_USER_NAME</a></span></code></th>
 <td class="colLast">
 <div class="block">Set a user's name.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#SET_USER_PASS">SET_USER_PASS</a></span></code></th>
 <td class="colLast">
 <div class="block">Set a user's password.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#SET_USER_TRUST">SET_USER_TRUST</a></span></code></th>
 <td class="colLast">
 <div class="block">Set the amount a user is trusted.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#UPDATE_GROUP">UPDATE_GROUP</a></span></code></th>
 <td class="colLast">
 <div class="block">Update a single group record's name and quota.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#UPDATE_KEEPALIVE">UPDATE_KEEPALIVE</a></span></code></th>
 <td class="colLast">
 <div class="block">Update the keepalive timestamp.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#WRITE_HISTORICAL_ALLOCS">WRITE_HISTORICAL_ALLOCS</a></span></code></th>
 <td class="colLast">
 <div class="block">Write to the historical allocations database.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#WRITE_HISTORICAL_JOBS">WRITE_HISTORICAL_JOBS</a></span></code></th>
 <td class="colLast">

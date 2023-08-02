@@ -154,39 +154,38 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#powerOff(java.util.List)">powerOff</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#ping(java.util.List)">ping</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;uk.ac.manchester.spinnaker.machine.board.BMPBoard&gt;&nbsp;boards)</code></th>
 <td class="colLast">
-<div class="block">Turn off boards managed by a BMP.</div>
+<div class="block">Ping the given boards.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#powerOnAndCheck(java.util.List)">powerOnAndCheck</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#powerOff(java.util.List)">powerOff</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;uk.ac.manchester.spinnaker.machine.board.BMPBoard&gt;&nbsp;boards)</code></th>
+<td class="colLast">
+<div class="block">Turn off boards managed by a BMP.</div>
+</td>
+</tr>
+<tr class="altColor" id="i2">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#powerOnAndCheck(java.util.List)">powerOnAndCheck</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;uk.ac.manchester.spinnaker.machine.board.BMPBoard&gt;&nbsp;boards)</code></th>
 <td class="colLast">
 <div class="block">Switch on a collection of boards managed by a BMP on a machine and check
  that they've come up correctly.</div>
 </td>
 </tr>
-<tr class="altColor" id="i2">
+<tr class="rowColor" id="i3">
 <td class="colFirst"><code><a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/messages/model/Blacklist.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.messages.model" class="externalLink">Blacklist</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readBlacklist(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readBlacklist</a></span>&#8203;(uk.ac.manchester.spinnaker.machine.board.BMPBoard&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a blacklist from the given board.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="altColor" id="i4">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readSerial(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readSerial</a></span>&#8203;(uk.ac.manchester.spinnaker.machine.board.BMPBoard&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a BMP serial number from the given board.</div>
-</td>
-</tr>
-<tr class="altColor" id="i4">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setIdToBoardMap(java.util.Map)">setIdToBoardMap</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>,&#8203;uk.ac.manchester.spinnaker.machine.board.BMPBoard&gt;&nbsp;idToBoard)</code></th>
-<td class="colLast">
-<div class="block">Set how to map from database IDs for a board to what to use when talking
- to the BMP.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i5">
@@ -224,7 +223,7 @@ loadScripts(document, 'script');</script>
 <li class="blockList">
 <section class="detail">
 <h3><a id="powerOnAndCheck(java.util.List)">powerOnAndCheck</a></h3>
-<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">powerOnAndCheck</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</span>
+<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">powerOnAndCheck</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;uk.ac.manchester.spinnaker.machine.board.BMPBoard&gt;&nbsp;boards)</span>
               throws <span class="exceptions"><a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/ProcessException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">ProcessException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
@@ -234,7 +233,7 @@ loadScripts(document, 'script');</script>
  Note that this operation can take some time.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>boards</code> - The <em>database IDs</em> of the boards to switch on.</dd>
+<dd><code>boards</code> - The local-relative boards to switch on.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/ProcessException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">ProcessException</a></code> - If a BMP sends a failure message.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If network I/O fails or we reach the limit on retries.</dd>
@@ -264,7 +263,7 @@ loadScripts(document, 'script');</script>
 <li class="blockList">
 <section class="detail">
 <h3><a id="powerOff(java.util.List)">powerOff</a></h3>
-<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">powerOff</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</span>
+<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">powerOff</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;uk.ac.manchester.spinnaker.machine.board.BMPBoard&gt;&nbsp;boards)</span>
        throws <span class="exceptions"><a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/ProcessException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">ProcessException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
@@ -272,24 +271,11 @@ loadScripts(document, 'script');</script>
  links.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>boards</code> - The <em>database IDs</em> of the boards to turn off.</dd>
+<dd><code>boards</code> - The local-relative ids of the boards to turn off.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/ProcessException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">ProcessException</a></code> - If a BMP sends a failure message.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If network I/O fails or we reach the limit on retries.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If we're interrupted.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="setIdToBoardMap(java.util.Map)">setIdToBoardMap</a></h3>
-<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">setIdToBoardMap</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>,&#8203;uk.ac.manchester.spinnaker.machine.board.BMPBoard&gt;&nbsp;idToBoard)</span></div>
-<div class="block">Set how to map from database IDs for a board to what to use when talking
- to the BMP.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>idToBoard</code> - How to get a physical board number from a database ID of the
-            board.</dd>
 </dl>
 </section>
 </li>
@@ -350,6 +336,17 @@ loadScripts(document, 'script');</script>
 <dd><code><a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/ProcessException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">ProcessException</a></code> - If a BMP sends a failure message.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If network I/O fails or we reach the limit on retries.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If we're interrupted.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="ping(java.util.List)">ping</a></h3>
+<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">ping</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;uk.ac.manchester.spinnaker.machine.board.BMPBoard&gt;&nbsp;boards)</span></div>
+<div class="block">Ping the given boards.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>boards</code> - The boards to ping.</dd>
 </dl>
 </section>
 </li>
