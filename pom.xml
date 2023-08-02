@@ -59,13 +59,15 @@ limitations under the License.
 		<jackson.doc.version>2.14</jackson.doc.version>
 		<sqlite.version>3.42.0.0</sqlite.version>
 		<keycloak.version>22.0.1</keycloak.version>
-		<swagger.version>5.1.3</swagger.version>
+		<swagger.version>5.2.0</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.3</jython.version>
 		<error-prone.version>2.18.0</error-prone.version>
 		<picocli.version>4.7.4</picocli.version>
 		<mysql.version>8.1.0</mysql.version>
 		<testcontainers.version>1.18.3</testcontainers.version>
+		<javax.ws.version>2.1.1</javax.ws.version>
+		<resteasy.version>6.2.4.Final</resteasy.version>
 	</properties>
 
 	<dependencyManagement>
@@ -146,6 +148,16 @@ limitations under the License.
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
+	            <groupId>uk.ac.manchester.spinnaker</groupId>
+	            <artifactId>SpiNNaker-nmpimodel</artifactId>
+	            <version>${project.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>uk.ac.manchester.spinnaker</groupId>
+	            <artifactId>SpiNNaker-nmpiexec</artifactId>
+	            <version>${project.version}</version>
+	        </dependency>
+			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
 				<version>${slf4j.version}</version>
@@ -223,6 +235,11 @@ limitations under the License.
 				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>${javax.ws.version}</version>
+            </dependency>
+			<dependency>
 				<groupId>org.json</groupId>
 				<artifactId>json</artifactId>
 				<version>20230618</version>
@@ -250,7 +267,7 @@ limitations under the License.
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
-				<version>3.12.0</version>
+				<version>3.13.0</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-cli</groupId>
@@ -369,6 +386,52 @@ limitations under the License.
 				<artifactId>system-lambda</artifactId>
 				<version>1.2.1</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+                <groupId>org.rauschig</groupId>
+                <artifactId>jarchivelib</artifactId>
+                <version>1.2.0</version>
+            </dependency>
+             <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-client</artifactId>
+                <version>${resteasy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>1.16.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ini4j</groupId>
+                <artifactId>ini4j</artifactId>
+                <version>0.5.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jgit</groupId>
+                <artifactId>org.eclipse.jgit</artifactId>
+                <version>6.6.0.202305301015-r</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>httpclient</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>net.java.dev.vcc.thirdparty</groupId>
+                <artifactId>xen-api</artifactId>
+                <version>6.2.0-3.1</version>
+            </dependency>
+            <dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-rs-client</artifactId>
+				<version>${cxf.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter</artifactId>
+				<version>${spring.boot.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -801,6 +864,9 @@ limitations under the License.
 		<module>SpiNNaker-front-end</module>
 		<module>SpiNNaker-allocserv</module>
 		<module>SpiNNaker-py2json</module>
+		<module>SpiNNaker-nmpiserv</module>
+		<module>SpiNNaker-nmpimodel</module>
+		<module>SpiNNaker-nmpiexec</module>
 	</modules>
 	<name>SpiNNaker Java Host</name>
 	<description>Implementation of the host software for SpiNNaker in Java.</description>
