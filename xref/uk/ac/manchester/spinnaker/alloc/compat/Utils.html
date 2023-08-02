@@ -39,9 +39,9 @@
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> org.springframework.dao.DataAccessException;
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.model.DownLink;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.model.DownLink;
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.model.JobState;
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.spalloc.messages.BoardLink;
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.spalloc.messages.State;
@@ -227,12 +227,12 @@
 <a class="jxr_linenumber" name="L219" href="#L219">219</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L220" href="#L220">220</a> <em class="jxr_javadoccomment">	 * Convert the state of a job.</em>
 <a class="jxr_linenumber" name="L221" href="#L221">221</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L222" href="#L222">222</a> <em class="jxr_javadoccomment">	 * @param job</em>
-<a class="jxr_linenumber" name="L223" href="#L223">223</a> <em class="jxr_javadoccomment">	 *            The job.</em>
+<a class="jxr_linenumber" name="L222" href="#L222">222</a> <em class="jxr_javadoccomment">	 * @param state</em>
+<a class="jxr_linenumber" name="L223" href="#L223">223</a> <em class="jxr_javadoccomment">	 *            The job state</em>
 <a class="jxr_linenumber" name="L224" href="#L224">224</a> <em class="jxr_javadoccomment">	 * @return The converted state.</em>
 <a class="jxr_linenumber" name="L225" href="#L225">225</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L226" href="#L226">226</a> 	<strong class="jxr_keyword">static</strong> <a name="State" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/State.html#State">State</a> state(Job job) {
-<a class="jxr_linenumber" name="L227" href="#L227">227</a> 		<strong class="jxr_keyword">switch</strong> (job.getState()) {
+<a class="jxr_linenumber" name="L226" href="#L226">226</a> 	<strong class="jxr_keyword">static</strong> <a name="State" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/State.html#State">State</a> state(<a name="JobState" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/JobState.html#JobState">JobState</a> state) {
+<a class="jxr_linenumber" name="L227" href="#L227">227</a> 		<strong class="jxr_keyword">switch</strong> (state) {
 <a class="jxr_linenumber" name="L228" href="#L228">228</a> 		<strong class="jxr_keyword">case</strong> QUEUED:
 <a class="jxr_linenumber" name="L229" href="#L229">229</a> 			<strong class="jxr_keyword">return</strong> State.QUEUED;
 <a class="jxr_linenumber" name="L230" href="#L230">230</a> 		<strong class="jxr_keyword">case</strong> POWER:

@@ -1208,7 +1208,7 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#LIST_LIVE_JOBS">LIST_LIVE_JOBS</a></code></th>
-<td class="colLast"><code>"SELECT job_id, jobs.machine_id, create_timestamp, keepalive_interval, job_state, allocation_size, keepalive_host, user_name, machines.machine_name FROM jobs JOIN machines USING (machine_id) JOIN user_info ON jobs.owner = user_info.user_id WHERE job_state != 4"</code></td>
+<td class="colLast"><code>"SELECT job_id, jobs.machine_id, create_timestamp, keepalive_interval, job_state, allocation_size, keepalive_host, user_name, machines.machine_name, original_request FROM jobs JOIN machines USING (machine_id) JOIN user_info ON jobs.owner = user_info.user_id WHERE job_state != 4"</code></td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.LIST_MACHINE_NAMES">
