@@ -178,7 +178,7 @@ public class SpallocMachineManagerImpl implements MachineManager {
 	 * Deserialiser for spalloc responses.
 	 */
 	@SuppressWarnings("serial")
-	private static class ResponseDeserializer
+	private static final class ResponseDeserializer
 			extends PropertyBasedDeserialiser<Response> {
 		/**
 		 * Subclass initialiser.

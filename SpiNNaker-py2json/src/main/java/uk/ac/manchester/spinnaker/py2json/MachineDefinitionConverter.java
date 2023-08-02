@@ -165,7 +165,8 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	/**
 	 * Requires that an argument be an existing plain file.
 	 */
-	private static class ExistingFileConverter implements ITypeConverter<File> {
+	private static final class ExistingFileConverter
+			implements ITypeConverter<File> {
 		@Override
 		public File convert(String value) throws Exception {
 			var f = new File(value);
