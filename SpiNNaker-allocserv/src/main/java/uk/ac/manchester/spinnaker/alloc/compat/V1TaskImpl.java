@@ -337,6 +337,7 @@ class V1TaskImpl extends V1CompatTask {
 	}
 
 	@Component
+	@SuppressWarnings("checkstyle:finalclass")
 	private static class CompatHelper extends DatabaseAwareBean {
 		/** The core spalloc service. */
 		@Autowired

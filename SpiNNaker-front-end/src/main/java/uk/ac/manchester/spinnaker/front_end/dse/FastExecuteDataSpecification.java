@@ -753,7 +753,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 *
 	 * @author Alan Stokes
 	 */
-	private static class SeenFlags {
+	private static final class SeenFlags {
 		boolean seenEnd;
 
 		boolean seenAll;
