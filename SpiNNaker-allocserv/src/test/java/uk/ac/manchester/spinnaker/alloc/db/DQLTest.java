@@ -1066,7 +1066,8 @@ class DQLTest extends SimpleDBTestBase {
 				assertEquals(List.of(), q.getParameters());
 				assertEquals(List.of("job_id", "machine_id", "create_timestamp",
 						"keepalive_interval", "job_state", "allocation_size",
-						"keepalive_host", "user_name", "machine_name"),
+						"keepalive_host", "user_name", "machine_name",
+						"original_request"),
 						q.getColumns());
 				// No jobs right now
 				assertEquals(empty(), q.call1(Row::toString));

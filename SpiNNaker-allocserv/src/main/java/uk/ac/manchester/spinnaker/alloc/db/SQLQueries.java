@@ -233,10 +233,13 @@ public abstract class SQLQueries {
 	@ResultColumn("allocation_size")
 	@ResultColumn("keepalive_host")
 	@ResultColumn("user_name")
+	@ResultColumn("machine_name")
+	@ResultColumn("original_request")
 	protected static final String LIST_LIVE_JOBS =
 			"SELECT job_id, jobs.machine_id, create_timestamp, "
 					+ "keepalive_interval, job_state, allocation_size, "
-					+ "keepalive_host, user_name, machines.machine_name "
+					+ "keepalive_host, user_name, machines.machine_name, "
+					+ "original_request "
 					+ "FROM jobs " + "JOIN machines USING (machine_id) "
 					+ "JOIN user_info ON jobs.owner = user_info.user_id "
 					+ "WHERE job_state != 4"; // DESTROYED

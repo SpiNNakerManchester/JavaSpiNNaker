@@ -331,27 +331,29 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	public List<JobListEntryRecord> listJobs(Permit permit) {
 		return executeRead(conn -> {
 			try (var listLiveJobs = conn.query(LIST_LIVE_JOBS);
-					var countPoweredBoards = conn.query(COUNT_POWERED_BOARDS)) {
+					var countPoweredBoards = conn.query(COUNT_POWERED_BOARDS);
+					var getCoords = conn.query(GET_JOB_BOARD_COORDS)) {
 				return listLiveJobs.call(row -> makeJobListEntryRecord(permit,
-						countPoweredBoards, row));
+						countPoweredBoards, getCoords, row));
 			}
 		});
 	}
 
 	private static JobListEntryRecord makeJobListEntryRecord(Permit permit,
-			Query countPoweredBoards, Row row) {
+			Query countPoweredBoards, Query getCoords, Row row) {
 		var rec = new JobListEntryRecord();
 		int id = row.getInt("job_id");
 		rec.setId(id);
 		rec.setState(row.getEnum("job_state", JobState.class));
 		var numBoards = row.getInteger("allocation_size");
-		rec.setNumBoards(numBoards);
 		rec.setPowered(nonNull(numBoards) && numBoards.equals(countPoweredBoards
 				.call1(integer("c"), id).orElseThrow()));
 		rec.setMachineId(row.getInt("machine_id"));
 		rec.setMachineName(row.getString("machine_name"));
 		rec.setCreationTimestamp(row.getInstant("create_timestamp"));
 		rec.setKeepaliveInterval(row.getDuration("keepalive_interval"));
+		rec.setBoards(getCoords.call(r -> new BoardCoords(r, false), id));
+		rec.setOriginalRequest(row.getBytes("original_request"));
 		var owner = row.getString("user_name");
 		if (permit.unveilFor(owner)) {
 			rec.setOwner(owner);
