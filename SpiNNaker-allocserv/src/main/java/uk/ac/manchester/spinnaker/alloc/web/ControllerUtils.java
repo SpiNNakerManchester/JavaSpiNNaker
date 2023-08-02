@@ -64,6 +64,46 @@ public abstract class ControllerUtils {
 	/** The name of the Spring MVC error view. */
 	public static final String MVC_ERROR = "erroroccurred";
 
+	/** The main URI variable for JSP pages. */
+	public static final String MAIN_URI = "mainUri";
+
+	/** The change password URI variable for JSP pages. */
+	public static final String CHANGE_PASSWORD_URI = "changePasswordUri";
+
+	/** The login URI variable for JSP pages. */
+	public static final String LOGOUT_URI = "logoutUri";
+
+	/** The logout URI variable for JSP pages. */
+	public static final String LOGIN_URI = "loginUri";
+
+	/** The OIDC URI variable for JSP pages. */
+	public static final String LOGIN_OIDC_URI = "loginOidcUri";
+
+	/** The Spalloc CSS URI variable for JSP pages. */
+	public static final String SPALLOC_CSS_URI = "spallocCssUri";
+
+	/** The Spalloc JS URI variable for JSP pages. */
+	public static final String SPALLOC_JS_URI = "spallocJsUri";
+
+	/** The URI path to use to perform logins. */
+	public static final String LOGIN_PATH = "perform_login";
+
+	/** The URI path to use to perform OIDC logins. */
+	public static final String LOGIN_OIDC_PATH =
+			"perform_oidc/auth/hbp-ebrains";
+
+	/** The URI path to use to change passwords. */
+	public static final String CHANGE_PASSWORD_PATH = "change_password";
+
+	/** The URI path to use to perform logouts. */
+	public static final String LOGOUT_PATH = "perform_logout";
+
+	/** The URI path of the Spalloc CSS file. */
+	public static final String SPALLOC_CSS_PATH = "resources/spalloc.css";
+
+	/** The URI path of the Spalloc JS file. */
+	public static final String SPALLOC_JS_PATH = "resources/spinnaker.js";
+
 	/**
 	 * Create a view that shows an error to the user.
 	 *

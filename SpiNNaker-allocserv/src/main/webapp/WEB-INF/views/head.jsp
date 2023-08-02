@@ -6,7 +6,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    https://www.apache.org/licenses/LICENSE-2.0
+	https://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,9 +18,9 @@ limitations under the License.
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>${ param.title }</title>
-	<link rel="stylesheet" href="<c:url value="/spalloc/system/resources/spalloc.css"/>">
+	<link rel="stylesheet" href="${ spallocCssUri }">
 	<c:if test="${ param.spalloclib ne null }">
-		<script src="<c:url value="/spalloc/system/resources/spinnaker.js"/>">
+		<script src="${ spallocJsUri }">
 		</script>
 	</c:if>
 	<c:if test="${ param.refresh ne null }">

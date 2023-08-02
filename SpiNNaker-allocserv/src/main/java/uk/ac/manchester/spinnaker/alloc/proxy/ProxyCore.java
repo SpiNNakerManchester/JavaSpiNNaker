@@ -64,7 +64,7 @@ public class ProxyCore implements AutoCloseable {
 
 	private static final int ID_WORDS = 1;
 
-	private static final int IP_ADDR_AND_PORT_WORDS = 5;
+	private static final int IP_ADDR_AND_PORT_WORDS = 2;
 
 	/**
 	 * Max amount of time to wait to send a message on the websocket, in

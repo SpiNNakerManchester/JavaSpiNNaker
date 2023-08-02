@@ -16,6 +16,7 @@
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
+import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 
 /**
  * Describes a part of a request that modifies the power of an FPGA-managed
@@ -27,7 +28,19 @@ import uk.ac.manchester.spinnaker.alloc.model.Direction;
  * @param link
  *            Which link (and hence which FPGA).
  */
-public record Link(int board, Direction link) {
+public record Link(BMPBoard board, Direction link) {
+	/**
+	 * Create a request.
+	 *
+	 * @param board
+	 *            The DB ID of the board that the FPGA is located on.
+	 * @param link
+	 *            Which link (and hence which FPGA).
+	 */
+	Link(int board, Direction link) {
+		this(new BMPBoard(board), link);
+	}
+
 	@Override
 	public String toString() {
 		return "Link(" + board + "," + link + ":OFF)";
