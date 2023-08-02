@@ -34,7 +34,7 @@ import org.springframework.context.support.ConversionServiceFactoryBean;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.convert.converter.Converter;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 import uk.ac.manchester.spinnaker.nmpi.jobmanager.DockerExecutorFactory;
 import uk.ac.manchester.spinnaker.nmpi.jobmanager.JobExecuterFactory;
