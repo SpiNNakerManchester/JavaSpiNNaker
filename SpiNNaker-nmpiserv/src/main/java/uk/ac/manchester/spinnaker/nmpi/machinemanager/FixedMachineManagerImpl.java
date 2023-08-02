@@ -25,6 +25,8 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Value;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
+
 import uk.ac.manchester.spinnaker.nmpi.model.machine.ChipCoordinates;
 import uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine;
 
@@ -35,11 +37,13 @@ public final class FixedMachineManagerImpl implements MachineManager {
 	/**
 	 * The queue of available machines.
 	 */
+	@GuardedBy("lock")
 	private final Set<SpinnakerMachine> machinesAvailable = new HashSet<>();
 
 	/**
 	 * The set of machine allocated.
 	 */
+	@GuardedBy("lock")
 	private final Set<SpinnakerMachine> machinesAllocated = new HashSet<>();
 
 	/**
@@ -50,6 +54,7 @@ public final class FixedMachineManagerImpl implements MachineManager {
 	/**
 	 * True when the manager is finished.
 	 */
+	@GuardedBy("lock")
 	private boolean done = false;
 
 	/**
@@ -59,13 +64,15 @@ public final class FixedMachineManagerImpl implements MachineManager {
 	 *            the collection of machines to use
 	 */
 	@Value("${machines}")
-	void setInitialMachines(final List<SpinnakerMachine> machines) {
-		machinesAvailable.addAll(machines);
+	void setInitialMachines(List<SpinnakerMachine> machines) {
+		synchronized (lock) {
+			machinesAvailable.addAll(machines);
+		}
 	}
 
 	@Override
 	public List<SpinnakerMachine> getMachines() {
-		final var machines = new ArrayList<SpinnakerMachine>();
+		var machines = new ArrayList<SpinnakerMachine>();
 		synchronized (lock) {
 			machines.addAll(machinesAvailable);
 			machines.addAll(machinesAllocated);
@@ -74,11 +81,11 @@ public final class FixedMachineManagerImpl implements MachineManager {
 	}
 
 	@Override
-	public SpinnakerMachine getNextAvailableMachine(final int nBoards,
-			final String owner, final int jobId) {
+	public SpinnakerMachine getNextAvailableMachine(int nBoards, String owner,
+			int jobId) {
 		synchronized (lock) {
 			while (!done) {
-				final var machine = getLargeEnoughMachine(nBoards);
+				var machine = getLargeEnoughMachine(nBoards);
 				if (nonNull(machine)) {
 					// Move the machine from available to allocated
 					machinesAvailable.remove(machine);
@@ -97,17 +104,19 @@ public final class FixedMachineManagerImpl implements MachineManager {
 	/**
 	 * Get a machine with at least the given number of boards.
 	 *
-	 * @param nBoards The number of boards required.
+	 * @param nBoards
+	 *            The number of boards required.
 	 * @return A machine big enough, or null of none.
 	 */
-	private SpinnakerMachine getLargeEnoughMachine(final int nBoards) {
+	@GuardedBy("lock")
+	private SpinnakerMachine getLargeEnoughMachine(int nBoards) {
 		return machinesAvailable.stream()
-				.filter(machine -> machine.getnBoards() >= nBoards)
-				.findFirst().orElse(null);
+				.filter(machine -> machine.getnBoards() >= nBoards).findFirst()
+				.orElse(null);
 	}
 
 	@Override
-	public void releaseMachine(final SpinnakerMachine machine) {
+	public void releaseMachine(SpinnakerMachine machine) {
 		synchronized (lock) {
 			machinesAllocated.remove(machine);
 			machinesAvailable.add(machine);
@@ -124,31 +133,30 @@ public final class FixedMachineManagerImpl implements MachineManager {
 	}
 
 	@Override
-	public boolean isMachineAvailable(final SpinnakerMachine machine) {
+	public boolean isMachineAvailable(SpinnakerMachine machine) {
 		synchronized (lock) {
 			return !machinesAvailable.contains(machine);
 		}
 	}
 
 	@Override
-	public boolean waitForMachineStateChange(final SpinnakerMachine machine,
-			final int waitTime) {
+	public boolean waitForMachineStateChange(SpinnakerMachine machine,
+			int waitTime) {
 		synchronized (lock) {
-			final boolean isAvailable = machinesAvailable.contains(machine);
+			boolean isAvailable = machinesAvailable.contains(machine);
 			waitfor(lock, waitTime);
 			return machinesAvailable.contains(machine) != isAvailable;
 		}
 	}
 
 	@Override
-	public void setMachinePower(
-			final SpinnakerMachine machine, final boolean powerOn) {
+	public void setMachinePower(SpinnakerMachine machine, boolean powerOn) {
 		// Does Nothing in this implementation
 	}
 
 	@Override
-	public ChipCoordinates getChipCoordinates(final SpinnakerMachine machine,
-			final int x, final int y) {
+	public ChipCoordinates getChipCoordinates(SpinnakerMachine machine, int x,
+			int y) {
 		return new ChipCoordinates(0, 0, 0);
 	}
 }

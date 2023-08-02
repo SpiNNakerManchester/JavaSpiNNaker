@@ -215,7 +215,7 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	 *
 	 * @param baseUrlParam The URL of the REST service of the manager.
 	 */
-	public JobManager(final URL baseUrlParam) {
+	public JobManager(URL baseUrlParam) {
 		this.baseUrl = requireNonNull(baseUrlParam);
 		logger.info("Base URL is {}", baseUrlParam);
 	}
@@ -244,7 +244,7 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	}
 
 	@Override
-	public void addJob(final Job job) throws IOException {
+	public void addJob(Job job) throws IOException {
 		requireNonNull(job);
 		logger.info("New job {}", job.getId());
 		jobOwner.put(job.getId(), job.getUserId());
@@ -257,13 +257,14 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	 * You need to hold the lock on {@link #jobExecuters} when running this
 	 * method.
 	 *
-	 * @param job The job to execute
+	 * @param job
+	 *            The job to execute
 	 *
-	 * @throws IOException If there is an error starting the job
+	 * @throws IOException
+	 *             If there is an error starting the job
 	 */
-	private void launchExecuter(final Job job) throws IOException {
-		final var executer =
-				jobExecuterFactory.createJobExecuter(this, baseUrl);
+	private void launchExecuter(Job job) throws IOException {
+		var executer = jobExecuterFactory.createJobExecuter(this, baseUrl);
 		synchronized (jobExecuters) {
 			var executerId = executer.getExecuterId();
 			jobExecuters.put(executerId, executer);
@@ -274,7 +275,7 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	}
 
 	@Override
-	public Job getNextJob(final String executerId) {
+	public Job getNextJob(String executerId) {
 		requireNonNull(executerId);
 		Job job = null;
 		synchronized (jobExecuters) {
@@ -290,8 +291,7 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	}
 
 	@Override
-	public SpinnakerMachine getLargestJobMachine(final int id,
-			final double runTime) {
+	public SpinnakerMachine getLargestJobMachine(int id, double runTime) {
 		// TODO Check quota to get the largest machine within the quota
 		try {
 			return machineManager.getMachines().stream()
@@ -303,9 +303,8 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	}
 
 	@Override
-	public SpinnakerMachine getJobMachine(final int id, final int nCores,
-			final int nChips, final int nBoards, final double runTime) {
-
+	public SpinnakerMachine getJobMachine(int id, int nCores, int nChips,
+			int nBoards, double runTime) {
 		logger.info(
 				"Request for {} cores or {} chips or {} boards for {} seconds",
 				nCores, nChips, nBoards, runTime / MILLISECONDS_PER_SECOND);
@@ -338,7 +337,7 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 			nBoardsToRequest = (int) nBoardsExact;
 		}
 
-		final var machine = allocateMachineForJob(id, jobOwner.get(id),
+		var machine = allocateMachineForJob(id, jobOwner.get(id),
 				nBoardsToRequest);
 		logger.info("Running {} on {}", id, machine.getMachineName());
 		addProvenance(id, asList("spinnaker_machine"),
@@ -357,10 +356,11 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	 * @param remove
 	 *            Whether the machine found should be removed or not.
 	 * @return The machine found
-	 * @throws WebApplicationException if machine not found
+	 * @throws WebApplicationException
+	 *             if machine not found
 	 */
-	private SpinnakerMachine findMachine(final int id,
-			final String machineName, final boolean remove) {
+	private SpinnakerMachine findMachine(int id,
+			String machineName, boolean remove) {
 		var machines = allocatedMachines.get(id);
 		if (isNull(machines)) {
 			throw new WebApplicationException(
@@ -380,7 +380,7 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	}
 
 	@Override
-	public void releaseMachine(final int id, final String machineName) {
+	public void releaseMachine(int id, String machineName) {
 		synchronized (allocatedMachines) {
 			var machine = findMachine(id, machineName, true);
 			try {
@@ -392,8 +392,7 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	}
 
 	@Override
-	public void setMachinePower(final int id, final String machineName,
-			final boolean powerOn) {
+	public void setMachinePower(int id, String machineName, boolean powerOn) {
 		synchronized (allocatedMachines) {
 			var machine = findMachine(id, machineName, false);
 			try {
@@ -405,8 +404,8 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	}
 
 	@Override
-	public ChipCoordinates getChipCoordinates(final int id,
-			final String machineName, final int chipX, final int chipY) {
+	public ChipCoordinates getChipCoordinates(int id, String machineName,
+			int chipX, int chipY) {
 		synchronized (allocatedMachines) {
 			var machine = findMachine(id, machineName, false);
 			try {
@@ -420,15 +419,18 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	/**
 	 * Get a machine to run the job on.
 	 *
-	 * @param id The ID of the job
-	 * @param user The user to run the job as
-	 * @param nBoardsToRequest The number of boards to request
+	 * @param id
+	 *            The ID of the job
+	 * @param user
+	 *            The user to run the job as
+	 * @param nBoardsToRequest
+	 *            The number of boards to request
 	 * @return The machine allocated
 	 */
-	private SpinnakerMachine allocateMachineForJob(final int id,
-			final String user, final int nBoardsToRequest) {
+	private SpinnakerMachine allocateMachineForJob(int id, String user,
+			int nBoardsToRequest) {
 		try {
-			final var machine = machineManager.getNextAvailableMachine(
+			var machine = machineManager.getNextAvailableMachine(
 					nBoardsToRequest, user, id);
 			synchronized (allocatedMachines) {
 				allocatedMachines.computeIfAbsent(
@@ -442,21 +444,23 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 
 	/**
 	 * Get the list of machines currently allocated to a job.
-	 * @param id The id of the job.
+	 *
+	 * @param id
+	 *            The id of the job.
 	 * @return The list of machines for the job.
 	 */
-	private List<SpinnakerMachine> getMachineForJob(final int id) {
+	private List<SpinnakerMachine> getMachineForJob(int id) {
 		synchronized (allocatedMachines) {
 			return allocatedMachines.get(id);
 		}
 	}
 
 	@Override
-	public void extendJobMachineLease(final int id, final double runTime) {
+	public void extendJobMachineLease(int id, double runTime) {
 		// Does Nothing
 	}
 
-	private boolean isMachineAvailable(final SpinnakerMachine machine) {
+	private boolean isMachineAvailable(SpinnakerMachine machine) {
 		try {
 			return machineManager.isMachineAvailable(machine);
 		} catch (IOException e) {
@@ -465,9 +469,8 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	}
 
 	@Override
-	public JobMachineAllocated checkMachineLease(final int id,
-			final int waitTime) {
-		final var machines = getMachineForJob(id);
+	public JobMachineAllocated checkMachineLease(int id, int waitTime) {
+		var machines = getMachineForJob(id);
 
 		// Return false if any machine is gone
 		if (!machines.stream().allMatch(this::isMachineAvailable)) {
@@ -490,12 +493,12 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	 * @param machines
 	 *            What to wait for events from.
 	 */
-	private void waitForAnyMachineStateChange(final int waitTime,
-			final List<SpinnakerMachine> machines) {
-		final var stateChangeSync = new LinkedBlockingQueue<>();
+	private void waitForAnyMachineStateChange(int waitTime,
+			List<SpinnakerMachine> machines) {
+		var stateChangeSync = new LinkedBlockingQueue<>();
 		try {
-			for (final var machine : machines) {
-				final var stateThread = new Thread(threadGroup, () -> {
+			for (var machine : machines) {
+				var stateThread = new Thread(threadGroup, () -> {
 					try {
 						machineManager.waitForMachineStateChange(machine,
 								waitTime);
@@ -508,21 +511,21 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 				stateThread.start();
 			}
 			stateChangeSync.take();
-		} catch (final InterruptedException e) {
+		} catch (InterruptedException e) {
 			// Does Nothing
 		}
 	}
 
 	@Override
-	public void appendLog(final int id, final String logToAppend) {
+	public void appendLog(int id, String logToAppend) {
 		logger.debug("Updating log for {}", id);
 		logger.trace("{}: {}", id, logToAppend);
 		queueManager.appendJobLog(id, requireNonNull(logToAppend));
 	}
 
 	@Override
-	public void addOutput(final String projectId, final int id,
-			final String output, final InputStream input) {
+	public void addOutput(String projectId, int id, String output,
+			InputStream input) {
 		requireNonNull(output);
 		requireNonNull(input);
 		try {
@@ -532,17 +535,17 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 				forceMkdir(tempOutputDir);
 				jobOutputTempFiles.put(id, tempOutputDir);
 			}
-		} catch (final IOException e) {
+		} catch (IOException e) {
 			logger.error("Error creating temporary output directory for {}",
 					id, e);
 			throw new WebApplicationException(INTERNAL_SERVER_ERROR);
 		}
 
-		final var outputFile = new File(jobOutputTempFiles.get(id), output);
+		var outputFile = new File(jobOutputTempFiles.get(id), output);
 		try {
 			forceMkdirParent(outputFile);
 			copyInputStreamToFile(input, outputFile);
-		} catch (final IOException e) {
+		} catch (IOException e) {
 			logger.error("Error writing file {} for job {}",
 					outputFile, id, e);
 			throw new WebApplicationException(INTERNAL_SERVER_ERROR);
@@ -552,24 +555,27 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	/**
 	 * Get the output data items for a job from a list of outputs.
 	 *
-	 * @param projectId The ID of the project of the job
-	 * @param id The ID of the job
-	 * @param baseFile The base file location for the files
-	 * @param outputs The output files
+	 * @param projectId
+	 *            The ID of the project of the job
+	 * @param id
+	 *            The ID of the job
+	 * @param baseFile
+	 *            The base file location for the files
+	 * @param outputs
+	 *            The output files
 	 * @return The list of data items.
-	 * @throws IOException If there was an error dealing with a file.
+	 * @throws IOException
+	 *             If there was an error dealing with a file.
 	 */
-	private List<DataItem> getOutputFiles(final String projectId, final int id,
-			final String baseFile, final List<String> outputs)
-			throws IOException {
-		final var outputItems = new ArrayList<DataItem>();
+	private List<DataItem> getOutputFiles(String projectId, int id,
+			String baseFile, List<String> outputs) throws IOException {
+		var outputItems = new ArrayList<DataItem>();
 		if (nonNull(outputs)) {
-			final var outputFiles =
-					outputs.stream().map(File::new).collect(toList());
+			var outputFiles = outputs.stream().map(File::new).collect(toList());
 			outputItems.addAll(outputManager.addOutputs(projectId, id,
 					new File(baseFile), outputFiles));
 		}
-		final var directory = jobOutputTempFiles.remove(id);
+		var directory = jobOutputTempFiles.remove(id);
 		if (nonNull(directory)) {
 			outputItems.addAll(outputManager.addOutputs(projectId, id,
 					directory, listFiles(directory, null, true)));
@@ -578,10 +584,9 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	}
 
 	@Override
-	public void addProvenance(final int id, final List<String> path,
-			final String value) {
+	public void addProvenance(int id, List<String> path, String value) {
 		synchronized (jobProvenance) {
-			final var provenance = jobProvenance.computeIfAbsent(id,
+			var provenance = jobProvenance.computeIfAbsent(id,
 					ignored -> new ObjectNode(JsonNodeFactory.instance));
 
 			// Traverse the object node to find the path to add to
@@ -621,19 +626,19 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	/**
 	 * Get the provenance for a job.
 	 *
-	 * @param id The ID of the job
+	 * @param id
+	 *            The ID of the job
 	 * @return The provenance as a JSON data item
 	 */
-	private ObjectNode getProvenance(final int id) {
+	private ObjectNode getProvenance(int id) {
 		synchronized (jobProvenance) {
 			return jobProvenance.remove(id);
 		}
 	}
 
 	@Override
-	public void setJobFinished(final String projectId, final int id,
-			final String logToAppend, final String baseDirectory,
-			final List<String> outputs) {
+	public void setJobFinished(String projectId, int id, String logToAppend,
+			String baseDirectory, List<String> outputs) {
 		requireNonNull(projectId);
 		requireNonNull(logToAppend);
 		requireNonNull(baseDirectory);
@@ -643,18 +648,18 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 		releaseAllocatedMachines(id);
 
 		// Do these before anything that can throw
-		final var prov = getProvenance(id);
+		var prov = getProvenance(id);
 
 		try {
 			queueManager.setJobFinished(id, logToAppend,
 					getOutputFiles(projectId, id, baseDirectory, outputs),
 					prov);
-		} catch (final IOException e) {
+		} catch (IOException e) {
 			logger.error("Error creating URLs while updating job", e);
 		}
 	}
 
-	private void releaseMachine(final SpinnakerMachine machine) {
+	private void releaseMachine(SpinnakerMachine machine) {
 		try {
 			machineManager.releaseMachine(machine);
 		} catch (IOException e) {
@@ -665,10 +670,11 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	/**
 	 * Release the machines allocated to a job.
 	 *
-	 * @param id The ID of the job
+	 * @param id
+	 *            The ID of the job
 	 * @return {@code true} if there were machines removed by this.
 	 */
-	private boolean releaseAllocatedMachines(final int id) {
+	private boolean releaseAllocatedMachines(int id) {
 		synchronized (allocatedMachines) {
 			final var machines = allocatedMachines.remove(id);
 			if (nonNull(machines)) {
@@ -679,10 +685,9 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	}
 
 	@Override
-	public void setJobError(final String projectId, final int id,
-			final String error, final String logToAppend,
-			final String baseDirectory, final List<String> outputs,
-			final RemoteStackTrace stackTrace) {
+	public void setJobError(String projectId, int id, String error,
+			String logToAppend, String baseDirectory, List<String> outputs,
+			RemoteStackTrace stackTrace) {
 		requireNonNull(projectId);
 		requireNonNull(error);
 		requireNonNull(logToAppend);
@@ -695,9 +700,9 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 		logger.info("Marking job {} as error", id);
 		releaseAllocatedMachines(id);
 
-		final var exception = reconstructRemoteException(error, stackTrace);
+		var exception = reconstructRemoteException(error, stackTrace);
 		// Do these before anything that can throw
-		final var prov = getProvenance(id);
+		var prov = getProvenance(id);
 
 		try {
 			queueManager.setJobError(id, logToAppend,
@@ -711,13 +716,15 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	/**
 	 * Convert a remote exception to a local one.
 	 *
-	 * @param error The error message.
-	 * @param stackTrace The stack trace.
+	 * @param error
+	 *            The error message.
+	 * @param stackTrace
+	 *            The stack trace.
 	 * @return The exception.
 	 */
-	private Exception reconstructRemoteException(final String error,
-			final RemoteStackTrace stackTrace) {
-		final var exception = new Exception(error);
+	private Exception reconstructRemoteException(String error,
+			RemoteStackTrace stackTrace) {
+		var exception = new Exception(error);
 		exception.setStackTrace(stackTrace.getElements().stream()
 				.map(RemoteStackTraceElement::toSTE)
 				.toArray(StackTraceElement[]::new));
@@ -732,27 +739,26 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	 * @param logToAppend
 	 *            The log messages
 	 */
-	public void setExecutorExited(final String executorId,
-			final String logToAppend) {
+	public void setExecutorExited(String executorId, String logToAppend) {
 		Job job = null;
 		synchronized (jobExecuters) {
 			job = executorJobId.remove(requireNonNull(executorId));
 			jobExecuters.remove(executorId);
 		}
 		if (nonNull(job)) {
-			final int id = job.getId();
+			int id = job.getId();
 			if (jobOwner.containsKey(id)) {
 				logger.debug("Executer {} for Job {} has exited, "
 						+ "but job not exited cleanly", executorId, id);
 				jobOwner.remove(id);
 				releaseAllocatedMachines(id);
-				final var prov = getProvenance(id);
+				var prov = getProvenance(id);
 				try {
-					final var projectId = job.getCollab();
+					var projectId = job.getCollab();
 					queueManager.setJobError(id, logToAppend,
 							getOutputFiles(projectId, id, null, null),
 							new Exception("Job did not finish cleanly"), prov);
-				} catch (final IOException e) {
+				} catch (IOException e) {
 					logger.error("Error creating URLs while updating job", e);
 					queueManager.setJobError(id, logToAppend,
 							new ArrayList<DataItem>(),
@@ -775,7 +781,7 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 
 	@Override
 	public Response getJobProcessManager() {
-		final var jobManagerStream =
+		var jobManagerStream =
 				getClass().getResourceAsStream("/" + JOB_PROCESS_MANAGER);
 		if (isNull(jobManagerStream)) {
 			throw new UnsatisfiedLinkError(

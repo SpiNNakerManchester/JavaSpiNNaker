@@ -148,7 +148,7 @@ public class OutputManagerImpl implements OutputManager {
 		 * Create a new lock for a directory.
 		 * @param dirParam The directory to lock
 		 */
-		JobLock(final File dirParam) {
+		JobLock(File dirParam) {
 			this.dir = dirParam;
 
 			LockToken lock;
@@ -167,7 +167,7 @@ public class OutputManagerImpl implements OutputManager {
 		@Override
 		public void close() {
 			synchronized (synchronizers) {
-				final var lock = synchronizers.get(dir);
+				var lock = synchronizers.get(dir);
 				if (!lock.unlock()) {
 					synchronizers.remove(dir);
 				}
@@ -182,7 +182,7 @@ public class OutputManagerImpl implements OutputManager {
 	 *            The base URL of the overall service, used when generating
 	 *            internal URLs.
 	 */
-	public OutputManagerImpl(final URL baseServerUrlParam) {
+	public OutputManagerImpl(URL baseServerUrlParam) {
 		this.baseServerUrl = baseServerUrlParam;
 	}
 
@@ -191,7 +191,7 @@ public class OutputManagerImpl implements OutputManager {
 	 * @param nDaysToKeepResults The number of days to keep the results
 	 */
 	@Value("${results.purge.days}")
-	void setPurgeTimeout(final long nDaysToKeepResults) {
+	void setPurgeTimeout(long nDaysToKeepResults) {
 		timeToKeepResults = MILLISECONDS.convert(nDaysToKeepResults, DAYS);
 	}
 
@@ -222,12 +222,12 @@ public class OutputManagerImpl implements OutputManager {
 	 * @param projectId The id of the project
 	 * @return The directory of the project
 	 */
-	private File getProjectDirectory(final String projectId) {
+	private File getProjectDirectory(String projectId) {
 		if (isNull(projectId) || projectId.isEmpty()
 				|| projectId.endsWith("/")) {
 			throw new IllegalArgumentException("bad projectId");
 		}
-		final var name = new File(projectId).getName();
+		var name = new File(projectId).getName();
 		if (name.equals(".") || name.equals("..") || name.isEmpty()) {
 			throw new IllegalArgumentException("bad projectId");
 		}
@@ -235,21 +235,20 @@ public class OutputManagerImpl implements OutputManager {
 	}
 
 	@Override
-	public List<DataItem> addOutputs(final String projectId, final int id,
-			final File baseDirectory, final Collection<File> outputs)
-			throws IOException {
+	public List<DataItem> addOutputs(String projectId, int id,
+			File baseDirectory, Collection<File> outputs) throws IOException {
 		if (isNull(outputs)) {
 			return null;
 		}
 
-		final var pId = new File(projectId).getName();
-		final int pathStart = baseDirectory.getAbsolutePath().length();
-		final var projectDirectory = getProjectDirectory(projectId);
-		final var idDirectory = new File(projectDirectory, String.valueOf(id));
+		var pId = new File(projectId).getName();
+		int pathStart = baseDirectory.getAbsolutePath().length();
+		var projectDirectory = getProjectDirectory(projectId);
+		var idDirectory = new File(projectDirectory, String.valueOf(id));
 
 		try (var op = new JobLock(idDirectory)) {
-			final var outputData = new ArrayList<DataItem>();
-			for (final var output : outputs) {
+			var outputData = new ArrayList<DataItem>();
+			for (var output : outputs) {
 				if (!output.getAbsolutePath()
 						.startsWith(baseDirectory.getAbsolutePath())) {
 					throw new IOException("Output file " + output
@@ -262,12 +261,14 @@ public class OutputManagerImpl implements OutputManager {
 					outputPath = outputPath.substring(1);
 				}
 
-				final var newOutput = new File(idDirectory, outputPath);
+				var newOutput = new File(idDirectory, outputPath);
 				newOutput.getParentFile().mkdirs();
 				if (newOutput.exists()) {
 					if (!newOutput.delete()) {
-						logger.warn("Could not delete existing file {};"
-								+ " new file will not be used!", newOutput);
+						logger.warn(
+								"Could not delete existing file {};"
+										+ " new file will not be used!",
+								newOutput);
 					} else {
 						logger.warn("Overwriting existing file {}", newOutput);
 					}
@@ -275,11 +276,11 @@ public class OutputManagerImpl implements OutputManager {
 				if (!newOutput.exists()) {
 					move(output.toPath(), newOutput.toPath());
 				}
-				final var outputUrl = new URL(baseServerUrl,
+				var outputUrl = new URL(baseServerUrl,
 						"output/" + pId + "/" + id + "/" + outputPath);
 				outputData.add(new DataItem(outputUrl.toExternalForm()));
-				logger.debug("New output {} mapped to {}",
-						newOutput, outputUrl);
+				logger.debug("New output {} mapped to {}", newOutput,
+						outputUrl);
 			}
 
 			return outputData;
@@ -288,17 +289,20 @@ public class OutputManagerImpl implements OutputManager {
 
 	/**
 	 * Get a file as a response to a query.
-	 * @param idDirectory The directory of the project
-	 * @param filename The name of the file to be stored
+	 *
+	 * @param idDirectory
+	 *            The directory of the project
+	 * @param filename
+	 *            The name of the file to be stored
 	 * @param download
-	 *     True if the content type should be set to guarantee that the file
-	 *     is downloaded, False to attempt to guess the content type
+	 *            True if the content type should be set to guarantee that the
+	 *            file is downloaded, False to attempt to guess the content type
 	 * @return The response
 	 */
-	private Response getResultFile(final File idDirectory,
-			final String filename, final boolean download) {
-		final var resultFile = new File(idDirectory, filename);
-		final var purgeFile = getPurgeFile(idDirectory);
+	private Response getResultFile(File idDirectory, String filename,
+			boolean download) {
+		var resultFile = new File(idDirectory, filename);
+		var purgeFile = getPurgeFile(idDirectory);
 
 		try (var op = new JobLock(idDirectory)) {
 			if (purgeFile.exists()) {
@@ -315,14 +319,13 @@ public class OutputManagerImpl implements OutputManager {
 
 			try {
 				if (!download) {
-					final var contentType =
-							probeContentType(resultFile.toPath());
+					var contentType = probeContentType(resultFile.toPath());
 					if (nonNull(contentType)) {
 						logger.debug("File has content type {}", contentType);
 						return ok(resultFile, contentType).build();
 					}
 				}
-			} catch (final IOException e) {
+			} catch (IOException e) {
 				logger.debug("Content type of {} could not be determined",
 						resultFile, e);
 			}
@@ -334,53 +337,60 @@ public class OutputManagerImpl implements OutputManager {
 
 	/**
 	 * Get the file that marks a directory as purged.
-	 * @param directory The directory to find the file in
+	 *
+	 * @param directory
+	 *            The directory to find the file in
 	 * @return The purge marker file
 	 */
-	private File getPurgeFile(final File directory) {
+	private File getPurgeFile(File directory) {
 		return new File(resultsDirectory, PURGED_FILE + directory.getName());
 	}
 
 	@Override
-	public Response getResultFile(final String projectId, final int id,
-			final String filename, final boolean download) {
+	public Response getResultFile(String projectId, int id, String filename,
+			boolean download) {
 		logger.debug("Retrieving {} from {}/{}", filename, projectId, id);
-		final var projectDirectory = getProjectDirectory(projectId);
-		final var idDirectory = new File(projectDirectory, String.valueOf(id));
+		var projectDirectory = getProjectDirectory(projectId);
+		var idDirectory = new File(projectDirectory, String.valueOf(id));
 		return getResultFile(idDirectory, filename, download);
 	}
 
 	@Override
-	public Response getResultFile(final int id, final String filename,
-			final boolean download) {
+	public Response getResultFile(int id, String filename, boolean download) {
 		logger.debug("Retrieving {} from {}", filename, id);
-		final var idDirectory = getProjectDirectory(String.valueOf(id));
+		var idDirectory = getProjectDirectory(String.valueOf(id));
 		return getResultFile(idDirectory, filename, download);
 	}
 
 	/**
 	 * Upload files in recursive subdirectories to UniCore.
-	 * @param authHeader The authentication to use
-	 * @param directory The directory to start from
-	 * @param fileManager The UniCore client
-	 * @param storageId The id of the UniCore storage
-	 * @param filePath The path in the UniCore storage to upload to
-	 * @throws IOException If something goes wrong
+	 *
+	 * @param authHeader
+	 *            The authentication to use
+	 * @param directory
+	 *            The directory to start from
+	 * @param fileManager
+	 *            The UniCore client
+	 * @param storageId
+	 *            The id of the UniCore storage
+	 * @param filePath
+	 *            The path in the UniCore storage to upload to
+	 * @throws IOException
+	 *             If something goes wrong
 	 */
-	private void recursivelyUploadFiles(final String authHeader,
-			final File directory,
-			final UnicoreFileClient fileManager, final String storageId,
-			final String filePath) throws IOException {
-		final var files = directory.listFiles();
+	private void recursivelyUploadFiles(String authHeader, File directory,
+			UnicoreFileClient fileManager, String storageId, String filePath)
+			throws IOException {
+		var files = directory.listFiles();
 		if (isNull(files)) {
 			return;
 		}
-		for (final var file : files) {
+		for (var file : files) {
 			if (file.getName().equals(".") || file.getName().equals("..")
 					|| file.getName().isEmpty()) {
 				continue;
 			}
-			final var uploadFileName = filePath + "/" + file.getName();
+			var uploadFileName = filePath + "/" + file.getName();
 			if (file.isDirectory()) {
 				recursivelyUploadFiles(authHeader, file, fileManager, storageId,
 						uploadFileName);
@@ -392,20 +402,20 @@ public class OutputManagerImpl implements OutputManager {
 			try (var input = new FileInputStream(file)) {
 				fileManager.upload(authHeader, storageId, uploadFileName,
 						input);
-			} catch (final WebApplicationException e) {
+			} catch (WebApplicationException e) {
 				throw new IOException("Error uploading file to " + storageId
 						+ "/" + uploadFileName, e);
-			} catch (final FileNotFoundException e) {
+			} catch (FileNotFoundException e) {
 				// Ignore files which vanish.
 			}
 		}
 	}
 
 	@Override
-	public Response uploadResultsToHPCServer(final String projectId,
-			final int id, final String serverUrl, final String storageId,
-			final String filePath, final String userId, final String token) {
-		final var idDirectory =
+	public Response uploadResultsToHPCServer(String projectId, int id,
+			String serverUrl, String storageId, String filePath, String userId,
+			String token) {
+		var idDirectory =
 				new File(getProjectDirectory(projectId), String.valueOf(id));
 		if (!idDirectory.canRead()) {
 			logger.debug("{} was not found", idDirectory);
@@ -413,17 +423,17 @@ public class OutputManagerImpl implements OutputManager {
 		}
 
 		try {
-			final var authHeader = "Bearer: " + token;
-			final var fileClient = UnicoreFileClient.createClient(serverUrl);
+			var authHeader = "Bearer: " + token;
+			var fileClient = UnicoreFileClient.createClient(serverUrl);
 			try (var op = new JobLock(idDirectory)) {
 				recursivelyUploadFiles(authHeader, idDirectory, fileClient,
 						storageId, filePath.replaceAll("/+$", ""));
 			}
-		} catch (final MalformedURLException e) {
+		} catch (MalformedURLException e) {
 			logger.error("bad user-supplied URL", e);
-			return status(BAD_REQUEST)
-					.entity("The URL specified was malformed").build();
-		} catch (final Throwable e) {
+			return status(BAD_REQUEST).entity("The URL specified was malformed")
+					.build();
+		} catch (Throwable e) {
 			logger.error("failure in upload", e);
 			return serverError()
 					.entity("General error reading or uploading a file")
@@ -435,10 +445,12 @@ public class OutputManagerImpl implements OutputManager {
 
 	/**
 	 * Recursively remove a directory.
-	 * @param directory The directory to remove
+	 *
+	 * @param directory
+	 *            The directory to remove
 	 */
-	private void removeDirectory(final File directory) {
-		for (final var file : directory.listFiles()) {
+	private void removeDirectory(File directory) {
+		for (var file : directory.listFiles()) {
 			if (file.isDirectory()) {
 				removeDirectory(file);
 			} else {
@@ -452,8 +464,8 @@ public class OutputManagerImpl implements OutputManager {
 	 * Remove files that are deemed to have expired.
 	 */
 	private void removeOldFiles() {
-		final long startTime = currentTimeMillis();
-		for (final var projectDirectory : resultsDirectory.listFiles()) {
+		long startTime = currentTimeMillis();
+		for (var projectDirectory : resultsDirectory.listFiles()) {
 			if (projectDirectory.isDirectory()
 					&& removeOldProjectDirectoryContents(startTime,
 							projectDirectory)) {
@@ -466,19 +478,23 @@ public class OutputManagerImpl implements OutputManager {
 
 	/**
 	 * Remove project contents that are deemed to have expired.
-	 * @param startTime The current time being considered
-	 * @param projectDirectory The directory containing the project files
+	 *
+	 * @param startTime
+	 *            The current time being considered
+	 * @param projectDirectory
+	 *            The directory containing the project files
 	 * @return True if every job in the project has been removed
 	 */
-	private boolean removeOldProjectDirectoryContents(final long startTime,
-			final File projectDirectory) {
+	private boolean removeOldProjectDirectoryContents(long startTime,
+			File projectDirectory) {
 		boolean allJobsRemoved = true;
-		for (final var jobDirectory : projectDirectory.listFiles()) {
-			logger.debug("Determining whether to remove {} "
-					+ "which is {}ms old of {}", jobDirectory,
-					startTime - jobDirectory.lastModified(),
+		for (var jobDirectory : projectDirectory.listFiles()) {
+			logger.debug(
+					"Determining whether to remove {} which is {}ms old of {}",
+					jobDirectory, startTime - jobDirectory.lastModified(),
 					timeToKeepResults);
-			if (jobDirectory.isDirectory() && ((startTime
+			if (jobDirectory
+					.isDirectory() && ((startTime
 					- jobDirectory.lastModified()) > timeToKeepResults)) {
 				logger.info("Removing results for job {}",
 						jobDirectory.getName());

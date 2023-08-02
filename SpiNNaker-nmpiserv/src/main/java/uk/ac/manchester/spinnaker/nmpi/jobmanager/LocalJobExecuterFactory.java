@@ -59,7 +59,7 @@ public final class LocalJobExecuterFactory implements JobExecuterFactory {
 	 * @throws IOException If the file can't be instantiated
 	 */
 	private static File getJavaExec() throws IOException {
-		final var binDir = new File(System.getProperty("java.home"), "bin");
+		var binDir = new File(System.getProperty("java.home"), "bin");
 		var exec = new File(binDir, "java");
 		if (!exec.canExecute()) {
 			exec = new File(binDir, "java.exe");
@@ -116,30 +116,32 @@ public final class LocalJobExecuterFactory implements JobExecuterFactory {
 	@PostConstruct
 	private void installJobExecuter() throws IOException {
 		// Find the JobManager resource
-		final var jobManagerStream =
+		var jobManagerStream =
 				getClass().getResourceAsStream("/" + JOB_PROCESS_MANAGER);
 		if (isNull(jobManagerStream)) {
 			throw new UnsatisfiedLinkError(
 					"/" + JOB_PROCESS_MANAGER + " not found in classpath");
 		}
 
-		// Create a temporary folder
-		jobExecuterDirectory = createTempFile("jobExecuter", "tmp");
-		jobExecuterDirectory.delete();
-		jobExecuterDirectory.mkdirs();
-		jobExecuterDirectory.deleteOnExit();
+		try (jobManagerStream) {
+			// Create a temporary folder
+			jobExecuterDirectory = createTempFile("jobExecuter", "tmp");
+			jobExecuterDirectory.delete();
+			jobExecuterDirectory.mkdirs();
+			jobExecuterDirectory.deleteOnExit();
 
-		// Extract the JobManager resources
-		forceMkdir(jobExecuterDirectory);
-		copyToFile(jobManagerStream, new File(jobExecuterDirectory,
-				JOB_PROCESS_MANAGER));
+			// Extract the JobManager resources
+			forceMkdir(jobExecuterDirectory);
+			copyToFile(jobManagerStream,
+					new File(jobExecuterDirectory, JOB_PROCESS_MANAGER));
+		}
 	}
 
 	@Override
-	public JobExecuter createJobExecuter(final JobManager manager,
-			final URL baseUrl) throws IOException {
-		final var uuid = UUID.randomUUID().toString();
-		final var arguments = new ArrayList<String>();
+	public JobExecuter createJobExecuter(JobManager manager, URL baseUrl)
+			throws IOException {
+		var uuid = UUID.randomUUID().toString();
+		var arguments = new ArrayList<String>();
 		arguments.add("--serverUrl");
 		arguments.add(requireNonNull(baseUrl).toString());
 		arguments.add("--local");
@@ -210,9 +212,8 @@ public final class LocalJobExecuterFactory implements JobExecuterFactory {
 		 * @throws IOException
 		 *             If there is an error creating the log file
 		 */
-		Executer(final JobManager jobManagerParam,
-				final List<String> argumentsParam,
-				final String idParam) throws IOException {
+		Executer(JobManager jobManagerParam, List<String> argumentsParam,
+				String idParam) throws IOException {
 			this.jobManager = jobManagerParam;
 			this.arguments = argumentsParam;
 			this.id = idParam;
@@ -235,7 +236,7 @@ public final class LocalJobExecuterFactory implements JobExecuterFactory {
 				logger.debug("Waiting for process to finish");
 				try {
 					process.waitFor();
-				} catch (final InterruptedException e) {
+				} catch (InterruptedException e) {
 					// Do nothing; the thread will terminate shortly
 				}
 				logger.debug("Process finished, closing pipe");
@@ -250,11 +251,11 @@ public final class LocalJobExecuterFactory implements JobExecuterFactory {
 		 * @return The arguments as a list of strings.
 		 */
 		private List<String> constructArguments() {
-			final var command = new ArrayList<String>();
+			var command = new ArrayList<String>();
 			command.add(javaExec.getAbsolutePath());
 			command.add("-jar");
 			command.add(JOB_PROCESS_MANAGER);
-			for (final var argument : arguments) {
+			for (var argument : arguments) {
 				command.add(argument);
 				logger.debug("Argument: {}", argument);
 			}
@@ -268,7 +269,7 @@ public final class LocalJobExecuterFactory implements JobExecuterFactory {
 		 * @return The output of the process as a pipe
 		 */
 		private JobOutputPipe startSubprocess(final List<String> command) {
-			final var builder = new ProcessBuilder(command);
+			var builder = new ProcessBuilder(command);
 			builder.directory(jobExecuterDirectory);
 			logger.debug("Working directory: {}", jobExecuterDirectory);
 			builder.redirectErrorStream(true);
@@ -277,12 +278,11 @@ public final class LocalJobExecuterFactory implements JobExecuterFactory {
 					logger.debug("Starting execution process");
 					process = builder.start();
 					logger.debug("Starting pipe from process");
-					var pipe = new JobOutputPipe(
-							process.getInputStream(),
+					var pipe = new JobOutputPipe(process.getInputStream(),
 							new PrintWriter(outputLog));
 					pipe.start();
 					return pipe;
-				} catch (final IOException e) {
+				} catch (IOException e) {
 					logger.error("Error running external job", e);
 					startException = e;
 					return null;
@@ -299,7 +299,7 @@ public final class LocalJobExecuterFactory implements JobExecuterFactory {
 			var loggedOutput = new StringWriter();
 			try (var reader = new FileReader(outputLog)) {
 				copy(reader, loggedOutput);
-			} catch (final IOException e) {
+			} catch (IOException e) {
 				logger.warn("problem in reporting log", e);
 			}
 			jobManager.setExecutorExited(id, loggedOutput.toString());
@@ -362,7 +362,7 @@ public final class LocalJobExecuterFactory implements JobExecuterFactory {
 		 *            Where things are going to. This class will close this when
 		 *            it is no longer required.
 		 */
-		JobOutputPipe(final InputStream input, final PrintWriter output) {
+		JobOutputPipe(InputStream input, PrintWriter output) {
 			super(threadGroup, "JobOutputPipe");
 			reader = buffer(new InputStreamReader(input));
 			writer = output;
@@ -373,7 +373,7 @@ public final class LocalJobExecuterFactory implements JobExecuterFactory {
 		private String readLine() {
 			try {
 				return reader.readLine();
-			} catch (final IOException e) {
+			} catch (IOException e) {
 				return null;
 			}
 		}

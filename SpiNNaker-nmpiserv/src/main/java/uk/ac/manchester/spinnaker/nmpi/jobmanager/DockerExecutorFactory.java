@@ -117,8 +117,8 @@ public final class DockerExecutorFactory implements JobExecuterFactory {
 	}
 
 	@Override
-	public JobExecuter createJobExecuter(final JobManager manager,
-			final URL baseUrl) throws IOException {
+	public JobExecuter createJobExecuter(JobManager manager, URL baseUrl)
+			throws IOException {
 		requireNonNull(manager);
 		requireNonNull(baseUrl);
 		waitToClaimVM();
@@ -162,7 +162,7 @@ public final class DockerExecutorFactory implements JobExecuterFactory {
 
 		private String id;
 
-		private Executor(final JobManager jobManager, final URL baseUrl)
+		private Executor(JobManager jobManager, URL baseUrl)
 				throws IOException {
 			this.manager = jobManager;
 			uuid = randomUUID().toString();

@@ -26,7 +26,7 @@ import java.util.Map;
  * @param <A>
  *            The type of arguments.
  */
-public sealed abstract class Command<A>
+public abstract sealed class Command<A>
 		permits CreateJobCommand, DestroyJobCommand, GetJobMachineInfoCommand,
 		GetJobStateCommand, JobKeepAliveCommand, ListMachinesCommand,
 		NoNotifyJobCommand, NotifyJobCommand, PowerOffJobBoardsCommand,

@@ -96,16 +96,16 @@ public final class SpallocJavaMachineManagerImpl implements MachineManager {
 
 	@Override
 	public List<SpinnakerMachine> getMachines() throws IOException {
-		return client.listMachines().stream().map(
-				m -> new SpinnakerMachine(m.getName(), VERSION,
+		return client.listMachines().stream()
+				.map(m -> new SpinnakerMachine(m.getName(), VERSION,
 						m.getWidth(), m.getHeight(), m.getLiveBoardCount(),
 						null))
 				.collect(Collectors.toList());
 	}
 
 	@Override
-	public SpinnakerMachine getNextAvailableMachine(final int nBoards,
-			final String owner, final int jobId) {
+	public SpinnakerMachine getNextAvailableMachine(int nBoards, String owner,
+			int jobId) {
 		try {
 			var createJob = new CreateJob(nBoards);
 			createJob.setOwner(owner);
@@ -125,8 +125,8 @@ public final class SpallocJavaMachineManagerImpl implements MachineManager {
 	}
 
 	@Override
-	public boolean isMachineAvailable(final SpinnakerMachine machine) {
-		final var job = jobMap.get(machine);
+	public boolean isMachineAvailable(SpinnakerMachine machine) {
+		var job = jobMap.get(machine);
 		if (isNull(job)) {
 			return false;
 		}
@@ -134,15 +134,15 @@ public final class SpallocJavaMachineManagerImpl implements MachineManager {
 	}
 
 	@Override
-	public boolean waitForMachineStateChange(final SpinnakerMachine machine,
-			final int waitTime) {
-		final var job = jobMap.get(machine);
+	public boolean waitForMachineStateChange(SpinnakerMachine machine,
+			int waitTime) {
+		var job = jobMap.get(machine);
 		if (isNull(job)) {
 			return true;
 		}
-		final var state = lastJobState.get(machine);
+		var state = lastJobState.get(machine);
 		try {
-			final var newState = job.describe(true).getState();
+			var newState = job.describe(true).getState();
 			lastJobState.put(machine, newState);
 			return newState == state;
 		} catch (IOException e) {
@@ -151,8 +151,8 @@ public final class SpallocJavaMachineManagerImpl implements MachineManager {
 	}
 
 	@Override
-	public void releaseMachine(final SpinnakerMachine machine) {
-		final var job = jobMap.get(machine);
+	public void releaseMachine(SpinnakerMachine machine) {
+		var job = jobMap.get(machine);
 		if (isNull(job)) {
 			return;
 		}
@@ -165,9 +165,8 @@ public final class SpallocJavaMachineManagerImpl implements MachineManager {
 	}
 
 	@Override
-	public void setMachinePower(final SpinnakerMachine machine,
-			final boolean powerOn) {
-		final var job = jobMap.get(machine);
+	public void setMachinePower(SpinnakerMachine machine, boolean powerOn) {
+		var job = jobMap.get(machine);
 		if (isNull(job)) {
 			return;
 		}
@@ -179,15 +178,15 @@ public final class SpallocJavaMachineManagerImpl implements MachineManager {
 	}
 
 	@Override
-	public ChipCoordinates getChipCoordinates(final SpinnakerMachine machine,
-			final int x, final int y) {
-		final var job = jobMap.get(machine);
+	public ChipCoordinates getChipCoordinates(SpinnakerMachine machine, int x,
+			int y) {
+		var job = jobMap.get(machine);
 		if (isNull(job)) {
 			return null;
 		}
 		try {
-			var whereIs = job.whereIs(new ChipLocation(x, y))
-					.getPhysicalCoords();
+			var whereIs =
+					job.whereIs(new ChipLocation(x, y)).getPhysicalCoords();
 			return new ChipCoordinates(whereIs.c(), whereIs.f(), whereIs.b());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
