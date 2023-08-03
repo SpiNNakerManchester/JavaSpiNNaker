@@ -187,7 +187,7 @@ public class ServiceConfig extends Application {
 	 *            {@code spring.task.scheduling.pool.size} property.
 	 * @return The set up thread pool bean.
 	 */
-	@Bean(name="threadPoolTaskExecutor")
+	@Bean(name = "threadPoolTaskExecutor")
 	@Primary
 	public ThreadPoolTaskScheduler threadPoolTaskExecutor(
 			@Value("${spring.task.scheduling.pool.size}") int numThreads) {
