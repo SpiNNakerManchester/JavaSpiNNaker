@@ -162,7 +162,9 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		// Set the pool size to match the number of workers
-		sched.setPoolSize(workers.size());
+		if (workers.size() > 1) {
+			sched.setPoolSize(workers.size());
+		}
 	}
 
 	private void makeWorkers() {
