@@ -47,6 +47,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
 import com.google.errorprone.annotations.RestrictedApi;
@@ -110,7 +111,6 @@ public class BMPController extends DatabaseAwareBean {
 	@Autowired
 	private AllocatorTask allocator;
 
-	@Autowired
 	private TaskScheduler scheduler;
 
 	private final Map<Integer, Worker> workers = new HashMap<>();
@@ -147,6 +147,12 @@ public class BMPController extends DatabaseAwareBean {
 
 	@PostConstruct
 	private void init() {
+		// Set up scheduler
+		var sched = new ThreadPoolTaskScheduler();
+		scheduler = sched;
+		sched.setThreadGroupName("BMP");
+		sched.initialize();
+
 		controllerFactory = controllerFactoryBean::getObject;
 		allocator.setBMPController(this);
 
@@ -154,6 +160,9 @@ public class BMPController extends DatabaseAwareBean {
 		if (!serviceControl.isUseDummyBMP()) {
 			makeWorkers();
 		}
+
+		// Set the pool size to match the number of workers
+		sched.setPoolSize(workers.size());
 	}
 
 	private void makeWorkers() {

@@ -401,17 +401,6 @@ public class ServiceConfig extends Application {
 		}
 	}
 
-	/*@Bean(name = "dataSource")
-	@ConfigurationProperties(prefix = "spring.datasource")
-	public DataSource dataSource() {
-		return DataSourceBuilder.create().build();
-	}
-
-	@Bean(name = "jdbcTemplate")
-	public JdbcTemplate applicationDataConnection(){
-		return new JdbcTemplate(dataSource());
-	} */
-
 	@Autowired
 	private ApplicationContext ctx;
 
