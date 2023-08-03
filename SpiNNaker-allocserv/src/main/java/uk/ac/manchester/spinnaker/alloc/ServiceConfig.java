@@ -71,7 +71,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Role;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.JdbcTransactionManager;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -188,9 +187,9 @@ public class ServiceConfig extends Application {
 	 *            {@code spring.task.scheduling.pool.size} property.
 	 * @return The set up thread pool bean.
 	 */
-	@Bean
+	@Bean(name="threadPoolTaskExecutor")
 	@Primary
-	public TaskScheduler threadPoolTaskScheduler(
+	public ThreadPoolTaskScheduler threadPoolTaskExecutor(
 			@Value("${spring.task.scheduling.pool.size}") int numThreads) {
 		ThreadPoolTaskScheduler threadPoolTaskScheduler
 			= new ThreadPoolTaskScheduler();
