@@ -31,9 +31,9 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.springframework.dao.DataAccessException;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.DownLink;
+import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardLink;
 import uk.ac.manchester.spinnaker.spalloc.messages.State;
@@ -219,13 +219,13 @@ abstract class Utils {
 	/**
 	 * Convert the state of a job.
 	 *
-	 * @param job
-	 *            The job.
+	 * @param state
+	 *            The job state
 	 * @return The converted state.
 	 */
-	static State state(Job job) {
+	static State state(JobState state) {
 		// So trivial...
-		return switch (job.getState()) {
+		return switch (state) {
 		case QUEUED -> State.QUEUED;
 		case POWER -> State.POWER;
 		case READY -> State.READY;

@@ -15,14 +15,16 @@
  */
 package uk.ac.manchester.spinnaker.alloc.model;
 
+import static java.util.Objects.isNull;
+
 import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
 /**
@@ -81,8 +83,7 @@ public class JobListEntryRecord {
 
 	private boolean powered;
 
-	@Positive
-	private Integer numBoards;
+	private List<BoardCoords> boards;
 
 	@PositiveOrZero
 	private int machineId;
@@ -99,6 +100,8 @@ public class JobListEntryRecord {
 	private String owner;
 
 	private String host;
+
+	private byte[] originalRequest;
 
 	/** @return the job's ID */
 	public int getId() {
@@ -142,12 +145,23 @@ public class JobListEntryRecord {
 
 	/** @return the number of boards allocated to the job */
 	public Optional<Integer> getNumBoards() {
-		return Optional.ofNullable(numBoards);
+		if (isNull(boards)) {
+			return Optional.empty();
+		}
+		return Optional.of(boards.size());
 	}
 
-	/** @param numBoards the number of boards allocated to the job */
-	public void setNumBoards(Integer numBoards) {
-		this.numBoards = numBoards;
+	/** @return the boards of the job */
+	public List<BoardCoords> getBoards() {
+		if (isNull(boards)) {
+			return List.of();
+		}
+		return boards;
+	}
+
+	/** @param boards the boards allocated to the job */
+	public void setBoards(List<BoardCoords> boards) {
+		this.boards = boards;
 	}
 
 	/** @return the ID of the machine that the job is using */
@@ -218,5 +232,15 @@ public class JobListEntryRecord {
 	/** @param host the host keeping things alive */
 	public void setHost(String host) {
 		this.host = host;
+	}
+
+	/** @param originalRequest the original request to create the job */
+	public void setOriginalRequest(byte[] originalRequest) {
+		this.originalRequest = originalRequest;
+	}
+
+	/** @return the original request to create the job */
+	public Optional<byte[]> getOriginalRequest() {
+		return Optional.ofNullable(originalRequest);
 	}
 }

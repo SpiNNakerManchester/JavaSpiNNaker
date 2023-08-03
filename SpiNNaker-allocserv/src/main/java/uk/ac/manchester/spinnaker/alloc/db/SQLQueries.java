@@ -262,10 +262,13 @@ public abstract class SQLQueries {
 	@ResultColumn("allocation_size")
 	@ResultColumn("keepalive_host")
 	@ResultColumn("user_name")
+	@ResultColumn("machine_name")
+	@ResultColumn("original_request")
 	protected static final String LIST_LIVE_JOBS = """
 			SELECT job_id, jobs.machine_id, create_timestamp,
 				keepalive_interval, job_state, allocation_size,
-				keepalive_host, user_name, machines.machine_name
+				keepalive_host, user_name, machines.machine_name,
+  			original_request
 			FROM jobs
 				JOIN machines USING (machine_id)
 				JOIN user_info ON jobs.owner = user_info.user_id
@@ -2066,18 +2069,6 @@ public abstract class SQLQueries {
 			""";
 
 	/**
-<<<<<<< HEAD
-	 * Mark all pending changes as eligible for processing. Called once on
-	 * application startup when all internal queues are guaranteed to be empty.
-	 */
-	protected static final String CLEAR_STUCK_PENDING = """
-			UPDATE pending_changes
-			SET in_progress = 0
-			""";
-
-	/**
-=======
->>>>>>> refs/heads/master
 	 * Read the blacklisted chips for a board.
 	 *
 	 * @see BlacklistStore
@@ -2938,7 +2929,6 @@ public abstract class SQLQueries {
 	protected Resource issueChangeForJob;
 
 	/**
->>>>>>> refs/heads/master
 	 * Count the number of <em>connected</em> boards (i.e., have at least one
 	 * path over enabled links to the root board of the allocation) within a
 	 * rectangle of triads. The triads are taken as being full depth.
