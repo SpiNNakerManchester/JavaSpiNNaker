@@ -16,7 +16,6 @@
 package uk.ac.manchester.spinnaker.nmpi.rest;
 
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE;
-import static uk.ac.manchester.spinnaker.nmpi.rest.NMPIQueue.createProvider;
 
 import java.util.List;
 
@@ -31,9 +30,14 @@ import javax.ws.rs.Produces;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 import uk.ac.manchester.spinnaker.nmpi.model.NMPILog;
+import uk.ac.manchester.spinnaker.nmpi.model.QueueEmpty;
+import uk.ac.manchester.spinnaker.nmpi.model.QueueJobCompat;
 import uk.ac.manchester.spinnaker.nmpi.model.QueueNextResponse;
+import uk.ac.manchester.spinnaker.nmpi.rest.utils.CustomJacksonJsonProvider;
+import uk.ac.manchester.spinnaker.nmpi.rest.utils.PropertyBasedDeserialiser;
 
 /**
  * The REST API for the HBP Neuromorphic Platform Interface queue.
@@ -100,7 +104,7 @@ public interface NMPIQueueCompat {
 	 *            The details to update
 	 */
 	@PUT
-	@Path("jobs/{id}")
+	@Path("queue/{id}")
 	@Consumes("application/json")
 	void finishJob(@HeaderParam("Authorization") String authHeader,
 			@PathParam("id") int id, JobDoneCompat job);
@@ -115,5 +119,34 @@ public interface NMPIQueueCompat {
 		mapper.setPropertyNamingStrategy(SNAKE_CASE);
 		return JAXRSClientFactory.create(url, NMPIQueueCompat.class,
 				List.of(createProvider()));
+	}
+
+	/**
+	 * Create a JSON provider capable of handling the messages on the NMPI
+	 * queue.
+	 *
+	 * @return The provider.
+	 */
+	static JacksonJsonProvider createProvider() {
+		var provider = new CustomJacksonJsonProvider();
+		provider.addDeserialiser(QueueNextResponse.class,
+				new NMPIQueueResponseDeserialiserCompat());
+		return provider;
+	}
+}
+
+/**
+ * How to understand messages coming from the queue.
+ */
+@SuppressWarnings("serial")
+class NMPIQueueResponseDeserialiserCompat
+		extends PropertyBasedDeserialiser<QueueNextResponse> {
+	/**
+	 * Make a deserialiser.
+	 */
+	NMPIQueueResponseDeserialiserCompat() {
+		super(QueueNextResponse.class);
+		register("id", QueueJobCompat.class);
+		register("warning", QueueEmpty.class);
 	}
 }
