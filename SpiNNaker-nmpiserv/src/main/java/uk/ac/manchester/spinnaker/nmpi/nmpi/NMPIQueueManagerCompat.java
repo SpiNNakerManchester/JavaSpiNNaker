@@ -43,7 +43,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.DataItem;
 import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.Job;
 import uk.ac.manchester.spinnaker.nmpi.model.NMPILog;
-import uk.ac.manchester.spinnaker.nmpi.model.OutputData;
 import uk.ac.manchester.spinnaker.nmpi.model.QueueEmpty;
 import uk.ac.manchester.spinnaker.nmpi.model.QueueNextResponse;
 import uk.ac.manchester.spinnaker.nmpi.rest.JobDoneCompat;
@@ -74,12 +73,6 @@ public class NMPIQueueManagerCompat implements NMPIQueueManager {
 	 * Job status when in error.
 	 */
 	public static final String STATUS_ERROR = "error";
-
-	/**
-	 * The name of the repository for the service.
-	 */
-	private static final String REPOSITORY =
-			"SpiNNaker Manchester temporary storage";
 
 	/**
 	 * The amount of time to sleep when an empty queue is detected.
@@ -283,10 +276,8 @@ public class NMPIQueueManagerCompat implements NMPIQueueManager {
 			appendJobLog(id, logToAppend);
 		}
 
-		final var outputData = new OutputData(REPOSITORY);
 		final var job = new JobDoneCompat(id, STATUS_FINISHED);
-		outputData.setFiles(outputs);
-		job.setOutputData(outputData);
+		job.setOutputData(outputs);
 		job.setTimestampCompletion(new DateTime(UTC));
 		job.setProvenance(provenance);
 
@@ -334,10 +325,8 @@ public class NMPIQueueManagerCompat implements NMPIQueueManager {
 		appendJobLog(id, logMessage.toString());
 
 		final var job = new JobDoneCompat(id, STATUS_ERROR);
-		final var outputData = new OutputData(REPOSITORY);
-		outputData.setFiles(outputs);
 		job.setTimestampCompletion(new DateTime(UTC));
-		job.setOutputData(outputData);
+		job.setOutputData(outputs);
 		job.setProvenance(provenance);
 
 		try {

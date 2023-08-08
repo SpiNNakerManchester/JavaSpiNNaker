@@ -15,13 +15,15 @@
  */
 package uk.ac.manchester.spinnaker.nmpi.rest;
 
+import java.util.List;
+
 import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import uk.ac.manchester.spinnaker.nmpi.model.DateTimeSerialiser;
-import uk.ac.manchester.spinnaker.nmpi.model.OutputData;
+import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.DataItem;
 
 /**
  * A Job where only the parts required for completion are set.
@@ -35,7 +37,7 @@ public class JobDoneCompat {
 	@JsonSerialize(using = DateTimeSerialiser.class)
 	private DateTime timestampCompletion;
 
-	private OutputData outputData;
+	private List<DataItem> outputData;
 
 	private ObjectNode provenance;
 
@@ -92,7 +94,7 @@ public class JobDoneCompat {
 	 *
 	 * @return the outputData
 	 */
-	public OutputData getOutputData() {
+	public List<DataItem> getOutputData() {
 		return outputData;
 	}
 
@@ -101,7 +103,7 @@ public class JobDoneCompat {
 	 *
 	 * @param outputDataParam the outputData to set
 	 */
-	public void setOutputData(final OutputData outputDataParam) {
+	public void setOutputData(final List<DataItem> outputDataParam) {
 		this.outputData = outputDataParam;
 	}
 
