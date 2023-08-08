@@ -32,9 +32,9 @@ public interface NMPIQueueManager {
 	 * @param listener
 	 *            The listener to register
 	 */
-	public void addListener(final NMPIQueueListener listener);
+	void addListener(NMPIQueueListener listener);
 
-	public void processResponsesFromQueue();
+	void processResponsesFromQueue();
 
 	/**
 	 * Appends log messages to the log.
@@ -44,7 +44,7 @@ public interface NMPIQueueManager {
 	 * @param logToAppend
 	 *            The messages to append
 	 */
-	public void appendJobLog(final int id, final String logToAppend);
+	void appendJobLog(int id, String logToAppend);
 
 	/**
 	 * Mark a job as running.
@@ -52,7 +52,7 @@ public interface NMPIQueueManager {
 	 * @param id
 	 *            The ID of the job.
 	 */
-	public void setJobRunning(final int id);
+	void setJobRunning(int id);
 
 	/**
 	 * Marks a job as finished successfully.
@@ -67,8 +67,8 @@ public interface NMPIQueueManager {
 	 * @param provenance
 	 *            JSON provenance information
 	 */
-	public void setJobFinished(final int id, final String logToAppend,
-			final List<DataItem> outputs, final ObjectNode provenance);
+	void setJobFinished(int id, String logToAppend,
+			List<DataItem> outputs, ObjectNode provenance);
 
 	/**
 	 * Marks a job as finished with an error.
@@ -85,9 +85,9 @@ public interface NMPIQueueManager {
 	 * @param provenance
 	 *            JSON provenance information
 	 */
-	public void setJobError(final int id, final String logToAppend,
-			final List<DataItem> outputs, final Throwable error,
-			final ObjectNode provenance);
+	void setJobError(int id, String logToAppend,
+			List<DataItem> outputs, Throwable error,
+			ObjectNode provenance);
 
 	/**
 	 * Close the manager.
