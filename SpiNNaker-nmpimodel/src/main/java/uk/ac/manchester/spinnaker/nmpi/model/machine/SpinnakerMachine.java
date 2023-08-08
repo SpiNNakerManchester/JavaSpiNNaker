@@ -21,8 +21,8 @@ import static java.util.Comparator.nullsFirst;
 import static java.util.Objects.nonNull;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -119,8 +119,8 @@ public class SpinnakerMachine
 		var output = new StringBuilder();
 		// Note: List.of won't work here because things can be null and
 		// List.of doesn't allow null things
-		var potentials = new Object[] { machineName, version, bmpDetails, width,
-				height, bmpDetails };
+		var potentials = Arrays.asList(machineName, version, bmpDetails, width,
+				height, bmpDetails);
 		for (var potential : potentials) {
 			if (nonNull(potential)) {
 				if (output.length() > 0) {
