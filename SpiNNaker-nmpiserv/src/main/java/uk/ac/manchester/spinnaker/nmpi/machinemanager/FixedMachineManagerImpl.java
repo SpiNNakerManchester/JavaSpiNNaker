@@ -34,26 +34,18 @@ import uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine;
  * A manager of directly-connected SpiNNaker machines.
  */
 public final class FixedMachineManagerImpl implements MachineManager {
-	/**
-	 * The queue of available machines.
-	 */
+	/** The queue of available machines. */
 	@GuardedBy("lock")
 	private final Set<SpinnakerMachine> machinesAvailable = new HashSet<>();
 
-	/**
-	 * The set of machine allocated.
-	 */
+	/** The set of machine allocated. */
 	@GuardedBy("lock")
 	private final Set<SpinnakerMachine> machinesAllocated = new HashSet<>();
 
-	/**
-	 * Lock to avoid concurrent modification in different threads.
-	 */
+	/** Lock to avoid concurrent modification in different threads. */
 	private final Object lock = new Object();
 
-	/**
-	 * True when the manager is finished.
-	 */
+	/** True when the manager is finished. */
 	@GuardedBy("lock")
 	private boolean done = false;
 

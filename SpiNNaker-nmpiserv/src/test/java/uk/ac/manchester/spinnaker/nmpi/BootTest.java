@@ -53,7 +53,7 @@ class BootTest extends TestSupport {
 	private NMPIQueueManager nmpiQueueManager;
 
 	@Test
-	void testContextBoot() throws InterruptedException {
+	void testContextBoot() {
 		// If all these bits are there, we declare the application to be working
 		assertNotNull(jobManager);
 		assertNotNull(machineManager);

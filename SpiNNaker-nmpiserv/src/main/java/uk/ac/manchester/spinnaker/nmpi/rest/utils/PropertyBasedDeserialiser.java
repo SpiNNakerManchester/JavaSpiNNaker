@@ -38,9 +38,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 public class PropertyBasedDeserialiser<T> extends StdDeserializer<T> {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * The registry of known elements.
-	 */
+	/** The registry of known elements. */
 	private final Map<String, Class<? extends T>> registry = new HashMap<>();
 
 	/**
@@ -49,7 +47,7 @@ public class PropertyBasedDeserialiser<T> extends StdDeserializer<T> {
 	 * @param type
 	 *          The (super)class of the values that will be produced.
 	 */
-	public PropertyBasedDeserialiser(final Class<T> type) {
+	public PropertyBasedDeserialiser(Class<T> type) {
 		super(type);
 	}
 
@@ -63,8 +61,7 @@ public class PropertyBasedDeserialiser<T> extends StdDeserializer<T> {
 	 *            The class to register against the property.
 	 * @throws IllegalArgumentException if one of the parameters is null.
 	 */
-	public void register(final String propertyName,
-			final Class<? extends T> type) {
+	public void register(String propertyName, Class<? extends T> type) {
 		if (isNull(propertyName)) {
 			throw new IllegalArgumentException("propertyName must be non-null");
 		}
@@ -76,11 +73,10 @@ public class PropertyBasedDeserialiser<T> extends StdDeserializer<T> {
 	}
 
 	@Override
-	public T deserialize(final JsonParser parser,
-			final DeserializationContext context)
+	public T deserialize(JsonParser parser, DeserializationContext context)
 			throws IOException, JsonProcessingException {
-		final var root = parser.readValueAsTree();
-		final var elementsIterator = root.fieldNames();
+		var root = parser.readValueAsTree();
+		var elementsIterator = root.fieldNames();
 		while (elementsIterator.hasNext()) {
 			var c = registry.get(elementsIterator.next());
 			if (nonNull(c)) {

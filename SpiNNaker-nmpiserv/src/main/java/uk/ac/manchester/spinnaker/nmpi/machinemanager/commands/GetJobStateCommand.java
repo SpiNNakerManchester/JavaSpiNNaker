@@ -25,7 +25,7 @@ public final class GetJobStateCommand extends Command<Integer> {
 	 * @param jobId
 	 *            The job to get the state of.
 	 */
-	public GetJobStateCommand(final int jobId) {
+	public GetJobStateCommand(int jobId) {
 		super("get_job_state");
 		addArg(jobId);
 	}

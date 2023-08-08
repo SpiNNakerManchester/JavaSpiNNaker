@@ -37,6 +37,7 @@ import org.apache.xmlrpc.XmlRpcException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 import com.xensource.xenapi.Connection;
 import com.xensource.xenapi.Types.VmPowerState;
 import com.xensource.xenapi.Types.XenAPIException;
@@ -48,91 +49,63 @@ import com.xensource.xenapi.VM;
  * Executer factory that uses Xen VMs.
  */
 public final class XenVMExecuterFactory implements JobExecuterFactory {
-
 	/** Bytes in a gigabyte. Well, a gibibyte, but that's a nasty word. */
 	private static final long GB = 1024L * 1024L * 1024L;
 
 	/** Time (in ms) between checks to see if a VM is running. */
 	private static final int VM_POLL_INTERVAL = 10000;
 
-	/**
-	 * Lock object used for synchronisation.
-	 */
+	/** Lock object used for synchronisation. */
 	private final Object lock = new Object();
 
-	/**
-	 * The thread group of any threads.
-	 */
+	/** The thread group of any threads. */
 	private final ThreadGroup threadGroup;
 
-	/**
-	 * Logging.
-	 */
+	/** Logging. */
 	private static final Logger logger = getLogger(Executer.class);
 
-	/**
-	 * The URL of the Xen Server.
-	 */
+	/** The URL of the Xen Server. */
 	@Value("${xen.server.url}")
 	private URL xenServerUrl;
 
-	/**
-	 * The username under which to control Xen.
-	 */
+	/** The username under which to control Xen. */
 	@Value("${xen.server.username}")
 	private String username;
 
-	/**
-	 * The password for the username.
-	 */
+	/** The password for the username. */
 	@Value("${xen.server.password}")
 	private String password;
 
-	/**
-	 * The name of the Xen Template VM.
-	 */
+	/** The name of the Xen Template VM. */
 	@Value("${xen.server.templateVm}")
 	private String templateLabel;
 
-	/**
-	 * True if the VMs should be deleted on shutdown of the VM.
-	 */
+	/** True if the VMs should be deleted on shutdown of the VM. */
 	@Value("${deleteJobsOnExit}")
 	private boolean deleteOnExit;
 
-	/**
-	 * True if the Xen VM should shutdown on exit of the job.
-	 */
+	/** True if the Xen VM should shutdown on exit of the job. */
 	@Value("${xen.server.shutdownOnExit}")
 	private boolean shutdownOnExit;
 
-	/**
-	 * True if the log of the job should upload as it is output.
-	 */
+	/** True if the log of the job should upload as it is output. */
 	@Value("${liveUploadOutput}")
 	private boolean liveUploadOutput;
 
-	/**
-	 * True if a spinnaker machine should be requested.
-	 */
+	/** True if a SpiNNaker machine should be requested. */
 	@Value("${requestSpiNNakerMachine}")
 	private boolean requestSpiNNakerMachine;
 
-	/**
-	 * The default size of the disk to attach to the Xen VM.
-	 */
+	/** The default size of the disk to attach to the Xen VM. */
 	@Value("${xen.server.diskspaceInGbs}")
 	private long defaultDiskSizeInGbs;
 
-	/**
-	 * The maximum number of VMs to create.
-	 */
+	/** The maximum number of VMs to create. */
 	@Value("${xen.server.maxVms}")
 	private int maxNVirtualMachines;
 
-	/**
-	 * The current number of VMs.
-	 */
+	/** The current number of VMs. */
+	@GuardedBy("lock")
 	private int nVirtualMachines = 0;
 
 	/**
@@ -185,14 +158,10 @@ public final class XenVMExecuterFactory implements JobExecuterFactory {
 
 	/** Taming the Xen API a bit. */
 	class XenConnection implements AutoCloseable {
-		/**
-		 * The Xen connection.
-		 */
+		/** The Xen connection. */
 		private Connection conn;
 
-		/**
-		 * The ID of the executor on the VM.
-		 */
+		/** The ID of the executor on the VM. */
 		private final String id;
 
 		/**
@@ -441,14 +410,10 @@ public final class XenVMExecuterFactory implements JobExecuterFactory {
 	 */
 	protected final class Executer implements JobExecuter {
 		// Parameters from constructor
-		/**
-		 * The Job Manager to report to.
-		 */
+		/** The Job Manager to report to. */
 		private final JobManager jobManager;
 
-		/**
-		 * The UUID to assign to this executor.
-		 */
+		/** The UUID to assign to this executor. */
 		private final String uuid;
 
 		/**
@@ -457,35 +422,23 @@ public final class XenVMExecuterFactory implements JobExecuterFactory {
 		 */
 		private final URL jobProcessManagerUrl;
 
-		/**
-		 * The arguments for the job process manager.
-		 */
+		/** The arguments for the job process manager. */
 		private final String args;
 
 		// Internal entities
-		/**
-		 * The VM of the job.
-		 */
+		/** The VM of the job. */
 		private VM clonedVm;
 
-		/**
-		 * The disk of the cloned VM.
-		 */
+		/** The disk of the cloned VM. */
 		private VBD disk;
 
-		/**
-		 * The Virtual Disk Image of the cloned VM.
-		 */
+		/** The Virtual Disk Image of the cloned VM. */
 		private VDI vdi;
 
-		/**
-		 * The Virtual Disk Image added to the VM.
-		 */
+		/** The Virtual Disk Image added to the VM. */
 		private VDI extraVdi;
 
-		/**
-		 * The disk added to the VM.
-		 */
+		/** The disk added to the VM. */
 		private VBD extraDisk;
 
 		/**

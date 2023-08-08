@@ -21,25 +21,16 @@ import java.util.List;
  * Describes a machine by its name, tags, width and height.
  */
 public class Machine {
-
-	/**
-	 * The name of the machine.
-	 */
+	/** The name of the machine. */
 	private String name;
 
-	/**
-	 * The list of tags associated with the machine.
-	 */
+	/** The list of tags associated with the machine. */
 	private List<String> tags;
 
-	/**
-	 * The width of the machine.
-	 */
+	/** The width of the machine. */
 	private int width;
 
-	/**
-	 * The height of the machine.
-	 */
+	/** The height of the machine. */
 	private int height;
 
 	/**
@@ -56,7 +47,7 @@ public class Machine {
 	 *
 	 * @param nameParam The name of the machine to set
 	 */
-	public void setName(final String nameParam) {
+	void setName(String nameParam) {
 		this.name = nameParam;
 	}
 
@@ -74,7 +65,7 @@ public class Machine {
 	 *
 	 * @param tagsParam The tags to set
 	 */
-	public void setTags(final List<String> tagsParam) {
+	void setTags(List<String> tagsParam) {
 		this.tags = tagsParam;
 	}
 
@@ -92,7 +83,7 @@ public class Machine {
 	 *
 	 * @param widthParam The width in chips
 	 */
-	public void setWidth(final int widthParam) {
+	void setWidth(int widthParam) {
 		this.width = widthParam;
 	}
 
@@ -110,7 +101,7 @@ public class Machine {
 	 *
 	 * @param heightParam The height in chips
 	 */
-	public void setHeight(final int heightParam) {
+	void setHeight(int heightParam) {
 		this.height = heightParam;
 	}
 }

@@ -63,7 +63,7 @@ public class SessionRequest {
 	 *
 	 * @param collab the collab to set
 	 */
-	public void setCollab(final String collab) {
+	public void setCollab(String collab) {
 		this.collab = collab;
 	}
 
@@ -81,7 +81,7 @@ public class SessionRequest {
 	 *
 	 * @param userIdParam the userId to set
 	 */
-	public void setUserId(final String userIdParam) {
+	public void setUserId(String userIdParam) {
 		this.userId = userIdParam;
 	}
 
@@ -123,7 +123,7 @@ public class SessionRequest {
 	 *            The value to set it to.
 	 */
 	@JsonAnySetter
-	void set(final String name, final Object value) {
+	void set(String name, Object value) {
 		// Ignore any other values
 	}
 }

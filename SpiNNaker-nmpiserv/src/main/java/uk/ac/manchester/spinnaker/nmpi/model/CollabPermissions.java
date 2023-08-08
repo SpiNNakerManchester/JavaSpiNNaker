@@ -21,15 +21,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * POJO describing the permissions to a collaboratory object.
  */
 public class CollabPermissions {
-
-	/**
-	 * True if delete permission.
-	 */
+	/** True if delete permission. */
 	private boolean delete;
 
-	/**
-	 * True if update permission.
-	 */
+	/** True if update permission. */
 	private boolean update;
 
 	/**
@@ -47,7 +42,7 @@ public class CollabPermissions {
 	 *
 	 * @param deleteParam Whether to give permission
 	 */
-	public void setDelete(final boolean deleteParam) {
+	void setDelete(boolean deleteParam) {
 		this.delete = deleteParam;
 	}
 
@@ -66,8 +61,7 @@ public class CollabPermissions {
 	 *
 	 * @param updateParam Whether permission is given
 	 */
-	public void setUpdate(final boolean updateParam) {
+	void setUpdate(boolean updateParam) {
 		this.update = updateParam;
 	}
-
 }

@@ -268,7 +268,7 @@ public abstract class SQLQueries {
 			SELECT job_id, jobs.machine_id, create_timestamp,
 				keepalive_interval, job_state, allocation_size,
 				keepalive_host, user_name, machines.machine_name,
-  			original_request
+				original_request
 			FROM jobs
 				JOIN machines USING (machine_id)
 				JOIN user_info ON jobs.owner = user_info.user_id

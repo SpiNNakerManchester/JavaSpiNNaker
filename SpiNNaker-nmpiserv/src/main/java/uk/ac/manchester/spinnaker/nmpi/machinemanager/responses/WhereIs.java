@@ -19,40 +19,25 @@ package uk.ac.manchester.spinnaker.nmpi.machinemanager.responses;
  * The description of where some resource is on a SpiNNaker system.
  */
 public class WhereIs {
-
-	/**
-	 * The job-relative location of the chip.
-	 */
+	/** The job-relative location of the chip. */
 	private int[] jobChip;
 
-	/**
-	 * The id of the job.
-	 */
+	/** The id of the job. */
 	private int jobId;
 
-	/**
-	 * The physical location of the chip.
-	 */
+	/** The physical location of the chip. */
 	private int[] chip;
 
-	/**
-	 * The logical location of the job.
-	 */
+	/** The logical location of the job. */
 	private int[] logical;
 
-	/**
-	 * The machine if the job.
-	 */
+	/** The machine if the job. */
 	private String machine;
 
-	/**
-	 * The board-relative location of the chip.
-	 */
+	/** The board-relative location of the chip. */
 	private int[] boardChip;
 
-	/**
-	 * The physical location of the job.
-	 */
+	/** The physical location of the job. */
 	private int[] physical;
 
 	/**
@@ -70,7 +55,7 @@ public class WhereIs {
 	 * @param jobChipParam
 	 *            the job chip to set
 	 */
-	public void setJobChip(final int[] jobChipParam) {
+	void setJobChip(int[] jobChipParam) {
 		this.jobChip = jobChipParam;
 	}
 
@@ -89,7 +74,7 @@ public class WhereIs {
 	 * @param jobIdParam
 	 *            the job id to set
 	 */
-	public void setJobId(final int jobIdParam) {
+	void setJobId(int jobIdParam) {
 		this.jobId = jobIdParam;
 	}
 
@@ -108,7 +93,7 @@ public class WhereIs {
 	 * @param chipParam
 	 *            the chip to set
 	 */
-	public void setChip(final int[] chipParam) {
+	void setChip(int[] chipParam) {
 		this.chip = chipParam;
 	}
 
@@ -127,7 +112,7 @@ public class WhereIs {
 	 * @param logicalParam
 	 *            the logical to set
 	 */
-	public void setLogical(final int[] logicalParam) {
+	void setLogical(int[] logicalParam) {
 		this.logical = logicalParam;
 	}
 
@@ -146,7 +131,7 @@ public class WhereIs {
 	 * @param machineParam
 	 *            the machine to set
 	 */
-	public void setMachine(final String machineParam) {
+	void setMachine(String machineParam) {
 		this.machine = machineParam;
 	}
 
@@ -165,7 +150,7 @@ public class WhereIs {
 	 * @param boardChipParam
 	 *            the board chip to set
 	 */
-	public void setBoardChip(final int[] boardChipParam) {
+	void setBoardChip(int[] boardChipParam) {
 		this.boardChip = boardChipParam;
 	}
 
@@ -184,7 +169,7 @@ public class WhereIs {
 	 * @param physicalParam
 	 *            the physical to set
 	 */
-	public void setPhysical(final int[] physicalParam) {
+	void setPhysical(int[] physicalParam) {
 		this.physical = physicalParam;
 	}
 }

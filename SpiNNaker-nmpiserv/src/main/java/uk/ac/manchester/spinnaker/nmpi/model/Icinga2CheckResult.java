@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A result to report to Icinga.
- *
  */
 @JsonInclude(Include.NON_NULL)
 public class Icinga2CheckResult {
@@ -67,17 +66,22 @@ public class Icinga2CheckResult {
 	/**
 	 * Create a new result to report.
 	 *
-	 * @param exitStatusParam The status to report.
-	 * @param pluginOutputParam An output string to add to the report.
-	 * @param performanceDataParam Any performance data to report as a string.
-	 * @param ttlParam The time at which the next report is expected in seconds.
-	 * @param hostParam The host to report on.
-	 * @param serviceParam The service to report on.
+	 * @param exitStatusParam
+	 *            The status to report.
+	 * @param pluginOutputParam
+	 *            An output string to add to the report.
+	 * @param performanceDataParam
+	 *            Any performance data to report as a string.
+	 * @param ttlParam
+	 *            The time at which the next report is expected in seconds.
+	 * @param hostParam
+	 *            The host to report on.
+	 * @param serviceParam
+	 *            The service to report on.
 	 */
-	public Icinga2CheckResult(final int exitStatusParam,
-			final String pluginOutputParam, final String performanceDataParam,
-			final Integer ttlParam, final String hostParam,
-			final String serviceParam) {
+	public Icinga2CheckResult(int exitStatusParam, String pluginOutputParam,
+			String performanceDataParam, Integer ttlParam, String hostParam,
+			String serviceParam) {
 		exitStatus = exitStatusParam;
 		pluginOutput = pluginOutputParam;
 		performanceData = performanceDataParam;

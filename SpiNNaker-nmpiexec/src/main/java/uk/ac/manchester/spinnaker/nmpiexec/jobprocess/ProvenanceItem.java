@@ -21,15 +21,10 @@ import java.util.List;
  * A single item of provenance data.
  */
 public class ProvenanceItem {
-
-	/**
-	 * The path of the item.
-	 */
+	/** The path of the item. */
 	private final List<String> path;
 
-	/**
-	 * The value if the item.
-	 */
+	/** The value if the item. */
 	private final String value;
 
 	/**
@@ -40,8 +35,7 @@ public class ProvenanceItem {
 	 * @param valueParam
 	 *            The content of the value.
 	 */
-	public ProvenanceItem(
-			final List<String> pathParam, final String valueParam) {
+	public ProvenanceItem(List<String> pathParam, String valueParam) {
 		this.path = pathParam;
 		this.value = valueParam;
 	}

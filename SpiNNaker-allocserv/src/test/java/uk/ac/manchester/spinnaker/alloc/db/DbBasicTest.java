@@ -32,8 +32,6 @@ import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.test.context.ActiveProfiles;
 
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
-
 /**
  * Test that the database engine interface works and that the queries are
  * synchronised with the schema. Deliberately does not do meaningful testing of
@@ -133,14 +131,15 @@ class DbBasicTest extends SimpleDBTestBase {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
 	void testDbChanges() {
 		assumeWritable(c);
 		c.transaction(() -> {
 			int rows;
-			((Connection) c).update(
-					"CREATE TEMPORARY TABLE foo "
-					+ "(k INT PRIMARY KEY AUTO_INCREMENT, x INT)").call();
+			c.update("""
+					CREATE TEMPORARY TABLE foo (
+						k INT PRIMARY KEY AUTO_INCREMENT,
+						x INT)
+					""").call();
 			try (var u = c.update("INSERT INTO foo(x) VALUES(?)");
 					var q = c.query("SELECT x FROM foo WHERE ? = ?");
 					var q2 = c.query("SELECT x FROM foo")) {

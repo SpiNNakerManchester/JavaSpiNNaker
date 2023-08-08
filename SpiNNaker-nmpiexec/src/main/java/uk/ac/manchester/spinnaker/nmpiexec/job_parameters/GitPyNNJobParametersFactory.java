@@ -38,11 +38,11 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.pynn.PyNNJobParameters;
  */
 final class GitPyNNJobParametersFactory extends JobParametersFactory {
 	@Override
-	public JobParameters getJobParameters(final Job job,
-			final File workingDirectory, final String setupScript)
+	public JobParameters getJobParameters(Job job, File workingDirectory,
+			String setupScript)
 			throws UnsupportedJobException, JobParametersFactoryException {
 		// Test that there is a URL
-		final var jobCodeLocation = job.getCode().trim();
+		var jobCodeLocation = job.getCode().trim();
 		if (!jobCodeLocation.startsWith("http://")
 				&& !jobCodeLocation.startsWith("https://")) {
 			throw new UnsupportedJobException();
@@ -52,13 +52,13 @@ final class GitPyNNJobParametersFactory extends JobParametersFactory {
 		try {
 			return constructParameters(job, workingDirectory, jobCodeLocation,
 					setupScript);
-		} catch (final InvalidRemoteException e) {
+		} catch (InvalidRemoteException e) {
 			throw new JobParametersFactoryException("Remote is not valid", e);
-		} catch (final TransportException e) {
+		} catch (TransportException e) {
 			throw new JobParametersFactoryException("Transport failed", e);
-		} catch (final GitAPIException e) {
+		} catch (GitAPIException e) {
 			throw new JobParametersFactoryException("Error using Git", e);
-		} catch (final Throwable e) {
+		} catch (Throwable e) {
 			throw new JobParametersFactoryException(
 					"General error getting git repository", e);
 		}
@@ -67,22 +67,29 @@ final class GitPyNNJobParametersFactory extends JobParametersFactory {
 	/**
 	 * Constructs the parameters by checking out the git repository.
 	 *
-	 * @param job The job to get the parameters of
-	 * @param workingDirectory The directory where the job should be run
-	 * @param experimentDescription The git URL
-	 * @param setupScript The setup script to run
+	 * @param job
+	 *            The job to get the parameters of
+	 * @param workingDirectory
+	 *            The directory where the job should be run
+	 * @param experimentDescription
+	 *            The git URL
+	 * @param setupScript
+	 *            The setup script to run
 	 * @return The constructed parameters
-	 * @throws GitAPIException If there is a general problem using Git
-	 * @throws InvalidRemoteException If there is a problem with the repository
-	 * @throws TransportException If there is a problem in communication
-	 * @throws URISyntaxException If the URI syntax is incorrect
+	 * @throws GitAPIException
+	 *             If there is a general problem using Git
+	 * @throws InvalidRemoteException
+	 *             If there is a problem with the repository
+	 * @throws TransportException
+	 *             If there is a problem in communication
+	 * @throws URISyntaxException
+	 *             If the URI syntax is incorrect
 	 */
-	private JobParameters constructParameters(final Job job,
-			final File workingDirectory, final String experimentDescription,
-			final String setupScript)
+	private JobParameters constructParameters(Job job, File workingDirectory,
+			String experimentDescription, String setupScript)
 			throws GitAPIException, InvalidRemoteException, TransportException,
 			URISyntaxException {
-		final var clone = cloneRepository();
+		var clone = cloneRepository();
 		var urish = new URIish(experimentDescription);
 		if (nonNull(urish.getUser())) {
 			var pass = urish.getPass();
@@ -90,7 +97,8 @@ final class GitPyNNJobParametersFactory extends JobParametersFactory {
 				pass = "";
 			}
 			clone.setCredentialsProvider(
-				new UsernamePasswordCredentialsProvider(urish.getUser(), pass));
+					new UsernamePasswordCredentialsProvider(urish.getUser(),
+							pass));
 		}
 
 		// Clone into a sub-directory of the working directory
@@ -98,7 +106,7 @@ final class GitPyNNJobParametersFactory extends JobParametersFactory {
 		if (subdir.equals("")) {
 			subdir = "repo";
 		}
-		final var cloneDir = new File(workingDirectory, subdir);
+		var cloneDir = new File(workingDirectory, subdir);
 
 		clone.setURI(experimentDescription);
 		clone.setDirectory(cloneDir);
@@ -106,12 +114,12 @@ final class GitPyNNJobParametersFactory extends JobParametersFactory {
 		clone.call();
 
 		var script = DEFAULT_SCRIPT_NAME + SYSTEM_ARG;
-		final var command = job.getCommand();
+		var command = job.getCommand();
 		if (nonNull(command) && !command.isEmpty()) {
 			script = command;
 		}
 
-		return new PyNNJobParameters(cloneDir.getAbsolutePath(),
-				setupScript, script, job.getHardwareConfig());
+		return new PyNNJobParameters(cloneDir.getAbsolutePath(), setupScript,
+				script, job.getHardwareConfig());
 	}
 }

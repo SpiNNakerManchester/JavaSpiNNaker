@@ -31,8 +31,8 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.pynn.PyNNJobParameters;
  */
 final class DirectPyNNJobParametersFactory extends JobParametersFactory {
 	@Override
-	public JobParameters getJobParameters(final Job job,
-			final File workingDirectory, final String setupScript)
+	public JobParameters getJobParameters(Job job, File workingDirectory,
+			String setupScript)
 			throws UnsupportedJobException, JobParametersFactoryException {
 		if (!job.getCode().contains("import")) {
 			throw new UnsupportedJobException();
@@ -40,27 +40,30 @@ final class DirectPyNNJobParametersFactory extends JobParametersFactory {
 
 		try {
 			return constructParameters(job, workingDirectory, setupScript);
-		} catch (final IOException e) {
+		} catch (IOException e) {
 			throw new JobParametersFactoryException("Error storing script", e);
-		} catch (final Throwable e) {
+		} catch (Throwable e) {
 			throw new JobParametersFactoryException(
 					"General error with PyNN Script", e);
 		}
 	}
 
-/**
-	* Constructs the parameters by writing the script into a local file.
-	*
-	* @param job The job to construct parameters for
-	* @param workingDirectory The directory where the job should be started
-	* @param setupScript The setup script to run
-	* @return The parameters created
-	* @throws IOException If the file can't be found to write
-	*/
-	private JobParameters constructParameters(final Job job,
-			final File workingDirectory, final String setupScript)
-			throws IOException {
-		final var scriptFile = new File(workingDirectory, DEFAULT_SCRIPT_NAME);
+	/**
+	 * Constructs the parameters by writing the script into a local file.
+	 *
+	 * @param job
+	 *            The job to construct parameters for
+	 * @param workingDirectory
+	 *            The directory where the job should be started
+	 * @param setupScript
+	 *            The setup script to run
+	 * @return The parameters created
+	 * @throws IOException
+	 *             If the file can't be found to write
+	 */
+	private JobParameters constructParameters(Job job, File workingDirectory,
+			String setupScript) throws IOException {
+		var scriptFile = new File(workingDirectory, DEFAULT_SCRIPT_NAME);
 		try (var writer = new PrintWriter(scriptFile, UTF_8)) {
 			writer.print(job.getCode());
 		}

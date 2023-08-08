@@ -25,7 +25,7 @@ public final class DestroyJobCommand extends Command<Integer> {
 	 * @param jobId
 	 *            The ID of the job.
 	 */
-	public DestroyJobCommand(final int jobId) {
+	public DestroyJobCommand(int jobId) {
 		super("destroy_job");
 		addArg(jobId);
 	}

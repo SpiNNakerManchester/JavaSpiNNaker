@@ -27,6 +27,7 @@ import static java.util.Objects.requireNonNull;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
@@ -51,12 +52,13 @@ public abstract class FileDownloader {
 	/**
 	 * Get the filename from the content disposition header.
 	 *
-	 * @param contentDisposition The header
+	 * @param contentDisposition
+	 *            The header
 	 * @return The filename
 	 */
-	private static String getFileName(final String contentDisposition) {
+	private static String getFileName(String contentDisposition) {
 		if (nonNull(contentDisposition)) {
-			final var cdl = contentDisposition.toLowerCase();
+			var cdl = contentDisposition.toLowerCase();
 			if (cdl.startsWith("form-data") || cdl.startsWith("attachment")) {
 				return new ContentDisposition(cdl).getFilename();
 			}
@@ -67,21 +69,24 @@ public abstract class FileDownloader {
 	/**
 	 * Create an authenticated connection.
 	 *
-	 * @param url The URL to connect to
-	 * @param userInfo The authentication to use, as username:password
-	 * @throws IOException if an I/O error occurs
+	 * @param url
+	 *            The URL to connect to
+	 * @param userInfo
+	 *            The authentication to use, as username:password
+	 * @throws IOException
+	 *             if an I/O error occurs
 	 * @return The created connection
 	 */
-	private static URLConnection createConnectionWithAuth(final URL url,
-			final String userInfo) throws IOException {
+	private static URLConnection createConnectionWithAuth(URL url,
+			String userInfo) throws IOException {
 		var urlConnection = requireNonNull(url).openConnection();
 		urlConnection.setDoInput(true);
 
 		urlConnection.setRequestProperty("Accept", "*/*");
 		if (nonNull(userInfo)
 				&& urlConnection instanceof HttpURLConnection httpConnection) {
-			var basicAuth = "Basic " + Base64.encodeBase64URLSafeString(
-				userInfo.getBytes(UTF_8));
+			var basicAuth = "Basic " + Base64
+					.encodeBase64URLSafeString(userInfo.getBytes(UTF_8));
 			httpConnection.setRequestProperty("Authorization", basicAuth);
 			httpConnection.setInstanceFollowRedirects(false);
 		}
@@ -102,8 +107,8 @@ public abstract class FileDownloader {
 	 * @throws IOException
 	 *          If anything goes wrong.
 	 */
-	public static File downloadFile(final URL url, final File workingDirectory,
-			final String defaultFilename) throws IOException {
+	public static File downloadFile(URL url, File workingDirectory,
+			String defaultFilename) throws IOException {
 		requireNonNull(workingDirectory);
 
 		// Open a connection
@@ -111,66 +116,93 @@ public abstract class FileDownloader {
 		if (nonNull(userInfo)) {
 			userInfo = URLDecoder.decode(url.getUserInfo(), UTF_8);
 		}
-		var urlConnection = createConnectionWithAuth(url, userInfo);
-		int redirectCount = 0;
+		var connection = createConnectionFolllowingRedirects(url, userInfo);
 
-		if (urlConnection instanceof HttpURLConnection) {
-			boolean redirect;
-			do {
-				var httpConnection = (HttpURLConnection) urlConnection;
-				httpConnection.connect();
-				int responseCode = httpConnection.getResponseCode();
-				switch (responseCode) {
-				case HTTP_MOVED_TEMP, HTTP_MOVED_PERM:
-					var location = httpConnection.getHeaderField("Location");
-					if (isNull(location)) {
-						location = url.toString();
-					}
-					urlConnection = createConnectionWithAuth(new URL(location),
-							userInfo);
-					redirect = true;
-					break;
-				default:
-					redirect = false;
-				}
-			} while (redirect && redirectCount++ < REDIRECT_LIMIT);
-		}
-
-		// Work out the output filename
-		final var output = getTargetFile(url, workingDirectory,
-			defaultFilename, urlConnection);
+		// Work out the output filename; uses the original URL for defaulting
+		var output = getTargetFile(url, workingDirectory, defaultFilename,
+				connection);
 
 		// Write the file
-		copy(urlConnection.getInputStream(), output.toPath());
+		copy(connection.getInputStream(), output.toPath());
 
 		return output;
+	}
+
+	private static URLConnection createConnectionFolllowingRedirects(URL url,
+			String userInfo) throws IOException, MalformedURLException {
+		var connection = createConnectionWithAuth(url, userInfo);
+		boolean secure = url.getProtocol().equalsIgnoreCase("https");
+		int redirectCount = 0;
+		boolean redirect;
+		var realUrl = url;
+		do {
+			if (connection instanceof HttpURLConnection httpConnection) {
+				httpConnection.connect();
+				redirect = switch (httpConnection.getResponseCode()) {
+				case HTTP_MOVED_TEMP, HTTP_MOVED_PERM -> {
+					var location = httpConnection.getHeaderField("Location");
+					if (isNull(location) || location.isBlank()) {
+						location = url.toString();
+					}
+					realUrl = new URL(realUrl, location);
+					if (secure && !realUrl.getProtocol()
+							.equalsIgnoreCase("https")) {
+						/*
+						 * Jumped from HTTPS to some other protocol, so drop the
+						 * credentials if we have them.
+						 */
+						userInfo = null;
+					}
+					connection = createConnectionWithAuth(realUrl, userInfo);
+					yield true;
+				}
+				default -> false;
+				};
+			} else {
+				// Non-HTTP connections can't do redirects
+				redirect = false;
+			}
+		} while (redirect && redirectCount++ < REDIRECT_LIMIT);
+		return connection;
 	}
 
 	/**
 	 * Get the file to write to.
 	 *
-	 * @param url The URL of the file
-	 * @param workingDirectory The directory to put the file in
-	 * @param defaultFilename The default file name if nothing else can be used
-	 * @param urlConnection The connection where the file has been downloaded
-	 *     from
+	 * @param url
+	 *            The URL of the file
+	 * @param workingDirectory
+	 *            The directory to put the file in
+	 * @param defaultFilename
+	 *            The default file name if nothing else can be used
+	 * @param connection
+	 *            The connection where the file has been downloaded from
 	 * @return The file to write to.
-	 * @throws IOException If the file cannot be created
+	 * @throws IOException
+	 *             If the file cannot be created
 	 */
-	private static File getTargetFile(final URL url,
-			final File workingDirectory, final String defaultFilename,
-			final URLConnection urlConnection) throws IOException {
-		final var filename = getFileName(
-				urlConnection.getHeaderField("Content-Disposition"));
+	private static File getTargetFile(URL url, File workingDirectory,
+			String defaultFilename, URLConnection connection)
+			throws IOException {
+		var filename =
+				getFileName(connection.getHeaderField("Content-Disposition"));
 		if (nonNull(filename)) {
+			if (filename.isBlank() || filename.contains("..")) {
+				throw new IllegalArgumentException("bad filename");
+			}
 			return new File(workingDirectory, filename);
 		}
 		if (nonNull(defaultFilename)) {
+			if (defaultFilename.isBlank() || defaultFilename.contains("..")) {
+				throw new IllegalArgumentException("bad filename");
+			}
 			return new File(workingDirectory, defaultFilename);
 		}
-		final var path = url.getPath();
+		var path = url.getPath();
 		if (path.isEmpty()) {
 			return createTempFile("download", "file", workingDirectory);
+		} else if (path.contains("..")) {
+			throw new IllegalArgumentException("bad filename");
 		}
 		return new File(workingDirectory, new File(path).getName());
 	}
@@ -187,11 +219,10 @@ public abstract class FileDownloader {
 	 *            URL or headers, or {@code null} to use a generated name
 	 * @return The file downloaded
 	 * @throws IOException
-	 *          If anything goes wrong.
+	 *             If anything goes wrong.
 	 */
-	public static File downloadFile(final String url,
-			final File workingDirectory, final String defaultFilename)
-			throws IOException {
+	public static File downloadFile(String url, File workingDirectory,
+			String defaultFilename) throws IOException {
 		return downloadFile(new URL(url), workingDirectory, defaultFilename);
 	}
 }

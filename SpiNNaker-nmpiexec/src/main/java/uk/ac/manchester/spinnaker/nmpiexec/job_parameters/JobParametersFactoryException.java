@@ -20,29 +20,27 @@ package uk.ac.manchester.spinnaker.nmpiexec.job_parameters;
  * converting the job to parameters.
  */
 public class JobParametersFactoryException extends Exception {
-
-	/**
-	 * Serial version UID.
-	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Create an exception with a message.
 	 *
-	 * @param message The message
+	 * @param message
+	 *            The message
 	 */
-	public JobParametersFactoryException(final String message) {
+	public JobParametersFactoryException(String message) {
 		super(message);
 	}
 
 	/**
 	 * Create an exception with a message and cause.
 	 *
-	 * @param message The message
-	 * @param cause The cause
+	 * @param message
+	 *            The message
+	 * @param cause
+	 *            The cause
 	 */
-	public JobParametersFactoryException(final String message,
-			final Throwable cause) {
+	public JobParametersFactoryException(String message, Throwable cause) {
 		super(message, cause);
 	}
 }

@@ -380,7 +380,7 @@ class V1TaskImpl extends V1CompatTask {
 			jd.setMachine(job.getMachineName());
 			jd.setPower(job.isPowered());
 			jd.setBoards(job.getBoards().stream().map(
-					b -> new BoardCoordinates(b.getX(), b.getY(), b.getZ()))
+					b -> new BoardCoordinates(b.x(), b.y(), b.z()))
 					.collect(Collectors.toList()));
 			return jd.build();
 		}

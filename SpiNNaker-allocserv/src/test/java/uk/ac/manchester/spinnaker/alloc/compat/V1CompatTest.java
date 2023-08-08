@@ -88,6 +88,7 @@ class V1CompatTest extends TestSupport {
 			} finally {
 				log.debug("task cancel failed; probably already finished");
 			}
+			f.get();
 		}
 	}
 

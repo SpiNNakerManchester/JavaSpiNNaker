@@ -192,7 +192,7 @@ public class TestSpiNNakerTriadGeometry {
 	@Test
 	public void testSingleBoardForEach() {
 		var instance = SpiNNakerTriadGeometry.getSpinn5Geometry();
-		final var count = new Counter();
+		var count = new Counter();
 		instance.singleBoardForEach(chip -> {
 			count.increment();
 			assertEquals(ChipLocation.ZERO_ZERO,

@@ -25,7 +25,7 @@ public final class PowerOnJobBoardsCommand extends Command<Integer> {
 	 * @param jobId
 	 *            The job to request about.
 	 */
-	public PowerOnJobBoardsCommand(final int jobId) {
+	public PowerOnJobBoardsCommand(int jobId) {
 		super("power_on_job_boards");
 		addArg(jobId);
 	}

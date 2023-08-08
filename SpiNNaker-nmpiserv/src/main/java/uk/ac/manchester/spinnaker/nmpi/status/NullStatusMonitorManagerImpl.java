@@ -17,11 +17,10 @@ package uk.ac.manchester.spinnaker.nmpi.status;
 
 /**
  * Status Monitor that does nothing.
- *
  */
 public class NullStatusMonitorManagerImpl implements StatusMonitorManager {
 	@Override
-	public void updateStatus(final int runningJobs, final int nBoardsInUse) {
+	public void updateStatus(int runningJobs, int nBoardsInUse) {
 		// Do Nothing
 	}
 }

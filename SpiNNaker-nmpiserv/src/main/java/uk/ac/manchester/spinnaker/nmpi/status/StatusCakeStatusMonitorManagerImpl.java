@@ -26,36 +26,24 @@ import uk.ac.manchester.spinnaker.nmpi.rest.StatusCake;
 
 /**
  * Status monitor manager that uses StatusCake service.
- *
  */
 public class StatusCakeStatusMonitorManagerImpl
 		implements StatusMonitorManager {
-
-	/**
-	 * The URL of the service.
-	 */
+	/** The URL of the service. */
 	private static final String SERVICE_URL = "https://push.statuscake.com/";
 
-	/**
-	 * The REST API to call.
-	 */
+	/** The REST API to call. */
 	private StatusCake statusCake;
 
-	/**
-	 * The Primary Key to use for updates.
-	 */
+	/** The Primary Key to use for updates. */
 	@Value("${statusCake.primaryKey}")
 	private String primaryKey;
 
-	/**
-	 * The Test ID to use for updates.
-	 */
+	/** The Test ID to use for updates. */
 	@Value("${statusCake.testID}")
 	private String testID;
 
-	/**
-	 * Logging.
-	 */
+	/** Logging. */
 	private static final Logger logger =
 			getLogger(StatusCakeStatusMonitorManagerImpl.class);
 
@@ -68,7 +56,7 @@ public class StatusCakeStatusMonitorManagerImpl
 	}
 
 	@Override
-	public void updateStatus(final int runningJobs, final int nBoardsInUse) {
+	public void updateStatus(int runningJobs, int nBoardsInUse) {
 		logger.debug("Updating to Status Cake - "
 				+ "runningJobs = {}, nBoardsInUse = {}",
 				runningJobs, nBoardsInUse);

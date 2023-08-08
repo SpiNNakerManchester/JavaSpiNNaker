@@ -80,95 +80,61 @@ import uk.ac.manchester.spinnaker.nmpi.rest.utils.PropertyBasedDeserialiser;
  * A machine manager that interfaces to the spalloc service.
  */
 public final class SpallocMachineManagerImpl implements MachineManager {
-	/**
-	 * The default version of a machine.
-	 */
+	/** The default version of a machine. */
 	private static final String MACHINE_VERSION = "5";
 
-	/**
-	 * The tag indicating the machine should be picked by default.
-	 */
+	/** The tag indicating the machine should be picked by default. */
 	private static final String DEFAULT_TAG = "default";
 
-	/**
-	 * The keep-alive period in seconds.
-	 */
+	/** The keep-alive period in seconds. */
 	private static final int PERIOD = 5;
 
-	/**
-	 * The scaling from width in triads to width in chips.
-	 */
+	/** The scaling from width in triads to width in chips. */
 	private static final int MACHINE_WIDTH_FACTOR = 12;
 
-	/**
-	 * The scaling from height in triads to height in chips.
-	 */
+	/** The scaling from height in triads to height in chips. */
 	private static final int MACHINE_HEIGHT_FACTOR = 12;
 
-	/**
-	 * The number of times to retry a spalloc request.
-	 */
+	/** The number of times to retry a spalloc request. */
 	private static final int N_RETRIES = 3;
 
-	/**
-	 * The time to wait for a response from spalloc.
-	 */
+	/** The time to wait for a response from spalloc. */
 	private static final long TIMEOUT_SECONDS = 1;
 
-	/**
-	 * The spalloc server address.
-	 */
+	/** The spalloc server address. */
 	@Value("${spalloc.server}")
 	private String ipAddress;
 
-	/**
-	 * The spalloc server port.
-	 */
+	/** The spalloc server port. */
 	@Value("${spalloc.port}")
 	private int port;
 
-	/**
-	 * The owner to give spalloc jobs from this client.
-	 */
+	/** The owner to give spalloc jobs from this client. */
 	@Value("${spalloc.user.name}")
 	private String owner;
 
-	/**
-	 * Unmarshaller of objects.
-	 */
+	/** Unmarshaller of objects. */
 	private final ObjectMapper mapper = new ObjectMapper();
 
-	/**
-	 * The machines that have been allocated by job ID.
-	 */
+	/** The machines that have been allocated by job ID. */
 	private final Map<Integer, SpinnakerMachine> machinesAllocated =
 			new HashMap<>();
 
-	/**
-	 * A map from machine to job.
-	 */
+	/** A map from machine to job. */
 	private final Map<SpinnakerMachine, SpallocJob> jobByMachine =
 			new HashMap<>();
 
-	/**
-	 * The state of the spalloc job by job ID.
-	 */
+	/** The state of the spalloc job by job ID. */
 	private final Map<Integer, JobState> machineState = new HashMap<>();
 
-	/**
-	 * Logging.
-	 */
+	/** Logging. */
 	private static final Logger logger =
 			getLogger(SpallocMachineManagerImpl.class);
 
-	/**
-	 * Communication management.
-	 */
+	/** Communication management. */
 	private final Comms comms = new Comms();
 
-	/**
-	 * True when the manager is finished with.
-	 */
+	/** True when the manager is finished with. */
 	private volatile boolean done = false;
 
 	/**
@@ -215,7 +181,7 @@ public final class SpallocMachineManagerImpl implements MachineManager {
 
 		new Thread(group, this::comms, "Spalloc Comms Interface").start();
 
-		final var t = new Thread(group, this::updateStateOfJobs,
+		var t = new Thread(group, this::updateStateOfJobs,
 				"Spalloc JobState Update Notification Handler");
 		t.setDaemon(true);
 		t.start();
@@ -247,36 +213,24 @@ public final class SpallocMachineManagerImpl implements MachineManager {
 			}
 		}
 
-		/**
-		 * The responses from spalloc to be read.
-		 */
+		/** The responses from spalloc to be read. */
 		private final BlockingQueue<Response> responses =
 				new LinkedBlockingQueue<>();
 
-		/**
-		 * The notifications from spalloc to be raised.
-		 */
+		/** The notifications from spalloc to be raised. */
 		private final BlockingQueue<JobsChangedResponse> notifications =
 				new LinkedBlockingQueue<>();
 
-		/**
-		 * Connection to server.
-		 */
+		/** Connection to server. */
 		private Socket socket;
 
-		/**
-		 * Reader from server.
-		 */
+		/** Reader from server. */
 		private BufferedReader reader;
 
-		/**
-		 * Writer to server.
-		 */
+		/** Writer to server. */
 		private PrintWriter writer;
 
-		/**
-		 * True if connected.
-		 */
+		/** True if connected. */
 		private volatile boolean connected = false;
 
 		/**
@@ -304,15 +258,15 @@ public final class SpallocMachineManagerImpl implements MachineManager {
 			}
 			if (response instanceof ExceptionResponse er) {
 				throw new IOException(er.getException());
-			}
-			if (response instanceof ReturnResponse rr) {
+			} else if (response instanceof ReturnResponse rr) {
 				if (isNull(responseType)) {
 					return null;
 				}
 				return mapper.readValue(rr.getReturnValue(), responseType);
+			} else {
+				// Should never happen!
+				throw new IOException("Unknown Response " + response);
 			}
-			// Should never happen!
-			throw new IOException("Unknown Response " + response);
 		}
 
 		/**
@@ -514,9 +468,7 @@ public final class SpallocMachineManagerImpl implements MachineManager {
 	 * Interface to an existing spalloc job.
 	 */
 	final class SpallocJob {
-		/**
-		 * Used for the Hash code.
-		 */
+		/** Used for the Hash code. */
 		private static final int MAGIC = 0xbadf00d;
 
 		/** The spalloc job ID. */
@@ -765,7 +717,7 @@ public final class SpallocMachineManagerImpl implements MachineManager {
 			try {
 				job = startJob(nBoards, jobOwner);
 				machineAllocated = getMachineForJob(job);
-			} catch (final IOException e) {
+			} catch (IOException e) {
 				logger.error("Error getting machine - retrying", e);
 			}
 		}
@@ -800,7 +752,7 @@ public final class SpallocMachineManagerImpl implements MachineManager {
 			if (nonNull(job)) {
 				stopJob(job);
 			}
-		} catch (final IOException e) {
+		} catch (IOException e) {
 			logger.error("Error releasing machine for {}", job.id);
 		}
 	}
@@ -888,7 +840,7 @@ public final class SpallocMachineManagerImpl implements MachineManager {
 		for (int jobId : jobIds) {
 			try {
 				new SpallocJob(jobId).keepAlive();
-			} catch (final IOException e) {
+			} catch (IOException e) {
 				logger.error("Error keeping machine {} alive", jobId);
 			}
 		}

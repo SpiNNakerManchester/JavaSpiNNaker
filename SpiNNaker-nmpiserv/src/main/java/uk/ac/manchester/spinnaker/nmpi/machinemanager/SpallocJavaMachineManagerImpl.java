@@ -16,13 +16,13 @@
 package uk.ac.manchester.spinnaker.nmpi.machinemanager;
 
 import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.toList;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.core.UriBuilder;
@@ -38,20 +38,13 @@ import uk.ac.manchester.spinnaker.alloc.client.State;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 public final class SpallocJavaMachineManagerImpl implements MachineManager {
-
-	/**
-	 * The version to use for the boards.
-	 */
+	/** The version to use for the boards. */
 	private static final String VERSION = "5";
 
-	/**
-	 * The reason to use when closed.
-	 */
+	/** The reason to use when closed. */
 	private static final String REASON_STOPPING = "RemoteSpiNNaker Stopping";
 
-	/**
-	 * The reason to use when a job is finished.
-	 */
+	/** The reason to use when a job is finished. */
 	private static final String REASON_FINISHED = "Finished";
 
 	/**
@@ -61,14 +54,10 @@ public final class SpallocJavaMachineManagerImpl implements MachineManager {
 	@Value("${spalloc.server}")
 	private URI spallocUri;
 
-	/**
-	 * The spalloc client to use.
-	 */
+	/** The spalloc client to use. */
 	private SpallocClient client;
 
-	/**
-	 * A map between machines and spalloc jobs.
-	 */
+	/** A map between machines and spalloc jobs. */
 	private Map<SpinnakerMachine, SpallocClient.Job> jobMap = new HashMap<>();
 
 	/**
@@ -100,7 +89,7 @@ public final class SpallocJavaMachineManagerImpl implements MachineManager {
 				.map(m -> new SpinnakerMachine(m.getName(), VERSION,
 						m.getWidth(), m.getHeight(), m.getLiveBoardCount(),
 						null))
-				.collect(Collectors.toList());
+				.collect(toList());
 	}
 
 	@Override
@@ -126,11 +115,7 @@ public final class SpallocJavaMachineManagerImpl implements MachineManager {
 
 	@Override
 	public boolean isMachineAvailable(SpinnakerMachine machine) {
-		var job = jobMap.get(machine);
-		if (isNull(job)) {
-			return false;
-		}
-		return true;
+		return jobMap.containsKey(machine);
 	}
 
 	@Override
@@ -192,5 +177,4 @@ public final class SpallocJavaMachineManagerImpl implements MachineManager {
 			throw new RuntimeException(e);
 		}
 	}
-
 }

@@ -25,7 +25,7 @@ public final class GetJobMachineInfoCommand extends Command<Integer> {
 	 * @param jobId
 	 *            The job to ask about.
 	 */
-	public GetJobMachineInfoCommand(final int jobId) {
+	public GetJobMachineInfoCommand(int jobId) {
 		super("get_job_machine_info");
 		addArg(jobId);
 	}

@@ -32,6 +32,8 @@ import javax.ws.rs.NotFoundException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
+
 import uk.ac.manchester.spinnaker.nmpi.rest.DockerAPI;
 import uk.ac.manchester.spinnaker.nmpi.rest.DockerCreateRequest;
 import uk.ac.manchester.spinnaker.nmpi.rest.DockerInspectResponse;
@@ -40,15 +42,10 @@ import uk.ac.manchester.spinnaker.nmpi.rest.DockerInspectResponse;
  * Executor factory that uses Docker to run jobs.
  */
 public final class DockerExecutorFactory implements JobExecuterFactory {
-
-	/**
-	 * Time to wait between docker inspects while waiting for finish.
-	 */
+	/** Time to wait between docker inspects while waiting for finish. */
 	private static final int WAIT_SLEEP_TIME_MS = 1000;
 
-	/**
-	 * The docker image to use.
-	 */
+	/** The docker image to use. */
 	@Value("${docker.image}")
 	private String image;
 
@@ -58,50 +55,35 @@ public final class DockerExecutorFactory implements JobExecuterFactory {
 	@Value("${deleteJobsOnExit}")
 	private boolean deleteOnExit;
 
-	/**
-	 * True if the log of the job should upload as it is output.
-	 */
+	/** True if the log of the job should upload as it is output. */
 	@Value("${liveUploadOutput}")
 	private boolean liveUploadOutput;
 
-	/**
-	 * True if a spinnaker machine should be requested.
-	 */
+	/** True if a SpiNNaker machine should be requested. */
 	@Value("${requestSpiNNakerMachine}")
 	private boolean requestSpiNNakerMachine;
 
 	@Value("${docker.uri}")
 	private String dockerUri;
 
-	/**
-	 * The maximum number of VMs to create.
-	 */
+	/** The maximum number of VMs to create. */
 	@Value("${docker.maxVms}")
 	private int maxNVirtualMachines;
 
-	/**
-	 * The current number of VMs.
-	 */
+	/** The current number of VMs. */
+	@GuardedBy("lock")
 	private int nVirtualMachines = 0;
 
-	/**
-	 * The docker client.
-	 */
+	/** The docker client. */
 	private DockerAPI dockerApi;
 
-	/**
-	 * The thread group of any threads.
-	 */
+	/** The thread group of any threads. */
 	private final ThreadGroup threadGroup;
 
-	/**
-	 * Lock object used for synchronisation.
-	 */
+	/** Lock object used for synchronisation. */
 	private final Object lock = new Object();
 
-	/**
-	 * Logging.
-	 */
+	/** Logging. */
 	private static final Logger logger = getLogger(Executor.class);
 
 	/**
@@ -153,7 +135,6 @@ public final class DockerExecutorFactory implements JobExecuterFactory {
 	}
 
 	protected final class Executor implements JobExecuter {
-
 		private final JobManager manager;
 
 		private final String uuid;
@@ -194,7 +175,8 @@ public final class DockerExecutorFactory implements JobExecuterFactory {
 			var response = dockerApi.create(
 					new DockerCreateRequest(image, args));
 			id = response.getId();
-			logger.info("Created docker container {}, warnings: {}", id);
+			logger.info("Created docker container {}, warnings: {}", id,
+					response.getWarnings());
 			dockerApi.start(id);
 			new Thread(threadGroup, this::waitForExit,
 					"Docker Executer (" + uuid + ")").start();
@@ -214,7 +196,7 @@ public final class DockerExecutorFactory implements JobExecuterFactory {
 				} catch (InterruptedException e) {
 					return;
 				}
-			} while (res.getState().isRunning() != running);
+			} while (res == null || res.getState().isRunning() != running);
 		}
 
 		public void waitForExit() {

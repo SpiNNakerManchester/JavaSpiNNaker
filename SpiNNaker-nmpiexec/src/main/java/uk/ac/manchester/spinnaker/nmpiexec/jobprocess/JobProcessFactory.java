@@ -29,10 +29,7 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.JobParameters;
  * {@link JobParameters} instance.
  */
 public class JobProcessFactory {
-
-	/**
-	 * The thread group of the factory.
-	 */
+	/** The thread group of the factory. */
 	private final ThreadGroup threadGroup;
 
 	/**
@@ -42,7 +39,7 @@ public class JobProcessFactory {
 	 *            The thread group for the factory. All threads created by the
 	 *            factory will be within this group.
 	 */
-	public JobProcessFactory(final ThreadGroup threadGroupParam) {
+	public JobProcessFactory(ThreadGroup threadGroupParam) {
 		this.threadGroup = threadGroupParam;
 	}
 
@@ -53,7 +50,7 @@ public class JobProcessFactory {
 	 *            The name of the thread group for the factory. All threads
 	 *            created by the factory will be within this group.
 	 */
-	public JobProcessFactory(final String threadGroupName) {
+	public JobProcessFactory(String threadGroupName) {
 		this(new ThreadGroup(threadGroupName));
 	}
 
@@ -89,8 +86,8 @@ public class JobProcessFactory {
 	 *            The job process supplier
 	 */
 	public <P extends JobParameters> void addMapping(
-			final Class<P> parameterType,
-			final ProcessSupplier<P> processSupplier) {
+			Class<P> parameterType,
+			ProcessSupplier<P> processSupplier) {
 		typeMap.put(parameterType, processSupplier);
 	}
 
@@ -115,20 +112,19 @@ public class JobProcessFactory {
 	 *             If the type of the job parameters is unexpected.
 	 */
 	public <P extends JobParameters> JobProcess<P> createProcess(
-			final P parameters) {
+			P parameters) {
 		/*
 		 * We know that this is of the correct type, because the addMapping
 		 * method will only allow the correct type mapping in
 		 */
 		@SuppressWarnings("unchecked")
-		final var supplier =
-				(ProcessSupplier<P>) typeMap.get(parameters.getClass());
+		var supplier = (ProcessSupplier<P>) typeMap.get(parameters.getClass());
 		if (isNull(supplier)) {
 			throw new IllegalArgumentException(
 					"unsupported job parameter type: " + parameters.getClass());
 		}
 
-		final var process = supplier.get();
+		var process = supplier.get();
 		// Magically set the thread group if there is one
 		setField(process, "threadGroup", threadGroup);
 		return process;
@@ -137,15 +133,18 @@ public class JobProcessFactory {
 	/**
 	 * Set a static field in an object.
 	 *
-	 * @param clazz The class of the object
-	 * @param fieldName The name of the field to set
-	 * @param value The value to set the field to
+	 * @param clazz
+	 *            The class of the object
+	 * @param fieldName
+	 *            The name of the field to set
+	 * @param value
+	 *            The value to set the field to
 	 */
 	@SuppressWarnings("unused")
-	private static void setField(final Class<?> clazz, final String fieldName,
-			final Object value) {
+	private static void setField(Class<?> clazz, String fieldName,
+			Object value) {
 		try {
-			final var threadGroupField = clazz.getDeclaredField(fieldName);
+			var threadGroupField = clazz.getDeclaredField(fieldName);
 			threadGroupField.setAccessible(true);
 			threadGroupField.set(null, value);
 		} catch (NoSuchFieldException | SecurityException
@@ -157,14 +156,17 @@ public class JobProcessFactory {
 	/**
 	 * Set a field in an instance.
 	 *
-	 * @param instance The instance
-	 * @param fieldName The name of the field
-	 * @param value The value to set
+	 * @param instance
+	 *            The instance
+	 * @param fieldName
+	 *            The name of the field
+	 * @param value
+	 *            The value to set
 	 */
-	private static void setField(final Object instance, final String fieldName,
-			final Object value) {
+	private static void setField(Object instance, String fieldName,
+			Object value) {
 		try {
-			final var threadGroupField =
+			var threadGroupField =
 					instance.getClass().getDeclaredField(fieldName);
 			threadGroupField.setAccessible(true);
 			threadGroupField.set(instance, value);

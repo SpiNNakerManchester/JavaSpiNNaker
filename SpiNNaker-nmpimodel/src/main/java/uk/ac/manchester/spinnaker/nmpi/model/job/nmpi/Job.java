@@ -24,45 +24,28 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  * A NMPI job.
  */
 public class Job {
-
-	/**
-	 * Code to be executed.
-	 */
+	/** Code to be executed. */
 	private String code;
 
-	/**
-	 * The hardware configuration.
-	 */
+	/** The hardware configuration. */
 	private Map<String, Object> hardwareConfig;
 
-	/**
-	 * The hardware platform.
-	 */
+	/** The hardware platform. */
 	private String hardwarePlatform;
 
-	/**
-	 * The ID of the job.
-	 */
+	/** The ID of the job. */
 	private Integer id;
 
-	/**
-	 * URLs of input data.
-	 */
+	/** URLs of input data. */
 	private List<DataItem> inputData;
 
-	/**
-	 * The ID of the collaboratory in which the job is created.
-	 */
+	/** The ID of the collaboratory in which the job is created. */
 	private String collab;
 
-	/**
-	 * The command used to execute the job.
-	 */
+	/** The command used to execute the job. */
 	private String command;
 
-	/**
-	 * The ID of the user which created the job.
-	 */
+	/** The ID of the user which created the job. */
 	private String userId;
 
 	/**
@@ -77,9 +60,10 @@ public class Job {
 	/**
 	 * Sets the code.
 	 *
-	 * @param codeParam the code to set
+	 * @param codeParam
+	 *            the code to set
 	 */
-	public void setCode(final String codeParam) {
+	public void setCode(String codeParam) {
 		this.code = codeParam;
 	}
 
@@ -95,10 +79,10 @@ public class Job {
 	/**
 	 * Sets the hardwareConfig.
 	 *
-	 * @param hardwareConfigParam the hardwareConfig to set
+	 * @param hardwareConfigParam
+	 *            the hardwareConfig to set
 	 */
-	public void setHardwareConfig(
-			final Map<String, Object> hardwareConfigParam) {
+	public void setHardwareConfig(Map<String, Object> hardwareConfigParam) {
 		this.hardwareConfig = hardwareConfigParam;
 	}
 
@@ -114,9 +98,10 @@ public class Job {
 	/**
 	 * Sets the hardwarePlatform.
 	 *
-	 * @param hardwarePlatformParam the hardwarePlatform to set
+	 * @param hardwarePlatformParam
+	 *            the hardwarePlatform to set
 	 */
-	public void setHardwarePlatform(final String hardwarePlatformParam) {
+	public void setHardwarePlatform(String hardwarePlatformParam) {
 		this.hardwarePlatform = hardwarePlatformParam;
 	}
 
@@ -132,9 +117,10 @@ public class Job {
 	/**
 	 * Sets the id.
 	 *
-	 * @param idParam the id to set
+	 * @param idParam
+	 *            the id to set
 	 */
-	public void setId(final Integer idParam) {
+	public void setId(Integer idParam) {
 		this.id = idParam;
 	}
 
@@ -150,9 +136,10 @@ public class Job {
 	/**
 	 * Sets the inputData.
 	 *
-	 * @param inputDataParam the inputData to set
+	 * @param inputDataParam
+	 *            the inputData to set
 	 */
-	public void setInputData(final List<DataItem> inputDataParam) {
+	public void setInputData(List<DataItem> inputDataParam) {
 		this.inputData = inputDataParam;
 	}
 
@@ -168,9 +155,10 @@ public class Job {
 	/**
 	 * Sets the collab.
 	 *
-	 * @param collabParam the collab to set
+	 * @param collabParam
+	 *            the collab to set
 	 */
-	public void setCollab(final String collabParam) {
+	public void setCollab(String collabParam) {
 		this.collab = collabParam;
 	}
 
@@ -186,9 +174,10 @@ public class Job {
 	/**
 	 * Sets the command.
 	 *
-	 * @param commandParam the command to set
+	 * @param commandParam
+	 *            the command to set
 	 */
-	public void setCommand(final String commandParam) {
+	public void setCommand(String commandParam) {
 		this.command = commandParam;
 	}
 
@@ -204,9 +193,10 @@ public class Job {
 	/**
 	 * Sets the userId.
 	 *
-	 * @param userIdParam the userId to set
+	 * @param userIdParam
+	 *            the userId to set
 	 */
-	public void setUserId(final String userIdParam) {
+	public void setUserId(String userIdParam) {
 		this.userId = userIdParam;
 	}
 
@@ -219,7 +209,7 @@ public class Job {
 	 *            The value to set it to.
 	 */
 	@JsonAnySetter
-	public void set(final String name, final Object value) {
+	public void set(String name, Object value) {
 		// Ignore
 	}
 }

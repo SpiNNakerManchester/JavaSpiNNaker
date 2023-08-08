@@ -23,6 +23,8 @@ import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.io.FileUtils.deleteQuietly;
 import static org.eclipse.jgit.util.FileUtils.createTempDir;
+import static uk.ac.manchester.spinnaker.nmpi.model.job.JobManagerInterface.PATH;
+import static uk.ac.manchester.spinnaker.nmpi.model.job.JobManagerInterface.SETUP_SCRIPT;
 import static uk.ac.manchester.spinnaker.nmpiexec.utils.FileDownloader.downloadFile;
 import static uk.ac.manchester.spinnaker.nmpiexec.utils.Log.log;
 
@@ -65,10 +67,11 @@ import uk.ac.manchester.spinnaker.nmpiexec.jobprocess.PyNNJobProcess;
  */
 @SpringBootApplication
 public class JobProcessManager implements CommandLineRunner {
-
 	/**
 	 * The main method.
-	 * @param args Program arguments.
+	 *
+	 * @param args
+	 *            Program arguments.
 	 */
 	public static void main(String[] args) {
 		SpringApplication.run(JobProcessManager.class, args);
@@ -81,10 +84,11 @@ public class JobProcessManager implements CommandLineRunner {
 	 * @param args
 	 *            The command line arguments.
 	 * @throws IllegalArgumentException
-	 *            If an unrecognized argument is found.
+	 *             If an unrecognized argument is found.
 	 * @throws IOException
-	 *            If an authentication token can't be read.
+	 *             If an authentication token can't be read.
 	 */
+	@Override
 	public void run(String... args) throws IOException {
 		String serverUrl = null;
 		boolean deleteOnExit = false;
@@ -95,27 +99,26 @@ public class JobProcessManager implements CommandLineRunner {
 
 		for (int i = 0; i < args.length; i++) {
 			switch (args[i]) {
-			case "--serverUrl" :
+			case "--serverUrl" -> {
 				serverUrl = args[++i];
-				break;
-			case "--executerId" :
+			}
+			case "--executerId" -> {
 				executerId = args[++i];
-				break;
-			case "--deleteOnExit" :
+			}
+			case "--deleteOnExit" -> {
 				deleteOnExit = true;
-				break;
-			case "--local" :
+			}
+			case "--local" -> {
 				isLocal = true;
-				break;
-			case "--liveUploadOutput" :
+			}
+			case "--liveUploadOutput" -> {
 				liveUploadOutput = true;
-				break;
-			case "--requestMachine" :
+			}
+			case "--requestMachine" -> {
 				requestMachine = true;
-				break;
-			default :
-				throw new IllegalArgumentException(
-						"unknown option: " + args[i]);
+			}
+			default -> throw new IllegalArgumentException(
+					"unknown option: " + args[i]);
 			}
 		}
 
@@ -129,10 +132,7 @@ public class JobProcessManager implements CommandLineRunner {
  * Actually runs the job.
  */
 class JobProcessRunner {
-
-	/**
-	 * The interval at which the log is updated.
-	 */
+	/** The interval at which the log is updated. */
 	private static final int UPDATE_INTERVAL = 500;
 
 	/**
@@ -140,14 +140,10 @@ class JobProcessRunner {
 	 */
 	private static final int MAX_LOG_CACHED = 1000000;
 
-	/**
-	 * Default parameters for getting a machine.
-	 */
+	/** Default parameters for getting a machine. */
 	private static final int DEFAULT = -1;
 
-	/**
-	 * The factory for converting parameters into processes.
-	 */
+	/** The factory for converting parameters into processes. */
 	private static final JobProcessFactory JOB_PROCESS_FACTORY =
 			new JobProcessFactory("JobProcess");
 
@@ -160,20 +156,13 @@ class JobProcessRunner {
 	 * A log writer that uploads to the server.
 	 */
 	class UploadingJobManagerLogWriter extends JobManagerLogWriter {
-
-		/**
-		 * The timer for the interval.
-		 */
+		/** The timer for the interval. */
 		private final Timer sendTimer;
 
-		/**
-		 * An object to synchronise on when sending data.
-		 */
+		/** An object to synchronise on when sending data. */
 		private final Object sendSync = new Object();
 
-		/**
-		 * Make a log writer that uploads the log every half second.
-		 */
+		/** Make a log writer that uploads the log every half second. */
 		UploadingJobManagerLogWriter() {
 			sendTimer = new Timer(UPDATE_INTERVAL, e -> sendLog());
 		}
@@ -197,7 +186,7 @@ class JobProcessRunner {
 		}
 
 		@Override
-		public void append(final String logMsg) {
+		public void append(String logMsg) {
 			log("Process Output: " + logMsg);
 			synchronized (this) {
 				sendTimer.restart();
@@ -216,54 +205,34 @@ class JobProcessRunner {
 		}
 	}
 
-	/**
-	 * The URL of the Job Manager server.
-	 */
+	/** The URL of the Job Manager server. */
 	private final String serverUrl;
 
-	/**
-	 * True if the working directory should be cleaned on exit.
-	 */
+	/** True if the working directory should be cleaned on exit. */
 	private final boolean deleteOnExit;
 
-	/**
-	 * True if the process is running on the same machine as the server.
-	 */
+	/** True if the process is running on the same machine as the server. */
 	private final boolean isLocal;
 
-	/**
-	 * The ID of the execution.
-	 */
+	/** The ID of the execution. */
 	private final String executerId;
 
-	/**
-	 * True if the output should be uploaded as it is produced.
-	 */
+	/** True if the output should be uploaded as it is produced. */
 	private final boolean liveUploadOutput;
 
-	/**
-	 * True if a machine should be requested for the job.
-	 */
+	/** True if a machine should be requested for the job. */
 	private final boolean requestMachine;
 
-	/**
-	 * The connection to the Job Manager.
-	 */
+	/** The connection to the Job Manager. */
 	private JobManagerInterface jobManager;
 
-	/**
-	 * The writer of the log.
-	 */
+	/** The writer of the log. */
 	private JobManagerLogWriter logWriter;
 
-	/**
-	 * The job being executed.
-	 */
+	/** The job being executed. */
 	private Job job;
 
-	/**
-	 * The ID of the project in which the job exists.
-	 */
+	/** The ID of the project in which the job exists. */
 	private String projectId;
 
 	/**
@@ -284,14 +253,13 @@ class JobProcessRunner {
 	 * @param authTokenParam
 	 *            The authorisation token for the server.
 	 */
-	JobProcessRunner(final String serverUrlParam,
-			final boolean deleteOnExitParam, final boolean isLocalParam,
-			final String executerIdParam, final boolean liveUploadOutputParam,
-			final boolean requestMachineParam) {
-		this.serverUrl = requireNonNull(
-				serverUrlParam, "--serverUrl must be specified");
-		this.executerId = requireNonNull(
-				executerIdParam, "--executerId must be specified");
+	JobProcessRunner(String serverUrlParam, boolean deleteOnExitParam,
+			boolean isLocalParam, String executerIdParam,
+			boolean liveUploadOutputParam, boolean requestMachineParam) {
+		this.serverUrl =
+				requireNonNull(serverUrlParam, "--serverUrl must be specified");
+		this.executerId = requireNonNull(executerIdParam,
+				"--executerId must be specified");
 		this.deleteOnExit = deleteOnExitParam;
 		this.isLocal = isLocalParam;
 		this.liveUploadOutput = liveUploadOutputParam;
@@ -303,7 +271,7 @@ class JobProcessRunner {
 	 */
 	public void runJob() {
 		try {
-			ObjectMapper mapper = new ObjectMapper();
+			var mapper = new ObjectMapper();
 			mapper.setPropertyNamingStrategy(SNAKE_CASE);
 			jobManager = JAXRSClientFactory.create(serverUrl,
 					JobManagerInterface.class,
@@ -316,26 +284,25 @@ class JobProcessRunner {
 			log("Going to run job " + job.getId() + " in collab " + projectId);
 
 			// Create a temporary location for the job
-			final var workingDirectory = createTempDir("job", ".tmp", null);
+			var workingDirectory = createTempDir("job", ".tmp", null);
 			log("Running in temporary directory " + workingDirectory);
 
 			// Download the setup script
-			var downloadUrl = serverUrl + JobManagerInterface.PATH
-					+ "/" + JobManagerInterface.SETUP_SCRIPT;
+			var downloadUrl = serverUrl + PATH + "/" + SETUP_SCRIPT;
 			log("Downloading setup script from " + downloadUrl);
-			final var setupScript = downloadFile(downloadUrl,
-					workingDirectory, JobManagerInterface.SETUP_SCRIPT);
+			var setupScript =
+					downloadFile(downloadUrl, workingDirectory, SETUP_SCRIPT);
 
-			final var parameters = getJobParameters(
-					workingDirectory, setupScript.getAbsolutePath());
+			var parameters = getJobParameters(workingDirectory,
+					setupScript.getAbsolutePath());
 
 			// Create a process to process the request
 			log("Creating process from parameters");
-			final var process = JOB_PROCESS_FACTORY.createProcess(parameters);
+			var process = JOB_PROCESS_FACTORY.createProcess(parameters);
 			logWriter = getLogWriter();
 
 			// Read the machine
-			final var machine = getMachine();
+			var machine = getMachine();
 
 			// Execute the process
 			log("Running job " + job.getId() + " on " + machine + " using "
@@ -346,7 +313,7 @@ class JobProcessRunner {
 
 			// Get the exit status
 			processOutcome(workingDirectory, process, logWriter.getLog());
-		} catch (final Exception error) {
+		} catch (Exception error) {
 			log(error);
 			reportFailure(error);
 			exit(1);
@@ -358,7 +325,7 @@ class JobProcessRunner {
 	 *
 	 * @param error The error of the failure.
 	 */
-	private void reportFailure(final Throwable error) {
+	private void reportFailure(Throwable error) {
 		if (isNull(jobManager) || isNull(job)) {
 			log(error);
 			return;
@@ -375,8 +342,8 @@ class JobProcessRunner {
 				message = "No Error Message";
 			}
 			jobManager.setJobError(projectId, job.getId(), message, log, "",
-					new ArrayList<String>(), new RemoteStackTrace(error));
-		} catch (final Throwable t) {
+					List.of(), new RemoteStackTrace(error));
+		} catch (Throwable t) {
 			// Exception while reporting exception...
 			log(t);
 			log(error);
@@ -412,11 +379,11 @@ class JobProcessRunner {
 	 *             unreadable or the job being unsupported on the current
 	 *             architectural configuration.
 	 */
-	private JobParameters getJobParameters(final File workingDirectory,
-			final String setupScript) throws IOException {
-		final var errors = new HashMap<String, JobParametersFactoryException>();
-		final var parameters = JobParametersFactory.getJobParameters(
-				job, workingDirectory, setupScript, errors);
+	private JobParameters getJobParameters(File workingDirectory,
+			String setupScript) throws IOException {
+		var errors = new HashMap<String, JobParametersFactoryException>();
+		var parameters = JobParametersFactory.getJobParameters(job,
+				workingDirectory, setupScript, errors);
 
 		if (isNull(parameters)) {
 			if (!errors.isEmpty()) {
@@ -429,7 +396,7 @@ class JobProcessRunner {
 
 		// Get any requested input files
 		if (nonNull(job.getInputData())) {
-			for (final var input : job.getInputData()) {
+			for (var input : job.getInputData()) {
 				downloadFile(input.getUrl(), workingDirectory, null);
 			}
 		}
@@ -452,20 +419,23 @@ class JobProcessRunner {
 	/**
 	 * Process the outcome of the job execution.
 	 *
-	 * @param workingDirectory The directory where the job was run
-	 * @param process The process of the job
-	 * @param log The log message of the job
-	 * @throws IOException If there is an error reading or writing files
+	 * @param workingDirectory
+	 *            The directory where the job was run
+	 * @param process
+	 *            The process of the job
+	 * @param log
+	 *            The log message of the job
+	 * @throws IOException
+	 *             If there is an error reading or writing files
 	 */
-	private void processOutcome(final File workingDirectory,
-			final JobProcess<?> process, final String log)
-			throws IOException {
-		final var status = process.getStatus();
+	private void processOutcome(File workingDirectory, JobProcess<?> process,
+			String log) throws IOException {
+		var status = process.getStatus();
 		log("Process has finished with status " + status);
 
-		final var outputs = process.getOutputs();
-		final var outputsAsStrings = new ArrayList<String>();
-		for (final var output : outputs) {
+		var outputs = process.getOutputs();
+		var outputsAsStrings = new ArrayList<String>();
+		for (var output : outputs) {
 			if (isLocal) {
 				outputsAsStrings.add(output.getAbsolutePath());
 			} else {
@@ -476,14 +446,14 @@ class JobProcessRunner {
 			}
 		}
 
-		for (final var item : process.getProvenance()) {
-			jobManager.addProvenance(
-				job.getId(), item.getPath(), item.getValue());
+		for (var item : process.getProvenance()) {
+			jobManager.addProvenance(job.getId(), item.getPath(),
+					item.getValue());
 		}
 
 		switch (status) {
-		case Error :
-			final var error = process.getError();
+		case Error -> {
+			var error = process.getError();
 			var message = error.getMessage();
 			if (isNull(message)) {
 				message = "No Error Message";
@@ -491,8 +461,8 @@ class JobProcessRunner {
 			jobManager.setJobError(projectId, job.getId(), message, log,
 					workingDirectory.getAbsolutePath(), outputsAsStrings,
 					new RemoteStackTrace(error));
-			break;
-		case Finished :
+		}
+		case Finished -> {
 			jobManager.setJobFinished(projectId, job.getId(), log,
 					workingDirectory.getAbsolutePath(), outputsAsStrings);
 
@@ -501,9 +471,8 @@ class JobProcessRunner {
 			if (deleteOnExit) {
 				deleteQuietly(workingDirectory);
 			}
-			break;
-		default :
-			throw new IllegalStateException("Unknown status returned!");
+		}
+		default -> throw new IllegalStateException("Unknown status returned!");
 		}
 	}
 }
@@ -512,7 +481,6 @@ class JobProcessRunner {
  * A description of a machine.
  */
 class Machine {
-
 	/** The machine. Knows its service URL. */
 	private SpinnakerMachine machine;
 
@@ -525,7 +493,7 @@ class Machine {
 	 * @param machineParam
 	 *            The machine object.
 	 */
-	Machine(final SpinnakerMachine machineParam) {
+	Machine(SpinnakerMachine machineParam) {
 		this.machine = machineParam;
 	}
 
@@ -537,7 +505,7 @@ class Machine {
 	 * @param id
 	 *            The ID for the job.
 	 */
-	Machine(final String baseUrl, final int id) {
+	Machine(String baseUrl, int id) {
 		this.url = format("%sjob/%d/machine", baseUrl, id);
 	}
 
@@ -572,10 +540,7 @@ class Machine {
  * How to write to the log.
  */
 abstract class JobManagerLogWriter implements LogWriter {
-
-	/**
-	 * The cached message.
-	 */
+	/** The cached message. */
 	private final StringBuilder cached = new StringBuilder();
 
 	/**
@@ -592,7 +557,7 @@ abstract class JobManagerLogWriter implements LogWriter {
 	 *
 	 * @param message The message to add
 	 */
-	protected synchronized void appendCache(final String message) {
+	protected synchronized void appendCache(String message) {
 		cached.append(message);
 	}
 
@@ -639,7 +604,7 @@ abstract class JobManagerLogWriter implements LogWriter {
  */
 class SimpleJobManagerLogWriter extends JobManagerLogWriter {
 	@Override
-	public void append(final String logMsg) {
+	public void append(String logMsg) {
 		log("Process Output: " + logMsg);
 		synchronized (this) {
 			appendCache(logMsg);
@@ -652,10 +617,7 @@ class SimpleJobManagerLogWriter extends JobManagerLogWriter {
  */
 @SuppressWarnings("serial")
 class JobErrorsException extends IOException {
-
-	/**
-	 * The error message of the exception.
-	 */
+	/** The error message of the exception. */
 	private static final String MAIN_MSG = "The job type was recognised"
 			+ " by at least one factory, but could not be decoded.  The"
 			+ " errors are as follows:";
@@ -663,15 +625,16 @@ class JobErrorsException extends IOException {
 	/**
 	 * Builds an error message from a map of errors.
 	 *
-	 * @param errors The errors to use.
+	 * @param errors
+	 *            The errors to use.
 	 * @return An exception containing the errors.
 	 */
-	private static String
-			buildMessage(final Map<String, ? extends Exception> errors) {
+	private static String buildMessage(
+			Map<String, ? extends Exception> errors) {
 		var buffer = new StringWriter();
 		var bufferWriter = new PrintWriter(buffer);
 		bufferWriter.println(MAIN_MSG);
-		for (final var key : errors.keySet()) {
+		for (var key : errors.keySet()) {
 			bufferWriter.print(key);
 			bufferWriter.println(":");
 			errors.get(key).printStackTrace(bufferWriter);
@@ -683,10 +646,10 @@ class JobErrorsException extends IOException {
 	/**
 	 * Creates an exception from a set of errors.
 	 *
-	 * @param errors The errors to build the exception from
+	 * @param errors
+	 *            The errors to build the exception from
 	 */
-	JobErrorsException(
-			final Map<String, JobParametersFactoryException> errors) {
+	JobErrorsException(Map<String, JobParametersFactoryException> errors) {
 		super(buildMessage(errors));
 	}
 }

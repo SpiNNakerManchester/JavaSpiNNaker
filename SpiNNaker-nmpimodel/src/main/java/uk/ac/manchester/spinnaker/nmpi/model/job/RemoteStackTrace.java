@@ -41,8 +41,8 @@ public class RemoteStackTrace {
 	 * @param throwable
 	 *            The exception to make the stack trace from.
 	 */
-	public RemoteStackTrace(final Throwable throwable) {
-		for (final var element : throwable.getStackTrace()) {
+	public RemoteStackTrace(Throwable throwable) {
+		for (var element : throwable.getStackTrace()) {
 			elements.add(new RemoteStackTraceElement(element));
 		}
 	}
@@ -53,7 +53,7 @@ public class RemoteStackTrace {
 	 * @param elementsParam
 	 *            The elements to make the stack trace from.
 	 */
-	public RemoteStackTrace(final List<RemoteStackTraceElement> elementsParam) {
+	public RemoteStackTrace(List<RemoteStackTraceElement> elementsParam) {
 		this.elements = elementsParam;
 	}
 
@@ -71,7 +71,7 @@ public class RemoteStackTrace {
 	 *
 	 * @param elementsParam The elements to set
 	 */
-	public void setElements(final List<RemoteStackTraceElement> elementsParam) {
+	public void setElements(List<RemoteStackTraceElement> elementsParam) {
 		this.elements = elementsParam;
 	}
 }

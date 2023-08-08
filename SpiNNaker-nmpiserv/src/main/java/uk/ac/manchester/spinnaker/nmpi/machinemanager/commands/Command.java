@@ -54,7 +54,7 @@ public abstract sealed class Command<A>
 	 * @param value
 	 *            The argument value; will be converted to a string
 	 */
-	protected final void addKwArg(final String key, final Object value) {
+	protected final void addKwArg(String key, Object value) {
 		kwargs.put(key, value);
 	}
 
@@ -65,8 +65,8 @@ public abstract sealed class Command<A>
 	 *            The arguments to add.
 	 */
 	@SafeVarargs
-	protected final void addArg(final A... values) {
-		for (final A value : values) {
+	protected final void addArg(A... values) {
+		for (A value : values) {
 			args.add(value);
 		}
 	}
@@ -77,7 +77,7 @@ public abstract sealed class Command<A>
 	 * @param commandParam
 	 *            The command token.
 	 */
-	public Command(final String commandParam) {
+	public Command(String commandParam) {
 		this.command = commandParam;
 	}
 

@@ -19,10 +19,7 @@ package uk.ac.manchester.spinnaker.nmpi.model;
  * POJO holding the response for a query for an API key.
  */
 public class APIKeyResponse {
-
-	/**
-	 * The API Key.
-	 */
+	/** The API Key. */
 	private String key;
 
 	/**
@@ -39,7 +36,7 @@ public class APIKeyResponse {
 	 *
 	 * @param keyParam The key to set
 	 */
-	public void setKey(final String keyParam) {
+	void setKey(String keyParam) {
 		this.key = keyParam;
 	}
 }

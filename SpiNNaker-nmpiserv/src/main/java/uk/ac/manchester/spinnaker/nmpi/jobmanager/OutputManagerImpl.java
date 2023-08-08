@@ -43,6 +43,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 
 import javax.annotation.PostConstruct;
@@ -62,50 +63,33 @@ import uk.ac.manchester.spinnaker.nmpi.rest.UnicoreFileClient;
  */
 //TODO needs security; Role = OutputHandler
 public class OutputManagerImpl implements OutputManager {
-
-	/**
-	 * Indicates that a file has been removed.
-	 */
+	/** Indicates that a file has been removed. */
 	private static final String PURGED_FILE = ".purged_";
 
-	/**
-	 * The directory to store files in.
-	 */
+	/** The directory to store files in. */
 	@Value("${results.directory}")
 	private File resultsDirectory;
 
-	/**
-	 * The URL of the server.
-	 */
+	/** The URL of the server. */
 	private final URL baseServerUrl;
 
-	/**
-	 * The amount of time results should be kept, in milliseconds.
-	 */
+	/** The amount of time results should be kept, in milliseconds. */
 	private long timeToKeepResults;
 
-	/**
-	 * Map of locks for files.
-	 */
+	/** Map of locks for files. */
 	private final Map<File, LockToken> synchronizers = new HashMap<>();
 
-	/**
-	 * The logger.
-	 */
+	/** The logger. */
 	private static final Logger logger = getLogger(OutputManagerImpl.class);
 
 	/**
 	 * A lock token. Initially locked.
 	 */
 	private static final class LockToken {
-		/**
-		 * True if the token is locked.
-		 */
+		/** True if the token is locked. */
 		private boolean locked = true;
 
-		/**
-		 * True if the token is waiting for a lock.
-		 */
+		/** True if the token is waiting for a lock. */
 		private boolean waiting = false;
 
 		/**
@@ -126,6 +110,7 @@ public class OutputManagerImpl implements OutputManager {
 
 		/**
 		 * Unlock the token.
+		 *
 		 * @return True if the token is waiting again.
 		 */
 		private synchronized boolean unlock() {
@@ -139,14 +124,14 @@ public class OutputManagerImpl implements OutputManager {
 	 * A class to lock a job.
 	 */
 	private class JobLock implements AutoCloseable {
-		/**
-		 * The directory being locked by this token.
-		 */
+		/** The directory being locked by this token. */
 		private File dir;
 
 		/**
 		 * Create a new lock for a directory.
-		 * @param dirParam The directory to lock
+		 *
+		 * @param dirParam
+		 *            The directory to lock
 		 */
 		JobLock(File dirParam) {
 			this.dir = dirParam;
@@ -195,9 +180,7 @@ public class OutputManagerImpl implements OutputManager {
 		timeToKeepResults = MILLISECONDS.convert(nDaysToKeepResults, DAYS);
 	}
 
-	/**
-	 * Periodic execution engine.
-	 */
+	/** Periodic execution engine. */
 	private final ScheduledExecutorService scheduler = newScheduledThreadPool(
 			1);
 
@@ -219,7 +202,9 @@ public class OutputManagerImpl implements OutputManager {
 
 	/**
 	 * Get the project directory for a given project.
-	 * @param projectId The id of the project
+	 *
+	 * @param projectId
+	 *            The id of the project
 	 * @return The directory of the project
 	 */
 	private File getProjectDirectory(String projectId) {
@@ -346,10 +331,28 @@ public class OutputManagerImpl implements OutputManager {
 		return new File(resultsDirectory, PURGED_FILE + directory.getName());
 	}
 
+	/**
+	 * Basic path validator. Rejects some things that could occur validly, but
+	 * that's better than permitting an attack.
+	 *
+	 * @param path
+	 *            The path to check.
+	 */
+	private void validatePath(String path) {
+		Objects.requireNonNull(path);
+		if (path.isEmpty()) {
+			throw new IllegalArgumentException("bad path");
+		} else if (path.contains("..")) {
+			throw new IllegalArgumentException("bad path");
+		}
+	}
+
 	@Override
 	public Response getResultFile(String projectId, int id, String filename,
 			boolean download) {
 		logger.debug("Retrieving {} from {}/{}", filename, projectId, id);
+		validatePath(projectId);
+		validatePath(filename);
 		var projectDirectory = getProjectDirectory(projectId);
 		var idDirectory = new File(projectDirectory, String.valueOf(id));
 		return getResultFile(idDirectory, filename, download);
@@ -358,6 +361,7 @@ public class OutputManagerImpl implements OutputManager {
 	@Override
 	public Response getResultFile(int id, String filename, boolean download) {
 		logger.debug("Retrieving {} from {}", filename, id);
+		validatePath(filename);
 		var idDirectory = getProjectDirectory(String.valueOf(id));
 		return getResultFile(idDirectory, filename, download);
 	}
@@ -415,6 +419,8 @@ public class OutputManagerImpl implements OutputManager {
 	public Response uploadResultsToHPCServer(String projectId, int id,
 			String serverUrl, String storageId, String filePath, String userId,
 			String token) {
+		validatePath(projectId);
+		validatePath(filePath);
 		var idDirectory =
 				new File(getProjectDirectory(projectId), String.valueOf(id));
 		if (!idDirectory.canRead()) {
@@ -505,7 +511,7 @@ public class OutputManagerImpl implements OutputManager {
 				try (var purgedFileWriter =
 						new PrintWriter(getPurgeFile(jobDirectory))) {
 					purgedFileWriter.println(currentTimeMillis());
-				} catch (final IOException e) {
+				} catch (IOException e) {
 					logger.error("Error writing purge file", e);
 				}
 			} else {

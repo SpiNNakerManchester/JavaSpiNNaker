@@ -22,9 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  * A response to a request that indicates a failure.
  */
 public final class ExceptionResponse implements Response {
-	/**
-	 * The exception to report.
-	 */
+	/** The exception to report. */
 	private String exception;
 
 	/**
@@ -42,7 +40,7 @@ public final class ExceptionResponse implements Response {
 	 * @param exceptionParam The exception to set
 	 */
 	@JsonSetter("exception")
-	public void setException(final JsonNode exceptionParam) {
+	void setException(JsonNode exceptionParam) {
 		this.exception = exceptionParam.toString();
 	}
 }

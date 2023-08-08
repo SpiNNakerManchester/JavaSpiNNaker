@@ -204,7 +204,7 @@ public final class EIEIODataMessage
 			return emptyIterator();
 		}
 
-		final var d = readOnly(data);
+		var d = readOnly(data);
 		return new Iterator<AbstractDataElement>() {
 			private int elementsRead = 0;
 
@@ -220,11 +220,12 @@ public final class EIEIODataMessage
 				}
 				elementsRead++;
 				int key = switch (header.eieioType) {
-				case KEY_16_BIT, KEY_PAYLOAD_16_BIT -> d.getShort();
+				case KEY_16_BIT, KEY_PAYLOAD_16_BIT ->
+					toUnsignedInt(d.getShort());
 				case KEY_32_BIT, KEY_PAYLOAD_32_BIT -> d.getInt();
 				};
-				Integer payload = switch (header.eieioType) {
-				case KEY_PAYLOAD_16_BIT -> (int) d.getShort();
+				var payload = switch (header.eieioType) {
+				case KEY_PAYLOAD_16_BIT -> toUnsignedInt(d.getShort());
 				case KEY_PAYLOAD_32_BIT -> d.getInt();
 				default -> null;
 				};

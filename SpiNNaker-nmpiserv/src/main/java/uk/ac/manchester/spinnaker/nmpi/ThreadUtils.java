@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.nmpi;
  * Utilities for working with threads.
  */
 public abstract class ThreadUtils {
-
 	/**
 	 * Avoid creation.
 	 */
@@ -35,10 +34,10 @@ public abstract class ThreadUtils {
 	 *      Question: When does Java's Thread.sleep throw
 	 *      InterruptedException?</a>
 	 */
-	public static void sleep(final long delay) {
+	public static void sleep(long delay) {
 		try {
 			Thread.sleep(delay);
-		} catch (final InterruptedException e) {
+		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		}
 	}
@@ -50,11 +49,11 @@ public abstract class ThreadUtils {
 	 *            The object to wait for
 	 * @return True if the wait was interrupted, false otherwise
 	 */
-	public static boolean waitfor(final Object obj) {
+	public static boolean waitfor(Object obj) {
 		try {
 			obj.wait();
 			return false;
-		} catch (final InterruptedException e) {
+		} catch (InterruptedException e) {
 			return true;
 		}
 	}
@@ -68,11 +67,11 @@ public abstract class ThreadUtils {
 	 *            The maximum time to wait, in milliseconds
 	 * @return True if the wait was interrupted, false otherwise
 	 */
-	public static boolean waitfor(final Object obj, final long timeout) {
+	public static boolean waitfor(Object obj, long timeout) {
 		try {
 			obj.wait(timeout);
 			return false;
-		} catch (final InterruptedException e) {
+		} catch (InterruptedException e) {
 			return true;
 		}
 	}

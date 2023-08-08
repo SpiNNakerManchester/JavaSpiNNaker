@@ -46,19 +46,13 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 @Consumes(WILDCARD)
 @Produces(WILDCARD)
 public class CustomJacksonJsonProvider extends JacksonJsonProvider {
-	/**
-	 * Mapper objects of this provider.
-	 */
+	/** Mapper objects of this provider. */
 	private final Set<ObjectMapper> registeredMappers = new HashSet<>();
 
-	/**
-	 * The module of the provider.
-	 */
+	/** The module of the provider. */
 	private final SimpleModule module = new SimpleModule();
 
-	/**
-	 * The date-time module of the provider.
-	 */
+	/** The date-time module of the provider. */
 	private final JodaModule jodaModule = new JodaModule();
 
 	/**
@@ -71,19 +65,21 @@ public class CustomJacksonJsonProvider extends JacksonJsonProvider {
 	 * @param deserialiser
 	 *            The deserialiser.
 	 */
-	public <T> void addDeserialiser(final Class<T> type,
-			final StdDeserializer<T> deserialiser) {
+	public <T> void addDeserialiser(Class<T> type,
+			StdDeserializer<T> deserialiser) {
 		module.addDeserializer(type, deserialiser);
 	}
 
 	/**
 	 * Register a new mapper.
-	 * @param type The class of the mapper
-	 * @param mediaType The media type to handle
+	 *
+	 * @param type
+	 *            The class of the mapper
+	 * @param mediaType
+	 *            The media type to handle
 	 */
-	private void registerMapper(final Class<?> type,
-			final MediaType mediaType) {
-		final var mapper = locateMapper(type, mediaType);
+	private void registerMapper(Class<?> type, MediaType mediaType) {
+		var mapper = locateMapper(type, mediaType);
 		if (!registeredMappers.contains(mapper)) {
 			mapper.registerModule(module);
 			mapper.setPropertyNamingStrategy(SNAKE_CASE);
@@ -94,21 +90,20 @@ public class CustomJacksonJsonProvider extends JacksonJsonProvider {
 	}
 
 	@Override
-	public Object readFrom(final Class<Object> type, final Type genericType,
-			final Annotation[] annotations, final MediaType mediaType,
-			final MultivaluedMap<String, String> httpHeaders,
-			final InputStream entityStream) throws IOException {
+	public Object readFrom(Class<Object> type, Type genericType,
+			Annotation[] annotations, MediaType mediaType,
+			MultivaluedMap<String, String> httpHeaders,
+			InputStream entityStream) throws IOException {
 		registerMapper(type, mediaType);
 		return super.readFrom(type, genericType, annotations, mediaType,
 				httpHeaders, entityStream);
 	}
 
 	@Override
-	public void writeTo(final Object value, final Class<?> type,
-			final Type genericType, final Annotation[] annotations,
-			final MediaType mediaType,
-			final MultivaluedMap<String, Object> httpHeaders,
-			final OutputStream entityStream) throws IOException {
+	public void writeTo(Object value, Class<?> type, Type genericType,
+			Annotation[] annotations, MediaType mediaType,
+			MultivaluedMap<String, Object> httpHeaders,
+			OutputStream entityStream) throws IOException {
 		registerMapper(type, mediaType);
 		super.writeTo(value, type, genericType, annotations, mediaType,
 				httpHeaders, entityStream);

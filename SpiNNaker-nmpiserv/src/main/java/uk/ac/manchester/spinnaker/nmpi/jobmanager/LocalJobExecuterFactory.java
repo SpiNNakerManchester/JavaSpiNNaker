@@ -51,12 +51,12 @@ import org.springframework.beans.factory.annotation.Value;
  * An executer that runs its subprocesses on the local machine.
  */
 public final class LocalJobExecuterFactory implements JobExecuterFactory {
-
 	/**
 	 * Get the java executable.
 	 *
 	 * @return The java executable.
-	 * @throws IOException If the file can't be instantiated
+	 * @throws IOException
+	 *             If the file can't be instantiated
 	 */
 	private static File getJavaExec() throws IOException {
 		var binDir = new File(System.getProperty("java.home"), "bin");
@@ -67,37 +67,25 @@ public final class LocalJobExecuterFactory implements JobExecuterFactory {
 		return exec;
 	}
 
-	/**
-	 * True if job files should be deleted on exit.
-	 */
+	/** True if job files should be deleted on exit. */
 	@Value("${deleteJobsOnExit}")
 	private boolean deleteOnExit;
 
-	/**
-	 * True if the job should live upload the logs.
-	 */
+	/** True if the job should live upload the logs. */
 	@Value("${liveUploadOutput}")
 	private boolean liveUploadOutput;
 
-	/**
-	 * True if the job should request a SpiNNaker machine.
-	 */
+	/** True if the job should request a SpiNNaker machine. */
 	@Value("${requestSpiNNakerMachine}")
 	private boolean requestSpiNNakerMachine;
 
-	/**
-	 * A thread group for the executor.
-	 */
+	/** A thread group for the executor. */
 	private final ThreadGroup threadGroup;
 
-	/**
-	 * The directory in which the executor should start.
-	 */
+	/** The directory in which the executor should start. */
 	private File jobExecuterDirectory = null;
 
-	/**
-	 * Logging.
-	 */
+	/** Logging. */
 	private static final Logger logger = getLogger(Executer.class);
 
 	/**
@@ -164,40 +152,25 @@ public final class LocalJobExecuterFactory implements JobExecuterFactory {
 	 * The executer thread.
 	 */
 	protected final class Executer implements JobExecuter {
-
-		/**
-		 * The job manager to report to.
-		 */
+		/** The job manager to report to. */
 		private final JobManager jobManager;
 
-		/**
-		 * The arguments to send to the command line.
-		 */
+		/** The arguments to send to the command line. */
 		private final List<String> arguments;
 
-		/**
-		 * The ID of the executor.
-		 */
+		/** The ID of the executor. */
 		private final String id;
 
-		/**
-		 * The java executable to run.
-		 */
+		/** The java executable to run. */
 		private final File javaExec;
 
-		/**
-		 * The output log file.
-		 */
+		/** The output log file. */
 		private final File outputLog = createTempFile("exec", ".log");
 
-		/**
-		 * The executing external process.
-		 */
+		/** The executing external process. */
 		private Process process;
 
-		/**
-		 * Any exception discovered when starting the process.
-		 */
+		/** Any exception discovered when starting the process. */
 		private IOException startException;
 
 		/**
@@ -265,10 +238,11 @@ public final class LocalJobExecuterFactory implements JobExecuterFactory {
 		/**
 		 * Start executing the process.
 		 *
-		 * @param command The command and arguments
+		 * @param command
+		 *            The command and arguments
 		 * @return The output of the process as a pipe
 		 */
-		private JobOutputPipe startSubprocess(final List<String> command) {
+		private JobOutputPipe startSubprocess(List<String> command) {
 			var builder = new ProcessBuilder(command);
 			builder.directory(jobExecuterDirectory);
 			logger.debug("Working directory: {}", jobExecuterDirectory);
@@ -338,19 +312,13 @@ public final class LocalJobExecuterFactory implements JobExecuterFactory {
 	 * The pipe copier.
 	 */
 	class JobOutputPipe extends Thread implements AutoCloseable {
-		/**
-		 *  The input to the pipe.
-		 */
+		/** The input to the pipe. */
 		private final BufferedReader reader;
 
-		/**
-		 * The place where the output should be written.
-		 */
+		/** The place where the output should be written. */
 		private final PrintWriter writer;
 
-		/**
-		 * True to stop execution.
-		 */
+		/** True to stop execution. */
 		private volatile boolean done;
 
 		/**

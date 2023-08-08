@@ -27,7 +27,6 @@ import uk.ac.manchester.spinnaker.nmpi.model.OutputData;
  * A Job where only the parts required for completion are set.
  */
 public class JobDone {
-
 	private String status;
 
 	@JsonSerialize(using = DateTimeSerialiser.class)
@@ -97,7 +96,7 @@ public class JobDone {
 	 *
 	 * @param outputDataParam the outputData to set
 	 */
-	public void setOutputData(final OutputData outputDataParam) {
+	public void setOutputData(OutputData outputDataParam) {
 		this.outputData = outputDataParam;
 	}
 
@@ -115,7 +114,7 @@ public class JobDone {
 	 *
 	 * @param provenanceParam the provenance to set
 	 */
-	public void setProvenance(final ObjectNode provenanceParam) {
+	public void setProvenance(ObjectNode provenanceParam) {
 		this.provenance = provenanceParam;
 	}
 }

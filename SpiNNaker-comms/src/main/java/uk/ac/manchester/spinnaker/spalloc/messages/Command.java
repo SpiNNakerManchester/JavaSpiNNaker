@@ -62,7 +62,7 @@ public abstract sealed class Command<A> //
 	 */
 	@SafeVarargs
 	protected final void addArg(A... values) {
-		for (final A value : values) {
+		for (A value : values) {
 			args.add(value);
 		}
 	}

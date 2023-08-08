@@ -23,20 +23,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * A response to docker create.
  */
 public class DockerCreateResponse {
-
 	private String id;
 
 	private List<String> warnings;
 
 	/**
-	 * @return the id
+	 * @return the ID
 	 */
 	public String getId() {
 		return id;
 	}
 
 	/**
-	 * @param id the id to set
+	 * @param id
+	 *            the id to set
 	 */
 	@JsonProperty("Id")
 	public void setId(String id) {
@@ -51,7 +51,8 @@ public class DockerCreateResponse {
 	}
 
 	/**
-	 * @param warnings the warnings to set
+	 * @param warnings
+	 *            the warnings to set
 	 */
 	@JsonProperty("Warnings")
 	public void setWarnings(List<String> warnings) {

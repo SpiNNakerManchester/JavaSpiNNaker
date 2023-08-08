@@ -25,7 +25,7 @@ public final class NotifyJobCommand extends Command<Integer> {
 	 * @param jobId
 	 *            The job to request about.
 	 */
-	public NotifyJobCommand(final int jobId) {
+	public NotifyJobCommand(int jobId) {
 		super("notify_job");
 		addArg(jobId);
 	}

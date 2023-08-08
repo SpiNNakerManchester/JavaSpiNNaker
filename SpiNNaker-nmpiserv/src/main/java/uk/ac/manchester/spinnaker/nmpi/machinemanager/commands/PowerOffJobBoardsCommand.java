@@ -25,7 +25,7 @@ public final class PowerOffJobBoardsCommand extends Command<Integer> {
 	 * @param jobId
 	 *            The job to request about.
 	 */
-	public PowerOffJobBoardsCommand(final int jobId) {
+	public PowerOffJobBoardsCommand(int jobId) {
 		super("power_off_job_boards");
 		addArg(jobId);
 	}

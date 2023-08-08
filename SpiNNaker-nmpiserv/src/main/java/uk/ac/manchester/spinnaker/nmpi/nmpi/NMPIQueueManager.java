@@ -54,36 +54,23 @@ import uk.ac.manchester.spinnaker.nmpi.rest.NMPIQueue;
  * Manages the NMPI queue, receiving jobs and submitting them to be run.
  */
 public class NMPIQueueManager {
-
-	/**
-	 * Job status when finished.
-	 */
+	/** Job status when finished. */
 	public static final String STATUS_FINISHED = "finished";
 
-	/**
-	 * Job status when in the queue but the executer hasn't started.
-	 */
+	/** Job status when in the queue but the executer hasn't started. */
 	public static final String STATUS_VALIDATED = "validated";
 
-	/**
-	 * Job status when running.
-	 */
+	/** Job status when running. */
 	public static final String STATUS_RUNNING = "running";
 
-	/**
-	 * Job status when in error.
-	 */
+	/** Job status when in error. */
 	public static final String STATUS_ERROR = "error";
 
-	/**
-	 * The name of the repository for the service.
-	 */
+	/** The name of the repository for the service. */
 	private static final String REPOSITORY =
 			"SpiNNaker Manchester temporary storage";
 
-	/**
-	 * The amount of time to sleep when an empty queue is detected.
-	 */
+	/** The amount of time to sleep when an empty queue is detected. */
 	private static final int EMPTY_QUEUE_SLEEP_MS = 10000;
 
 	/** The queue to get jobs from. */
@@ -101,9 +88,7 @@ public class NMPIQueueManager {
 	/** The log of the job so far. */
 	private final Map<Integer, StringBuilder> jobLog = new HashMap<>();
 
-	/**
-	 * Logger.
-	 */
+	/** Logger. */
 	private static final Logger logger = getLogger(NMPIQueueManager.class);
 
 	/** The hardware identifier for the queue. */
@@ -132,12 +117,11 @@ public class NMPIQueueManager {
 	 * @param listener
 	 *            The listener to register
 	 */
-	public void addListener(final NMPIQueueListener listener) {
+	public void addListener(NMPIQueueListener listener) {
 		listeners.add(listener);
 	}
 
-	private void handleWebAppError(final WebApplicationException e,
-			final String action) {
+	private void handleWebAppError(WebApplicationException e, String action) {
 		var body = e.getResponse().readEntity(String.class);
 		logger.error("Error {} ({}), continuing: {}", action, e.getMessage(),
 				body);
@@ -150,14 +134,14 @@ public class NMPIQueueManager {
 				QueueNextResponse response;
 				try {
 					response = queue.getNextJob(nmpiApiKey, hardware);
-				} catch (final NotFoundException e) {
+				} catch (NotFoundException e) {
 					response = new QueueEmpty();
 				}
 				processResponse(response);
-			} catch (final WebApplicationException e) {
+			} catch (WebApplicationException e) {
 				handleWebAppError(e, "getting next job");
 				sleep(EMPTY_QUEUE_SLEEP_MS);
-			} catch (final Exception e) {
+			} catch (Exception e) {
 				logger.error("Error in getting next job", e);
 				sleep(EMPTY_QUEUE_SLEEP_MS);
 			}
@@ -169,7 +153,7 @@ public class NMPIQueueManager {
 	 *
 	 * @param response The response to process
 	 */
-	private void processResponse(final QueueNextResponse response) {
+	private void processResponse(QueueNextResponse response) {
 		if (response instanceof QueueEmpty) {
 			sleep(EMPTY_QUEUE_SLEEP_MS);
 		} else if (response instanceof Job job) {
@@ -184,23 +168,23 @@ public class NMPIQueueManager {
 	 *
 	 * @param job The job to process
 	 */
-	private void processResponse(final Job job) {
+	private void processResponse(Job job) {
 		synchronized (jobCache) {
 			jobCache.put(job.getId(), job);
 		}
 		logger.debug("Job {} received", job.getId());
 		try {
-			for (final var listener : listeners) {
+			for (var listener : listeners) {
 				listener.addJob(job);
 			}
 			logger.debug("Setting job status");
 			logger.debug("Updating job status on server");
 			queue.updateJobStatus(nmpiApiKey, job.getId(),
 					new JobStatusOnly(STATUS_VALIDATED));
-		} catch (final WebApplicationException e) {
+		} catch (WebApplicationException e) {
 			handleWebAppError(e, "updating job");
 			setJobError(job.getId(), null, null, e, null);
-		} catch (final IOException e) {
+		} catch (IOException e) {
 			logger.error("Error in updating job", e);
 			setJobError(job.getId(), null, null, e, null);
 		}
@@ -214,7 +198,7 @@ public class NMPIQueueManager {
 	 * @param logToAppend
 	 *            The messages to append
 	 */
-	public void appendJobLog(final int id, final String logToAppend) {
+	public void appendJobLog(int id, String logToAppend) {
 		var existingLog = jobLog.computeIfAbsent(
 				id, ignored -> new StringBuilder());
 		existingLog.append(logToAppend);
@@ -233,7 +217,7 @@ public class NMPIQueueManager {
 	 * @param id
 	 *            The ID of the job.
 	 */
-	public void setJobRunning(final int id) {
+	public void setJobRunning(int id) {
 		logger.debug("Job {} is running", id);
 		logger.debug("Updating job status on server");
 		try {
@@ -257,16 +241,16 @@ public class NMPIQueueManager {
 	 * @param provenance
 	 *            JSON provenance information
 	 */
-	public void setJobFinished(final int id, final String logToAppend,
-			final List<DataItem> outputs, final ObjectNode provenance) {
+	public void setJobFinished(int id, String logToAppend,
+			List<DataItem> outputs, ObjectNode provenance) {
 		logger.debug("Job {} is finished", id);
 
 		if (nonNull(logToAppend)) {
 			appendJobLog(id, logToAppend);
 		}
 
-		final var outputData = new OutputData(REPOSITORY);
-		final var job = new JobDone(STATUS_FINISHED);
+		var outputData = new OutputData(REPOSITORY);
+		var job = new JobDone(STATUS_FINISHED);
 		outputData.setFiles(outputs);
 		job.setOutputData(outputData);
 		job.setTimestampCompletion(new DateTime(UTC));
@@ -297,13 +281,12 @@ public class NMPIQueueManager {
 	 * @param provenance
 	 *            JSON provenance information
 	 */
-	public void setJobError(final int id, final String logToAppend,
-			final List<DataItem> outputs, final Throwable error,
-			final ObjectNode provenance) {
+	public void setJobError(int id, String logToAppend, List<DataItem> outputs,
+			Throwable error, ObjectNode provenance) {
 		logger.debug("Job {} finished with an error", id);
-		final var errors = new StringWriter();
+		var errors = new StringWriter();
 		error.printStackTrace(new PrintWriter(errors));
-		final var logMessage = new StringBuilder();
+		var logMessage = new StringBuilder();
 		if (nonNull(logToAppend)) {
 			logMessage.append(logToAppend);
 		}
@@ -314,8 +297,8 @@ public class NMPIQueueManager {
 		logMessage.append(errors.toString());
 		appendJobLog(id, logMessage.toString());
 
-		final var job = new JobDone(STATUS_ERROR);
-		final var outputData = new OutputData(REPOSITORY);
+		var job = new JobDone(STATUS_ERROR);
+		var outputData = new OutputData(REPOSITORY);
 		outputData.setFiles(outputs);
 		job.setTimestampCompletion(new DateTime(UTC));
 		job.setOutputData(outputData);

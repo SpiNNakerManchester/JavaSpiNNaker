@@ -27,7 +27,7 @@ public final class CreateJobCommand extends Command<Integer> {
 	 * @param owner
 	 *            The owner of the job to create.
 	 */
-	public CreateJobCommand(final int numBoards, final String owner) {
+	public CreateJobCommand(int numBoards, String owner) {
 		super("create_job");
 		addArg(numBoards);
 		addKwArg("owner", owner);

@@ -25,7 +25,7 @@ public final class JobKeepAliveCommand extends Command<Integer> {
 	 * @param jobId
 	 *            The job to ask about.
 	 */
-	public JobKeepAliveCommand(final int jobId) {
+	public JobKeepAliveCommand(int jobId) {
 		super("job_keepalive");
 		addArg(jobId);
 	}

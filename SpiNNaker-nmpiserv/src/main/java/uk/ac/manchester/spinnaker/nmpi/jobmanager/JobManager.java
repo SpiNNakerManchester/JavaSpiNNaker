@@ -84,123 +84,78 @@ import uk.ac.manchester.spinnaker.nmpi.status.StatusMonitorManager;
 @Service("service")
 // TODO needs security; Role = JobEngine
 public class JobManager implements NMPIQueueListener, JobManagerInterface {
-
-	/**
-	 * Assumed number of chips on a board.
-	 */
+	/** Assumed number of chips on a board. */
 	private static final double CHIPS_PER_BOARD = 48.0;
 
-	/**
-	 * Assumed number of cores usable per chip.
-	 */
+	/** Assumed number of cores usable per chip. */
 	private static final double CORES_PER_CHIP = 15.0;
 
-	/**
-	 * Default number of boards to request.
-	 */
+	/** Default number of boards to request. */
 	private static final int DEFAULT_N_BOARDS = 3;
 
-	/**
-	 * Number of milliseconds per second.
-	 */
+	/** Number of milliseconds per second. */
 	private static final double MILLISECONDS_PER_SECOND = 1000.0;
 
-	/**
-	 * Threshold before the number of boards is scaled up.
-	 */
+	/** Threshold before the number of boards is scaled up. */
 	private static final double SCALE_UP_THRESHOLD = 0.1;
 
-	/**
-	 * Seconds between status updates.
-	 */
+	/** Seconds between status updates. */
 	public static final int STATUS_UPDATE_PERIOD = 10;
 
-	/**
-	 * The machine manager.
-	 */
+	/** The machine manager. */
 	@Autowired
 	private MachineManager machineManager;
 
-	/**
-	 * The NMPI queue manager.
-	 */
+	/** The NMPI queue manager. */
 	@Autowired
 	private NMPIQueueManager queueManager;
 
-	/**
-	 * The output manager.
-	 */
+	/** The output manager. */
 	@Autowired
 	private OutputManager outputManager;
 
-	/**
-	 * The status updater.
-	 */
+	/** The status updater. */
 	@Autowired
 	private StatusMonitorManager statusMonitorManager;
 
-	/**
-	 * The base URL of the REST service.
-	 */
+	/** The base URL of the REST service. */
 	private final URL baseUrl;
 
-	/**
-	 * The Job Execution factory.
-	 */
+	/** The Job Execution factory. */
 	@Autowired
 	private JobExecuterFactory jobExecuterFactory;
 
-	/**
-	 * True if jobs should be restarted on failure.
-	 */
+	/** True if jobs should be restarted on failure. */
 	@Value("${restartJobExecutorOnFailure}")
 	private boolean restartJobExecuterOnFailure;
 
-	/**
-	 * The name of the setup script.
-	 */
+	/** The name of the setup script. */
 	@Value("${setupScript}")
 	private Resource setupScript;
 
-	/**
-	 * Logging.
-	 */
+	/** Logging. */
 	private static final Logger logger = getLogger(JobManager.class);
 
-	/**
-	 * Job ID &rarr; Machine(s) allocated.
-	 */
+	/** Job ID &rarr; Machine(s) allocated. */
 	private final Map<Integer, List<SpinnakerMachine>> allocatedMachines =
 			new HashMap<>();
 
-	/**
-	 * Executor ID &rarr; Executor.
-	 */
+	/** Executor ID &rarr; Executor. */
 	private final Map<String, JobExecuter> jobExecuters = new HashMap<>();
 
-	/**
-	 * Executor ID &rarr; Job ID.
-	 */
+	/** Executor ID &rarr; Job ID. */
 	private final Map<String, Job> executorJobId = new HashMap<>();
 
-	/**
-	 * Job ID &rarr; Directory of temporary output files.
-	 */
+	/** Job ID &rarr; Directory of temporary output files. */
 	private final Map<Integer, File> jobOutputTempFiles = new HashMap<>();
 
-	/**
-	 * Job ID &rarr; Job Provenance data.
-	 */
+	/** Job ID &rarr; Job Provenance data. */
 	private final Map<Integer, ObjectNode> jobProvenance = new HashMap<>();
 
-	/**
-	 * Job ID &rarr; Job owner.
-	 */
+	/** Job ID &rarr; Job owner. */
 	private final Map<Integer, String> jobOwner = new HashMap<>();
 
-	/**
-	 * Thread group for the executor.
-	 */
+	/** Thread group for the executor. */
 	private ThreadGroup threadGroup;
 
 	/**
@@ -530,7 +485,7 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 		requireNonNull(input);
 		try {
 			if (!jobOutputTempFiles.containsKey(id)) {
-				final var tempOutputDir = createTempFile("jobOutput", ".tmp");
+				var tempOutputDir = createTempFile("jobOutput", ".tmp");
 				forceDelete(tempOutputDir);
 				forceMkdir(tempOutputDir);
 				jobOutputTempFiles.put(id, tempOutputDir);
@@ -676,7 +631,7 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	 */
 	private boolean releaseAllocatedMachines(int id) {
 		synchronized (allocatedMachines) {
-			final var machines = allocatedMachines.remove(id);
+			var machines = allocatedMachines.remove(id);
 			if (nonNull(machines)) {
 				machines.forEach(this::releaseMachine);
 			}
@@ -708,7 +663,7 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 			queueManager.setJobError(id, logToAppend,
 					getOutputFiles(projectId, id, baseDirectory, outputs),
 					exception, prov);
-		} catch (final IOException e) {
+		} catch (IOException e) {
 			logger.error("Error creating URLs while updating job", e);
 		}
 	}

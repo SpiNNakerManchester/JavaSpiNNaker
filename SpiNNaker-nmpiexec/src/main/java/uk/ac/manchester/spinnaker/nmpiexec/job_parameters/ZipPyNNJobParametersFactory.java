@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import org.rauschig.jarchivelib.ArchiveFormat;
 import org.rauschig.jarchivelib.CompressionType;
@@ -41,11 +42,11 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.pynn.PyNNJobParameters;
  */
 final class ZipPyNNJobParametersFactory extends JobParametersFactory {
 	@Override
-	public JobParameters getJobParameters(final Job job,
-			final File workingDirectory, final String setupScript)
+	public JobParameters getJobParameters(Job job, File workingDirectory,
+			String setupScript)
 			throws UnsupportedJobException, JobParametersFactoryException {
 		// Test that there is a URL
-		final var jobCodeLocation = job.getCode().trim();
+		var jobCodeLocation = job.getCode().trim();
 		if (!jobCodeLocation.startsWith("http://")
 				&& !jobCodeLocation.startsWith("https://")) {
 			throw new UnsupportedJobException();
@@ -55,18 +56,18 @@ final class ZipPyNNJobParametersFactory extends JobParametersFactory {
 		URL url;
 		try {
 			url = new URL(jobCodeLocation);
-		} catch (final MalformedURLException e) {
+		} catch (MalformedURLException e) {
 			throw new JobParametersFactoryException("The URL is malformed", e);
 		}
 
 		// Try to get the file and extract it
 		try {
 			return constructParameters(job, workingDirectory, url, setupScript);
-		} catch (final IOException e) {
+		} catch (IOException e) {
 			log(e);
 			throw new JobParametersFactoryException(
 					"Error in communication or extraction", e);
-		} catch (final Throwable e) {
+		} catch (Throwable e) {
 			log(e);
 			throw new JobParametersFactoryException(
 					"General error with zip extraction", e);
@@ -76,24 +77,27 @@ final class ZipPyNNJobParametersFactory extends JobParametersFactory {
 	/**
 	 * The supported compression types.
 	 */
-	private static final CompressionType[] SUPPORTED_TYPES =
-			new CompressionType[]{BZIP2, GZIP};
+	private static final List<CompressionType> SUPPORTED_TYPES =
+			List.of(BZIP2, GZIP);
 
 	/**
 	 * Extract an archive using auto-detection for the format.
 	 *
-	 * @param output The archive to extract
-	 * @param workingDirectory The directory to extract into
+	 * @param output
+	 *            The archive to extract
+	 * @param workingDirectory
+	 *            The directory to extract into
 	 * @return True if extracted, False if failed
-	 * @throws IOException If there is a general error in extraction
+	 * @throws IOException
+	 *             If there is a general error in extraction
 	 */
-	private boolean extractAutodetectedArchive(final File output,
-			final File workingDirectory) throws IOException {
+	private boolean extractAutodetectedArchive(File output,
+			File workingDirectory) throws IOException {
 		try {
-			final var archiver = createArchiver(output);
+			var archiver = createArchiver(output);
 			archiver.extract(output, workingDirectory);
 			return true;
-		} catch (final IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			return false;
 		}
 	}
@@ -101,18 +105,20 @@ final class ZipPyNNJobParametersFactory extends JobParametersFactory {
 	/**
 	 * Extract an archive by trying known archive types.
 	 *
-	 * @param workingDirectory The directory to extract into
-	 * @param output The archive to extract
+	 * @param workingDirectory
+	 *            The directory to extract into
+	 * @param output
+	 *            The archive to extract
 	 * @return True if the archive was extracted, False otherwise
 	 */
-	private boolean extractArchiveUsingKnownFormats(final File workingDirectory,
-			final File output) {
-		for (final var format : ArchiveFormat.values()) {
+	private boolean extractArchiveUsingKnownFormats(File workingDirectory,
+			File output) {
+		for (var format : ArchiveFormat.values()) {
 			try {
-				final var archiver = createArchiver(format);
+				var archiver = createArchiver(format);
 				archiver.extract(output, workingDirectory);
 				return true;
-			} catch (final IOException e) {
+			} catch (IOException e) {
 				// Ignore - try the next
 			}
 		}
@@ -122,19 +128,20 @@ final class ZipPyNNJobParametersFactory extends JobParametersFactory {
 	/**
 	 * Extract an archive by trying internal list of archive types.
 	 *
-	 * @param workingDirectory The directory to extract into
-	 * @param output The archive to extract
+	 * @param workingDirectory
+	 *            The directory to extract into
+	 * @param output
+	 *            The archive to extract
 	 * @return True if the archive was extracted, False otherwise
 	 */
-	private boolean extractTypedArchive(final File workingDirectory,
-			final File output) {
-		for (final var format : ArchiveFormat.values()) {
-			for (final var type : SUPPORTED_TYPES) {
+	private boolean extractTypedArchive(File workingDirectory, File output) {
+		for (var format : ArchiveFormat.values()) {
+			for (var type : SUPPORTED_TYPES) {
 				try {
-					final var archiver = createArchiver(format, type);
+					var archiver = createArchiver(format, type);
 					archiver.extract(output, workingDirectory);
 					return true;
-				} catch (final IOException e) {
+				} catch (IOException e) {
 					// Ignore - try the next
 				}
 			}
@@ -145,20 +152,24 @@ final class ZipPyNNJobParametersFactory extends JobParametersFactory {
 	/**
 	 * Build the job parameters.
 	 *
-	 * @param job The job to build the parameters for
-	 * @param workingDirectory The directory where the job should be run
-	 * @param url The URL of the archive to use
-	 * @param setupScript The setup script
+	 * @param job
+	 *            The job to build the parameters for
+	 * @param workingDirectory
+	 *            The directory where the job should be run
+	 * @param url
+	 *            The URL of the archive to use
+	 * @param setupScript
+	 *            The setup script
 	 * @return The constructed parameters
-	 * @throws IOException If there is an error with the file
-	 * @throws JobParametersFactoryException If no way to uncompress the file
-	 *     could be found
+	 * @throws IOException
+	 *             If there is an error with the file
+	 * @throws JobParametersFactoryException
+	 *             If no way to uncompress the file could be found
 	 */
-	private JobParameters constructParameters(final Job job,
-			final File workingDirectory, final URL url,
-			final String setupScript)
+	private JobParameters constructParameters(Job job, File workingDirectory,
+			URL url, String setupScript)
 			throws IOException, JobParametersFactoryException {
-		final var output = downloadFile(url, workingDirectory, null);
+		var output = downloadFile(url, workingDirectory, null);
 
 		/* Test if there is a recognised archive */
 		boolean archiveExtracted =
@@ -193,7 +204,7 @@ final class ZipPyNNJobParametersFactory extends JobParametersFactory {
 		}
 
 		var script = DEFAULT_SCRIPT_NAME + SYSTEM_ARG;
-		final var command = job.getCommand();
+		var command = job.getCommand();
 		if (nonNull(command) && !command.isEmpty()) {
 			script = command;
 		}

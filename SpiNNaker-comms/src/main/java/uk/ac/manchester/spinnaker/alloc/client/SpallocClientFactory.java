@@ -370,7 +370,7 @@ public class SpallocClientFactory {
 
 		private URI machines;
 
-		private ClientImpl(Session s, RootInfo ri) throws IOException {
+		private ClientImpl(Session s, RootInfo ri) {
 			super(null, s);
 			this.v = ri.version;
 			this.jobs = asDir(ri.jobsURI);

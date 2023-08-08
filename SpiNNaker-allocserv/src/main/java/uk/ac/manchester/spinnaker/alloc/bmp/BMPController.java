@@ -947,6 +947,7 @@ public class BMPController extends DatabaseAwareBean {
 		/**
 		 * Periodically call to update, or trigger externally.
 		 */
+		@Override
 		public synchronized void run() {
 			log.trace("Searching for changes on BMP {}", bmpId);
 

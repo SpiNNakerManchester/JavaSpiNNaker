@@ -36,24 +36,16 @@ public class JobState {
 	/** Job has terminated, see the {@code reason} property for why. */
 	public static final int DESTROYED = 4;
 
-	/**
-	 * The state of the job in the queue (from the above list).
-	 */
+	/** The state of the job in the queue (from the above list). */
 	private int state;
 
-	/**
-	 * The power state of the job.
-	 */
+	/** The power state of the job. */
 	private Boolean power;
 
-	/**
-	 * The number of seconds to keep alive.
-	 */
+	/** The number of seconds to keep alive. */
 	private double keepAlive;
 
-	/**
-	 * The reason for the job being destroyed.
-	 */
+	/** The reason for the job being destroyed. */
 	private String reason;
 
 	/**
@@ -70,7 +62,7 @@ public class JobState {
 	 *
 	 * @param stateParam The state to set
 	 */
-	public void setState(final int stateParam) {
+	void setState(int stateParam) {
 		this.state = stateParam;
 	}
 
@@ -88,7 +80,7 @@ public class JobState {
 	 *
 	 * @param powerParam True for on, False for off
 	 */
-	public void setPower(final Boolean powerParam) {
+	void setPower(Boolean powerParam) {
 		this.power = powerParam;
 	}
 
@@ -106,7 +98,7 @@ public class JobState {
 	 *
 	 * @param keepAliveParam The number of seconds to set
 	 */
-	public void setKeepAlive(final double keepAliveParam) {
+	void setKeepAlive(double keepAliveParam) {
 		this.keepAlive = keepAliveParam;
 	}
 
@@ -124,7 +116,7 @@ public class JobState {
 	 *
 	 * @param reasonParam The reason to set.
 	 */
-	public void setReason(final String reasonParam) {
+	void setReason(String reasonParam) {
 		this.reason = reasonParam;
 	}
 }

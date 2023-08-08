@@ -31,10 +31,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
  */
 @SuppressWarnings("serial")
 public class DateTimeSerialiser extends StdSerializer<DateTime> {
-
-	/**
-	 * The format of the Date and Time.
-	 */
+	/** The format of the Date and Time. */
 	private static final DateTimeFormatter FORMAT =
 			DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
 
@@ -49,8 +46,8 @@ public class DateTimeSerialiser extends StdSerializer<DateTime> {
 	 * Perform serialisation.
 	 */
 	@Override
-	public void serialize(final DateTime value, final JsonGenerator jgen,
-			final SerializerProvider provider)
+	public void serialize(DateTime value, JsonGenerator jgen,
+			SerializerProvider provider)
 			throws IOException, JsonGenerationException {
 		jgen.writeString(FORMAT.print(value));
 	}

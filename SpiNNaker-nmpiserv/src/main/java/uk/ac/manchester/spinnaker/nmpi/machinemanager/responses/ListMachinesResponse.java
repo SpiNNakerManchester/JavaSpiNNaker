@@ -26,10 +26,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  */
 @JsonFormat(shape = ARRAY)
 public class ListMachinesResponse {
-
-	/**
-	 * The list of machines.
-	 */
+	/** The list of machines. */
 	private List<Machine> machines;
 
 	/**
@@ -46,7 +43,7 @@ public class ListMachinesResponse {
 	 *
 	 * @param machinesParam The list of machines to set
 	 */
-	public void setMachines(final List<Machine> machinesParam) {
+	void setMachines(List<Machine> machinesParam) {
 		this.machines = machinesParam;
 	}
 }

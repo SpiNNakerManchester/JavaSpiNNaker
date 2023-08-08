@@ -63,9 +63,8 @@ public class JobSpecification {
 	 * @param urlParam
 	 *            The URL
 	 */
-	public JobSpecification(final SpinnakerMachine machineParam,
-			final JobParameters parametersParam, final int idParam,
-			final String urlParam) {
+	public JobSpecification(SpinnakerMachine machineParam,
+			JobParameters parametersParam, int idParam, String urlParam) {
 		this.machine = machineParam;
 		this.parameters = parametersParam;
 		this.id = idParam;
@@ -86,7 +85,7 @@ public class JobSpecification {
 	 *
 	 * @param machineParam the machine to set
 	 */
-	public void setMachine(final SpinnakerMachine machineParam) {
+	public void setMachine(SpinnakerMachine machineParam) {
 		this.machine = machineParam;
 	}
 
@@ -104,7 +103,7 @@ public class JobSpecification {
 	 *
 	 * @param parametersParam the parameters to set
 	 */
-	public void setParameters(final JobParameters parametersParam) {
+	public void setParameters(JobParameters parametersParam) {
 		this.parameters = parametersParam;
 	}
 
@@ -122,7 +121,7 @@ public class JobSpecification {
 	 *
 	 * @param idParam the id to set
 	 */
-	public void setId(final int idParam) {
+	public void setId(int idParam) {
 		this.id = idParam;
 	}
 
@@ -140,7 +139,7 @@ public class JobSpecification {
 	 *
 	 * @param urlParam the URL to set
 	 */
-	public void setUrl(final String urlParam) {
+	public void setUrl(String urlParam) {
 		this.url = urlParam;
 	}
 }

@@ -34,14 +34,11 @@ import org.slf4j.Logger;
 @Provider
 public class NullExceptionMapper
 		implements ExceptionMapper<NullPointerException> {
-
-	/**
-	 * Log.
-	 */
+	/** Log. */
 	private static final Logger logger = getLogger(NullExceptionMapper.class);
 
 	@Override
-	public Response toResponse(final NullPointerException exception) {
+	public Response toResponse(NullPointerException exception) {
 		var msg = exception.getMessage();
 		if (isNull(msg) || msg.isEmpty()) {
 			msg = "bad parameter";

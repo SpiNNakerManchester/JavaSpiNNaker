@@ -19,21 +19,16 @@ package uk.ac.manchester.spinnaker.nmpi.model.machine;
  * Represents a set of coordinates of a chip within a machine.
  */
 public class ChipCoordinates {
-
 	/**
 	 * The cabinet containing the frame containing the board containing the
 	 * chip.
 	 */
 	private int cabinet;
 
-	/**
-	 * The frame containing the board containing the chip.
-	 */
+	/** The frame containing the board containing the chip. */
 	private int frame;
 
-	/**
-	 * The board containing the chip.
-	 */
+	/** The board containing the chip. */
 	private int board;
 
 	/**
@@ -47,8 +42,7 @@ public class ChipCoordinates {
 	 * @param boardParam
 	 *            The board containing the chip.
 	 */
-	public ChipCoordinates(final int cabinetParam, final int frameParam,
-			final int boardParam) {
+	public ChipCoordinates(int cabinetParam, int frameParam, int boardParam) {
 		this.cabinet = cabinetParam;
 		this.frame = frameParam;
 		this.board = boardParam;
