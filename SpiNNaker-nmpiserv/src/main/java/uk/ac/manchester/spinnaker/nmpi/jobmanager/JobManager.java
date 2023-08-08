@@ -228,10 +228,20 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	private void startManager() throws IOException {
 		threadGroup = new ThreadGroup("NMPI");
 
+		// Start looking for jobs after the startup of the services
+		scheduler.schedule(() -> startJobs(), STATUS_UPDATE_PERIOD,
+				TimeUnit.SECONDS);
+	}
+
+	private void startJobs() {
 		// Get all jobs that are supposedly running or waiting and start them
 		// again
 		for (var job : queueManager.getJobs()) {
-			addJob((Job) job);
+			try {
+				addJob((Job) job);
+			} catch (IOException e) {
+				logger.error("Error adding job at startup", e);
+			}
 		}
 
 		// Start the queue manager
