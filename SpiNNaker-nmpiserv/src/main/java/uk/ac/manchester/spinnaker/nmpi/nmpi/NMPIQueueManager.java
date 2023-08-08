@@ -20,11 +20,18 @@ import java.util.List;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.DataItem;
+import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.Job;
 
 /**
  * Manages the NMPI queue, receiving jobs and submitting them to be run.
  */
 public interface NMPIQueueManager {
+
+	/**
+	 * Get jobs that are marked as running or in progress in some form.
+	 * @return A list of jobs.
+	 */
+	List<? extends Job> getJobs();
 
 	/**
 	 * Register a listener against the manager for new jobs.
@@ -34,6 +41,9 @@ public interface NMPIQueueManager {
 	 */
 	void addListener(NMPIQueueListener listener);
 
+	/**
+	 * Process responses from the queue now.
+	 */
 	void processResponsesFromQueue();
 
 	/**

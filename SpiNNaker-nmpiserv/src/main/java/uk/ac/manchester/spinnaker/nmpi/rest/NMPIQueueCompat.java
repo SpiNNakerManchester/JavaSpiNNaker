@@ -26,6 +26,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 
@@ -44,6 +45,20 @@ import uk.ac.manchester.spinnaker.nmpi.rest.utils.PropertyBasedDeserialiser;
  */
 @Path("/api/v2")
 public interface NMPIQueueCompat {
+
+	/**
+	 * Gets all jobs in the queue.
+	 * @param authHeader
+	 *            The authorization header.
+	 * @return
+	 */
+	@GET
+	@Path("queue/")
+	@Produces("application/json")
+	List<QueueJobCompat> getJobs(
+			@HeaderParam("Authorization") String authHeader,
+			@QueryParam("hardware") String hardware,
+			@QueryParam("status") String status);
 
 	/**
 	 * Get the next queue item for a specific hardware system.

@@ -29,6 +29,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.NotFoundException;
@@ -130,6 +132,14 @@ public class NMPIQueueManagerCompat implements NMPIQueueManager {
 	private void initAPIClient() {
 		queue = NMPIQueueCompat.createClient(nmpiUrl.toString());
 		nmpiAuthHeader = NMPI_AUTH + " " + nmpiUsername + ":" + nmpiApiKey;
+	}
+
+	@Override
+	public List<? extends Job> getJobs() {
+		var val = queue.getJobs(nmpiAuthHeader, hardware, STATUS_VALIDATED);
+		var run = queue.getJobs(nmpiAuthHeader, hardware, STATUS_RUNNING);
+		return Stream.concat(val.stream(), run.stream())
+				.collect(Collectors.toList());
 	}
 
 	/**

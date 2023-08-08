@@ -126,6 +126,12 @@ public class NMPIQueueManagerV3 implements NMPIQueueManager {
 		queue = NMPIQueue.createClient(nmpiUrl.toString());
 	}
 
+	@Override
+	public List<? extends Job> getJobs() {
+		return queue.getJobs(nmpiApiKey, hardware,
+				List.of(STATUS_VALIDATED, STATUS_RUNNING));
+	}
+
 	/**
 	 * Register a listener against the manager for new jobs.
 	 *

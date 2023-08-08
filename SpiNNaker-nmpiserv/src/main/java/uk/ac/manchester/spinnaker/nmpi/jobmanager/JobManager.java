@@ -222,10 +222,18 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 
 	/**
 	 * Start the manager's worker threads.
+	 * @throws IOException If we get an error starting a job.
 	 */
 	@PostConstruct
-	private void startManager() {
+	private void startManager() throws IOException {
 		threadGroup = new ThreadGroup("NMPI");
+
+		// Get all jobs that are supposedly running or waiting and start them
+		// again
+		for (var job : queueManager.getJobs()) {
+			addJob((Job) job);
+		}
+
 		// Start the queue manager
 		queueManager.addListener(this);
 		new Thread(threadGroup, queueManager::processResponsesFromQueue,
