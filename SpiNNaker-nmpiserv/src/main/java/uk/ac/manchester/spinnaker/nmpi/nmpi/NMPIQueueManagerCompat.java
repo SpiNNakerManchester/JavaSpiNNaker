@@ -138,7 +138,8 @@ public class NMPIQueueManagerCompat implements NMPIQueueManager {
 	public List<? extends Job> getJobs() {
 		var val = queue.getJobs(nmpiAuthHeader, hardware, STATUS_VALIDATED);
 		var run = queue.getJobs(nmpiAuthHeader, hardware, STATUS_RUNNING);
-		return Stream.concat(val.stream(), run.stream())
+		return Stream
+				.concat(val.getObjects().stream(), run.getObjects().stream())
 				.collect(Collectors.toList());
 	}
 

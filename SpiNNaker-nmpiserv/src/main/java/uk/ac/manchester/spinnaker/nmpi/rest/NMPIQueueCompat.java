@@ -55,7 +55,7 @@ public interface NMPIQueueCompat {
 	@GET
 	@Path("queue/")
 	@Produces("application/json")
-	List<QueueJobCompat> getJobs(
+	JobListCompat getJobs(
 			@HeaderParam("Authorization") String authHeader,
 			@QueryParam("hardware") String hardware,
 			@QueryParam("status") String status);
