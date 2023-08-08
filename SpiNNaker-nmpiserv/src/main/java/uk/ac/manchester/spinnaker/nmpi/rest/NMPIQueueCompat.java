@@ -48,8 +48,10 @@ public interface NMPIQueueCompat {
 
 	/**
 	 * Gets all jobs in the queue.
-	 * @param authHeader
-	 *            The authorization header.
+	 * @param authHeader The authorization header.
+	 * @param hardware The hardware to request the jobs for.
+	 * @param status The accepted status.
+	 * @return The list of jobs that meet the criteria.
 	 * @return
 	 */
 	@GET

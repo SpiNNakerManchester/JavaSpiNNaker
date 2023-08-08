@@ -47,9 +47,10 @@ public interface NMPIQueue {
 
 	/**
 	 * Gets all jobs in the queue.
-	 * @param apiKey
-	 *            The API key to use.
-	 * @return
+	 * @param apiKey The API key to use.
+	 * @param hardware The hardware to request the jobs for.
+	 * @param status List of accepted statuses.
+	 * @return The list of jobs that meet the criteria.
 	 */
 	@GET
 	@Path("jobs/")
