@@ -123,10 +123,11 @@ public class NMPIQueueManagerCompat implements NMPIQueueManager {
 	@Value("${nmpi.apiKey}")
 	private String nmpiApiKey;
 
+	/** The API username to authenticate against the server. */
 	@Value("${nmpi.username}")
 	private String nmpiUsername;
 
-	/** The authorization header to use **/
+	/** The authorization header to use. **/
 	private String nmpiAuthHeader;
 
 	/**

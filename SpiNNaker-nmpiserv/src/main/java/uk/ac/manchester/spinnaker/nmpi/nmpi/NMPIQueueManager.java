@@ -92,5 +92,5 @@ public interface NMPIQueueManager {
 	/**
 	 * Close the manager.
 	 */
-	public void close();
+	void close();
 }
