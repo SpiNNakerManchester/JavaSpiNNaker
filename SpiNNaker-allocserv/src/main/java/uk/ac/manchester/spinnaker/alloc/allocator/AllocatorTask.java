@@ -1154,6 +1154,8 @@ public class AllocatorTask extends DatabaseAwareBean
 			if (targetState == DESTROYED) {
 				log.debug("no boards for {} in destroy", jobId);
 			}
+			// Make sure we still update the job!
+			updateJob(jobId, sourceState, targetState);
 			return List.of();
 		}
 		log.debug("{} boards for job {}", boards.size(), jobId);
