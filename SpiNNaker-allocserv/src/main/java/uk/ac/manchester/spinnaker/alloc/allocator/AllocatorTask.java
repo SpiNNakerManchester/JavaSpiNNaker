@@ -234,6 +234,13 @@ public class AllocatorTask extends DatabaseAwareBean
 	}
 
 	/**
+	 * Ask for allocation to happen now.
+	 */
+	public void scheduleAllocateNow() {
+		scheduler.schedule(this::allocate, Instant.now());
+	}
+
+	/**
 	 * Allocate all current requests for resources.
 	 */
 	public synchronized void allocate() {

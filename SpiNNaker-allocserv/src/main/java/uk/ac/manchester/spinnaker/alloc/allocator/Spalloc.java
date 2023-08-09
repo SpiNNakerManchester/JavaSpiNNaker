@@ -118,6 +118,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	@Autowired
 	private ProxyRememberer rememberer;
 
+	@Autowired
+	private AllocatorTask allocator;
+
 	@GuardedBy("this")
 	private transient Map<String, List<BoardCoords>> downBoardsCache =
 			new HashMap<>();
@@ -513,6 +516,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			JobLifecycle.log.info(
 					"created job {} on {} for {} asking for {} board(s)", jobId,
 					machine.name, owner, numBoards);
+
+			allocator.scheduleAllocateNow();
 			return getJob(jobId, conn).map(ji -> (Job) ji);
 		});
 	}
