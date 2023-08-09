@@ -355,6 +355,25 @@ public class BMPController extends DatabaseAwareBean {
 				}
 			}
 		}
+
+		boolean processRequest(SpiNNakerControl control) {
+			while (isRepeat()) {
+				try {
+					if (tryProcessRequest(control)) {
+						return true;
+					}
+					sleep(props.getProbeInterval().toMillis());
+				} catch (InterruptedException e) {
+					// If this happens, just cancel the transaction;
+					// when we come back, all things will be redone.
+					throw new RuntimeException(e);
+				}
+			}
+			return false;
+		}
+
+		abstract boolean tryProcessRequest(SpiNNakerControl control)
+				throws InterruptedException;
 	}
 
 	/**
@@ -383,14 +402,6 @@ public class BMPController extends DatabaseAwareBean {
 		private final List<Integer> changeIds = new ArrayList<>();
 
 		private final Map<Integer, Integer> boardToId = new HashMap<>();
-
-		/** Flag indicates the job should be updated after the transaction. */
-		private boolean updateJob = false;
-
-		/** Flag indicates the job allocation should be restarted after the
-		 *  transaction.
-		 */
-		private boolean resetJobAlloc = false;
 
 		/**
 		 * Create a request.
@@ -455,12 +466,8 @@ public class BMPController extends DatabaseAwareBean {
 		 * @throws IOException
 		 *             If network I/O fails
 		 */
-		private void changeBoardPowerState(SpiNNakerControl controller)
+		final void changeBoardPowerState(SpiNNakerControl controller)
 				throws ProcessException, InterruptedException, IOException {
-
-			// We might be retrying, so reset the flags
-			updateJob = false;
-			resetJobAlloc = false;
 
 			// Send any power on commands
 			if (!powerOnBoards.isEmpty()) {
@@ -487,35 +494,38 @@ public class BMPController extends DatabaseAwareBean {
 		 *            How to access the DB
 		 * @return Whether the state of boards or jobs has changed.
 		 */
-		private void done(Connection c) {
-			try (var deallocateBoards = c.update(DEALLOCATE_BMP_BOARDS_JOB);
+		private void done() {
+			try (var c = getConnection();
+					var deallocateBoards = c.update(DEALLOCATE_BMP_BOARDS_JOB);
 					var deleteChange = c.update(FINISHED_PENDING);
 					var setBoardPowerOn = c.update(SET_BOARD_POWER_ON);
 					var setBoardPowerOff = c.update(SET_BOARD_POWER_OFF)) {
-				int turnedOn = powerOnBoards.stream().mapToInt(
-						board -> setBoardPowerOn.call(
-								getBoardId(board).get())).sum();
-				int turnedOff = powerOffBoards.stream().mapToInt(
-						board -> setBoardPowerOff.call(
-								getBoardId(board).get())).sum();
+				c.transaction(() -> {
+					int turnedOn = powerOnBoards.stream().mapToInt(
+							board -> setBoardPowerOn.call(
+									getBoardId(board).get())).sum();
+					int turnedOff = powerOffBoards.stream().mapToInt(
+							board -> setBoardPowerOff.call(
+									getBoardId(board).get())).sum();
 
-				if (to == DESTROYED || to == QUEUED) {
-					/*
-					 * Need to mark the boards as not allocated; can't do that
-					 * until they've been switched off.
-					 */
-					deallocateBoards.call(jobId, bmpId);
-				}
-				int completed = changeIds.stream().mapToInt(
-						deleteChange::call).sum();
+					if (to == DESTROYED || to == QUEUED) {
+						/*
+						 * Need to mark the boards as not allocated; can't do
+						 * that until they've been switched off.
+						 */
+						deallocateBoards.call(jobId, bmpId);
+					}
+					int completed = changeIds.stream().mapToInt(
+							deleteChange::call).sum();
 
-				log.debug("BMP ACTION SUCCEEDED ({}:{}->{}): on:{} off:{} "
-						+ "completed: {}",
-						jobId, from, to, turnedOn, turnedOff, completed);
-
-				// Flag that the job should be updated
-				updateJob = true;
+					log.debug("BMP ACTION SUCCEEDED ({}:{}->{}): on:{} off:{} "
+							+ "completed: {}",
+							jobId, from, to, turnedOn, turnedOff, completed);
+				});
 			}
+
+			// Tell the allocator something has happened
+			allocator.updateJob(jobId, from, to);
 		}
 
 		/**
@@ -527,34 +537,39 @@ public class BMPController extends DatabaseAwareBean {
 		 *            How to access the DB
 		 * @return Whether the state of boards or jobs has changed.
 		 */
-		private void failed(Connection c) {
-			try (var deallocateBoards = c.update(DEALLOCATE_BMP_BOARDS_JOB);
+		private void failed() {
+			var resetJobAlloc = false;
+			try (var c = getConnection();
+					var deallocateBoards = c.update(DEALLOCATE_BMP_BOARDS_JOB);
 					var deleteChange = c.update(FINISHED_PENDING);
 					var setBoardPowerOff = c.update(SET_BOARD_POWER_OFF)) {
+				resetJobAlloc = c.transaction(() -> {
+					// We should mark the boards as off
+					int turnedOff = powerOffBoards.stream().mapToInt(
+							board -> setBoardPowerOff.call(
+									getBoardId(board).get())).sum();
 
-				// We should mark the boards as off
-				int turnedOff = powerOffBoards.stream().mapToInt(
-						board -> setBoardPowerOff.call(
-								getBoardId(board).get())).sum();
+					// Deallocate the boards on this bmp from the job;
+					// other boards can be deallocated elsewhere.
+					deallocateBoards.call(jobId, bmpId);
 
-				// Deallocate the boards on this bmp from the job;
-				// other boards can be deallocated elsewhere.
-				deallocateBoards.call(jobId, bmpId);
+					// Delete change ids as they are done even if failed.
+					var completed = changeIds.stream().mapToInt(
+							deleteChange::call).sum();
 
-				// Delete change ids as they are done even if failed.
-				var completed = changeIds.stream().mapToInt(
-						deleteChange::call).sum();
+					log.debug(
+							"BMP ACTION FAILED on {} ({}:{}->{}) off:{} "
+							+ "completed:{}",
+							bmpId, jobId, from, to, turnedOff, completed);
 
-				// If we were meant to be powering up, reset the allocation
-				// once done here.
-				if (to == READY && powerOffBoards.isEmpty()) {
-					resetJobAlloc = true;
-				}
 
-				log.debug(
-						"BMP ACTION FAILED on {} ({}:{}->{}) off:{} "
-						+ "completed:{}",
-						bmpId, jobId, from, to, turnedOff, completed);
+					// If we were meant to be powering up, reset the allocation
+					// once done here.
+					return (to == READY && powerOffBoards.isEmpty());
+				});
+			}
+			if (resetJobAlloc) {
+				allocator.resetPowerOnFailure(jobId);
 			}
 		}
 
@@ -563,30 +578,31 @@ public class BMPController extends DatabaseAwareBean {
 		 * thread that may touch a BMP directly, but which may not touch the
 		 * database.
 		 *
-		 * @param controllers
+		 * @param controller
 		 *            How to actually reach the BMPs.
 		 * @return Whether this action has "succeeded" and shouldn't be retried.
 		 * @throws InterruptedException
 		 *             If interrupted.
 		 */
-		boolean tryChangePowerState(SpiNNakerControl controller, Connection c)
+		boolean tryProcessRequest(SpiNNakerControl controller)
 				throws InterruptedException {
-			return bmpAction(() -> {
+			boolean ok = bmpAction(() -> {
 				changeBoardPowerState(controller);
 				// We want to ensure the lead board is alive
 				if (!serviceControl.isUseDummyBMP()) {
 					// Don't bother with pings when the dummy is enabled
 					controller.ping(powerOnBoards);
 				}
-				done(c);
+				done();
 			}, e -> {
-				failed(c);
+				failed();
 				synchronized (BMPController.this) {
 					bmpProcessingException = e;
 				}
 			}, ppe -> {
-				badBoard(ppe, c);
+				badBoard(ppe);
 			});
+			return ok;
 		}
 
 		@Override
@@ -608,19 +624,21 @@ public class BMPController extends DatabaseAwareBean {
 		 * it's never going to work so taking it out right away is the only sane
 		 * plan. We also need to nuke the planned changes. Retrying is bad.
 		 *
-		 * @param sql
-		 *            How to access the DB.
 		 * @param failure
 		 *            The failure message.
 		 * @return Whether the state of boards or jobs has changed.
 		 */
-		private void badBoard(ProcessException failure, Connection c) {
-			getBoardId(failure.core).ifPresent(boardId -> {
-				// Mark the board as dead right now
-				markBoardAsDead(c, boardId, REPORT_MSG + failure);
-				// Add a report if we can
-				addBoardReport(c, boardId, jobId, REPORT_MSG + failure);
-			});
+		private void badBoard(ProcessException failure) {
+			try (var c = getConnection()) {
+				c.transaction(() -> {
+					getBoardId(failure.core).ifPresent(boardId -> {
+						// Mark the board as dead right now
+						markBoardAsDead(c, boardId, REPORT_MSG + failure);
+						// Add a report if we can
+						addBoardReport(c, boardId, jobId, REPORT_MSG + failure);
+					});
+				});
+			}
 		}
 
 		/**
@@ -748,12 +766,12 @@ public class BMPController extends DatabaseAwareBean {
 		 *
 		 * @param exn
 		 *            The exception that caused the failure.
-		 * @param sql
-		 *            How to access the DB
 		 * @return Whether we've changed anything
 		 */
-		private void failed(Exception exn, Connection c) {
-			try (var failed = c.update(FAILED_BLACKLIST_OP)) {
+		private void failed(Exception exn) {
+			try (var c = getConnection();
+					var failed = c.update(FAILED_BLACKLIST_OP)) {
+				// Not worth a transaction!
 				failed.call(exn, opId);
 			}
 		}
@@ -767,13 +785,15 @@ public class BMPController extends DatabaseAwareBean {
 		 *
 		 * @param exn
 		 *            The exception that caused the failure.
-		 * @param sql
-		 *            How to access the DB
 		 * @return Whether we've changed anything
 		 */
-		void takeOutOfService(Exception exn, Connection c) {
-			addBoardReport(c, boardId, null, REPORT_MSG + exn);
-			markBoardAsDead(c, boardId, REPORT_MSG + exn);
+		void takeOutOfService(Exception exn) {
+			try (var c = getConnection()) {
+				c.transaction(() -> {
+					addBoardReport(c, boardId, null, REPORT_MSG + exn);
+					markBoardAsDead(c, boardId, REPORT_MSG + exn);
+				});
+			}
 		}
 
 		/**
@@ -787,7 +807,7 @@ public class BMPController extends DatabaseAwareBean {
 		 * @throws InterruptedException
 		 *             If interrupted.
 		 */
-		boolean perform(SpiNNakerControl controller, Connection c)
+		boolean tryProcessRequest(SpiNNakerControl controller)
 				throws InterruptedException {
 			return bmpAction(() -> {
 				switch (op) {
@@ -803,10 +823,12 @@ public class BMPController extends DatabaseAwareBean {
 				default:
 					throw new IllegalArgumentException();
 				}
+				epochs.nextBlacklistEpoch();
+				epochs.nextMachineEpoch();
 			}, e -> {
-				failed(e, c);
+				failed(e);
 			}, ppe -> {
-				takeOutOfService(ppe, c);
+				takeOutOfService(ppe);
 			});
 		}
 
@@ -967,14 +989,13 @@ public class BMPController extends DatabaseAwareBean {
 		public synchronized void run() {
 			log.trace("Searching for changes on BMP {}", bmpId);
 
-			boolean updateBlacklistEpoch = false;
+			List<Request> changes = new ArrayList<>();
 
 			try (var c = getConnection();
 					var getRequests = c.query(GET_CHANGES);
 					var getBlacklistReads = c.query(GET_BLACKLIST_READS);
 					var getBlacklistWrites = c.query(GET_BLACKLIST_WRITES);
 					var getReadSerialInfos = c.query(GET_SERIAL_INFO_REQS)) {
-				boolean changed = false;
 
 				// Group power requests by job
 				var powerChanges = new LinkedList<>(getRequests.call(
@@ -989,94 +1010,39 @@ public class BMPController extends DatabaseAwareBean {
 					}
 					if (!jobChanges.isEmpty()) {
 						log.debug("Running job changes {}", jobChanges);
-						changed = true;
-						processPower(new PowerRequest(bmpId,
+						changes.add(new PowerRequest(bmpId,
 								change.jobId, change.from, change.to,
 								jobChanges));
 					}
 				}
 
 				// Leave these until quiet
-				if (!changed) {
-					for (var change : getBlacklistReads.call(
+				if (changes.isEmpty()) {
+					changes.addAll(getBlacklistReads.call(
 							row -> new BlacklistRequest(bmpId, READ, row),
-							bmpId)) {
-						updateBlacklistEpoch = processBlacklist(change);
-						changed = true;
-					}
+							bmpId));
 				}
-				if (!changed) {
-					for (var change : getBlacklistWrites.call(
+				if (changes.isEmpty()) {
+					changes.addAll(getBlacklistWrites.call(
 							row -> new BlacklistRequest(bmpId, WRITE, row),
-							bmpId)) {
-						updateBlacklistEpoch = processBlacklist(change);
-						changed = true;
-					}
+							bmpId));
 				}
-				if (!changed) {
-					for (var change : getReadSerialInfos.call(
+				if (changes.isEmpty()) {
+					changes.addAll(getReadSerialInfos.call(
 							row -> new BlacklistRequest(bmpId, GET_SERIAL, row),
-							bmpId)) {
-						updateBlacklistEpoch = processBlacklist(change);
-						changed = true;
-					}
+							bmpId));
 				}
 			} catch (Exception e) {
 				log.error("unhandled exception for BMP '{}'", bmpId, e);
 			}
 
+			boolean updateBlacklistEpoch = false;
+			for (var change : changes) {
+				change.processRequest(control);
+			}
+
 			if (updateBlacklistEpoch) {
-				epochs.nextBlacklistEpoch();
-				epochs.nextMachineEpoch();
-			}
-		}
 
-		private boolean processPower(PowerRequest request) {
-			try (var c = getConnection()) {
-				boolean ok = c.transaction(() -> {
-					while (request.isRepeat()) {
-						try {
-							if (request.tryChangePowerState(control, c)) {
-								return true;
-							}
-							sleep(props.getProbeInterval().toMillis());
-						} catch (InterruptedException e) {
-							// If this happens, just cancel the transaction;
-							// when we come back, all things will be redone.
-							throw new RuntimeException(e);
-						}
-					}
-					return false;
-				});
-				if (request.updateJob) {
-					// Tell the allocator something has happened
-					allocator.updateJob(request.jobId, request.from,
-							request.to);
-				}
-				if (request.resetJobAlloc) {
-					allocator.resetPowerOnFailure(request.jobId);
-				}
-				return ok;
-			}
-		}
-
-		private boolean processBlacklist(BlacklistRequest request) {
-			try (Connection c = getConnection()) {
-				return c.transaction(() -> {
-					while (request.isRepeat()) {
-						try {
-							if (request.perform(control, c)) {
-								return true;
-							}
-							sleep(props.getProbeInterval().toMillis());
-						} catch (InterruptedException e) {
-							// If this happens, just cancel the transaction;
-							// when we come back all things will be redone.
-							throw new RuntimeException(e);
-						}
-					}
-					return false;
-				});
 			}
 		}
 	}
