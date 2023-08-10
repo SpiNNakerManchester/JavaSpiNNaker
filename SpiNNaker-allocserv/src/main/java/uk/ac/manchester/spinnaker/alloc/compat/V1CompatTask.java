@@ -105,7 +105,82 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * Note that synchronisation will be performed on this object.
 	 */
 	@GuardedBy("itself")
-	private final PrintWriter out;
+	private final ExceptionPrintWriter out;
+
+	private class ExceptionPrintWriter extends PrintWriter {
+
+		public ExceptionPrintWriter(Writer out) {
+			super(out);
+		}
+
+		public void flush() {
+			try {
+				synchronized (lock) {
+					out.flush();
+				}
+			}
+			catch (IOException x) {
+				x.printStackTrace();
+			}
+		}
+
+		public void close() {
+			log.info("Closing");
+			try {
+				synchronized (lock) {
+					if (out == null)
+						return;
+					out.close();
+					out = null;
+				}
+			}
+			catch (IOException x) {
+				x.printStackTrace();
+			}
+		}
+
+		public void write(int c) {
+			try {
+				synchronized (lock) {
+					out.write(c);
+				}
+			}
+			catch (InterruptedIOException x) {
+				Thread.currentThread().interrupt();
+			}
+			catch (IOException x) {
+				x.printStackTrace();
+			}
+		}
+
+		public void write(char buf[], int off, int len) {
+			try {
+				synchronized (lock) {
+					out.write(buf, off, len);
+				}
+			}
+			catch (InterruptedIOException x) {
+				Thread.currentThread().interrupt();
+			}
+			catch (IOException x) {
+				x.printStackTrace();
+			}
+		}
+
+		public void write(String s, int off, int len) {
+			try {
+				synchronized (lock) {
+					out.write(s, off, len);
+				}
+			}
+			catch (InterruptedIOException x) {
+				Thread.currentThread().interrupt();
+			}
+			catch (IOException x) {
+				x.printStackTrace();
+			}
+		}
+	}
 
 	/**
 	 * Make an instance that wraps a socket.
@@ -126,7 +201,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		sock.setSoTimeout((int) getProperties().getReceiveTimeout().toMillis());
 
 		in = buffer(new InputStreamReader(sock.getInputStream(), UTF_8));
-		out = new PrintWriter(
+		out = new ExceptionPrintWriter(
 				new OutputStreamWriter(sock.getOutputStream(), UTF_8));
 	}
 
@@ -145,7 +220,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		super(srv);
 		this.sock = null;
 		this.in = buffer(in);
-		this.out = new PrintWriter(out);
+		this.out = new ExceptionPrintWriter(out);
 	}
 
 	final void handleConnection() {
@@ -256,7 +331,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		String line;
 		try {
 			line = in.readLine();
-			log.debug("Incoming message: {}", line);
+			log.info("Incoming message: {}", line);
 		} catch (SocketException e) {
 			/*
 			 * Don't know why we get a generic socket exception for some of
@@ -286,7 +361,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		if (isNull(c) || isNull(c.getCommand())) {
 			throw new IOException("message did not specify a command");
 		}
-		log.debug("Command: {}", c);
+		log.info("Command: {}", c);
 		return Optional.of(c);
 	}
 
@@ -301,7 +376,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	private void sendMessage(Object msg) throws IOException {
 		// We go via a string to avoid early closing issues
 		var data = getJsonMapper().writeValueAsString(msg);
-		log.debug("about to send message: {}", data);
+		log.info("about to send message: {}", data);
 		// Synch so we definitely don't interleave bits of messages
 		synchronized (out) {
 			out.println(data);
@@ -375,7 +450,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * @throws IOException
 	 *             If network access fails.
 	 */
-	protected final void writeMachineNotification(List<String> machineNames)
+	protected final void writeMachineNotification(
+			List<String> machineNames)
 			throws IOException {
 		if (!machineNames.isEmpty() && mayWrite()) {
 			sendMessage(new MachineNotifyMessage(machineNames));
@@ -426,7 +502,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			return true;
 		}
 
-		log.debug("responded with {}", r);
+		log.info("responded with {}", r);
 		writeResponse(r);
 		return true;
 	}

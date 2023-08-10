@@ -114,12 +114,11 @@ class V1TaskImpl extends V1CompatTask {
 	@Autowired
 	private SpallocAPI spalloc;
 
-	/** The epoch manager. */
-	@Autowired
-	private Epochs epochs;
-
 	@Autowired
 	private CompatHelper helper;
+
+	@Autowired
+	private Epochs epochs;
 
 	/** Encoded form of our special permissions token. */
 	private Permit permit;
@@ -417,37 +416,59 @@ class V1TaskImpl extends V1CompatTask {
 		if (nonNull(jobId)) {
 			var job = getJob(jobId);
 			job.access(host());
-		}
-		manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
-			var actual = permit.authorize(() -> {
-				spalloc.getJobs(false, LOTS, 0).waitForChange(
-						mainProps.getCompat().getNotifyWaitTime());
-				return spalloc.getJobs(false, LOTS, 0).ids();
+			manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
+				if (job.waitForChange(
+						mainProps.getCompat().getNotifyWaitTime())) {
+					writeJobNotification(List.of(jobId));
+				}
 			});
-			if (nonNull(jobId)) {
-				actual.retainAll(List.of(jobId));
-			}
-			writeJobNotification(actual);
-		});
+		} else {
+			manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
+				var actual = permit.authorize(() -> {
+					return spalloc.getJobs(false, LOTS, 0).getChanged(
+							mainProps.getCompat().getNotifyWaitTime());
+				});
+				writeJobNotification(
+						actual.stream().collect(Collectors.toList()));
+			});
+		}
 	}
 
 	@Override
-	protected final void notifyMachine(String machine, boolean wantNotify)
+	protected final void notifyMachine(String machineName, boolean wantNotify)
 			throws TaskException {
-		if (nonNull(machine)) {
-			// Validate
-			getMachine(machine);
+		if (nonNull(machineName)) {
+			var machine = getMachine(machineName);
+			manageNotifier(machNotifiers, machineName, wantNotify, () -> {
+				if (machine.waitForChange(
+						mainProps.getCompat().getNotifyWaitTime())) {
+					log.info("Machine {} changed", machineName);
+					writeMachineNotification(List.of(machineName));
+				}
+			});
+		} else {
+			manageNotifier(machNotifiers, machineName, wantNotify, () -> {
+				var actual = permit.authorize(() -> {
+					var machines = spalloc.getMachines(false);
+					var invMap = machines.values().stream().collect(
+							Collectors.toMap(SpallocAPI.Machine::getId,
+									SpallocAPI.Machine::getName));
+					var epoch = epochs.getMachinesEpoch(
+							machines.values().stream().map(m -> m.getId())
+							.collect(Collectors.toList()));
+					try {
+						return epoch.getChanged(
+								mainProps.getCompat().getNotifyWaitTime())
+								.stream().map(id -> invMap.get(id)).collect(
+										Collectors.toList());
+					} catch (InterruptedException e) {
+						return invMap.values();
+					}
+				});
+				writeMachineNotification(actual.stream().collect(
+						Collectors.toList()));
+			});
 		}
-		manageNotifier(machNotifiers, machine, wantNotify, () -> {
-			epochs.getMachineEpoch()
-					.waitForChange(mainProps.getCompat().getNotifyWaitTime());
-			var actual = new ArrayList<>(permit
-					.authorize(() -> spalloc.getMachines(false)).keySet());
-			if (nonNull(machine)) {
-				actual.retainAll(List.of(machine));
-			}
-			writeMachineNotification(actual);
-		});
 	}
 
 	@Override
@@ -546,12 +567,15 @@ class V1TaskImpl extends V1CompatTask {
 			boolean wantNotify, Notifier notifier) {
 		if (wantNotify) {
 			if (!notifiers.containsKey(key)) {
+				log.info("Adding notifier for {}", key);
 				notifiers.put(key,
 						getExecutor().submit(Notifier.toCallable(notifier)));
 			}
 		} else {
+			log.info("Removing notifier for {}", key);
 			var n = notifiers.remove(key);
 			if (nonNull(n)) {
+				log.info("    Notifier cancelled");
 				n.cancel(true);
 			}
 		}

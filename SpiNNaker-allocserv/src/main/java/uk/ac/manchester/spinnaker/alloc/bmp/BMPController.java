@@ -29,6 +29,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -201,7 +202,7 @@ public class BMPController extends DatabaseAwareBean {
 		for (var b : bmps) {
 			var worker = workers.get(b);
 			if (worker != null) {
-				scheduler.schedule(() -> worker.run(), new Date());
+				scheduler.schedule(() -> worker.run(), Instant.now());
 			} else {
 				log.error("Could not find worker for BMP {}", b);
 			}
@@ -466,7 +467,7 @@ public class BMPController extends DatabaseAwareBean {
 		 * @throws IOException
 		 *             If network I/O fails
 		 */
-		final void changeBoardPowerState(SpiNNakerControl controller)
+		void changeBoardPowerState(SpiNNakerControl controller)
 				throws ProcessException, InterruptedException, IOException {
 
 			// Send any power on commands
@@ -561,7 +562,6 @@ public class BMPController extends DatabaseAwareBean {
 							"BMP ACTION FAILED on {} ({}:{}->{}) off:{} "
 							+ "completed:{}",
 							bmpId, jobId, from, to, turnedOff, completed);
-
 
 					// If we were meant to be powering up, reset the allocation
 					// once done here.
@@ -678,6 +678,8 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final Blacklist blacklist;
 
+		private final int machineId;
+
 		private BlacklistRequest(int bmpId, BlacklistOperation op,
 				Row row) {
 			super(bmpId);
@@ -692,6 +694,7 @@ public class BMPController extends DatabaseAwareBean {
 				blacklist = null;
 			}
 			bmpSerialId = row.getString("bmp_serial_id");
+			machineId = row.getInt("machine_id");
 		}
 
 		/** The serial number actually read from the board. */
@@ -823,8 +826,8 @@ public class BMPController extends DatabaseAwareBean {
 				default:
 					throw new IllegalArgumentException();
 				}
-				epochs.nextBlacklistEpoch();
-				epochs.nextMachineEpoch();
+				epochs.blacklistChanged(boardId);
+				epochs.machineChanged(machineId);
 			}, e -> {
 				failed(e);
 			}, ppe -> {
@@ -1036,13 +1039,8 @@ public class BMPController extends DatabaseAwareBean {
 				log.error("unhandled exception for BMP '{}'", bmpId, e);
 			}
 
-			boolean updateBlacklistEpoch = false;
 			for (var change : changes) {
 				change.processRequest(control);
-			}
-
-			if (updateBlacklistEpoch) {
-
 			}
 		}
 	}
