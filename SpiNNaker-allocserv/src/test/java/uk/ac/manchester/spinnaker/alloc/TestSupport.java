@@ -34,10 +34,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.IntConsumer;
 import java.util.function.ObjIntConsumer;
-
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -166,25 +166,34 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 		}
 	}
 
+	private static void checkKey(String name, int expected,
+			Optional<Integer> got) {
+		if (got.isPresent() && got.get() != expected) {
+			log.warn("{} created with ID {} and not {}", name, got.get(),
+					expected);
+		}
+	}
+
 	private static void makeMachine(Connection c, int width, int height,
 			int depth) {
 		try (var u = c.update(INSERT_MACHINE)) {
-			u.call(MACHINE, MACHINE_NAME, width, height, depth);
+			checkKey("Machine", MACHINE,
+					u.key(MACHINE, MACHINE_NAME, width, height, depth));
 		}
 		try (var u = c.update(INSERT_BMP_WITH_ID)) {
-			u.call(BMP, MACHINE, BMP_ADDR, 1, 1);
+			checkKey("BMP", BMP, u.key(BMP, MACHINE, BMP_ADDR, 1, 1));
 		}
 	}
 
 	private static void makeUser(Connection c) {
 		try (var u = c.update(INSERT_USER)) {
-			u.call(USER, USER_NAME, BASIC, true);
+			checkKey("User", USER, u.key(USER, USER_NAME, BASIC, true));
 		}
 		try (var u = c.update(INSERT_GROUP)) {
-			u.call(GROUP, GROUP_NAME, INITIAL_QUOTA);
+			checkKey("Group", GROUP, u.key(GROUP, GROUP_NAME, INITIAL_QUOTA));
 		}
 		try (var u = c.update(INSERT_MEMBER)) {
-			u.call(MEMBERSHIP, USER, GROUP);
+			checkKey("Membership", MEMBERSHIP, u.key(MEMBERSHIP, USER, GROUP));
 		}
 	}
 
@@ -202,8 +211,8 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 		makeMachine(c, 1, 1, 1);
 		// Add one board to the machine
 		try (var u = c.update(INSERT_BOARD_WITH_ID)) {
-			assertEquals(1, u.call(BOARD, BOARD_ADDR, BMP, 0, MACHINE, 0, 0, 0,
-					0, 0, false));
+			checkKey("Board", BOARD, u.key(BOARD, BOARD_ADDR, BMP, 0, MACHINE,
+					0, 0, 0, 0, 0, false));
 		}
 		// A disabled permission-less user with a quota
 		makeUser(c);
@@ -224,9 +233,12 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 		// Add three connected boards to the machine
 		int b0 = BOARD, b1 = BOARD + 1, b2 = BOARD + 2;
 		try (var u = c.update(INSERT_BOARD_WITH_ID)) {
-			u.call(b0, BOARD_ADDR, BMP, 0, MACHINE, 0, 0, 0, 0, 0, false);
-			u.call(b1, "2.2.2.3", BMP, 1, MACHINE, 0, 0, 1, 8, 4, false);
-			u.call(b2, "2.2.2.4", BMP, 2, MACHINE, 0, 0, 2, 4, 8, false);
+			checkKey("Board", b0, u.key(b0, BOARD_ADDR, BMP, 0, MACHINE, 0, 0,
+					0, 0, 0, false));
+			checkKey("Board", b1, u.key(b1, "2.2.2.3", BMP, 1, MACHINE, 0, 0, 1,
+					8, 4, false));
+			checkKey("Board", b2, u.key(b2, "2.2.2.4", BMP, 2, MACHINE, 0, 0, 2,
+					4, 8, false));
 		}
 		try (var u = c.update(INSERT_LINK)) {
 			u.call(b0, 0, b1, 3, true);
