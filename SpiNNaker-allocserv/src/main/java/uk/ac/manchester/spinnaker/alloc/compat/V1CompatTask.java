@@ -256,7 +256,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		String line;
 		try {
 			line = in.readLine();
-			log.info("Incoming message: {}", line);
+			log.debug("Incoming message: {}", line);
 		} catch (SocketException e) {
 			/*
 			 * Don't know why we get a generic socket exception for some of
@@ -286,7 +286,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		if (isNull(c) || isNull(c.getCommand())) {
 			throw new IOException("message did not specify a command");
 		}
-		log.info("Command: {}", c);
+		log.debug("Command: {}", c);
 		return Optional.of(c);
 	}
 
@@ -301,7 +301,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	private void sendMessage(Object msg) throws IOException {
 		// We go via a string to avoid early closing issues
 		var data = getJsonMapper().writeValueAsString(msg);
-		log.info("about to send message: {}", data);
+		log.debug("about to send message: {}", data);
 		// Synch so we definitely don't interleave bits of messages
 		synchronized (out) {
 			out.println(data);
@@ -427,7 +427,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			return true;
 		}
 
-		log.info("responded with {}", r);
+		log.debug("responded with {}", r);
 		writeResponse(r);
 		return true;
 	}
