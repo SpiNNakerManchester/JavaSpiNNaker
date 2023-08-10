@@ -257,7 +257,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	public void powerOnAndCheck(List<BMPBoard> boards)
 			throws ProcessException, InterruptedException, IOException {
 		var boardsToPower = boards;
-		log.debug("Power on and check boards {} for BMP {}", boards, bmp);
+		log.info("Power on and check boards {} for BMP {}", boards, bmp);
 		boolean reloadDone = false; // so we only do firmware loading once
 		for (int attempt = 1; attempt <= props.getFpgaAttempts(); attempt++) {
 			if (attempt > 1) {
@@ -316,29 +316,34 @@ class SpiNNaker1 implements SpiNNakerControl {
 	@Override
 	public void powerOff(List<BMPBoard> boards)
 			throws ProcessException, InterruptedException, IOException {
+		log.info("Power off boards {} for BMP {}", boards, bmp);
 		txrx.powerOff(boards);
 	}
 
 	@Override
 	public String readSerial(BMPBoard board)
 			throws ProcessException, IOException, InterruptedException {
+		log.info("Read serial number from board {} for BMP {}", board, bmp);
 		return txrx.readBoardSerialNumber(board);
 	}
 
 	@Override
 	public Blacklist readBlacklist(BMPBoard board)
 			throws ProcessException, IOException, InterruptedException {
+		log.info("Read blacklist from board {} for BMP {}", board, bmp);
 		return txrx.readBlacklist(board);
 	}
 
 	@Override
 	public void writeBlacklist(BMPBoard board, Blacklist blacklist)
 			throws ProcessException, InterruptedException, IOException {
+		log.info("Write blacklist to board {} for BMP {}", board, bmp);
 		txrx.writeBlacklist(board, blacklist);
 	}
 
 	@Override
 	public void ping(List<BMPBoard> boards) {
+		log.info("Ping boards {} for BMP {}", boards, bmp);
 		boards.parallelStream().forEach(id -> {
 			var address = boardAddresses.get(id);
 			if (Ping.ping(address) != 0) {
