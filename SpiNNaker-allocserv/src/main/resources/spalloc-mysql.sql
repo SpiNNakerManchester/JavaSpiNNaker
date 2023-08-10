@@ -413,7 +413,7 @@ CREATE TABLE IF NOT EXISTS pending_changes (
 -- STMT
 CREATE TABLE IF NOT EXISTS blacklist_ops (
 	op_id INTEGER PRIMARY KEY AUTO_INCREMENT,
-	board_id INTEGER UNIQUE NOT NULL,
+	board_id INTEGER NOT NULL,
 		FOREIGN KEY (board_id)
 		REFERENCES boards(board_id) ON DELETE RESTRICT,
 	op INTEGER NOT NULL			-- What we plan to do (BlacklistOperations ID)

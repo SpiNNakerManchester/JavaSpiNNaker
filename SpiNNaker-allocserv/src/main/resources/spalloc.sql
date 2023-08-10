@@ -397,7 +397,7 @@ CREATE TABLE IF NOT EXISTS pending_changes (
 
 CREATE TABLE IF NOT EXISTS blacklist_ops (
 	op_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	board_id INTEGER UNIQUE NOT NULL
+	board_id INTEGER NOT NULL
 		CONSTRAINT "blacklist_ops.board_id -> boards.board_id"
 		REFERENCES boards(board_id) ON DELETE RESTRICT,
 	op INTEGER NOT NULL			-- What we plan to do (BlacklistOperations ID)
