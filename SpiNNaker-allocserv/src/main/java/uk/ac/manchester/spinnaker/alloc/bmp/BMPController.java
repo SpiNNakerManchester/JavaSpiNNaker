@@ -157,10 +157,12 @@ public class BMPController extends DatabaseAwareBean {
 	}
 
 	private void makeWorkers() {
+		log.info("making BMP workers");
+		int made;
 		// Make workers
 		try (var c = getConnection(); var getBmps = c.query(GET_ALL_BMPS);
 				var getBoards = c.query(GET_ALL_BMP_BOARDS)) {
-			getBmps.call(row -> {
+			made = getBmps.call(row -> {
 				var m = spallocCore.getMachine(row.getString("machine_name"),
 						true);
 				var coords = new BMPCoords(row.getInt("cabinet"),
@@ -175,10 +177,12 @@ public class BMPController extends DatabaseAwareBean {
 				var control = controllerFactory.create(m.get(), coords, boards);
 				var worker = new Worker(control, bmpId);
 				scheduler.scheduleAtFixedRate(worker, allocProps.getPeriod());
-				workers.put(row.getInt("bmp_id"), worker);
+				workers.put(bmpId, worker);
+				log.info("made worker for BMP {}", bmpId);
 				return null;
-			});
+			}).size();
 		}
+		log.info("made {} BMP workers", made);
 	}
 
 	/**
