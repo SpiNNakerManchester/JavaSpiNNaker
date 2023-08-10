@@ -349,9 +349,6 @@ class AllocatorTest extends TestSupport {
 		});
 	}
 
-	private static final String HACK_POWER_TIMESTAMP =
-			"UPDATE boards SET power_on_timestamp = power_on_timestamp - 1000";
-
 	@Test
 	public void expireReady() throws Exception {
 		// This is messier; can't have a transaction open and roll it back

@@ -16,7 +16,6 @@
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.util.Objects.nonNull;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -26,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.google.errorprone.annotations.concurrent.GuardedBy;
@@ -38,7 +36,6 @@ import com.google.errorprone.annotations.concurrent.GuardedBy;
  */
 @Service
 public class Epochs {
-	private static final Logger log = getLogger(Epochs.class);
 
 	@GuardedBy("this")
 	private final Map<Integer, Set<Epoch>> jobs = new HashMap<>();
@@ -138,7 +135,6 @@ public class Epochs {
 	 * @param machine The machine that has changed
 	 */
 	public synchronized void machineChanged(int machine) {
-		log.info("Machine {} changed", machine);
 		changed(machines, machine);
 	}
 
@@ -215,7 +211,6 @@ public class Epochs {
 					remove(map, this, id);
 				}
 			}
-			log.info("Changes: {}", changed);
 			return changed;
 		}
 

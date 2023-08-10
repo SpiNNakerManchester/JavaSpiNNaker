@@ -428,8 +428,10 @@ class V1TaskImpl extends V1CompatTask {
 					return spalloc.getJobs(false, LOTS, 0).getChanged(
 							mainProps.getCompat().getNotifyWaitTime());
 				});
-				writeJobNotification(
-						actual.stream().collect(Collectors.toList()));
+				if (actual.size() > 0) {
+					writeJobNotification(
+							actual.stream().collect(Collectors.toList()));
+				}
 			});
 		}
 	}
@@ -442,31 +444,33 @@ class V1TaskImpl extends V1CompatTask {
 			manageNotifier(machNotifiers, machineName, wantNotify, () -> {
 				if (machine.waitForChange(
 						mainProps.getCompat().getNotifyWaitTime())) {
-					log.info("Machine {} changed", machineName);
 					writeMachineNotification(List.of(machineName));
 				}
 			});
 		} else {
 			manageNotifier(machNotifiers, machineName, wantNotify, () -> {
-				var actual = permit.authorize(() -> {
+				List<String> actual = permit.authorize(() -> {
 					var machines = spalloc.getMachines(false);
 					var invMap = machines.values().stream().collect(
 							Collectors.toMap(SpallocAPI.Machine::getId,
 									SpallocAPI.Machine::getName));
-					var epoch = epochs.getMachinesEpoch(
-							machines.values().stream().map(m -> m.getId())
-							.collect(Collectors.toList()));
+					var mIds = machines.values().stream().map(m -> m.getId())
+							.collect(Collectors.toList());
+					var epoch = epochs.getMachinesEpoch(mIds);
 					try {
-						return epoch.getChanged(
-								mainProps.getCompat().getNotifyWaitTime())
-								.stream().map(id -> invMap.get(id)).collect(
-										Collectors.toList());
+						var changed = epoch.getChanged(
+								mainProps.getCompat().getNotifyWaitTime());
+						return changed.stream()
+								.map(id -> invMap.get(id))
+								.collect(Collectors.toList());
 					} catch (InterruptedException e) {
-						return invMap.values();
+						return List.of();
 					}
 				});
-				writeMachineNotification(actual.stream().collect(
-						Collectors.toList()));
+				if (actual.size() > 0) {
+					writeMachineNotification(actual.stream().collect(
+							Collectors.toList()));
+				}
 			});
 		}
 	}
@@ -567,15 +571,12 @@ class V1TaskImpl extends V1CompatTask {
 			boolean wantNotify, Notifier notifier) {
 		if (wantNotify) {
 			if (!notifiers.containsKey(key)) {
-				log.info("Adding notifier for {}", key);
 				notifiers.put(key,
 						getExecutor().submit(Notifier.toCallable(notifier)));
 			}
 		} else {
-			log.info("Removing notifier for {}", key);
 			var n = notifiers.remove(key);
 			if (nonNull(n)) {
-				log.info("    Notifier cancelled");
 				n.cancel(true);
 			}
 		}

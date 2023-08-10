@@ -188,20 +188,13 @@ class V1CompatTest extends TestSupport {
 		@Test
 		void notifyMachine() throws Exception {
 			withInstance((to, from) -> {
-				System.out.println("Notify On");
 				to.println("{\"command\": \"notify_machine\"}");
 				assertEquals(VOID_RESPONSE, from.readLine());
-
-				System.out.println("Notify Off");
 				to.println("{\"command\": \"no_notify_machine\"}");
 				assertEquals(VOID_RESPONSE, from.readLine());
-
-				System.out.println("Notify Machine On");
 				to.println("{\"command\":\"notify_machine\",\"args\":[\""
 						+ MACHINE_NAME + "\"]}");
 				assertEquals(VOID_RESPONSE, from.readLine());
-
-				System.out.println("Notify Machine Off");
 				to.println("{\"command\":\"no_notify_machine\",\"args\":[\""
 						+ MACHINE_NAME + "\"]}");
 				assertEquals(VOID_RESPONSE, from.readLine());

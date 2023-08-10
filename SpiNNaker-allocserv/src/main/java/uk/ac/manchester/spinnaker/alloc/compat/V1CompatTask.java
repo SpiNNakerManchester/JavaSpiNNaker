@@ -105,82 +105,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * Note that synchronisation will be performed on this object.
 	 */
 	@GuardedBy("itself")
-	private final ExceptionPrintWriter out;
-
-	private class ExceptionPrintWriter extends PrintWriter {
-
-		public ExceptionPrintWriter(Writer out) {
-			super(out);
-		}
-
-		public void flush() {
-			try {
-				synchronized (lock) {
-					out.flush();
-				}
-			}
-			catch (IOException x) {
-				x.printStackTrace();
-			}
-		}
-
-		public void close() {
-			log.info("Closing");
-			try {
-				synchronized (lock) {
-					if (out == null)
-						return;
-					out.close();
-					out = null;
-				}
-			}
-			catch (IOException x) {
-				x.printStackTrace();
-			}
-		}
-
-		public void write(int c) {
-			try {
-				synchronized (lock) {
-					out.write(c);
-				}
-			}
-			catch (InterruptedIOException x) {
-				Thread.currentThread().interrupt();
-			}
-			catch (IOException x) {
-				x.printStackTrace();
-			}
-		}
-
-		public void write(char buf[], int off, int len) {
-			try {
-				synchronized (lock) {
-					out.write(buf, off, len);
-				}
-			}
-			catch (InterruptedIOException x) {
-				Thread.currentThread().interrupt();
-			}
-			catch (IOException x) {
-				x.printStackTrace();
-			}
-		}
-
-		public void write(String s, int off, int len) {
-			try {
-				synchronized (lock) {
-					out.write(s, off, len);
-				}
-			}
-			catch (InterruptedIOException x) {
-				Thread.currentThread().interrupt();
-			}
-			catch (IOException x) {
-				x.printStackTrace();
-			}
-		}
-	}
+	private final PrintWriter out;
 
 	/**
 	 * Make an instance that wraps a socket.
@@ -201,7 +126,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		sock.setSoTimeout((int) getProperties().getReceiveTimeout().toMillis());
 
 		in = buffer(new InputStreamReader(sock.getInputStream(), UTF_8));
-		out = new ExceptionPrintWriter(
+		out = new PrintWriter(
 				new OutputStreamWriter(sock.getOutputStream(), UTF_8));
 	}
 
@@ -220,7 +145,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		super(srv);
 		this.sock = null;
 		this.in = buffer(in);
-		this.out = new ExceptionPrintWriter(out);
+		this.out = new PrintWriter(out);
 	}
 
 	final void handleConnection() {
