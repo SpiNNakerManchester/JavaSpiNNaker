@@ -37,13 +37,10 @@ import com.google.errorprone.annotations.concurrent.GuardedBy;
 @Service
 public class Epochs {
 
-	@GuardedBy("jobs")
 	private final Map<Integer, Set<Epoch>> jobs = new HashMap<>();
 
-	@GuardedBy("machines")
 	private final Map<Integer, Set<Epoch>> machines = new HashMap<>();
 
-	@GuardedBy("blacklists")
 	private final Map<Integer, Set<Epoch>> blacklists = new HashMap<>();
 
 	private static void changed(Map<Integer, Set<Epoch>> map, int id) {
@@ -103,7 +100,7 @@ public class Epochs {
 	 *
 	 * @param job The job that has changed
 	 */
-	public synchronized void jobChanged(int job) {
+	public void jobChanged(int job) {
 		changed(jobs, job);
 	}
 
@@ -134,7 +131,7 @@ public class Epochs {
 	 *
 	 * @param machine The machine that has changed
 	 */
-	public synchronized void machineChanged(int machine) {
+	public void machineChanged(int machine) {
 		changed(machines, machine);
 	}
 
@@ -155,7 +152,7 @@ public class Epochs {
 	 *
 	 * @param board The board that has changed.
 	 */
-	public synchronized void blacklistChanged(int board) {
+	public void blacklistChanged(int board) {
 		changed(blacklists, board);
 	}
 
