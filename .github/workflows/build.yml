@@ -29,6 +29,7 @@ env:
   # https://maven.apache.org/resolver/configuration.html
   MAVEN_OPTS: >
     -Daether.connector.http.connectionMaxTtl=25
+    -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
 
 jobs:
   compile:
@@ -62,7 +63,7 @@ jobs:
   test:
     needs: compile
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     strategy:
       matrix:
         java: [17]
@@ -74,9 +75,11 @@ jobs:
         distribution: 'zulu'
         java-version: ${{ matrix.java }}
         cache: 'maven'
+      timeout-minutes: 2
 
     - name: Build with Java ${{ matrix.java }}
       run: mvn install --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true
+      timeout-minutes: 3
     - name: "Check: Test"
       run: mvn verify --settings $SETTINGS_FILE -Dmaven.javadoc.skip=true jacoco:report
     - name: "Report: Coverage via coveralls.io"
