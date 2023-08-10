@@ -369,9 +369,9 @@ class AllocatorTest extends TestSupport {
 				allocations = c.transaction(() -> {
 					return getAllocTester().expireJobs();
 				});
-				allocations.updateBMPs();
-
 				assertState(job, DESTROYED, 0, 1);
+
+				allocations.updateBMPs();
 
 				snooze1s();
 
