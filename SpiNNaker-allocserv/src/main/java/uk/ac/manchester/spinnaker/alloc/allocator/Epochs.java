@@ -24,30 +24,66 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
 /**
- * Manages epoch counters.
+ * Manages waiting for values.
  *
  * @author Donal Fellows
  */
 @Service
 public class Epochs {
 
-	private final Map<Integer, Set<Epoch>> jobs = new HashMap<>();
+	/** How long to wait between cleaning of the maps. */
+	private static final Duration CLEANING_SCHEDULE = Duration.ofSeconds(30);
 
-	private final Map<Integer, Set<Epoch>> machines = new HashMap<>();
+	@Autowired
+	private TaskScheduler scheduler;
 
-	private final Map<Integer, Set<Epoch>> blacklists = new HashMap<>();
+	private final Map<Integer, WeakHashMap<Epoch, Boolean>> jobs =
+			new HashMap<>();
 
-	private static void changed(Map<Integer, Set<Epoch>> map, int id) {
-		Set<Epoch> items;
+	private final Map<Integer, WeakHashMap<Epoch, Boolean>> machines =
+			new HashMap<>();
+
+	private final Map<Integer, WeakHashMap<Epoch, Boolean>> blacklists =
+			new HashMap<>();
+
+	@PostConstruct
+	private void init() {
+		// The maps contain weak reference maps, where Epochs are removed when
+		// they are no longer referenced, but the map will still contain the
+		// empty weak reference map unless removed.
+		scheduler.scheduleAtFixedRate(this::checkEmpties, CLEANING_SCHEDULE);
+	}
+
+	private void checkEmpties() {
+		checkEmptyValues(jobs);
+		checkEmptyValues(machines);
+		checkEmptyValues(blacklists);
+	}
+
+	private void checkEmptyValues(
+			Map<Integer, WeakHashMap<Epoch, Boolean>> map) {
 		synchronized (map) {
-			items = map.get(id);
+			map.entrySet().removeIf(entry -> entry.getValue().isEmpty());
+		}
+	}
+
+	private static void changed(Map<Integer, WeakHashMap<Epoch, Boolean>> map,
+			int id) {
+		Map<Epoch, Boolean> items;
+		synchronized (map) {
+			items = map.remove(id);
 		}
 		if (nonNull(items)) {
-			for (Epoch item : items) {
+			for (Epoch item : items.keySet()) {
 				synchronized (item) {
 					item.changed.add(id);
 					item.notifyAll();
@@ -56,19 +92,12 @@ public class Epochs {
 		}
 	}
 
-	private static void add(Map<Integer, Set<Epoch>> map, Epoch epoch,
-			int id) {
+	private static void add(Map<Integer, WeakHashMap<Epoch, Boolean>> map,
+			Epoch epoch, int id) {
 		if (!map.containsKey(id)) {
-			map.put(id, new HashSet<>());
+			map.put(id, new WeakHashMap<>());
 		}
-		map.get(id).add(epoch);
-	}
-
-	private static void remove(Map<Integer, Set<Epoch>> map, Epoch epoch,
-			int id) {
-		if (map.containsKey(id)) {
-			map.get(id).remove(epoch);
-		}
+		map.get(id).put(epoch, true);
 	}
 
 	/**
@@ -161,20 +190,25 @@ public class Epochs {
 	 */
 	public final class Epoch {
 
-		private final Map<Integer, Set<Epoch>> map;
+		private final Map<Integer, WeakHashMap<Epoch, Boolean>> map;
 
 		private final List<Integer> ids;
 
 		private final Set<Integer> changed = new HashSet<>();
 
-		private Epoch(Map<Integer, Set<Epoch>> map, int id) {
-			this.map = map;
-			this.ids = List.of(id);
+		private Epoch(Map<Integer, WeakHashMap<Epoch, Boolean>> map, int id) {
+			this(map, List.of(id));
 		}
 
-		private Epoch(Map<Integer, Set<Epoch>> map, List<Integer> ids) {
+		private Epoch(Map<Integer, WeakHashMap<Epoch, Boolean>> map,
+				List<Integer> ids) {
 			this.map = map;
 			this.ids = List.copyOf(ids);
+			synchronized (map) {
+				for (var id : ids) {
+					add(map, this, id);
+				}
+			}
 		}
 
 		/**
@@ -191,20 +225,17 @@ public class Epochs {
 			return !getChanged(timeout).isEmpty();
 		}
 
+		/**
+		 * Get the set of changed items.
+		 *
+		 * @param timeout The timeout to wait for one item to change.
+		 * @return The changed items.
+		 * @throws InterruptedException If the wait is interrupted.
+		 */
 		public Collection<Integer> getChanged(Duration timeout)
 				throws InterruptedException {
-			synchronized (map) {
-				for (var id : ids) {
-					add(map, this, id);
-				}
-			}
 			synchronized (this) {
 				wait(timeout.toMillis());
-			}
-			synchronized (map) {
-				for (var id : ids) {
-					remove(map, this, id);
-				}
 			}
 			return changed;
 		}
