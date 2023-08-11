@@ -422,6 +422,8 @@ class V1TaskImpl extends V1CompatTask {
 						mainProps.getCompat().getNotifyWaitTime())) {
 					log.debug("Job {} changed!", jobId);
 					writeJobNotification(List.of(jobId));
+				} else {
+					log.debug("Stopped looking for changes to {}", jobId);
 				}
 			});
 		} else {
@@ -436,6 +438,7 @@ class V1TaskImpl extends V1CompatTask {
 					writeJobNotification(
 							actual.stream().collect(Collectors.toList()));
 				}
+				log.debug("Stopped looking for changes to all jobs");
 			});
 		}
 	}
