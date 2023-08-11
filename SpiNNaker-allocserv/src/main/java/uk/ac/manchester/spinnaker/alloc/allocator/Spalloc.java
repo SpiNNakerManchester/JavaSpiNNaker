@@ -1458,9 +1458,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				var result = q.transaction(
 						() -> reportIssue(report, permit, email, q));
 				emailSender.sendServiceMail(email);
-				for (var m : report.boards.stream()
+				for (var m : report.boards().stream()
 						.map(b -> q.getNamedMachine.call1(
-								r -> r.getInt("machine_id"), b.machine, true))
+								r -> r.getInt("machine_id"), b.machine(), true))
 						.collect(Collectors.toSet())) {
 					if (m.isPresent()) {
 						epochs.machineChanged(m.get());

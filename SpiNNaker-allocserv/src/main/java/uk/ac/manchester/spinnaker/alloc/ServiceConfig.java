@@ -123,6 +123,7 @@ public class ServiceConfig extends Application {
 
 	@Bean(name = "mainDatasource")
 	@Role(ROLE_INFRASTRUCTURE)
+	@Primary
 	@ConfigurationProperties(prefix = "spalloc.datasource")
 	DataSource mainDatasource() {
 		return DataSourceBuilder.create().build();
