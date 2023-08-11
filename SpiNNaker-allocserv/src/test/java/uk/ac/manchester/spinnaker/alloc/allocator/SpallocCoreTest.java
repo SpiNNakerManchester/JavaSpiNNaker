@@ -568,6 +568,7 @@ class SpallocCoreTest extends TestSupport {
 
 				// reread
 				snooze1s();
+				snooze1s();
 				var j2 = spalloc.getJob(p, jobId).orElseThrow();
 				assertEquals(DESTROYED, j2.getState());
 				var ts1 = j2.getFinishTime().orElseThrow();
