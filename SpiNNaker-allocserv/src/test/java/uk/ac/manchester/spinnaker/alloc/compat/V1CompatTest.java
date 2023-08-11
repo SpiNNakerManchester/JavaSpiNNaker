@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.compat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 import static org.slf4j.LoggerFactory.getLogger;
 import static java.lang.String.format;
 import static java.util.regex.Pattern.compile;
@@ -40,6 +41,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.parallel.Execution;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -59,6 +61,7 @@ import uk.ac.manchester.spinnaker.alloc.TestSupport;
 	"spalloc.compat.service-user=" + TestSupport.USER_NAME,
 	"spalloc.compat.service-group=" + TestSupport.GROUP_NAME
 })
+@Execution(SAME_THREAD)
 class V1CompatTest extends TestSupport {
 	// Take care in this class: JSON documents must be SINGLE LINE too
 
