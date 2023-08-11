@@ -16,6 +16,7 @@
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.util.Objects.nonNull;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -28,6 +29,7 @@ import java.util.WeakHashMap;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
@@ -39,6 +41,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class Epochs {
+
+	private static final Logger log = getLogger(Epochs.class);
 
 	/** How long to wait between cleaning of the maps. */
 	private static final Duration CLEANING_SCHEDULE = Duration.ofSeconds(30);
@@ -72,7 +76,11 @@ public class Epochs {
 	private void checkEmptyValues(
 			Map<Integer, WeakHashMap<Epoch, Boolean>> map) {
 		synchronized (map) {
-			map.entrySet().removeIf(entry -> entry.getValue().isEmpty());
+			var removed = map.entrySet().removeIf(
+					entry -> entry.getValue().isEmpty());
+			if (removed) {
+				log.debug("Removed items from map");
+			}
 		}
 	}
 
@@ -80,7 +88,7 @@ public class Epochs {
 			int id) {
 		Map<Epoch, Boolean> items;
 		synchronized (map) {
-			items = map.remove(id);
+			items = map.get(id);
 		}
 		if (nonNull(items)) {
 			for (Epoch item : items.keySet()) {
