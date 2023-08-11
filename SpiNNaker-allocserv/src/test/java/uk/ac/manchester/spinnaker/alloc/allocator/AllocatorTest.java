@@ -25,7 +25,6 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -101,16 +100,6 @@ class AllocatorTest extends TestSupport {
 				() -> format("expected %s but got %s", expected, got));
 	}
 
-	/**
-	 * Expiry tests need a two second sleep to get things to tick over to *past*
-	 * the expiration timestamp.
-	 */
-	private static final int DELAY_MS = 2000;
-
-	private void processBMPRequests(Collection<Integer> bmps) throws Exception {
-		bmpCtrl.processRequests(DELAY_MS, bmps);
-	}
-
 	@SuppressWarnings("deprecation")
 	private TestAPI getAllocTester() {
 		return alloc.getTestAPI(conn);
@@ -144,11 +133,11 @@ class AllocatorTest extends TestSupport {
 
 			assertState(job, QUEUED, 1, 0);
 
-			assertTrue(getAllocTester().allocate().size() > 0);
+			assertTrue(getAllocTester().allocate().bmps.size() > 0);
 
 			assertState(job, POWER, 0, 1);
 
-			assertFalse(getAllocTester().allocate().size() > 0);
+			assertFalse(getAllocTester().allocate().bmps.size() > 0);
 
 			assertState(job, POWER, 0, 1);
 
@@ -171,11 +160,11 @@ class AllocatorTest extends TestSupport {
 
 			assertState(job, QUEUED, 1, 0);
 
-			assertTrue(getAllocTester().allocate().size() > 0);
+			assertTrue(getAllocTester().allocate().bmps.size() > 0);
 
 			assertState(job, POWER, 0, 3);
 
-			assertFalse(getAllocTester().allocate().size() > 0);
+			assertFalse(getAllocTester().allocate().bmps.size() > 0);
 
 			assertState(job, POWER, 0, 3);
 
@@ -198,11 +187,11 @@ class AllocatorTest extends TestSupport {
 
 			assertState(job, QUEUED, 1, 0);
 
-			assertTrue(getAllocTester().allocate().size() > 0);
+			assertTrue(getAllocTester().allocate().bmps.size() > 0);
 
 			assertState(job, POWER, 0, 1);
 
-			assertFalse(getAllocTester().allocate().size() > 0);
+			assertFalse(getAllocTester().allocate().bmps.size() > 0);
 
 			assertState(job, POWER, 0, 1);
 
@@ -225,11 +214,11 @@ class AllocatorTest extends TestSupport {
 
 			assertState(job, QUEUED, 1, 0);
 
-			assertTrue(getAllocTester().allocate().size() > 0);
+			assertTrue(getAllocTester().allocate().bmps.size() > 0);
 
 			assertState(job, POWER, 0, 3);
 
-			assertFalse(getAllocTester().allocate().size() > 0);
+			assertFalse(getAllocTester().allocate().bmps.size() > 0);
 
 			assertState(job, POWER, 0, 3);
 
@@ -279,11 +268,11 @@ class AllocatorTest extends TestSupport {
 
 			assertState(job, QUEUED, 1, 0);
 
-			assertTrue(getAllocTester().allocate().size() > 0);
+			assertTrue(getAllocTester().allocate().bmps.size() > 0);
 
 			assertState(job, POWER, 0, 1);
 
-			assertFalse(getAllocTester().allocate().size() > 0);
+			assertFalse(getAllocTester().allocate().bmps.size() > 0);
 
 			assertState(job, POWER, 0, 1);
 
@@ -360,9 +349,6 @@ class AllocatorTest extends TestSupport {
 		});
 	}
 
-	private static final String HACK_POWER_TIMESTAMP =
-			"UPDATE boards SET power_on_timestamp = power_on_timestamp - 1000";
-
 	@Test
 	public void expireReady() throws Exception {
 		// This is messier; can't have a transaction open and roll it back
@@ -371,24 +357,23 @@ class AllocatorTest extends TestSupport {
 			int job = c.transaction(() -> makeQueuedJob(1));
 			try {
 				makeAllocBySizeRequest(job, 1);
-				var bmps = c.transaction(() -> {
+				var allocations = c.transaction(() -> {
 					return getAllocTester().allocate();
 				});
+				allocations.updateBMPs();
 				snooze1s();
 				snooze1s();
-				processBMPRequests(bmps);
 
-				assumeState(job, READY, 0, 0);
+				assertState(job, READY, 0, 0);
 
-				bmps = c.transaction(() -> {
+				allocations = c.transaction(() -> {
 					return getAllocTester().expireJobs();
 				});
-
 				assertState(job, DESTROYED, 0, 1);
 
-				// HACK! Allow immediate switch off (OK because not real BMP)
-				c.transaction(() -> c.update(HACK_POWER_TIMESTAMP).call());
-				processBMPRequests(bmps);
+				allocations.updateBMPs();
+
+				snooze1s();
 
 				assertState(job, DESTROYED, 0, 0);
 			} finally {

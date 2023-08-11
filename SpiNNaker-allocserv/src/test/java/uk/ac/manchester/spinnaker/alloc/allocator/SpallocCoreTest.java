@@ -585,6 +585,7 @@ class SpallocCoreTest extends TestSupport {
 					// Messy to build as usually only done by Jackson
 					var r = new IssueReportRequest();
 					var b = new ReportedBoard();
+					b.machine = "test";
 					b.address = BOARD_ADDR;
 					r.issue = "test";
 					r.boards = List.of(b);
