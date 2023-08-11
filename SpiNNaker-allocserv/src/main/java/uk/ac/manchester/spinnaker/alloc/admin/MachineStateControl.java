@@ -108,10 +108,13 @@ public class MachineStateControl extends DatabaseAwareBean {
 	private void launchBackground() {
 		props = properties.getStateControl();
 		// After a minute, start retrieving board serial numbers
-		readAllTask =
-				executor.schedule((Runnable) this::readAllBoardSerialNumbers,
-						Instant.now().plus(props.getBlacklistTimeout()));
-		// Why can't I pass a Duration directly there?
+		// Don't do this if testing
+		if (!properties.getTransceiver().isDummy()) {
+			readAllTask = executor.schedule(
+					(Runnable) this::readAllBoardSerialNumbers,
+					Instant.now().plus(props.getBlacklistTimeout()));
+			// Why can't I pass a Duration directly there?
+		}
 	}
 
 	@PreDestroy
