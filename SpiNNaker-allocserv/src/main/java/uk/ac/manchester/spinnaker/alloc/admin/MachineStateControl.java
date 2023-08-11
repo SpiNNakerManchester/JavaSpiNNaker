@@ -141,6 +141,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 		/** The name of the containing SpiNNaker machine. */
 		public final String machineName;
 
+		/** The machine ID. Unique. */
+		public final int machineId;
+
 		/** The board ID. Unique. */
 		public final int id;
 
@@ -187,6 +190,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 			this.bmpSerial = row.getString("bmp_serial_id");
 			this.physicalSerial = row.getString("physical_serial_id");
 			this.bmpId = row.getInt("bmp_id");
+			this.machineId = row.getInt("machine_id");
 		}
 
 		/**
@@ -595,7 +599,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 			 * sensitive part of the code.
 			 */
 			var ops = lmap(batch, board -> opGenerator.apply(board.boardId));
-			var bmps = new HashSet<>(lmap(batch, board -> board.bmpId));
+			var bmps = new HashSet<>(lmap(batch, board -> board.bmp.bmpId));
 			boolean stop = false;
 			try {
 				bmpController.triggerSearch(bmps);
@@ -797,7 +801,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		@SuppressWarnings("CompileTimeConstant")
 		BmpOp(@CompileTimeConstant final String operation, Object... args) {
 			boardId = (Integer) args[0];
-			epoch = epochs.getBlacklistEpoch();
+			epoch = epochs.getBlacklistEpoch(boardId);
 			op = execute(conn -> {
 				try (var readReq = conn.update(operation)) {
 					return readReq.key(args);

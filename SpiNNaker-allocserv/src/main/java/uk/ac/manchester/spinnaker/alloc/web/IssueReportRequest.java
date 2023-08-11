@@ -50,6 +50,8 @@ public record IssueReportRequest(
 	/**
 	 * Describes a board that has an issue.
 	 *
+	 * @param machine
+	 *            The machine containing the board.
 	 * @param chip
 	 *            The location of the chip within the reporting allocation.
 	 * @param x
@@ -67,7 +69,8 @@ public record IssueReportRequest(
 	 * @param address
 	 *            The IP address of the board.
 	 */
-	public record ReportedBoard(@Valid ChipLocation chip,
+	public record ReportedBoard(
+			@NotBlank String machine, @Valid ChipLocation chip,
 			@ValidTriadX Integer x, @ValidTriadY Integer y,
 			@ValidTriadZ Integer z, @ValidCabinetNumber Integer cabinet,
 			@ValidFrameNumber Integer frame, @ValidBoardNumber Integer board,

@@ -38,6 +38,7 @@ import static uk.ac.manchester.spinnaker.utils.OptionalUtils.apply;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +46,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,6 +120,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	@Autowired
 	private ProxyRememberer rememberer;
 
+	@Autowired
+	private AllocatorTask allocator;
+
 	@GuardedBy("this")
 	private transient Map<String, List<BoardCoords>> downBoardsCache =
 			new HashMap<>();
@@ -133,10 +138,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	private Map<String, Machine> getMachines(Connection conn,
 			boolean allowOutOfService) {
-		var me = epochs.getMachineEpoch();
 		try (var listMachines = conn.query(GET_ALL_MACHINES)) {
 			return Row.stream(listMachines.call(
-					row -> new MachineImpl(conn, row, me), allowOutOfService))
+					row -> new MachineImpl(conn, row), allowOutOfService))
 					.toMap(Machine::getName, (m) -> m);
 		}
 	}
@@ -196,18 +200,16 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	private Optional<MachineImpl> getMachine(int id, boolean allowOutOfService,
 			Connection conn) {
-		var me = epochs.getMachineEpoch();
 		try (var idMachine = conn.query(GET_MACHINE_BY_ID)) {
-			return idMachine.call1(row -> new MachineImpl(conn, row, me),
+			return idMachine.call1(row -> new MachineImpl(conn, row),
 					id, allowOutOfService);
 		}
 	}
 
 	private Optional<MachineImpl> getMachine(String name,
 			boolean allowOutOfService, Connection conn) {
-		var me = epochs.getMachineEpoch();
 		try (var namedMachine = conn.query(GET_NAMED_MACHINE)) {
-			return namedMachine.call1(row -> new MachineImpl(conn, row, me),
+			return namedMachine.call1(row -> new MachineImpl(conn, row),
 					name, allowOutOfService);
 		}
 	}
@@ -294,21 +296,18 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	@Override
 	public Jobs getJobs(boolean deleted, int limit, int start) {
-		var epoch = epochs.getJobsEpoch();
 		return executeRead(conn -> {
-			var jc = new JobCollection(epoch);
 			if (deleted) {
 				try (var jobs = conn.query(GET_JOB_IDS)) {
-					jc.setJobs(jobs.call((row) -> makeJob(row, epoch), limit,
-							start));
+					return new JobCollection(
+							jobs.call((row) -> makeJob(row), limit,	start));
 				}
 			} else {
 				try (var jobs = conn.query(GET_LIVE_JOB_IDS)) {
-					jc.setJobs(jobs.call((row) -> makeJob(row, epoch), limit,
-							start));
+					return new JobCollection(jobs.call((row) -> makeJob(row),
+							limit, start));
 				}
 			}
-			return jc;
 		});
 	}
 
@@ -319,12 +318,12 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	 * @param row
 	 *            The row to make the job from.
 	 */
-	private Job makeJob(Row row, Epoch epoch) {
+	private Job makeJob(Row row) {
 		int jobId = row.getInt("job_id");
 		int machineId = row.getInt("machine_id");
 		var jobState = row.getEnum("job_state", JobState.class);
 		var keepalive = row.getInstant("keepalive_timestamp");
-		return new JobImpl(epoch, jobId, machineId, jobState, keepalive);
+		return new JobImpl(jobId, machineId, jobState, keepalive);
 	}
 
 	@Override
@@ -369,9 +368,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	private Optional<JobImpl> getJob(int id, Connection conn) {
-		var epoch = epochs.getJobsEpoch();
 		try (var s = conn.query(GET_JOB)) {
-			return s.call1(row -> new JobImpl(epoch, conn, row), id);
+			return s.call1(row -> new JobImpl(conn, row), id);
 		}
 	}
 
@@ -445,7 +443,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			}
 			int jobId = id.orElseThrow();
 
-			epochs.nextJobsEpoch();
 			var scale = props.getPriorityScale();
 
 			if (machine.getArea() < descriptor.getArea()) {
@@ -513,6 +510,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			JobLifecycle.log.info(
 					"created job {} on {} for {} asking for {} board(s)", jobId,
 					machine.name, owner, numBoards);
+
+			allocator.scheduleAllocateNow();
 			return getJob(jobId, conn).map(ji -> (Job) ji);
 		});
 	}
@@ -804,7 +803,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 		if (acted > 0) {
 			purgeDownCache();
-			epochs.nextMachineEpoch();
 		}
 		return acted > 0 ? Optional.of(acted) : Optional.empty();
 	}
@@ -845,8 +843,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		@JsonIgnore
 		private final Epoch epoch;
 
-		MachineImpl(Connection conn, Row rs, Epoch epoch) {
-			this.epoch = epoch;
+		MachineImpl(Connection conn, Row rs) {
 			id = rs.getInt("machine_id");
 			name = rs.getString("machine_name");
 			width = rs.getInt("width");
@@ -857,6 +854,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				tags = Row.stream(copy(getTags.call(string("tag"), id)))
 						.toSet();
 			}
+
+			this.epoch = epochs.getMachineEpoch(id);
 		}
 
 		private int getArea() {
@@ -864,14 +863,17 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 
 		@Override
-		public void waitForChange(Duration timeout) {
+		public boolean waitForChange(Duration timeout) {
 			if (isNull(epoch)) {
-				return;
+				log.info("Machine {} epoch is null!", id);
+				return true;
 			}
 			try {
-				epoch.waitForChange(timeout);
+				log.info("Waiting for change in epoch for {}", id);
+				return epoch.waitForChange(timeout);
 			} catch (InterruptedException interrupted) {
-				currentThread().interrupt();
+				log.info("Interrupted waiting for change on {}", id);
+				return false;
 			}
 		}
 
@@ -1098,19 +1100,43 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 		private List<Job> jobs = new ArrayList<>();
 
-		JobCollection(Epoch je) {
-			epoch = je;
+		private JobCollection(List<Job> jobs) {
+			this.jobs = jobs;
+			this.epoch = epochs.getJobsEpoch(
+					jobs.stream().map(j -> j.getId())
+					.collect(Collectors.toList()));
 		}
 
 		@Override
-		public void waitForChange(Duration timeout) {
+		public boolean waitForChange(Duration timeout) {
 			if (isNull(epoch)) {
-				return;
+				return true;
 			}
 			try {
-				epoch.waitForChange(timeout);
+				return epoch.waitForChange(timeout);
 			} catch (InterruptedException interrupted) {
 				currentThread().interrupt();
+				return false;
+			}
+		}
+
+		/**
+		 * Get the set of jobs changed.
+		 *
+		 * @param timeout The timeout to wait for until something happens.
+		 * @return The set of changed job identifiers.
+		 */
+		public Collection<Integer> getChanged(Duration timeout) {
+			if (isNull(epoch)) {
+				return jobs.stream().map(
+						j -> j.getId()).collect(Collectors.toSet());
+			}
+			try {
+				return epoch.getChanged(timeout);
+			} catch (InterruptedException interrupted) {
+				currentThread().interrupt();
+				return jobs.stream().map(
+						j -> j.getId()).collect(Collectors.toSet());
 			}
 		}
 
@@ -1122,10 +1148,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		@Override
 		public List<Integer> ids() {
 			return jobs.stream().map(Job::getId).collect(toList());
-		}
-
-		private void setJobs(List<Job> jobs) {
-			this.jobs = jobs;
 		}
 	}
 
@@ -1144,6 +1166,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 		final Update setFunctioning = conn.update(SET_FUNCTIONING_FIELD);
 
+		final Query getNamedMachine = conn.query(GET_NAMED_MACHINE);
+
 		@Override
 		public void close() {
 			findBoardByChip.close();
@@ -1153,6 +1177,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			insertReport.close();
 			getReported.close();
 			setFunctioning.close();
+			getNamedMachine.close();
 			super.close();
 		}
 	}
@@ -1265,22 +1290,21 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 		private boolean partial;
 
-		JobImpl(Epoch epoch, int id, int machineId) {
-			this.epoch = epoch;
+		JobImpl(int id, int machineId) {
+			this.epoch = epochs.getJobsEpoch(id);
 			this.id = id;
 			this.machineId = machineId;
 			partial = true;
 		}
 
-		JobImpl(Epoch epoch, int jobId, int machineId, JobState jobState,
+		JobImpl(int jobId, int machineId, JobState jobState,
 				Instant keepalive) {
-			this(epoch, jobId, machineId);
+			this(jobId, machineId);
 			state = jobState;
 			keepaliveTime = keepalive;
 		}
 
-		JobImpl(Epoch epoch, Connection conn, Row row) {
-			this.epoch = epoch;
+		JobImpl(Connection conn, Row row) {
 			this.id = row.getInt("job_id");
 			this.machineId = row.getInt("machine_id");
 			width = row.getInteger("width");
@@ -1302,6 +1326,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			deathReason = row.getString("death_reason");
 			request = row.getBytes("original_request");
 			partial = false;
+
+			this.epoch = epochs.getJobsEpoch(id);
 		}
 
 		private MachineImpl cachedMachine;
@@ -1343,14 +1369,15 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 
 		@Override
-		public void waitForChange(Duration timeout) {
+		public boolean waitForChange(Duration timeout) {
 			if (isNull(epoch)) {
-				return;
+				return true;
 			}
 			try {
-				epoch.waitForChange(timeout);
+				return epoch.waitForChange(timeout);
 			} catch (InterruptedException interrupted) {
 				currentThread().interrupt();
+				return false;
 			}
 		}
 
@@ -1431,6 +1458,15 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				var result = q.transaction(
 						() -> reportIssue(report, permit, email, q));
 				emailSender.sendServiceMail(email);
+				for (var m : report.boards.stream()
+						.map(b -> q.getNamedMachine.call1(
+								r -> r.getInt("machine_id"), b.machine, true))
+						.collect(Collectors.toSet())) {
+					if (m.isPresent()) {
+						epochs.machineChanged(m.get());
+					}
+				}
+
 				return result;
 			} catch (ReportRollbackExn e) {
 				return e.getMessage();
@@ -1785,8 +1821,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 			var jobId = row.getInteger("job_id");
 			if (nonNull(jobId)) {
-				job = new JobImpl(epochs.getJobsEpoch(), jobId,
-						machine.getId());
+				job = new JobImpl(jobId, machine.getId());
 				job.chipRoot = row.getChip("job_root_chip_x",
 						"job_root_chip_y");
 			}

@@ -19,30 +19,30 @@ import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 
 /**
- * A Board and a BMP.
+ * A Machine and a BMP.
  *
  */
-public class BoardAndBMP {
+public class BMPAndMachine {
 
-	/** The board identifier. */
-	public final int boardId;
+	/** The machine identifier. */
+	public final int machineId;
 
 	/** The BMP identifier. */
-	public final BMPAndMachine bmp;
+	public final int bmpId;
 
 	/**
 	 * Make a new Board-and-BMP from a database query.
 	 *
 	 * @param result The database query results to read from.
 	 */
-	public BoardAndBMP(Row result) {
-		this.boardId = result.getInt("board_id");
-		this.bmp = new BMPAndMachine(result);
+	public BMPAndMachine(Row result) {
+		this.machineId = result.getInt("machine_id");
+		this.bmpId = result.getInt("bmp_id");
 	}
 
-	public BoardAndBMP(BoardState bs) {
-		this.boardId = bs.board;
-		this.bmp = new BMPAndMachine(bs);
+	public BMPAndMachine(BoardState bs) {
+		this.machineId = bs.machineId;
+		this.bmpId = bs.bmpId;
 	}
 
 }

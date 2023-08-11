@@ -35,7 +35,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  */
 public abstract class StubJob implements Job {
 	@Override
-	public void waitForChange(Duration timeout) {
+	public boolean waitForChange(Duration timeout) {
 		throw new UnsupportedOperationException();
 	}
 

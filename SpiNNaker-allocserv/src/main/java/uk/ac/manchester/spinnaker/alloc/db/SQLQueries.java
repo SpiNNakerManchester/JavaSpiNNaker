@@ -246,8 +246,9 @@ public abstract class SQLQueries {
 	@Parameter("job_id")
 	@ResultColumn("board_id")
 	@ResultColumn("bmp_id")
+	@ResultColumn("machine_id")
 	protected static final String GET_JOB_BOARDS = """
-			SELECT board_id, bmp_id
+			SELECT board_id, bmp_id, boards.machine_id
 			FROM boards
 				JOIN jobs ON boards.allocated_job = jobs.job_id
 			WHERE boards.allocated_job = :job_id
@@ -476,9 +477,10 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("address")
 	@ResultColumn("bmp_id")
+	@ResultColumn("machine_id")
 	protected static final String GET_LIVE_BOARDS = """
 			SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num,
-				boards.address, bmp_id
+				boards.address, bmp_id, boards.machine_id
 			FROM boards
 				JOIN bmp USING (bmp_id)
 			WHERE boards.machine_id = :machine_id
@@ -500,9 +502,10 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("address")
 	@ResultColumn("bmp_id")
+	@ResultColumn("machine_id")
 	protected static final String GET_DEAD_BOARDS = """
 			SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num,
-				boards.address, bmp_id
+				boards.address, bmp_id, boards.machine_id
 			FROM boards
 				JOIN bmp USING (bmp_id)
 			WHERE boards.machine_id = :machine_id
@@ -525,9 +528,10 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("address")
 	@ResultColumn("bmp_id")
+	@ResultColumn("machine_id")
 	protected static final String GET_ALL_BOARDS = """
 			SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num,
-				boards.address, bmp_id
+				boards.address, bmp_id, boards.machine_id
 			FROM boards
 				JOIN bmp USING (bmp_id)
 			WHERE boards.machine_id = :machine_id
@@ -549,9 +553,10 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("address")
 	@ResultColumn("bmp_id")
+	@ResultColumn("machine_id")
 	protected static final String GET_ALL_BOARDS_OF_ALL_MACHINES = """
 			SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num,
-				boards.address, bmp_id
+				boards.address, bmp_id, boards.machine_id
 			FROM boards
 				JOIN bmp USING (bmp_id)
 			WHERE board_num IS NOT NULL
@@ -571,9 +576,10 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("address")
 	@ResultColumn("bmp_id")
+	@ResultColumn("machine_id")
 	protected static final String GET_JOB_BOARD_COORDS = """
 			SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num,
-				boards.address, bmp_id
+				boards.address, bmp_id, boards.machine_id
 			FROM boards
 				JOIN bmp USING (bmp_id)
 			WHERE boards.allocated_job = :job_id
@@ -1113,12 +1119,13 @@ public abstract class SQLQueries {
 	@ResultColumn("bmp_serial_id")
 	@ResultColumn("physical_serial_id")
 	@ResultColumn("bmp_id")
+	@ResultColumn("machine_id")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_ID = """
 			SELECT boards.board_id, boards.x, boards.y, boards.z,
 				bmp.cabinet, bmp.frame, board_num, boards.address,
 				machines.machine_name, bmp_serial_id,
-				physical_serial_id, bmp_id
+				physical_serial_id, bmp_id, boards.machine_id
 			FROM boards
 				JOIN machines USING (machine_id)
 				JOIN bmp USING (bmp_id)
@@ -1144,12 +1151,13 @@ public abstract class SQLQueries {
 	@ResultColumn("bmp_serial_id")
 	@ResultColumn("physical_serial_id")
 	@ResultColumn("bmp_id")
+	@ResultColumn("machine_id")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_NAME_AND_XYZ = """
 			SELECT boards.board_id, boards.x, boards.y, boards.z,
 				bmp.cabinet, bmp.frame, board_num, boards.address,
 				machines.machine_name, bmp_serial_id,
-				physical_serial_id, bmp_id
+				physical_serial_id, bmp_id, boards.machine_id
 			FROM boards
 				JOIN machines USING (machine_id)
 				JOIN bmp USING (bmp_id)
@@ -1176,12 +1184,13 @@ public abstract class SQLQueries {
 	@ResultColumn("bmp_serial_id")
 	@ResultColumn("physical_serial_id")
 	@ResultColumn("bmp_id")
+	@ResultColumn("machine_id")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_NAME_AND_CFB = """
 			SELECT boards.board_id, boards.x, boards.y, boards.z,
 				bmp.cabinet, bmp.frame, board_num, boards.address,
 				machines.machine_name, bmp_serial_id,
-				physical_serial_id, bmp_id
+				physical_serial_id, bmp_id, boards.machine_id
 			FROM boards
 				JOIN machines USING (machine_id)
 				JOIN bmp USING (bmp_id)
@@ -1208,12 +1217,13 @@ public abstract class SQLQueries {
 	@ResultColumn("bmp_serial_id")
 	@ResultColumn("physical_serial_id")
 	@ResultColumn("bmp_id")
+	@ResultColumn("machine_id")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_NAME_AND_IP_ADDRESS = """
 			SELECT boards.board_id, boards.x, boards.y, boards.z,
 				bmp.cabinet, bmp.frame, board_num, boards.address,
 				machines.machine_name, bmp_serial_id,
-				physical_serial_id, bmp_id
+				physical_serial_id, bmp_id, boards.machine_id
 			FROM boards
 				JOIN machines USING (machine_id)
 				JOIN bmp USING (bmp_id)
@@ -2278,9 +2288,10 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("cabinet")
 	@ResultColumn("frame")
+	@ResultColumn("machine_id")
 	protected static final String GET_BLACKLIST_WRITES = """
 			SELECT op_id, board_id, board_serial.bmp_serial_id, board_num,
-				cabinet, frame, data
+				cabinet, frame, data, boards.machine_id
 			FROM blacklist_ops
 				JOIN boards USING (board_id)
 				JOIN bmp USING (bmp_id)
@@ -2302,9 +2313,10 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("cabinet")
 	@ResultColumn("frame")
+	@ResultColumn("machine_id")
 	protected static final String GET_BLACKLIST_READS = """
 			SELECT op_id, board_id, board_serial.bmp_serial_id, board_num,
-				cabinet, frame
+				cabinet, frame, boards.machine_id
 			FROM blacklist_ops
 				JOIN boards USING (board_id)
 				JOIN bmp USING (bmp_id)
@@ -2326,9 +2338,10 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("cabinet")
 	@ResultColumn("frame")
+	@ResultColumn("machine_id")
 	protected static final String GET_SERIAL_INFO_REQS = """
 			SELECT op_id, board_id, board_serial.bmp_serial_id, board_num,
-				cabinet, frame
+				cabinet, frame, boards.machine_id
 			FROM blacklist_ops
 				JOIN boards USING (board_id)
 				JOIN bmp USING (bmp_id)

@@ -24,6 +24,7 @@ import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_J
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -819,8 +820,10 @@ public interface SpallocAPI {
 		 *
 		 * @param timeout
 		 *            How long to wait.
+		 * @return True if the wait was interrupted,
+		 *         False if the timeout expired
 		 */
-		void waitForChange(@NotNull Duration timeout);
+		boolean waitForChange(@NotNull Duration timeout);
 	}
 
 	/**
@@ -989,6 +992,12 @@ public interface SpallocAPI {
 		 *         information.)
 		 */
 		List<Job> jobs();
+
+		/**
+		 * @param duration How long to wait for a change.
+		 * @return The set of jobs that have changed.
+		 */
+		Collection<Integer> getChanged(Duration duration);
 	}
 
 	/**

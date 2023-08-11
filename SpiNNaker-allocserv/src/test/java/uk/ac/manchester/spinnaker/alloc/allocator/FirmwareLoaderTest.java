@@ -124,9 +124,9 @@ class FirmwareLoaderTest extends TestSupport {
 	}
 
 	private void resetDBState(Connection c, int job) throws Exception {
-		var bmps = c.transaction(
+		var allocations = c.transaction(
 				() -> getAllocTester().destroyJob(job, "test"));
-		processBMPRequests(bmps);
+		processBMPRequests(allocations.bmps);
 		c.transaction(() -> {
 			if (log.isDebugEnabled()) {
 				/*
@@ -164,8 +164,8 @@ class FirmwareLoaderTest extends TestSupport {
 			log.info("job id = {}", job);
 			try {
 				makeAllocBySizeRequest(job, 1);
-				var bmps = c.transaction(() -> getAllocTester().allocate());
-				waitForBMPCompletion(job, bmps);
+				var allocs = c.transaction(() -> getAllocTester().allocate());
+				waitForBMPCompletion(job, allocs.bmps);
 
 				assertState(job, READY, 0, 0);
 			} finally {
@@ -190,8 +190,8 @@ class FirmwareLoaderTest extends TestSupport {
 			log.info("job id = {}", job);
 			try {
 				makeAllocBySizeRequest(job, 1);
-				var bmps = c.transaction(() -> getAllocTester().allocate());
-				waitForBMPCompletion(job, bmps);
+				var allocs = c.transaction(() -> getAllocTester().allocate());
+				waitForBMPCompletion(job, allocs.bmps);
 
 				assertState(job, READY, 0, 0);
 			} finally {
@@ -215,8 +215,8 @@ class FirmwareLoaderTest extends TestSupport {
 			log.info("job id = {}", job);
 			try {
 				makeAllocBySizeRequest(job, 1);
-				var bmps = c.transaction(() -> getAllocTester().allocate());
-				waitForBMPCompletion(job, bmps);
+				var allocs = c.transaction(() -> getAllocTester().allocate());
+				waitForBMPCompletion(job, allocs.bmps);
 
 				assertState(job, READY, 0, 0);
 			} finally {

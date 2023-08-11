@@ -377,7 +377,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * @throws IOException
 	 *             If network access fails.
 	 */
-	protected final void writeMachineNotification(List<String> machineNames)
+	protected final void writeMachineNotification(
+			List<String> machineNames)
 			throws IOException {
 		if (!machineNames.isEmpty() && mayWrite()) {
 			sendMessage(new MachineNotifyMessage(machineNames));

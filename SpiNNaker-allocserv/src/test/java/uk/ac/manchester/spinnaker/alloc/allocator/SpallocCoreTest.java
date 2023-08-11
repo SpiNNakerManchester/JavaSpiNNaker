@@ -584,8 +584,8 @@ class SpallocCoreTest extends TestSupport {
 					var j = spalloc.getJob(p, jobId).orElseThrow();
 					// A bit messy to build as usually only done by Jackson
 					var r = new IssueReportRequest("test",
-							List.of(new ReportedBoard(null, null, null, null,
-									null, null, null, BOARD_ADDR)));
+							List.of(new ReportedBoard("test", null, null, null,
+									null, null, null, null, BOARD_ADDR)));
 					j.reportIssue(r, p);
 
 					assertEquals(List.of("test"), getReports());
