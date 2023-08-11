@@ -165,7 +165,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			var updated = execute(
 					conn -> update(jobId, sourceState, targetState, conn));
 			if (updated) {
-				log.debug("advancing job epoch");
+				log.debug("advancing job {} epoch", jobId);
 				epochs.jobChanged(jobId);
 			}
 		} catch (DataAccessException e) {
