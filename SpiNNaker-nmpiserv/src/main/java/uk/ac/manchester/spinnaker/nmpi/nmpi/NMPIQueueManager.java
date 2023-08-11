@@ -23,6 +23,7 @@ import static uk.ac.manchester.spinnaker.nmpi.ThreadUtils.sleep;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.ConnectException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,6 +33,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 
 import org.joda.time.DateTime;
@@ -140,6 +142,14 @@ public class NMPIQueueManager {
 				processResponse(response);
 			} catch (WebApplicationException e) {
 				handleWebAppError(e, "getting next job");
+				sleep(EMPTY_QUEUE_SLEEP_MS);
+			} catch (ProcessingException e) {
+				if (e.getCause() instanceof ConnectException) {
+					logger.warn("couldn't connnect", e.getCause().getMessage());
+					sleep(EMPTY_QUEUE_SLEEP_MS);
+					continue;
+				}
+				logger.error("Error in getting next job", e);
 				sleep(EMPTY_QUEUE_SLEEP_MS);
 			} catch (Exception e) {
 				logger.error("Error in getting next job", e);
