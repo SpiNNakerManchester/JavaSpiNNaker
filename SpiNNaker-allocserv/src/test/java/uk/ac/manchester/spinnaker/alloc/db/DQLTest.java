@@ -54,11 +54,13 @@ class DQLTest extends SimpleDBTestBase {
 
 	/** Columns to inflate a BoardCoords. */
 	private static final List<String> BOARD_COLUMNS = List.of("board_id", "x",
-			"y", "z", "cabinet", "frame", "board_num", "address", "bmp_id");
+			"y", "z", "cabinet", "frame", "board_num", "address", "bmp_id",
+			"machine_id");
 
 	private static final List<String> FULL_BOARD_COLUMNS = List.of("board_id",
 			"x", "y", "z", "cabinet", "frame", "board_num", "address",
-			"machine_name", "bmp_serial_id", "physical_serial_id", "bmp_id");
+			"machine_name", "bmp_serial_id", "physical_serial_id", "bmp_id",
+			"machine_id");
 
 	private static final List<String> LOCATED_BOARD = List.of("board_id",
 			"bmp_id", "job_id", "machine_name", "address", "x", "y", "z",
@@ -225,7 +227,8 @@ class DQLTest extends SimpleDBTestBase {
 		try (var q = c.query(GET_JOB_BOARDS)) {
 			c.transaction(() -> {
 				assertEquals(List.of("job_id"), q.getParameters());
-				assertEquals(List.of("board_id", "bmp_id"), q.getColumns());
+				assertEquals(List.of("board_id", "bmp_id", "machine_id"),
+						q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, NO_JOB));
 			});
 		}
@@ -1152,7 +1155,7 @@ class DQLTest extends SimpleDBTestBase {
 				assertEquals(List.of("bmp_id"), q.getParameters());
 				assertEquals(
 						List.of("op_id", "board_id", "bmp_serial_id",
-								"board_num", "cabinet", "frame"),
+								"board_num", "cabinet", "frame", "machine_id"),
 						q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, NO_MACHINE));
 			});
@@ -1166,7 +1169,8 @@ class DQLTest extends SimpleDBTestBase {
 				assertEquals(List.of("bmp_id"), q.getParameters());
 				assertEquals(
 						List.of("op_id", "board_id", "bmp_serial_id",
-								"board_num", "cabinet", "frame", "data"),
+								"board_num", "cabinet", "frame", "data",
+								"machine_id"),
 						q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, NO_MACHINE));
 			});
@@ -1180,7 +1184,7 @@ class DQLTest extends SimpleDBTestBase {
 				assertEquals(List.of("bmp_id"), q.getParameters());
 				assertEquals(
 						List.of("op_id", "board_id", "bmp_serial_id",
-								"board_num", "cabinet", "frame"),
+								"board_num", "cabinet", "frame", "machine_id"),
 						q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, NO_MACHINE));
 			});
