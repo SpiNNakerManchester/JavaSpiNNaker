@@ -504,7 +504,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	/**
 	 * A set of information about the allocations that have been made.
 	 */
-	private class Allocations {
+	class Allocations {
 		/** The BMPs that have been affected by the allocations. **/
 		final Set<Integer> bmps = new HashSet<>();
 
