@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -213,10 +213,17 @@ implements <a href="PowerController.html" title="interface in uk.ac.manchester.s
 </tr>
 <tr class="altColor" id="i4">
 <td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#scheduleAllocateNow()">scheduleAllocateNow</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Ask for allocation to happen now.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i5">
+<td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setBMPController(uk.ac.manchester.spinnaker.alloc.bmp.BMPController)">setBMPController</a></span>&#8203;(<a href="../bmp/BMPController.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">BMPController</a>&nbsp;bmpController)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor" id="i5">
+<tr class="altColor" id="i6">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setPower(int,uk.ac.manchester.spinnaker.alloc.model.PowerState,uk.ac.manchester.spinnaker.alloc.model.JobState)">setPower</a></span>&#8203;(int&nbsp;jobId,
 <a href="../model/PowerState.html" title="enum in uk.ac.manchester.spinnaker.alloc.model">PowerState</a>&nbsp;power,
@@ -225,14 +232,14 @@ implements <a href="PowerController.html" title="interface in uk.ac.manchester.s
 <div class="block">Issue a power change for a job.</div>
 </td>
 </tr>
-<tr class="altColor" id="i6">
+<tr class="rowColor" id="i7">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#tombstone()">tombstone</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Migrates long dead jobs to the historical data DB.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i7">
+<tr class="altColor" id="i8">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateJob(int,uk.ac.manchester.spinnaker.alloc.model.JobState,uk.ac.manchester.spinnaker.alloc.model.JobState)">updateJob</a></span>&#8203;(int&nbsp;jobId,
 <a href="../model/JobState.html" title="enum in uk.ac.manchester.spinnaker.alloc.model">JobState</a>&nbsp;sourceState,
@@ -303,6 +310,13 @@ implements <a href="PowerController.html" title="interface in uk.ac.manchester.s
 <dd><code>sourceState</code> - The change source state.</dd>
 <dd><code>targetState</code> - The change target state.</dd>
 </dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="scheduleAllocateNow()">scheduleAllocateNow</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">scheduleAllocateNow</span>()</div>
+<div class="block">Ask for allocation to happen now.</div>
 </section>
 </li>
 <li class="blockList">

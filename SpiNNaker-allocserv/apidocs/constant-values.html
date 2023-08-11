@@ -564,28 +564,28 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#FIND_BOARD_BY_ID">FIND_BOARD_BY_ID</a></code></th>
-<td class="colLast"><code>"SELECT boards.board_id, boards.x, boards.y, boards.z, bmp.cabinet, bmp.frame, board_num, boards.address, machines.machine_name, bmp_serial_id, physical_serial_id, bmp_id FROM boards JOIN machines USING (machine_id) JOIN bmp USING (bmp_id) LEFT JOIN board_serial USING (board_id) WHERE boards.board_id = :board_id LIMIT 1"</code></td>
+<td class="colLast"><code>"SELECT boards.board_id, boards.x, boards.y, boards.z, bmp.cabinet, bmp.frame, board_num, boards.address, machines.machine_name, bmp_serial_id, physical_serial_id, bmp_id, boards.machine_id FROM boards JOIN machines USING (machine_id) JOIN bmp USING (bmp_id) LEFT JOIN board_serial USING (board_id) WHERE boards.board_id = :board_id LIMIT 1"</code></td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.FIND_BOARD_BY_NAME_AND_CFB">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#FIND_BOARD_BY_NAME_AND_CFB">FIND_BOARD_BY_NAME_AND_CFB</a></code></th>
-<td class="colLast"><code>"SELECT boards.board_id, boards.x, boards.y, boards.z, bmp.cabinet, bmp.frame, board_num, boards.address, machines.machine_name, bmp_serial_id, physical_serial_id, bmp_id FROM boards JOIN machines USING (machine_id) JOIN bmp USING (bmp_id) LEFT JOIN board_serial USING (board_id) WHERE machine_name = :machine_name AND bmp.cabinet = :cabinet AND bmp.frame = :frame AND boards.board_num IS NOT NULL AND boards.board_num = :board LIMIT 1"</code></td>
+<td class="colLast"><code>"SELECT boards.board_id, boards.x, boards.y, boards.z, bmp.cabinet, bmp.frame, board_num, boards.address, machines.machine_name, bmp_serial_id, physical_serial_id, bmp_id, boards.machine_id FROM boards JOIN machines USING (machine_id) JOIN bmp USING (bmp_id) LEFT JOIN board_serial USING (board_id) WHERE machine_name = :machine_name AND bmp.cabinet = :cabinet AND bmp.frame = :frame AND boards.board_num IS NOT NULL AND boards.board_num = :board LIMIT 1"</code></td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.FIND_BOARD_BY_NAME_AND_IP_ADDRESS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#FIND_BOARD_BY_NAME_AND_IP_ADDRESS">FIND_BOARD_BY_NAME_AND_IP_ADDRESS</a></code></th>
-<td class="colLast"><code>"SELECT boards.board_id, boards.x, boards.y, boards.z, bmp.cabinet, bmp.frame, board_num, boards.address, machines.machine_name, bmp_serial_id, physical_serial_id, bmp_id FROM boards JOIN machines USING (machine_id) JOIN bmp USING (bmp_id) LEFT JOIN board_serial USING (board_id) WHERE machine_name = :machine_name AND boards.address IS NOT NULL AND boards.address = :address LIMIT 1"</code></td>
+<td class="colLast"><code>"SELECT boards.board_id, boards.x, boards.y, boards.z, bmp.cabinet, bmp.frame, board_num, boards.address, machines.machine_name, bmp_serial_id, physical_serial_id, bmp_id, boards.machine_id FROM boards JOIN machines USING (machine_id) JOIN bmp USING (bmp_id) LEFT JOIN board_serial USING (board_id) WHERE machine_name = :machine_name AND boards.address IS NOT NULL AND boards.address = :address LIMIT 1"</code></td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.FIND_BOARD_BY_NAME_AND_XYZ">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#FIND_BOARD_BY_NAME_AND_XYZ">FIND_BOARD_BY_NAME_AND_XYZ</a></code></th>
-<td class="colLast"><code>"SELECT boards.board_id, boards.x, boards.y, boards.z, bmp.cabinet, bmp.frame, board_num, boards.address, machines.machine_name, bmp_serial_id, physical_serial_id, bmp_id FROM boards JOIN machines USING (machine_id) JOIN bmp USING (bmp_id) LEFT JOIN board_serial USING (board_id) WHERE machine_name = :machine_name AND x = :x AND y = :y AND z = :z LIMIT 1"</code></td>
+<td class="colLast"><code>"SELECT boards.board_id, boards.x, boards.y, boards.z, bmp.cabinet, bmp.frame, board_num, boards.address, machines.machine_name, bmp_serial_id, physical_serial_id, bmp_id, boards.machine_id FROM boards JOIN machines USING (machine_id) JOIN bmp USING (bmp_id) LEFT JOIN board_serial USING (board_id) WHERE machine_name = :machine_name AND x = :x AND y = :y AND z = :z LIMIT 1"</code></td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.FIND_EXPIRED_JOBS">
@@ -627,14 +627,14 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_ALL_BOARDS">GET_ALL_BOARDS</a></code></th>
-<td class="colLast"><code>"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address, bmp_id FROM boards JOIN bmp USING (bmp_id) WHERE boards.machine_id = :machine_id AND board_num IS NOT NULL ORDER BY z ASC, x ASC, y ASC"</code></td>
+<td class="colLast"><code>"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address, bmp_id, boards.machine_id FROM boards JOIN bmp USING (bmp_id) WHERE boards.machine_id = :machine_id AND board_num IS NOT NULL ORDER BY z ASC, x ASC, y ASC"</code></td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_ALL_BOARDS_OF_ALL_MACHINES">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_ALL_BOARDS_OF_ALL_MACHINES">GET_ALL_BOARDS_OF_ALL_MACHINES</a></code></th>
-<td class="colLast"><code>"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address, bmp_id FROM boards JOIN bmp USING (bmp_id) WHERE board_num IS NOT NULL ORDER BY z ASC, x ASC, y ASC"</code></td>
+<td class="colLast"><code>"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address, bmp_id, boards.machine_id FROM boards JOIN bmp USING (bmp_id) WHERE board_num IS NOT NULL ORDER BY z ASC, x ASC, y ASC"</code></td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_ALL_MACHINES">
@@ -655,14 +655,14 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_BLACKLIST_READS">GET_BLACKLIST_READS</a></code></th>
-<td class="colLast"><code>"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, cabinet, frame FROM blacklist_ops JOIN boards USING (board_id) JOIN bmp USING (bmp_id) LEFT JOIN board_serial USING (board_id) WHERE op = 0 AND NOT completed AND boards.bmp_id = :bmp_id"</code></td>
+<td class="colLast"><code>"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, cabinet, frame, boards.machine_id FROM blacklist_ops JOIN boards USING (board_id) JOIN bmp USING (bmp_id) LEFT JOIN board_serial USING (board_id) WHERE op = 0 AND NOT completed AND boards.bmp_id = :bmp_id"</code></td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_BLACKLIST_WRITES">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_BLACKLIST_WRITES">GET_BLACKLIST_WRITES</a></code></th>
-<td class="colLast"><code>"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, cabinet, frame, data FROM blacklist_ops JOIN boards USING (board_id) JOIN bmp USING (bmp_id) LEFT JOIN board_serial USING (board_id) WHERE op = 1 AND NOT completed AND boards.bmp_id = :bmp_id"</code></td>
+<td class="colLast"><code>"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, cabinet, frame, data, boards.machine_id FROM blacklist_ops JOIN boards USING (board_id) JOIN bmp USING (bmp_id) LEFT JOIN board_serial USING (board_id) WHERE op = 1 AND NOT completed AND boards.bmp_id = :bmp_id"</code></td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_BLACKLISTED_CHIPS">
@@ -781,7 +781,7 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_DEAD_BOARDS">GET_DEAD_BOARDS</a></code></th>
-<td class="colLast"><code>"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address, bmp_id FROM boards JOIN bmp USING (bmp_id) WHERE boards.machine_id = :machine_id AND (board_num IS NULL OR functioning = 0) ORDER BY z ASC, x ASC, y ASC"</code></td>
+<td class="colLast"><code>"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address, bmp_id, boards.machine_id FROM boards JOIN bmp USING (bmp_id) WHERE boards.machine_id = :machine_id AND (board_num IS NULL OR functioning = 0) ORDER BY z ASC, x ASC, y ASC"</code></td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_FUNCTIONING_FIELD">
@@ -837,14 +837,14 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_JOB_BOARD_COORDS">GET_JOB_BOARD_COORDS</a></code></th>
-<td class="colLast"><code>"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address, bmp_id FROM boards JOIN bmp USING (bmp_id) WHERE boards.allocated_job = :job_id ORDER BY z ASC, x ASC, y ASC"</code></td>
+<td class="colLast"><code>"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address, bmp_id, boards.machine_id FROM boards JOIN bmp USING (bmp_id) WHERE boards.allocated_job = :job_id ORDER BY z ASC, x ASC, y ASC"</code></td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_JOB_BOARDS">
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_JOB_BOARDS">GET_JOB_BOARDS</a></code></th>
-<td class="colLast"><code>"SELECT board_id, bmp_id FROM boards JOIN jobs ON boards.allocated_job = jobs.job_id WHERE boards.allocated_job = :job_id"</code></td>
+<td class="colLast"><code>"SELECT board_id, bmp_id, boards.machine_id FROM boards JOIN jobs ON boards.allocated_job = jobs.job_id WHERE boards.allocated_job = :job_id"</code></td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_JOB_CHIP_DIMENSIONS">
@@ -886,7 +886,7 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_LIVE_BOARDS">GET_LIVE_BOARDS</a></code></th>
-<td class="colLast"><code>"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address, bmp_id FROM boards JOIN bmp USING (bmp_id) WHERE boards.machine_id = :machine_id AND board_num IS NOT NULL AND functioning = 1 ORDER BY z ASC, x ASC, y ASC"</code></td>
+<td class="colLast"><code>"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address, bmp_id, boards.machine_id FROM boards JOIN bmp USING (bmp_id) WHERE boards.machine_id = :machine_id AND board_num IS NOT NULL AND functioning = 1 ORDER BY z ASC, x ASC, y ASC"</code></td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_LIVE_JOB_IDS">
@@ -977,7 +977,7 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a><code>protected&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_SERIAL_INFO_REQS">GET_SERIAL_INFO_REQS</a></code></th>
-<td class="colLast"><code>"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, cabinet, frame FROM blacklist_ops JOIN boards USING (board_id) JOIN bmp USING (bmp_id) LEFT JOIN board_serial USING (board_id) WHERE op = 2 AND NOT completed AND boards.bmp_id = :bmp_id"</code></td>
+<td class="colLast"><code>"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, cabinet, frame, boards.machine_id FROM blacklist_ops JOIN boards USING (board_id) JOIN bmp USING (bmp_id) LEFT JOIN board_serial USING (board_id) WHERE op = 2 AND NOT completed AND boards.bmp_id = :bmp_id"</code></td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><a id="uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_SUM_BOARDS_POWERED">

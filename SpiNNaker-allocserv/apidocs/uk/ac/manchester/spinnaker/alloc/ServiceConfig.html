@@ -217,8 +217,8 @@ extends <a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax
 </td>
 </tr>
 <tr class="altColor" id="i4">
-<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/TaskScheduler.html?is-external=true" title="class or interface in org.springframework.scheduling" class="externalLink">TaskScheduler</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#threadPoolTaskScheduler(int)">threadPoolTaskScheduler</a></span>&#8203;(int&nbsp;numThreads)</code></th>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/concurrent/ThreadPoolTaskScheduler.html?is-external=true" title="class or interface in org.springframework.scheduling.concurrent" class="externalLink">ThreadPoolTaskScheduler</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#threadPoolTaskExecutor(int)">threadPoolTaskExecutor</a></span>&#8203;(int&nbsp;numThreads)</code></th>
 <td class="colLast">
 <div class="block">The thread pool.</div>
 </td>
@@ -319,10 +319,10 @@ extends <a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="threadPoolTaskScheduler(int)">threadPoolTaskScheduler</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Bean</a>
+<h3><a id="threadPoolTaskExecutor(int)">threadPoolTaskExecutor</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Bean</a>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html?is-external=true#name()" title="class or interface in org.springframework.context.annotation" class="externalLink">name</a>="threadPoolTaskExecutor")
 <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Primary.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Primary</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/TaskScheduler.html?is-external=true" title="class or interface in org.springframework.scheduling" class="externalLink">TaskScheduler</a></span>&nbsp;<span class="memberName">threadPoolTaskScheduler</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Value.html?is-external=true" title="class or interface in org.springframework.beans.factory.annotation" class="externalLink">@Value</a>("${spring.task.scheduling.pool.size}")
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/concurrent/ThreadPoolTaskScheduler.html?is-external=true" title="class or interface in org.springframework.scheduling.concurrent" class="externalLink">ThreadPoolTaskScheduler</a></span>&nbsp;<span class="memberName">threadPoolTaskExecutor</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Value.html?is-external=true" title="class or interface in org.springframework.beans.factory.annotation" class="externalLink">@Value</a>("${spring.task.scheduling.pool.size}")
 int&nbsp;numThreads)</span></div>
 <div class="block">The thread pool. The rest of the application expects there to be a single
  such pool.</div>

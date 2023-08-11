@@ -1550,7 +1550,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="GET_JOB_BOARDS">GET_JOB_BOARDS</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("job_id")
-@ResultColumn("board_id") @ResultColumn("bmp_id")
+@ResultColumn("board_id") @ResultColumn("bmp_id") @ResultColumn("machine_id")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GET_JOB_BOARDS</span></div>
 <div class="block">Get what boards are allocated to a job.</div>
 <dl>
@@ -1772,7 +1772,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="GET_LIVE_BOARDS">GET_LIVE_BOARDS</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("machine_id")
-@ResultColumn("board_id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("board_num") @ResultColumn("address") @ResultColumn("bmp_id")
+@ResultColumn("board_id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("board_num") @ResultColumn("address") @ResultColumn("bmp_id") @ResultColumn("machine_id")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GET_LIVE_BOARDS</span></div>
 <div class="block">Get the boards (and related info) of a machine that are in service.</div>
 <dl>
@@ -1785,7 +1785,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="GET_DEAD_BOARDS">GET_DEAD_BOARDS</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("machine_id")
-@ResultColumn("board_id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("board_num") @ResultColumn("address") @ResultColumn("bmp_id")
+@ResultColumn("board_id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("board_num") @ResultColumn("address") @ResultColumn("bmp_id") @ResultColumn("machine_id")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GET_DEAD_BOARDS</span></div>
 <div class="block">Get the boards (and related info) of a machine that have been disabled.</div>
 <dl>
@@ -1798,7 +1798,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="GET_ALL_BOARDS">GET_ALL_BOARDS</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("machine_id")
-@ResultColumn("board_id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("board_num") @ResultColumn("address") @ResultColumn("bmp_id")
+@ResultColumn("board_id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("board_num") @ResultColumn("address") @ResultColumn("bmp_id") @ResultColumn("machine_id")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GET_ALL_BOARDS</span></div>
 <div class="block">Get all the boards (and related info) of a machine.</div>
 <dl>
@@ -1811,7 +1811,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="GET_ALL_BOARDS_OF_ALL_MACHINES">GET_ALL_BOARDS_OF_ALL_MACHINES</a></h3>
-<div class="memberSignature"><span class="annotations">@ResultColumn("board_id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("board_num") @ResultColumn("address") @ResultColumn("bmp_id")
+<div class="memberSignature"><span class="annotations">@ResultColumn("board_id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("board_num") @ResultColumn("address") @ResultColumn("bmp_id") @ResultColumn("machine_id")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GET_ALL_BOARDS_OF_ALL_MACHINES</span></div>
 <div class="block">Get all the boards (and related info) known to the service.</div>
 <dl>
@@ -1825,7 +1825,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="GET_JOB_BOARD_COORDS">GET_JOB_BOARD_COORDS</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("job_id")
-@ResultColumn("board_id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("board_num") @ResultColumn("address") @ResultColumn("bmp_id")
+@ResultColumn("board_id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("board_num") @ResultColumn("address") @ResultColumn("bmp_id") @ResultColumn("machine_id")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GET_JOB_BOARD_COORDS</span></div>
 <div class="block">Get the coords of boards assigned to a job.</div>
 <dl>
@@ -2320,7 +2320,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="FIND_BOARD_BY_ID">FIND_BOARD_BY_ID</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("board_id")
-@ResultColumn("board_id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("board_num") @ResultColumn("address") @ResultColumn("machine_name") @ResultColumn("bmp_serial_id") @ResultColumn("physical_serial_id") @ResultColumn("bmp_id")
+@ResultColumn("board_id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("board_num") @ResultColumn("address") @ResultColumn("machine_name") @ResultColumn("bmp_serial_id") @ResultColumn("physical_serial_id") @ResultColumn("bmp_id") @ResultColumn("machine_id")
 @SingleRowResult
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">FIND_BOARD_BY_ID</span></div>
 <div class="block">Get a board's full coordinate info given it's ID.</div>
@@ -2334,7 +2334,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="FIND_BOARD_BY_NAME_AND_XYZ">FIND_BOARD_BY_NAME_AND_XYZ</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("machine_name") @Parameter("x") @Parameter("y") @Parameter("z")
-@ResultColumn("board_id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("board_num") @ResultColumn("address") @ResultColumn("machine_name") @ResultColumn("bmp_serial_id") @ResultColumn("physical_serial_id") @ResultColumn("bmp_id")
+@ResultColumn("board_id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("board_num") @ResultColumn("address") @ResultColumn("machine_name") @ResultColumn("bmp_serial_id") @ResultColumn("physical_serial_id") @ResultColumn("bmp_id") @ResultColumn("machine_id")
 @SingleRowResult
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">FIND_BOARD_BY_NAME_AND_XYZ</span></div>
 <div class="block">Get a board's ID given it's triad coordinates.</div>
@@ -2348,7 +2348,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="FIND_BOARD_BY_NAME_AND_CFB">FIND_BOARD_BY_NAME_AND_CFB</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("machine_name") @Parameter("cabinet") @Parameter("frame") @Parameter("board")
-@ResultColumn("board_id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("board_num") @ResultColumn("address") @ResultColumn("machine_name") @ResultColumn("bmp_serial_id") @ResultColumn("physical_serial_id") @ResultColumn("bmp_id")
+@ResultColumn("board_id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("board_num") @ResultColumn("address") @ResultColumn("machine_name") @ResultColumn("bmp_serial_id") @ResultColumn("physical_serial_id") @ResultColumn("bmp_id") @ResultColumn("machine_id")
 @SingleRowResult
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">FIND_BOARD_BY_NAME_AND_CFB</span></div>
 <div class="block">Get a board's ID given it's physical coordinates.</div>
@@ -2362,7 +2362,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="FIND_BOARD_BY_NAME_AND_IP_ADDRESS">FIND_BOARD_BY_NAME_AND_IP_ADDRESS</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("machine_name") @Parameter("address")
-@ResultColumn("board_id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("board_num") @ResultColumn("address") @ResultColumn("machine_name") @ResultColumn("bmp_serial_id") @ResultColumn("physical_serial_id") @ResultColumn("bmp_id")
+@ResultColumn("board_id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("board_num") @ResultColumn("address") @ResultColumn("machine_name") @ResultColumn("bmp_serial_id") @ResultColumn("physical_serial_id") @ResultColumn("bmp_id") @ResultColumn("machine_id")
 @SingleRowResult
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">FIND_BOARD_BY_NAME_AND_IP_ADDRESS</span></div>
 <div class="block">Get a board's ID given it's IP address.</div>
@@ -3307,7 +3307,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="GET_BLACKLIST_WRITES">GET_BLACKLIST_WRITES</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("bmp_id")
-@ResultColumn("op_id") @ResultColumn("board_id") @ResultColumn("bmp_serial_id") @ResultColumn("board_num") @ResultColumn("cabinet") @ResultColumn("frame")
+@ResultColumn("op_id") @ResultColumn("board_id") @ResultColumn("bmp_serial_id") @ResultColumn("board_num") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("machine_id")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GET_BLACKLIST_WRITES</span></div>
 <div class="block">Get the list of writes (to the machine) of blacklist data to perform.</div>
 <dl>
@@ -3321,7 +3321,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="GET_BLACKLIST_READS">GET_BLACKLIST_READS</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("bmp_id")
-@ResultColumn("op_id") @ResultColumn("board_id") @ResultColumn("bmp_serial_id") @ResultColumn("board_num") @ResultColumn("cabinet") @ResultColumn("frame")
+@ResultColumn("op_id") @ResultColumn("board_id") @ResultColumn("bmp_serial_id") @ResultColumn("board_num") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("machine_id")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GET_BLACKLIST_READS</span></div>
 <div class="block">Get the list of reads (from the machine) of blacklist data to perform.</div>
 <dl>
@@ -3335,7 +3335,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="GET_SERIAL_INFO_REQS">GET_SERIAL_INFO_REQS</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("bmp_id")
-@ResultColumn("op_id") @ResultColumn("board_id") @ResultColumn("bmp_serial_id") @ResultColumn("board_num") @ResultColumn("cabinet") @ResultColumn("frame")
+@ResultColumn("op_id") @ResultColumn("board_id") @ResultColumn("bmp_serial_id") @ResultColumn("board_num") @ResultColumn("cabinet") @ResultColumn("frame") @ResultColumn("machine_id")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GET_SERIAL_INFO_REQS</span></div>
 <div class="block">Get the list of reads (from the machine) of serial data to perform.</div>
 <dl>

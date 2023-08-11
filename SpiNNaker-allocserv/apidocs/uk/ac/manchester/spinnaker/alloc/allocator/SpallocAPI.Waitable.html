@@ -125,7 +125,7 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code>void</code></td>
+<td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#waitForChange(java.time.Duration)">waitForChange</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Wait for the object to (maybe) change, or for the timeout to expire.</div>
@@ -151,7 +151,7 @@ loadScripts(document, 'script');</script>
 <li class="blockList">
 <section class="detail">
 <h3><a id="waitForChange(java.time.Duration)">waitForChange</a></h3>
-<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">waitForChange</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>
+<div class="memberSignature"><span class="returnType">boolean</span>&nbsp;<span class="memberName">waitForChange</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;timeout)</span></div>
 <div class="block">Wait for the object to (maybe) change, or for the timeout to expire.
  This is a best-effort method.
@@ -163,6 +163,9 @@ loadScripts(document, 'script');</script>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>timeout</code> - How long to wait.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>True if the wait was interrupted,
+         False if the timeout expired</dd>
 </dl>
 </section>
 </li>

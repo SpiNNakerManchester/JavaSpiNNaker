@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -95,7 +95,7 @@ loadScripts(document, 'script');</script>
 <pre><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Service.html?is-external=true" title="class or interface in org.springframework.stereotype" class="externalLink">@Service</a>
 public class <span class="typeNameLabel">Epochs</span>
 extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
-<div class="block">Manages epoch counters.</div>
+<div class="block">Manages waiting for values.</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
 <dd>Donal Fellows</dd>
@@ -121,8 +121,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>static interface&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="Epochs.Epoch.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></span></code></th>
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="Epochs.Epoch.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></span></code></th>
 <td class="colLast">
 <div class="block">A waitable epoch checkpoint.</div>
 </td>
@@ -176,45 +176,59 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code><a href="Epochs.Epoch.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBlacklistEpoch()">getBlacklistEpoch</a></span>()</code></th>
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#blacklistChanged(int)">blacklistChanged</a></span>&#8203;(int&nbsp;board)</code></th>
 <td class="colLast">
-<div class="block">Get the current blacklist epoch.</div>
+<div class="block">Indicate a change in a blacklist.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i1">
-<td class="colFirst"><code><a href="Epochs.Epoch.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getJobsEpoch()">getJobsEpoch</a></span>()</code></th>
+<td class="colFirst"><code><a href="Epochs.Epoch.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBlacklistEpoch(int)">getBlacklistEpoch</a></span>&#8203;(int&nbsp;boardId)</code></th>
 <td class="colLast">
-<div class="block">Get the current jobs epoch.</div>
+<div class="block">Get a blacklist epoch for a board.</div>
 </td>
 </tr>
 <tr class="altColor" id="i2">
-<td class="colFirst"><code><a href="Epochs.Epoch.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMachineEpoch()">getMachineEpoch</a></span>()</code></th>
+<td class="colFirst"><code><a href="Epochs.Epoch.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getJobsEpoch(int)">getJobsEpoch</a></span>&#8203;(int&nbsp;jobId)</code></th>
 <td class="colLast">
-<div class="block">Get the current machines epoch.</div>
+<div class="block">Get a job epoch for a job.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i3">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#nextBlacklistEpoch()">nextBlacklistEpoch</a></span>()</code></th>
+<td class="colFirst"><code><a href="Epochs.Epoch.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getJobsEpoch(java.util.List)">getJobsEpoch</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;jobIds)</code></th>
 <td class="colLast">
-<div class="block">Advance the blacklist epoch.</div>
+<div class="block">Get a job epoch for a list of jobs.</div>
 </td>
 </tr>
 <tr class="altColor" id="i4">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#nextJobsEpoch()">nextJobsEpoch</a></span>()</code></th>
+<td class="colFirst"><code><a href="Epochs.Epoch.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMachineEpoch(int)">getMachineEpoch</a></span>&#8203;(int&nbsp;machineId)</code></th>
 <td class="colLast">
-<div class="block">Advance the jobs epoch.</div>
+<div class="block">Get a machine epoch for a machine.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i5">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#nextMachineEpoch()">nextMachineEpoch</a></span>()</code></th>
+<td class="colFirst"><code><a href="Epochs.Epoch.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMachinesEpoch(java.util.List)">getMachinesEpoch</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;machineIds)</code></th>
 <td class="colLast">
-<div class="block">Advance the machine epoch.</div>
+<div class="block">Get a machine epoch for a set of machines.</div>
+</td>
+</tr>
+<tr class="altColor" id="i6">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#jobChanged(int)">jobChanged</a></span>&#8203;(int&nbsp;job)</code></th>
+<td class="colLast">
+<div class="block">Indicate a change in a job.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i7">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#machineChanged(int)">machineChanged</a></span>&#8203;(int&nbsp;machine)</code></th>
+<td class="colLast">
+<div class="block">Indicate a change in a machine.</div>
 </td>
 </tr>
 </tbody>
@@ -257,60 +271,103 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="getJobsEpoch()">getJobsEpoch</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="Epochs.Epoch.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></span>&nbsp;<span class="memberName">getJobsEpoch</span>()</div>
-<div class="block">Get the current jobs epoch.</div>
+<h3><a id="getJobsEpoch(int)">getJobsEpoch</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="Epochs.Epoch.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></span>&nbsp;<span class="memberName">getJobsEpoch</span>&#8203;(<span class="arguments">int&nbsp;jobId)</span></div>
+<div class="block">Get a job epoch for a job.</div>
 <dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>jobId</code> - The job identifier.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>Jobs epoch handle.</dd>
+<dd>The epoch handle.</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="nextJobsEpoch()">nextJobsEpoch</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">nextJobsEpoch</span>()</div>
-<div class="block">Advance the jobs epoch. Will wake any thread waiting on changes to the
- epoch with <a href="Epochs.Epoch.html#waitForChange(java.time.Duration)"><code>waitForChange()</code></a> on a <code>jobsEpoch</code> handle.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="getMachineEpoch()">getMachineEpoch</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="Epochs.Epoch.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></span>&nbsp;<span class="memberName">getMachineEpoch</span>()</div>
-<div class="block">Get the current machines epoch.</div>
+<h3><a id="getJobsEpoch(java.util.List)">getJobsEpoch</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="Epochs.Epoch.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></span>&nbsp;<span class="memberName">getJobsEpoch</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;jobIds)</span></div>
+<div class="block">Get a job epoch for a list of jobs.</div>
 <dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>jobIds</code> - The job identifiers.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>Machines epoch handle.</dd>
+<dd>The epoch handle.</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="nextMachineEpoch()">nextMachineEpoch</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">nextMachineEpoch</span>()</div>
-<div class="block">Advance the machine epoch. Will wake any thread waiting on changes to the
- epoch with <a href="Epochs.Epoch.html#waitForChange(java.time.Duration)"><code>waitForChange()</code></a> on a <code>machineEpoch</code> handle.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="getBlacklistEpoch()">getBlacklistEpoch</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="Epochs.Epoch.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></span>&nbsp;<span class="memberName">getBlacklistEpoch</span>()</div>
-<div class="block">Get the current blacklist epoch.</div>
+<h3><a id="jobChanged(int)">jobChanged</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">jobChanged</span>&#8203;(<span class="arguments">int&nbsp;job)</span></div>
+<div class="block">Indicate a change in a job. Will wake any thread waiting on changes to
+ the job epoch with <a href="Epochs.Epoch.html#waitForChange(java.time.Duration)"><code>waitForChange()</code></a> on a <code>Epoch</code> handle.</div>
 <dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>Blacklist epoch handle.</dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>job</code> - The job that has changed</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="nextBlacklistEpoch()">nextBlacklistEpoch</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">nextBlacklistEpoch</span>()</div>
-<div class="block">Advance the blacklist epoch. Will wake any thread waiting on changes to
- the epoch with <a href="Epochs.Epoch.html#waitForChange(java.time.Duration)"><code>waitForChange()</code></a> on a
- <code>blacklistEpoch</code> handle.</div>
+<h3><a id="getMachineEpoch(int)">getMachineEpoch</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="Epochs.Epoch.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></span>&nbsp;<span class="memberName">getMachineEpoch</span>&#8203;(<span class="arguments">int&nbsp;machineId)</span></div>
+<div class="block">Get a machine epoch for a machine.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>machineId</code> - The identifier of the machine.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The epoch handle.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getMachinesEpoch(java.util.List)">getMachinesEpoch</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="Epochs.Epoch.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></span>&nbsp;<span class="memberName">getMachinesEpoch</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;machineIds)</span></div>
+<div class="block">Get a machine epoch for a set of machines.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>machineIds</code> - The identifiers of the machine.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The epoch handle.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="machineChanged(int)">machineChanged</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">machineChanged</span>&#8203;(<span class="arguments">int&nbsp;machine)</span></div>
+<div class="block">Indicate a change in a machine. Will wake any thread waiting on changes
+ to the machine epoch with <a href="Epochs.Epoch.html#waitForChange(java.time.Duration)"><code>waitForChange()</code></a> on a <code>Epoch</code> handle.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>machine</code> - The machine that has changed</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getBlacklistEpoch(int)">getBlacklistEpoch</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="Epochs.Epoch.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></span>&nbsp;<span class="memberName">getBlacklistEpoch</span>&#8203;(<span class="arguments">int&nbsp;boardId)</span></div>
+<div class="block">Get a blacklist epoch for a board.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>boardId</code> - The id of the board.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The epoch handle.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="blacklistChanged(int)">blacklistChanged</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">blacklistChanged</span>&#8203;(<span class="arguments">int&nbsp;board)</span></div>
+<div class="block">Indicate a change in a blacklist. Will wake any thread waiting on changes
+ to the blacklist epoch with <a href="Epochs.Epoch.html#waitForChange(java.time.Duration)"><code>waitForChange()</code></a> on a <code>Epoch</code> handle.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>board</code> - The board that has changed.</dd>
+</dl>
 </section>
 </li>
 </ul>

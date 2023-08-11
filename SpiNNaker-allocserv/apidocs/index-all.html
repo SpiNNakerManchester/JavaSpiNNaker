@@ -332,6 +332,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Path to blacklist operations.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html#blacklistChanged(int)">blacklistChanged(int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs</a></dt>
+<dd>
+<div class="block">Indicate a change in a blacklist.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.BlacklistData.html#%3Cinit%3E()">BlacklistData()</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html#blacklistFetch(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">blacklistFetch(AdminController.BlacklistData, ModelMap)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminController</a></dt>
@@ -362,6 +366,20 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/BlacklistStore.html#%3Cinit%3E()">BlacklistStore()</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/BlacklistStore.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">BlacklistStore</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/BoardAndBMP.html#bmp">bmp</a></span> - Variable in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/BoardAndBMP.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardAndBMP</a></dt>
+<dd>
+<div class="block">The BMP identifier.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/alloc/model/BMPAndMachine.html" title="class in uk.ac.manchester.spinnaker.alloc.model"><span class="typeNameLink">BMPAndMachine</span></a> - Class in <a href="uk/ac/manchester/spinnaker/alloc/model/package-summary.html">uk.ac.manchester.spinnaker.alloc.model</a></dt>
+<dd>
+<div class="block">A Machine and a BMP.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/BMPAndMachine.html#%3Cinit%3E(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState)">BMPAndMachine(MachineStateControl.BoardState)</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/BMPAndMachine.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BMPAndMachine</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/BMPAndMachine.html#%3Cinit%3E(uk.ac.manchester.spinnaker.alloc.db.Row)">BMPAndMachine(Row)</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/BMPAndMachine.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BMPAndMachine</a></dt>
+<dd>
+<div class="block">Make a new Board-and-BMP from a database query.</div>
+</dd>
 <dt><a href="uk/ac/manchester/spinnaker/alloc/bmp/BMPController.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp"><span class="typeNameLink">BMPController</span></a> - Class in <a href="uk/ac/manchester/spinnaker/alloc/bmp/package-summary.html">uk.ac.manchester.spinnaker.alloc.bmp</a></dt>
 <dd>
 <div class="block">Manages the BMPs of machines controlled by Spalloc.</div>
@@ -372,7 +390,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">The BMP id.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/BoardAndBMP.html#bmpId">bmpId</a></span> - Variable in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/BoardAndBMP.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardAndBMP</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/BMPAndMachine.html#bmpId">bmpId</a></span> - Variable in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/BMPAndMachine.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BMPAndMachine</a></dt>
 <dd>
 <div class="block">The BMP identifier.</div>
 </dd>
@@ -1260,11 +1278,11 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator"><span class="typeNameLink">Epochs</span></a> - Class in <a href="uk/ac/manchester/spinnaker/alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a></dt>
 <dd>
-<div class="block">Manages epoch counters.</div>
+<div class="block">Manages waiting for values.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html#%3Cinit%3E()">Epochs()</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.Epoch.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator"><span class="typeNameLink">Epochs.Epoch</span></a> - Interface in <a href="uk/ac/manchester/spinnaker/alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a></dt>
+<dt><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.Epoch.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator"><span class="typeNameLink">Epochs.Epoch</span></a> - Class in <a href="uk/ac/manchester/spinnaker/alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a></dt>
 <dd>
 <div class="block">A waitable epoch checkpoint.</div>
 </dd>
@@ -1781,9 +1799,9 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.BlacklistData.html#getBlacklist()">getBlacklist()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html#getBlacklistEpoch()">getBlacklistEpoch()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html#getBlacklistEpoch(int)">getBlacklistEpoch(int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs</a></dt>
 <dd>
-<div class="block">Get the current blacklist epoch.</div>
+<div class="block">Get a blacklist epoch for a board.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.StateControlProperties.html#getBlacklistPoll()">getBlacklistPoll()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.StateControlProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.StateControlProperties</a></dt>
 <dd>&nbsp;</dd>
@@ -1896,6 +1914,12 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/BoardCoords.html#getCabinet()">getCabinet()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/BoardCoords.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardCoords</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html#getCabinet()">getCabinet()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardRecord</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.Epoch.html#getChanged(java.time.Duration)">getChanged(Duration)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.Epoch.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></dt>
+<dd>
+<div class="block">Get the set of changed items.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/SpallocAPI.Jobs.html#getChanged(java.time.Duration)">getChanged(Duration)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/SpallocAPI.Jobs.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Jobs</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/SpallocAPI.BoardLocation.html#getChip()">getChip()</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/SpallocAPI.BoardLocation.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.BoardLocation</a></dt>
 <dd>
@@ -2240,9 +2264,13 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">List the jobs.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html#getJobsEpoch()">getJobsEpoch()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html#getJobsEpoch(int)">getJobsEpoch(int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs</a></dt>
 <dd>
-<div class="block">Get the current jobs epoch.</div>
+<div class="block">Get a job epoch for a job.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html#getJobsEpoch(java.util.List)">getJobsEpoch(List&lt;Integer&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs</a></dt>
+<dd>
+<div class="block">Get a job epoch for a list of jobs.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/ServiceDescription.html#getJobsRef()">getJobsRef()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/ServiceDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ServiceDescription</a></dt>
 <dd>&nbsp;</dd>
@@ -2330,9 +2358,9 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/SpallocServiceImpl.html#getMachine(java.lang.String,javax.ws.rs.core.UriInfo,javax.ws.rs.core.SecurityContext)">getMachine(String, UriInfo, SecurityContext)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/SpallocServiceImpl.html" title="class in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceImpl</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html#getMachineEpoch()">getMachineEpoch()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html#getMachineEpoch(int)">getMachineEpoch(int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs</a></dt>
 <dd>
-<div class="block">Get the current machines epoch.</div>
+<div class="block">Get a machine epoch for a machine.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/JobListEntryRecord.html#getMachineId()">getMachineId()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/JobListEntryRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">JobListEntryRecord</a></dt>
 <dd>&nbsp;</dd>
@@ -2378,6 +2406,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/SpallocServiceImpl.html#getMachines(javax.ws.rs.core.UriInfo)">getMachines(UriInfo)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/SpallocServiceImpl.html" title="class in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceImpl</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html#getMachinesEpoch(java.util.List)">getMachinesEpoch(List&lt;Integer&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs</a></dt>
+<dd>
+<div class="block">Get a machine epoch for a set of machines.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/ServiceDescription.html#getMachinesRef()">getMachinesRef()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/ServiceDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ServiceDescription</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html#getMachineTagging()">getMachineTagging()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl</a></dt>
@@ -3300,7 +3332,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/ServiceMasterControl.html#isUseDummyBMP()">isUseDummyBMP()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/ServiceMasterControl.html" title="class in uk.ac.manchester.spinnaker.alloc">ServiceMasterControl</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.Epoch.html#isValid()">isValid()</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.Epoch.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.Epoch.html#isValid()">isValid()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.Epoch.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></dt>
 <dd>
 <div class="block">Check if this epoch is the current one.</div>
 </dd>
@@ -3339,6 +3371,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/WebServiceComponentNames.html#JOB_MACHINE_POWER">JOB_MACHINE_POWER</a></span> - Static variable in interface uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/WebServiceComponentNames.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">WebServiceComponentNames</a></dt>
 <dd>
 <div class="block">The job power resource name component.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html#jobChanged(int)">jobChanged(int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs</a></dt>
+<dd>
+<div class="block">Indicate a change in a job.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/WhereIsResponse.html#jobChip">jobChip</a></span> - Variable in class uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></dt>
 <dd>
@@ -3658,6 +3694,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">The machine physical board resource name component.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/IssueReportRequest.ReportedBoard.html#machine">machine</a></span> - Variable in class uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/IssueReportRequest.ReportedBoard.html" title="class in uk.ac.manchester.spinnaker.alloc.web">IssueReportRequest.ReportedBoard</a></dt>
+<dd>
+<div class="block">The machine containing the board.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/WhereIsResponse.html#machine">machine</a></span> - Variable in class uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></dt>
 <dd>
 <div class="block">The name of the machine.</div>
@@ -3675,6 +3715,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html#MACHINE_RETAG_PARAM">MACHINE_RETAG_PARAM</a></span> - Static variable in interface uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminController</a></dt>
 <dd>
 <div class="block">Name of parameter used to mark a retagging.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html#machineChanged(int)">machineChanged(int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs</a></dt>
+<dd>
+<div class="block">Indicate a change in a machine.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineDefinitionLoader.html" title="class in uk.ac.manchester.spinnaker.alloc.admin"><span class="typeNameLink">MachineDefinitionLoader</span></a> - Class in <a href="uk/ac/manchester/spinnaker/alloc/admin/package-summary.html">uk.ac.manchester.spinnaker.alloc.admin</a></dt>
 <dd>
@@ -3707,6 +3751,14 @@ loadScripts(document, 'script');</script>
 <dt><a href="uk/ac/manchester/spinnaker/alloc/model/MachineDescription.JobInfo.html" title="class in uk.ac.manchester.spinnaker.alloc.model"><span class="typeNameLink">MachineDescription.JobInfo</span></a> - Class in <a href="uk/ac/manchester/spinnaker/alloc/model/package-summary.html">uk.ac.manchester.spinnaker.alloc.model</a></dt>
 <dd>
 <div class="block">Information about a single job.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.BoardState.html#machineId">machineId</a></span> - Variable in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a></dt>
+<dd>
+<div class="block">The machine ID.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/BMPAndMachine.html#machineId">machineId</a></span> - Variable in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/BMPAndMachine.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BMPAndMachine</a></dt>
+<dd>
+<div class="block">The machine identifier.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/alloc/model/MachineListEntryRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model"><span class="typeNameLink">MachineListEntryRecord</span></a> - Class in <a href="uk/ac/manchester/spinnaker/alloc/model/package-summary.html">uk.ac.manchester.spinnaker.alloc.model</a></dt>
 <dd>
@@ -3944,18 +3996,6 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/WebServiceComponentNames.html#NAME">NAME</a></span> - Static variable in interface uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/WebServiceComponentNames.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">WebServiceComponentNames</a></dt>
 <dd>
 <div class="block">The name path parameter name.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html#nextBlacklistEpoch()">nextBlacklistEpoch()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs</a></dt>
-<dd>
-<div class="block">Advance the blacklist epoch.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html#nextJobsEpoch()">nextJobsEpoch()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs</a></dt>
-<dd>
-<div class="block">Advance the jobs epoch.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html#nextMachineEpoch()">nextMachineEpoch()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs</a></dt>
-<dd>
-<div class="block">Advance the machine epoch.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/security/TrustLevel.html#NMPI_EXEC">NMPI_EXEC</a></span> - uk.ac.manchester.spinnaker.alloc.security.<a href="uk/ac/manchester/spinnaker/alloc/security/TrustLevel.html" title="enum in uk.ac.manchester.spinnaker.alloc.security">TrustLevel</a></dt>
 <dd>
@@ -4532,6 +4572,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/UserRecord.html#sanitise()">sanitise()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/UserRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">UserRecord</a></dt>
 <dd>
 <div class="block">Forces correct shrouding of information.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/AllocatorTask.html#scheduleAllocateNow()">scheduleAllocateNow()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/AllocatorTask.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">AllocatorTask</a></dt>
+<dd>
+<div class="block">Ask for allocation to happen now.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/Direction.html#SE">SE</a></span> - uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/Direction.html" title="enum in uk.ac.manchester.spinnaker.alloc.model">Direction</a></dt>
 <dd>
@@ -5347,7 +5391,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">An exception that a task operation may throw.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/ServiceConfig.html#threadPoolTaskScheduler(int)">threadPoolTaskScheduler(int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/ServiceConfig.html" title="class in uk.ac.manchester.spinnaker.alloc">ServiceConfig</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/ServiceConfig.html#threadPoolTaskExecutor(int)">threadPoolTaskExecutor(int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/ServiceConfig.html" title="class in uk.ac.manchester.spinnaker.alloc">ServiceConfig</a></dt>
 <dd>
 <div class="block">The thread pool.</div>
 </dd>
@@ -5790,7 +5834,7 @@ the order they are declared.</div>
 <dd>
 <div class="block">Wait for the object to (maybe) change, or for the timeout to expire.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.Epoch.html#waitForChange(java.time.Duration)">waitForChange(Duration)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.Epoch.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.Epoch.html#waitForChange(java.time.Duration)">waitForChange(Duration)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Epochs.Epoch.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Epochs.Epoch</a></dt>
 <dd>
 <div class="block">Wait, for up to <code>timeout</code>, for a change.</div>
 </dd>
