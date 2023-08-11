@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.InetSocketAddress;
@@ -105,7 +104,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * Note that synchronisation will be performed on this object.
 	 */
 	@GuardedBy("itself")
-	private final PrintWriter out;
+	private final Writer out;
 
 	/**
 	 * Make an instance that wraps a socket.
@@ -126,8 +125,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		sock.setSoTimeout((int) getProperties().getReceiveTimeout().toMillis());
 
 		in = buffer(new InputStreamReader(sock.getInputStream(), UTF_8));
-		out = new PrintWriter(
-				new OutputStreamWriter(sock.getOutputStream(), UTF_8));
+		out = new OutputStreamWriter(sock.getOutputStream(), UTF_8);
 	}
 
 	/**
@@ -145,7 +143,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		super(srv);
 		this.sock = null;
 		this.in = buffer(in);
-		this.out = new PrintWriter(out);
+		this.out = out;
 	}
 
 	final void handleConnection() {
@@ -306,10 +304,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		log.debug("about to send message: {}", data);
 		// Synch so we definitely don't interleave bits of messages
 		synchronized (out) {
-			out.println(data);
-			if (out.checkError()) {
-				throw new UnknownIOException();
-			}
+			out.write(data + "\r\n");
+			out.flush();
 		}
 	}
 
