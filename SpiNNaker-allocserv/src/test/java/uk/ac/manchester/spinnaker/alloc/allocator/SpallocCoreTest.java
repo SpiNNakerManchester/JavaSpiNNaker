@@ -567,8 +567,8 @@ class SpallocCoreTest extends TestSupport {
 				j.destroy("foo bar");
 
 				// reread
-				var j2 = spalloc.getJob(p, jobId).orElseThrow();
 				snooze1s();
+				var j2 = spalloc.getJob(p, jobId).orElseThrow();
 				assertEquals(DESTROYED, j2.getState());
 				var ts1 = j2.getFinishTime().orElseThrow();
 				assertFalse(ts0.isAfter(ts1));
