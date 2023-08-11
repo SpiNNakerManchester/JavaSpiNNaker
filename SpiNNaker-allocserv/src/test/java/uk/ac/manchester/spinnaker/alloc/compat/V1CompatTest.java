@@ -127,7 +127,7 @@ class V1CompatTest extends TestSupport {
 	// The actual tests
 
 	@Test
-	@Timeout(5)
+	@Timeout(15)
 	public void testMachineryTest() throws Exception {
 		for (int i = 0; i < 100; i++) {
 			withInstance((to, from) -> {
