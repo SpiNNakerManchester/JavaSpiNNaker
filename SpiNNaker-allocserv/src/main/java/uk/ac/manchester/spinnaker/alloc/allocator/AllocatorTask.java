@@ -504,16 +504,15 @@ public class AllocatorTask extends DatabaseAwareBean
 	/**
 	 * A set of information about the allocations that have been made.
 	 */
-	class Allocations {
-
+	private class Allocations {
 		/** The BMPs that have been affected by the allocations. **/
 		final Set<Integer> bmps = new HashSet<>();
 
 		/** The Machines that have been affected by the allocations. **/
-		final Set<Integer> machines = new HashSet<>();
+		private final Set<Integer> machines = new HashSet<>();
 
 		/** The jobs that have been affected by the allocations. **/
-		final List<Integer> jobIds = new ArrayList<>();
+		private final List<Integer> jobIds = new ArrayList<>();
 
 		Allocations() {
 			// Does nothing
@@ -883,6 +882,9 @@ public class AllocatorTask extends DatabaseAwareBean
 			var bmps = setPower(sql, id, OFF, DESTROYED);
 			sql.killAlloc.call(id);
 			sql.markAsDestroyed.call(reason, id);
+			JobLifecycle.log.info(
+					"destroyed job {}; reclaiming boards in {} frames", id,
+					bmps.size());
 			return bmps;
 		} finally {
 			quotaManager.finishJob(id);
