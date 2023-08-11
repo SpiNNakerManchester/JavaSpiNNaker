@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.compat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.slf4j.LoggerFactory.getLogger;
 import static java.lang.String.format;
 import static java.util.regex.Pattern.compile;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,6 +40,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.Timeout;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -269,18 +271,27 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void jobCreateDelete() throws Exception {
+			Logger log = getLogger(V1CompatTest.class);
 			withInstance((to, from) -> {
 				var jobId = create(to, from);
+				log.info("created(1) with ID={}", jobId);
 				destroy(to, from, jobId);
+				log.info("destroyed(1) ID={}", jobId);
 
 				jobId = create(to, from, 1);
+				log.info("created(2) with ID={}", jobId);
 				destroy(to, from, jobId);
+				log.info("destroyed(2) ID={}", jobId);
 
 				jobId = create(to, from, 1, 1);
+				log.info("created(3) with ID={}", jobId);
 				destroy(to, from, jobId);
+				log.info("destroyed(3) ID={}", jobId);
 
 				jobId = create(to, from, 0, 0, 0);
+				log.info("created(4) with ID={}", jobId);
 				destroy(to, from, jobId);
+				log.info("destroyed(4) ID={}", jobId);
 
 				to.println("{\"command\":\"create_job\",\"args\":[0,0,0,0],"
 						+ "\"kwargs\":{\"owner\":\"gorp\"," + "\"machine\":\""

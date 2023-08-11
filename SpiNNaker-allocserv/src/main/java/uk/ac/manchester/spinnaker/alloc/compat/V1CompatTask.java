@@ -52,6 +52,7 @@ import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
@@ -158,19 +159,12 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			if (interrupted()) {
 				log.debug("Shutdown on interrupt");
 			}
-		} catch (UnknownIOException e) {
-			/*
-			 * Nothing useful to do in this case except close.
-			 *
-			 * This happens when the problem is detected by a PrintWriter, but
-			 * the problem with PrintWriters is they swallow exceptions and
-			 * throw the information away. I'm not going to fix that.
-			 */
-			log.error("Something went wrong in comms", e);
 		} catch (InterruptedException | InterruptedIOException interrupted) {
 			log.debug("interrupted", interrupted);
 		} catch (IOException e) {
-			log.error("problem with socket {}", sock, e);
+			if (!e.getMessage().equals("Pipe closed")) {
+				log.error("problem with socket {}", sock, e);
+			}
 		} finally {
 			log.debug("closing down connection from {}", sock);
 			closeNotifiers();
@@ -405,6 +399,10 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			log.trace("timeout");
 			// Message was not read by time timeout expired
 			return !currentThread().isInterrupted();
+		} catch (MismatchedInputException e) {
+			log.error("Error on message reception: {}", e.getMessage());
+			writeException(e);
+			return true;
 		} catch (JsonMappingException | JsonParseException e) {
 			log.error("Error on message reception", e);
 			writeException(e);
