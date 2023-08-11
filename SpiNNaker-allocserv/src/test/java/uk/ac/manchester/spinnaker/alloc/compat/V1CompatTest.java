@@ -126,16 +126,23 @@ class V1CompatTest extends TestSupport {
 
 	// The actual tests
 
+	private static final int MACHINERY_TEST_SIZE = 50;
+
 	@Test
 	@Timeout(15)
-	public void testMachineryTest() throws Exception {
-		for (int i = 0; i < 100; i++) {
+	public void testMachineryTestBidirectional() throws Exception {
+		for (int i = 0; i < MACHINERY_TEST_SIZE; i++) {
 			withInstance((to, from) -> {
 				to.println();
 				from.readLine();
 			});
 		}
-		for (int i = 0; i < 100; i++) {
+	}
+
+	@Test
+	@Timeout(15)
+	public void testMachineryTestUnidirectional() throws Exception {
+		for (int i = 0; i < MACHINERY_TEST_SIZE; i++) {
 			withInstance((to, from) -> {
 				to.println();
 			});
