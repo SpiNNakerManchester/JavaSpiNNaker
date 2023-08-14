@@ -16,11 +16,13 @@
 package uk.ac.manchester.spinnaker.alloc.db;
 
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
 import java.io.IOException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import uk.ac.manchester.spinnaker.alloc.TestSupport;
@@ -36,6 +38,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * Subclasses should be annotated with {@link SpringBootTest}.
  */
 @UsedInJavadocOnly(SpringBootTest.class)
+@Execution(SAME_THREAD)
 public abstract class SimpleDBTestBase extends TestSupport {
 	/**
 	 * The DB connection. Only valid in a test. <em>Must not</em> be modified by
