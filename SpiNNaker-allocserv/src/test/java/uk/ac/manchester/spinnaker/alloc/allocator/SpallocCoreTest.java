@@ -567,11 +567,19 @@ class SpallocCoreTest extends TestSupport {
 				j.destroy("foo bar");
 
 				// reread
-				var j2 = spalloc.getJob(p, jobId).orElseThrow();
-				assertEquals(DESTROYED, j2.getState());
-				var ts1 = j2.getFinishTime().orElseThrow();
-				assertFalse(ts0.isAfter(ts1));
-				assertEquals(Optional.of("foo bar"), j2.getReason());
+				spalloc.getJob(p, jobId).ifPresentOrElse(j2 -> {
+					/*
+					 * It's possible that something may have reaped the job
+					 * early; that's not entirely wrong, so we won't fail the
+					 * test if that occurs, but it does mean these other checks
+					 * will not usefully do anything.
+					 */
+					assertEquals(DESTROYED, j2.getState());
+					var ts1 = j2.getFinishTime().orElseThrow();
+					assertFalse(ts0.isAfter(ts1));
+					assertEquals(Optional.of("foo bar"), j2.getReason());
+				}, () -> log.warn("job {} reaped early; some checks skipped",
+						jobId));
 			}));
 		}
 

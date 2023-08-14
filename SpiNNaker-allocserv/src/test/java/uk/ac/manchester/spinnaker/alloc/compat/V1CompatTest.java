@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
-import static org.slf4j.LoggerFactory.getLogger;
 import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.util.regex.Pattern.compile;
@@ -34,6 +33,7 @@ import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
 import java.io.PrintWriter;
+import java.io.UncheckedIOException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.Future;
@@ -46,7 +46,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.parallel.Execution;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -303,9 +302,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void jobCreateDeleteZeroArgs() throws Exception {
-			Logger log = getLogger(V1CompatTest.class);
 			withInstance("nojob.createDelete.0", (to, from) -> {
-				log.info("create with no args");
 				var jobId = create(to, from);
 				log.debug("created() with ID={}", jobId);
 				destroy(to, from, jobId);
@@ -316,9 +313,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void jobCreateDeleteOneArg() throws Exception {
-			Logger log = getLogger(V1CompatTest.class);
 			withInstance("nojob.createDelete.1", (to, from) -> {
-				log.info("create with one arg");
 				var jobId = create(to, from, 1);
 				log.debug("created(1) with ID={}", jobId);
 				destroy(to, from, jobId);
@@ -329,9 +324,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void jobCreateDeleteTwoArgs() throws Exception {
-			Logger log = getLogger(V1CompatTest.class);
 			withInstance("nojob.createDelete.2", (to, from) -> {
-				log.info("create with two args");
 				var jobId = create(to, from, 1, 1);
 				log.debug("created(1,1) with ID={}", jobId);
 				destroy(to, from, jobId);
@@ -342,9 +335,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void jobCreateDeleteThreeArgs() throws Exception {
-			Logger log = getLogger(V1CompatTest.class);
 			withInstance("nojob.createDelete.3", (to, from) -> {
-				log.info("create with three args");
 				var jobId = create(to, from, 0, 0, 0);
 				log.debug("created(0,0,0) with ID={}", jobId);
 				destroy(to, from, jobId);
@@ -355,9 +346,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void jobCreateDeleteFourArgs() throws Exception {
-			Logger log = getLogger(V1CompatTest.class);
 			withInstance("nojob.createDelete.4", (to, from) -> {
-				log.info("create with four args (will reject)");
 				to.println("{\"command\":\"create_job\",\"args\":[0,0,0,0],"
 						+ "\"kwargs\":{\"owner\":\"gorp\"," + "\"machine\":\""
 						+ MACHINE_NAME + "\"}}");
@@ -366,7 +355,8 @@ class V1CompatTest extends TestSupport {
 								+ "\"unsupported number of arguments: 4\"}",
 						from.readLine());
 				destroy(to, from, 999999999);
-				assertEquals("{\"exception\": \"\"}", from.readLine());
+				assertEquals("{\"exception\": \"no such job\"}",
+						from.readLine());
 			});
 		}
 
@@ -518,9 +508,7 @@ class NonThrowingLineReader extends BufferedReader {
 		try {
 			return super.readLine();
 		} catch (IOException e) {
-			getLogger(NonThrowingLineReader.class)
-					.error("exception when reading line", e);
-			return "THREW " + e;
+			throw new UncheckedIOException(e);
 		}
 	}
 }
