@@ -298,22 +298,22 @@ class V1CompatTest extends TestSupport {
 			Logger log = getLogger(V1CompatTest.class);
 			withInstance("nojob.createDelete", (to, from) -> {
 				var jobId = create(to, from);
-				log.debug("created(1) with ID={}", jobId);
+				log.info("created(1) with ID={}", jobId);
 				destroy(to, from, jobId);
 				log.debug("destroyed(1) ID={}", jobId);
 
 				jobId = create(to, from, 1);
-				log.debug("created(2) with ID={}", jobId);
+				log.info("created(2) with ID={}", jobId);
 				destroy(to, from, jobId);
 				log.debug("destroyed(2) ID={}", jobId);
 
 				jobId = create(to, from, 1, 1);
-				log.debug("created(3) with ID={}", jobId);
+				log.info("created(3) with ID={}", jobId);
 				destroy(to, from, jobId);
 				log.debug("destroyed(3) ID={}", jobId);
 
 				jobId = create(to, from, 0, 0, 0);
-				log.debug("created(4) with ID={}", jobId);
+				log.info("created(4) with ID={}", jobId);
 				destroy(to, from, jobId);
 				log.debug("destroyed(4) ID={}", jobId);
 
