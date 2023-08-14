@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 
@@ -26,6 +27,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,6 +51,7 @@ import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 @SpringBootTest
 @TestInstance(PER_CLASS)
 @ActiveProfiles("unittest")
+@Execution(SAME_THREAD)
 class MDefLoaderTest extends SimpleDBTestBase {
 	@ResultColumn("c")
 	@SingleRowResult

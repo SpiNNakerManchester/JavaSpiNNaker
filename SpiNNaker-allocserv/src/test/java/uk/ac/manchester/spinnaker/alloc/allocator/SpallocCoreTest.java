@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
@@ -34,6 +35,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -59,6 +61,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 @SpringBootTest
 @SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
+@Execution(SAME_THREAD)
 class SpallocCoreTest extends TestSupport {
 
 	private static final String BAD_USER = "user_foo";
@@ -567,19 +570,11 @@ class SpallocCoreTest extends TestSupport {
 				j.destroy("foo bar");
 
 				// reread
-				spalloc.getJob(p, jobId).ifPresentOrElse(j2 -> {
-					/*
-					 * It's possible that something may have reaped the job
-					 * early; that's not entirely wrong, so we won't fail the
-					 * test if that occurs, but it does mean these other checks
-					 * will not usefully do anything.
-					 */
-					assertEquals(DESTROYED, j2.getState());
-					var ts1 = j2.getFinishTime().orElseThrow();
-					assertFalse(ts0.isAfter(ts1));
-					assertEquals(Optional.of("foo bar"), j2.getReason());
-				}, () -> log.warn("job {} reaped early; some checks skipped",
-						jobId));
+				var j2 = spalloc.getJob(p, jobId).orElseThrow();
+				assertEquals(DESTROYED, j2.getState());
+				var ts1 = j2.getFinishTime().orElseThrow();
+				assertFalse(ts0.isAfter(ts1));
+				assertEquals(Optional.of("foo bar"), j2.getReason());
 			}));
 		}
 

@@ -17,6 +17,7 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.stream;
 import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
 import static uk.ac.manchester.spinnaker.machine.Direction.NORTH;
@@ -33,6 +34,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -48,6 +50,7 @@ import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 @SpringBootTest
 @SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
+@Execution(SAME_THREAD)
 class BlacklistStoreTest extends TestSupport {
 
 	private BlacklistStore.TestAPI testAPI;

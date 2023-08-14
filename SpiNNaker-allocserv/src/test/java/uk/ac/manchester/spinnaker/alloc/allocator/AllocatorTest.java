@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.POWER;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
@@ -30,6 +31,7 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -53,6 +55,7 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 	"spalloc.sqlite.lock-note-threshold=2200ms",
 	"spalloc.sqlite.lock-warn-threshold=3s"
 })
+@Execution(SAME_THREAD)
 class AllocatorTest extends TestSupport {
 
 	@Autowired

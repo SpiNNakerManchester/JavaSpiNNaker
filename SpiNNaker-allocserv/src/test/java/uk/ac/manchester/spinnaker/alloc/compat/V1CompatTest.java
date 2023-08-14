@@ -152,9 +152,14 @@ class V1CompatTest extends TestSupport {
 
 	private static void destroy(PrintWriter to, NonThrowingLineReader from,
 			Object jobId) {
+		destroy(to, from, jobId, VOID_RESPONSE);
+	}
+
+	private static void destroy(PrintWriter to, NonThrowingLineReader from,
+			Object jobId, String expecting) {
 		to.println("{\"command\":\"destroy_job\",\"args\":[" + jobId
 				+ "],\"kwargs\":{\"reason\":\"whatever\"}}");
-		assertEquals(VOID_RESPONSE, from.readLine());
+		assertEquals(expecting, from.readLine());
 	}
 
 	// The actual tests
@@ -354,9 +359,8 @@ class V1CompatTest extends TestSupport {
 						"{\"exception\":"
 								+ "\"unsupported number of arguments: 4\"}",
 						from.readLine());
-				destroy(to, from, 999999999);
-				assertEquals("{\"exception\": \"no such job\"}",
-						from.readLine());
+				destroy(to, from, 999999999,
+						"{\"exception\": \"no such job\"}");
 			});
 		}
 

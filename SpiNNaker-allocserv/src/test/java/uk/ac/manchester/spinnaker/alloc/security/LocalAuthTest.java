@@ -18,11 +18,13 @@ package uk.ac.manchester.spinnaker.alloc.security;
 import static java.time.Instant.now;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
 import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -35,6 +37,7 @@ import uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl.TestAPI;
 @SpringBootTest
 @SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
+@Execution(SAME_THREAD)
 class LocalAuthTest extends TestSupport {
 
 	private TestAPI authEngine;
