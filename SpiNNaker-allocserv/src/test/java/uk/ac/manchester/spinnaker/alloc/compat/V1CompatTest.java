@@ -33,6 +33,7 @@ import java.io.PipedReader;
 import java.io.PipedWriter;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
 
 import org.junit.jupiter.api.AfterEach;
@@ -86,10 +87,10 @@ class V1CompatTest extends TestSupport {
 	private void withInstance(String test,
 			BiConsumer<PrintWriter, NonThrowingLineReader> act)
 			throws Exception {
-		try (var to = new PipedWriter();
-				var from = new PipedReader()) {
+		Future<?> f = null;
+		try (var to = new PipedWriter(); var from = new PipedReader()) {
 			log.info("starting instance for {}", test);
-			var f = testAPI.launchInstance(to, from);
+			f = testAPI.launchInstance(to, from);
 			try {
 				log.info("running test body {}", test);
 				act.accept(new PrintWriter(to),
@@ -99,7 +100,10 @@ class V1CompatTest extends TestSupport {
 			}
 			// Stop the instance
 			log.info("stopping instance for {}", test);
-			f.cancel(true);
+		} finally {
+			if (f != null && f.cancel(true)) {
+				log.warn("cancelled instance task");
+			}
 		}
 	}
 

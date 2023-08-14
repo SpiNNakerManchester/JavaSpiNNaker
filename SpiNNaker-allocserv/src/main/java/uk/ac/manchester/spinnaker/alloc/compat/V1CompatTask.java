@@ -166,20 +166,27 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 				log.error("problem with socket {}", sock, e);
 			}
 		} finally {
-			log.info("closing down connection from {}", sock);
-			closeNotifiers();
-			try {
-				if (nonNull(sock)) {
-					sock.close();
-				} else {
-					in.close();
-					synchronized (out) {
-						out.close();
-					}
+			shutdown();
+		}
+	}
+
+	private void shutdown() {
+		log.info("closing down connection from {}", sock);
+		closeNotifiers();
+		try {
+			if (nonNull(sock)) {
+				sock.close();
+			} else {
+				log.info("closing reader");
+				in.close();
+				log.info("closing writer");
+				synchronized (out) {
+					out.close();
 				}
-			} catch (IOException e) {
-				log.error("problem closing socket {}", sock, e);
+				log.info("done shutdown");
 			}
+		} catch (IOException e) {
+			log.error("problem closing socket {}", sock, e);
 		}
 	}
 
