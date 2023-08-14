@@ -21,7 +21,9 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 import static org.slf4j.LoggerFactory.getLogger;
 import static java.lang.String.format;
+import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.util.regex.Pattern.compile;
+import static org.apache.commons.lang3.ThreadUtils.sleepQuietly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
@@ -32,6 +34,7 @@ import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
 import java.io.PrintWriter;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
@@ -101,8 +104,12 @@ class V1CompatTest extends TestSupport {
 			// Stop the instance
 			log.info("stopping instance for {}", test);
 		} finally {
-			if (f != null && f.cancel(true)) {
-				log.warn("cancelled instance task");
+			sleepQuietly(Duration.of(20, MILLIS));
+			if (f != null && !f.isDone()) {
+				sleepQuietly(Duration.of(80, MILLIS));
+				if (f.cancel(true)) {
+					log.warn("cancelled instance task");
+				}
 			}
 		}
 	}
