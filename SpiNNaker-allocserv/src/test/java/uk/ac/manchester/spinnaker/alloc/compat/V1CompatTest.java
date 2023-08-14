@@ -149,19 +149,21 @@ class V1CompatTest extends TestSupport {
 	@Test
 	@Timeout(15)
 	public void testMachineryTestBidirectional() throws Exception {
+		log.info("starting MachineryTestBidirectional");
 		for (int i = 0; i < MACHINERY_TEST_SIZE; i++) {
-			withInstance("MachineryTestBidirectional", (to, from) -> {
+			withInstance("MachineryTestBidirectional " + i, (to, from) -> {
 				to.println();
 				from.readLine();
 			});
 		}
+		log.info("finished MachineryTestBidirectional");
 	}
 
 	@Test
 	@Timeout(15)
 	public void testMachineryTestUnidirectional() throws Exception {
 		for (int i = 0; i < MACHINERY_TEST_SIZE; i++) {
-			withInstance("MachineryTestUnidirectional", (to, from) -> {
+			withInstance("MachineryTestUnidirectional " + i, (to, from) -> {
 				to.println();
 			});
 		}
