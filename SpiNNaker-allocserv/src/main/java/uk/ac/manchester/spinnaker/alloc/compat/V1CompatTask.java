@@ -172,7 +172,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 
 	private void shutdown() {
 		var origin = nonNull(sock) ? sock : "TEST";
-		log.info("closing down connection from {}", origin);
+		log.debug("closing down connection from {}", origin);
 		closeNotifiers();
 		try {
 			if (nonNull(sock)) {
@@ -186,7 +186,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		} catch (IOException e) {
 			log.error("problem closing connection {}", origin, e);
 		}
-		log.info("closed connection from {}", origin);
+		log.debug("closed connection from {}", origin);
 	}
 
 	/**

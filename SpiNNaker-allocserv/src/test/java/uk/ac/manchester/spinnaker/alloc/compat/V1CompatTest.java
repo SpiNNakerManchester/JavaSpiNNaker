@@ -92,19 +92,20 @@ class V1CompatTest extends TestSupport {
 			throws Exception {
 		Future<?> f = null;
 		try (var to = new PipedWriter(); var from = new PipedReader()) {
-			log.info("starting instance for {}", test);
+			log.debug("starting instance for {}", test);
 			f = testAPI.launchInstance(to, from);
 			log.debug("running test body {}", test);
 			act.accept(new PrintWriter(to),
 					new NonThrowingLineReader(from));
 			// Stop the instance
 			log.debug("stopping instance for {}", test);
+			Thread.currentThread().interrupt();
 		} finally {
 			sleepQuietly(Duration.of(20, MILLIS));
 			if (f != null && !f.isDone()) {
 				sleepQuietly(Duration.of(80, MILLIS));
 				if (f.cancel(true)) {
-					log.warn("cancelled instance task");
+					log.warn("cancelled instance task for {}", test);
 				} else {
 					log.debug("task cancel failed; probably already finished");
 				}
@@ -117,7 +118,7 @@ class V1CompatTest extends TestSupport {
 		 * very strange failure.
 		 */
 		Thread.interrupted();
-		log.info("stopped instance for {}", test);
+		log.debug("stopped instance for {}", test);
 	}
 
 	// The representation of void
@@ -156,14 +157,12 @@ class V1CompatTest extends TestSupport {
 	@Test
 	@Timeout(15)
 	public void testMachineryTestBidirectional() throws Exception {
-		log.info("starting MachineryTestBidirectional");
 		for (int i = 0; i < MACHINERY_TEST_SIZE; i++) {
 			withInstance("MachineryTestBidirectional " + i, (to, from) -> {
 				to.println();
 				from.readLine();
 			});
 		}
-		log.info("finished MachineryTestBidirectional");
 	}
 
 	@Test
@@ -299,24 +298,24 @@ class V1CompatTest extends TestSupport {
 			Logger log = getLogger(V1CompatTest.class);
 			withInstance("nojob.createDelete", (to, from) -> {
 				var jobId = create(to, from);
-				log.info("created(1) with ID={}", jobId);
+				log.debug("created(1) with ID={}", jobId);
 				destroy(to, from, jobId);
-				log.info("destroyed(1) ID={}", jobId);
+				log.debug("destroyed(1) ID={}", jobId);
 
 				jobId = create(to, from, 1);
-				log.info("created(2) with ID={}", jobId);
+				log.debug("created(2) with ID={}", jobId);
 				destroy(to, from, jobId);
-				log.info("destroyed(2) ID={}", jobId);
+				log.debug("destroyed(2) ID={}", jobId);
 
 				jobId = create(to, from, 1, 1);
-				log.info("created(3) with ID={}", jobId);
+				log.debug("created(3) with ID={}", jobId);
 				destroy(to, from, jobId);
-				log.info("destroyed(3) ID={}", jobId);
+				log.debug("destroyed(3) ID={}", jobId);
 
 				jobId = create(to, from, 0, 0, 0);
-				log.info("created(4) with ID={}", jobId);
+				log.debug("created(4) with ID={}", jobId);
 				destroy(to, from, jobId);
-				log.info("destroyed(4) ID={}", jobId);
+				log.debug("destroyed(4) ID={}", jobId);
 
 				to.println("{\"command\":\"create_job\",\"args\":[0,0,0,0],"
 						+ "\"kwargs\":{\"owner\":\"gorp\"," + "\"machine\":\""
