@@ -87,6 +87,14 @@ class V1CompatTest extends TestSupport {
 		testAPI = compat.getTestApi();
 	}
 
+	private static void verySmallDelay() {
+		sleepQuietly(Duration.of(20, MILLIS));
+	}
+
+	private static void smallDelay() {
+		sleepQuietly(Duration.of(80, MILLIS));
+	}
+
 	private void withInstance(String test,
 			BiConsumer<PrintWriter, NonThrowingLineReader> act)
 			throws Exception {
@@ -101,9 +109,9 @@ class V1CompatTest extends TestSupport {
 			log.debug("stopping instance for {}", test);
 			Thread.currentThread().interrupt();
 		} finally {
-			sleepQuietly(Duration.of(20, MILLIS));
+			verySmallDelay();
 			if (f != null && !f.isDone()) {
-				sleepQuietly(Duration.of(80, MILLIS));
+				smallDelay();
 				if (f.cancel(true)) {
 					log.warn("cancelled instance task for {}", test);
 				} else {
@@ -297,26 +305,39 @@ class V1CompatTest extends TestSupport {
 		void jobCreateDelete() throws Exception {
 			Logger log = getLogger(V1CompatTest.class);
 			withInstance("nojob.createDelete", (to, from) -> {
+				log.info("create with no args");
 				var jobId = create(to, from);
-				log.info("created(1) with ID={}", jobId);
+				log.debug("created() with ID={}", jobId);
+				destroy(to, from, jobId);
+				log.debug("destroyed() ID={}", jobId);
+
+				smallDelay();
+
+				log.info("create with one arg");
+				jobId = create(to, from, 1);
+				log.debug("created(1) with ID={}", jobId);
 				destroy(to, from, jobId);
 				log.debug("destroyed(1) ID={}", jobId);
 
-				jobId = create(to, from, 1);
-				log.info("created(2) with ID={}", jobId);
-				destroy(to, from, jobId);
-				log.debug("destroyed(2) ID={}", jobId);
+				smallDelay();
 
+				log.info("create with two args");
 				jobId = create(to, from, 1, 1);
-				log.info("created(3) with ID={}", jobId);
+				log.debug("created(1,1) with ID={}", jobId);
 				destroy(to, from, jobId);
-				log.debug("destroyed(3) ID={}", jobId);
+				log.debug("destroyed(1,1) ID={}", jobId);
 
+				smallDelay();
+
+				log.info("create with three args");
 				jobId = create(to, from, 0, 0, 0);
-				log.info("created(4) with ID={}", jobId);
+				log.debug("created(0,0,0) with ID={}", jobId);
 				destroy(to, from, jobId);
-				log.debug("destroyed(4) ID={}", jobId);
+				log.debug("destroyed(0,0,0) ID={}", jobId);
 
+				smallDelay();
+
+				log.info("create with four args (will reject)");
 				to.println("{\"command\":\"create_job\",\"args\":[0,0,0,0],"
 						+ "\"kwargs\":{\"owner\":\"gorp\"," + "\"machine\":\""
 						+ MACHINE_NAME + "\"}}");
