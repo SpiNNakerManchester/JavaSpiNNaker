@@ -94,11 +94,11 @@ class V1CompatTest extends TestSupport {
 		try (var to = new PipedWriter(); var from = new PipedReader()) {
 			log.info("starting instance for {}", test);
 			f = testAPI.launchInstance(to, from);
-			log.info("running test body {}", test);
+			log.debug("running test body {}", test);
 			act.accept(new PrintWriter(to),
 					new NonThrowingLineReader(from));
 			// Stop the instance
-			log.info("stopping instance for {}", test);
+			log.debug("stopping instance for {}", test);
 		} finally {
 			sleepQuietly(Duration.of(20, MILLIS));
 			if (f != null && !f.isDone()) {
@@ -110,6 +110,13 @@ class V1CompatTest extends TestSupport {
 				}
 			}
 		}
+		/*
+		 * Clear the interrupted status. If we got here (i.e., we're NOT in a
+		 * finally block) we weren't interrupted in a way that matters, so we
+		 * mustn't have the thread marked as interrupted here or JUnit throws a
+		 * very strange failure.
+		 */
+		Thread.interrupted();
 		log.info("stopped instance for {}", test);
 	}
 
