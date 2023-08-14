@@ -359,8 +359,7 @@ class V1CompatTest extends TestSupport {
 						"{\"exception\":"
 								+ "\"unsupported number of arguments: 4\"}",
 						from.readLine());
-				destroy(to, from, 999999999,
-						"{\"exception\": \"no such job\"}");
+				destroy(to, from, 999999999, "{\"exception\":\"no such job\"}");
 			});
 		}
 
