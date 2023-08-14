@@ -94,13 +94,9 @@ class V1CompatTest extends TestSupport {
 		try (var to = new PipedWriter(); var from = new PipedReader()) {
 			log.info("starting instance for {}", test);
 			f = testAPI.launchInstance(to, from);
-			try {
-				log.info("running test body {}", test);
-				act.accept(new PrintWriter(to),
-						new NonThrowingLineReader(from));
-			} finally {
-				log.debug("task cancel failed; probably already finished");
-			}
+			log.info("running test body {}", test);
+			act.accept(new PrintWriter(to),
+					new NonThrowingLineReader(from));
 			// Stop the instance
 			log.info("stopping instance for {}", test);
 		} finally {
@@ -109,9 +105,12 @@ class V1CompatTest extends TestSupport {
 				sleepQuietly(Duration.of(80, MILLIS));
 				if (f.cancel(true)) {
 					log.warn("cancelled instance task");
+				} else {
+					log.debug("task cancel failed; probably already finished");
 				}
 			}
 		}
+		log.info("stopped instance for {}", test);
 	}
 
 	// The representation of void
