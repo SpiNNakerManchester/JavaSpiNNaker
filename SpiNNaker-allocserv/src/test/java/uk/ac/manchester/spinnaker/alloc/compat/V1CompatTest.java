@@ -475,6 +475,8 @@ class NonThrowingLineReader extends BufferedReader {
 		try {
 			return super.readLine();
 		} catch (IOException e) {
+			getLogger(NonThrowingLineReader.class)
+					.error("exception when reading line", e);
 			return "THREW " + e;
 		}
 	}
