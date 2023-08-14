@@ -270,10 +270,10 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			ex.initCause(e);
 			throw ex;
 		}
+		if (currentThread().isInterrupted()) {
+			throw new InterruptedException();
+		}
 		if (isNull(line) || line.isBlank()) {
-			if (currentThread().isInterrupted()) {
-				throw new InterruptedException();
-			}
 			return Optional.empty();
 		}
 		var c = parseCommand(line);
