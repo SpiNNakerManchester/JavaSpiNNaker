@@ -83,19 +83,22 @@ class V1CompatTest extends TestSupport {
 		testAPI = compat.getTestApi();
 	}
 
-	private void withInstance(
+	private void withInstance(String test,
 			BiConsumer<PrintWriter, NonThrowingLineReader> act)
 			throws Exception {
 		try (var to = new PipedWriter();
 				var from = new PipedReader()) {
+			log.info("starting instance for {}", test);
 			var f = testAPI.launchInstance(to, from);
 			try {
+				log.info("running test body {}", test);
 				act.accept(new PrintWriter(to),
 						new NonThrowingLineReader(from));
 			} finally {
 				log.debug("task cancel failed; probably already finished");
 			}
 			// Stop the instance
+			log.info("stopping instance for {}", test);
 			f.cancel(true);
 		}
 	}
@@ -137,7 +140,7 @@ class V1CompatTest extends TestSupport {
 	@Timeout(15)
 	public void testMachineryTestBidirectional() throws Exception {
 		for (int i = 0; i < MACHINERY_TEST_SIZE; i++) {
-			withInstance((to, from) -> {
+			withInstance("MachineryTestBidirectional", (to, from) -> {
 				to.println();
 				from.readLine();
 			});
@@ -148,7 +151,7 @@ class V1CompatTest extends TestSupport {
 	@Timeout(15)
 	public void testMachineryTestUnidirectional() throws Exception {
 		for (int i = 0; i < MACHINERY_TEST_SIZE; i++) {
-			withInstance((to, from) -> {
+			withInstance("MachineryTestUnidirectional", (to, from) -> {
 				to.println();
 			});
 		}
@@ -161,7 +164,7 @@ class V1CompatTest extends TestSupport {
 		@Timeout(5)
 		void version() throws Exception {
 			var response = "{\"return\":\"" + VERSION + "\"}";
-			withInstance((to, from) -> {
+			withInstance("nojob.version", (to, from) -> {
 				to.println("{\"command\":\"version\"}");
 				assertEquals(response, from.readLine());
 			});
@@ -173,7 +176,7 @@ class V1CompatTest extends TestSupport {
 			var machinesResponse = "{\"return\":[{\"name\":\"" + MACHINE_NAME
 					+ "\",\"tags\":[],\"width\":1,\"height\":1,"
 					+ "\"dead_boards\":[],\"dead_links\":[]}]}";
-			withInstance((to, from) -> {
+			withInstance("nojob.listMachines", (to, from) -> {
 				to.println("{\"command\": \"list_machines\"}");
 				assertEquals(machinesResponse, from.readLine());
 				to.println("{\"command\": \"list_machines\", \"args\": [0]}");
@@ -191,7 +194,7 @@ class V1CompatTest extends TestSupport {
 		@Timeout(5)
 		void listJobs() throws Exception {
 			var jobsResponse = "{\"return\":[]}";
-			withInstance((to, from) -> {
+			withInstance("nojob.listJobs", (to, from) -> {
 				to.println("{\"command\": \"list_jobs\"}");
 				assertEquals(jobsResponse, from.readLine());
 			});
@@ -200,7 +203,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void notifyJob() throws Exception {
-			withInstance((to, from) -> {
+			withInstance("nojob.notifyJob", (to, from) -> {
 				to.println("{\"command\": \"notify_job\"}");
 				assertEquals(VOID_RESPONSE, from.readLine());
 				to.println("{\"command\": \"no_notify_job\"}");
@@ -211,7 +214,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void notifyMachine() throws Exception {
-			withInstance((to, from) -> {
+			withInstance("nojob.notifyMachine", (to, from) -> {
 				to.println("{\"command\": \"notify_machine\"}");
 				assertEquals(VOID_RESPONSE, from.readLine());
 				to.println("{\"command\": \"no_notify_machine\"}");
@@ -228,7 +231,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void whereIs() throws Exception {
-			withInstance((to, from) -> {
+			withInstance("nojob.whereis", (to, from) -> {
 				to.println("{\"command\": \"where_is\", \"kwargs\":{"
 						+ "\"machine\": \"" + MACHINE_NAME + "\","
 						+ "\"x\": 0, \"y\": 0, \"z\": 0 }}");
@@ -249,7 +252,7 @@ class V1CompatTest extends TestSupport {
 		void getBoardAtPosition() throws Exception {
 			// Physical->Logical map
 			var response = "{\"return\":[0,0,0]}";
-			withInstance((to, from) -> {
+			withInstance("nojob.getAtPos", (to, from) -> {
 				to.println("{\"command\":\"get_board_at_position\",\"kwargs\":{"
 						+ "\"machine_name\":\"" + MACHINE_NAME
 						// Misnamed params if you ask me: cabinet, frame, board
@@ -263,7 +266,7 @@ class V1CompatTest extends TestSupport {
 		void getBoardPosition() throws Exception {
 			// Logical->Physical map
 			var response = "{\"return\":[1,1,0]}";
-			withInstance((to, from) -> {
+			withInstance("nojob.boardPos", (to, from) -> {
 				to.println("{\"command\":\"get_board_position\",\"kwargs\":{"
 						+ "\"machine_name\":\"" + MACHINE_NAME
 						+ "\",\"x\":0,\"y\":0,\"z\":0}}");
@@ -275,7 +278,7 @@ class V1CompatTest extends TestSupport {
 		@Timeout(5)
 		void jobCreateDelete() throws Exception {
 			Logger log = getLogger(V1CompatTest.class);
-			withInstance((to, from) -> {
+			withInstance("nojob.createDelete", (to, from) -> {
 				var jobId = create(to, from);
 				log.info("created(1) with ID={}", jobId);
 				destroy(to, from, jobId);
@@ -309,7 +312,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void compound() throws Exception {
-			withInstance((to, from) -> {
+			withInstance("nojob.compound", (to, from) -> {
 				var jobId = create(to, from, 1, 1);
 
 				try {
@@ -372,7 +375,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void getJobState() throws Exception {
-			withInstance((to, from) -> {
+			withInstance("job.state", (to, from) -> {
 				to.println("{\"command\":\"get_job_state\",\"args\":[" + jobId
 						+ "]}");
 				assertThat("got job state", readReply(from),
@@ -385,7 +388,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void getJobMachineInfo() throws Exception {
-			withInstance((to, from) -> {
+			withInstance("job.machineInfo", (to, from) -> {
 				to.println("{\"command\":\"get_job_machine_info\",\"args\":["
 						+ jobId + "]}");
 				assertThat("got job state", readReply(from),
@@ -397,7 +400,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void jobKeepalive() throws Exception {
-			withInstance((to, from) -> {
+			withInstance("job.keepalive", (to, from) -> {
 				to.println("{\"command\":\"job_keepalive\",\"args\":[" + jobId
 						+ "]}");
 				assertEquals(VOID_RESPONSE, readReply(from));
@@ -407,7 +410,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void jobNotify() throws Exception {
-			withInstance((to, from) -> {
+			withInstance("job.notify", (to, from) -> {
 				to.println("{\"command\":\"notify_job\",\"args\":[" + jobId
 						+ "]}");
 				assertEquals(VOID_RESPONSE, readReply(from));
@@ -420,7 +423,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void jobPower() throws Exception {
-			withInstance((to, from) -> {
+			withInstance("job.power", (to, from) -> {
 				to.println("{\"command\":\"power_off_job_boards\","
 						+ "\"args\":[" + jobId + "]}");
 				assertEquals(VOID_RESPONSE, readReply(from));
@@ -430,7 +433,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void whereIs() throws Exception {
-			withInstance((to, from) -> {
+			withInstance("job.whereis", (to, from) -> {
 				to.println("{\"command\":\"where_is\",\"kwargs\":{\"job_id\":"
 						+ jobId + ",\"chip_x\":0,\"chip_y\":0}}");
 				assertEquals("{\"return\":{\"job_chip\":[0,0],\"job_id\":"
