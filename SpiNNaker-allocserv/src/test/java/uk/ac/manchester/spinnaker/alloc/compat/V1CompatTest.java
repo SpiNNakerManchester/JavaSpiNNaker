@@ -302,41 +302,61 @@ class V1CompatTest extends TestSupport {
 
 		@Test
 		@Timeout(5)
-		void jobCreateDelete() throws Exception {
+		void jobCreateDeleteZeroArgs() throws Exception {
 			Logger log = getLogger(V1CompatTest.class);
-			withInstance("nojob.createDelete", (to, from) -> {
+			withInstance("nojob.createDelete.0", (to, from) -> {
 				log.info("create with no args");
 				var jobId = create(to, from);
 				log.debug("created() with ID={}", jobId);
 				destroy(to, from, jobId);
 				log.debug("destroyed() ID={}", jobId);
+			});
+		}
 
-				smallDelay();
-
+		@Test
+		@Timeout(5)
+		void jobCreateDeleteOneArg() throws Exception {
+			Logger log = getLogger(V1CompatTest.class);
+			withInstance("nojob.createDelete.1", (to, from) -> {
 				log.info("create with one arg");
-				jobId = create(to, from, 1);
+				var jobId = create(to, from, 1);
 				log.debug("created(1) with ID={}", jobId);
 				destroy(to, from, jobId);
 				log.debug("destroyed(1) ID={}", jobId);
+			});
+		}
 
-				smallDelay();
-
+		@Test
+		@Timeout(5)
+		void jobCreateDeleteTwoArgs() throws Exception {
+			Logger log = getLogger(V1CompatTest.class);
+			withInstance("nojob.createDelete.2", (to, from) -> {
 				log.info("create with two args");
-				jobId = create(to, from, 1, 1);
+				var jobId = create(to, from, 1, 1);
 				log.debug("created(1,1) with ID={}", jobId);
 				destroy(to, from, jobId);
 				log.debug("destroyed(1,1) ID={}", jobId);
+			});
+		}
 
-				smallDelay();
-
+		@Test
+		@Timeout(5)
+		void jobCreateDeleteThreeArgs() throws Exception {
+			Logger log = getLogger(V1CompatTest.class);
+			withInstance("nojob.createDelete.3", (to, from) -> {
 				log.info("create with three args");
-				jobId = create(to, from, 0, 0, 0);
+				var jobId = create(to, from, 0, 0, 0);
 				log.debug("created(0,0,0) with ID={}", jobId);
 				destroy(to, from, jobId);
 				log.debug("destroyed(0,0,0) ID={}", jobId);
+			});
+		}
 
-				smallDelay();
-
+		@Test
+		@Timeout(5)
+		void jobCreateDeleteFourArgs() throws Exception {
+			Logger log = getLogger(V1CompatTest.class);
+			withInstance("nojob.createDelete.4", (to, from) -> {
 				log.info("create with four args (will reject)");
 				to.println("{\"command\":\"create_job\",\"args\":[0,0,0,0],"
 						+ "\"kwargs\":{\"owner\":\"gorp\"," + "\"machine\":\""
@@ -345,6 +365,8 @@ class V1CompatTest extends TestSupport {
 						"{\"exception\":"
 								+ "\"unsupported number of arguments: 4\"}",
 						from.readLine());
+				destroy(to, from, 999999999);
+				assertEquals("{\"exception\": \"\"}", from.readLine());
 			});
 		}
 
