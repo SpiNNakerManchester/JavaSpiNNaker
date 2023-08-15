@@ -831,7 +831,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 				throws InterruptedException, BlacklistException,
 				DataAccessException {
 			var end = now().plus(props.getBlacklistTimeout());
-			while (end.isAfter(now())) {
+			while (end.isAfter(now()) && epoch.isValid()) {
 				var result = executeRead(conn -> {
 					try (var getResult =
 							conn.query(GET_COMPLETED_BLACKLIST_OP)) {
