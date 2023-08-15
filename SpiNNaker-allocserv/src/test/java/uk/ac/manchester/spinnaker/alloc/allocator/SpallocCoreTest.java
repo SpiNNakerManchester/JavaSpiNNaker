@@ -46,6 +46,8 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensions;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensionsAt;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateNumBoards;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
+import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
+import uk.ac.manchester.spinnaker.alloc.bmp.BMPController.TestAPI;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
@@ -67,11 +69,15 @@ class SpallocCoreTest extends TestSupport {
 	@Autowired
 	private SpallocAPI spalloc;
 
+	private TestAPI bmpTester;
+
+	@SuppressWarnings("deprecation")
 	@BeforeEach
-	void checkSetup() throws IOException {
+	void checkSetup(@Autowired BMPController bmpController) throws IOException {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		killDB();
 		setupDB1();
+		bmpTester = bmpController.getTestAPI();
 	}
 
 	// The actual tests
@@ -569,7 +575,13 @@ class SpallocCoreTest extends TestSupport {
 
 				j.destroy("foo bar");
 
-				snooze5s(); // Time for internals to process
+				snooze1s(); // Time for internals to process
+				try {
+					bmpTester.processRequests(1000, Set.of(BMP));
+				} catch (Exception e) {
+					log.warn("exception processing BMP requests", e);
+				}
+				snooze1s();
 
 				// reread
 				var j2 = spalloc.getJob(p, jobId).orElseThrow();

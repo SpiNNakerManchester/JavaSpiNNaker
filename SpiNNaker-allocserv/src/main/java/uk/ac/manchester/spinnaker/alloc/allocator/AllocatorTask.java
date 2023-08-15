@@ -148,15 +148,17 @@ public class AllocatorTask extends DatabaseAwareBean
 	/**
 	 * Perform update on a job now as a result of a change.
 	 *
-	 * @param jobId The job to update.
-	 * @param sourceState The change source state.
-	 * @param targetState The change target state.
+	 * @param jobId
+	 *            The job to update.
+	 * @param sourceState
+	 *            The change source state.
+	 * @param targetState
+	 *            The change target state.
 	 */
 	public void updateJob(int jobId, JobState sourceState,
 			JobState targetState) {
-		scheduler.schedule(() -> {
-			updateJobNow(jobId, sourceState, targetState);
-		}, Instant.now());
+		scheduler.schedule(() -> updateJobNow(jobId, sourceState, targetState),
+				Instant.now());
 	}
 
 	private void updateJobNow(int jobId, JobState sourceState,
