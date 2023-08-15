@@ -802,13 +802,18 @@ public class MachineStateControl extends DatabaseAwareBean {
 		@MustBeClosed
 		Op(@CompileTimeConstant final String operation, Object... args) {
 			boardId = (Integer) args[0];
-			epoch = epochs.getBlacklistEpoch(boardId);
+			var e = epochs.getBlacklistEpoch(boardId);
 			op = execute(conn -> {
 				try (var readReq = conn.update(operation)) {
 					return readReq.key(args);
 				}
 			}).orElseThrow(() -> new BlacklistException(
 					"could not create blacklist request"));
+			if (!e.isValid()) {
+				log.warn("early board epoch invalidation");
+				e = epochs.getBlacklistEpoch(boardId);
+			}
+			epoch = e;
 		}
 
 		/**
@@ -831,7 +836,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 				throws InterruptedException, BlacklistException,
 				DataAccessException {
 			var end = now().plus(props.getBlacklistTimeout());
-			while (end.isAfter(now()) && epoch.isValid()) {
+			while (end.isAfter(now())) {
 				var result = executeRead(conn -> {
 					try (var getResult =
 							conn.query(GET_COMPLETED_BLACKLIST_OP)) {
@@ -841,6 +846,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 				});
 				if (result.isPresent()) {
 					return result;
+				} else if (!epoch.isValid()) {
+					log.warn("epoch invalid for board {}?", boardId);
 				}
 				log.debug("Waiting for blacklist change");
 				epoch.waitForChange(props.getBlacklistPoll());
