@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.compat;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.isAsciiPrintable;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.triad;
@@ -45,7 +46,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -379,7 +379,7 @@ class V1TaskImpl extends V1CompatTask {
 			jd.setPower(job.isPowered());
 			jd.setBoards(job.getBoards().stream().map(
 					b -> new BoardCoordinates(b.getX(), b.getY(), b.getZ()))
-					.collect(Collectors.toList()));
+					.collect(toList()));
 			return jd.build();
 		}
 
@@ -430,7 +430,7 @@ class V1TaskImpl extends V1CompatTask {
 				});
 				if (actual.size() > 0) {
 					writeJobNotification(
-							actual.stream().collect(Collectors.toList()));
+							actual.stream().collect(toList()));
 				}
 			});
 		}
@@ -451,25 +451,27 @@ class V1TaskImpl extends V1CompatTask {
 			manageNotifier(machNotifiers, machineName, wantNotify, () -> {
 				List<String> actual = permit.authorize(() -> {
 					var machines = spalloc.getMachines(false);
-					var invMap = machines.values().stream().collect(
-							Collectors.toMap(SpallocAPI.Machine::getId,
+					if (machines.isEmpty()) {
+						// No machines, so don't wait
+						return List.of();
+					}
+					var invMap = machines.values().stream()
+							.collect(toMap(SpallocAPI.Machine::getId,
 									SpallocAPI.Machine::getName));
 					var mIds = machines.values().stream().map(m -> m.getId())
-							.collect(Collectors.toList());
+							.collect(toList());
 					var epoch = epochs.getMachinesEpoch(mIds);
 					try {
 						var changed = epoch.getChanged(
 								mainProps.getCompat().getNotifyWaitTime());
-						return changed.stream()
-								.map(id -> invMap.get(id))
-								.collect(Collectors.toList());
+						return changed.stream().map(id -> invMap.get(id))
+								.collect(toList());
 					} catch (InterruptedException e) {
 						return List.of();
 					}
 				});
 				if (actual.size() > 0) {
-					writeMachineNotification(actual.stream().collect(
-							Collectors.toList()));
+					writeMachineNotification(actual.stream().collect(toList()));
 				}
 			});
 		}

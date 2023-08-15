@@ -583,6 +583,7 @@ public class BMPController extends DatabaseAwareBean {
 		 * @throws InterruptedException
 		 *             If interrupted.
 		 */
+		@Override
 		boolean tryProcessRequest(SpiNNakerControl controller)
 				throws InterruptedException {
 			boolean ok = bmpAction(() -> {
@@ -809,6 +810,7 @@ public class BMPController extends DatabaseAwareBean {
 		 * @throws InterruptedException
 		 *             If interrupted.
 		 */
+		@Override
 		boolean tryProcessRequest(SpiNNakerControl controller)
 				throws InterruptedException {
 			return bmpAction(() -> {
@@ -988,6 +990,7 @@ public class BMPController extends DatabaseAwareBean {
 		/**
 		 * Periodically call to update, or trigger externally.
 		 */
+		@Override
 		public synchronized void run() {
 			log.trace("Searching for changes on BMP {}", bmpId);
 
@@ -1051,7 +1054,6 @@ public class BMPController extends DatabaseAwareBean {
 	 */
 	@ForTestingOnly
 	public interface TestAPI {
-
 		/**
 		 * Ensure things are set up after a database change that updates the
 		 * BMPs in the system.
