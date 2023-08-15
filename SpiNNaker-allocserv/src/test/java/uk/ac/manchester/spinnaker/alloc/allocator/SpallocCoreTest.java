@@ -34,6 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -552,6 +553,7 @@ class SpallocCoreTest extends TestSupport {
 		}
 
 		@Test
+		@Timeout(15)
 		void termination() {
 			// Don't hold an allocation for this
 			inContext(c -> withJob(jobId -> {
@@ -567,7 +569,7 @@ class SpallocCoreTest extends TestSupport {
 
 				j.destroy("foo bar");
 
-				snooze1s(); // Time for internals to process
+				snooze5s(); // Time for internals to process
 
 				// reread
 				var j2 = spalloc.getJob(p, jobId).orElseThrow();

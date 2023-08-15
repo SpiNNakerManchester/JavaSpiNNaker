@@ -17,7 +17,6 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.lang.Math.max;
 import static java.lang.String.format;
-import static java.lang.System.identityHashCode;
 import static java.lang.Thread.currentThread;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -1674,9 +1673,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 		@Override
 		public String toString() {
-			return format("Job@%s(id=%s,dims=(%s,%s,%s),start=%s,finish=%s)",
-					identityHashCode(this), id, width, height, depth, startTime,
-					finishTime);
+			return format("Job(id=%s,dims=(%s,%s,%s),start=%s,finish=%s)", id,
+					width, height, depth, startTime, finishTime);
 		}
 
 		private final class SubMachineImpl implements SubMachine {

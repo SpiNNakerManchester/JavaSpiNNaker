@@ -481,6 +481,15 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 		}
 	}
 
+	/** Sleep for one second. */
+	protected static void snooze5s() {
+		try {
+			Thread.sleep(DELAY_MS * 5);
+		} catch (InterruptedException e) {
+			assumeTrue(false, "sleep() was interrupted");
+		}
+	}
+
 	/** Capability provided by {@link #inContext(InC)} to what it guards. */
 	public interface C {
 		/**
