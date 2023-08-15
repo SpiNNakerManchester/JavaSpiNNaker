@@ -881,6 +881,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		try (var sql = new DestroySQL(conn)) {
 			if (sql.getJob.call1(enumerate("job_state", JobState.class), id)
 					.orElse(DESTROYED) == DESTROYED) {
+				log.info("job {} already destroyed", id);
 				/*
 				 * Don't do anything if the job doesn't exist or is already
 				 * destroyed
@@ -891,6 +892,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			var bmps = setPower(sql, id, OFF, DESTROYED);
 			sql.killAlloc.call(id);
 			sql.markAsDestroyed.call(reason, id);
+			log.info("job {} marked as destroyed", id);
 			return bmps;
 		} finally {
 			quotaManager.finishJob(id);
