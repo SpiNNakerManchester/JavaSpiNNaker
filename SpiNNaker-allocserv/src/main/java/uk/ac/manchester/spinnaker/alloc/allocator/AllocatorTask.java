@@ -891,7 +891,11 @@ public class AllocatorTask extends DatabaseAwareBean
 			// Inserts into pending_changes; these run after job is dead
 			var bmps = setPower(sql, id, OFF, DESTROYED);
 			sql.killAlloc.call(id);
-			sql.markAsDestroyed.call(reason, id);
+			int rows = sql.markAsDestroyed.call(reason, id);
+			if (rows != 1) {
+				log.warn("unexpected number of database rows affected: {}",
+						rows);
+			}
 			log.info("job {} marked as destroyed", id);
 			return bmps;
 		} finally {
