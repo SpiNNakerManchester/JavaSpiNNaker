@@ -171,9 +171,10 @@ public class BMPController extends DatabaseAwareBean {
 
 	private void makeWorkers() {
 		// Make workers
-		try (var c = getConnection(); var getBmps = c.query(GET_ALL_BMPS);
+		try (var c = getConnection();
+				var getBmps = c.query(GET_ALL_BMPS);
 				var getBoards = c.query(GET_ALL_BMP_BOARDS)) {
-			getBmps.call(row -> {
+			var madeWorkers = c.transaction(false, () -> getBmps.call(row -> {
 				var m = spallocCore.getMachine(row.getString("machine_name"),
 						true);
 				var coords = new BMPCoords(row.getInt("cabinet"),
@@ -187,10 +188,14 @@ public class BMPController extends DatabaseAwareBean {
 				}, bmpId);
 				var control = controllerFactory.create(m.get(), coords, boards);
 				var worker = new Worker(control, bmpId);
-				scheduler.scheduleAtFixedRate(worker, allocProps.getPeriod());
 				workers.put(row.getInt("bmp_id"), worker);
-				return null;
-			});
+				return worker;
+			}));
+
+			// Schedule outside the transaction for safety
+			for (var worker : madeWorkers) {
+				scheduler.scheduleAtFixedRate(worker, allocProps.getPeriod());
+			}
 		}
 	}
 
@@ -503,12 +508,11 @@ public class BMPController extends DatabaseAwareBean {
 					var setBoardPowerOn = c.update(SET_BOARD_POWER_ON);
 					var setBoardPowerOff = c.update(SET_BOARD_POWER_OFF)) {
 				c.transaction(() -> {
-					int turnedOn = powerOnBoards.stream().mapToInt(
-							board -> setBoardPowerOn.call(
-									getBoardId(board).get())).sum();
-					int turnedOff = powerOffBoards.stream().mapToInt(
-							board -> setBoardPowerOff.call(
-									getBoardId(board).get())).sum();
+					int turnedOn = powerOnBoards.stream().map(this::getBoardId)
+							.mapToInt(setBoardPowerOn::call).sum();
+					int turnedOff =
+							powerOffBoards.stream().map(this::getBoardId)
+									.mapToInt(setBoardPowerOff::call).sum();
 
 					if (to == DESTROYED || to == QUEUED) {
 						/*
@@ -547,9 +551,9 @@ public class BMPController extends DatabaseAwareBean {
 					var setBoardPowerOff = c.update(SET_BOARD_POWER_OFF)) {
 				resetJobAlloc = c.transaction(() -> {
 					// We should mark the boards as off
-					int turnedOff = powerOffBoards.stream().mapToInt(
-							board -> setBoardPowerOff.call(
-									getBoardId(board).get())).sum();
+					int turnedOff =
+							powerOffBoards.stream().map(this::getBoardId)
+									.mapToInt(setBoardPowerOff::call).sum();
 
 					// Deallocate the boards on this bmp from the job;
 					// other boards can be deallocated elsewhere.
@@ -655,8 +659,8 @@ public class BMPController extends DatabaseAwareBean {
 			return Optional.ofNullable(boardToId.get(addr.getP()));
 		}
 
-		private Optional<Integer> getBoardId(BMPBoard board) {
-			return Optional.ofNullable(boardToId.get(board.board));
+		private Integer getBoardId(BMPBoard board) {
+			return boardToId.get(board.board);
 		}
 	}
 
@@ -682,8 +686,7 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final int machineId;
 
-		private BlacklistRequest(int bmpId, BlacklistOperation op,
-				Row row) {
+		private BlacklistRequest(int bmpId, BlacklistOperation op, Row row) {
 			super(bmpId);
 			this.op = op;
 			opId = row.getInt("op_id");
@@ -706,8 +709,7 @@ public class BMPController extends DatabaseAwareBean {
 
 		/**
 		 * Access the DB to store the serial number information that we
-		 * retrieved. Runs on a thread that may touch the database, but may not
-		 * touch any BMP.
+		 * retrieved. A transaction should already be held.
 		 *
 		 * @param sql
 		 *            How to access the DB
@@ -991,45 +993,58 @@ public class BMPController extends DatabaseAwareBean {
 		public synchronized void run() {
 			log.trace("Searching for changes on BMP {}", bmpId);
 
-			List<Request> changes = new ArrayList<>();
+			var changes = getRequestedOperations();
+			for (var change : changes) {
+				change.processRequest(control);
+			}
+		}
 
+		/**
+		 * Get the things that we want the worker to do. <em>Be very
+		 * careful!</em> Because this necessarily involves the database, this
+		 * must not touch the BMP handle as those operations take a long time
+		 * and we absolutely must not have a transaction open at the same time.
+		 *
+		 * @return List of operations to perform.
+		 */
+		private List<Request> getRequestedOperations() {
+			var requests = new ArrayList<Request>();
 			try (var c = getConnection();
-					var getRequests = c.query(GET_CHANGES);
+					var getPowerRequests = c.query(GET_CHANGES);
 					var getBlacklistReads = c.query(GET_BLACKLIST_READS);
 					var getBlacklistWrites = c.query(GET_BLACKLIST_WRITES);
 					var getReadSerialInfos = c.query(GET_SERIAL_INFO_REQS)) {
 				c.transaction(false, () -> {
-					// Group power requests by job
+					// Batch power requests by job
 					var powerChanges = new LinkedList<>(
-							getRequests.call(PowerChange::new, bmpId));
+							getPowerRequests.call(PowerChange::new, bmpId));
 					while (!powerChanges.isEmpty()) {
-						List<PowerChange> jobChanges = new ArrayList<>();
 						var change = powerChanges.poll();
-						jobChanges.add(change);
+						var jobChanges = new ArrayList<>(List.of(change));
 						while (!powerChanges.isEmpty()
 								&& change.isSameJob(powerChanges.peek())) {
 							jobChanges.add(powerChanges.poll());
 						}
 						if (!jobChanges.isEmpty()) {
 							log.debug("Running job changes {}", jobChanges);
-							changes.add(new PowerRequest(bmpId, change.jobId,
+							requests.add(new PowerRequest(bmpId, change.jobId,
 									change.from, change.to, jobChanges));
 						}
 					}
 
 					// Leave these until quiet
-					if (changes.isEmpty()) {
-						changes.addAll(getBlacklistReads.call(
+					if (requests.isEmpty()) {
+						requests.addAll(getBlacklistReads.call(
 								row -> new BlacklistRequest(bmpId, READ, row),
 								bmpId));
 					}
-					if (changes.isEmpty()) {
-						changes.addAll(getBlacklistWrites.call(
+					if (requests.isEmpty()) {
+						requests.addAll(getBlacklistWrites.call(
 								row -> new BlacklistRequest(bmpId, WRITE, row),
 								bmpId));
 					}
-					if (changes.isEmpty()) {
-						changes.addAll(getReadSerialInfos
+					if (requests.isEmpty()) {
+						requests.addAll(getReadSerialInfos
 								.call(row -> new BlacklistRequest(bmpId,
 										GET_SERIAL, row), bmpId));
 					}
@@ -1037,10 +1052,7 @@ public class BMPController extends DatabaseAwareBean {
 			} catch (Exception e) {
 				log.error("unhandled exception for BMP '{}'", bmpId, e);
 			}
-
-			for (var change : changes) {
-				change.processRequest(control);
-			}
+			return requests;
 		}
 	}
 
