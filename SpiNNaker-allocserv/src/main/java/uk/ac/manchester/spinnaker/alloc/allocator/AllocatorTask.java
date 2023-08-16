@@ -183,8 +183,8 @@ public class AllocatorTask extends DatabaseAwareBean
 	private boolean update(int jobId, JobState sourceState,
 			JobState targetState, Connection c) {
 		try (var getNTasks = c.query(COUNT_CHANGES_FOR_JOB);
-				var setJobState = c.update(SET_STATE_PENDING)) {
-
+				var setJobState = c.update(SET_STATE_PENDING);
+				var setJobDestroyed = c.update(SET_STATE_DESTROYED)) {
 			// Count pending changes for this state change
 			var n = getNTasks.call1(row -> row.getInteger("n_changes"),
 					jobId, sourceState, targetState).orElseThrow(
@@ -197,8 +197,15 @@ public class AllocatorTask extends DatabaseAwareBean
 			// the target state
 			if (n == 0) {
 				log.debug("Job {} moving to state {}", jobId, targetState);
-				setJobState.call(targetState, 0, jobId);
-				return true;
+				if (targetState == DESTROYED) {
+					int rows = setJobDestroyed.call(0, jobId);
+					if (rows != 1) {
+						log.warn("unexpected number of rows affected by "
+								+ "destroy in state update: {}", rows);
+					}
+					return rows > 0;
+				}
+				return setJobState.call(targetState, 0, jobId) > 0;
 			}
 			return false;
 		}
@@ -891,6 +898,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			// Inserts into pending_changes; these run after job is dead
 			var bmps = setPower(sql, id, OFF, DESTROYED);
 			sql.killAlloc.call(id);
+			log.info("marking job {} as destroyed directly", id);
 			int rows = sql.markAsDestroyed.call(reason, id);
 			if (rows != 1) {
 				log.warn("unexpected number of database rows affected: {}",
@@ -1258,7 +1266,12 @@ public class AllocatorTask extends DatabaseAwareBean
 
 		if (targetState == DESTROYED) {
 			log.debug("num changes for {} in destroy: {}", jobId, numPending);
-			sql.setStateDestroyed.call(numPending, jobId);
+			log.info("destroying job {} after power change", jobId);
+			int rows = sql.setStateDestroyed.call(numPending, jobId);
+			if (rows != 1) {
+				log.warn("unexpected number of jobs marked destroyed: {}",
+						rows);
+			}
 		} else {
 			log.debug("Num changes for target {}: {}", targetState, numPending);
 			sql.setStatePending.call(

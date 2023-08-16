@@ -771,7 +771,6 @@ public abstract class SQLQueries {
 	 * @see AllocatorTask
 	 */
 	@Parameter("num_pending")
-	@Parameter("time_now")
 	@Parameter("job_id")
 	protected static final String SET_STATE_DESTROYED =
 			"UPDATE jobs SET job_state = 4, "
