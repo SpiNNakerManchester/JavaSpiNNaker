@@ -423,19 +423,19 @@ public class AllocatorTask extends DatabaseAwareBean
 	/** Encapsulates the queries and updates used in deletion. */
 	private final class DestroySQL extends PowerSQL {
 		/** Get basic information about a specific job. */
-		private final Query getJob;
+		private final Query getJob = conn.query(GET_JOB);
 
 		/** Mark a job as dead. */
-		private final Update markAsDestroyed;
+		private final Update markAsDestroyed = conn.update(DESTROY_JOB);
+
+		/** Note the reason why a job is dead. */
+		private Update recordDestroyReason = conn.update(NOTE_DESTROY_REASON);
 
 		/** Delete a request to allocate resources for a job. */
-		private final Update killAlloc;
+		private final Update killAlloc = conn.update(KILL_JOB_ALLOC_TASK);
 
 		DestroySQL(Connection conn) {
 			super(conn);
-			getJob = conn.query(GET_JOB);
-			markAsDestroyed = conn.update(DESTROY_JOB);
-			killAlloc = conn.update(KILL_JOB_ALLOC_TASK);
 		}
 
 		@Override
@@ -443,6 +443,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			super.close();
 			getJob.close();
 			markAsDestroyed.close();
+			recordDestroyReason.close();
 			killAlloc.close();
 		}
 	}
@@ -895,15 +896,15 @@ public class AllocatorTask extends DatabaseAwareBean
 				 */
 				return List.of();
 			}
+			/*
+			 * Record the reason as a separate step here; state change can take
+			 * some time.  It also doesn't matter if we do that twice.
+			 */
+			sql.recordDestroyReason.call(reason, id);
 			// Inserts into pending_changes; these run after job is dead
 			var bmps = setPower(sql, id, OFF, DESTROYED);
 			sql.killAlloc.call(id);
-			log.info("marking job {} as destroyed directly", id);
-			int rows = sql.markAsDestroyed.call(reason, id);
-			if (rows != 1) {
-				log.warn("unexpected number of database rows affected: {}",
-						rows);
-			}
+			sql.markAsDestroyed.call(reason, id);
 			log.info("job {} marked as destroyed", id);
 			return bmps;
 		} finally {
@@ -1185,6 +1186,10 @@ public class AllocatorTask extends DatabaseAwareBean
 
 	@Override
 	public boolean setPower(int jobId, PowerState power, JobState targetState) {
+		if (targetState == DESTROYED) {
+			throw new IllegalArgumentException(
+					"job destruction must be done via destroyJob() method");
+		}
 		var allocations = new Allocations(jobId, execute(conn -> {
 			try (var sql = new PowerSQL(conn)) {
 				return setPower(sql, jobId, power, targetState);

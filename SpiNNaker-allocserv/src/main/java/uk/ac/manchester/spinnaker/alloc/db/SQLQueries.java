@@ -558,6 +558,13 @@ public abstract class SQLQueries {
 					+ "death_timestamp = UNIX_TIMESTAMP() "
 					+ "WHERE job_id = :job_id AND job_state != 4";
 
+	/** Record the reason for a job being destroyed. */
+	@Parameter("death_reason")
+	@Parameter("job_id")
+	protected static final String NOTE_DESTROY_REASON =
+			"UPDATE jobs SET death_reason = :death_reason "
+					+ "WHERE job_id = :job_id";
+
 	/**
 	 * Get the number of boards that are allocated to a job that are switched
 	 * on.
