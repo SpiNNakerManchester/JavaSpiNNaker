@@ -98,7 +98,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="block">Manages waiting for values.</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
-<dd>Donal Fellows</dd>
+<dd>Donal Fellows, Andrew Rowley</dd>
 </dl>
 </section>
 <section class="summary">
@@ -300,7 +300,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <h3><a id="jobChanged(int)">jobChanged</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">jobChanged</span>&#8203;(<span class="arguments">int&nbsp;job)</span></div>
 <div class="block">Indicate a change in a job. Will wake any thread waiting on changes to
- the job epoch with <a href="Epochs.Epoch.html#waitForChange(java.time.Duration)"><code>waitForChange()</code></a> on a <code>Epoch</code> handle.</div>
+ the job epoch with <a href="Epochs.Epoch.html#waitForChange(java.time.Duration)"><code>waitForChange()</code></a>
+ on a <code>Epoch</code> handle.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>job</code> - The job that has changed</dd>

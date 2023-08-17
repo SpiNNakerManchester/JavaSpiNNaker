@@ -26,34 +26,34 @@
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.util.Objects.isNull;
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.util.Objects.nonNull;
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.util.stream.Collectors.toList;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.apache.commons.lang3.StringUtils.isAsciiPrintable;
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.slf4j.LoggerFactory.getLogger;
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.triad;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.compat.Utils.parseDec;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.compat.Utils.state;
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.compat.Utils.timestamp;
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.machine.MachineDefaults.HALF_SIZE;
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_X_OF_ONE_BOARD;
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_Y_OF_ONE_BOARD;
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.machine.MachineDefaults.TRIAD_HEIGHT;
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.machine.MachineDefaults.TRIAD_WIDTH;
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.utils.CollectionUtils.collectToArray;
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> java.io.Reader;
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> java.io.Writer;
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> java.net.Socket;
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> java.time.Duration;
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> java.util.HashMap;
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> java.util.List;
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> java.util.Objects;
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> java.util.Optional;
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.Future;
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> java.util.stream.Collectors;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.util.stream.Collectors.toMap;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.apache.commons.lang3.StringUtils.isAsciiPrintable;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.slf4j.LoggerFactory.getLogger;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.triad;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.compat.Utils.parseDec;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.compat.Utils.state;
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.compat.Utils.timestamp;
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.machine.MachineDefaults.HALF_SIZE;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_X_OF_ONE_BOARD;
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_Y_OF_ONE_BOARD;
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.machine.MachineDefaults.TRIAD_HEIGHT;
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.machine.MachineDefaults.TRIAD_WIDTH;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.utils.CollectionUtils.collectToArray;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> java.io.Reader;
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> java.io.Writer;
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> java.net.Socket;
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> java.time.Duration;
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> java.util.HashMap;
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> java.util.Objects;
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> java.util.Optional;
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.Future;
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> javax.annotation.PostConstruct;
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  
@@ -387,7 +387,7 @@
 <a class="jxr_linenumber" name="L379" href="#L379">379</a> 			jd.setPower(job.isPowered());
 <a class="jxr_linenumber" name="L380" href="#L380">380</a> 			jd.setBoards(job.getBoards().stream().map(
 <a class="jxr_linenumber" name="L381" href="#L381">381</a> 					b -&gt; <strong class="jxr_keyword">new</strong> BoardCoordinates(b.getX(), b.getY(), b.getZ()))
-<a class="jxr_linenumber" name="L382" href="#L382">382</a> 					.collect(Collectors.toList()));
+<a class="jxr_linenumber" name="L382" href="#L382">382</a> 					.collect(toList()));
 <a class="jxr_linenumber" name="L383" href="#L383">383</a> 			<strong class="jxr_keyword">return</strong> jd.build();
 <a class="jxr_linenumber" name="L384" href="#L384">384</a> 		}
 <a class="jxr_linenumber" name="L385" href="#L385">385</a> 
@@ -438,7 +438,7 @@
 <a class="jxr_linenumber" name="L430" href="#L430">430</a> 				});
 <a class="jxr_linenumber" name="L431" href="#L431">431</a> 				<strong class="jxr_keyword">if</strong> (actual.size() &gt; 0) {
 <a class="jxr_linenumber" name="L432" href="#L432">432</a> 					writeJobNotification(
-<a class="jxr_linenumber" name="L433" href="#L433">433</a> 							actual.stream().collect(Collectors.toList()));
+<a class="jxr_linenumber" name="L433" href="#L433">433</a> 							actual.stream().collect(toList()));
 <a class="jxr_linenumber" name="L434" href="#L434">434</a> 				}
 <a class="jxr_linenumber" name="L435" href="#L435">435</a> 			});
 <a class="jxr_linenumber" name="L436" href="#L436">436</a> 		}
@@ -459,137 +459,139 @@
 <a class="jxr_linenumber" name="L451" href="#L451">451</a> 			manageNotifier(machNotifiers, machineName, wantNotify, () -&gt; {
 <a class="jxr_linenumber" name="L452" href="#L452">452</a> 				List&lt;String&gt; actual = permit.authorize(() -&gt; {
 <a class="jxr_linenumber" name="L453" href="#L453">453</a> 					<strong class="jxr_keyword">var</strong> machines = spalloc.getMachines(false);
-<a class="jxr_linenumber" name="L454" href="#L454">454</a> 					<strong class="jxr_keyword">var</strong> invMap = machines.values().stream().collect(
-<a class="jxr_linenumber" name="L455" href="#L455">455</a> 							Collectors.toMap(SpallocAPI.Machine::getId,
-<a class="jxr_linenumber" name="L456" href="#L456">456</a> 									SpallocAPI.Machine::getName));
-<a class="jxr_linenumber" name="L457" href="#L457">457</a> 					<strong class="jxr_keyword">var</strong> mIds = machines.values().stream().map(m -&gt; m.getId())
-<a class="jxr_linenumber" name="L458" href="#L458">458</a> 							.collect(Collectors.toList());
-<a class="jxr_linenumber" name="L459" href="#L459">459</a> 					<strong class="jxr_keyword">var</strong> epoch = epochs.getMachinesEpoch(mIds);
-<a class="jxr_linenumber" name="L460" href="#L460">460</a> 					<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L461" href="#L461">461</a> 						<strong class="jxr_keyword">var</strong> changed = epoch.getChanged(
-<a class="jxr_linenumber" name="L462" href="#L462">462</a> 								mainProps.getCompat().getNotifyWaitTime());
-<a class="jxr_linenumber" name="L463" href="#L463">463</a> 						<strong class="jxr_keyword">return</strong> changed.stream()
-<a class="jxr_linenumber" name="L464" href="#L464">464</a> 								.map(id -&gt; invMap.get(id))
-<a class="jxr_linenumber" name="L465" href="#L465">465</a> 								.collect(Collectors.toList());
-<a class="jxr_linenumber" name="L466" href="#L466">466</a> 					} <strong class="jxr_keyword">catch</strong> (InterruptedException e) {
-<a class="jxr_linenumber" name="L467" href="#L467">467</a> 						<strong class="jxr_keyword">return</strong> List.of();
-<a class="jxr_linenumber" name="L468" href="#L468">468</a> 					}
-<a class="jxr_linenumber" name="L469" href="#L469">469</a> 				});
-<a class="jxr_linenumber" name="L470" href="#L470">470</a> 				<strong class="jxr_keyword">if</strong> (actual.size() &gt; 0) {
-<a class="jxr_linenumber" name="L471" href="#L471">471</a> 					writeMachineNotification(actual.stream().collect(
-<a class="jxr_linenumber" name="L472" href="#L472">472</a> 							Collectors.toList()));
-<a class="jxr_linenumber" name="L473" href="#L473">473</a> 				}
-<a class="jxr_linenumber" name="L474" href="#L474">474</a> 			});
-<a class="jxr_linenumber" name="L475" href="#L475">475</a> 		}
-<a class="jxr_linenumber" name="L476" href="#L476">476</a> 	}
-<a class="jxr_linenumber" name="L477" href="#L477">477</a> 
-<a class="jxr_linenumber" name="L478" href="#L478">478</a> 	@Override
-<a class="jxr_linenumber" name="L479" href="#L479">479</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">void</strong> powerJobBoards(<strong class="jxr_keyword">int</strong> jobId, <a name="PowerState" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/PowerState.html#PowerState">PowerState</a> switchOn)
-<a class="jxr_linenumber" name="L480" href="#L480">480</a> 			<strong class="jxr_keyword">throws</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a> {
-<a class="jxr_linenumber" name="L481" href="#L481">481</a> 		<strong class="jxr_keyword">var</strong> job = getJob(jobId);
-<a class="jxr_linenumber" name="L482" href="#L482">482</a> 		job.access(host());
-<a class="jxr_linenumber" name="L483" href="#L483">483</a> 		job.getMachine().orElseThrow(
-<a class="jxr_linenumber" name="L484" href="#L484">484</a> 				() -&gt; <strong class="jxr_keyword">new</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a>(<span class="jxr_string">"no boards currently allocated"</span>))
-<a class="jxr_linenumber" name="L485" href="#L485">485</a> 				.setPower(switchOn);
-<a class="jxr_linenumber" name="L486" href="#L486">486</a> 	}
-<a class="jxr_linenumber" name="L487" href="#L487">487</a> 
-<a class="jxr_linenumber" name="L488" href="#L488">488</a> 	@Override
-<a class="jxr_linenumber" name="L489" href="#L489">489</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> reportProblem(String address, Integer x, Integer y,
-<a class="jxr_linenumber" name="L490" href="#L490">490</a> 			Integer p, String description) {
-<a class="jxr_linenumber" name="L491" href="#L491">491</a> 		HasChipLocation locus;
-<a class="jxr_linenumber" name="L492" href="#L492">492</a> 		<strong class="jxr_keyword">if</strong> (nonNull(x) &amp;&amp; nonNull(y)) {
-<a class="jxr_linenumber" name="L493" href="#L493">493</a> 			<strong class="jxr_keyword">if</strong> (nonNull(p)) {
-<a class="jxr_linenumber" name="L494" href="#L494">494</a> 				locus = <strong class="jxr_keyword">new</strong> <a name="CoreLocation" href="../../../../../../uk/ac/manchester/spinnaker/machine/CoreLocation.html#CoreLocation">CoreLocation</a>(x, y, p);
-<a class="jxr_linenumber" name="L495" href="#L495">495</a> 			} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L496" href="#L496">496</a> 				locus = <strong class="jxr_keyword">new</strong> ChipLocation(x, y);
-<a class="jxr_linenumber" name="L497" href="#L497">497</a> 			}
-<a class="jxr_linenumber" name="L498" href="#L498">498</a> 		} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L499" href="#L499">499</a> 			locus = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L500" href="#L500">500</a> 		}
-<a class="jxr_linenumber" name="L501" href="#L501">501</a> 		permit.authorize(() -&gt; {
-<a class="jxr_linenumber" name="L502" href="#L502">502</a> 			spalloc.reportProblem(address, locus, description, permit);
-<a class="jxr_linenumber" name="L503" href="#L503">503</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>; <em class="jxr_comment">// Ignored value</em>
-<a class="jxr_linenumber" name="L504" href="#L504">504</a> 		});
-<a class="jxr_linenumber" name="L505" href="#L505">505</a> 	}
-<a class="jxr_linenumber" name="L506" href="#L506">506</a> 
-<a class="jxr_linenumber" name="L507" href="#L507">507</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a name="WhereIs" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html#WhereIs">WhereIs</a> makeWhereIs(BoardLocation bl) {
-<a class="jxr_linenumber" name="L508" href="#L508">508</a> 		<strong class="jxr_keyword">var</strong> wi = <strong class="jxr_keyword">new</strong> WhereIs.Builder();
-<a class="jxr_linenumber" name="L509" href="#L509">509</a> 		wi.setMachine(bl.getMachine());
-<a class="jxr_linenumber" name="L510" href="#L510">510</a> 		wi.setLogical(bl.getLogical());
-<a class="jxr_linenumber" name="L511" href="#L511">511</a> 		wi.setPhysical(bl.getPhysical());
-<a class="jxr_linenumber" name="L512" href="#L512">512</a> 		wi.setChip(bl.getChip());
-<a class="jxr_linenumber" name="L513" href="#L513">513</a> 		wi.setBoardChip(bl.getBoardChip());
-<a class="jxr_linenumber" name="L514" href="#L514">514</a> 		<strong class="jxr_keyword">var</strong> j = bl.getJob();
-<a class="jxr_linenumber" name="L515" href="#L515">515</a> 		<strong class="jxr_keyword">if</strong> (nonNull(j)) {
-<a class="jxr_linenumber" name="L516" href="#L516">516</a> 			wi.setJobId(j.getId());
-<a class="jxr_linenumber" name="L517" href="#L517">517</a> 			wi.setJobChip(bl.getChipRelativeTo(j.getRootChip().orElseThrow()));
-<a class="jxr_linenumber" name="L518" href="#L518">518</a> 		}
-<a class="jxr_linenumber" name="L519" href="#L519">519</a> 		<strong class="jxr_keyword">return</strong> wi.build();
-<a class="jxr_linenumber" name="L520" href="#L520">520</a> 	}
-<a class="jxr_linenumber" name="L521" href="#L521">521</a> 
-<a class="jxr_linenumber" name="L522" href="#L522">522</a> 	@Override
-<a class="jxr_linenumber" name="L523" href="#L523">523</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <a name="WhereIs" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html#WhereIs">WhereIs</a> whereIsJobChip(<strong class="jxr_keyword">int</strong> jobId, <strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y)
-<a class="jxr_linenumber" name="L524" href="#L524">524</a> 			<strong class="jxr_keyword">throws</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a> {
-<a class="jxr_linenumber" name="L525" href="#L525">525</a> 		<strong class="jxr_keyword">var</strong> job = getJob(jobId);
-<a class="jxr_linenumber" name="L526" href="#L526">526</a> 		job.access(host());
-<a class="jxr_linenumber" name="L527" href="#L527">527</a> 		<strong class="jxr_keyword">return</strong> job.whereIs(x, y).map(V1TaskImpl::makeWhereIs).orElseThrow(
-<a class="jxr_linenumber" name="L528" href="#L528">528</a> 				() -&gt; <strong class="jxr_keyword">new</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a>(<span class="jxr_string">"no boards currently allocated"</span>));
-<a class="jxr_linenumber" name="L529" href="#L529">529</a> 	}
-<a class="jxr_linenumber" name="L530" href="#L530">530</a> 
-<a class="jxr_linenumber" name="L531" href="#L531">531</a> 	@Override
-<a class="jxr_linenumber" name="L532" href="#L532">532</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <a name="WhereIs" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html#WhereIs">WhereIs</a> whereIsMachineChip(String machineName, <strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y)
-<a class="jxr_linenumber" name="L533" href="#L533">533</a> 			<strong class="jxr_keyword">throws</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a> {
-<a class="jxr_linenumber" name="L534" href="#L534">534</a> 		<strong class="jxr_keyword">return</strong> getMachine(machineName).getBoardByChip(<strong class="jxr_keyword">new</strong> ChipLocation(x, y))
-<a class="jxr_linenumber" name="L535" href="#L535">535</a> 				.map(V1TaskImpl::makeWhereIs)
-<a class="jxr_linenumber" name="L536" href="#L536">536</a> 				.orElseThrow(() -&gt; <strong class="jxr_keyword">new</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a>(<span class="jxr_string">"no such board"</span>));
-<a class="jxr_linenumber" name="L537" href="#L537">537</a> 	}
-<a class="jxr_linenumber" name="L538" href="#L538">538</a> 
-<a class="jxr_linenumber" name="L539" href="#L539">539</a> 	@Override
-<a class="jxr_linenumber" name="L540" href="#L540">540</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <a name="WhereIs" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html#WhereIs">WhereIs</a> whereIsMachineLogicalBoard(String machineName,
-<a class="jxr_linenumber" name="L541" href="#L541">541</a> 			<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y, <strong class="jxr_keyword">int</strong> z) <strong class="jxr_keyword">throws</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a> {
-<a class="jxr_linenumber" name="L542" href="#L542">542</a> 		<strong class="jxr_keyword">return</strong> getMachine(machineName)
-<a class="jxr_linenumber" name="L543" href="#L543">543</a> 				.getBoardByLogicalCoords(<strong class="jxr_keyword">new</strong> <a name="TriadCoords" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/TriadCoords.html#TriadCoords">TriadCoords</a>(x, y, z))
-<a class="jxr_linenumber" name="L544" href="#L544">544</a> 				.map(V1TaskImpl::makeWhereIs)
-<a class="jxr_linenumber" name="L545" href="#L545">545</a> 				.orElseThrow(() -&gt; <strong class="jxr_keyword">new</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a>(<span class="jxr_string">"no such board"</span>));
-<a class="jxr_linenumber" name="L546" href="#L546">546</a> 	}
-<a class="jxr_linenumber" name="L547" href="#L547">547</a> 
-<a class="jxr_linenumber" name="L548" href="#L548">548</a> 	@Override
-<a class="jxr_linenumber" name="L549" href="#L549">549</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <a name="WhereIs" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html#WhereIs">WhereIs</a> whereIsMachinePhysicalBoard(String machineName,
-<a class="jxr_linenumber" name="L550" href="#L550">550</a> 			<strong class="jxr_keyword">int</strong> c, <strong class="jxr_keyword">int</strong> f, <strong class="jxr_keyword">int</strong> b) <strong class="jxr_keyword">throws</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a> {
-<a class="jxr_linenumber" name="L551" href="#L551">551</a> 		<strong class="jxr_keyword">return</strong> getMachine(machineName)
-<a class="jxr_linenumber" name="L552" href="#L552">552</a> 				.getBoardByPhysicalCoords(<strong class="jxr_keyword">new</strong> <a name="PhysicalCoords" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html#PhysicalCoords">PhysicalCoords</a>(c, f, b))
-<a class="jxr_linenumber" name="L553" href="#L553">553</a> 				.map(V1TaskImpl::makeWhereIs)
-<a class="jxr_linenumber" name="L554" href="#L554">554</a> 				.orElseThrow(() -&gt; <strong class="jxr_keyword">new</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a>(<span class="jxr_string">"no such board"</span>));
-<a class="jxr_linenumber" name="L555" href="#L555">555</a> 	}
-<a class="jxr_linenumber" name="L556" href="#L556">556</a> 
-<a class="jxr_linenumber" name="L557" href="#L557">557</a> 	<em class="jxr_comment">// instance-aware utilities</em>
+<a class="jxr_linenumber" name="L454" href="#L454">454</a> 					<strong class="jxr_keyword">if</strong> (machines.isEmpty()) {
+<a class="jxr_linenumber" name="L455" href="#L455">455</a> 						<em class="jxr_comment">// No machines, so don't wait</em>
+<a class="jxr_linenumber" name="L456" href="#L456">456</a> 						<strong class="jxr_keyword">return</strong> List.of();
+<a class="jxr_linenumber" name="L457" href="#L457">457</a> 					}
+<a class="jxr_linenumber" name="L458" href="#L458">458</a> 					<strong class="jxr_keyword">var</strong> invMap = machines.values().stream()
+<a class="jxr_linenumber" name="L459" href="#L459">459</a> 							.collect(toMap(SpallocAPI.Machine::getId,
+<a class="jxr_linenumber" name="L460" href="#L460">460</a> 									SpallocAPI.Machine::getName));
+<a class="jxr_linenumber" name="L461" href="#L461">461</a> 					<strong class="jxr_keyword">var</strong> mIds = machines.values().stream().map(m -&gt; m.getId())
+<a class="jxr_linenumber" name="L462" href="#L462">462</a> 							.collect(toList());
+<a class="jxr_linenumber" name="L463" href="#L463">463</a> 					<strong class="jxr_keyword">var</strong> epoch = epochs.getMachinesEpoch(mIds);
+<a class="jxr_linenumber" name="L464" href="#L464">464</a> 					<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L465" href="#L465">465</a> 						<strong class="jxr_keyword">var</strong> changed = epoch.getChanged(
+<a class="jxr_linenumber" name="L466" href="#L466">466</a> 								mainProps.getCompat().getNotifyWaitTime());
+<a class="jxr_linenumber" name="L467" href="#L467">467</a> 						<strong class="jxr_keyword">return</strong> changed.stream().map(id -&gt; invMap.get(id))
+<a class="jxr_linenumber" name="L468" href="#L468">468</a> 								.collect(toList());
+<a class="jxr_linenumber" name="L469" href="#L469">469</a> 					} <strong class="jxr_keyword">catch</strong> (InterruptedException e) {
+<a class="jxr_linenumber" name="L470" href="#L470">470</a> 						<strong class="jxr_keyword">return</strong> List.of();
+<a class="jxr_linenumber" name="L471" href="#L471">471</a> 					}
+<a class="jxr_linenumber" name="L472" href="#L472">472</a> 				});
+<a class="jxr_linenumber" name="L473" href="#L473">473</a> 				<strong class="jxr_keyword">if</strong> (actual.size() &gt; 0) {
+<a class="jxr_linenumber" name="L474" href="#L474">474</a> 					writeMachineNotification(actual.stream().collect(toList()));
+<a class="jxr_linenumber" name="L475" href="#L475">475</a> 				}
+<a class="jxr_linenumber" name="L476" href="#L476">476</a> 			});
+<a class="jxr_linenumber" name="L477" href="#L477">477</a> 		}
+<a class="jxr_linenumber" name="L478" href="#L478">478</a> 	}
+<a class="jxr_linenumber" name="L479" href="#L479">479</a> 
+<a class="jxr_linenumber" name="L480" href="#L480">480</a> 	@Override
+<a class="jxr_linenumber" name="L481" href="#L481">481</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">void</strong> powerJobBoards(<strong class="jxr_keyword">int</strong> jobId, <a name="PowerState" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/PowerState.html#PowerState">PowerState</a> switchOn)
+<a class="jxr_linenumber" name="L482" href="#L482">482</a> 			<strong class="jxr_keyword">throws</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a> {
+<a class="jxr_linenumber" name="L483" href="#L483">483</a> 		<strong class="jxr_keyword">var</strong> job = getJob(jobId);
+<a class="jxr_linenumber" name="L484" href="#L484">484</a> 		job.access(host());
+<a class="jxr_linenumber" name="L485" href="#L485">485</a> 		job.getMachine().orElseThrow(
+<a class="jxr_linenumber" name="L486" href="#L486">486</a> 				() -&gt; <strong class="jxr_keyword">new</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a>(<span class="jxr_string">"no boards currently allocated"</span>))
+<a class="jxr_linenumber" name="L487" href="#L487">487</a> 				.setPower(switchOn);
+<a class="jxr_linenumber" name="L488" href="#L488">488</a> 	}
+<a class="jxr_linenumber" name="L489" href="#L489">489</a> 
+<a class="jxr_linenumber" name="L490" href="#L490">490</a> 	@Override
+<a class="jxr_linenumber" name="L491" href="#L491">491</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> reportProblem(String address, Integer x, Integer y,
+<a class="jxr_linenumber" name="L492" href="#L492">492</a> 			Integer p, String description) {
+<a class="jxr_linenumber" name="L493" href="#L493">493</a> 		HasChipLocation locus;
+<a class="jxr_linenumber" name="L494" href="#L494">494</a> 		<strong class="jxr_keyword">if</strong> (nonNull(x) &amp;&amp; nonNull(y)) {
+<a class="jxr_linenumber" name="L495" href="#L495">495</a> 			<strong class="jxr_keyword">if</strong> (nonNull(p)) {
+<a class="jxr_linenumber" name="L496" href="#L496">496</a> 				locus = <strong class="jxr_keyword">new</strong> <a name="CoreLocation" href="../../../../../../uk/ac/manchester/spinnaker/machine/CoreLocation.html#CoreLocation">CoreLocation</a>(x, y, p);
+<a class="jxr_linenumber" name="L497" href="#L497">497</a> 			} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L498" href="#L498">498</a> 				locus = <strong class="jxr_keyword">new</strong> ChipLocation(x, y);
+<a class="jxr_linenumber" name="L499" href="#L499">499</a> 			}
+<a class="jxr_linenumber" name="L500" href="#L500">500</a> 		} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L501" href="#L501">501</a> 			locus = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L502" href="#L502">502</a> 		}
+<a class="jxr_linenumber" name="L503" href="#L503">503</a> 		permit.authorize(() -&gt; {
+<a class="jxr_linenumber" name="L504" href="#L504">504</a> 			spalloc.reportProblem(address, locus, description, permit);
+<a class="jxr_linenumber" name="L505" href="#L505">505</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>; <em class="jxr_comment">// Ignored value</em>
+<a class="jxr_linenumber" name="L506" href="#L506">506</a> 		});
+<a class="jxr_linenumber" name="L507" href="#L507">507</a> 	}
+<a class="jxr_linenumber" name="L508" href="#L508">508</a> 
+<a class="jxr_linenumber" name="L509" href="#L509">509</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a name="WhereIs" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html#WhereIs">WhereIs</a> makeWhereIs(BoardLocation bl) {
+<a class="jxr_linenumber" name="L510" href="#L510">510</a> 		<strong class="jxr_keyword">var</strong> wi = <strong class="jxr_keyword">new</strong> WhereIs.Builder();
+<a class="jxr_linenumber" name="L511" href="#L511">511</a> 		wi.setMachine(bl.getMachine());
+<a class="jxr_linenumber" name="L512" href="#L512">512</a> 		wi.setLogical(bl.getLogical());
+<a class="jxr_linenumber" name="L513" href="#L513">513</a> 		wi.setPhysical(bl.getPhysical());
+<a class="jxr_linenumber" name="L514" href="#L514">514</a> 		wi.setChip(bl.getChip());
+<a class="jxr_linenumber" name="L515" href="#L515">515</a> 		wi.setBoardChip(bl.getBoardChip());
+<a class="jxr_linenumber" name="L516" href="#L516">516</a> 		<strong class="jxr_keyword">var</strong> j = bl.getJob();
+<a class="jxr_linenumber" name="L517" href="#L517">517</a> 		<strong class="jxr_keyword">if</strong> (nonNull(j)) {
+<a class="jxr_linenumber" name="L518" href="#L518">518</a> 			wi.setJobId(j.getId());
+<a class="jxr_linenumber" name="L519" href="#L519">519</a> 			wi.setJobChip(bl.getChipRelativeTo(j.getRootChip().orElseThrow()));
+<a class="jxr_linenumber" name="L520" href="#L520">520</a> 		}
+<a class="jxr_linenumber" name="L521" href="#L521">521</a> 		<strong class="jxr_keyword">return</strong> wi.build();
+<a class="jxr_linenumber" name="L522" href="#L522">522</a> 	}
+<a class="jxr_linenumber" name="L523" href="#L523">523</a> 
+<a class="jxr_linenumber" name="L524" href="#L524">524</a> 	@Override
+<a class="jxr_linenumber" name="L525" href="#L525">525</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <a name="WhereIs" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html#WhereIs">WhereIs</a> whereIsJobChip(<strong class="jxr_keyword">int</strong> jobId, <strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y)
+<a class="jxr_linenumber" name="L526" href="#L526">526</a> 			<strong class="jxr_keyword">throws</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a> {
+<a class="jxr_linenumber" name="L527" href="#L527">527</a> 		<strong class="jxr_keyword">var</strong> job = getJob(jobId);
+<a class="jxr_linenumber" name="L528" href="#L528">528</a> 		job.access(host());
+<a class="jxr_linenumber" name="L529" href="#L529">529</a> 		<strong class="jxr_keyword">return</strong> job.whereIs(x, y).map(V1TaskImpl::makeWhereIs).orElseThrow(
+<a class="jxr_linenumber" name="L530" href="#L530">530</a> 				() -&gt; <strong class="jxr_keyword">new</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a>(<span class="jxr_string">"no boards currently allocated"</span>));
+<a class="jxr_linenumber" name="L531" href="#L531">531</a> 	}
+<a class="jxr_linenumber" name="L532" href="#L532">532</a> 
+<a class="jxr_linenumber" name="L533" href="#L533">533</a> 	@Override
+<a class="jxr_linenumber" name="L534" href="#L534">534</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <a name="WhereIs" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html#WhereIs">WhereIs</a> whereIsMachineChip(String machineName, <strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y)
+<a class="jxr_linenumber" name="L535" href="#L535">535</a> 			<strong class="jxr_keyword">throws</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a> {
+<a class="jxr_linenumber" name="L536" href="#L536">536</a> 		<strong class="jxr_keyword">return</strong> getMachine(machineName).getBoardByChip(<strong class="jxr_keyword">new</strong> ChipLocation(x, y))
+<a class="jxr_linenumber" name="L537" href="#L537">537</a> 				.map(V1TaskImpl::makeWhereIs)
+<a class="jxr_linenumber" name="L538" href="#L538">538</a> 				.orElseThrow(() -&gt; <strong class="jxr_keyword">new</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a>(<span class="jxr_string">"no such board"</span>));
+<a class="jxr_linenumber" name="L539" href="#L539">539</a> 	}
+<a class="jxr_linenumber" name="L540" href="#L540">540</a> 
+<a class="jxr_linenumber" name="L541" href="#L541">541</a> 	@Override
+<a class="jxr_linenumber" name="L542" href="#L542">542</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <a name="WhereIs" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html#WhereIs">WhereIs</a> whereIsMachineLogicalBoard(String machineName,
+<a class="jxr_linenumber" name="L543" href="#L543">543</a> 			<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y, <strong class="jxr_keyword">int</strong> z) <strong class="jxr_keyword">throws</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a> {
+<a class="jxr_linenumber" name="L544" href="#L544">544</a> 		<strong class="jxr_keyword">return</strong> getMachine(machineName)
+<a class="jxr_linenumber" name="L545" href="#L545">545</a> 				.getBoardByLogicalCoords(<strong class="jxr_keyword">new</strong> <a name="TriadCoords" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/TriadCoords.html#TriadCoords">TriadCoords</a>(x, y, z))
+<a class="jxr_linenumber" name="L546" href="#L546">546</a> 				.map(V1TaskImpl::makeWhereIs)
+<a class="jxr_linenumber" name="L547" href="#L547">547</a> 				.orElseThrow(() -&gt; <strong class="jxr_keyword">new</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a>(<span class="jxr_string">"no such board"</span>));
+<a class="jxr_linenumber" name="L548" href="#L548">548</a> 	}
+<a class="jxr_linenumber" name="L549" href="#L549">549</a> 
+<a class="jxr_linenumber" name="L550" href="#L550">550</a> 	@Override
+<a class="jxr_linenumber" name="L551" href="#L551">551</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <a name="WhereIs" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html#WhereIs">WhereIs</a> whereIsMachinePhysicalBoard(String machineName,
+<a class="jxr_linenumber" name="L552" href="#L552">552</a> 			<strong class="jxr_keyword">int</strong> c, <strong class="jxr_keyword">int</strong> f, <strong class="jxr_keyword">int</strong> b) <strong class="jxr_keyword">throws</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a> {
+<a class="jxr_linenumber" name="L553" href="#L553">553</a> 		<strong class="jxr_keyword">return</strong> getMachine(machineName)
+<a class="jxr_linenumber" name="L554" href="#L554">554</a> 				.getBoardByPhysicalCoords(<strong class="jxr_keyword">new</strong> <a name="PhysicalCoords" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/PhysicalCoords.html#PhysicalCoords">PhysicalCoords</a>(c, f, b))
+<a class="jxr_linenumber" name="L555" href="#L555">555</a> 				.map(V1TaskImpl::makeWhereIs)
+<a class="jxr_linenumber" name="L556" href="#L556">556</a> 				.orElseThrow(() -&gt; <strong class="jxr_keyword">new</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a>(<span class="jxr_string">"no such board"</span>));
+<a class="jxr_linenumber" name="L557" href="#L557">557</a> 	}
 <a class="jxr_linenumber" name="L558" href="#L558">558</a> 
-<a class="jxr_linenumber" name="L559" href="#L559">559</a> 	<strong class="jxr_keyword">private</strong> Job getJob(<strong class="jxr_keyword">int</strong> jobId) <strong class="jxr_keyword">throws</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a> {
-<a class="jxr_linenumber" name="L560" href="#L560">560</a> 		<strong class="jxr_keyword">return</strong> permit.authorize(() -&gt; spalloc.getJob(permit, jobId))
-<a class="jxr_linenumber" name="L561" href="#L561">561</a> 				.orElseThrow(() -&gt; <strong class="jxr_keyword">new</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a>(<span class="jxr_string">"no such job"</span>));
-<a class="jxr_linenumber" name="L562" href="#L562">562</a> 	}
-<a class="jxr_linenumber" name="L563" href="#L563">563</a> 
-<a class="jxr_linenumber" name="L564" href="#L564">564</a> 	<strong class="jxr_keyword">private</strong> SpallocAPI.Machine getMachine(String machineName)
-<a class="jxr_linenumber" name="L565" href="#L565">565</a> 			<strong class="jxr_keyword">throws</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a> {
-<a class="jxr_linenumber" name="L566" href="#L566">566</a> 		<strong class="jxr_keyword">return</strong> permit.authorize(() -&gt; spalloc.getMachine(machineName, false))
-<a class="jxr_linenumber" name="L567" href="#L567">567</a> 				.orElseThrow(() -&gt; <strong class="jxr_keyword">new</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a>(<span class="jxr_string">"no such machine"</span>));
-<a class="jxr_linenumber" name="L568" href="#L568">568</a> 	}
-<a class="jxr_linenumber" name="L569" href="#L569">569</a> 
-<a class="jxr_linenumber" name="L570" href="#L570">570</a> 	<strong class="jxr_keyword">private</strong> &lt;T&gt; <strong class="jxr_keyword">void</strong> manageNotifier(Map&lt;T, Future&lt;Void&gt;&gt; notifiers, T key,
-<a class="jxr_linenumber" name="L571" href="#L571">571</a> 			<strong class="jxr_keyword">boolean</strong> wantNotify, Notifier notifier) {
-<a class="jxr_linenumber" name="L572" href="#L572">572</a> 		<strong class="jxr_keyword">if</strong> (wantNotify) {
-<a class="jxr_linenumber" name="L573" href="#L573">573</a> 			<strong class="jxr_keyword">if</strong> (!notifiers.containsKey(key)) {
-<a class="jxr_linenumber" name="L574" href="#L574">574</a> 				notifiers.put(key,
-<a class="jxr_linenumber" name="L575" href="#L575">575</a> 						getExecutor().submit(Notifier.toCallable(notifier)));
-<a class="jxr_linenumber" name="L576" href="#L576">576</a> 			}
-<a class="jxr_linenumber" name="L577" href="#L577">577</a> 		} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L578" href="#L578">578</a> 			<strong class="jxr_keyword">var</strong> n = notifiers.remove(key);
-<a class="jxr_linenumber" name="L579" href="#L579">579</a> 			<strong class="jxr_keyword">if</strong> (nonNull(n)) {
-<a class="jxr_linenumber" name="L580" href="#L580">580</a> 				n.cancel(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L581" href="#L581">581</a> 			}
-<a class="jxr_linenumber" name="L582" href="#L582">582</a> 		}
-<a class="jxr_linenumber" name="L583" href="#L583">583</a> 	}
-<a class="jxr_linenumber" name="L584" href="#L584">584</a> }
+<a class="jxr_linenumber" name="L559" href="#L559">559</a> 	<em class="jxr_comment">// instance-aware utilities</em>
+<a class="jxr_linenumber" name="L560" href="#L560">560</a> 
+<a class="jxr_linenumber" name="L561" href="#L561">561</a> 	<strong class="jxr_keyword">private</strong> Job getJob(<strong class="jxr_keyword">int</strong> jobId) <strong class="jxr_keyword">throws</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a> {
+<a class="jxr_linenumber" name="L562" href="#L562">562</a> 		<strong class="jxr_keyword">return</strong> permit.authorize(() -&gt; spalloc.getJob(permit, jobId))
+<a class="jxr_linenumber" name="L563" href="#L563">563</a> 				.orElseThrow(() -&gt; <strong class="jxr_keyword">new</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a>(<span class="jxr_string">"no such job"</span>));
+<a class="jxr_linenumber" name="L564" href="#L564">564</a> 	}
+<a class="jxr_linenumber" name="L565" href="#L565">565</a> 
+<a class="jxr_linenumber" name="L566" href="#L566">566</a> 	<strong class="jxr_keyword">private</strong> SpallocAPI.Machine getMachine(String machineName)
+<a class="jxr_linenumber" name="L567" href="#L567">567</a> 			<strong class="jxr_keyword">throws</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a> {
+<a class="jxr_linenumber" name="L568" href="#L568">568</a> 		<strong class="jxr_keyword">return</strong> permit.authorize(() -&gt; spalloc.getMachine(machineName, false))
+<a class="jxr_linenumber" name="L569" href="#L569">569</a> 				.orElseThrow(() -&gt; <strong class="jxr_keyword">new</strong> <a name="TaskException" href="../../../../../../uk/ac/manchester/spinnaker/alloc/compat/TaskException.html#TaskException">TaskException</a>(<span class="jxr_string">"no such machine"</span>));
+<a class="jxr_linenumber" name="L570" href="#L570">570</a> 	}
+<a class="jxr_linenumber" name="L571" href="#L571">571</a> 
+<a class="jxr_linenumber" name="L572" href="#L572">572</a> 	<strong class="jxr_keyword">private</strong> &lt;T&gt; <strong class="jxr_keyword">void</strong> manageNotifier(Map&lt;T, Future&lt;Void&gt;&gt; notifiers, T key,
+<a class="jxr_linenumber" name="L573" href="#L573">573</a> 			<strong class="jxr_keyword">boolean</strong> wantNotify, Notifier notifier) {
+<a class="jxr_linenumber" name="L574" href="#L574">574</a> 		<strong class="jxr_keyword">if</strong> (wantNotify) {
+<a class="jxr_linenumber" name="L575" href="#L575">575</a> 			<strong class="jxr_keyword">if</strong> (!notifiers.containsKey(key)) {
+<a class="jxr_linenumber" name="L576" href="#L576">576</a> 				notifiers.put(key,
+<a class="jxr_linenumber" name="L577" href="#L577">577</a> 						getExecutor().submit(Notifier.toCallable(notifier)));
+<a class="jxr_linenumber" name="L578" href="#L578">578</a> 			}
+<a class="jxr_linenumber" name="L579" href="#L579">579</a> 		} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L580" href="#L580">580</a> 			<strong class="jxr_keyword">var</strong> n = notifiers.remove(key);
+<a class="jxr_linenumber" name="L581" href="#L581">581</a> 			<strong class="jxr_keyword">if</strong> (nonNull(n)) {
+<a class="jxr_linenumber" name="L582" href="#L582">582</a> 				n.cancel(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L583" href="#L583">583</a> 			}
+<a class="jxr_linenumber" name="L584" href="#L584">584</a> 		}
+<a class="jxr_linenumber" name="L585" href="#L585">585</a> 	}
+<a class="jxr_linenumber" name="L586" href="#L586">586</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2023 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

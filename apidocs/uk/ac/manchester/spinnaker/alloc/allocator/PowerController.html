@@ -181,6 +181,8 @@ loadScripts(document, 'script');</script>
 <dd><code>power</code> - What state to change the job's boards' power to.</dd>
 <dd><code>targetState</code> - What state are we aiming to put the job into once the power
             has been switched. Should be <a href="../model/JobState.html#READY"><code>JobState.READY</code></a> or
+            <a href="../model/JobState.html#QUEUED"><code>JobState.QUEUED</code></a>. <strong>NB:</strong> Use
+            <a href="#destroyJob(int,java.lang.String)"><code>destroyJob(int, String)</code></a> to move to
             <a href="../model/JobState.html#DESTROYED"><code>JobState.DESTROYED</code></a>.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Whether any change has been requested.</dd>

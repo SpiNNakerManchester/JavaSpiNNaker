@@ -32,555 +32,692 @@
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.COLLABRATORY;
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> java.util.Optional;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> javax.annotation.PostConstruct;
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> javax.ws.rs.BadRequestException;
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> org.springframework.beans.factory.annotation.Autowired;
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> org.springframework.dao.DataAccessException;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> org.springframework.scheduling.annotation.Scheduled;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> org.springframework.stereotype.Service;
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> com.google.errorprone.annotations.RestrictedApi;
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Query;
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Update;
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.db.Row;
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.nmpi.JobResourceUpdate;
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.nmpi.NMPIv3API;
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.nmpi.ResourceUsage;
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.nmpi.SessionRequest;
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.nmpi.SessionResourceUpdate;
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.nmpi.SessionResponse;
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment"> * Manages user quotas.</em>
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment"> * @author Donal Fellows</em>
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  @Service
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="QuotaManager" href="../../../../../../uk/ac/manchester/spinnaker/alloc/allocator/QuotaManager.html#QuotaManager">QuotaManager</a> <strong class="jxr_keyword">extends</strong> <a name="DatabaseAwareBean" href="../../../../../../uk/ac/manchester/spinnaker/alloc/db/DatabaseAwareBean.html#DatabaseAwareBean">DatabaseAwareBean</a> {
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger log = getLogger(QuotaManager.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment">	 * The status of the quote to request from the NMPI service.</em>
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String STATUS_ACCEPTED = <span class="jxr_string">"accepted"</span>;
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>  
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>  	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment">	 * An approximation of cores per board.</em>
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> APPROX_CORES_PER_BOARD = 48 * 16;
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>  
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>  	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>  <em class="jxr_javadoccomment">	 * The number of seconds per hour.</em>
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> SECONDS_PER_HOUR = 60 * 60;
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>  
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>  	@Autowired
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>  	<strong class="jxr_keyword">private</strong> <a name="ServiceMasterControl" href="../../../../../../uk/ac/manchester/spinnaker/alloc/ServiceMasterControl.html#ServiceMasterControl">ServiceMasterControl</a> control;
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>  
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>  	@Autowired
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>  	<strong class="jxr_keyword">private</strong> QuotaProperties quotaProps;
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>  
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>  	<strong class="jxr_keyword">private</strong> <a name="NMPIv3API" href="../../../../../../uk/ac/manchester/spinnaker/alloc/nmpi/NMPIv3API.html#NMPIv3API">NMPIv3API</a> nmpiProxy = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> java.util.Optional;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> javax.annotation.PostConstruct;
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> javax.ws.rs.BadRequestException;
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> org.springframework.beans.factory.annotation.Autowired;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> org.springframework.dao.DataAccessException;
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> org.springframework.scheduling.annotation.Scheduled;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> org.springframework.stereotype.Service;
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> com.google.errorprone.annotations.RestrictedApi;
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Query;
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Update;
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.db.Row;
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.nmpi.Job;
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.nmpi.JobResourceUpdate;
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.nmpi.NMPIv3API;
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.nmpi.Project;
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.nmpi.ResourceUsage;
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.nmpi.SessionRequest;
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.alloc.nmpi.SessionResourceUpdate;
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment"> * Manages user quotas.</em>
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment"> * @author Donal Fellows</em>
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  @Service
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="QuotaManager" href="../../../../../../uk/ac/manchester/spinnaker/alloc/allocator/QuotaManager.html#QuotaManager">QuotaManager</a> <strong class="jxr_keyword">extends</strong> <a name="DatabaseAwareBean" href="../../../../../../uk/ac/manchester/spinnaker/alloc/db/DatabaseAwareBean.html#DatabaseAwareBean">DatabaseAwareBean</a> {
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger log = getLogger(QuotaManager.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment">	 * The status of the quote to request from the NMPI service.</em>
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String STATUS_ACCEPTED = <span class="jxr_string">"accepted"</span>;
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment">	 * An approximation of cores per board.</em>
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> APPROX_CORES_PER_BOARD = 48 * 16;
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>  <em class="jxr_javadoccomment">	 * The number of seconds per hour.</em>
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> SECONDS_PER_HOUR = 60 * 60;
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>  
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>  	@Autowired
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>  	<strong class="jxr_keyword">private</strong> <a name="ServiceMasterControl" href="../../../../../../uk/ac/manchester/spinnaker/alloc/ServiceMasterControl.html#ServiceMasterControl">ServiceMasterControl</a> control;
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>  
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>  	@Autowired
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>  	<strong class="jxr_keyword">private</strong> QuotaProperties quotaProps;
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>  	@PostConstruct
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> createProxy() {
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>  		String nmpiUrl = quotaProps.getNMPIUrl();
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>  		<strong class="jxr_keyword">if</strong> (!nmpiUrl.isEmpty()) {
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>  			nmpiProxy = NMPIv3API.createClient(quotaProps.getNMPIUrl());
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>  		}
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>  	}
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>  
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>  	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>  <em class="jxr_javadoccomment">	 * Can the user (in a specific group) create another job at this point? If</em>
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>  <em class="jxr_javadoccomment">	 * not, they're currently out of resources.</em>
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>  <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>  <em class="jxr_javadoccomment">	 * @param groupId</em>
-<a class="jxr_linenumber" name="L100" href="#L100">100</a> <em class="jxr_javadoccomment">	 *            What group will the job be accounted against.</em>
-<a class="jxr_linenumber" name="L101" href="#L101">101</a> <em class="jxr_javadoccomment">	 * @return True if they can make a job. False if they can't.</em>
-<a class="jxr_linenumber" name="L102" href="#L102">102</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L103" href="#L103">103</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> mayCreateJob(<strong class="jxr_keyword">int</strong> groupId) {
-<a class="jxr_linenumber" name="L104" href="#L104">104</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> sql = <strong class="jxr_keyword">new</strong> CreateCheckSQL()) {
-<a class="jxr_linenumber" name="L105" href="#L105">105</a> 			<strong class="jxr_keyword">return</strong> sql.transactionRead(() -&gt; sql.mayCreateJob(groupId));
-<a class="jxr_linenumber" name="L106" href="#L106">106</a> 		}
-<a class="jxr_linenumber" name="L107" href="#L107">107</a> 	}
-<a class="jxr_linenumber" name="L108" href="#L108">108</a> 
-<a class="jxr_linenumber" name="L109" href="#L109">109</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> CreateCheckSQL <strong class="jxr_keyword">extends</strong> AbstractSQL {
-<a class="jxr_linenumber" name="L110" href="#L110">110</a> 		<em class="jxr_comment">// TODO These should be combined (but one is an aggregate so...)</em>
-<a class="jxr_linenumber" name="L111" href="#L111">111</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Query getQuota = conn.query(GET_GROUP_QUOTA);
-<a class="jxr_linenumber" name="L112" href="#L112">112</a> 
-<a class="jxr_linenumber" name="L113" href="#L113">113</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Query getCurrentUsage = conn.query(GET_CURRENT_USAGE);
-<a class="jxr_linenumber" name="L114" href="#L114">114</a> 
-<a class="jxr_linenumber" name="L115" href="#L115">115</a> 		@Override
-<a class="jxr_linenumber" name="L116" href="#L116">116</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> close() {
-<a class="jxr_linenumber" name="L117" href="#L117">117</a> 			getQuota.close();
-<a class="jxr_linenumber" name="L118" href="#L118">118</a> 			getCurrentUsage.close();
-<a class="jxr_linenumber" name="L119" href="#L119">119</a> 			<strong class="jxr_keyword">super</strong>.close();
-<a class="jxr_linenumber" name="L120" href="#L120">120</a> 		}
-<a class="jxr_linenumber" name="L121" href="#L121">121</a> 
-<a class="jxr_linenumber" name="L122" href="#L122">122</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> mayCreateJob(<strong class="jxr_keyword">int</strong> groupId) {
-<a class="jxr_linenumber" name="L123" href="#L123">123</a> 			<strong class="jxr_keyword">return</strong> getQuota.call1(result -&gt; {
-<a class="jxr_linenumber" name="L124" href="#L124">124</a> 				<strong class="jxr_keyword">var</strong> quota = result.getInteger(<span class="jxr_string">"quota"</span>);
-<a class="jxr_linenumber" name="L125" href="#L125">125</a> 				log.debug(<span class="jxr_string">"Group {} has quota {}"</span>, groupId, quota);
-<a class="jxr_linenumber" name="L126" href="#L126">126</a> 				<strong class="jxr_keyword">if</strong> (isNull(quota)) {
-<a class="jxr_linenumber" name="L127" href="#L127">127</a> 					<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L128" href="#L128">128</a> 				}
-<a class="jxr_linenumber" name="L129" href="#L129">129</a> 				<em class="jxr_comment">// Quota is defined; check if current usage exceeds it</em>
-<a class="jxr_linenumber" name="L130" href="#L130">130</a> 				<strong class="jxr_keyword">int</strong> usage = getCurrentUsage.call1(
-<a class="jxr_linenumber" name="L131" href="#L131">131</a> 						integer(<span class="jxr_string">"current_usage"</span>), groupId).orElse(0);
-<a class="jxr_linenumber" name="L132" href="#L132">132</a> 				log.debug(<span class="jxr_string">"Group {} has usage {}"</span>, groupId, usage);
-<a class="jxr_linenumber" name="L133" href="#L133">133</a> 				<em class="jxr_comment">// If board-seconds are left, we're good to go</em>
-<a class="jxr_linenumber" name="L134" href="#L134">134</a> 				<strong class="jxr_keyword">return</strong> (quota &gt; usage);
-<a class="jxr_linenumber" name="L135" href="#L135">135</a> 			}, groupId).orElse(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L136" href="#L136">136</a> 		}
-<a class="jxr_linenumber" name="L137" href="#L137">137</a> 	}
-<a class="jxr_linenumber" name="L138" href="#L138">138</a> 
-<a class="jxr_linenumber" name="L139" href="#L139">139</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">	 * Has the execution of a job remained within its group's resource</em>
-<a class="jxr_linenumber" name="L141" href="#L141">141</a> <em class="jxr_javadoccomment">	 * allocation at this point?</em>
-<a class="jxr_linenumber" name="L142" href="#L142">142</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L143" href="#L143">143</a> <em class="jxr_javadoccomment">	 * @param jobId</em>
-<a class="jxr_linenumber" name="L144" href="#L144">144</a> <em class="jxr_javadoccomment">	 *            What job is consuming resources?</em>
-<a class="jxr_linenumber" name="L145" href="#L145">145</a> <em class="jxr_javadoccomment">	 * @return True if the job can continue to run. False if it can't.</em>
-<a class="jxr_linenumber" name="L146" href="#L146">146</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L147" href="#L147">147</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> mayLetJobContinue(<strong class="jxr_keyword">int</strong> jobId) {
-<a class="jxr_linenumber" name="L148" href="#L148">148</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> sql = <strong class="jxr_keyword">new</strong> ContinueCheckSQL()) {
-<a class="jxr_linenumber" name="L149" href="#L149">149</a> 			<strong class="jxr_keyword">return</strong> sql.transactionRead(() -&gt; sql.mayLetJobContinue(jobId));
-<a class="jxr_linenumber" name="L150" href="#L150">150</a> 		}
-<a class="jxr_linenumber" name="L151" href="#L151">151</a> 	}
-<a class="jxr_linenumber" name="L152" href="#L152">152</a> 
-<a class="jxr_linenumber" name="L153" href="#L153">153</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L154" href="#L154">154</a> <em class="jxr_javadoccomment">	 * Has the execution of a job exceeded its group's resource allocation at</em>
-<a class="jxr_linenumber" name="L155" href="#L155">155</a> <em class="jxr_javadoccomment">	 * this point?</em>
-<a class="jxr_linenumber" name="L156" href="#L156">156</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L157" href="#L157">157</a> <em class="jxr_javadoccomment">	 * @param jobId</em>
-<a class="jxr_linenumber" name="L158" href="#L158">158</a> <em class="jxr_javadoccomment">	 *            What job is consuming resources?</em>
-<a class="jxr_linenumber" name="L159" href="#L159">159</a> <em class="jxr_javadoccomment">	 * @return False if the job should be killed. True otherwise.</em>
-<a class="jxr_linenumber" name="L160" href="#L160">160</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L161" href="#L161">161</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> shouldKillJob(<strong class="jxr_keyword">int</strong> jobId) {
-<a class="jxr_linenumber" name="L162" href="#L162">162</a> 		<strong class="jxr_keyword">return</strong> !mayLetJobContinue(jobId);
-<a class="jxr_linenumber" name="L163" href="#L163">163</a> 	}
-<a class="jxr_linenumber" name="L164" href="#L164">164</a> 
-<a class="jxr_linenumber" name="L165" href="#L165">165</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> ContinueCheckSQL <strong class="jxr_keyword">extends</strong> AbstractSQL {
-<a class="jxr_linenumber" name="L166" href="#L166">166</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Query getUsageAndQuota =
-<a class="jxr_linenumber" name="L167" href="#L167">167</a> 				conn.query(GET_JOB_USAGE_AND_QUOTA);
-<a class="jxr_linenumber" name="L168" href="#L168">168</a> 
-<a class="jxr_linenumber" name="L169" href="#L169">169</a> 		@Override
-<a class="jxr_linenumber" name="L170" href="#L170">170</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> close() {
-<a class="jxr_linenumber" name="L171" href="#L171">171</a> 			getUsageAndQuota.close();
-<a class="jxr_linenumber" name="L172" href="#L172">172</a> 			<strong class="jxr_keyword">super</strong>.close();
-<a class="jxr_linenumber" name="L173" href="#L173">173</a> 		}
-<a class="jxr_linenumber" name="L174" href="#L174">174</a> 
-<a class="jxr_linenumber" name="L175" href="#L175">175</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> mayLetJobContinue(<strong class="jxr_keyword">int</strong> jobId) {
-<a class="jxr_linenumber" name="L176" href="#L176">176</a> 			<strong class="jxr_keyword">return</strong> getUsageAndQuota.call1(
-<a class="jxr_linenumber" name="L177" href="#L177">177</a> 					<em class="jxr_comment">// If we have an entry, check if usage &lt;= quota</em>
-<a class="jxr_linenumber" name="L178" href="#L178">178</a> 					row -&gt; row.getInt(<span class="jxr_string">"quota_used"</span>) &lt;= row.getInt(<span class="jxr_string">"quota"</span>),
-<a class="jxr_linenumber" name="L179" href="#L179">179</a> 					jobId)
-<a class="jxr_linenumber" name="L180" href="#L180">180</a> 
-<a class="jxr_linenumber" name="L181" href="#L181">181</a> 					<em class="jxr_comment">// Otherwise, we'll just allow it</em>
-<a class="jxr_linenumber" name="L182" href="#L182">182</a> 					.orElse(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L183" href="#L183">183</a> 		}
-<a class="jxr_linenumber" name="L184" href="#L184">184</a> 	}
-<a class="jxr_linenumber" name="L185" href="#L185">185</a> 
-<a class="jxr_linenumber" name="L186" href="#L186">186</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">	 * Adjust a group's quota.</em>
-<a class="jxr_linenumber" name="L188" href="#L188">188</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L189" href="#L189">189</a> <em class="jxr_javadoccomment">	 * @param groupId</em>
-<a class="jxr_linenumber" name="L190" href="#L190">190</a> <em class="jxr_javadoccomment">	 *            Which group's quota to change</em>
-<a class="jxr_linenumber" name="L191" href="#L191">191</a> <em class="jxr_javadoccomment">	 * @param delta</em>
-<a class="jxr_linenumber" name="L192" href="#L192">192</a> <em class="jxr_javadoccomment">	 *            Amount to change by, in board-seconds</em>
-<a class="jxr_linenumber" name="L193" href="#L193">193</a> <em class="jxr_javadoccomment">	 * @return Information about what group's quota was adjusted and what it has</em>
-<a class="jxr_linenumber" name="L194" href="#L194">194</a> <em class="jxr_javadoccomment">	 *         become.</em>
-<a class="jxr_linenumber" name="L195" href="#L195">195</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L196" href="#L196">196</a> 	<strong class="jxr_keyword">public</strong> Optional&lt;AdjustedQuota&gt; addQuota(<strong class="jxr_keyword">int</strong> groupId, <strong class="jxr_keyword">int</strong> delta) {
-<a class="jxr_linenumber" name="L197" href="#L197">197</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> sql = <strong class="jxr_keyword">new</strong> AdjustQuotaSQL()) {
-<a class="jxr_linenumber" name="L198" href="#L198">198</a> 			<strong class="jxr_keyword">return</strong> sql.transaction(() -&gt; sql.adjustQuota(groupId, delta));
-<a class="jxr_linenumber" name="L199" href="#L199">199</a> 		}
-<a class="jxr_linenumber" name="L200" href="#L200">200</a> 	}
-<a class="jxr_linenumber" name="L201" href="#L201">201</a> 
-<a class="jxr_linenumber" name="L202" href="#L202">202</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L203" href="#L203">203</a> <em class="jxr_javadoccomment">	 * Describes the result of the {@link QuotaManager#addQuota(int,int)}</em>
-<a class="jxr_linenumber" name="L204" href="#L204">204</a> <em class="jxr_javadoccomment">	 * operation.</em>
-<a class="jxr_linenumber" name="L205" href="#L205">205</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L206" href="#L206">206</a> <em class="jxr_javadoccomment">	 * @author Donal Fellows</em>
-<a class="jxr_linenumber" name="L207" href="#L207">207</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L208" href="#L208">208</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> AdjustedQuota {
-<a class="jxr_linenumber" name="L209" href="#L209">209</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> String name;
-<a class="jxr_linenumber" name="L210" href="#L210">210</a> 
-<a class="jxr_linenumber" name="L211" href="#L211">211</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Long quota;
-<a class="jxr_linenumber" name="L212" href="#L212">212</a> 
-<a class="jxr_linenumber" name="L213" href="#L213">213</a> 		<strong class="jxr_keyword">private</strong> AdjustedQuota(<a name="Row" href="../../../../../../uk/ac/manchester/spinnaker/alloc/db/Row.html#Row">Row</a> row) {
-<a class="jxr_linenumber" name="L214" href="#L214">214</a> 			<strong class="jxr_keyword">this</strong>.name = row.getString(<span class="jxr_string">"group_name"</span>);
-<a class="jxr_linenumber" name="L215" href="#L215">215</a> 			<strong class="jxr_keyword">this</strong>.quota = row.getLong(<span class="jxr_string">"quota"</span>);
-<a class="jxr_linenumber" name="L216" href="#L216">216</a> 		}
-<a class="jxr_linenumber" name="L217" href="#L217">217</a> 
-<a class="jxr_linenumber" name="L218" href="#L218">218</a> 		<em class="jxr_javadoccomment">/** @return The name of the group. */</em>
-<a class="jxr_linenumber" name="L219" href="#L219">219</a> 		<strong class="jxr_keyword">public</strong> String getName() {
-<a class="jxr_linenumber" name="L220" href="#L220">220</a> 			<strong class="jxr_keyword">return</strong> name;
-<a class="jxr_linenumber" name="L221" href="#L221">221</a> 		}
-<a class="jxr_linenumber" name="L222" href="#L222">222</a> 
-<a class="jxr_linenumber" name="L223" href="#L223">223</a> 		<em class="jxr_javadoccomment">/** @return The new quota of the group. */</em>
-<a class="jxr_linenumber" name="L224" href="#L224">224</a> 		<strong class="jxr_keyword">public</strong> Long getQuota() {
-<a class="jxr_linenumber" name="L225" href="#L225">225</a> 			<strong class="jxr_keyword">return</strong> quota;
-<a class="jxr_linenumber" name="L226" href="#L226">226</a> 		}
-<a class="jxr_linenumber" name="L227" href="#L227">227</a> 	}
-<a class="jxr_linenumber" name="L228" href="#L228">228</a> 
-<a class="jxr_linenumber" name="L229" href="#L229">229</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> AdjustQuotaSQL <strong class="jxr_keyword">extends</strong> AbstractSQL {
-<a class="jxr_linenumber" name="L230" href="#L230">230</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Update adjustQuota = conn.update(ADJUST_QUOTA);
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  	<em class="jxr_javadoccomment">/** The wrapped NMPI proxy, bound to the API key. */</em>
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>  	<strong class="jxr_keyword">private</strong> <a name="NMPI" href="../../../../../../uk/ac/manchester/spinnaker/alloc/allocator/QuotaManager.html#NMPI">NMPI</a> nmpi;
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>  	@PostConstruct
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> createProxy() {
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>  		<strong class="jxr_keyword">var</strong> nmpiUrl = quotaProps.getNMPIUrl();
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>  		<strong class="jxr_keyword">if</strong> (!nmpiUrl.isEmpty()) {
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  			nmpi = <strong class="jxr_keyword">new</strong> <a name="NMPI" href="../../../../../../uk/ac/manchester/spinnaker/alloc/allocator/QuotaManager.html#NMPI">NMPI</a>(quotaProps);
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>  		}
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>  	}
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>  
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>  <em class="jxr_javadoccomment">	 * Can the user (in a specific group) create another job at this point? If</em>
+<a class="jxr_linenumber" name="L100" href="#L100">100</a> <em class="jxr_javadoccomment">	 * not, they're currently out of resources.</em>
+<a class="jxr_linenumber" name="L101" href="#L101">101</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L102" href="#L102">102</a> <em class="jxr_javadoccomment">	 * @param groupId</em>
+<a class="jxr_linenumber" name="L103" href="#L103">103</a> <em class="jxr_javadoccomment">	 *            What group will the job be accounted against.</em>
+<a class="jxr_linenumber" name="L104" href="#L104">104</a> <em class="jxr_javadoccomment">	 * @return True if they can make a job. False if they can't.</em>
+<a class="jxr_linenumber" name="L105" href="#L105">105</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L106" href="#L106">106</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> mayCreateJob(<strong class="jxr_keyword">int</strong> groupId) {
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> sql = <strong class="jxr_keyword">new</strong> CreateCheckSQL()) {
+<a class="jxr_linenumber" name="L108" href="#L108">108</a> 			<strong class="jxr_keyword">return</strong> sql.transactionRead(() -&gt; sql.mayCreateJob(groupId));
+<a class="jxr_linenumber" name="L109" href="#L109">109</a> 		}
+<a class="jxr_linenumber" name="L110" href="#L110">110</a> 	}
+<a class="jxr_linenumber" name="L111" href="#L111">111</a> 
+<a class="jxr_linenumber" name="L112" href="#L112">112</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> CreateCheckSQL <strong class="jxr_keyword">extends</strong> AbstractSQL {
+<a class="jxr_linenumber" name="L113" href="#L113">113</a> 		<em class="jxr_comment">// TODO These should be combined (but one is an aggregate so...)</em>
+<a class="jxr_linenumber" name="L114" href="#L114">114</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Query getQuota = conn.query(GET_GROUP_QUOTA);
+<a class="jxr_linenumber" name="L115" href="#L115">115</a> 
+<a class="jxr_linenumber" name="L116" href="#L116">116</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Query getCurrentUsage = conn.query(GET_CURRENT_USAGE);
+<a class="jxr_linenumber" name="L117" href="#L117">117</a> 
+<a class="jxr_linenumber" name="L118" href="#L118">118</a> 		@Override
+<a class="jxr_linenumber" name="L119" href="#L119">119</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> close() {
+<a class="jxr_linenumber" name="L120" href="#L120">120</a> 			getQuota.close();
+<a class="jxr_linenumber" name="L121" href="#L121">121</a> 			getCurrentUsage.close();
+<a class="jxr_linenumber" name="L122" href="#L122">122</a> 			<strong class="jxr_keyword">super</strong>.close();
+<a class="jxr_linenumber" name="L123" href="#L123">123</a> 		}
+<a class="jxr_linenumber" name="L124" href="#L124">124</a> 
+<a class="jxr_linenumber" name="L125" href="#L125">125</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> mayCreateJob(<strong class="jxr_keyword">int</strong> groupId) {
+<a class="jxr_linenumber" name="L126" href="#L126">126</a> 			<strong class="jxr_keyword">return</strong> getQuota.call1(result -&gt; {
+<a class="jxr_linenumber" name="L127" href="#L127">127</a> 				<strong class="jxr_keyword">var</strong> quota = result.getInteger(<span class="jxr_string">"quota"</span>);
+<a class="jxr_linenumber" name="L128" href="#L128">128</a> 				log.debug(<span class="jxr_string">"Group {} has quota {}"</span>, groupId, quota);
+<a class="jxr_linenumber" name="L129" href="#L129">129</a> 				<strong class="jxr_keyword">if</strong> (isNull(quota)) {
+<a class="jxr_linenumber" name="L130" href="#L130">130</a> 					<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L131" href="#L131">131</a> 				}
+<a class="jxr_linenumber" name="L132" href="#L132">132</a> 				<em class="jxr_comment">// Quota is defined; check if current usage exceeds it</em>
+<a class="jxr_linenumber" name="L133" href="#L133">133</a> 				<strong class="jxr_keyword">int</strong> usage = getCurrentUsage.call1(
+<a class="jxr_linenumber" name="L134" href="#L134">134</a> 						integer(<span class="jxr_string">"current_usage"</span>), groupId).orElse(0);
+<a class="jxr_linenumber" name="L135" href="#L135">135</a> 				log.debug(<span class="jxr_string">"Group {} has usage {}"</span>, groupId, usage);
+<a class="jxr_linenumber" name="L136" href="#L136">136</a> 				<em class="jxr_comment">// If board-seconds are left, we're good to go</em>
+<a class="jxr_linenumber" name="L137" href="#L137">137</a> 				<strong class="jxr_keyword">return</strong> (quota &gt; usage);
+<a class="jxr_linenumber" name="L138" href="#L138">138</a> 			}, groupId).orElse(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L139" href="#L139">139</a> 		}
+<a class="jxr_linenumber" name="L140" href="#L140">140</a> 	}
+<a class="jxr_linenumber" name="L141" href="#L141">141</a> 
+<a class="jxr_linenumber" name="L142" href="#L142">142</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L143" href="#L143">143</a> <em class="jxr_javadoccomment">	 * Has the execution of a job remained within its group's resource</em>
+<a class="jxr_linenumber" name="L144" href="#L144">144</a> <em class="jxr_javadoccomment">	 * allocation at this point?</em>
+<a class="jxr_linenumber" name="L145" href="#L145">145</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L146" href="#L146">146</a> <em class="jxr_javadoccomment">	 * @param jobId</em>
+<a class="jxr_linenumber" name="L147" href="#L147">147</a> <em class="jxr_javadoccomment">	 *            What job is consuming resources?</em>
+<a class="jxr_linenumber" name="L148" href="#L148">148</a> <em class="jxr_javadoccomment">	 * @return True if the job can continue to run. False if it can't.</em>
+<a class="jxr_linenumber" name="L149" href="#L149">149</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L150" href="#L150">150</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> mayLetJobContinue(<strong class="jxr_keyword">int</strong> jobId) {
+<a class="jxr_linenumber" name="L151" href="#L151">151</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> sql = <strong class="jxr_keyword">new</strong> ContinueCheckSQL()) {
+<a class="jxr_linenumber" name="L152" href="#L152">152</a> 			<strong class="jxr_keyword">return</strong> sql.transactionRead(() -&gt; sql.mayLetJobContinue(jobId));
+<a class="jxr_linenumber" name="L153" href="#L153">153</a> 		}
+<a class="jxr_linenumber" name="L154" href="#L154">154</a> 	}
+<a class="jxr_linenumber" name="L155" href="#L155">155</a> 
+<a class="jxr_linenumber" name="L156" href="#L156">156</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L157" href="#L157">157</a> <em class="jxr_javadoccomment">	 * Has the execution of a job exceeded its group's resource allocation at</em>
+<a class="jxr_linenumber" name="L158" href="#L158">158</a> <em class="jxr_javadoccomment">	 * this point?</em>
+<a class="jxr_linenumber" name="L159" href="#L159">159</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L160" href="#L160">160</a> <em class="jxr_javadoccomment">	 * @param jobId</em>
+<a class="jxr_linenumber" name="L161" href="#L161">161</a> <em class="jxr_javadoccomment">	 *            What job is consuming resources?</em>
+<a class="jxr_linenumber" name="L162" href="#L162">162</a> <em class="jxr_javadoccomment">	 * @return False if the job should be killed. True otherwise.</em>
+<a class="jxr_linenumber" name="L163" href="#L163">163</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L164" href="#L164">164</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> shouldKillJob(<strong class="jxr_keyword">int</strong> jobId) {
+<a class="jxr_linenumber" name="L165" href="#L165">165</a> 		<strong class="jxr_keyword">return</strong> !mayLetJobContinue(jobId);
+<a class="jxr_linenumber" name="L166" href="#L166">166</a> 	}
+<a class="jxr_linenumber" name="L167" href="#L167">167</a> 
+<a class="jxr_linenumber" name="L168" href="#L168">168</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> ContinueCheckSQL <strong class="jxr_keyword">extends</strong> AbstractSQL {
+<a class="jxr_linenumber" name="L169" href="#L169">169</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Query getUsageAndQuota =
+<a class="jxr_linenumber" name="L170" href="#L170">170</a> 				conn.query(GET_JOB_USAGE_AND_QUOTA);
+<a class="jxr_linenumber" name="L171" href="#L171">171</a> 
+<a class="jxr_linenumber" name="L172" href="#L172">172</a> 		@Override
+<a class="jxr_linenumber" name="L173" href="#L173">173</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> close() {
+<a class="jxr_linenumber" name="L174" href="#L174">174</a> 			getUsageAndQuota.close();
+<a class="jxr_linenumber" name="L175" href="#L175">175</a> 			<strong class="jxr_keyword">super</strong>.close();
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> 		}
+<a class="jxr_linenumber" name="L177" href="#L177">177</a> 
+<a class="jxr_linenumber" name="L178" href="#L178">178</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> mayLetJobContinue(<strong class="jxr_keyword">int</strong> jobId) {
+<a class="jxr_linenumber" name="L179" href="#L179">179</a> 			<strong class="jxr_keyword">return</strong> getUsageAndQuota.call1(
+<a class="jxr_linenumber" name="L180" href="#L180">180</a> 					<em class="jxr_comment">// If we have an entry, check if usage &lt;= quota</em>
+<a class="jxr_linenumber" name="L181" href="#L181">181</a> 					row -&gt; row.getInt(<span class="jxr_string">"quota_used"</span>) &lt;= row.getInt(<span class="jxr_string">"quota"</span>),
+<a class="jxr_linenumber" name="L182" href="#L182">182</a> 					jobId)
+<a class="jxr_linenumber" name="L183" href="#L183">183</a> 
+<a class="jxr_linenumber" name="L184" href="#L184">184</a> 					<em class="jxr_comment">// Otherwise, we'll just allow it</em>
+<a class="jxr_linenumber" name="L185" href="#L185">185</a> 					.orElse(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L186" href="#L186">186</a> 		}
+<a class="jxr_linenumber" name="L187" href="#L187">187</a> 	}
+<a class="jxr_linenumber" name="L188" href="#L188">188</a> 
+<a class="jxr_linenumber" name="L189" href="#L189">189</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L190" href="#L190">190</a> <em class="jxr_javadoccomment">	 * Adjust a group's quota.</em>
+<a class="jxr_linenumber" name="L191" href="#L191">191</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L192" href="#L192">192</a> <em class="jxr_javadoccomment">	 * @param groupId</em>
+<a class="jxr_linenumber" name="L193" href="#L193">193</a> <em class="jxr_javadoccomment">	 *            Which group's quota to change</em>
+<a class="jxr_linenumber" name="L194" href="#L194">194</a> <em class="jxr_javadoccomment">	 * @param delta</em>
+<a class="jxr_linenumber" name="L195" href="#L195">195</a> <em class="jxr_javadoccomment">	 *            Amount to change by, in board-seconds</em>
+<a class="jxr_linenumber" name="L196" href="#L196">196</a> <em class="jxr_javadoccomment">	 * @return Information about what group's quota was adjusted and what it has</em>
+<a class="jxr_linenumber" name="L197" href="#L197">197</a> <em class="jxr_javadoccomment">	 *         become.</em>
+<a class="jxr_linenumber" name="L198" href="#L198">198</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L199" href="#L199">199</a> 	<strong class="jxr_keyword">public</strong> Optional&lt;AdjustedQuota&gt; addQuota(<strong class="jxr_keyword">int</strong> groupId, <strong class="jxr_keyword">int</strong> delta) {
+<a class="jxr_linenumber" name="L200" href="#L200">200</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> sql = <strong class="jxr_keyword">new</strong> AdjustQuotaSQL()) {
+<a class="jxr_linenumber" name="L201" href="#L201">201</a> 			<strong class="jxr_keyword">return</strong> sql.transaction(() -&gt; sql.adjustQuota(groupId, delta));
+<a class="jxr_linenumber" name="L202" href="#L202">202</a> 		}
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> 	}
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> 
+<a class="jxr_linenumber" name="L205" href="#L205">205</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L206" href="#L206">206</a> <em class="jxr_javadoccomment">	 * Describes the result of the {@link QuotaManager#addQuota(int,int)}</em>
+<a class="jxr_linenumber" name="L207" href="#L207">207</a> <em class="jxr_javadoccomment">	 * operation.</em>
+<a class="jxr_linenumber" name="L208" href="#L208">208</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L209" href="#L209">209</a> <em class="jxr_javadoccomment">	 * @author Donal Fellows</em>
+<a class="jxr_linenumber" name="L210" href="#L210">210</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L211" href="#L211">211</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> AdjustedQuota {
+<a class="jxr_linenumber" name="L212" href="#L212">212</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> String name;
+<a class="jxr_linenumber" name="L213" href="#L213">213</a> 
+<a class="jxr_linenumber" name="L214" href="#L214">214</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Long quota;
+<a class="jxr_linenumber" name="L215" href="#L215">215</a> 
+<a class="jxr_linenumber" name="L216" href="#L216">216</a> 		<strong class="jxr_keyword">private</strong> AdjustedQuota(<a name="Row" href="../../../../../../uk/ac/manchester/spinnaker/alloc/db/Row.html#Row">Row</a> row) {
+<a class="jxr_linenumber" name="L217" href="#L217">217</a> 			<strong class="jxr_keyword">this</strong>.name = row.getString(<span class="jxr_string">"group_name"</span>);
+<a class="jxr_linenumber" name="L218" href="#L218">218</a> 			<strong class="jxr_keyword">this</strong>.quota = row.getLong(<span class="jxr_string">"quota"</span>);
+<a class="jxr_linenumber" name="L219" href="#L219">219</a> 		}
+<a class="jxr_linenumber" name="L220" href="#L220">220</a> 
+<a class="jxr_linenumber" name="L221" href="#L221">221</a> 		<em class="jxr_javadoccomment">/** @return The name of the group. */</em>
+<a class="jxr_linenumber" name="L222" href="#L222">222</a> 		<strong class="jxr_keyword">public</strong> String getName() {
+<a class="jxr_linenumber" name="L223" href="#L223">223</a> 			<strong class="jxr_keyword">return</strong> name;
+<a class="jxr_linenumber" name="L224" href="#L224">224</a> 		}
+<a class="jxr_linenumber" name="L225" href="#L225">225</a> 
+<a class="jxr_linenumber" name="L226" href="#L226">226</a> 		<em class="jxr_javadoccomment">/** @return The new quota of the group. */</em>
+<a class="jxr_linenumber" name="L227" href="#L227">227</a> 		<strong class="jxr_keyword">public</strong> Long getQuota() {
+<a class="jxr_linenumber" name="L228" href="#L228">228</a> 			<strong class="jxr_keyword">return</strong> quota;
+<a class="jxr_linenumber" name="L229" href="#L229">229</a> 		}
+<a class="jxr_linenumber" name="L230" href="#L230">230</a> 	}
 <a class="jxr_linenumber" name="L231" href="#L231">231</a> 
-<a class="jxr_linenumber" name="L232" href="#L232">232</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Query getQuota = conn.query(GET_GROUP_QUOTA);
-<a class="jxr_linenumber" name="L233" href="#L233">233</a> 
-<a class="jxr_linenumber" name="L234" href="#L234">234</a> 		@Override
-<a class="jxr_linenumber" name="L235" href="#L235">235</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> close() {
-<a class="jxr_linenumber" name="L236" href="#L236">236</a> 			adjustQuota.close();
-<a class="jxr_linenumber" name="L237" href="#L237">237</a> 			<strong class="jxr_keyword">super</strong>.close();
-<a class="jxr_linenumber" name="L238" href="#L238">238</a> 		}
-<a class="jxr_linenumber" name="L239" href="#L239">239</a> 
-<a class="jxr_linenumber" name="L240" href="#L240">240</a> 		<strong class="jxr_keyword">private</strong> Optional&lt;AdjustedQuota&gt; adjustQuota(<strong class="jxr_keyword">int</strong> groupId, <strong class="jxr_keyword">int</strong> delta) {
-<a class="jxr_linenumber" name="L241" href="#L241">241</a> 			<strong class="jxr_keyword">if</strong> (adjustQuota.call(delta, groupId) == 0) {
-<a class="jxr_linenumber" name="L242" href="#L242">242</a> 				<strong class="jxr_keyword">return</strong> Optional.empty();
-<a class="jxr_linenumber" name="L243" href="#L243">243</a> 			}
-<a class="jxr_linenumber" name="L244" href="#L244">244</a> 			<strong class="jxr_keyword">return</strong> getQuota.call1(AdjustedQuota::<strong class="jxr_keyword">new</strong>, groupId);
-<a class="jxr_linenumber" name="L245" href="#L245">245</a> 		}
-<a class="jxr_linenumber" name="L246" href="#L246">246</a> 	}
-<a class="jxr_linenumber" name="L247" href="#L247">247</a> 
-<a class="jxr_linenumber" name="L248" href="#L248">248</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L249" href="#L249">249</a> <em class="jxr_javadoccomment">	 * Consolidates usage from finished jobs onto quotas. Runs hourly.</em>
-<a class="jxr_linenumber" name="L250" href="#L250">250</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L251" href="#L251">251</a> 	@Scheduled(cron = <span class="jxr_string">"#{quotaProperties.consolidationSchedule}"</span>)
-<a class="jxr_linenumber" name="L252" href="#L252">252</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> consolidateQuotas() {
-<a class="jxr_linenumber" name="L253" href="#L253">253</a> 		<strong class="jxr_keyword">if</strong> (control.isPaused()) {
-<a class="jxr_linenumber" name="L254" href="#L254">254</a> 			<strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L255" href="#L255">255</a> 		}
-<a class="jxr_linenumber" name="L256" href="#L256">256</a> 		<em class="jxr_comment">// Split off for testability</em>
-<a class="jxr_linenumber" name="L257" href="#L257">257</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> c = getConnection()) {
-<a class="jxr_linenumber" name="L258" href="#L258">258</a> 			doConsolidate(c);
-<a class="jxr_linenumber" name="L259" href="#L259">259</a> 		} <strong class="jxr_keyword">catch</strong> (DataAccessException e) {
-<a class="jxr_linenumber" name="L260" href="#L260">260</a> 			<strong class="jxr_keyword">if</strong> (isBusy(e)) {
-<a class="jxr_linenumber" name="L261" href="#L261">261</a> 				log.info(<span class="jxr_string">"database is busy; "</span>
-<a class="jxr_linenumber" name="L262" href="#L262">262</a> 						+ <span class="jxr_string">"will try job quota consolidation processing later"</span>);
-<a class="jxr_linenumber" name="L263" href="#L263">263</a> 				<strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L264" href="#L264">264</a> 			}
-<a class="jxr_linenumber" name="L265" href="#L265">265</a> 			<strong class="jxr_keyword">throw</strong> e;
-<a class="jxr_linenumber" name="L266" href="#L266">266</a> 		}
-<a class="jxr_linenumber" name="L267" href="#L267">267</a> 	}
-<a class="jxr_linenumber" name="L268" href="#L268">268</a> 
-<a class="jxr_linenumber" name="L269" href="#L269">269</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> doConsolidate(Connection c) {
-<a class="jxr_linenumber" name="L270" href="#L270">270</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> sql = <strong class="jxr_keyword">new</strong> ConsolidateSQL(c)) {
-<a class="jxr_linenumber" name="L271" href="#L271">271</a> 			sql.transaction(sql::consolidate);
-<a class="jxr_linenumber" name="L272" href="#L272">272</a> 		}
-<a class="jxr_linenumber" name="L273" href="#L273">273</a> 	}
-<a class="jxr_linenumber" name="L274" href="#L274">274</a> 
-<a class="jxr_linenumber" name="L275" href="#L275">275</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">class</strong> ConsolidateSQL <strong class="jxr_keyword">extends</strong> AbstractSQL {
-<a class="jxr_linenumber" name="L276" href="#L276">276</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Query getConsoldationTargets =
-<a class="jxr_linenumber" name="L277" href="#L277">277</a> 				conn.query(GET_CONSOLIDATION_TARGETS);
-<a class="jxr_linenumber" name="L278" href="#L278">278</a> 
-<a class="jxr_linenumber" name="L279" href="#L279">279</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Update decrementQuota = conn.update(DECREMENT_QUOTA);
-<a class="jxr_linenumber" name="L280" href="#L280">280</a> 
-<a class="jxr_linenumber" name="L281" href="#L281">281</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Update markConsolidated = conn.update(MARK_CONSOLIDATED);
-<a class="jxr_linenumber" name="L282" href="#L282">282</a> 
-<a class="jxr_linenumber" name="L283" href="#L283">283</a> 		ConsolidateSQL(Connection c) {
-<a class="jxr_linenumber" name="L284" href="#L284">284</a> 			<strong class="jxr_keyword">super</strong>(c);
-<a class="jxr_linenumber" name="L285" href="#L285">285</a> 		}
-<a class="jxr_linenumber" name="L286" href="#L286">286</a> 
-<a class="jxr_linenumber" name="L287" href="#L287">287</a> 		@Override
-<a class="jxr_linenumber" name="L288" href="#L288">288</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> close() {
-<a class="jxr_linenumber" name="L289" href="#L289">289</a> 			getConsoldationTargets.close();
-<a class="jxr_linenumber" name="L290" href="#L290">290</a> 			decrementQuota.close();
-<a class="jxr_linenumber" name="L291" href="#L291">291</a> 			markConsolidated.close();
-<a class="jxr_linenumber" name="L292" href="#L292">292</a> 			<strong class="jxr_keyword">super</strong>.close();
-<a class="jxr_linenumber" name="L293" href="#L293">293</a> 		}
-<a class="jxr_linenumber" name="L294" href="#L294">294</a> 
-<a class="jxr_linenumber" name="L295" href="#L295">295</a> 		<em class="jxr_comment">// Result is arbitrary and ignored</em>
-<a class="jxr_linenumber" name="L296" href="#L296">296</a> 		<strong class="jxr_keyword">private</strong> Void consolidate() {
-<a class="jxr_linenumber" name="L297" href="#L297">297</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> target : getConsoldationTargets.call(Target::<strong class="jxr_keyword">new</strong>)) {
-<a class="jxr_linenumber" name="L298" href="#L298">298</a> 				decrementQuota.call(target.quotaUsed, target.groupId);
-<a class="jxr_linenumber" name="L299" href="#L299">299</a> 				markConsolidated.call(target.jobId);
-<a class="jxr_linenumber" name="L300" href="#L300">300</a> 			}
-<a class="jxr_linenumber" name="L301" href="#L301">301</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L302" href="#L302">302</a> 		}
-<a class="jxr_linenumber" name="L303" href="#L303">303</a> 
-<a class="jxr_linenumber" name="L304" href="#L304">304</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">class</strong> Target {
-<a class="jxr_linenumber" name="L305" href="#L305">305</a> 			Object quotaUsed;
+<a class="jxr_linenumber" name="L232" href="#L232">232</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> AdjustQuotaSQL <strong class="jxr_keyword">extends</strong> AbstractSQL {
+<a class="jxr_linenumber" name="L233" href="#L233">233</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Update adjustQuota = conn.update(ADJUST_QUOTA);
+<a class="jxr_linenumber" name="L234" href="#L234">234</a> 
+<a class="jxr_linenumber" name="L235" href="#L235">235</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Query getQuota = conn.query(GET_GROUP_QUOTA);
+<a class="jxr_linenumber" name="L236" href="#L236">236</a> 
+<a class="jxr_linenumber" name="L237" href="#L237">237</a> 		@Override
+<a class="jxr_linenumber" name="L238" href="#L238">238</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> close() {
+<a class="jxr_linenumber" name="L239" href="#L239">239</a> 			adjustQuota.close();
+<a class="jxr_linenumber" name="L240" href="#L240">240</a> 			<strong class="jxr_keyword">super</strong>.close();
+<a class="jxr_linenumber" name="L241" href="#L241">241</a> 		}
+<a class="jxr_linenumber" name="L242" href="#L242">242</a> 
+<a class="jxr_linenumber" name="L243" href="#L243">243</a> 		<strong class="jxr_keyword">private</strong> Optional&lt;AdjustedQuota&gt; adjustQuota(<strong class="jxr_keyword">int</strong> groupId, <strong class="jxr_keyword">int</strong> delta) {
+<a class="jxr_linenumber" name="L244" href="#L244">244</a> 			<strong class="jxr_keyword">if</strong> (adjustQuota.call(delta, groupId) == 0) {
+<a class="jxr_linenumber" name="L245" href="#L245">245</a> 				<strong class="jxr_keyword">return</strong> Optional.empty();
+<a class="jxr_linenumber" name="L246" href="#L246">246</a> 			}
+<a class="jxr_linenumber" name="L247" href="#L247">247</a> 			<strong class="jxr_keyword">return</strong> getQuota.call1(AdjustedQuota::<strong class="jxr_keyword">new</strong>, groupId);
+<a class="jxr_linenumber" name="L248" href="#L248">248</a> 		}
+<a class="jxr_linenumber" name="L249" href="#L249">249</a> 	}
+<a class="jxr_linenumber" name="L250" href="#L250">250</a> 
+<a class="jxr_linenumber" name="L251" href="#L251">251</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L252" href="#L252">252</a> <em class="jxr_javadoccomment">	 * Consolidates usage from finished jobs onto quotas. Runs hourly.</em>
+<a class="jxr_linenumber" name="L253" href="#L253">253</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L254" href="#L254">254</a> 	@Scheduled(cron = <span class="jxr_string">"#{quotaProperties.consolidationSchedule}"</span>)
+<a class="jxr_linenumber" name="L255" href="#L255">255</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> consolidateQuotas() {
+<a class="jxr_linenumber" name="L256" href="#L256">256</a> 		<strong class="jxr_keyword">if</strong> (control.isPaused()) {
+<a class="jxr_linenumber" name="L257" href="#L257">257</a> 			<strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L258" href="#L258">258</a> 		}
+<a class="jxr_linenumber" name="L259" href="#L259">259</a> 		<em class="jxr_comment">// Split off for testability</em>
+<a class="jxr_linenumber" name="L260" href="#L260">260</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> c = getConnection()) {
+<a class="jxr_linenumber" name="L261" href="#L261">261</a> 			doConsolidate(c);
+<a class="jxr_linenumber" name="L262" href="#L262">262</a> 		} <strong class="jxr_keyword">catch</strong> (DataAccessException e) {
+<a class="jxr_linenumber" name="L263" href="#L263">263</a> 			<strong class="jxr_keyword">if</strong> (isBusy(e)) {
+<a class="jxr_linenumber" name="L264" href="#L264">264</a> 				log.info(<span class="jxr_string">"database is busy; "</span>
+<a class="jxr_linenumber" name="L265" href="#L265">265</a> 						+ <span class="jxr_string">"will try job quota consolidation processing later"</span>);
+<a class="jxr_linenumber" name="L266" href="#L266">266</a> 				<strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L267" href="#L267">267</a> 			}
+<a class="jxr_linenumber" name="L268" href="#L268">268</a> 			<strong class="jxr_keyword">throw</strong> e;
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> 		}
+<a class="jxr_linenumber" name="L270" href="#L270">270</a> 	}
+<a class="jxr_linenumber" name="L271" href="#L271">271</a> 
+<a class="jxr_linenumber" name="L272" href="#L272">272</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> doConsolidate(Connection c) {
+<a class="jxr_linenumber" name="L273" href="#L273">273</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> sql = <strong class="jxr_keyword">new</strong> ConsolidateSQL(c)) {
+<a class="jxr_linenumber" name="L274" href="#L274">274</a> 			sql.transaction(sql::consolidate);
+<a class="jxr_linenumber" name="L275" href="#L275">275</a> 		}
+<a class="jxr_linenumber" name="L276" href="#L276">276</a> 	}
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> 
+<a class="jxr_linenumber" name="L278" href="#L278">278</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">class</strong> ConsolidateSQL <strong class="jxr_keyword">extends</strong> AbstractSQL {
+<a class="jxr_linenumber" name="L279" href="#L279">279</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Query getConsoldationTargets =
+<a class="jxr_linenumber" name="L280" href="#L280">280</a> 				conn.query(GET_CONSOLIDATION_TARGETS);
+<a class="jxr_linenumber" name="L281" href="#L281">281</a> 
+<a class="jxr_linenumber" name="L282" href="#L282">282</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Update decrementQuota = conn.update(DECREMENT_QUOTA);
+<a class="jxr_linenumber" name="L283" href="#L283">283</a> 
+<a class="jxr_linenumber" name="L284" href="#L284">284</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Update markConsolidated = conn.update(MARK_CONSOLIDATED);
+<a class="jxr_linenumber" name="L285" href="#L285">285</a> 
+<a class="jxr_linenumber" name="L286" href="#L286">286</a> 		ConsolidateSQL(Connection c) {
+<a class="jxr_linenumber" name="L287" href="#L287">287</a> 			<strong class="jxr_keyword">super</strong>(c);
+<a class="jxr_linenumber" name="L288" href="#L288">288</a> 		}
+<a class="jxr_linenumber" name="L289" href="#L289">289</a> 
+<a class="jxr_linenumber" name="L290" href="#L290">290</a> 		@Override
+<a class="jxr_linenumber" name="L291" href="#L291">291</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> close() {
+<a class="jxr_linenumber" name="L292" href="#L292">292</a> 			getConsoldationTargets.close();
+<a class="jxr_linenumber" name="L293" href="#L293">293</a> 			decrementQuota.close();
+<a class="jxr_linenumber" name="L294" href="#L294">294</a> 			markConsolidated.close();
+<a class="jxr_linenumber" name="L295" href="#L295">295</a> 			<strong class="jxr_keyword">super</strong>.close();
+<a class="jxr_linenumber" name="L296" href="#L296">296</a> 		}
+<a class="jxr_linenumber" name="L297" href="#L297">297</a> 
+<a class="jxr_linenumber" name="L298" href="#L298">298</a> 		<em class="jxr_comment">// Result is arbitrary and ignored</em>
+<a class="jxr_linenumber" name="L299" href="#L299">299</a> 		<strong class="jxr_keyword">private</strong> Void consolidate() {
+<a class="jxr_linenumber" name="L300" href="#L300">300</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> target : getConsoldationTargets.call(Target::<strong class="jxr_keyword">new</strong>)) {
+<a class="jxr_linenumber" name="L301" href="#L301">301</a> 				decrementQuota.call(target.quotaUsed, target.groupId);
+<a class="jxr_linenumber" name="L302" href="#L302">302</a> 				markConsolidated.call(target.jobId);
+<a class="jxr_linenumber" name="L303" href="#L303">303</a> 			}
+<a class="jxr_linenumber" name="L304" href="#L304">304</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L305" href="#L305">305</a> 		}
 <a class="jxr_linenumber" name="L306" href="#L306">306</a> 
-<a class="jxr_linenumber" name="L307" href="#L307">307</a> 			<strong class="jxr_keyword">int</strong> groupId;
-<a class="jxr_linenumber" name="L308" href="#L308">308</a> 
-<a class="jxr_linenumber" name="L309" href="#L309">309</a> 			<strong class="jxr_keyword">int</strong> jobId;
-<a class="jxr_linenumber" name="L310" href="#L310">310</a> 
-<a class="jxr_linenumber" name="L311" href="#L311">311</a> 			Target(<a name="Row" href="../../../../../../uk/ac/manchester/spinnaker/alloc/db/Row.html#Row">Row</a> row) {
-<a class="jxr_linenumber" name="L312" href="#L312">312</a> 				quotaUsed = row.getObject(<span class="jxr_string">"quota_used"</span>);
-<a class="jxr_linenumber" name="L313" href="#L313">313</a> 				groupId = row.getInt(<span class="jxr_string">"group_id"</span>);
-<a class="jxr_linenumber" name="L314" href="#L314">314</a> 				jobId = row.getInt(<span class="jxr_string">"job_id"</span>);
-<a class="jxr_linenumber" name="L315" href="#L315">315</a> 			}
-<a class="jxr_linenumber" name="L316" href="#L316">316</a> 		}
-<a class="jxr_linenumber" name="L317" href="#L317">317</a> 	}
-<a class="jxr_linenumber" name="L318" href="#L318">318</a> 
-<a class="jxr_linenumber" name="L319" href="#L319">319</a> 	Optional&lt;String&gt; mayCreateNMPISession(String collab) {
-<a class="jxr_linenumber" name="L320" href="#L320">320</a> 		<em class="jxr_comment">// Read collab from NMPI; fail if not there</em>
-<a class="jxr_linenumber" name="L321" href="#L321">321</a> 		<strong class="jxr_keyword">var</strong> projects = nmpiProxy.getProjects(quotaProps.getNMPIApiKey(),
-<a class="jxr_linenumber" name="L322" href="#L322">322</a> 				STATUS_ACCEPTED, collab);
-<a class="jxr_linenumber" name="L323" href="#L323">323</a> 		String quotaUnits = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L324" href="#L324">324</a> 		<strong class="jxr_keyword">long</strong> totalBoardSeconds = 0L;
-<a class="jxr_linenumber" name="L325" href="#L325">325</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> project : projects) {
-<a class="jxr_linenumber" name="L326" href="#L326">326</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> quota : project.getQuotas()) {
-<a class="jxr_linenumber" name="L327" href="#L327">327</a> 				<strong class="jxr_keyword">if</strong> (quota.getPlatform().equals(quotaProps.getNMPIPlaform())) {
-<a class="jxr_linenumber" name="L328" href="#L328">328</a> 					<strong class="jxr_keyword">if</strong> (quotaUnits == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L329" href="#L329">329</a> 						quotaUnits = quota.getUnits();
-<a class="jxr_linenumber" name="L330" href="#L330">330</a> 					} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (quotaUnits != quota.getUnits()) {
-<a class="jxr_linenumber" name="L331" href="#L331">331</a> 						<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(
-<a class="jxr_linenumber" name="L332" href="#L332">332</a> 								<span class="jxr_string">"Quotas have multiple units!"</span>);
-<a class="jxr_linenumber" name="L333" href="#L333">333</a> 					}
+<a class="jxr_linenumber" name="L307" href="#L307">307</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">class</strong> Target {
+<a class="jxr_linenumber" name="L308" href="#L308">308</a> 			<strong class="jxr_keyword">final</strong> Object quotaUsed;
+<a class="jxr_linenumber" name="L309" href="#L309">309</a> 
+<a class="jxr_linenumber" name="L310" href="#L310">310</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> groupId;
+<a class="jxr_linenumber" name="L311" href="#L311">311</a> 
+<a class="jxr_linenumber" name="L312" href="#L312">312</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> jobId;
+<a class="jxr_linenumber" name="L313" href="#L313">313</a> 
+<a class="jxr_linenumber" name="L314" href="#L314">314</a> 			Target(<a name="Row" href="../../../../../../uk/ac/manchester/spinnaker/alloc/db/Row.html#Row">Row</a> row) {
+<a class="jxr_linenumber" name="L315" href="#L315">315</a> 				quotaUsed = row.getObject(<span class="jxr_string">"quota_used"</span>);
+<a class="jxr_linenumber" name="L316" href="#L316">316</a> 				groupId = row.getInt(<span class="jxr_string">"group_id"</span>);
+<a class="jxr_linenumber" name="L317" href="#L317">317</a> 				jobId = row.getInt(<span class="jxr_string">"job_id"</span>);
+<a class="jxr_linenumber" name="L318" href="#L318">318</a> 			}
+<a class="jxr_linenumber" name="L319" href="#L319">319</a> 		}
+<a class="jxr_linenumber" name="L320" href="#L320">320</a> 	}
+<a class="jxr_linenumber" name="L321" href="#L321">321</a> 
+<a class="jxr_linenumber" name="L322" href="#L322">322</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> QuotaInfo {
+<a class="jxr_linenumber" name="L323" href="#L323">323</a> 		<em class="jxr_javadoccomment">/** The size of quota remaining, in board-seconds. */</em>
+<a class="jxr_linenumber" name="L324" href="#L324">324</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> quota;
+<a class="jxr_linenumber" name="L325" href="#L325">325</a> 
+<a class="jxr_linenumber" name="L326" href="#L326">326</a> 		<em class="jxr_javadoccomment">/** The units that the quota was measured in on the NMPI. */</em>
+<a class="jxr_linenumber" name="L327" href="#L327">327</a> 		<strong class="jxr_keyword">final</strong> String units;
+<a class="jxr_linenumber" name="L328" href="#L328">328</a> 
+<a class="jxr_linenumber" name="L329" href="#L329">329</a> 		QuotaInfo(<strong class="jxr_keyword">long</strong> quota, String units) {
+<a class="jxr_linenumber" name="L330" href="#L330">330</a> 			<strong class="jxr_keyword">this</strong>.quota = quota;
+<a class="jxr_linenumber" name="L331" href="#L331">331</a> 			<strong class="jxr_keyword">this</strong>.units = units;
+<a class="jxr_linenumber" name="L332" href="#L332">332</a> 		}
+<a class="jxr_linenumber" name="L333" href="#L333">333</a> 	}
 <a class="jxr_linenumber" name="L334" href="#L334">334</a> 
-<a class="jxr_linenumber" name="L335" href="#L335">335</a> 					<strong class="jxr_keyword">long</strong> limitBoardSeconds = (<strong class="jxr_keyword">long</strong>) quota.getLimit();
-<a class="jxr_linenumber" name="L336" href="#L336">336</a> 					<strong class="jxr_keyword">long</strong> usageBoardSeconds = (<strong class="jxr_keyword">long</strong>) quota.getUsage();
-<a class="jxr_linenumber" name="L337" href="#L337">337</a> 					<strong class="jxr_keyword">if</strong> (quota.getUnits().equals(CORE_HOURS)) {
-<a class="jxr_linenumber" name="L338" href="#L338">338</a> 						limitBoardSeconds = toBoardSeconds(quota.getLimit());
-<a class="jxr_linenumber" name="L339" href="#L339">339</a> 						usageBoardSeconds = toBoardSeconds(quota.getUsage());
-<a class="jxr_linenumber" name="L340" href="#L340">340</a> 					} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (!quota.getUnits().equals(BOARD_SECONDS)) {
-<a class="jxr_linenumber" name="L341" href="#L341">341</a> 						<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(<span class="jxr_string">"Unknown Quota units: "</span>
-<a class="jxr_linenumber" name="L342" href="#L342">342</a> 								+ quota.getUnits());
-<a class="jxr_linenumber" name="L343" href="#L343">343</a> 					}
-<a class="jxr_linenumber" name="L344" href="#L344">344</a> 					totalBoardSeconds += limitBoardSeconds - usageBoardSeconds;
-<a class="jxr_linenumber" name="L345" href="#L345">345</a> 				}
-<a class="jxr_linenumber" name="L346" href="#L346">346</a> 			}
-<a class="jxr_linenumber" name="L347" href="#L347">347</a> 		}
+<a class="jxr_linenumber" name="L335" href="#L335">335</a> 	<strong class="jxr_keyword">private</strong> QuotaInfo parseQuotaData(List&lt;Project&gt; projects) {
+<a class="jxr_linenumber" name="L336" href="#L336">336</a> 		String units = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L337" href="#L337">337</a> 		<strong class="jxr_keyword">long</strong> total = 0;
+<a class="jxr_linenumber" name="L338" href="#L338">338</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> project : projects) {
+<a class="jxr_linenumber" name="L339" href="#L339">339</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> quota : project.getQuotas()) {
+<a class="jxr_linenumber" name="L340" href="#L340">340</a> 				<strong class="jxr_keyword">if</strong> (!quota.getPlatform().equals(quotaProps.getNMPIPlaform())) {
+<a class="jxr_linenumber" name="L341" href="#L341">341</a> 					<strong class="jxr_keyword">continue</strong>;
+<a class="jxr_linenumber" name="L342" href="#L342">342</a> 				}
+<a class="jxr_linenumber" name="L343" href="#L343">343</a> 				<strong class="jxr_keyword">if</strong> (units == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L344" href="#L344">344</a> 					units = quota.getUnits();
+<a class="jxr_linenumber" name="L345" href="#L345">345</a> 				} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (units != quota.getUnits()) {
+<a class="jxr_linenumber" name="L346" href="#L346">346</a> 					<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(<span class="jxr_string">"Quotas have multiple units!"</span>);
+<a class="jxr_linenumber" name="L347" href="#L347">347</a> 				}
 <a class="jxr_linenumber" name="L348" href="#L348">348</a> 
-<a class="jxr_linenumber" name="L349" href="#L349">349</a> 		log.debug(<span class="jxr_string">"Setting quota of collab {} to {}"</span>, collab,
-<a class="jxr_linenumber" name="L350" href="#L350">350</a> 				totalBoardSeconds);
-<a class="jxr_linenumber" name="L351" href="#L351">351</a> 
-<a class="jxr_linenumber" name="L352" href="#L352">352</a> 		<em class="jxr_comment">// Update quota in group for collab from NMPI</em>
-<a class="jxr_linenumber" name="L353" href="#L353">353</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> c = getConnection();
-<a class="jxr_linenumber" name="L354" href="#L354">354</a> 				Update setQuota = c.update(SET_COLLAB_QUOTA)) {
-<a class="jxr_linenumber" name="L355" href="#L355">355</a> 			setQuota.call(totalBoardSeconds, collab);
-<a class="jxr_linenumber" name="L356" href="#L356">356</a> 		}
-<a class="jxr_linenumber" name="L357" href="#L357">357</a> 
-<a class="jxr_linenumber" name="L358" href="#L358">358</a> 		<strong class="jxr_keyword">if</strong> (totalBoardSeconds &gt; 0) {
-<a class="jxr_linenumber" name="L359" href="#L359">359</a> 			<strong class="jxr_keyword">return</strong> Optional.of(quotaUnits);
-<a class="jxr_linenumber" name="L360" href="#L360">360</a> 		}
-<a class="jxr_linenumber" name="L361" href="#L361">361</a> 		<strong class="jxr_keyword">return</strong> Optional.empty();
-<a class="jxr_linenumber" name="L362" href="#L362">362</a> 	}
-<a class="jxr_linenumber" name="L363" href="#L363">363</a> 
-<a class="jxr_linenumber" name="L364" href="#L364">364</a> 	<strong class="jxr_keyword">void</strong> associateNMPISession(<strong class="jxr_keyword">int</strong> jobId, String user, String collab,
-<a class="jxr_linenumber" name="L365" href="#L365">365</a> 			String quotaUnits) {
-<a class="jxr_linenumber" name="L366" href="#L366">366</a> 		SessionRequest request = <strong class="jxr_keyword">new</strong> <a name="SessionRequest" href="../../../../../../uk/ac/manchester/spinnaker/alloc/nmpi/SessionRequest.html#SessionRequest">SessionRequest</a>();
-<a class="jxr_linenumber" name="L367" href="#L367">367</a> 		request.setCollab(collab);
-<a class="jxr_linenumber" name="L368" href="#L368">368</a> 		request.setHardwarePlatform(quotaProps.getNMPIPlaform());
-<a class="jxr_linenumber" name="L369" href="#L369">369</a> 		request.setUserId(user);
-<a class="jxr_linenumber" name="L370" href="#L370">370</a> 		SessionResponse session = nmpiProxy.createSession(
-<a class="jxr_linenumber" name="L371" href="#L371">371</a> 				quotaProps.getNMPIApiKey(), request);
+<a class="jxr_linenumber" name="L349" href="#L349">349</a> 				<strong class="jxr_keyword">switch</strong> (quota.getUnits()) {
+<a class="jxr_linenumber" name="L350" href="#L350">350</a> 				<strong class="jxr_keyword">case</strong> BOARD_SECONDS:
+<a class="jxr_linenumber" name="L351" href="#L351">351</a> 					total += (<strong class="jxr_keyword">long</strong>) (quota.getLimit() - quota.getUsage());
+<a class="jxr_linenumber" name="L352" href="#L352">352</a> 					<strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L353" href="#L353">353</a> 				<strong class="jxr_keyword">case</strong> CORE_HOURS:
+<a class="jxr_linenumber" name="L354" href="#L354">354</a> 					total += toBoardSeconds(quota.getLimit())
+<a class="jxr_linenumber" name="L355" href="#L355">355</a> 							- toBoardSeconds(quota.getUsage());
+<a class="jxr_linenumber" name="L356" href="#L356">356</a> 					<strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L357" href="#L357">357</a> 				<strong class="jxr_keyword">default</strong>:
+<a class="jxr_linenumber" name="L358" href="#L358">358</a> 					<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(
+<a class="jxr_linenumber" name="L359" href="#L359">359</a> 							<span class="jxr_string">"Unknown Quota units: "</span> + quota.getUnits());
+<a class="jxr_linenumber" name="L360" href="#L360">360</a> 				}
+<a class="jxr_linenumber" name="L361" href="#L361">361</a> 			}
+<a class="jxr_linenumber" name="L362" href="#L362">362</a> 		}
+<a class="jxr_linenumber" name="L363" href="#L363">363</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> QuotaInfo(total, units);
+<a class="jxr_linenumber" name="L364" href="#L364">364</a> 	}
+<a class="jxr_linenumber" name="L365" href="#L365">365</a> 
+<a class="jxr_linenumber" name="L366" href="#L366">366</a> 	<strong class="jxr_keyword">final</strong> Optional&lt;String&gt; mayCreateNMPISession(String collab) {
+<a class="jxr_linenumber" name="L367" href="#L367">367</a> 		<em class="jxr_comment">// Read collab from NMPI; fail if not there</em>
+<a class="jxr_linenumber" name="L368" href="#L368">368</a> 		<strong class="jxr_keyword">var</strong> projects = nmpi.getProjects(STATUS_ACCEPTED, collab);
+<a class="jxr_linenumber" name="L369" href="#L369">369</a> 		<strong class="jxr_keyword">var</strong> info = parseQuotaData(projects);
+<a class="jxr_linenumber" name="L370" href="#L370">370</a> 
+<a class="jxr_linenumber" name="L371" href="#L371">371</a> 		log.debug(<span class="jxr_string">"Setting quota of collab {} to {}"</span>, collab, info.quota);
 <a class="jxr_linenumber" name="L372" href="#L372">372</a> 
-<a class="jxr_linenumber" name="L373" href="#L373">373</a> 		<em class="jxr_comment">// Associate NMPI session with Job in the database</em>
+<a class="jxr_linenumber" name="L373" href="#L373">373</a> 		<em class="jxr_comment">// Update quota in group for collab from NMPI</em>
 <a class="jxr_linenumber" name="L374" href="#L374">374</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> c = getConnection();
-<a class="jxr_linenumber" name="L375" href="#L375">375</a> 				<strong class="jxr_keyword">var</strong> setSession = c.update(SET_JOB_SESSION)) {
-<a class="jxr_linenumber" name="L376" href="#L376">376</a> 			setSession.call(jobId, session.getId(), quotaUnits);
+<a class="jxr_linenumber" name="L375" href="#L375">375</a> 				<strong class="jxr_keyword">var</strong> setQuota = c.update(SET_COLLAB_QUOTA)) {
+<a class="jxr_linenumber" name="L376" href="#L376">376</a> 			c.transaction(() -&gt; setQuota.call(info.quota, collab));
 <a class="jxr_linenumber" name="L377" href="#L377">377</a> 		}
-<a class="jxr_linenumber" name="L378" href="#L378">378</a> 	}
-<a class="jxr_linenumber" name="L379" href="#L379">379</a> 
-<a class="jxr_linenumber" name="L380" href="#L380">380</a> 	Optional&lt;NMPIJobQuotaDetails&gt; mayUseNMPIJob(String user, <strong class="jxr_keyword">int</strong> nmpiJobId) {
-<a class="jxr_linenumber" name="L381" href="#L381">381</a> 		<em class="jxr_comment">// Read job from NMPI to get collab ID</em>
-<a class="jxr_linenumber" name="L382" href="#L382">382</a> 		<strong class="jxr_keyword">var</strong> job = nmpiProxy.getJob(quotaProps.getNMPIApiKey(), nmpiJobId);
-<a class="jxr_linenumber" name="L383" href="#L383">383</a> 
-<a class="jxr_linenumber" name="L384" href="#L384">384</a> 		<em class="jxr_comment">// If it is possible to run this job, we need to associate the user</em>
-<a class="jxr_linenumber" name="L385" href="#L385">385</a> 		<em class="jxr_comment">// with it because only special users can run jobs like this.</em>
-<a class="jxr_linenumber" name="L386" href="#L386">386</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> c = getConnection();
-<a class="jxr_linenumber" name="L387" href="#L387">387</a> 				Query getUserByName = c.query(GET_USER_DETAILS_BY_NAME);
-<a class="jxr_linenumber" name="L388" href="#L388">388</a> 				Query getGroupByName = c.query(GET_GROUP_BY_NAME);
-<a class="jxr_linenumber" name="L389" href="#L389">389</a> 				Update createUser = c.update(CREATE_USER);
-<a class="jxr_linenumber" name="L390" href="#L390">390</a> 				Update createGroup = c.update(CREATE_GROUP_IF_NOT_EXISTS);
-<a class="jxr_linenumber" name="L391" href="#L391">391</a> 				Update addUserToGroup = c.update(ADD_USER_TO_GROUP)) {
-<a class="jxr_linenumber" name="L392" href="#L392">392</a> 			createGroup.call(job.getCollab(), 0.0, COLLABRATORY);
-<a class="jxr_linenumber" name="L393" href="#L393">393</a> 			<strong class="jxr_keyword">var</strong> userId = getUserByName.call1(r -&gt; r.getInt(<span class="jxr_string">"user_id"</span>), user);
-<a class="jxr_linenumber" name="L394" href="#L394">394</a> 
-<a class="jxr_linenumber" name="L395" href="#L395">395</a> 			<em class="jxr_comment">// The user has never logged in directly, so we have to create them</em>
-<a class="jxr_linenumber" name="L396" href="#L396">396</a> 			<strong class="jxr_keyword">if</strong> (!userId.isPresent()) {
-<a class="jxr_linenumber" name="L397" href="#L397">397</a> 				createUser.call(user, <strong class="jxr_keyword">null</strong>, USER, false, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L398" href="#L398">398</a> 				userId = getUserByName.call1(r -&gt; r.getInt(<span class="jxr_string">"user_id"</span>), user);
-<a class="jxr_linenumber" name="L399" href="#L399">399</a> 			}
-<a class="jxr_linenumber" name="L400" href="#L400">400</a> 			<strong class="jxr_keyword">var</strong> groupId = getGroupByName.call1(r -&gt; r.getInt(<span class="jxr_string">"group_id"</span>),
-<a class="jxr_linenumber" name="L401" href="#L401">401</a> 					job.getCollab());
-<a class="jxr_linenumber" name="L402" href="#L402">402</a> 			addUserToGroup.call(userId.get(), groupId);
-<a class="jxr_linenumber" name="L403" href="#L403">403</a> 		}
+<a class="jxr_linenumber" name="L378" href="#L378">378</a> 
+<a class="jxr_linenumber" name="L379" href="#L379">379</a> 		<strong class="jxr_keyword">if</strong> (info.quota &gt; 0) {
+<a class="jxr_linenumber" name="L380" href="#L380">380</a> 			<strong class="jxr_keyword">return</strong> Optional.of(info.units);
+<a class="jxr_linenumber" name="L381" href="#L381">381</a> 		}
+<a class="jxr_linenumber" name="L382" href="#L382">382</a> 		<strong class="jxr_keyword">return</strong> Optional.empty();
+<a class="jxr_linenumber" name="L383" href="#L383">383</a> 	}
+<a class="jxr_linenumber" name="L384" href="#L384">384</a> 
+<a class="jxr_linenumber" name="L385" href="#L385">385</a> 	<strong class="jxr_keyword">void</strong> associateNMPISession(<strong class="jxr_keyword">int</strong> jobId, String user, String collab,
+<a class="jxr_linenumber" name="L386" href="#L386">386</a> 			String quotaUnits) {
+<a class="jxr_linenumber" name="L387" href="#L387">387</a> 		<strong class="jxr_keyword">var</strong> sessionId = nmpi.createSession(collab, user);
+<a class="jxr_linenumber" name="L388" href="#L388">388</a> 
+<a class="jxr_linenumber" name="L389" href="#L389">389</a> 		<em class="jxr_comment">// Associate NMPI session with Job in the database</em>
+<a class="jxr_linenumber" name="L390" href="#L390">390</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> c = getConnection();
+<a class="jxr_linenumber" name="L391" href="#L391">391</a> 				<strong class="jxr_keyword">var</strong> setSession = c.update(SET_JOB_SESSION)) {
+<a class="jxr_linenumber" name="L392" href="#L392">392</a> 			c.transaction(
+<a class="jxr_linenumber" name="L393" href="#L393">393</a> 					() -&gt; setSession.call(jobId, sessionId, quotaUnits));
+<a class="jxr_linenumber" name="L394" href="#L394">394</a> 		}
+<a class="jxr_linenumber" name="L395" href="#L395">395</a> 	}
+<a class="jxr_linenumber" name="L396" href="#L396">396</a> 
+<a class="jxr_linenumber" name="L397" href="#L397">397</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> InflateUser <strong class="jxr_keyword">extends</strong> AbstractSQL {
+<a class="jxr_linenumber" name="L398" href="#L398">398</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Query getUserByName =
+<a class="jxr_linenumber" name="L399" href="#L399">399</a> 				conn.query(GET_USER_DETAILS_BY_NAME);
+<a class="jxr_linenumber" name="L400" href="#L400">400</a> 
+<a class="jxr_linenumber" name="L401" href="#L401">401</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Query getGroupByName = conn.query(GET_GROUP_BY_NAME);
+<a class="jxr_linenumber" name="L402" href="#L402">402</a> 
+<a class="jxr_linenumber" name="L403" href="#L403">403</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Update createUser = conn.update(CREATE_USER);
 <a class="jxr_linenumber" name="L404" href="#L404">404</a> 
-<a class="jxr_linenumber" name="L405" href="#L405">405</a> 		<em class="jxr_comment">// This is now a collab so check there instead</em>
-<a class="jxr_linenumber" name="L406" href="#L406">406</a> 		<strong class="jxr_keyword">var</strong> quotaUnits = mayCreateNMPISession(job.getCollab());
-<a class="jxr_linenumber" name="L407" href="#L407">407</a> 		<strong class="jxr_keyword">if</strong> (quotaUnits.isEmpty()) {
-<a class="jxr_linenumber" name="L408" href="#L408">408</a> 			<strong class="jxr_keyword">return</strong> Optional.empty();
-<a class="jxr_linenumber" name="L409" href="#L409">409</a> 		}
-<a class="jxr_linenumber" name="L410" href="#L410">410</a> 
-<a class="jxr_linenumber" name="L411" href="#L411">411</a> 		<strong class="jxr_keyword">return</strong> Optional.of(
-<a class="jxr_linenumber" name="L412" href="#L412">412</a> 				<strong class="jxr_keyword">new</strong> NMPIJobQuotaDetails(job.getCollab(), quotaUnits.get()));
-<a class="jxr_linenumber" name="L413" href="#L413">413</a> 	}
-<a class="jxr_linenumber" name="L414" href="#L414">414</a> 
-<a class="jxr_linenumber" name="L415" href="#L415">415</a> 	<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> NMPIJobQuotaDetails {
-<a class="jxr_linenumber" name="L416" href="#L416">416</a> 		<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L417" href="#L417">417</a> <em class="jxr_javadoccomment">		 * The collaboratory ID.</em>
-<a class="jxr_linenumber" name="L418" href="#L418">418</a> <em class="jxr_javadoccomment">		 */</em>
-<a class="jxr_linenumber" name="L419" href="#L419">419</a> 		<strong class="jxr_keyword">final</strong> String collabId;
-<a class="jxr_linenumber" name="L420" href="#L420">420</a> 
-<a class="jxr_linenumber" name="L421" href="#L421">421</a> 		<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L422" href="#L422">422</a> <em class="jxr_javadoccomment">		 * The units of the Quota.</em>
-<a class="jxr_linenumber" name="L423" href="#L423">423</a> <em class="jxr_javadoccomment">		 */</em>
-<a class="jxr_linenumber" name="L424" href="#L424">424</a> 		<strong class="jxr_keyword">final</strong> String quotaUnits;
-<a class="jxr_linenumber" name="L425" href="#L425">425</a> 
-<a class="jxr_linenumber" name="L426" href="#L426">426</a> 		<strong class="jxr_keyword">private</strong> NMPIJobQuotaDetails(String collabId, String quotaUnits) {
-<a class="jxr_linenumber" name="L427" href="#L427">427</a> 			<strong class="jxr_keyword">this</strong>.collabId = collabId;
-<a class="jxr_linenumber" name="L428" href="#L428">428</a> 			<strong class="jxr_keyword">this</strong>.quotaUnits = quotaUnits;
-<a class="jxr_linenumber" name="L429" href="#L429">429</a> 		}
-<a class="jxr_linenumber" name="L430" href="#L430">430</a> 	}
+<a class="jxr_linenumber" name="L405" href="#L405">405</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Update createGroup =
+<a class="jxr_linenumber" name="L406" href="#L406">406</a> 				conn.update(CREATE_GROUP_IF_NOT_EXISTS);
+<a class="jxr_linenumber" name="L407" href="#L407">407</a> 
+<a class="jxr_linenumber" name="L408" href="#L408">408</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Update addUserToGroup = conn.update(ADD_USER_TO_GROUP);
+<a class="jxr_linenumber" name="L409" href="#L409">409</a> 
+<a class="jxr_linenumber" name="L410" href="#L410">410</a> 		@Override
+<a class="jxr_linenumber" name="L411" href="#L411">411</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> close() {
+<a class="jxr_linenumber" name="L412" href="#L412">412</a> 			getUserByName.close();
+<a class="jxr_linenumber" name="L413" href="#L413">413</a> 			getGroupByName.close();
+<a class="jxr_linenumber" name="L414" href="#L414">414</a> 			createUser.close();
+<a class="jxr_linenumber" name="L415" href="#L415">415</a> 			createGroup.close();
+<a class="jxr_linenumber" name="L416" href="#L416">416</a> 			addUserToGroup.close();
+<a class="jxr_linenumber" name="L417" href="#L417">417</a> 			<strong class="jxr_keyword">super</strong>.close();
+<a class="jxr_linenumber" name="L418" href="#L418">418</a> 		}
+<a class="jxr_linenumber" name="L419" href="#L419">419</a> 
+<a class="jxr_linenumber" name="L420" href="#L420">420</a> 		<strong class="jxr_keyword">private</strong> Optional&lt;Integer&gt; getUserByName(String user) {
+<a class="jxr_linenumber" name="L421" href="#L421">421</a> 			<strong class="jxr_keyword">return</strong> getUserByName.call1(r -&gt; r.getInt(<span class="jxr_string">"user_id"</span>), user);
+<a class="jxr_linenumber" name="L422" href="#L422">422</a> 		}
+<a class="jxr_linenumber" name="L423" href="#L423">423</a> 
+<a class="jxr_linenumber" name="L424" href="#L424">424</a> 		<strong class="jxr_keyword">private</strong> Optional&lt;Integer&gt; getGroupByName(String group) {
+<a class="jxr_linenumber" name="L425" href="#L425">425</a> 			<strong class="jxr_keyword">return</strong> getGroupByName.call1(r -&gt; r.getInt(<span class="jxr_string">"group_id"</span>), group);
+<a class="jxr_linenumber" name="L426" href="#L426">426</a> 		}
+<a class="jxr_linenumber" name="L427" href="#L427">427</a> 
+<a class="jxr_linenumber" name="L428" href="#L428">428</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> createUser(String user) {
+<a class="jxr_linenumber" name="L429" href="#L429">429</a> 			<strong class="jxr_keyword">return</strong> createUser.call(user, <strong class="jxr_keyword">null</strong>, USER, false, <strong class="jxr_keyword">null</strong>) &gt; 0;
+<a class="jxr_linenumber" name="L430" href="#L430">430</a> 		}
 <a class="jxr_linenumber" name="L431" href="#L431">431</a> 
-<a class="jxr_linenumber" name="L432" href="#L432">432</a> 	<strong class="jxr_keyword">void</strong> associateNMPIJob(<strong class="jxr_keyword">int</strong> jobId, <strong class="jxr_keyword">int</strong> nmpiJobId, String quotaUnits) {
-<a class="jxr_linenumber" name="L433" href="#L433">433</a> 		<em class="jxr_comment">// Associate NMPI Job with job in database</em>
-<a class="jxr_linenumber" name="L434" href="#L434">434</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> c = getConnection();
-<a class="jxr_linenumber" name="L435" href="#L435">435</a> 				<strong class="jxr_keyword">var</strong> setNMPIJob = c.update(SET_JOB_NMPI_JOB)) {
-<a class="jxr_linenumber" name="L436" href="#L436">436</a> 			setNMPIJob.call(jobId, nmpiJobId, quotaUnits);
-<a class="jxr_linenumber" name="L437" href="#L437">437</a> 		}
-<a class="jxr_linenumber" name="L438" href="#L438">438</a> 	}
+<a class="jxr_linenumber" name="L432" href="#L432">432</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> createGroup(String group) {
+<a class="jxr_linenumber" name="L433" href="#L433">433</a> 			<strong class="jxr_keyword">return</strong> createGroup.call(group, 0.0, COLLABRATORY) &gt; 0;
+<a class="jxr_linenumber" name="L434" href="#L434">434</a> 		}
+<a class="jxr_linenumber" name="L435" href="#L435">435</a> 
+<a class="jxr_linenumber" name="L436" href="#L436">436</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> addUserToGroup(<strong class="jxr_keyword">int</strong> userId, Optional&lt;Integer&gt; groupId) {
+<a class="jxr_linenumber" name="L437" href="#L437">437</a> 			<strong class="jxr_keyword">return</strong> addUserToGroup.call(userId, groupId) &gt; 0;
+<a class="jxr_linenumber" name="L438" href="#L438">438</a> 		}
 <a class="jxr_linenumber" name="L439" href="#L439">439</a> 
-<a class="jxr_linenumber" name="L440" href="#L440">440</a> 	<strong class="jxr_keyword">void</strong> finishJob(<strong class="jxr_keyword">int</strong> jobId) {
-<a class="jxr_linenumber" name="L441" href="#L441">441</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> c = getConnection();
-<a class="jxr_linenumber" name="L442" href="#L442">442</a> 				<strong class="jxr_keyword">var</strong> getSession = c.query(GET_JOB_SESSION);
-<a class="jxr_linenumber" name="L443" href="#L443">443</a> 				<strong class="jxr_keyword">var</strong> getNMPIJob = c.query(GET_JOB_NMPI_JOB);
-<a class="jxr_linenumber" name="L444" href="#L444">444</a> 				<strong class="jxr_keyword">var</strong> getUsage = c.query(GET_JOB_USAGE_AND_QUOTA)) {
-<a class="jxr_linenumber" name="L445" href="#L445">445</a> 
-<a class="jxr_linenumber" name="L446" href="#L446">446</a> 			<em class="jxr_comment">// Get the quota used</em>
-<a class="jxr_linenumber" name="L447" href="#L447">447</a> 			<strong class="jxr_keyword">var</strong> quota = getUsage.call1(
-<a class="jxr_linenumber" name="L448" href="#L448">448</a> 					r -&gt; r.getLong(<span class="jxr_string">"quota_used"</span>), jobId);
-<a class="jxr_linenumber" name="L449" href="#L449">449</a> 			<em class="jxr_comment">// If job has associated session, update quota in session</em>
-<a class="jxr_linenumber" name="L450" href="#L450">450</a> 			getSession.call1(
-<a class="jxr_linenumber" name="L451" href="#L451">451</a> 					r -&gt; <strong class="jxr_keyword">new</strong> Session(r), jobId).ifPresent(
-<a class="jxr_linenumber" name="L452" href="#L452">452</a> 					session -&gt; {
-<a class="jxr_linenumber" name="L453" href="#L453">453</a> 							<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L454" href="#L454">454</a> 								<strong class="jxr_keyword">var</strong> update = <strong class="jxr_keyword">new</strong> <a name="SessionResourceUpdate" href="../../../../../../uk/ac/manchester/spinnaker/alloc/nmpi/SessionResourceUpdate.html#SessionResourceUpdate">SessionResourceUpdate</a>();
-<a class="jxr_linenumber" name="L455" href="#L455">455</a> 								update.setStatus(<span class="jxr_string">"finished"</span>);
-<a class="jxr_linenumber" name="L456" href="#L456">456</a> 								update.setResourceUsage(getResourceUsage(
-<a class="jxr_linenumber" name="L457" href="#L457">457</a> 										quota.get(), session.quotaUnits));
-<a class="jxr_linenumber" name="L458" href="#L458">458</a> 								nmpiProxy.setSessionStatusAndResources(
-<a class="jxr_linenumber" name="L459" href="#L459">459</a> 										quotaProps.getNMPIApiKey(), session.id,
-<a class="jxr_linenumber" name="L460" href="#L460">460</a> 										update);
-<a class="jxr_linenumber" name="L461" href="#L461">461</a> 							} <strong class="jxr_keyword">catch</strong> (BadRequestException e) {
-<a class="jxr_linenumber" name="L462" href="#L462">462</a> 								log.error(e.getResponse().readEntity(
-<a class="jxr_linenumber" name="L463" href="#L463">463</a> 										String.<strong class="jxr_keyword">class</strong>));
-<a class="jxr_linenumber" name="L464" href="#L464">464</a> 								<strong class="jxr_keyword">throw</strong> e;
-<a class="jxr_linenumber" name="L465" href="#L465">465</a> 							}
-<a class="jxr_linenumber" name="L466" href="#L466">466</a> 						});
+<a class="jxr_linenumber" name="L440" href="#L440">440</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">		 * Construct the user and group records if necessary and associate them.</em>
+<a class="jxr_linenumber" name="L442" href="#L442">442</a> <em class="jxr_javadoccomment">		 *</em>
+<a class="jxr_linenumber" name="L443" href="#L443">443</a> <em class="jxr_javadoccomment">		 * @param user</em>
+<a class="jxr_linenumber" name="L444" href="#L444">444</a> <em class="jxr_javadoccomment">		 *            The user name.</em>
+<a class="jxr_linenumber" name="L445" href="#L445">445</a> <em class="jxr_javadoccomment">		 * @param job</em>
+<a class="jxr_linenumber" name="L446" href="#L446">446</a> <em class="jxr_javadoccomment">		 *            The NMPI job details containing the collabratory (group)</em>
+<a class="jxr_linenumber" name="L447" href="#L447">447</a> <em class="jxr_javadoccomment">		 *            name.</em>
+<a class="jxr_linenumber" name="L448" href="#L448">448</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L449" href="#L449">449</a> 		<strong class="jxr_keyword">void</strong> inflateUser(String user, <a name="Job" href="../../../../../../uk/ac/manchester/spinnaker/alloc/nmpi/Job.html#Job">Job</a> job) {
+<a class="jxr_linenumber" name="L450" href="#L450">450</a> 			<strong class="jxr_keyword">var</strong> userId = getUserByName(user).or(() -&gt; {
+<a class="jxr_linenumber" name="L451" href="#L451">451</a> 				<em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L452" href="#L452">452</a> <em class="jxr_comment">				 * The user has never logged in directly, so we have to create</em>
+<a class="jxr_linenumber" name="L453" href="#L453">453</a> <em class="jxr_comment">				 * them.</em>
+<a class="jxr_linenumber" name="L454" href="#L454">454</a> <em class="jxr_comment">				 */</em>
+<a class="jxr_linenumber" name="L455" href="#L455">455</a> 				<strong class="jxr_keyword">if</strong> (!createUser(user)) {
+<a class="jxr_linenumber" name="L456" href="#L456">456</a> 					log.warn(<span class="jxr_string">"failed to make user: {}"</span>, user);
+<a class="jxr_linenumber" name="L457" href="#L457">457</a> 				}
+<a class="jxr_linenumber" name="L458" href="#L458">458</a> 				<strong class="jxr_keyword">return</strong> getUserByName(user);
+<a class="jxr_linenumber" name="L459" href="#L459">459</a> 			});
+<a class="jxr_linenumber" name="L460" href="#L460">460</a> 
+<a class="jxr_linenumber" name="L461" href="#L461">461</a> 			createGroup(job.getCollab());
+<a class="jxr_linenumber" name="L462" href="#L462">462</a> 			<strong class="jxr_keyword">var</strong> groupId = getGroupByName(job.getCollab());
+<a class="jxr_linenumber" name="L463" href="#L463">463</a> 			addUserToGroup(userId.orElseThrow(() -&gt; <strong class="jxr_keyword">new</strong> IllegalStateException(
+<a class="jxr_linenumber" name="L464" href="#L464">464</a> 					<span class="jxr_string">"failed to find or create user"</span>)), groupId);
+<a class="jxr_linenumber" name="L465" href="#L465">465</a> 		}
+<a class="jxr_linenumber" name="L466" href="#L466">466</a> 	}
 <a class="jxr_linenumber" name="L467" href="#L467">467</a> 
-<a class="jxr_linenumber" name="L468" href="#L468">468</a> 			<em class="jxr_comment">// If job has associated NMPI job, update quota on NMPI job</em>
-<a class="jxr_linenumber" name="L469" href="#L469">469</a> 			getNMPIJob.call1(r -&gt; <strong class="jxr_keyword">new</strong> NMPIJob(r), jobId).ifPresent(
-<a class="jxr_linenumber" name="L470" href="#L470">470</a> 					nmpiJob -&gt; {
-<a class="jxr_linenumber" name="L471" href="#L471">471</a> 						<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L472" href="#L472">472</a> 							<strong class="jxr_keyword">var</strong> update = <strong class="jxr_keyword">new</strong> <a name="JobResourceUpdate" href="../../../../../../uk/ac/manchester/spinnaker/alloc/nmpi/JobResourceUpdate.html#JobResourceUpdate">JobResourceUpdate</a>();
-<a class="jxr_linenumber" name="L473" href="#L473">473</a> 							update.setResourceUsage(getResourceUsage(
-<a class="jxr_linenumber" name="L474" href="#L474">474</a> 									quota.get(), nmpiJob.quotaUnits));
-<a class="jxr_linenumber" name="L475" href="#L475">475</a> 							nmpiProxy.setJobResources(
-<a class="jxr_linenumber" name="L476" href="#L476">476</a> 									quotaProps.getNMPIApiKey(), nmpiJob.id,
-<a class="jxr_linenumber" name="L477" href="#L477">477</a> 									update);
-<a class="jxr_linenumber" name="L478" href="#L478">478</a> 						} <strong class="jxr_keyword">catch</strong> (BadRequestException e) {
-<a class="jxr_linenumber" name="L479" href="#L479">479</a> 							log.error(e.getResponse().readEntity(String.<strong class="jxr_keyword">class</strong>));
-<a class="jxr_linenumber" name="L480" href="#L480">480</a> 							<strong class="jxr_keyword">throw</strong> e;
-<a class="jxr_linenumber" name="L481" href="#L481">481</a> 						}
-<a class="jxr_linenumber" name="L482" href="#L482">482</a> 					});
+<a class="jxr_linenumber" name="L468" href="#L468">468</a> 	<strong class="jxr_keyword">final</strong> Optional&lt;NMPIJobQuotaDetails&gt; mayUseNMPIJob(String user,
+<a class="jxr_linenumber" name="L469" href="#L469">469</a> 			<strong class="jxr_keyword">int</strong> nmpiJobId) {
+<a class="jxr_linenumber" name="L470" href="#L470">470</a> 		<em class="jxr_comment">// Read job from NMPI to get collab ID</em>
+<a class="jxr_linenumber" name="L471" href="#L471">471</a> 		<strong class="jxr_keyword">var</strong> job = nmpi.getJob(nmpiJobId);
+<a class="jxr_linenumber" name="L472" href="#L472">472</a> 
+<a class="jxr_linenumber" name="L473" href="#L473">473</a> 		<em class="jxr_comment">// If it is possible to run this job, we need to associate the user</em>
+<a class="jxr_linenumber" name="L474" href="#L474">474</a> 		<em class="jxr_comment">// with it because only special users can run jobs like this.</em>
+<a class="jxr_linenumber" name="L475" href="#L475">475</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> sql = <strong class="jxr_keyword">new</strong> InflateUser()) {
+<a class="jxr_linenumber" name="L476" href="#L476">476</a> 			sql.transaction(() -&gt; sql.inflateUser(user, job));
+<a class="jxr_linenumber" name="L477" href="#L477">477</a> 		}
+<a class="jxr_linenumber" name="L478" href="#L478">478</a> 
+<a class="jxr_linenumber" name="L479" href="#L479">479</a> 		<em class="jxr_comment">// This is now a collab so check there instead</em>
+<a class="jxr_linenumber" name="L480" href="#L480">480</a> 		<strong class="jxr_keyword">var</strong> quotaUnits = mayCreateNMPISession(job.getCollab());
+<a class="jxr_linenumber" name="L481" href="#L481">481</a> 		<strong class="jxr_keyword">if</strong> (quotaUnits.isEmpty()) {
+<a class="jxr_linenumber" name="L482" href="#L482">482</a> 			<strong class="jxr_keyword">return</strong> Optional.empty();
 <a class="jxr_linenumber" name="L483" href="#L483">483</a> 		}
-<a class="jxr_linenumber" name="L484" href="#L484">484</a> 	}
-<a class="jxr_linenumber" name="L485" href="#L485">485</a> 
-<a class="jxr_linenumber" name="L486" href="#L486">486</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> Session {
-<a class="jxr_linenumber" name="L487" href="#L487">487</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> id;
+<a class="jxr_linenumber" name="L484" href="#L484">484</a> 
+<a class="jxr_linenumber" name="L485" href="#L485">485</a> 		<strong class="jxr_keyword">return</strong> Optional.of(
+<a class="jxr_linenumber" name="L486" href="#L486">486</a> 				<strong class="jxr_keyword">new</strong> NMPIJobQuotaDetails(job.getCollab(), quotaUnits.get()));
+<a class="jxr_linenumber" name="L487" href="#L487">487</a> 	}
 <a class="jxr_linenumber" name="L488" href="#L488">488</a> 
-<a class="jxr_linenumber" name="L489" href="#L489">489</a> 		<strong class="jxr_keyword">private</strong> String quotaUnits;
-<a class="jxr_linenumber" name="L490" href="#L490">490</a> 
-<a class="jxr_linenumber" name="L491" href="#L491">491</a> 		<strong class="jxr_keyword">private</strong> Session(<a name="Row" href="../../../../../../uk/ac/manchester/spinnaker/alloc/db/Row.html#Row">Row</a> r) {
-<a class="jxr_linenumber" name="L492" href="#L492">492</a> 			<strong class="jxr_keyword">this</strong>.id = r.getInt(<span class="jxr_string">"session_id"</span>);
-<a class="jxr_linenumber" name="L493" href="#L493">493</a> 			<strong class="jxr_keyword">this</strong>.quotaUnits = r.getString(<span class="jxr_string">"quota_units"</span>);
-<a class="jxr_linenumber" name="L494" href="#L494">494</a> 		}
-<a class="jxr_linenumber" name="L495" href="#L495">495</a> 	}
-<a class="jxr_linenumber" name="L496" href="#L496">496</a> 
-<a class="jxr_linenumber" name="L497" href="#L497">497</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> NMPIJob {
-<a class="jxr_linenumber" name="L498" href="#L498">498</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> id;
-<a class="jxr_linenumber" name="L499" href="#L499">499</a> 
-<a class="jxr_linenumber" name="L500" href="#L500">500</a> 		<strong class="jxr_keyword">private</strong> String quotaUnits;
+<a class="jxr_linenumber" name="L489" href="#L489">489</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> NMPIJobQuotaDetails {
+<a class="jxr_linenumber" name="L490" href="#L490">490</a> 		<em class="jxr_javadoccomment">/** The collaboratory ID. */</em>
+<a class="jxr_linenumber" name="L491" href="#L491">491</a> 		<strong class="jxr_keyword">final</strong> String collabId;
+<a class="jxr_linenumber" name="L492" href="#L492">492</a> 
+<a class="jxr_linenumber" name="L493" href="#L493">493</a> 		<em class="jxr_javadoccomment">/** The units of the Quota. */</em>
+<a class="jxr_linenumber" name="L494" href="#L494">494</a> 		<strong class="jxr_keyword">final</strong> String quotaUnits;
+<a class="jxr_linenumber" name="L495" href="#L495">495</a> 
+<a class="jxr_linenumber" name="L496" href="#L496">496</a> 		<strong class="jxr_keyword">private</strong> NMPIJobQuotaDetails(String collabId, String quotaUnits) {
+<a class="jxr_linenumber" name="L497" href="#L497">497</a> 			<strong class="jxr_keyword">this</strong>.collabId = collabId;
+<a class="jxr_linenumber" name="L498" href="#L498">498</a> 			<strong class="jxr_keyword">this</strong>.quotaUnits = quotaUnits;
+<a class="jxr_linenumber" name="L499" href="#L499">499</a> 		}
+<a class="jxr_linenumber" name="L500" href="#L500">500</a> 	}
 <a class="jxr_linenumber" name="L501" href="#L501">501</a> 
-<a class="jxr_linenumber" name="L502" href="#L502">502</a> 		<strong class="jxr_keyword">private</strong> NMPIJob(<a name="Row" href="../../../../../../uk/ac/manchester/spinnaker/alloc/db/Row.html#Row">Row</a> r) {
-<a class="jxr_linenumber" name="L503" href="#L503">503</a> 			<strong class="jxr_keyword">this</strong>.id = r.getInt(<span class="jxr_string">"nmpi_job_id"</span>);
-<a class="jxr_linenumber" name="L504" href="#L504">504</a> 			<strong class="jxr_keyword">this</strong>.quotaUnits = r.getString(<span class="jxr_string">"quota_units"</span>);
-<a class="jxr_linenumber" name="L505" href="#L505">505</a> 		}
-<a class="jxr_linenumber" name="L506" href="#L506">506</a> 	}
-<a class="jxr_linenumber" name="L507" href="#L507">507</a> 
-<a class="jxr_linenumber" name="L508" href="#L508">508</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a name="ResourceUsage" href="../../../../../../uk/ac/manchester/spinnaker/alloc/nmpi/ResourceUsage.html#ResourceUsage">ResourceUsage</a> getResourceUsage(<strong class="jxr_keyword">long</strong> boardSeconds,
-<a class="jxr_linenumber" name="L509" href="#L509">509</a> 			String units) {
-<a class="jxr_linenumber" name="L510" href="#L510">510</a> 		ResourceUsage resourceUsage = <strong class="jxr_keyword">new</strong> <a name="ResourceUsage" href="../../../../../../uk/ac/manchester/spinnaker/alloc/nmpi/ResourceUsage.html#ResourceUsage">ResourceUsage</a>();
-<a class="jxr_linenumber" name="L511" href="#L511">511</a> 		resourceUsage.setUnits(units);
-<a class="jxr_linenumber" name="L512" href="#L512">512</a> 		<strong class="jxr_keyword">if</strong> (units.equals(BOARD_SECONDS)) {
-<a class="jxr_linenumber" name="L513" href="#L513">513</a> 			resourceUsage.setValue(boardSeconds);
-<a class="jxr_linenumber" name="L514" href="#L514">514</a> 		} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (units.equals(CORE_HOURS)) {
-<a class="jxr_linenumber" name="L515" href="#L515">515</a> 			resourceUsage.setValue(toCoreHours(boardSeconds));
-<a class="jxr_linenumber" name="L516" href="#L516">516</a> 		} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L517" href="#L517">517</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(<span class="jxr_string">"Unknown units "</span> + units);
-<a class="jxr_linenumber" name="L518" href="#L518">518</a> 		}
-<a class="jxr_linenumber" name="L519" href="#L519">519</a> 		<strong class="jxr_keyword">return</strong> resourceUsage;
-<a class="jxr_linenumber" name="L520" href="#L520">520</a> 	}
-<a class="jxr_linenumber" name="L521" href="#L521">521</a> 
-<a class="jxr_linenumber" name="L522" href="#L522">522</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L523" href="#L523">523</a> <em class="jxr_javadoccomment">	 * Convert board-seconds to core-hours (approximately).</em>
-<a class="jxr_linenumber" name="L524" href="#L524">524</a> <em class="jxr_javadoccomment">	 * @param boardSeconds The number of board-seconds to convert.</em>
-<a class="jxr_linenumber" name="L525" href="#L525">525</a> <em class="jxr_javadoccomment">	 * @return The number of board-hours, which may have fractional values.</em>
-<a class="jxr_linenumber" name="L526" href="#L526">526</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L527" href="#L527">527</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">double</strong> toCoreHours(<strong class="jxr_keyword">long</strong> boardSeconds) {
-<a class="jxr_linenumber" name="L528" href="#L528">528</a> 		<strong class="jxr_keyword">return</strong> ((<strong class="jxr_keyword">double</strong>) (boardSeconds * APPROX_CORES_PER_BOARD))
-<a class="jxr_linenumber" name="L529" href="#L529">529</a> 				/ SECONDS_PER_HOUR;
-<a class="jxr_linenumber" name="L530" href="#L530">530</a> 	}
-<a class="jxr_linenumber" name="L531" href="#L531">531</a> 
-<a class="jxr_linenumber" name="L532" href="#L532">532</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L533" href="#L533">533</a> <em class="jxr_javadoccomment">	 * Convert core-hours to board-seconds (approximately).</em>
-<a class="jxr_linenumber" name="L534" href="#L534">534</a> <em class="jxr_javadoccomment">	 * @param coreHours The number of core-hours to convert.</em>
-<a class="jxr_linenumber" name="L535" href="#L535">535</a> <em class="jxr_javadoccomment">	 * @return The integer number of board seconds.</em>
-<a class="jxr_linenumber" name="L536" href="#L536">536</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L537" href="#L537">537</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">long</strong> toBoardSeconds(<strong class="jxr_keyword">double</strong> coreHours) {
-<a class="jxr_linenumber" name="L538" href="#L538">538</a> 		<strong class="jxr_keyword">return</strong> (<strong class="jxr_keyword">long</strong>) ((coreHours * SECONDS_PER_HOUR) / APPROX_CORES_PER_BOARD);
-<a class="jxr_linenumber" name="L539" href="#L539">539</a> 	}
+<a class="jxr_linenumber" name="L502" href="#L502">502</a> 	<strong class="jxr_keyword">void</strong> associateNMPIJob(<strong class="jxr_keyword">int</strong> jobId, <strong class="jxr_keyword">int</strong> nmpiJobId, String quotaUnits) {
+<a class="jxr_linenumber" name="L503" href="#L503">503</a> 		<em class="jxr_comment">// Associate NMPI Job with job in database</em>
+<a class="jxr_linenumber" name="L504" href="#L504">504</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> c = getConnection();
+<a class="jxr_linenumber" name="L505" href="#L505">505</a> 				<strong class="jxr_keyword">var</strong> setNMPIJob = c.update(SET_JOB_NMPI_JOB)) {
+<a class="jxr_linenumber" name="L506" href="#L506">506</a> 			c.transaction(() -&gt; setNMPIJob.call(jobId, nmpiJobId, quotaUnits));
+<a class="jxr_linenumber" name="L507" href="#L507">507</a> 		}
+<a class="jxr_linenumber" name="L508" href="#L508">508</a> 	}
+<a class="jxr_linenumber" name="L509" href="#L509">509</a> 
+<a class="jxr_linenumber" name="L510" href="#L510">510</a> 	<em class="jxr_javadoccomment">/** Results of database queries. */</em>
+<a class="jxr_linenumber" name="L511" href="#L511">511</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> FinishInfo {
+<a class="jxr_linenumber" name="L512" href="#L512">512</a> 		Optional&lt;Long&gt; quota;
+<a class="jxr_linenumber" name="L513" href="#L513">513</a> 
+<a class="jxr_linenumber" name="L514" href="#L514">514</a> 		Optional&lt;Session&gt; session;
+<a class="jxr_linenumber" name="L515" href="#L515">515</a> 
+<a class="jxr_linenumber" name="L516" href="#L516">516</a> 		Optional&lt;NMPIJob&gt; job;
+<a class="jxr_linenumber" name="L517" href="#L517">517</a> 	}
+<a class="jxr_linenumber" name="L518" href="#L518">518</a> 
+<a class="jxr_linenumber" name="L519" href="#L519">519</a> 	<strong class="jxr_keyword">private</strong> FinishInfo getFinishingInfo(<strong class="jxr_keyword">int</strong> jobId) {
+<a class="jxr_linenumber" name="L520" href="#L520">520</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> c = getConnection();
+<a class="jxr_linenumber" name="L521" href="#L521">521</a> 				<strong class="jxr_keyword">var</strong> getSession = c.query(GET_JOB_SESSION);
+<a class="jxr_linenumber" name="L522" href="#L522">522</a> 				<strong class="jxr_keyword">var</strong> getNMPIJob = c.query(GET_JOB_NMPI_JOB);
+<a class="jxr_linenumber" name="L523" href="#L523">523</a> 				<strong class="jxr_keyword">var</strong> getUsage = c.query(GET_JOB_USAGE_AND_QUOTA)) {
+<a class="jxr_linenumber" name="L524" href="#L524">524</a> 			<em class="jxr_comment">// Get the quota used</em>
+<a class="jxr_linenumber" name="L525" href="#L525">525</a> 			<strong class="jxr_keyword">return</strong> c.transaction(false, () -&gt; {
+<a class="jxr_linenumber" name="L526" href="#L526">526</a> 				<strong class="jxr_keyword">var</strong> i = <strong class="jxr_keyword">new</strong> FinishInfo();
+<a class="jxr_linenumber" name="L527" href="#L527">527</a> 				i.quota = getUsage.call1(r -&gt; r.getLong(<span class="jxr_string">"quota_used"</span>), jobId);
+<a class="jxr_linenumber" name="L528" href="#L528">528</a> 				i.session = getSession.call1(Session::<strong class="jxr_keyword">new</strong>, jobId);
+<a class="jxr_linenumber" name="L529" href="#L529">529</a> 				i.job = getNMPIJob.call1(NMPIJob::<strong class="jxr_keyword">new</strong>, jobId);
+<a class="jxr_linenumber" name="L530" href="#L530">530</a> 				<strong class="jxr_keyword">return</strong> i;
+<a class="jxr_linenumber" name="L531" href="#L531">531</a> 			});
+<a class="jxr_linenumber" name="L532" href="#L532">532</a> 		}
+<a class="jxr_linenumber" name="L533" href="#L533">533</a> 	}
+<a class="jxr_linenumber" name="L534" href="#L534">534</a> 
+<a class="jxr_linenumber" name="L535" href="#L535">535</a> 	<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">void</strong> finishJob(<strong class="jxr_keyword">int</strong> jobId) {
+<a class="jxr_linenumber" name="L536" href="#L536">536</a> 		<em class="jxr_comment">// Get the information about the job from the DB</em>
+<a class="jxr_linenumber" name="L537" href="#L537">537</a> 		<strong class="jxr_keyword">var</strong> info = getFinishingInfo(jobId);
+<a class="jxr_linenumber" name="L538" href="#L538">538</a> 
+<a class="jxr_linenumber" name="L539" href="#L539">539</a> 		<em class="jxr_comment">// From here on, we don't touch the DB but we do touch the network</em>
 <a class="jxr_linenumber" name="L540" href="#L540">540</a> 
-<a class="jxr_linenumber" name="L541" href="#L541">541</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L542" href="#L542">542</a> <em class="jxr_javadoccomment">	 * Operations for testing only.</em>
-<a class="jxr_linenumber" name="L543" href="#L543">543</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L544" href="#L544">544</a> <em class="jxr_javadoccomment">	 * @hidden</em>
-<a class="jxr_linenumber" name="L545" href="#L545">545</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L546" href="#L546">546</a> 	@ForTestingOnly
-<a class="jxr_linenumber" name="L547" href="#L547">547</a> 	<strong class="jxr_keyword">interface</strong> TestAPI {
-<a class="jxr_linenumber" name="L548" href="#L548">548</a> 		<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L549" href="#L549">549</a> <em class="jxr_javadoccomment">		 * Consolidates usage from finished jobs onto quotas.</em>
-<a class="jxr_linenumber" name="L550" href="#L550">550</a> <em class="jxr_javadoccomment">		 *</em>
-<a class="jxr_linenumber" name="L551" href="#L551">551</a> <em class="jxr_javadoccomment">		 * @param c</em>
-<a class="jxr_linenumber" name="L552" href="#L552">552</a> <em class="jxr_javadoccomment">		 *            How to talk to the DB.</em>
-<a class="jxr_linenumber" name="L553" href="#L553">553</a> <em class="jxr_javadoccomment">		 */</em>
-<a class="jxr_linenumber" name="L554" href="#L554">554</a> 		<strong class="jxr_keyword">void</strong> doConsolidate(Connection c);
-<a class="jxr_linenumber" name="L555" href="#L555">555</a> 	}
+<a class="jxr_linenumber" name="L541" href="#L541">541</a> 		<strong class="jxr_keyword">if</strong> (!info.quota.isPresent()) {
+<a class="jxr_linenumber" name="L542" href="#L542">542</a> 			<em class="jxr_comment">// No quota? No update!</em>
+<a class="jxr_linenumber" name="L543" href="#L543">543</a> 			<strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L544" href="#L544">544</a> 		}
+<a class="jxr_linenumber" name="L545" href="#L545">545</a> 
+<a class="jxr_linenumber" name="L546" href="#L546">546</a> 		<em class="jxr_comment">// If job has associated session, update quota in session</em>
+<a class="jxr_linenumber" name="L547" href="#L547">547</a> 		info.session.ifPresent(session -&gt; {
+<a class="jxr_linenumber" name="L548" href="#L548">548</a> 			<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L549" href="#L549">549</a> 				nmpi.setSessionStatusAndResources(session.id, <span class="jxr_string">"finished"</span>,
+<a class="jxr_linenumber" name="L550" href="#L550">550</a> 						getResourceUsage(info.quota.get(), session.quotaUnits));
+<a class="jxr_linenumber" name="L551" href="#L551">551</a> 			} <strong class="jxr_keyword">catch</strong> (BadRequestException e) {
+<a class="jxr_linenumber" name="L552" href="#L552">552</a> 				log.error(e.getResponse().readEntity(String.<strong class="jxr_keyword">class</strong>));
+<a class="jxr_linenumber" name="L553" href="#L553">553</a> 				<strong class="jxr_keyword">throw</strong> e;
+<a class="jxr_linenumber" name="L554" href="#L554">554</a> 			}
+<a class="jxr_linenumber" name="L555" href="#L555">555</a> 		});
 <a class="jxr_linenumber" name="L556" href="#L556">556</a> 
-<a class="jxr_linenumber" name="L557" href="#L557">557</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L558" href="#L558">558</a> <em class="jxr_javadoccomment">	 * @return The test interface.</em>
-<a class="jxr_linenumber" name="L559" href="#L559">559</a> <em class="jxr_javadoccomment">	 * @deprecated This interface is just for testing.</em>
-<a class="jxr_linenumber" name="L560" href="#L560">560</a> <em class="jxr_javadoccomment">	 * @hidden</em>
-<a class="jxr_linenumber" name="L561" href="#L561">561</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L562" href="#L562">562</a> 	@ForTestingOnly
-<a class="jxr_linenumber" name="L563" href="#L563">563</a> 	@RestrictedApi(explanation = <span class="jxr_string">"just for testing"</span>, link = <span class="jxr_string">"index.html"</span>,
-<a class="jxr_linenumber" name="L564" href="#L564">564</a> 			allowedOnPath = <span class="jxr_string">".*/src/test/java/.*"</span>)
-<a class="jxr_linenumber" name="L565" href="#L565">565</a> 	@Deprecated
-<a class="jxr_linenumber" name="L566" href="#L566">566</a> 	TestAPI getTestAPI() {
-<a class="jxr_linenumber" name="L567" href="#L567">567</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
-<a class="jxr_linenumber" name="L568" href="#L568">568</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TestAPI() {
-<a class="jxr_linenumber" name="L569" href="#L569">569</a> 			@Override
-<a class="jxr_linenumber" name="L570" href="#L570">570</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> doConsolidate(Connection c) {
-<a class="jxr_linenumber" name="L571" href="#L571">571</a> 				QuotaManager.<strong class="jxr_keyword">this</strong>.doConsolidate(c);
-<a class="jxr_linenumber" name="L572" href="#L572">572</a> 			}
-<a class="jxr_linenumber" name="L573" href="#L573">573</a> 		};
-<a class="jxr_linenumber" name="L574" href="#L574">574</a> 	}
-<a class="jxr_linenumber" name="L575" href="#L575">575</a> }
+<a class="jxr_linenumber" name="L557" href="#L557">557</a> 		<em class="jxr_comment">// If job has associated NMPI job, update quota on NMPI job</em>
+<a class="jxr_linenumber" name="L558" href="#L558">558</a> 		info.job.ifPresent(nmpiJob -&gt; {
+<a class="jxr_linenumber" name="L559" href="#L559">559</a> 			<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L560" href="#L560">560</a> 				nmpi.setJobResources(nmpiJob.id,
+<a class="jxr_linenumber" name="L561" href="#L561">561</a> 						getResourceUsage(info.quota.get(), nmpiJob.quotaUnits));
+<a class="jxr_linenumber" name="L562" href="#L562">562</a> 			} <strong class="jxr_keyword">catch</strong> (BadRequestException e) {
+<a class="jxr_linenumber" name="L563" href="#L563">563</a> 				log.error(e.getResponse().readEntity(String.<strong class="jxr_keyword">class</strong>));
+<a class="jxr_linenumber" name="L564" href="#L564">564</a> 				<strong class="jxr_keyword">throw</strong> e;
+<a class="jxr_linenumber" name="L565" href="#L565">565</a> 			}
+<a class="jxr_linenumber" name="L566" href="#L566">566</a> 		});
+<a class="jxr_linenumber" name="L567" href="#L567">567</a> 	}
+<a class="jxr_linenumber" name="L568" href="#L568">568</a> 
+<a class="jxr_linenumber" name="L569" href="#L569">569</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> Session {
+<a class="jxr_linenumber" name="L570" href="#L570">570</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> id;
+<a class="jxr_linenumber" name="L571" href="#L571">571</a> 
+<a class="jxr_linenumber" name="L572" href="#L572">572</a> 		<strong class="jxr_keyword">private</strong> String quotaUnits;
+<a class="jxr_linenumber" name="L573" href="#L573">573</a> 
+<a class="jxr_linenumber" name="L574" href="#L574">574</a> 		<strong class="jxr_keyword">private</strong> Session(<a name="Row" href="../../../../../../uk/ac/manchester/spinnaker/alloc/db/Row.html#Row">Row</a> r) {
+<a class="jxr_linenumber" name="L575" href="#L575">575</a> 			<strong class="jxr_keyword">this</strong>.id = r.getInt(<span class="jxr_string">"session_id"</span>);
+<a class="jxr_linenumber" name="L576" href="#L576">576</a> 			<strong class="jxr_keyword">this</strong>.quotaUnits = r.getString(<span class="jxr_string">"quota_units"</span>);
+<a class="jxr_linenumber" name="L577" href="#L577">577</a> 		}
+<a class="jxr_linenumber" name="L578" href="#L578">578</a> 	}
+<a class="jxr_linenumber" name="L579" href="#L579">579</a> 
+<a class="jxr_linenumber" name="L580" href="#L580">580</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> NMPIJob {
+<a class="jxr_linenumber" name="L581" href="#L581">581</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> id;
+<a class="jxr_linenumber" name="L582" href="#L582">582</a> 
+<a class="jxr_linenumber" name="L583" href="#L583">583</a> 		<strong class="jxr_keyword">private</strong> String quotaUnits;
+<a class="jxr_linenumber" name="L584" href="#L584">584</a> 
+<a class="jxr_linenumber" name="L585" href="#L585">585</a> 		<strong class="jxr_keyword">private</strong> NMPIJob(<a name="Row" href="../../../../../../uk/ac/manchester/spinnaker/alloc/db/Row.html#Row">Row</a> r) {
+<a class="jxr_linenumber" name="L586" href="#L586">586</a> 			<strong class="jxr_keyword">this</strong>.id = r.getInt(<span class="jxr_string">"nmpi_job_id"</span>);
+<a class="jxr_linenumber" name="L587" href="#L587">587</a> 			<strong class="jxr_keyword">this</strong>.quotaUnits = r.getString(<span class="jxr_string">"quota_units"</span>);
+<a class="jxr_linenumber" name="L588" href="#L588">588</a> 		}
+<a class="jxr_linenumber" name="L589" href="#L589">589</a> 	}
+<a class="jxr_linenumber" name="L590" href="#L590">590</a> 
+<a class="jxr_linenumber" name="L591" href="#L591">591</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a name="ResourceUsage" href="../../../../../../uk/ac/manchester/spinnaker/alloc/nmpi/ResourceUsage.html#ResourceUsage">ResourceUsage</a> getResourceUsage(<strong class="jxr_keyword">long</strong> boardSeconds,
+<a class="jxr_linenumber" name="L592" href="#L592">592</a> 			String units) {
+<a class="jxr_linenumber" name="L593" href="#L593">593</a> 		<strong class="jxr_keyword">var</strong> resourceUsage = <strong class="jxr_keyword">new</strong> <a name="ResourceUsage" href="../../../../../../uk/ac/manchester/spinnaker/alloc/nmpi/ResourceUsage.html#ResourceUsage">ResourceUsage</a>();
+<a class="jxr_linenumber" name="L594" href="#L594">594</a> 		resourceUsage.setUnits(units);
+<a class="jxr_linenumber" name="L595" href="#L595">595</a> 		<strong class="jxr_keyword">if</strong> (units.equals(BOARD_SECONDS)) {
+<a class="jxr_linenumber" name="L596" href="#L596">596</a> 			resourceUsage.setValue(boardSeconds);
+<a class="jxr_linenumber" name="L597" href="#L597">597</a> 		} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (units.equals(CORE_HOURS)) {
+<a class="jxr_linenumber" name="L598" href="#L598">598</a> 			resourceUsage.setValue(toCoreHours(boardSeconds));
+<a class="jxr_linenumber" name="L599" href="#L599">599</a> 		} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L600" href="#L600">600</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Unknown units "</span> + units);
+<a class="jxr_linenumber" name="L601" href="#L601">601</a> 		}
+<a class="jxr_linenumber" name="L602" href="#L602">602</a> 		<strong class="jxr_keyword">return</strong> resourceUsage;
+<a class="jxr_linenumber" name="L603" href="#L603">603</a> 	}
+<a class="jxr_linenumber" name="L604" href="#L604">604</a> 
+<a class="jxr_linenumber" name="L605" href="#L605">605</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L606" href="#L606">606</a> <em class="jxr_javadoccomment">	 * Convert board-seconds to core-hours (approximately).</em>
+<a class="jxr_linenumber" name="L607" href="#L607">607</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L608" href="#L608">608</a> <em class="jxr_javadoccomment">	 * @param boardSeconds</em>
+<a class="jxr_linenumber" name="L609" href="#L609">609</a> <em class="jxr_javadoccomment">	 *            The number of board-seconds to convert.</em>
+<a class="jxr_linenumber" name="L610" href="#L610">610</a> <em class="jxr_javadoccomment">	 * @return The number of board-hours, which may have fractional values.</em>
+<a class="jxr_linenumber" name="L611" href="#L611">611</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L612" href="#L612">612</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">double</strong> toCoreHours(<strong class="jxr_keyword">long</strong> boardSeconds) {
+<a class="jxr_linenumber" name="L613" href="#L613">613</a> 		<strong class="jxr_keyword">return</strong> ((<strong class="jxr_keyword">double</strong>) (boardSeconds * APPROX_CORES_PER_BOARD))
+<a class="jxr_linenumber" name="L614" href="#L614">614</a> 				/ SECONDS_PER_HOUR;
+<a class="jxr_linenumber" name="L615" href="#L615">615</a> 	}
+<a class="jxr_linenumber" name="L616" href="#L616">616</a> 
+<a class="jxr_linenumber" name="L617" href="#L617">617</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L618" href="#L618">618</a> <em class="jxr_javadoccomment">	 * Convert core-hours to board-seconds (approximately).</em>
+<a class="jxr_linenumber" name="L619" href="#L619">619</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L620" href="#L620">620</a> <em class="jxr_javadoccomment">	 * @param coreHours</em>
+<a class="jxr_linenumber" name="L621" href="#L621">621</a> <em class="jxr_javadoccomment">	 *            The number of core-hours to convert.</em>
+<a class="jxr_linenumber" name="L622" href="#L622">622</a> <em class="jxr_javadoccomment">	 * @return The integer number of board seconds.</em>
+<a class="jxr_linenumber" name="L623" href="#L623">623</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L624" href="#L624">624</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">long</strong> toBoardSeconds(<strong class="jxr_keyword">double</strong> coreHours) {
+<a class="jxr_linenumber" name="L625" href="#L625">625</a> 		<strong class="jxr_keyword">return</strong> (<strong class="jxr_keyword">long</strong>) ((coreHours * SECONDS_PER_HOUR) / APPROX_CORES_PER_BOARD);
+<a class="jxr_linenumber" name="L626" href="#L626">626</a> 	}
+<a class="jxr_linenumber" name="L627" href="#L627">627</a> 
+<a class="jxr_linenumber" name="L628" href="#L628">628</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L629" href="#L629">629</a> <em class="jxr_javadoccomment">	 * Operations for testing only.</em>
+<a class="jxr_linenumber" name="L630" href="#L630">630</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L631" href="#L631">631</a> <em class="jxr_javadoccomment">	 * @hidden</em>
+<a class="jxr_linenumber" name="L632" href="#L632">632</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L633" href="#L633">633</a> 	@ForTestingOnly
+<a class="jxr_linenumber" name="L634" href="#L634">634</a> 	<strong class="jxr_keyword">interface</strong> TestAPI {
+<a class="jxr_linenumber" name="L635" href="#L635">635</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L636" href="#L636">636</a> <em class="jxr_javadoccomment">		 * Consolidates usage from finished jobs onto quotas.</em>
+<a class="jxr_linenumber" name="L637" href="#L637">637</a> <em class="jxr_javadoccomment">		 *</em>
+<a class="jxr_linenumber" name="L638" href="#L638">638</a> <em class="jxr_javadoccomment">		 * @param c</em>
+<a class="jxr_linenumber" name="L639" href="#L639">639</a> <em class="jxr_javadoccomment">		 *            How to talk to the DB.</em>
+<a class="jxr_linenumber" name="L640" href="#L640">640</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L641" href="#L641">641</a> 		<strong class="jxr_keyword">void</strong> doConsolidate(Connection c);
+<a class="jxr_linenumber" name="L642" href="#L642">642</a> 	}
+<a class="jxr_linenumber" name="L643" href="#L643">643</a> 
+<a class="jxr_linenumber" name="L644" href="#L644">644</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L645" href="#L645">645</a> <em class="jxr_javadoccomment">	 * @return The test interface.</em>
+<a class="jxr_linenumber" name="L646" href="#L646">646</a> <em class="jxr_javadoccomment">	 * @deprecated This interface is just for testing.</em>
+<a class="jxr_linenumber" name="L647" href="#L647">647</a> <em class="jxr_javadoccomment">	 * @hidden</em>
+<a class="jxr_linenumber" name="L648" href="#L648">648</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L649" href="#L649">649</a> 	@ForTestingOnly
+<a class="jxr_linenumber" name="L650" href="#L650">650</a> 	@RestrictedApi(explanation = <span class="jxr_string">"just for testing"</span>, link = <span class="jxr_string">"index.html"</span>,
+<a class="jxr_linenumber" name="L651" href="#L651">651</a> 			allowedOnPath = <span class="jxr_string">".*/src/test/java/.*"</span>)
+<a class="jxr_linenumber" name="L652" href="#L652">652</a> 	@Deprecated
+<a class="jxr_linenumber" name="L653" href="#L653">653</a> 	TestAPI getTestAPI() {
+<a class="jxr_linenumber" name="L654" href="#L654">654</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
+<a class="jxr_linenumber" name="L655" href="#L655">655</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TestAPI() {
+<a class="jxr_linenumber" name="L656" href="#L656">656</a> 			@Override
+<a class="jxr_linenumber" name="L657" href="#L657">657</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> doConsolidate(Connection c) {
+<a class="jxr_linenumber" name="L658" href="#L658">658</a> 				QuotaManager.<strong class="jxr_keyword">this</strong>.doConsolidate(c);
+<a class="jxr_linenumber" name="L659" href="#L659">659</a> 			}
+<a class="jxr_linenumber" name="L660" href="#L660">660</a> 		};
+<a class="jxr_linenumber" name="L661" href="#L661">661</a> 	}
+<a class="jxr_linenumber" name="L662" href="#L662">662</a> }
+<a class="jxr_linenumber" name="L663" href="#L663">663</a> 
+<a class="jxr_linenumber" name="L664" href="#L664">664</a> <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L665" href="#L665">665</a> <em class="jxr_javadoccomment"> * Wrapper round the proxy and its API key. Does a bit of wrapping and</em>
+<a class="jxr_linenumber" name="L666" href="#L666">666</a> <em class="jxr_javadoccomment"> * unwrapping of arguments and results.</em>
+<a class="jxr_linenumber" name="L667" href="#L667">667</a> <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L668" href="#L668">668</a> <em class="jxr_javadoccomment"> * @author Donal Fellows</em>
+<a class="jxr_linenumber" name="L669" href="#L669">669</a> <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L670" href="#L670">670</a> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a name="NMPI" href="../../../../../../uk/ac/manchester/spinnaker/alloc/allocator/QuotaManager.html#NMPI">NMPI</a> {
+<a class="jxr_linenumber" name="L671" href="#L671">671</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="NMPIv3API" href="../../../../../../uk/ac/manchester/spinnaker/alloc/nmpi/NMPIv3API.html#NMPIv3API">NMPIv3API</a> proxy;
+<a class="jxr_linenumber" name="L672" href="#L672">672</a> 
+<a class="jxr_linenumber" name="L673" href="#L673">673</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> String apiKey;
+<a class="jxr_linenumber" name="L674" href="#L674">674</a> 
+<a class="jxr_linenumber" name="L675" href="#L675">675</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> String platform;
+<a class="jxr_linenumber" name="L676" href="#L676">676</a> 
+<a class="jxr_linenumber" name="L677" href="#L677">677</a> 	NMPI(QuotaProperties quotaProps) {
+<a class="jxr_linenumber" name="L678" href="#L678">678</a> 		proxy = NMPIv3API.createClient(quotaProps.getNMPIUrl());
+<a class="jxr_linenumber" name="L679" href="#L679">679</a> 		apiKey = quotaProps.getNMPIApiKey();
+<a class="jxr_linenumber" name="L680" href="#L680">680</a> 		platform = quotaProps.getNMPIPlaform();
+<a class="jxr_linenumber" name="L681" href="#L681">681</a> 	}
+<a class="jxr_linenumber" name="L682" href="#L682">682</a> 
+<a class="jxr_linenumber" name="L683" href="#L683">683</a> 	Job getJob(<strong class="jxr_keyword">int</strong> jobId) {
+<a class="jxr_linenumber" name="L684" href="#L684">684</a> 		<strong class="jxr_keyword">return</strong> proxy.getJob(apiKey, jobId);
+<a class="jxr_linenumber" name="L685" href="#L685">685</a> 	}
+<a class="jxr_linenumber" name="L686" href="#L686">686</a> 
+<a class="jxr_linenumber" name="L687" href="#L687">687</a> 	<strong class="jxr_keyword">void</strong> setJobResources(<strong class="jxr_keyword">int</strong> jobId, <a name="ResourceUsage" href="../../../../../../uk/ac/manchester/spinnaker/alloc/nmpi/ResourceUsage.html#ResourceUsage">ResourceUsage</a> resources) {
+<a class="jxr_linenumber" name="L688" href="#L688">688</a> 		<strong class="jxr_keyword">var</strong> wrapper = <strong class="jxr_keyword">new</strong> <a name="JobResourceUpdate" href="../../../../../../uk/ac/manchester/spinnaker/alloc/nmpi/JobResourceUpdate.html#JobResourceUpdate">JobResourceUpdate</a>();
+<a class="jxr_linenumber" name="L689" href="#L689">689</a> 		wrapper.setResourceUsage(resources);
+<a class="jxr_linenumber" name="L690" href="#L690">690</a> 		proxy.setJobResources(apiKey, jobId, wrapper);
+<a class="jxr_linenumber" name="L691" href="#L691">691</a> 	}
+<a class="jxr_linenumber" name="L692" href="#L692">692</a> 
+<a class="jxr_linenumber" name="L693" href="#L693">693</a> 	List&lt;Project&gt; getProjects(String status, String collab) {
+<a class="jxr_linenumber" name="L694" href="#L694">694</a> 		<strong class="jxr_keyword">return</strong> proxy.getProjects(apiKey, status, collab);
+<a class="jxr_linenumber" name="L695" href="#L695">695</a> 	}
+<a class="jxr_linenumber" name="L696" href="#L696">696</a> 
+<a class="jxr_linenumber" name="L697" href="#L697">697</a> 	<strong class="jxr_keyword">int</strong> createSession(String collab, String user) {
+<a class="jxr_linenumber" name="L698" href="#L698">698</a> 		<strong class="jxr_keyword">var</strong> request = <strong class="jxr_keyword">new</strong> <a name="SessionRequest" href="../../../../../../uk/ac/manchester/spinnaker/alloc/nmpi/SessionRequest.html#SessionRequest">SessionRequest</a>();
+<a class="jxr_linenumber" name="L699" href="#L699">699</a> 		request.setCollab(collab);
+<a class="jxr_linenumber" name="L700" href="#L700">700</a> 		request.setHardwarePlatform(platform);
+<a class="jxr_linenumber" name="L701" href="#L701">701</a> 		request.setUserId(user);
+<a class="jxr_linenumber" name="L702" href="#L702">702</a> 		<strong class="jxr_keyword">return</strong> proxy.createSession(apiKey, request).getId();
+<a class="jxr_linenumber" name="L703" href="#L703">703</a> 	}
+<a class="jxr_linenumber" name="L704" href="#L704">704</a> 
+<a class="jxr_linenumber" name="L705" href="#L705">705</a> 	<strong class="jxr_keyword">void</strong> setSessionStatusAndResources(<strong class="jxr_keyword">int</strong> sessionId, String status,
+<a class="jxr_linenumber" name="L706" href="#L706">706</a> 			ResourceUsage resources) {
+<a class="jxr_linenumber" name="L707" href="#L707">707</a> 		<strong class="jxr_keyword">var</strong> wrapper = <strong class="jxr_keyword">new</strong> <a name="SessionResourceUpdate" href="../../../../../../uk/ac/manchester/spinnaker/alloc/nmpi/SessionResourceUpdate.html#SessionResourceUpdate">SessionResourceUpdate</a>();
+<a class="jxr_linenumber" name="L708" href="#L708">708</a> 		wrapper.setStatus(status);
+<a class="jxr_linenumber" name="L709" href="#L709">709</a> 		wrapper.setResourceUsage(resources);
+<a class="jxr_linenumber" name="L710" href="#L710">710</a> 		proxy.setSessionStatusAndResources(apiKey, sessionId, wrapper);
+<a class="jxr_linenumber" name="L711" href="#L711">711</a> 	}
+<a class="jxr_linenumber" name="L712" href="#L712">712</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2023 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>
