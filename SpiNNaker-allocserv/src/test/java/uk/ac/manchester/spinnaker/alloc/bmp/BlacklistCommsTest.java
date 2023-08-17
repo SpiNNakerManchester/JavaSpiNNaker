@@ -99,11 +99,16 @@ class BlacklistCommsTest extends TestSupport {
 	 * A faked up running of the BMP worker thread because the main schedule is
 	 * disabled.
 	 *
+	 * @param bmps
+	 *            The IDs of the BMPs to process information for.
+	 * @param count
+	 *            The number of times to run the processing loop.
 	 * @return The future to wait for as part of shutting down. The value is
 	 *         meaningless, but the exceptions potentially thrown are not.
-	 * @throws InterruptedException If interrupted.
+	 * @throws InterruptedException
+	 *             If interrupted.
 	 */
-	private Future<String> bmpWorker(Collection<Integer> bmps)
+	private Future<String> bmpWorker(Collection<Integer> bmps, int count)
 			throws InterruptedException {
 		var ready = new OneShotEvent();
 		var future = exec.submit(() -> {
@@ -121,7 +126,7 @@ class BlacklistCommsTest extends TestSupport {
 	@Timeout(TEST_TIMEOUT)
 	public void getSerialNumber() throws Exception {
 		var bs = stateCtrl.findId(BOARD).orElseThrow();
-		var future = bmpWorker(Set.of(bs.bmpId));
+		var future = bmpWorker(Set.of(bs.bmpId), 1);
 
 		var serialNumber = stateCtrl.getSerialNumber(bs);
 
@@ -133,7 +138,7 @@ class BlacklistCommsTest extends TestSupport {
 	@Timeout(TEST_TIMEOUT)
 	public void readBlacklistFromMachine() throws Exception {
 		var bs = stateCtrl.findId(BOARD).orElseThrow();
-		var future = bmpWorker(Set.of(bs.bmpId));
+		var future = bmpWorker(Set.of(bs.bmpId), 1);
 
 		var bl = stateCtrl.readBlacklistFromMachine(bs).orElseThrow();
 
@@ -145,7 +150,7 @@ class BlacklistCommsTest extends TestSupport {
 	@Timeout(TEST_TIMEOUT)
 	public void writeBlacklistToMachine() throws Exception {
 		var bs = stateCtrl.findId(BOARD).orElseThrow();
-		var future = bmpWorker(Set.of(bs.bmpId));
+		var future = bmpWorker(Set.of(bs.bmpId), 2);
 		assertNotEquals(WRITE_BASELINE, txrxFactory.getCurrentBlacklist());
 
 		stateCtrl.writeBlacklistToMachine(bs,
