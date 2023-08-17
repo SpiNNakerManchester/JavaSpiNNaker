@@ -80,6 +80,8 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  */
 @Service
 public class MachineStateControl extends DatabaseAwareBean {
+	private static final int SHORT_WAIT = 500;
+
 	private static final Logger log = getLogger(MachineStateControl.class);
 
 	@Autowired
@@ -138,6 +140,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 		/** The name of the containing SpiNNaker machine. */
 		public final String machineName;
 
+		/** The machine ID. Unique. */
+		public final int machineId;
+
 		/** The board ID. Unique. */
 		public final int id;
 
@@ -184,6 +189,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 			this.bmpSerial = row.getString("bmp_serial_id");
 			this.physicalSerial = row.getString("physical_serial_id");
 			this.bmpId = row.getInt("bmp_id");
+			this.machineId = row.getInt("machine_id");
 		}
 
 		/**
@@ -597,7 +603,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 			 * sensitive part of the code.
 			 */
 			var ops = lmap(batch, board -> opGenerator.apply(board.boardId));
-			var bmps = new HashSet<>(lmap(batch, board -> board.bmpId));
+			var bmps = new HashSet<>(lmap(batch, board -> board.bmp.bmpId));
 			boolean stop = false;
 			try {
 				bmpController.triggerSearch(bmps);
@@ -798,13 +804,18 @@ public class MachineStateControl extends DatabaseAwareBean {
 		@MustBeClosed
 		Op(@CompileTimeConstant final String operation, Object... args) {
 			boardId = (Integer) args[0];
-			epoch = epochs.getBlacklistEpoch();
+			var e = epochs.getBlacklistEpoch(boardId);
 			op = execute(conn -> {
 				try (var readReq = conn.update(operation)) {
 					return readReq.key(args);
 				}
 			}).orElseThrow(() -> new BlacklistException(
 					"could not create blacklist request"));
+			if (!e.isValid()) {
+				log.warn("early board epoch invalidation");
+				e = epochs.getBlacklistEpoch(boardId);
+			}
+			epoch = e;
 		}
 
 		/**
@@ -827,6 +838,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 				throws InterruptedException, BlacklistException,
 				DataAccessException {
 			var end = now().plus(props.getBlacklistTimeout());
+			boolean once = false;
 			while (end.isAfter(now())) {
 				var result = executeRead(conn -> {
 					try (var getResult =
@@ -838,8 +850,17 @@ public class MachineStateControl extends DatabaseAwareBean {
 				if (result.isPresent()) {
 					return result;
 				}
-				log.debug("Waiting for blacklist change");
-				epoch.waitForChange(props.getBlacklistPoll());
+				if (!epoch.isValid()) {
+					// Things are going wonky; fall back on regular polling
+					if (!once) {
+						log.warn("epoch invalid for board {}?", boardId);
+						once = true;
+					}
+					Thread.sleep(SHORT_WAIT);
+				} else {
+					log.debug("Waiting for blacklist change");
+					epoch.waitForChange(props.getBlacklistPoll());
+				}
 			}
 			return Optional.empty();
 		}

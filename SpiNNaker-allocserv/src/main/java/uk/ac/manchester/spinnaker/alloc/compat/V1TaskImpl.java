@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.compat;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.isAsciiPrintable;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.triad;
@@ -45,7 +46,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -114,12 +114,11 @@ class V1TaskImpl extends V1CompatTask {
 	@Autowired
 	private SpallocAPI spalloc;
 
-	/** The epoch manager. */
-	@Autowired
-	private Epochs epochs;
-
 	@Autowired
 	private CompatHelper helper;
+
+	@Autowired
+	private Epochs epochs;
 
 	/** Encoded form of our special permissions token. */
 	private Permit permit;
@@ -380,7 +379,7 @@ class V1TaskImpl extends V1CompatTask {
 			jd.setPower(job.isPowered());
 			jd.setBoards(job.getBoards().stream().map(
 					b -> new BoardCoordinates(b.getX(), b.getY(), b.getZ()))
-					.collect(Collectors.toList()));
+					.collect(toList()));
 			return jd.build();
 		}
 
@@ -417,37 +416,65 @@ class V1TaskImpl extends V1CompatTask {
 		if (nonNull(jobId)) {
 			var job = getJob(jobId);
 			job.access(host());
-		}
-		manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
-			var actual = permit.authorize(() -> {
-				spalloc.getJobs(false, LOTS, 0).waitForChange(
-						mainProps.getCompat().getNotifyWaitTime());
-				return spalloc.getJobs(false, LOTS, 0).ids();
+			manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
+				if (job.waitForChange(
+						mainProps.getCompat().getNotifyWaitTime())) {
+					writeJobNotification(List.of(jobId));
+				}
 			});
-			if (nonNull(jobId)) {
-				actual.retainAll(List.of(jobId));
-			}
-			writeJobNotification(actual);
-		});
+		} else {
+			manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
+				var actual = permit.authorize(() -> {
+					return spalloc.getJobs(false, LOTS, 0).getChanged(
+							mainProps.getCompat().getNotifyWaitTime());
+				});
+				if (actual.size() > 0) {
+					writeJobNotification(
+							actual.stream().collect(toList()));
+				}
+			});
+		}
 	}
 
 	@Override
-	protected final void notifyMachine(String machine, boolean wantNotify)
+	protected final void notifyMachine(String machineName, boolean wantNotify)
 			throws TaskException {
-		if (nonNull(machine)) {
-			// Validate
-			getMachine(machine);
+		if (nonNull(machineName)) {
+			var machine = getMachine(machineName);
+			manageNotifier(machNotifiers, machineName, wantNotify, () -> {
+				if (machine.waitForChange(
+						mainProps.getCompat().getNotifyWaitTime())) {
+					writeMachineNotification(List.of(machineName));
+				}
+			});
+		} else {
+			manageNotifier(machNotifiers, machineName, wantNotify, () -> {
+				List<String> actual = permit.authorize(() -> {
+					var machines = spalloc.getMachines(false);
+					if (machines.isEmpty()) {
+						// No machines, so don't wait
+						return List.of();
+					}
+					var invMap = machines.values().stream()
+							.collect(toMap(SpallocAPI.Machine::getId,
+									SpallocAPI.Machine::getName));
+					var mIds = machines.values().stream().map(m -> m.getId())
+							.collect(toList());
+					var epoch = epochs.getMachinesEpoch(mIds);
+					try {
+						var changed = epoch.getChanged(
+								mainProps.getCompat().getNotifyWaitTime());
+						return changed.stream().map(id -> invMap.get(id))
+								.collect(toList());
+					} catch (InterruptedException e) {
+						return List.of();
+					}
+				});
+				if (actual.size() > 0) {
+					writeMachineNotification(actual.stream().collect(toList()));
+				}
+			});
 		}
-		manageNotifier(machNotifiers, machine, wantNotify, () -> {
-			epochs.getMachineEpoch()
-					.waitForChange(mainProps.getCompat().getNotifyWaitTime());
-			var actual = new ArrayList<>(permit
-					.authorize(() -> spalloc.getMachines(false)).keySet());
-			if (nonNull(machine)) {
-				actual.retainAll(List.of(machine));
-			}
-			writeMachineNotification(actual);
-		});
 	}
 
 	@Override

@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.InetSocketAddress;
@@ -53,6 +52,7 @@ import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
@@ -105,7 +105,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * Note that synchronisation will be performed on this object.
 	 */
 	@GuardedBy("itself")
-	private final PrintWriter out;
+	private final Writer out;
 
 	/**
 	 * Make an instance that wraps a socket.
@@ -126,8 +126,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		sock.setSoTimeout((int) getProperties().getReceiveTimeout().toMillis());
 
 		in = buffer(new InputStreamReader(sock.getInputStream(), UTF_8));
-		out = new PrintWriter(
-				new OutputStreamWriter(sock.getOutputStream(), UTF_8));
+		out = new OutputStreamWriter(sock.getOutputStream(), UTF_8);
 	}
 
 	/**
@@ -145,7 +144,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		super(srv);
 		this.sock = null;
 		this.in = buffer(in);
-		this.out = new PrintWriter(out);
+		this.out = out;
 	}
 
 	final void handleConnection() {
@@ -160,15 +159,6 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			if (interrupted()) {
 				log.debug("Shutdown on interrupt");
 			}
-		} catch (UnknownIOException e) {
-			/*
-			 * Nothing useful to do in this case except close.
-			 *
-			 * This happens when the problem is detected by a PrintWriter, but
-			 * the problem with PrintWriters is they swallow exceptions and
-			 * throw the information away. I'm not going to fix that.
-			 */
-			log.error("Something went wrong in comms", e);
 		} catch (InterruptedException | InterruptedIOException interrupted) {
 			log.debug("interrupted", interrupted);
 		} catch (IOException e) {
@@ -276,10 +266,10 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 				throw e;
 			}
 		}
+		if (currentThread().isInterrupted()) {
+			throw new InterruptedException();
+		}
 		if (isNull(line) || line.isBlank()) {
-			if (currentThread().isInterrupted()) {
-				throw new InterruptedException();
-			}
 			return Optional.empty();
 		}
 		var c = parseCommand(line);
@@ -304,10 +294,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		log.debug("about to send message: {}", data);
 		// Synch so we definitely don't interleave bits of messages
 		synchronized (out) {
-			out.println(data);
-			if (out.checkError()) {
-				throw new UnknownIOException();
-			}
+			out.write(data + "\r\n");
+			out.flush();
 		}
 	}
 
@@ -375,7 +363,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * @throws IOException
 	 *             If network access fails.
 	 */
-	protected final void writeMachineNotification(List<String> machineNames)
+	protected final void writeMachineNotification(
+			List<String> machineNames)
 			throws IOException {
 		if (!machineNames.isEmpty() && mayWrite()) {
 			sendMessage(new MachineNotifyMessage(machineNames));
@@ -406,6 +395,10 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			log.trace("timeout");
 			// Message was not read by time timeout expired
 			return !currentThread().isInterrupted();
+		} catch (MismatchedInputException e) {
+			log.error("Error on message reception: {}", e.getMessage());
+			writeException(e);
+			return true;
 		} catch (JsonMappingException | JsonParseException e) {
 			log.error("Error on message reception", e);
 			writeException(e);
@@ -870,13 +863,5 @@ final class Oops extends RuntimeException {
 
 	Oops(String msg) {
 		super(msg);
-	}
-}
-
-final class UnknownIOException extends IOException {
-	private static final long serialVersionUID = -852489744228393668L;
-
-	UnknownIOException() {
-		super("unknown error writing message");
 	}
 }
