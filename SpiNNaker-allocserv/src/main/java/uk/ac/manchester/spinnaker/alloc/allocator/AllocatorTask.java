@@ -131,6 +131,13 @@ public class AllocatorTask extends DatabaseAwareBean
 	// instead set by setter in postconstruct of BMPController
 	private BMPController bmpController;
 
+	/**
+	 * Only called by BMP controller.
+	 *
+	 * @param bmpController
+	 *            The BMP controller
+	 * @hidden
+	 */
 	public void setBMPController(BMPController bmpController) {
 		this.bmpController = bmpController;
 	}

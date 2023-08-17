@@ -1073,9 +1073,6 @@ public class BMPController extends DatabaseAwareBean {
 				throws IOException, SpinnmanException, InterruptedException;
 
 		/**
-<<<<<<< HEAD
-		 * Get the most recently thrown BMP processing exception.
-=======
 		 * The core of the scheduler. Will process for all known BMPs.
 		 *
 		 * @param millis
@@ -1092,8 +1089,7 @@ public class BMPController extends DatabaseAwareBean {
 				throws IOException, SpinnmanException, InterruptedException;
 
 		/**
-		 * Get the last BMP exception.
->>>>>>> refs/heads/master
+		 * Get the most recently thrown BMP processing exception.
 		 *
 		 * @return Current processing exception.
 		 */
