@@ -113,6 +113,9 @@ public class BMPController extends DatabaseAwareBean {
 
 	private TaskScheduler scheduler;
 
+	/**
+	 * Map from BMP ID to worker task that handles it.
+	 */
 	private final Map<Integer, Worker> workers = new HashMap<>();
 
 	/**
@@ -1088,6 +1091,22 @@ public class BMPController extends DatabaseAwareBean {
 				throws IOException, SpinnmanException, InterruptedException;
 
 		/**
+		 * The core of the scheduler. Will process for all known BMPs.
+		 *
+		 * @param millis
+		 *            How many milliseconds to sleep before doing a rerun of the
+		 *            scheduler. If zero (or less), only one run will be done.
+		 * @throws IOException
+		 *             If talking to the network fails
+		 * @throws SpinnmanException
+		 *             If a BMP sends an error back
+		 * @throws InterruptedException
+		 *             If the wait for workers to spawn fails.
+		 */
+		void processRequests(long millis)
+				throws IOException, SpinnmanException, InterruptedException;
+
+		/**
 		 * Get the last BMP exception.
 		 *
 		 * @return The exception.
@@ -1119,15 +1138,23 @@ public class BMPController extends DatabaseAwareBean {
 
 			@Override
 			public void processRequests(long millis, Collection<Integer> bmps)
-					throws IOException,	SpinnmanException,
+					throws IOException, SpinnmanException,
 					InterruptedException {
 				/*
 				 * Runs twice because it takes two cycles to fully process a
 				 * request.
 				 */
 				triggerSearch(bmps);
-				Thread.sleep(millis);
-				triggerSearch(bmps);
+				if (millis > 0) {
+					Thread.sleep(millis);
+					triggerSearch(bmps);
+				}
+			}
+
+			@Override
+			public void processRequests(long millis) throws IOException,
+					SpinnmanException, InterruptedException {
+				processRequests(millis, workers.keySet());
 			}
 
 			@Override

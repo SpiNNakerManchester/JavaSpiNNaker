@@ -571,13 +571,12 @@ class SpallocCoreTest extends TestSupport {
 				assertEquals(Optional.empty(), j.getReason());
 				var ts0 = Instant.now().truncatedTo(SECONDS);
 				snooze1s();
-				log.info("pre-termination: {}", j);
 
 				j.destroy("foo bar");
 
 				snooze1s(); // Time for internals to process
 				try {
-					bmpTester.processRequests(1000, Set.of(BMP));
+					bmpTester.processRequests(1000);
 				} catch (Exception e) {
 					log.warn("exception processing BMP requests", e);
 				}
@@ -585,7 +584,6 @@ class SpallocCoreTest extends TestSupport {
 
 				// reread
 				var j2 = spalloc.getJob(p, jobId).orElseThrow();
-				log.info("post-termination: {}", j2);
 				assertEquals(DESTROYED, j2.getState());
 				var ts1 = j2.getFinishTime().orElseThrow();
 				assertFalse(ts0.isAfter(ts1));
