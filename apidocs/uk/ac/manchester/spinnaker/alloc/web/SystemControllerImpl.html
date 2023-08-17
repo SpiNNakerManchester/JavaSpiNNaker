@@ -427,7 +427,7 @@ implements <a href="SystemController.html" title="interface in uk.ac.manchester.
 <li class="blockList">
 <section class="detail">
 <h3><a id="destroyJob(int,java.lang.String)">destroyJob</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/access/prepost/PreAuthorize.html?is-external=true" title="class or interface in org.springframework.security.access.prepost" class="externalLink">@PreAuthorize</a>("#permit.admin or  #permit.nmpiexec or  #permit.name == filterObject.owner.orElse(null)")
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/access/prepost/PreAuthorize.html?is-external=true" title="class or interface in org.springframework.security.access.prepost" class="externalLink">@PreAuthorize</a>("hasRole(\'READER\')")
 </span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">destroyJob</span>&#8203;(<span class="arguments">int&nbsp;id,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reason)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SystemController.html#destroyJob(int,java.lang.String)">SystemController</a></code></span></div>
