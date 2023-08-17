@@ -15,7 +15,9 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
+import static java.util.Collections.newSetFromMap;
 import static java.util.Objects.nonNull;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -28,6 +30,7 @@ import java.util.WeakHashMap;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
@@ -36,9 +39,11 @@ import org.springframework.stereotype.Service;
  * Manages waiting for values.
  *
  * @author Donal Fellows
+ * @author Andrew Rowley
  */
 @Service
 public class Epochs {
+	private static final Logger log = getLogger(Epochs.class);
 
 	/** How long to wait between cleaning of the maps. */
 	private static final Duration CLEANING_SCHEDULE = Duration.ofSeconds(30);
@@ -46,64 +51,45 @@ public class Epochs {
 	@Autowired
 	private TaskScheduler scheduler;
 
-	private final Map<Integer, WeakHashMap<Epoch, Boolean>> jobs =
-			new HashMap<>();
+	/**
+	 * Mapping from job ID to set of epoch handles waiting on it for a state
+	 * change.
+	 */
+	private final EpochMap jobs = new EpochMap();
 
-	private final Map<Integer, WeakHashMap<Epoch, Boolean>> machines =
-			new HashMap<>();
+	/**
+	 * Mapping from machine ID to set of epoch handles waiting on it for a state
+	 * change.
+	 */
+	private final EpochMap machines = new EpochMap();
 
-	private final Map<Integer, WeakHashMap<Epoch, Boolean>> blacklists =
-			new HashMap<>();
+	/**
+	 * Mapping from board ID to set of epoch handles waiting on it for blacklist
+	 * handling.
+	 */
+	private final EpochMap blacklists = new EpochMap();
 
 	@PostConstruct
 	private void init() {
-		// The maps contain weak reference maps, where Epochs are removed when
-		// they are no longer referenced, but the map will still contain the
-		// empty weak reference map unless removed.
 		scheduler.scheduleAtFixedRate(this::checkEmpties, CLEANING_SCHEDULE);
 	}
 
+	/**
+	 * The maps contain weak reference maps, where Epochs are removed when they
+	 * are no longer referenced, but the map will still contain the empty weak
+	 * reference map unless removed. This tasklet handles that cleanup.
+	 */
 	private void checkEmpties() {
-		checkEmptyValues(jobs);
-		checkEmptyValues(machines);
-		checkEmptyValues(blacklists);
-	}
-
-	private void checkEmptyValues(
-			Map<Integer, WeakHashMap<Epoch, Boolean>> map) {
-		synchronized (map) {
-			map.entrySet().removeIf(entry -> entry.getValue().isEmpty());
-		}
-	}
-
-	private static void changed(Map<Integer, WeakHashMap<Epoch, Boolean>> map,
-			int id) {
-		Map<Epoch, Boolean> items;
-		synchronized (map) {
-			items = map.remove(id);
-		}
-		if (nonNull(items)) {
-			for (Epoch item : items.keySet()) {
-				synchronized (item) {
-					item.changed.add(id);
-					item.notifyAll();
-				}
-			}
-		}
-	}
-
-	private static void add(Map<Integer, WeakHashMap<Epoch, Boolean>> map,
-			Epoch epoch, int id) {
-		if (!map.containsKey(id)) {
-			map.put(id, new WeakHashMap<>());
-		}
-		map.get(id).put(epoch, true);
+		jobs.checkEmptyValues();
+		machines.checkEmptyValues();
+		blacklists.checkEmptyValues();
 	}
 
 	/**
 	 * Get a job epoch for a job.
 	 *
-	 * @param jobId The job identifier.
+	 * @param jobId
+	 *            The job identifier.
 	 * @return The epoch handle.
 	 */
 	public Epoch getJobsEpoch(int jobId) {
@@ -113,7 +99,8 @@ public class Epochs {
 	/**
 	 * Get a job epoch for a list of jobs.
 	 *
-	 * @param jobIds The job identifiers.
+	 * @param jobIds
+	 *            The job identifiers.
 	 * @return The epoch handle.
 	 */
 	public Epoch getJobsEpoch(List<Integer> jobIds) {
@@ -122,19 +109,21 @@ public class Epochs {
 
 	/**
 	 * Indicate a change in a job. Will wake any thread waiting on changes to
-	 * the job epoch with {@link Epoch#waitForChange(Duration)
-	 * waitForChange()} on a {@code Epoch} handle.
+	 * the job epoch with {@link Epoch#waitForChange(Duration) waitForChange()}
+	 * on a {@code Epoch} handle.
 	 *
-	 * @param job The job that has changed
+	 * @param job
+	 *            The job that has changed
 	 */
 	public void jobChanged(int job) {
-		changed(jobs, job);
+		jobs.changed(job);
 	}
 
 	/**
 	 * Get a machine epoch for a machine.
 	 *
-	 * @param machineId The identifier of the machine.
+	 * @param machineId
+	 *            The identifier of the machine.
 	 * @return The epoch handle.
 	 */
 	public Epoch getMachineEpoch(int machineId) {
@@ -144,7 +133,8 @@ public class Epochs {
 	/**
 	 * Get a machine epoch for a set of machines.
 	 *
-	 * @param machineIds The identifiers of the machine.
+	 * @param machineIds
+	 *            The identifiers of the machine.
 	 * @return The epoch handle.
 	 */
 	public Epoch getMachinesEpoch(List<Integer> machineIds) {
@@ -156,16 +146,18 @@ public class Epochs {
 	 * to the machine epoch with {@link Epoch#waitForChange(Duration)
 	 * waitForChange()} on a {@code Epoch} handle.
 	 *
-	 * @param machine The machine that has changed
+	 * @param machine
+	 *            The machine that has changed
 	 */
 	public void machineChanged(int machine) {
-		changed(machines, machine);
+		machines.changed(machine);
 	}
 
 	/**
 	 * Get a blacklist epoch for a board.
 	 *
-	 * @param boardId The id of the board.
+	 * @param boardId
+	 *            The id of the board.
 	 * @return The epoch handle.
 	 */
 	public Epoch getBlacklistEpoch(int boardId) {
@@ -177,38 +169,44 @@ public class Epochs {
 	 * to the blacklist epoch with {@link Epoch#waitForChange(Duration)
 	 * waitForChange()} on a {@code Epoch} handle.
 	 *
-	 * @param board The board that has changed.
+	 * @param board
+	 *            The board that has changed.
 	 */
 	public void blacklistChanged(int board) {
-		changed(blacklists, board);
+		blacklists.changed(board);
 	}
 
 	/**
 	 * A waitable epoch checkpoint.
 	 *
 	 * @author Donal Fellows
+	 * @author Andrew Rowley
 	 */
 	public final class Epoch {
-
-		private final Map<Integer, WeakHashMap<Epoch, Boolean>> map;
+		private final EpochMap map;
 
 		private final List<Integer> ids;
 
 		private final Set<Integer> changed = new HashSet<>();
 
-		private Epoch(Map<Integer, WeakHashMap<Epoch, Boolean>> map, int id) {
-			this(map, List.of(id));
+		private Epoch(EpochMap map, int id) {
+			this.map = map;
+			this.ids = List.of(id);
+			map.addAll(this, ids);
 		}
 
-		private Epoch(Map<Integer, WeakHashMap<Epoch, Boolean>> map,
-				List<Integer> ids) {
+		private Epoch(EpochMap map, List<Integer> ids) {
+			if (ids.isEmpty()) {
+				log.warn("empty ID list; will never wake");
+			}
 			this.map = map;
 			this.ids = List.copyOf(ids);
-			synchronized (map) {
-				for (var id : ids) {
-					add(map, this, id);
-				}
-			}
+			map.addAll(this, ids);
+		}
+
+		synchronized void updateChanged(int id) {
+			changed.add(id);
+			notifyAll();
 		}
 
 		/**
@@ -228,16 +226,18 @@ public class Epochs {
 		/**
 		 * Get the set of changed items.
 		 *
-		 * @param timeout The timeout to wait for one item to change.
+		 * @param timeout
+		 *            The timeout to wait for one item to change.
 		 * @return The changed items.
-		 * @throws InterruptedException If the wait is interrupted.
+		 * @throws InterruptedException
+		 *             If the wait is interrupted.
 		 */
 		public Collection<Integer> getChanged(Duration timeout)
 				throws InterruptedException {
 			synchronized (this) {
 				wait(timeout.toMillis());
+				return Set.copyOf(changed);
 			}
-			return changed;
 		}
 
 		/**
@@ -246,14 +246,49 @@ public class Epochs {
 		 * @return Whether this is a valid epoch.
 		 */
 		public boolean isValid() {
-			synchronized (map) {
-				for (var id : ids) {
-					if (!map.containsKey(id)) {
-						return false;
-					}
-				}
-				return true;
+			return map.containsAnyKey(ids);
+		}
+	}
+}
+
+/**
+ * A weak mapping from an ID to the epoch handles that care about it. Handles
+ * will be removed when they get garbage collected.
+ *
+ * @author Donal Fellows
+ */
+class EpochMap {
+	/*
+	 * This is a wrapper around the map to provide exactly the ops we want
+	 * (including correct synchronization), and just them.
+	 */
+	private final Map<Integer, Set<Epochs.Epoch>> map = new HashMap<>();
+
+	synchronized void checkEmptyValues() {
+		map.entrySet().removeIf(entry -> entry.getValue().isEmpty());
+	}
+
+	void changed(int id) {
+		var items = removeSet(id);
+		if (nonNull(items)) {
+			for (var item : items) {
+				item.updateChanged(id);
 			}
 		}
+	}
+
+	private synchronized Set<Epochs.Epoch> removeSet(int id) {
+		return map.remove(id);
+	}
+
+	synchronized void addAll(Epochs.Epoch epoch, List<Integer> ids) {
+		for (var id : ids) {
+			map.computeIfAbsent(id, key -> newSetFromMap(new WeakHashMap<>()))
+					.add(epoch);
+		}
+	}
+
+	synchronized boolean containsAnyKey(Collection<Integer> ids) {
+		return ids.stream().allMatch(map::containsKey);
 	}
 }
