@@ -50,6 +50,11 @@ public class IssueReportRequest {
 
 	/** Describes a board that has an issue. */
 	public static class ReportedBoard {
+
+		/** The machine containing the board. */
+		@NotBlank
+		public String machine;
+
 		/** The location of the chip within the reporting allocation. */
 		@Valid
 		public ChipLocation chip;

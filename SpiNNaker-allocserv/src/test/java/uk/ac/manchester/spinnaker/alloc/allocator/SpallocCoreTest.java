@@ -34,6 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -45,6 +46,8 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensions;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensionsAt;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateNumBoards;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
+import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
+import uk.ac.manchester.spinnaker.alloc.bmp.BMPController.TestAPI;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
@@ -66,11 +69,15 @@ class SpallocCoreTest extends TestSupport {
 	@Autowired
 	private SpallocAPI spalloc;
 
+	private TestAPI bmpTester;
+
+	@SuppressWarnings("deprecation")
 	@BeforeEach
-	void checkSetup() throws IOException {
+	void checkSetup(@Autowired BMPController bmpController) throws IOException {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		killDB();
 		setupDB1();
+		bmpTester = bmpController.getTestAPI();
 	}
 
 	// The actual tests
@@ -552,6 +559,7 @@ class SpallocCoreTest extends TestSupport {
 		}
 
 		@Test
+		@Timeout(15)
 		void termination() {
 			// Don't hold an allocation for this
 			inContext(c -> withJob(jobId -> {
@@ -565,6 +573,14 @@ class SpallocCoreTest extends TestSupport {
 				snooze1s();
 
 				j.destroy("foo bar");
+
+				snooze1s(); // Time for internals to process
+				try {
+					bmpTester.processRequests(1000);
+				} catch (Exception e) {
+					log.warn("exception processing BMP requests", e);
+				}
+				snooze1s();
 
 				// reread
 				var j2 = spalloc.getJob(p, jobId).orElseThrow();
@@ -585,6 +601,7 @@ class SpallocCoreTest extends TestSupport {
 					// Messy to build as usually only done by Jackson
 					var r = new IssueReportRequest();
 					var b = new ReportedBoard();
+					b.machine = "test";
 					b.address = BOARD_ADDR;
 					r.issue = "test";
 					r.boards = List.of(b);

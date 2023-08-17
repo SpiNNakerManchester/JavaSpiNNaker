@@ -37,7 +37,7 @@ import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
  */
 public abstract class StubMachine implements Machine {
 	@Override
-	public void waitForChange(Duration timeout) {
+	public boolean waitForChange(Duration timeout) {
 		throw new UnsupportedOperationException();
 	}
 

@@ -31,9 +31,9 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.springframework.dao.DataAccessException;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.DownLink;
+import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardLink;
 import uk.ac.manchester.spinnaker.spalloc.messages.State;
@@ -85,8 +85,6 @@ abstract class Utils {
 					while (!interrupted()) {
 						notifier.waitAndNotify();
 					}
-				} catch (UnknownIOException e) {
-					// Nothing useful we can do here
 				} catch (DataAccessException e) {
 					log.error("SQL failure", e);
 				} catch (IOException e) {
@@ -219,12 +217,12 @@ abstract class Utils {
 	/**
 	 * Convert the state of a job.
 	 *
-	 * @param job
-	 *            The job.
+	 * @param state
+	 *            The job state
 	 * @return The converted state.
 	 */
-	static State state(Job job) {
-		switch (job.getState()) {
+	static State state(JobState state) {
+		switch (state) {
 		case QUEUED:
 			return State.QUEUED;
 		case POWER:

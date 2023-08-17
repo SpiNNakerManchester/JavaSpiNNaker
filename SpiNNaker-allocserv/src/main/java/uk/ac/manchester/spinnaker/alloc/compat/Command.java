@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -32,6 +33,7 @@ import jakarta.validation.constraints.Size;
  * call encoded (except that no argument is a live object).
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public final class Command {
 	private static final int MAX_SIZE = 10;
 
