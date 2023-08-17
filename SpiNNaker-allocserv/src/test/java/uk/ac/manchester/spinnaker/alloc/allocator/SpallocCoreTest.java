@@ -24,17 +24,12 @@ import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.Optional;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -63,7 +58,6 @@ import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
-import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 @SpringBootTest
 @SpringJUnitWebConfig(TestSupport.Config.class)
@@ -84,16 +78,6 @@ class SpallocCoreTest extends TestSupport {
 		killDB();
 		setupDB1();
 		bmpTester = bmpController.getTestAPI();
-	}
-
-	private static void threadDump() {
-		var threadDump = new StringBuilder(System.lineSeparator());
-		var threadMXBean = ManagementFactory.getThreadMXBean();
-		for (var threadInfo : threadMXBean.dumpAllThreads(true,
-				true)) {
-			threadDump.append(threadInfo);
-		}
-		log.warn("thread dump for long termination " + threadDump);
 	}
 
 	// The actual tests
@@ -438,18 +422,6 @@ class SpallocCoreTest extends TestSupport {
 	@Nested
 	@DisplayName("Spalloc.Job")
 	class SpallocJobTest {
-		private ScheduledExecutorService exe;
-
-		@BeforeEach
-		void makeExecutor() {
-			exe = Executors.newScheduledThreadPool(1);
-		}
-
-		@AfterEach
-		void stopExecutor() {
-			exe.shutdown();
-		}
-
 		@Test
 		void getId() {
 			withStandardAllocatedJob((p, jobId) -> {
@@ -590,12 +562,6 @@ class SpallocCoreTest extends TestSupport {
 		@Timeout(15)
 		void termination() {
 			// Don't hold an allocation for this
-			var done = new ValueHolder<>(false);
-			var f = exe.schedule(() -> {
-				if (!done.getValue()) {
-					threadDump();
-				}
-			}, 1100, TimeUnit.MILLISECONDS);
 			inContext(c -> withJob(jobId -> {
 				var p = c.setAuth(USER_NAME);
 
@@ -624,9 +590,7 @@ class SpallocCoreTest extends TestSupport {
 				var ts1 = j2.getFinishTime().orElseThrow();
 				assertFalse(ts0.isAfter(ts1));
 				assertEquals(Optional.of("foo bar"), j2.getReason());
-				done.setValue(true);
 			}));
-			f.cancel(false);
 		}
 
 		@Test
