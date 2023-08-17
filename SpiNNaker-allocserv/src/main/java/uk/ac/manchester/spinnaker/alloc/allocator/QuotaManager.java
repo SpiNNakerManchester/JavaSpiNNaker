@@ -24,6 +24,7 @@ import static uk.ac.manchester.spinnaker.alloc.nmpi.ResourceUsage.CORE_HOURS;
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.COLLABRATORY;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
@@ -45,8 +46,10 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Update;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
+import uk.ac.manchester.spinnaker.alloc.nmpi.Job;
 import uk.ac.manchester.spinnaker.alloc.nmpi.JobResourceUpdate;
 import uk.ac.manchester.spinnaker.alloc.nmpi.NMPIv3API;
+import uk.ac.manchester.spinnaker.alloc.nmpi.Project;
 import uk.ac.manchester.spinnaker.alloc.nmpi.ResourceUsage;
 import uk.ac.manchester.spinnaker.alloc.nmpi.SessionRequest;
 import uk.ac.manchester.spinnaker.alloc.nmpi.SessionResourceUpdate;
@@ -81,13 +84,14 @@ public class QuotaManager extends DatabaseAwareBean {
 	@Autowired
 	private QuotaProperties quotaProps;
 
-	private NMPIv3API nmpiProxy;
+	/** The wrapped NMPI proxy, bound to the API key. */
+	private NMPI nmpi;
 
 	@PostConstruct
 	public void createProxy() {
 		var nmpiUrl = quotaProps.getNMPIUrl();
 		if (!nmpiUrl.isEmpty()) {
-			nmpiProxy = NMPIv3API.createClient(quotaProps.getNMPIUrl());
+			nmpi = new NMPI(quotaProps);
 		}
 	}
 
@@ -291,11 +295,11 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 
 		private class Target {
-			Object quotaUsed;
+			final Object quotaUsed;
 
-			int groupId;
+			final int groupId;
 
-			int jobId;
+			final int jobId;
 
 			Target(Row row) {
 				quotaUsed = row.getObject("quota_used");
@@ -305,90 +309,157 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 	}
 
-	Optional<String> mayCreateNMPISession(String collab) {
-		// Read collab from NMPI; fail if not there
-		var projects = nmpiProxy.getProjects(quotaProps.getNMPIApiKey(),
-				STATUS_ACCEPTED, collab);
-		String quotaUnits = null;
-		long totalBoardSeconds = 0L;
+	/**
+	 * @param quota
+	 *            The size of quota remaining, in board-seconds.
+	 * @param units
+	 *            The units that the quota was measured in on the NMPI.
+	 */
+	private record QuotaInfo(long quota, String units) {
+	}
+
+	private QuotaInfo parseQuotaData(List<Project> projects) {
+		String units = null;
+		long total = 0;
 		for (var project : projects) {
 			for (var quota : project.getQuotas()) {
-				if (quota.getPlatform().equals(quotaProps.getNMPIPlaform())) {
-					if (quotaUnits == null) {
-						quotaUnits = quota.getUnits();
-					} else if (quotaUnits != quota.getUnits()) {
-						throw new RuntimeException(
-								"Quotas have multiple units!");
-					}
+				if (!quota.getPlatform().equals(quotaProps.getNMPIPlaform())) {
+					continue;
+				}
+				if (units == null) {
+					units = quota.getUnits();
+				} else if (units != quota.getUnits()) {
+					throw new RuntimeException("Quotas have multiple units!");
+				}
 
-					long limitBoardSeconds = (long) quota.getLimit();
-					long usageBoardSeconds = (long) quota.getUsage();
-					if (quota.getUnits().equals(CORE_HOURS)) {
-						limitBoardSeconds = toBoardSeconds(quota.getLimit());
-						usageBoardSeconds = toBoardSeconds(quota.getUsage());
-					} else if (!quota.getUnits().equals(BOARD_SECONDS)) {
-						throw new RuntimeException("Unknown Quota units: "
-								+ quota.getUnits());
-					}
-					totalBoardSeconds += limitBoardSeconds - usageBoardSeconds;
+				switch (quota.getUnits()) {
+				case BOARD_SECONDS:
+					total += (long) (quota.getLimit() - quota.getUsage());
+					break;
+				case CORE_HOURS:
+					total += toBoardSeconds(quota.getLimit())
+							- toBoardSeconds(quota.getUsage());
+					break;
+				default:
+					throw new RuntimeException(
+							"Unknown Quota units: " + quota.getUnits());
 				}
 			}
 		}
+		return new QuotaInfo(total, units);
+	}
 
-		log.debug("Setting quota of collab {} to {}", collab,
-				totalBoardSeconds);
+	final Optional<String> mayCreateNMPISession(String collab) {
+		// Read collab from NMPI; fail if not there
+		var projects = nmpi.getProjects(STATUS_ACCEPTED, collab);
+		var info = parseQuotaData(projects);
+
+		log.debug("Setting quota of collab {} to {}", collab, info.quota());
 
 		// Update quota in group for collab from NMPI
 		try (var c = getConnection();
 				var setQuota = c.update(SET_COLLAB_QUOTA)) {
-			setQuota.call(totalBoardSeconds, collab);
+			c.transaction(() -> setQuota.call(info.quota(), collab));
 		}
 
-		if (totalBoardSeconds > 0) {
-			return Optional.of(quotaUnits);
+		if (info.quota() > 0) {
+			return Optional.of(info.units());
 		}
 		return Optional.empty();
 	}
 
 	void associateNMPISession(int jobId, String user, String collab,
 			String quotaUnits) {
-		var request = new SessionRequest();
-		request.setCollab(collab);
-		request.setHardwarePlatform(quotaProps.getNMPIPlaform());
-		request.setUserId(user);
-		var session = nmpiProxy.createSession(
-				quotaProps.getNMPIApiKey(), request);
+		var sessionId = nmpi.createSession(collab, user);
 
 		// Associate NMPI session with Job in the database
 		try (var c = getConnection();
 				var setSession = c.update(SET_JOB_SESSION)) {
-			setSession.call(jobId, session.getId(), quotaUnits);
+			c.transaction(
+					() -> setSession.call(jobId, sessionId, quotaUnits));
 		}
 	}
 
-	Optional<NMPIJobQuotaDetails> mayUseNMPIJob(String user, int nmpiJobId) {
+	private final class InflateUser extends AbstractSQL {
+		private final Query getUserByName =
+				conn.query(GET_USER_DETAILS_BY_NAME);
+
+		private final Query getGroupByName = conn.query(GET_GROUP_BY_NAME);
+
+		private final Update createUser = conn.update(CREATE_USER);
+
+		private final Update createGroup =
+				conn.update(CREATE_GROUP_IF_NOT_EXISTS);
+
+		private final Update addUserToGroup = conn.update(ADD_USER_TO_GROUP);
+
+		@Override
+		public void close() {
+			getUserByName.close();
+			getGroupByName.close();
+			createUser.close();
+			createGroup.close();
+			addUserToGroup.close();
+			super.close();
+		}
+
+		private Optional<Integer> getUserByName(String user) {
+			return getUserByName.call1(r -> r.getInt("user_id"), user);
+		}
+
+		private Optional<Integer> getGroupByName(String group) {
+			return getGroupByName.call1(r -> r.getInt("group_id"), group);
+		}
+
+		private boolean createUser(String user) {
+			return createUser.call(user, null, USER, false, null) > 0;
+		}
+
+		private boolean createGroup(String group) {
+			return createGroup.call(group, 0.0, COLLABRATORY) > 0;
+		}
+
+		private boolean addUserToGroup(int userId, Optional<Integer> groupId) {
+			return addUserToGroup.call(userId, groupId) > 0;
+		}
+
+		/**
+		 * Construct the user and group records if necessary and associate them.
+		 *
+		 * @param user
+		 *            The user name.
+		 * @param job
+		 *            The NMPI job details containing the collabratory (group)
+		 *            name.
+		 */
+		void inflateUser(String user, Job job) {
+			var userId = getUserByName(user).or(() -> {
+				/*
+				 * The user has never logged in directly, so we have to create
+				 * them.
+				 */
+				if (!createUser(user)) {
+					log.warn("failed to make user: {}", user);
+				}
+				return getUserByName(user);
+			});
+
+			createGroup(job.getCollab());
+			var groupId = getGroupByName(job.getCollab());
+			addUserToGroup(userId.orElseThrow(() -> new IllegalStateException(
+					"failed to find or create user")), groupId);
+		}
+	}
+
+	final Optional<NMPIJobQuotaDetails> mayUseNMPIJob(String user,
+			int nmpiJobId) {
 		// Read job from NMPI to get collab ID
-		var job = nmpiProxy.getJob(quotaProps.getNMPIApiKey(), nmpiJobId);
+		var job = nmpi.getJob(nmpiJobId);
 
 		// If it is possible to run this job, we need to associate the user
 		// with it because only special users can run jobs like this.
-		try (var c = getConnection();
-				var getUserByName = c.query(GET_USER_DETAILS_BY_NAME);
-				var getGroupByName = c.query(GET_GROUP_BY_NAME);
-				var createUser = c.update(CREATE_USER);
-				var createGroup = c.update(CREATE_GROUP_IF_NOT_EXISTS);
-				var addUserToGroup = c.update(ADD_USER_TO_GROUP)) {
-			createGroup.call(job.getCollab(), 0.0, COLLABRATORY);
-			var userId = getUserByName.call1(r -> r.getInt("user_id"), user);
-
-			// The user has never logged in directly, so we have to create them
-			if (!userId.isPresent()) {
-				createUser.call(user, null, USER, false, null);
-				userId = getUserByName.call1(r -> r.getInt("user_id"), user);
-			}
-			var groupId = getGroupByName.call1(r -> r.getInt("group_id"),
-					job.getCollab());
-			addUserToGroup.call(userId.get(), groupId);
+		try (var sql = new InflateUser()) {
+			sql.transaction(() -> sql.inflateUser(user, job));
 		}
 
 		// This is now a collab so check there instead
@@ -401,95 +472,86 @@ public class QuotaManager extends DatabaseAwareBean {
 				new NMPIJobQuotaDetails(job.getCollab(), quotaUnits.get()));
 	}
 
-	final class NMPIJobQuotaDetails {
-		/**
-		 * The collaboratory ID.
-		 */
-		final String collabId;
-
-		/**
-		 * The units of the Quota.
-		 */
-		final String quotaUnits;
-
-		private NMPIJobQuotaDetails(String collabId, String quotaUnits) {
-			this.collabId = collabId;
-			this.quotaUnits = quotaUnits;
-		}
+	/**
+	 * @param collabId
+	 *            The collaboratory ID.
+	 * @param quotaUnits
+	 *            The units of the Quota.
+	 */
+	record NMPIJobQuotaDetails(String collabId, String quotaUnits) {
 	}
 
 	void associateNMPIJob(int jobId, int nmpiJobId, String quotaUnits) {
 		// Associate NMPI Job with job in database
 		try (var c = getConnection();
 				var setNMPIJob = c.update(SET_JOB_NMPI_JOB)) {
-			setNMPIJob.call(jobId, nmpiJobId, quotaUnits);
+			c.transaction(() -> setNMPIJob.call(jobId, nmpiJobId, quotaUnits));
 		}
 	}
 
-	void finishJob(int jobId) {
+	/** Results of database queries. */
+	private record FinishInfo(Optional<Long> quota, Optional<Session> session,
+			Optional<NMPIJob> job) {
+	}
+
+	private FinishInfo getFinishingInfo(int jobId) {
 		try (var c = getConnection();
 				var getSession = c.query(GET_JOB_SESSION);
 				var getNMPIJob = c.query(GET_JOB_NMPI_JOB);
 				var getUsage = c.query(GET_JOB_USAGE_AND_QUOTA)) {
 			// Get the quota used
-			var quota = getUsage.call1(
-					r -> r.getLong("quota_used"), jobId);
-			// If job has associated session, update quota in session
-			getSession.call1(
-					r -> new Session(r), jobId).ifPresent(
-					session -> {
-							try {
-								var update = new SessionResourceUpdate();
-								update.setStatus("finished");
-								update.setResourceUsage(getResourceUsage(
-										quota.get(), session.quotaUnits));
-								nmpiProxy.setSessionStatusAndResources(
-										quotaProps.getNMPIApiKey(), session.id,
-										update);
-							} catch (BadRequestException e) {
-								log.error(e.getResponse().readEntity(
-										String.class));
-								throw e;
-							}
-						});
-
-			// If job has associated NMPI job, update quota on NMPI job
-			getNMPIJob.call1(r -> new NMPIJob(r), jobId).ifPresent(
-					nmpiJob -> {
-						try {
-							var update = new JobResourceUpdate();
-							update.setResourceUsage(getResourceUsage(
-									quota.get(), nmpiJob.quotaUnits));
-							nmpiProxy.setJobResources(
-									quotaProps.getNMPIApiKey(), nmpiJob.id,
-									update);
-						} catch (BadRequestException e) {
-							log.error(e.getResponse().readEntity(String.class));
-							throw e;
-						}
-					});
+			return c.transaction(false,
+					() -> new FinishInfo(
+							getUsage.call1(r -> r.getLong("quota_used"), jobId),
+							getSession.call1(Session::new, jobId),
+							getNMPIJob.call1(NMPIJob::new, jobId)));
 		}
 	}
 
-	private final class Session {
-		private int id;
+	final void finishJob(int jobId) {
+		// Get the information about the job from the DB
+		var info = getFinishingInfo(jobId);
 
-		private String quotaUnits;
+		// From here on, we don't touch the DB but we do touch the network
 
+		if (!info.quota().isPresent()) {
+			// No quota? No update!
+			return;
+		}
+
+		// If job has associated session, update quota in session
+		info.session().ifPresent(session -> {
+			try {
+				nmpi.setSessionStatusAndResources(session.id(), "finished",
+						getResourceUsage(info.quota().get(),
+								session.quotaUnits()));
+			} catch (BadRequestException e) {
+				log.error(e.getResponse().readEntity(String.class));
+				throw e;
+			}
+		});
+
+		// If job has associated NMPI job, update quota on NMPI job
+		info.job().ifPresent(nmpiJob -> {
+			try {
+				nmpi.setJobResources(nmpiJob.id(), getResourceUsage(
+						info.quota().get(), nmpiJob.quotaUnits()));
+			} catch (BadRequestException e) {
+				log.error(e.getResponse().readEntity(String.class));
+				throw e;
+			}
+		});
+	}
+
+	private record Session(int id, String quotaUnits) {
 		private Session(Row r) {
-			this.id = r.getInt("session_id");
-			this.quotaUnits = r.getString("quota_units");
+			this(r.getInt("session_id"), r.getString("quota_units"));
 		}
 	}
 
-	private final class NMPIJob {
-		private int id;
-
-		private String quotaUnits;
-
+	private record NMPIJob(int id, String quotaUnits) {
 		private NMPIJob(Row r) {
-			this.id = r.getInt("nmpi_job_id");
-			this.quotaUnits = r.getString("quota_units");
+			this(r.getInt("nmpi_job_id"), r.getString("quota_units"));
 		}
 	}
 
@@ -502,14 +564,16 @@ public class QuotaManager extends DatabaseAwareBean {
 		} else if (units.equals(CORE_HOURS)) {
 			resourceUsage.setValue(toCoreHours(boardSeconds));
 		} else {
-			throw new RuntimeException("Unknown units " + units);
+			throw new IllegalArgumentException("Unknown units " + units);
 		}
 		return resourceUsage;
 	}
 
 	/**
 	 * Convert board-seconds to core-hours (approximately).
-	 * @param boardSeconds The number of board-seconds to convert.
+	 *
+	 * @param boardSeconds
+	 *            The number of board-seconds to convert.
 	 * @return The number of board-hours, which may have fractional values.
 	 */
 	private static double toCoreHours(long boardSeconds) {
@@ -519,7 +583,9 @@ public class QuotaManager extends DatabaseAwareBean {
 
 	/**
 	 * Convert core-hours to board-seconds (approximately).
-	 * @param coreHours The number of core-hours to convert.
+	 *
+	 * @param coreHours
+	 *            The number of core-hours to convert.
 	 * @return The integer number of board seconds.
 	 */
 	private static long toBoardSeconds(double coreHours) {
@@ -559,5 +625,55 @@ public class QuotaManager extends DatabaseAwareBean {
 				QuotaManager.this.doConsolidate(c);
 			}
 		};
+	}
+}
+
+/**
+ * Wrapper round the proxy and its API key. Does a bit of wrapping and
+ * unwrapping of arguments and results.
+ *
+ * @author Donal Fellows
+ */
+final class NMPI {
+	private final NMPIv3API proxy;
+
+	private final String apiKey;
+
+	private final String platform;
+
+	NMPI(QuotaProperties quotaProps) {
+		proxy = NMPIv3API.createClient(quotaProps.getNMPIUrl());
+		apiKey = quotaProps.getNMPIApiKey();
+		platform = quotaProps.getNMPIPlaform();
+	}
+
+	Job getJob(int jobId) {
+		return proxy.getJob(apiKey, jobId);
+	}
+
+	void setJobResources(int jobId, ResourceUsage resources) {
+		var wrapper = new JobResourceUpdate();
+		wrapper.setResourceUsage(resources);
+		proxy.setJobResources(apiKey, jobId, wrapper);
+	}
+
+	List<Project> getProjects(String status, String collab) {
+		return proxy.getProjects(apiKey, status, collab);
+	}
+
+	int createSession(String collab, String user) {
+		var request = new SessionRequest();
+		request.setCollab(collab);
+		request.setHardwarePlatform(platform);
+		request.setUserId(user);
+		return proxy.createSession(apiKey, request).getId();
+	}
+
+	void setSessionStatusAndResources(int sessionId, String status,
+			ResourceUsage resources) {
+		var wrapper = new SessionResourceUpdate();
+		wrapper.setStatus(status);
+		wrapper.setResourceUsage(resources);
+		proxy.setSessionStatusAndResources(apiKey, sessionId, wrapper);
 	}
 }

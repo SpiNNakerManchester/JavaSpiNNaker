@@ -21,6 +21,7 @@ import static java.lang.Thread.currentThread;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_CHIP_SIZE;
 import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
@@ -46,7 +47,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -300,12 +300,12 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			if (deleted) {
 				try (var jobs = conn.query(GET_JOB_IDS)) {
 					return new JobCollection(
-							jobs.call((row) -> makeJob(row), limit,	start));
+							jobs.call(this::makeJob, limit, start));
 				}
 			} else {
 				try (var jobs = conn.query(GET_LIVE_JOB_IDS)) {
-					return new JobCollection(jobs.call((row) -> makeJob(row),
-							limit, start));
+					return new JobCollection(
+							jobs.call(this::makeJob, limit, start));
 				}
 			}
 		});
@@ -563,7 +563,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		var quotaDetails = collab.get();
 
 		var job = execute(conn -> createJobInGroup(
-				owner, quotaDetails.collabId, descriptor, machineName,
+				owner, quotaDetails.collabId(), descriptor, machineName,
 				tags, keepaliveInterval, originalRequest));
 		// On failure to get job, just return; shouldn't happen as quota checked
 		// earlier, but just in case!
@@ -572,7 +572,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 
 		quotaManager.associateNMPIJob(job.get().getId(), nmpiJobId,
-				quotaDetails.quotaUnits);
+				quotaDetails.quotaUnits());
 
 		// Return the job created
 		return job;
@@ -1096,15 +1096,18 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	private final class JobCollection implements Jobs {
 		@JsonIgnore
-		private Epoch epoch;
+		private final Epoch epoch;
 
-		private List<Job> jobs = new ArrayList<>();
+		private final List<Job> jobs;
 
 		private JobCollection(List<Job> jobs) {
 			this.jobs = jobs;
-			this.epoch = epochs.getJobsEpoch(
-					jobs.stream().map(j -> j.getId())
-					.collect(Collectors.toList()));
+			if (jobs.isEmpty()) {
+				epoch = null;
+			} else {
+				epoch = epochs.getJobsEpoch(
+						jobs.stream().map(Job::getId).collect(toList()));
+			}
 		}
 
 		@Override
@@ -1123,20 +1126,20 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		/**
 		 * Get the set of jobs changed.
 		 *
-		 * @param timeout The timeout to wait for until something happens.
+		 * @param timeout
+		 *            The timeout to wait for until something happens.
 		 * @return The set of changed job identifiers.
 		 */
+		@Override
 		public Collection<Integer> getChanged(Duration timeout) {
 			if (isNull(epoch)) {
-				return jobs.stream().map(
-						j -> j.getId()).collect(Collectors.toSet());
+				return jobs.stream().map(Job::getId).collect(toSet());
 			}
 			try {
 				return epoch.getChanged(timeout);
 			} catch (InterruptedException interrupted) {
 				currentThread().interrupt();
-				return jobs.stream().map(
-						j -> j.getId()).collect(Collectors.toSet());
+				return jobs.stream().map(Job::getId).collect(toSet());
 			}
 		}
 
@@ -1290,6 +1293,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 		private boolean partial;
 
+		private MachineImpl cachedMachine;
+
 		JobImpl(int id, int machineId) {
 			this.epoch = epochs.getJobsEpoch(id);
 			this.id = id;
@@ -1329,8 +1334,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 			this.epoch = epochs.getJobsEpoch(id);
 		}
-
-		private MachineImpl cachedMachine;
 
 		/**
 		 * Get the machine that this job is running on. May used a cached value.
@@ -1461,7 +1464,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				for (var m : report.boards().stream()
 						.map(b -> q.getNamedMachine.call1(
 								r -> r.getInt("machine_id"), b.machine(), true))
-						.collect(Collectors.toSet())) {
+						.collect(toSet())) {
 					if (m.isPresent()) {
 						epochs.machineChanged(m.get());
 					}
@@ -1644,6 +1647,12 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		@Override
 		public int hashCode() {
 			return id;
+		}
+
+		@Override
+		public String toString() {
+			return format("Job(id=%s,dims=(%s,%s,%s),start=%s,finish=%s)", id,
+					width, height, depth, startTime, finishTime);
 		}
 
 		private final class SubMachineImpl implements SubMachine {

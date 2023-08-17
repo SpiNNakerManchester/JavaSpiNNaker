@@ -85,8 +85,6 @@ abstract class Utils {
 					while (!interrupted()) {
 						notifier.waitAndNotify();
 					}
-				} catch (UnknownIOException e) {
-					// Nothing useful we can do here
 				} catch (DataAccessException e) {
 					log.error("SQL failure", e);
 				} catch (IOException e) {

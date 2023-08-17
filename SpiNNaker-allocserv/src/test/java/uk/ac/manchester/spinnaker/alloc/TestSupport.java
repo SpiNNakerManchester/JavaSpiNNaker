@@ -20,6 +20,7 @@ import static java.time.Instant.now;
 import static java.time.Instant.ofEpochMilli;
 import static java.time.Instant.ofEpochSecond;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
@@ -39,6 +40,7 @@ import java.util.Set;
 import java.util.function.IntConsumer;
 import java.util.function.ObjIntConsumer;
 
+import org.junit.jupiter.api.parallel.Execution;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -60,6 +62,7 @@ import uk.ac.manchester.spinnaker.alloc.security.Permit;
 @SuppressWarnings({
 	"checkstyle:ParameterNumber", "checkstyle:VisibilityModifier"
 })
+@Execution(SAME_THREAD)
 public abstract class TestSupport extends SQLQueries implements SupportQueries {
 	/** Bring in the application Spring configuration that we're testing. */
 	@Configuration
@@ -496,6 +499,15 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 	protected static void snooze1s() {
 		try {
 			Thread.sleep(DELAY_MS);
+		} catch (InterruptedException e) {
+			assumeTrue(false, "sleep() was interrupted");
+		}
+	}
+
+	/** Sleep for one second. */
+	protected static void snooze5s() {
+		try {
+			Thread.sleep(DELAY_MS * 5);
 		} catch (InterruptedException e) {
 			assumeTrue(false, "sleep() was interrupted");
 		}

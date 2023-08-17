@@ -102,17 +102,22 @@ class BlacklistCommsTest extends TestSupport {
 	 * A faked up running of the BMP worker thread because the main schedule is
 	 * disabled.
 	 *
+	 * @param bmps
+	 *            The IDs of the BMPs to process information for.
+	 * @param count
+	 *            The number of times to run the processing loop.
 	 * @return The future to wait for as part of shutting down. The value is
 	 *         meaningless, but the exceptions potentially thrown are not.
-	 * @throws InterruptedException If interrupted.
+	 * @throws InterruptedException
+	 *             If interrupted.
 	 */
-	private Future<String> bmpWorker(Collection<Integer> bmps, int times)
+	private Future<String> bmpWorker(Collection<Integer> bmps, int count)
 			throws InterruptedException {
 		var ready = new OneShotEvent();
 		var future = exec.submit(() -> {
 			ready.fire();
 			// Time to allow main thread to submit the work we'll carry out
-			for (int i = 0; i < times; i++) {
+			for (int i = 0; i < count; i++) {
 				Thread.sleep(TEST_DELAY);
 				bmpCtrl.processRequests(TEST_DELAY, bmps);
 			}

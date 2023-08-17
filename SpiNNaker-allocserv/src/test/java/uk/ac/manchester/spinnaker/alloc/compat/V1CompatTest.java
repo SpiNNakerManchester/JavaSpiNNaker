@@ -94,25 +94,19 @@ class V1CompatTest extends TestSupport {
 		sleepQuietly(Duration.of(80, MILLIS));
 	}
 
-	private void withInstance(String test,
-			BiConsumer<PrintWriter, NonThrowingLineReader> act)
+	private void withInstance(
+			BiConsumer<PrintWriter, UncheckedLineReader> act)
 			throws Exception {
 		Future<?> f = null;
 		try (var to = new PipedWriter(); var from = new PipedReader()) {
-			log.debug("starting instance for {}", test);
 			f = testAPI.launchInstance(to, from);
-			log.debug("running test body {}", test);
-			act.accept(new PrintWriter(to),
-					new NonThrowingLineReader(from));
-			// Stop the instance
-			log.debug("stopping instance for {}", test);
-			Thread.currentThread().interrupt();
+			act.accept(new PrintWriter(to), new UncheckedLineReader(from));
 		} finally {
 			verySmallDelay();
 			if (f != null && !f.isDone()) {
 				smallDelay();
 				if (f.cancel(true)) {
-					log.warn("cancelled instance task for {}", test);
+					log.warn("cancelled instance task");
 				} else {
 					log.debug("task cancel failed; probably already finished");
 				}
@@ -125,7 +119,25 @@ class V1CompatTest extends TestSupport {
 		 * very strange failure.
 		 */
 		Thread.interrupted();
-		log.debug("stopped instance for {}", test);
+	}
+
+	/**
+	 * A buffered reader that doesn't throw a checked exception if it gets an
+	 * error reading a line. It converts it to an unchecked exception.
+	 */
+	private static class UncheckedLineReader extends BufferedReader {
+		UncheckedLineReader(PipedReader r) {
+			super(r);
+		}
+
+		@Override
+		public String readLine() {
+			try {
+				return super.readLine();
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
+			}
+		}
 	}
 
 	// The representation of void
@@ -137,7 +149,7 @@ class V1CompatTest extends TestSupport {
 					+ "\"machine\":\"foo_machine\",\"board_chip\":[0,0],"
 					+ "\"physical\":[1,1,0]}}";
 
-	private static String create(PrintWriter to, NonThrowingLineReader from,
+	private static String create(PrintWriter to, UncheckedLineReader from,
 			int... args) {
 		to.println("{\"command\":\"create_job\",\"args\":"
 				+ Arrays.toString(args) + ",\"kwargs\":{\"owner\":\"gorp\","
@@ -150,12 +162,12 @@ class V1CompatTest extends TestSupport {
 		return m.group(1);
 	}
 
-	private static void destroy(PrintWriter to, NonThrowingLineReader from,
+	private static void destroy(PrintWriter to, UncheckedLineReader from,
 			Object jobId) {
 		destroy(to, from, jobId, VOID_RESPONSE);
 	}
 
-	private static void destroy(PrintWriter to, NonThrowingLineReader from,
+	private static void destroy(PrintWriter to, UncheckedLineReader from,
 			Object jobId, String expecting) {
 		to.println("{\"command\":\"destroy_job\",\"args\":[" + jobId
 				+ "],\"kwargs\":{\"reason\":\"whatever\"}}");
@@ -164,13 +176,16 @@ class V1CompatTest extends TestSupport {
 
 	// The actual tests
 
+	/** Big enough to stress test some internal pools. */
 	private static final int MACHINERY_TEST_SIZE = 50;
 
+	private static final int MACHINERY_TEST_TIMEOUT = 15;
+
 	@Test
-	@Timeout(15)
+	@Timeout(MACHINERY_TEST_TIMEOUT)
 	public void testMachineryTestBidirectional() throws Exception {
 		for (int i = 0; i < MACHINERY_TEST_SIZE; i++) {
-			withInstance("MachineryTestBidirectional " + i, (to, from) -> {
+			withInstance((to, from) -> {
 				to.println();
 				from.readLine();
 			});
@@ -178,10 +193,10 @@ class V1CompatTest extends TestSupport {
 	}
 
 	@Test
-	@Timeout(15)
+	@Timeout(MACHINERY_TEST_TIMEOUT)
 	public void testMachineryTestUnidirectional() throws Exception {
 		for (int i = 0; i < MACHINERY_TEST_SIZE; i++) {
-			withInstance("MachineryTestUnidirectional " + i, (to, from) -> {
+			withInstance((to, from) -> {
 				to.println();
 			});
 		}
@@ -194,7 +209,7 @@ class V1CompatTest extends TestSupport {
 		@Timeout(5)
 		void version() throws Exception {
 			var response = "{\"return\":\"" + VERSION + "\"}";
-			withInstance("nojob.version", (to, from) -> {
+			withInstance((to, from) -> {
 				to.println("{\"command\":\"version\"}");
 				assertEquals(response, from.readLine());
 			});
@@ -206,7 +221,7 @@ class V1CompatTest extends TestSupport {
 			var machinesResponse = "{\"return\":[{\"name\":\"" + MACHINE_NAME
 					+ "\",\"tags\":[],\"width\":1,\"height\":1,"
 					+ "\"dead_boards\":[],\"dead_links\":[]}]}";
-			withInstance("nojob.listMachines", (to, from) -> {
+			withInstance((to, from) -> {
 				to.println("{\"command\": \"list_machines\"}");
 				assertEquals(machinesResponse, from.readLine());
 				to.println("{\"command\": \"list_machines\", \"args\": [0]}");
@@ -224,7 +239,7 @@ class V1CompatTest extends TestSupport {
 		@Timeout(5)
 		void listJobs() throws Exception {
 			var jobsResponse = "{\"return\":[]}";
-			withInstance("nojob.listJobs", (to, from) -> {
+			withInstance((to, from) -> {
 				to.println("{\"command\": \"list_jobs\"}");
 				assertEquals(jobsResponse, from.readLine());
 			});
@@ -233,7 +248,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void notifyJob() throws Exception {
-			withInstance("nojob.notifyJob", (to, from) -> {
+			withInstance((to, from) -> {
 				to.println("{\"command\": \"notify_job\"}");
 				assertEquals(VOID_RESPONSE, from.readLine());
 				to.println("{\"command\": \"no_notify_job\"}");
@@ -244,7 +259,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void notifyMachine() throws Exception {
-			withInstance("nojob.notifyMachine", (to, from) -> {
+			withInstance((to, from) -> {
 				to.println("{\"command\": \"notify_machine\"}");
 				assertEquals(VOID_RESPONSE, from.readLine());
 				to.println("{\"command\": \"no_notify_machine\"}");
@@ -261,7 +276,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void whereIs() throws Exception {
-			withInstance("nojob.whereis", (to, from) -> {
+			withInstance((to, from) -> {
 				to.println("{\"command\": \"where_is\", \"kwargs\":{"
 						+ "\"machine\": \"" + MACHINE_NAME + "\","
 						+ "\"x\": 0, \"y\": 0, \"z\": 0 }}");
@@ -282,7 +297,7 @@ class V1CompatTest extends TestSupport {
 		void getBoardAtPosition() throws Exception {
 			// Physical->Logical map
 			var response = "{\"return\":[0,0,0]}";
-			withInstance("nojob.getAtPos", (to, from) -> {
+			withInstance((to, from) -> {
 				to.println("{\"command\":\"get_board_at_position\",\"kwargs\":{"
 						+ "\"machine_name\":\"" + MACHINE_NAME
 						// Misnamed params if you ask me: cabinet, frame, board
@@ -296,7 +311,7 @@ class V1CompatTest extends TestSupport {
 		void getBoardPosition() throws Exception {
 			// Logical->Physical map
 			var response = "{\"return\":[1,1,0]}";
-			withInstance("nojob.boardPos", (to, from) -> {
+			withInstance((to, from) -> {
 				to.println("{\"command\":\"get_board_position\",\"kwargs\":{"
 						+ "\"machine_name\":\"" + MACHINE_NAME
 						+ "\",\"x\":0,\"y\":0,\"z\":0}}");
@@ -307,7 +322,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void jobCreateDeleteZeroArgs() throws Exception {
-			withInstance("nojob.createDelete.0", (to, from) -> {
+			withInstance((to, from) -> {
 				var jobId = create(to, from);
 				log.debug("created() with ID={}", jobId);
 				destroy(to, from, jobId);
@@ -318,7 +333,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void jobCreateDeleteOneArg() throws Exception {
-			withInstance("nojob.createDelete.1", (to, from) -> {
+			withInstance((to, from) -> {
 				var jobId = create(to, from, 1);
 				log.debug("created(1) with ID={}", jobId);
 				destroy(to, from, jobId);
@@ -329,7 +344,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void jobCreateDeleteTwoArgs() throws Exception {
-			withInstance("nojob.createDelete.2", (to, from) -> {
+			withInstance((to, from) -> {
 				var jobId = create(to, from, 1, 1);
 				log.debug("created(1,1) with ID={}", jobId);
 				destroy(to, from, jobId);
@@ -340,7 +355,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void jobCreateDeleteThreeArgs() throws Exception {
-			withInstance("nojob.createDelete.3", (to, from) -> {
+			withInstance((to, from) -> {
 				var jobId = create(to, from, 0, 0, 0);
 				log.debug("created(0,0,0) with ID={}", jobId);
 				destroy(to, from, jobId);
@@ -351,7 +366,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void jobCreateDeleteFourArgs() throws Exception {
-			withInstance("nojob.createDelete.4", (to, from) -> {
+			withInstance((to, from) -> {
 				to.println("{\"command\":\"create_job\",\"args\":[0,0,0,0],"
 						+ "\"kwargs\":{\"owner\":\"gorp\"," + "\"machine\":\""
 						+ MACHINE_NAME + "\"}}");
@@ -366,7 +381,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void compound() throws Exception {
-			withInstance("nojob.compound", (to, from) -> {
+			withInstance((to, from) -> {
 				var jobId = create(to, from, 1, 1);
 
 				try {
@@ -417,7 +432,7 @@ class V1CompatTest extends TestSupport {
 			nukeJob(jobId);
 		}
 
-		private String readReply(NonThrowingLineReader from) {
+		private String readReply(UncheckedLineReader from) {
 			// Skip over any notifications
 			String r;
 			do {
@@ -429,7 +444,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void getJobState() throws Exception {
-			withInstance("job.state", (to, from) -> {
+			withInstance((to, from) -> {
 				to.println("{\"command\":\"get_job_state\",\"args\":[" + jobId
 						+ "]}");
 				assertThat("got job state", readReply(from),
@@ -442,7 +457,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void getJobMachineInfo() throws Exception {
-			withInstance("job.machineInfo", (to, from) -> {
+			withInstance((to, from) -> {
 				to.println("{\"command\":\"get_job_machine_info\",\"args\":["
 						+ jobId + "]}");
 				assertThat("got job state", readReply(from),
@@ -454,7 +469,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void jobKeepalive() throws Exception {
-			withInstance("job.keepalive", (to, from) -> {
+			withInstance((to, from) -> {
 				to.println("{\"command\":\"job_keepalive\",\"args\":[" + jobId
 						+ "]}");
 				assertEquals(VOID_RESPONSE, readReply(from));
@@ -464,7 +479,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void jobNotify() throws Exception {
-			withInstance("job.notify", (to, from) -> {
+			withInstance((to, from) -> {
 				to.println("{\"command\":\"notify_job\",\"args\":[" + jobId
 						+ "]}");
 				assertEquals(VOID_RESPONSE, readReply(from));
@@ -477,7 +492,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void jobPower() throws Exception {
-			withInstance("job.power", (to, from) -> {
+			withInstance((to, from) -> {
 				to.println("{\"command\":\"power_off_job_boards\","
 						+ "\"args\":[" + jobId + "]}");
 				assertEquals(VOID_RESPONSE, readReply(from));
@@ -487,7 +502,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		@Timeout(5)
 		void whereIs() throws Exception {
-			withInstance("job.whereis", (to, from) -> {
+			withInstance((to, from) -> {
 				to.println("{\"command\":\"where_is\",\"kwargs\":{\"job_id\":"
 						+ jobId + ",\"chip_x\":0,\"chip_y\":0}}");
 				assertEquals("{\"return\":{\"job_chip\":[0,0],\"job_id\":"
@@ -496,22 +511,6 @@ class V1CompatTest extends TestSupport {
 						+ "\"board_chip\":[0,0],\"physical\":[1,1,0]}}",
 						readReply(from));
 			});
-		}
-	}
-}
-
-/** A buffered reader that doesn't throw if it gets an error reading a line. */
-class NonThrowingLineReader extends BufferedReader {
-	NonThrowingLineReader(PipedReader r) {
-		super(r);
-	}
-
-	@Override
-	public String readLine() {
-		try {
-			return super.readLine();
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
 		}
 	}
 }

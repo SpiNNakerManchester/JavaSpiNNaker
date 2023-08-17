@@ -279,6 +279,9 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		if (currentThread().isInterrupted()) {
 			throw new InterruptedException();
 		}
+		if (currentThread().isInterrupted()) {
+			throw new InterruptedException();
+		}
 		if (isNull(line) || line.isBlank()) {
 			return Optional.empty();
 		}
@@ -875,13 +878,5 @@ final class Oops extends RuntimeException {
 
 	Oops(String msg) {
 		super(msg);
-	}
-}
-
-final class UnknownIOException extends IOException {
-	private static final long serialVersionUID = -852489744228393668L;
-
-	UnknownIOException() {
-		super("unknown error writing message");
 	}
 }

@@ -148,15 +148,17 @@ public class AllocatorTask extends DatabaseAwareBean
 	/**
 	 * Perform update on a job now as a result of a change.
 	 *
-	 * @param jobId The job to update.
-	 * @param sourceState The change source state.
-	 * @param targetState The change target state.
+	 * @param jobId
+	 *            The job to update.
+	 * @param sourceState
+	 *            The change source state.
+	 * @param targetState
+	 *            The change target state.
 	 */
 	public void updateJob(int jobId, JobState sourceState,
 			JobState targetState) {
-		scheduler.schedule(() -> {
-			updateJobNow(jobId, sourceState, targetState);
-		}, Instant.now());
+		scheduler.schedule(() -> updateJobNow(jobId, sourceState, targetState),
+				Instant.now());
 	}
 
 	private void updateJobNow(int jobId, JobState sourceState,
@@ -181,8 +183,8 @@ public class AllocatorTask extends DatabaseAwareBean
 	private boolean update(int jobId, JobState sourceState,
 			JobState targetState, Connection c) {
 		try (var getNTasks = c.query(COUNT_CHANGES_FOR_JOB);
-				var setJobState = c.update(SET_STATE_PENDING)) {
-
+				var setJobState = c.update(SET_STATE_PENDING);
+				var setJobDestroyed = c.update(SET_STATE_DESTROYED)) {
 			// Count pending changes for this state change
 			var n = getNTasks.call1(row -> row.getInteger("n_changes"),
 					jobId, sourceState, targetState).orElseThrow(
@@ -195,8 +197,15 @@ public class AllocatorTask extends DatabaseAwareBean
 			// the target state
 			if (n == 0) {
 				log.debug("Job {} moving to state {}", jobId, targetState);
-				setJobState.call(targetState, 0, jobId);
-				return true;
+				if (targetState == DESTROYED) {
+					int rows = setJobDestroyed.call(0, jobId);
+					if (rows != 1) {
+						log.warn("unexpected number of rows affected by "
+								+ "destroy in state update: {}", rows);
+					}
+					return rows > 0;
+				}
+				return setJobState.call(targetState, 0, jobId) > 0;
 			}
 			return false;
 		}
@@ -397,19 +406,19 @@ public class AllocatorTask extends DatabaseAwareBean
 	/** Encapsulates the queries and updates used in deletion. */
 	private final class DestroySQL extends PowerSQL {
 		/** Get basic information about a specific job. */
-		private final Query getJob;
+		private final Query getJob = conn.query(GET_JOB);
 
 		/** Mark a job as dead. */
-		private final Update markAsDestroyed;
+		private final Update markAsDestroyed = conn.update(DESTROY_JOB);
+
+		/** Note the reason why a job is dead. */
+		private Update recordDestroyReason = conn.update(NOTE_DESTROY_REASON);
 
 		/** Delete a request to allocate resources for a job. */
-		private final Update killAlloc;
+		private final Update killAlloc = conn.update(KILL_JOB_ALLOC_TASK);
 
 		DestroySQL(Connection conn) {
 			super(conn);
-			getJob = conn.query(GET_JOB);
-			markAsDestroyed = conn.update(DESTROY_JOB);
-			killAlloc = conn.update(KILL_JOB_ALLOC_TASK);
 		}
 
 		@Override
@@ -417,6 +426,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			super.close();
 			getJob.close();
 			markAsDestroyed.close();
+			recordDestroyReason.close();
 			killAlloc.close();
 		}
 	}
@@ -872,12 +882,18 @@ public class AllocatorTask extends DatabaseAwareBean
 		try (var sql = new DestroySQL(conn)) {
 			if (sql.getJob.call1(enumerate("job_state", JobState.class), id)
 					.orElse(DESTROYED) == DESTROYED) {
+				log.info("job {} already destroyed", id);
 				/*
 				 * Don't do anything if the job doesn't exist or is already
 				 * destroyed
 				 */
 				return List.of();
 			}
+			/*
+			 * Record the reason as a separate step here; state change can take
+			 * some time.  It also doesn't matter if we do that twice.
+			 */
+			sql.recordDestroyReason.call(reason, id);
 			// Inserts into pending_changes; these run after job is dead
 			var bmps = setPower(sql, id, OFF, DESTROYED);
 			sql.killAlloc.call(id);
@@ -1166,6 +1182,10 @@ public class AllocatorTask extends DatabaseAwareBean
 
 	@Override
 	public boolean setPower(int jobId, PowerState power, JobState targetState) {
+		if (targetState == DESTROYED) {
+			throw new IllegalArgumentException(
+					"job destruction must be done via destroyJob() method");
+		}
 		var allocations = new Allocations(jobId, execute(conn -> {
 			try (var sql = new PowerSQL(conn)) {
 				return setPower(sql, jobId, power, targetState);
@@ -1254,7 +1274,12 @@ public class AllocatorTask extends DatabaseAwareBean
 
 		if (targetState == DESTROYED) {
 			log.debug("num changes for {} in destroy: {}", jobId, numPending);
-			sql.setStateDestroyed.call(numPending, jobId);
+			log.info("destroying job {} after power change", jobId);
+			int rows = sql.setStateDestroyed.call(numPending, jobId);
+			if (rows != 1) {
+				log.warn("unexpected number of jobs marked destroyed: {}",
+						rows);
+			}
 		} else {
 			log.debug("Num changes for target {}: {}", targetState, numPending);
 			sql.setStatePending.call(
