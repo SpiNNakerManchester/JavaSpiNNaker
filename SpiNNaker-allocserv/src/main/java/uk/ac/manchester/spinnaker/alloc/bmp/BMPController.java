@@ -115,6 +115,9 @@ public class BMPController extends DatabaseAwareBean {
 
 	private TaskScheduler scheduler;
 
+	/**
+	 * Map from BMP ID to worker task that handles it.
+	 */
 	private final Map<Integer, Worker> workers = new HashMap<>();
 
 	/**
@@ -153,7 +156,6 @@ public class BMPController extends DatabaseAwareBean {
 		var sched = new ThreadPoolTaskScheduler();
 		scheduler = sched;
 		sched.setThreadGroupName("BMP");
-		sched.initialize();
 
 		controllerFactory = controllerFactoryBean::getObject;
 		allocator.setBMPController(this);
@@ -167,13 +169,17 @@ public class BMPController extends DatabaseAwareBean {
 		if (workers.size() > 1) {
 			sched.setPoolSize(workers.size());
 		}
+
+		// Launch the scheduler now it is all set up
+		sched.initialize();
 	}
 
 	private void makeWorkers() {
 		// Make workers
-		try (var c = getConnection(); var getBmps = c.query(GET_ALL_BMPS);
+		try (var c = getConnection();
+				var getBmps = c.query(GET_ALL_BMPS);
 				var getBoards = c.query(GET_ALL_BMP_BOARDS)) {
-			getBmps.call(row -> {
+			var madeWorkers = c.transaction(false, () -> getBmps.call(row -> {
 				var m = spallocCore.getMachine(row.getString("machine_name"),
 						true);
 				var coords = new BMPCoords(row.getInt("cabinet"),
@@ -187,10 +193,14 @@ public class BMPController extends DatabaseAwareBean {
 				}, bmpId);
 				var control = controllerFactory.create(m.get(), coords, boards);
 				var worker = new Worker(control, bmpId);
-				scheduler.scheduleAtFixedRate(worker, allocProps.getPeriod());
 				workers.put(row.getInt("bmp_id"), worker);
-				return null;
-			});
+				return worker;
+			}));
+
+			// Schedule outside the transaction for safety
+			for (var worker : madeWorkers) {
+				scheduler.scheduleAtFixedRate(worker, allocProps.getPeriod());
+			}
 		}
 	}
 
@@ -503,12 +513,11 @@ public class BMPController extends DatabaseAwareBean {
 					var setBoardPowerOn = c.update(SET_BOARD_POWER_ON);
 					var setBoardPowerOff = c.update(SET_BOARD_POWER_OFF)) {
 				c.transaction(() -> {
-					int turnedOn = powerOnBoards.stream().mapToInt(
-							board -> setBoardPowerOn.call(
-									getBoardId(board).get())).sum();
-					int turnedOff = powerOffBoards.stream().mapToInt(
-							board -> setBoardPowerOff.call(
-									getBoardId(board).get())).sum();
+					int turnedOn = powerOnBoards.stream().map(this::getBoardId)
+							.mapToInt(setBoardPowerOn::call).sum();
+					int turnedOff =
+							powerOffBoards.stream().map(this::getBoardId)
+									.mapToInt(setBoardPowerOff::call).sum();
 
 					if (to == DESTROYED || to == QUEUED) {
 						/*
@@ -547,9 +556,9 @@ public class BMPController extends DatabaseAwareBean {
 					var setBoardPowerOff = c.update(SET_BOARD_POWER_OFF)) {
 				resetJobAlloc = c.transaction(() -> {
 					// We should mark the boards as off
-					int turnedOff = powerOffBoards.stream().mapToInt(
-							board -> setBoardPowerOff.call(
-									getBoardId(board).get())).sum();
+					int turnedOff =
+							powerOffBoards.stream().map(this::getBoardId)
+									.mapToInt(setBoardPowerOff::call).sum();
 
 					// Deallocate the boards on this bmp from the job;
 					// other boards can be deallocated elsewhere.
@@ -655,8 +664,8 @@ public class BMPController extends DatabaseAwareBean {
 			return Optional.ofNullable(boardToId.get(addr.getP()));
 		}
 
-		private Optional<Integer> getBoardId(BMPBoard board) {
-			return Optional.ofNullable(boardToId.get(board.board));
+		private Integer getBoardId(BMPBoard board) {
+			return boardToId.get(board.board);
 		}
 	}
 
@@ -683,8 +692,7 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final int machineId;
 
-		private BoardRequest(int bmpId, NonBootOperation op,
-				Row row) {
+		private BoardRequest(int bmpId, NonBootOperation op, Row row) {
 			super(bmpId);
 			this.op = op;
 			opId = row.getInt("op_id");
@@ -710,8 +718,7 @@ public class BMPController extends DatabaseAwareBean {
 
 		/**
 		 * Access the DB to store the serial number information that we
-		 * retrieved. Runs on a thread that may touch the database, but may not
-		 * touch any BMP.
+		 * retrieved. A transaction should already be held.
 		 *
 		 * @param sql
 		 *            How to access the DB
@@ -726,8 +733,7 @@ public class BMPController extends DatabaseAwareBean {
 
 		/**
 		 * Access the DB to mark the read request as successful and store the
-		 * blacklist that was read. Runs on a thread that may touch the
-		 * database, but may not touch any BMP.
+		 * blacklist that was read. A transaction should already be held.
 		 *
 		 * @param sql
 		 *            How to access the DB
@@ -741,8 +747,8 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		/**
-		 * Access the DB to mark the write request as successful. Runs on a
-		 * thread that may touch the database, but may not touch any BMP.
+		 * Access the DB to mark the write request as successful. A transaction
+		 * should already be held.
 		 *
 		 * @param sql
 		 *            How to access the DB
@@ -755,8 +761,9 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		/**
-		 * Access the DB to mark the read request as successful. Runs on a
-		 * thread that may touch the database, but may not touch any BMP.
+		 * Access the DB to mark the read request as successful; the actual
+		 * store of the serial data is elsewhere. A transaction should already
+		 * be held.
 		 *
 		 * @param sql
 		 *            How to access the DB
@@ -784,8 +791,6 @@ public class BMPController extends DatabaseAwareBean {
 
 		/**
 		 * Access the DB to mark the request as failed and store the exception.
-		 * Runs on a thread that may touch the database, but may not touch any
-		 * BMP.
 		 *
 		 * @param exn
 		 *            The exception that caused the failure.
@@ -794,8 +799,7 @@ public class BMPController extends DatabaseAwareBean {
 		private void failed(Exception exn) {
 			try (var c = getConnection();
 					var failed = c.update(FAILED_BLACKLIST_OP)) {
-				// Not worth a transaction!
-				failed.call(exn, opId);
+				c.transaction(() -> failed.call(exn, opId));
 			}
 		}
 
@@ -803,8 +807,7 @@ public class BMPController extends DatabaseAwareBean {
 				"board was not reachable when trying to access its blacklist: ";
 
 		/**
-		 * Access the DB to mark a board as out of service. Runs on a thread
-		 * that may touch the database, but may not touch any BMP.
+		 * Access the DB to mark a board as out of service.
 		 *
 		 * @param exn
 		 *            The exception that caused the failure.
@@ -1033,12 +1036,12 @@ public class BMPController extends DatabaseAwareBean {
 		/**
 		 * Periodically call to update, or trigger externally.
 		 */
+		@Override
 		public synchronized void run() {
 			log.trace("Searching for changes on BMP {}", bmpId);
 
 			try {
-				var changes = takeRequests();
-
+				var changes = getRequestedOperations();
 				for (var change : changes) {
 					change.processRequest(control);
 				}
@@ -1047,53 +1050,62 @@ public class BMPController extends DatabaseAwareBean {
 			}
 		}
 
-		private List<Request> takeRequests() {
-			var changes = new ArrayList<Request>();
+		/**
+		 * Get the things that we want the worker to do. <em>Be very
+		 * careful!</em> Because this necessarily involves the database, this
+		 * must not touch the BMP handle as those operations take a long time
+		 * and we absolutely must not have a transaction open at the same time.
+		 *
+		 * @return List of operations to perform.
+		 */
+		private List<Request> getRequestedOperations() {
+			var requests = new ArrayList<Request>();
 			try (var c = getConnection();
-					var getRequests = c.query(GET_CHANGES);
+					var getPowerRequests = c.query(GET_CHANGES);
 					var getBlacklistReads = c.query(GET_BLACKLIST_READS);
 					var getBlacklistWrites = c.query(GET_BLACKLIST_WRITES);
 					var getReadSerialInfos = c.query(GET_SERIAL_INFO_REQS);
 					var getReadTemps = c.query(GET_TEMP_INFO_REQS)) {
-				c.transaction(() -> {
-					// Group power requests by job
+				c.transaction(false, () -> {
+					// Batch power requests by job
 					var powerChanges = new LinkedList<>(
-							getRequests.call(PowerChange::new, bmpId));
+							getPowerRequests.call(PowerChange::new, bmpId));
 					while (!powerChanges.isEmpty()) {
-						var jobChanges = new ArrayList<PowerChange>();
 						var change = powerChanges.poll();
-						jobChanges.add(change);
+						var jobChanges = new ArrayList<>(List.of(change));
 						while (!powerChanges.isEmpty()
 								&& change.isSameJob(powerChanges.peek())) {
 							jobChanges.add(powerChanges.poll());
 						}
 						if (!jobChanges.isEmpty()) {
 							log.debug("Running job changes {}", jobChanges);
-							changes.add(new PowerRequest(bmpId, change.jobId,
+							requests.add(new PowerRequest(bmpId, change.jobId,
 									change.from, change.to, jobChanges));
 						}
 					}
 
 					// Leave these until quiet
-					if (changes.isEmpty()) {
-						changes.addAll(getBlacklistWrites.call(
-								row -> new BoardRequest(bmpId, WRITE_BL, row),
-								bmpId));
-					}
-					if (changes.isEmpty()) {
-						changes.addAll(getBlacklistReads.call(
+					if (requests.isEmpty()) {
+						requests.addAll(getBlacklistReads.call(
 								row -> new BoardRequest(bmpId, READ_BL, row),
 								bmpId));
-						changes.addAll(getReadSerialInfos.call(
+					}
+					if (requests.isEmpty()) {
+						requests.addAll(getBlacklistWrites.call(
+								row -> new BoardRequest(bmpId, WRITE_BL, row),
+								bmpId));
+						requests.addAll(getReadSerialInfos.call(
 								row -> new BoardRequest(bmpId, GET_SERIAL, row),
 								bmpId));
-						changes.addAll(getReadTemps.call(
+						requests.addAll(getReadTemps.call(
 								row -> new BoardRequest(bmpId, READ_TEMP, row),
 								bmpId));
 					}
 				});
+			} catch (Exception e) {
+				log.error("unhandled exception for BMP '{}'", bmpId, e);
 			}
-			return changes;
+			return requests;
 		}
 	}
 
@@ -1129,6 +1141,22 @@ public class BMPController extends DatabaseAwareBean {
 				throws IOException, SpinnmanException, InterruptedException;
 
 		/**
+		 * The core of the scheduler. Will process for all known BMPs.
+		 *
+		 * @param millis
+		 *            How many milliseconds to sleep before doing a rerun of the
+		 *            scheduler. If zero (or less), only one run will be done.
+		 * @throws IOException
+		 *             If talking to the network fails
+		 * @throws SpinnmanException
+		 *             If a BMP sends an error back
+		 * @throws InterruptedException
+		 *             If the wait for workers to spawn fails.
+		 */
+		void processRequests(long millis)
+				throws IOException, SpinnmanException, InterruptedException;
+
+		/**
 		 * Get the last BMP exception.
 		 *
 		 * @return The exception.
@@ -1160,15 +1188,23 @@ public class BMPController extends DatabaseAwareBean {
 
 			@Override
 			public void processRequests(long millis, Collection<Integer> bmps)
-					throws IOException,	SpinnmanException,
+					throws IOException, SpinnmanException,
 					InterruptedException {
 				/*
 				 * Runs twice because it takes two cycles to fully process a
 				 * request.
 				 */
 				triggerSearch(bmps);
-				Thread.sleep(millis);
-				triggerSearch(bmps);
+				if (millis > 0) {
+					Thread.sleep(millis);
+					triggerSearch(bmps);
+				}
+			}
+
+			@Override
+			public void processRequests(long millis) throws IOException,
+					SpinnmanException, InterruptedException {
+				processRequests(millis, workers.keySet());
 			}
 
 			@Override

@@ -19,7 +19,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static java.lang.String.format;
+import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.util.regex.Pattern.compile;
+import static org.apache.commons.lang3.ThreadUtils.sleepQuietly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
@@ -30,7 +32,10 @@ import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
 import java.io.PrintWriter;
+import java.io.UncheckedIOException;
+import java.time.Duration;
 import java.util.Arrays;
+import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
 
 import org.junit.jupiter.api.AfterEach;
@@ -74,17 +79,56 @@ class V1CompatTest extends TestSupport {
 		testAPI = compat.getTestApi();
 	}
 
+	private static void verySmallDelay() {
+		sleepQuietly(Duration.of(20, MILLIS));
+	}
+
+	private static void smallDelay() {
+		sleepQuietly(Duration.of(80, MILLIS));
+	}
+
 	private void withInstance(
-			BiConsumer<PrintWriter, NonThrowingLineReader> act)
+			BiConsumer<PrintWriter, UncheckedLineReader> act)
 			throws Exception {
-		try (var to = new PipedWriter();
-				var from = new PipedReader()) {
-			var f = testAPI.launchInstance(to, from);
+		Future<?> f = null;
+		try (var to = new PipedWriter(); var from = new PipedReader()) {
+			f = testAPI.launchInstance(to, from);
+			act.accept(new PrintWriter(to), new UncheckedLineReader(from));
+		} finally {
+			verySmallDelay();
+			if (f != null && !f.isDone()) {
+				smallDelay();
+				if (f.cancel(true)) {
+					log.warn("cancelled instance task");
+				} else {
+					log.debug("task cancel failed; probably already finished");
+				}
+			}
+		}
+		/*
+		 * Clear the interrupted status. If we got here (i.e., we're NOT in a
+		 * finally block) we weren't interrupted in a way that matters, so we
+		 * mustn't have the thread marked as interrupted here or JUnit throws a
+		 * very strange failure.
+		 */
+		Thread.interrupted();
+	}
+
+	/**
+	 * A buffered reader that doesn't throw a checked exception if it gets an
+	 * error reading a line. It converts it to an unchecked exception.
+	 */
+	private static class UncheckedLineReader extends BufferedReader {
+		UncheckedLineReader(PipedReader r) {
+			super(r);
+		}
+
+		@Override
+		public String readLine() {
 			try {
-				act.accept(new PrintWriter(to),
-						new NonThrowingLineReader(from));
-			} finally {
-				log.debug("task cancel failed; probably already finished");
+				return super.readLine();
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
 			}
 		}
 	}
@@ -98,7 +142,7 @@ class V1CompatTest extends TestSupport {
 					+ "\"machine\":\"foo_machine\",\"board_chip\":[0,0],"
 					+ "\"physical\":[1,1,0]}}";
 
-	private static String create(PrintWriter to, NonThrowingLineReader from,
+	private static String create(PrintWriter to, UncheckedLineReader from,
 			int... args) {
 		to.println("{\"command\":\"create_job\",\"args\":"
 				+ Arrays.toString(args) + ",\"kwargs\":{\"owner\":\"gorp\","
@@ -111,7 +155,7 @@ class V1CompatTest extends TestSupport {
 		return m.group(1);
 	}
 
-	private static void destroy(PrintWriter to, NonThrowingLineReader from,
+	private static void destroy(PrintWriter to, UncheckedLineReader from,
 			Object jobId) {
 		to.println("{\"command\":\"destroy_job\",\"args\":[" + jobId
 				+ "],\"kwargs\":{\"reason\":\"whatever\"}}");
@@ -320,7 +364,7 @@ class V1CompatTest extends TestSupport {
 			nukeJob(jobId);
 		}
 
-		private String readReply(NonThrowingLineReader from) {
+		private String readReply(UncheckedLineReader from) {
 			// Skip over any notifications
 			String r;
 			do {
@@ -393,22 +437,6 @@ class V1CompatTest extends TestSupport {
 						+ "\"board_chip\":[0,0],\"physical\":[1,1,0]}}",
 						readReply(from));
 			});
-		}
-	}
-}
-
-/** A buffered reader that doesn't throw if it gets an error reading a line. */
-class NonThrowingLineReader extends BufferedReader {
-	NonThrowingLineReader(PipedReader r) {
-		super(r);
-	}
-
-	@Override
-	public String readLine() {
-		try {
-			return super.readLine();
-		} catch (IOException e) {
-			return "THREW " + e;
 		}
 	}
 }

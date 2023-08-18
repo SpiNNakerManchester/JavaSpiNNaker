@@ -45,6 +45,8 @@ public interface PowerController {
 	 * @param targetState
 	 *            What state are we aiming to put the job into once the power
 	 *            has been switched. Should be {@link JobState#READY} or
+	 *            {@link JobState#QUEUED}. <strong>NB:</strong> Use
+	 *            {@link #destroyJob(int, String)} to move to
 	 *            {@link JobState#DESTROYED}.
 	 * @return Whether any change has been requested.
 	 */

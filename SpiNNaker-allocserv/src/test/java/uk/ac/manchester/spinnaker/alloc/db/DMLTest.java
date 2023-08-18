@@ -162,6 +162,18 @@ class DMLTest extends SimpleDBTestBase {
 	}
 
 	@Test
+	void noteDestroyReason() {
+		assumeWritable(c);
+		try (var u = c.update(NOTE_DESTROY_REASON)) {
+			c.transaction(() -> {
+				assertEquals(List.of("death_reason", "job_id"),
+						u.getParameters());
+				assertEquals(0, u.call("anything", NO_JOB));
+			});
+		}
+	}
+
+	@Test
 	void deleteTask() {
 		assumeWritable(c);
 		try (var u = c.update(DELETE_TASK)) {
