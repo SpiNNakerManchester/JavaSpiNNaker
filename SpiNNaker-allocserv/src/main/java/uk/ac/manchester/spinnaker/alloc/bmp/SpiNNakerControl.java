@@ -48,7 +48,7 @@ public interface SpiNNakerControl {
 	 * Note that this operation can take some time.
 	 *
 	 * @param boards
-	 *            The <em>database IDs</em> of the boards to switch on.
+	 *            The local-relative boards to switch on.
 	 * @throws ProcessException
 	 *             If a BMP sends a failure message.
 	 * @throws IOException
@@ -56,7 +56,7 @@ public interface SpiNNakerControl {
 	 * @throws InterruptedException
 	 *             If we're interrupted.
 	 */
-	void powerOnAndCheck(List<Integer> boards)
+	void powerOnAndCheck(List<BMPBoard> boards)
 			throws ProcessException, InterruptedException, IOException;
 
 	/**
@@ -80,7 +80,7 @@ public interface SpiNNakerControl {
 	 * links.
 	 *
 	 * @param boards
-	 *            The <em>database IDs</em> of the boards to turn off.
+	 *            The local-relative ids of the boards to turn off.
 	 * @throws ProcessException
 	 *             If a BMP sends a failure message.
 	 * @throws IOException
@@ -88,18 +88,8 @@ public interface SpiNNakerControl {
 	 * @throws InterruptedException
 	 *             If we're interrupted.
 	 */
-	void powerOff(List<Integer> boards)
+	void powerOff(List<BMPBoard> boards)
 			throws ProcessException, InterruptedException, IOException;
-
-	/**
-	 * Set how to map from database IDs for a board to what to use when talking
-	 * to the BMP.
-	 *
-	 * @param idToBoard
-	 *            How to get a physical board number from a database ID of the
-	 *            board.
-	 */
-	void setIdToBoardMap(Map<Integer, BMPBoard> idToBoard);
 
 	/**
 	 * Read a BMP serial number from the given board.
@@ -167,6 +157,13 @@ public interface SpiNNakerControl {
 			throws ProcessException, InterruptedException, IOException;
 
 	/**
+	 * Ping the given boards.
+	 *
+	 * @param boards The boards to ping.
+	 */
+	void ping(List<BMPBoard> boards);
+
+	/**
 	 * A guide for how to make a BMP controller.
 	 *
 	 * @author Donal Fellows
@@ -184,8 +181,11 @@ public interface SpiNNakerControl {
 		 *            The machine that this will be managing.
 		 * @param coords
 		 *            The coordinates of the BMP that this will manage.
+		 * @param boardAddresses
+		 *            The IP addresses of the boards of the BMP.
 		 * @return The board controller.
 		 */
-		SpiNNakerControl create(Machine machine, BMPCoords coords);
+		SpiNNakerControl create(Machine machine, BMPCoords coords,
+				Map<BMPBoard, String> boardAddresses);
 	}
 }

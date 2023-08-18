@@ -24,7 +24,9 @@ public interface HasCoreLocation extends HasChipLocation {
 	/**
 	 * @return The processor coordinate of the core on its chip.
 	 */
-	@ValidP
+	// We would like to validate this, but BMP also uses it and that uses
+	// P values outside of the valid range!
+	// @ValidP
 	int getP();
 
 	/**

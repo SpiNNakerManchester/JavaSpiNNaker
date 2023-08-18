@@ -18,8 +18,6 @@ package uk.ac.manchester.spinnaker.alloc;
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static java.lang.System.setProperty;
-import static java.util.concurrent.Executors.defaultThreadFactory;
-import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
@@ -34,8 +32,6 @@ import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPO
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletRequest;
@@ -70,12 +66,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Role;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.servlet.ViewResolver;
@@ -180,12 +178,6 @@ public class ServiceConfig extends Application {
 		return new JdbcTransactionManager(ds);
 	}
 
-	@Bean(name = "spallocThreadFactory")
-	@Role(ROLE_INFRASTRUCTURE)
-	ThreadFactory threadFactory() {
-		return defaultThreadFactory();
-	}
-
 	/**
 	 * The thread pool. The rest of the application expects there to be a single
 	 * such pool.
@@ -193,17 +185,18 @@ public class ServiceConfig extends Application {
 	 * @param numThreads
 	 *            The size of the pool. From
 	 *            {@code spring.task.scheduling.pool.size} property.
-	 * @param factory
-	 *            The thread factory.
 	 * @return The set up thread pool bean.
 	 */
-	@Bean(destroyMethod = "shutdown")
-	@DependsOn("databaseEngineJDBCImpl")
-	@Role(ROLE_INFRASTRUCTURE)
-	ScheduledExecutorService scheduledThreadPoolExecutor(
-			@Value("${spring.task.scheduling.pool.size}") int numThreads,
-			ThreadFactory factory) {
-		return newScheduledThreadPool(numThreads, factory);
+	@Bean(name = "threadPoolTaskExecutor")
+	@Primary
+	public ThreadPoolTaskScheduler threadPoolTaskExecutor(
+			@Value("${spring.task.scheduling.pool.size}") int numThreads) {
+		ThreadPoolTaskScheduler threadPoolTaskScheduler
+			= new ThreadPoolTaskScheduler();
+		threadPoolTaskScheduler.setPoolSize(numThreads);
+		threadPoolTaskScheduler.setThreadNamePrefix(
+			"ThreadPoolTaskScheduler");
+		return threadPoolTaskScheduler;
 	}
 
 	/**
@@ -406,17 +399,6 @@ public class ServiceConfig extends Application {
 			return prefix + suffix;
 		}
 	}
-
-	/*@Bean(name = "dataSource")
-    @ConfigurationProperties(prefix = "spring.datasource")
-    public DataSource dataSource() {
-        return DataSourceBuilder.create().build();
-    }
-
-    @Bean(name = "jdbcTemplate")
-    public JdbcTemplate applicationDataConnection(){
-        return new JdbcTemplate(dataSource());
-    } */
 
 	@Autowired
 	private ApplicationContext ctx;

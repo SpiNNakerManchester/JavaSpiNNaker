@@ -13,6 +13,9 @@
 # limitations under the License.
 
 # These are just the settings that are changed during testing
+logging:
+  level:
+    root: DEBUG
 
 spalloc:
   pause: true

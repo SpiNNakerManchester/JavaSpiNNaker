@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS boards (
 	root_y INTEGER NOT NULL
 		CONSTRAINT root_y_sane CHECK (root_y >= 0), -- Chip coordinate
 	allocated_job INTEGER,
-	    -- job table doesn't exist, so we can't reference it
+		-- job table doesn't exist, so we can't reference it
 		-- FOREIGN KEY (allocated_job) REFERENCES jobs(job_id),
 	board_power INTEGER
 		CONSTRAINT board_power_check CHECK (board_power IN (0, 1)),
@@ -142,10 +142,10 @@ CREATE TABLE IF NOT EXISTS boards (
 	-- Every board has a unique location within its machine
 	UNIQUE INDEX (root_x ASC, root_y ASC, machine_id ASC),
 	-- Every board has a unique board number within its BMP
-    UNIQUE INDEX (bmp_id ASC, board_num ASC),
-    INDEX (power_off_timestamp ASC),
-    INDEX (allocated_job),
-    INDEX (machine_id)
+	UNIQUE INDEX (bmp_id ASC, board_num ASC),
+	INDEX (power_off_timestamp ASC),
+	INDEX (allocated_job),
+	INDEX (machine_id)
 );
 
 -- STMT
@@ -188,7 +188,7 @@ CREATE TABLE IF NOT EXISTS user_info (
 	last_successful_login_timestamp INTEGER, -- If NULL, never logged in
 	-- Roles; see SecurityConfig.TrustLevel
 	trust_level INTEGER NOT NULL
-		CONSTRAINT trust_level_check CHECK (trust_level IN (0, 1, 2, 3)),
+		CONSTRAINT trust_level_check CHECK (trust_level IN (0, 1, 2, 3, 4)),
 	-- Automatic disablement support
 	failure_count INTEGER NOT NULL DEFAULT (0),
 	locked INTEGER NOT NULL DEFAULT (0)
@@ -199,7 +199,7 @@ CREATE TABLE IF NOT EXISTS user_info (
 		CONSTRAINT disabled_check CHECK (disabled IN (0, 1)),
 	openid_subject CHAR(100) UNIQUE,
 	is_internal INTEGER GENERATED ALWAYS AS ( -- generated COLUMN
-		encrypted_password IS NOT NULL) VIRTUAL
+		encrypted_password IS NOT NULL AND trust_level != 4) VIRTUAL
 );
 
 -- STMT
@@ -265,6 +265,26 @@ CREATE TABLE IF NOT EXISTS jobs (
 );
 
 -- STMT
+CREATE TABLE IF NOT EXISTS job_nmpi_session (
+	job_id INTEGER,
+		FOREIGN KEY (job_id)
+		REFERENCES jobs(job_id),
+	session_id INTEGER NOT NULL,
+	quota_units VARCHAR(50) NOT NULL,
+	UNIQUE INDEX (job_id ASC, session_id ASC)
+);
+
+-- STMT
+CREATE TABLE IF NOT EXISTS job_nmpi_job (
+	job_id INTEGER,
+		FOREIGN KEY (job_id)
+		REFERENCES jobs(job_id),
+	nmpi_job_id INTEGER NOT NULL,
+	quota_units VARCHAR(50) NOT NULL,
+	UNIQUE INDEX (job_id ASC, nmpi_job_id ASC)
+);
+
+-- STMT
 -- Reports of problems with boards
 CREATE TABLE IF NOT EXISTS board_reports(
 	report_id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -307,7 +327,7 @@ CREATE TABLE IF NOT EXISTS old_board_allocations (
 		FOREIGN KEY (job_id)
 		REFERENCES jobs(job_id) ON DELETE CASCADE,
 	board_id INTEGER NOT NULL,
-	    FOREIGN KEY (board_id)
+		FOREIGN KEY (board_id)
 		REFERENCES boards(board_id) ON DELETE CASCADE,
 	alloc_timestamp INTEGER NOT NULL
 );
@@ -358,36 +378,36 @@ CREATE TABLE IF NOT EXISTS job_request (
 
 -- STMT
 CREATE TABLE IF NOT EXISTS pending_changes (
-    change_id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    job_id INTEGER,
+	change_id INTEGER PRIMARY KEY AUTO_INCREMENT,
+	job_id INTEGER,
 		FOREIGN KEY (job_id)
 		REFERENCES jobs(job_id) ON DELETE CASCADE,
-    board_id INTEGER UNIQUE NOT NULL,
+	board_id INTEGER NOT NULL,
 		FOREIGN KEY (board_id)
 		REFERENCES boards(board_id) ON DELETE RESTRICT,
-    power INTEGER NOT NULL	-- Whether to switch the board on
+	power INTEGER NOT NULL	-- Whether to switch the board on
 		CONSTRAINT pending_changes_power CHECK (power IN (0, 1)),
-    fpga_n INTEGER NOT NULL		-- Whether to switch the northward FPGA on
+	fpga_n INTEGER NOT NULL		-- Whether to switch the northward FPGA on
 		CONSTRAINT pending_changes_fpga_n CHECK (fpga_n IN (0, 1)),
-    fpga_s INTEGER NOT NULL		-- Whether to switch the southward FPGA on
+	fpga_s INTEGER NOT NULL		-- Whether to switch the southward FPGA on
 		CONSTRAINT pending_changes_fpga_s CHECK (fpga_s IN (0, 1)),
-    fpga_e INTEGER NOT NULL		-- Whether to switch the eastward FPGA on
+	fpga_e INTEGER NOT NULL		-- Whether to switch the eastward FPGA on
 		CONSTRAINT pending_changes_fpga_e CHECK (fpga_e IN (0, 1)),
-    fpga_w INTEGER NOT NULL		-- Whether to switch the westward FPGA on
+	fpga_w INTEGER NOT NULL		-- Whether to switch the westward FPGA on
 		CONSTRAINT pending_changes_fpga_w CHECK (fpga_w IN (0, 1)),
-    fpga_nw INTEGER NOT NULL	-- Whether to switch the northwest FPGA on
+	fpga_nw INTEGER NOT NULL	-- Whether to switch the northwest FPGA on
 		CONSTRAINT pending_changes_fpga_nw CHECK (fpga_nw IN (0, 1)),
-    fpga_se INTEGER NOT NULL	-- Whether to switch the southeast FPGA on
+	fpga_se INTEGER NOT NULL	-- Whether to switch the southeast FPGA on
 		CONSTRAINT pending_changes_fpga_se CHECK (fpga_se IN (0, 1)),
-    in_progress INTEGER NOT NULL DEFAULT (0)
+	in_progress INTEGER NOT NULL DEFAULT (0)
 		CONSTRAINT pending_changes_in_progress CHECK (in_progress IN (0, 1)),
-    from_state INTEGER NOT NULL DEFAULT (0),
+	from_state INTEGER NOT NULL DEFAULT (0),
 		FOREIGN KEY (from_state)
 		REFERENCES job_states(id) ON DELETE RESTRICT,
-    to_state INTEGER NOT NULL DEFAULT (0),
+	to_state INTEGER NOT NULL DEFAULT (0),
 		FOREIGN KEY (to_state)
 		REFERENCES job_states(id) ON DELETE RESTRICT,
-	INDEX (job_id)
+	INDEX (job_id, from_state, to_state)
 );
 
 -- STMT
@@ -428,7 +448,7 @@ CREATE TABLE IF NOT EXISTS blacklisted_chips(
 		FOREIGN KEY (coord_id)
 		REFERENCES board_model_coords(coord_id) ON DELETE RESTRICT,
 	notes TEXT,
-    UNIQUE INDEX (board_id ASC, coord_id ASC)
+	UNIQUE INDEX (board_id ASC, coord_id ASC)
 );
 
 -- STMT
@@ -520,10 +540,10 @@ VALUES
 	(3, 0, 1), (3, 1, 1),
 	(3, 0, 0), (3, 1, 0),
 	-- Version 5 boards
-	                                            (5, 4, 7), (5, 5, 7), (5, 6, 7), (5, 7, 7),
-	                                 (5, 3, 6), (5, 4, 6), (5, 5, 6), (5, 6, 6), (5, 7, 6),
-	                      (5, 2, 5), (5, 3, 5), (5, 4, 5), (5, 5, 5), (5, 6, 5), (5, 7, 5),
-	           (5, 1, 4), (5, 2, 4), (5, 3, 4), (5, 4, 4), (5, 5, 4), (5, 6, 4), (5, 7, 4),
+												(5, 4, 7), (5, 5, 7), (5, 6, 7), (5, 7, 7),
+									(5, 3, 6), (5, 4, 6), (5, 5, 6), (5, 6, 6), (5, 7, 6),
+						(5, 2, 5), (5, 3, 5), (5, 4, 5), (5, 5, 5), (5, 6, 5), (5, 7, 5),
+			(5, 1, 4), (5, 2, 4), (5, 3, 4), (5, 4, 4), (5, 5, 4), (5, 6, 4), (5, 7, 4),
 	(5, 0, 3), (5, 1, 3), (5, 2, 3), (5, 3, 3), (5, 4, 3), (5, 5, 3), (5, 6, 3), (5, 7, 3),
 	(5, 0, 2), (5, 1, 2), (5, 2, 2), (5, 3, 2), (5, 4, 2), (5, 5, 2), (5, 6, 2),
 	(5, 0, 1), (5, 1, 1), (5, 2, 1), (5, 3, 1), (5, 4, 1), (5, 5, 1),

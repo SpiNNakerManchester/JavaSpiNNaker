@@ -40,7 +40,7 @@ public class Placement implements HasCoreLocation {
 	 */
 	public static final TypeReference<List<Placement>> LIST = new TR();
 
-	private static class TR extends TypeReference<List<Placement>> {
+	private static final class TR extends TypeReference<List<Placement>> {
 	}
 
 	/** The X coordinate of the core this vertex is placed on. */

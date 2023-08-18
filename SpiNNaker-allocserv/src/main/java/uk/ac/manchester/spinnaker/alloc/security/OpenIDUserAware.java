@@ -24,6 +24,7 @@ import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.P
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 /**
@@ -38,6 +39,14 @@ public interface OpenIDUserAware {
 	 * @return The user info, if known. Pay attention to the attributes.
 	 */
 	Optional<OAuth2User> getOpenIdUser();
+
+	/**
+	 * Get the underlying OpenID Bearer token.
+	 *
+	 * @return The bearer token, if known (probably only if originally used to
+	 *         authenticate).
+	 */
+	Optional<OAuth2AccessToken> getBearerToken();
 
 	/**
 	 * Get a claim/attribute that is a string.

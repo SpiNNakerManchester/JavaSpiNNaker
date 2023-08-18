@@ -190,10 +190,10 @@ class DMLTest extends SimpleDBTestBase {
 	@Test
 	void deallocateBoardsJob() {
 		assumeWritable(c);
-		try (var u = c.update(DEALLOCATE_BOARDS_JOB)) {
+		try (var u = c.update(DEALLOCATE_BMP_BOARDS_JOB)) {
 			c.transaction(() -> {
-				assertEquals(List.of("job_id"), u.getParameters());
-				assertEquals(0, u.call(NO_JOB));
+				assertEquals(List.of("job_id", "bmp_id"), u.getParameters());
+				assertEquals(0, u.call(NO_JOB, 0));
 			});
 		}
 	}
@@ -252,29 +252,6 @@ class DMLTest extends SimpleDBTestBase {
 			c.transaction(() -> {
 				assertEquals(List.of("job_id"), u.getParameters());
 				assertEquals(0, u.call(NO_JOB));
-			});
-		}
-	}
-
-	@Test
-	void killJobPending() {
-		assumeWritable(c);
-		try (var u = c.update(KILL_JOB_PENDING)) {
-			c.transaction(() -> {
-				assertEquals(List.of("job_id"), u.getParameters());
-				assertEquals(0, u.call(NO_JOB));
-			});
-		}
-	}
-
-	@Test
-	void setInProgress() {
-		assumeWritable(c);
-		try (var u = c.update(SET_IN_PROGRESS)) {
-			c.transaction(() -> {
-				assertEquals(List.of("in_progress", "change_id"),
-						u.getParameters());
-				assertEquals(0, u.call(false, NO_JOB));
 			});
 		}
 	}
@@ -799,17 +776,6 @@ class DMLTest extends SimpleDBTestBase {
 	}
 
 	@Test
-	void clearStuckPending() {
-		assumeWritable(c);
-		try (var u = c.update(CLEAR_STUCK_PENDING)) {
-			c.transaction(() -> {
-				assertEquals(List.of(), u.getParameters());
-				assertEquals(0, u.call());
-			});
-		}
-	}
-
-	@Test
 	void setBoardSerialIds() {
 		assumeWritable(c);
 		try (var u = c.update(SET_BOARD_SERIAL_IDS)) {
@@ -822,10 +788,10 @@ class DMLTest extends SimpleDBTestBase {
 	}
 
 	@Test
-	void completedBlacklistRead() {
+	void completedBoardInfoRead() {
 		assumeWritable(c);
 		var bl = new Blacklist("");
-		try (var u = c.update(COMPLETED_BLACKLIST_READ)) {
+		try (var u = c.update(COMPLETED_BOARD_INFO_READ)) {
 			c.transaction(() -> {
 				assertEquals(List.of("data", "op_id"), u.getParameters());
 				assertEquals(0, u.call(bl, NO_BLACKLIST_OP));
@@ -1005,6 +971,45 @@ class DMLTest extends SimpleDBTestBase {
 				assertEquals(List.of("board_id"), u.getParameters());
 				// No such board, so no delete
 				assertEquals(0, u.call(NO_BOARD));
+			});
+		}
+	}
+
+	@Test
+	void setCollabQuota() {
+		assumeWritable(c);
+		try (var u = c.update(SET_COLLAB_QUOTA)) {
+			c.transaction(() -> {
+				assertEquals(List.of("new_quota", "group_name"),
+						u.getParameters());
+				// No such group so no quota set
+				assertEquals(0, u.call(0, NO_NAME));
+			});
+		}
+	}
+
+	@Test
+	void addJobSession() {
+		assumeWritable(c);
+		try (var u = c.update(SET_JOB_SESSION)) {
+			c.transaction(() -> {
+				assertEquals(List.of("job_id", "session_id", "quota_units"),
+						u.getParameters());
+				// No such job
+				assertEquals(0, u.call(0, 0, ""));
+			});
+		}
+	}
+
+	@Test
+	void addJobNmpiJob() {
+		assumeWritable(c);
+		try (var u = c.update(SET_JOB_NMPI_JOB)) {
+			c.transaction(() -> {
+				assertEquals(List.of("job_id", "nmpi_job_id", "quota_units"),
+						u.getParameters());
+				// No such job
+				assertEquals(0, u.call(0, 0, ""));
 			});
 		}
 	}

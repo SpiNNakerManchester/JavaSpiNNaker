@@ -54,11 +54,13 @@ class DQLTest extends SimpleDBTestBase {
 
 	/** Columns to inflate a BoardCoords. */
 	private static final List<String> BOARD_COLUMNS = List.of("board_id", "x",
-			"y", "z", "cabinet", "frame", "board_num", "address");
+			"y", "z", "cabinet", "frame", "board_num", "address", "bmp_id",
+			"machine_id");
 
 	private static final List<String> FULL_BOARD_COLUMNS = List.of("board_id",
 			"x", "y", "z", "cabinet", "frame", "board_num", "address",
-			"machine_name", "bmp_serial_id", "physical_serial_id");
+			"machine_name", "bmp_serial_id", "physical_serial_id", "bmp_id",
+			"machine_id");
 
 	private static final List<String> LOCATED_BOARD = List.of("board_id",
 			"bmp_id", "job_id", "machine_name", "address", "x", "y", "z",
@@ -225,7 +227,8 @@ class DQLTest extends SimpleDBTestBase {
 		try (var q = c.query(GET_JOB_BOARDS)) {
 			c.transaction(() -> {
 				assertEquals(List.of("job_id"), q.getParameters());
-				assertEquals(List.of("board_id"), q.getColumns());
+				assertEquals(List.of("board_id", "bmp_id", "machine_id"),
+						q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, NO_JOB));
 			});
 		}
@@ -546,11 +549,11 @@ class DQLTest extends SimpleDBTestBase {
 	void getChanges() {
 		try (var q = c.query(GET_CHANGES)) {
 			c.transaction(() -> {
-				assertEquals(List.of("job_id"), q.getParameters());
+				assertEquals(List.of("bmp_id"), q.getParameters());
 				assertEquals(List.of("change_id", "job_id", "board_id", "power",
 						"fpga_n", "fpga_s", "fpga_e", "fpga_w", "fpga_se",
-						"fpga_nw", "in_progress", "from_state", "to_state",
-						"board_num", "bmp_id", "cabinet", "frame"),
+						"fpga_nw", "from_state", "to_state",
+						"board_num", "bmp_id"),
 						q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, NO_JOB));
 			});
@@ -607,17 +610,6 @@ class DQLTest extends SimpleDBTestBase {
 				assertEquals(List.of("connected_size"), q.getColumns());
 				assertEquals(0, q.call1(integer("connected_size"), NO_MACHINE,
 						-1, -1, -1, -1).orElseThrow());
-			});
-		}
-	}
-
-	@Test
-	void countPendingChanges() {
-		try (var q = c.query(COUNT_PENDING_CHANGES)) {
-			c.transaction(() -> {
-				assertEquals(List.of(), q.getParameters());
-				assertEquals(List.of("c"), q.getColumns());
-				assertEquals(0, q.call1(integer("c")).orElseThrow());
 			});
 		}
 	}
@@ -1030,11 +1022,11 @@ class DQLTest extends SimpleDBTestBase {
 	}
 
 	@Test
-	void getGroupsAndQuotasOfUser() {
-		try (var q = c.query(GET_GROUPS_AND_QUOTAS_OF_USER)) {
+	void getGroupsNamesOfUser() {
+		try (var q = c.query(GET_GROUP_NAMES_OF_USER)) {
 			c.transaction(() -> {
 				assertEquals(List.of("user_name"), q.getParameters());
-				assertEquals(List.of("group_id", "quota"), q.getColumns());
+				assertEquals(List.of("group_name"), q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, NO_NAME));
 			});
 		}
@@ -1077,7 +1069,8 @@ class DQLTest extends SimpleDBTestBase {
 				assertEquals(List.of(), q.getParameters());
 				assertEquals(List.of("job_id", "machine_id", "create_timestamp",
 						"keepalive_interval", "job_state", "allocation_size",
-						"keepalive_host", "user_name", "machine_name"),
+						"keepalive_host", "user_name", "machine_name",
+						"original_request"),
 						q.getColumns());
 				// No jobs right now
 				assertEquals(empty(), q.call1(Row::toString));
@@ -1159,10 +1152,10 @@ class DQLTest extends SimpleDBTestBase {
 	void getBlacklistReads() {
 		try (var q = c.query(GET_BLACKLIST_READS)) {
 			c.transaction(() -> {
-				assertEquals(List.of("machine_id"), q.getParameters());
+				assertEquals(List.of("bmp_id"), q.getParameters());
 				assertEquals(
 						List.of("op_id", "board_id", "bmp_serial_id",
-								"board_num", "cabinet", "frame"),
+								"board_num", "cabinet", "frame", "machine_id"),
 						q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, NO_MACHINE));
 			});
@@ -1173,10 +1166,11 @@ class DQLTest extends SimpleDBTestBase {
 	void getBlacklistWrites() {
 		try (var q = c.query(GET_BLACKLIST_WRITES)) {
 			c.transaction(() -> {
-				assertEquals(List.of("machine_id"), q.getParameters());
+				assertEquals(List.of("bmp_id"), q.getParameters());
 				assertEquals(
 						List.of("op_id", "board_id", "bmp_serial_id",
-								"board_num", "cabinet", "frame", "data"),
+								"board_num", "cabinet", "frame", "data",
+								"machine_id"),
 						q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, NO_MACHINE));
 			});
@@ -1187,10 +1181,10 @@ class DQLTest extends SimpleDBTestBase {
 	void getSerialInfoReqs() {
 		try (var q = c.query(GET_SERIAL_INFO_REQS)) {
 			c.transaction(() -> {
-				assertEquals(List.of("machine_id"), q.getParameters());
+				assertEquals(List.of("bmp_id"), q.getParameters());
 				assertEquals(
 						List.of("op_id", "board_id", "bmp_serial_id",
-								"board_num", "cabinet", "frame"),
+								"board_num", "cabinet", "frame", "machine_id"),
 						q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, NO_MACHINE));
 			});
@@ -1218,6 +1212,74 @@ class DQLTest extends SimpleDBTestBase {
 						List.of("board_id", "op", "data", "failure", "failed"),
 						q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, NO_BLACKLIST_OP));
+			});
+		}
+	}
+
+	@Test
+	void getJobSession() {
+		try (var q = c.query(GET_JOB_SESSION)) {
+			c.transaction(() -> {
+				assertEquals(List.of("job_id"), q.getParameters());
+				assertEquals(
+						List.of("session_id", "quota_units"),
+						q.getColumns());
+				assertEquals(empty(), q.call1(Row::toString, NO_JOB));
+			});
+		}
+	}
+
+	@Test
+	void getJobNMPIJob() {
+		try (var q = c.query(GET_JOB_NMPI_JOB)) {
+			c.transaction(() -> {
+				assertEquals(List.of("job_id"), q.getParameters());
+				assertEquals(
+						List.of("nmpi_job_id", "quota_units"),
+						q.getColumns());
+				assertEquals(empty(), q.call1(Row::toString, NO_JOB));
+			});
+		}
+	}
+
+	@Test
+	void getAllBmps() {
+		try (var q = c.query(GET_ALL_BMPS)) {
+			c.transaction(() -> {
+				assertEquals(List.of(), q.getParameters());
+				assertEquals(
+						List.of("bmp_id", "machine_name", "address", "cabinet",
+								"frame"),
+						q.getColumns());
+				assertNotNull(q.call(Row::toString));
+			});
+		}
+	}
+
+	@Test
+	void getAllBmpBoards() {
+		try (var q = c.query(GET_ALL_BMP_BOARDS)) {
+			c.transaction(() -> {
+				assertEquals(List.of("bmp_id"), q.getParameters());
+				assertEquals(
+						List.of("board_id", "board_num", "address"),
+						q.getColumns());
+				assertNotNull(q.call(Row::toString, -1));
+			});
+		}
+	}
+
+	@Test
+	void countChangesForJob() {
+		try (var q = c.query(COUNT_CHANGES_FOR_JOB)) {
+			c.transaction(() -> {
+				assertEquals(List.of("job_id", "from_state", "to_state"),
+						q.getParameters());
+				assertEquals(
+						List.of("n_changes"),
+						q.getColumns());
+				assertEquals(0, q.call1(integer("n_changes"), -1, 0, 0)
+						.orElseThrow());
 			});
 		}
 	}

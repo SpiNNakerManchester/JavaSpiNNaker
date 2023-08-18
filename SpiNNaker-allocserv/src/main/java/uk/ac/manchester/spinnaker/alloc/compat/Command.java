@@ -26,12 +26,14 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * The encoded form of a command to the server. This is basically a Python
  * call encoded (except that no argument is a live object).
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public final class Command {
 	private static final int MAX_SIZE = 10;
 

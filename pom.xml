@@ -20,7 +20,7 @@ limitations under the License.
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.ac.manchester.spinnaker</groupId>
 	<artifactId>SpiNNaker</artifactId>
-	<version>7.0.0-SNAPSHOT</version>
+	<version>7.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -32,18 +32,17 @@ limitations under the License.
 		<!-- What does the CheckForFIXME profile look for? -->
 		<forbidden.keywords.re>\bFIXME\b|Auto-generated method stub</forbidden.keywords.re>
 
-		<spinnaker.version>7.0.0-SNAPSHOT</spinnaker.version>
-
-		<junit.version>5.9.3</junit.version>
-		<checkstyle.version>10.12.1</checkstyle.version>
+		<junit.version>5.10.0</junit.version>
+		<junit.platform.version>1.10.0</junit.platform.version>
+		<checkstyle.version>10.12.2</checkstyle.version>
 		<javadoc.version>3.5.0</javadoc.version>
 		<testing.version>3.1.2</testing.version>
 
 		<slf4j.version>2.0.7</slf4j.version>
 		<log4j.version>2.20.0</log4j.version>
 
-		<spring.version>5.3.28</spring.version>
-		<spring.boot.version>2.7.13</spring.boot.version>
+		<spring.version>5.3.29</spring.version>
+		<spring.boot.version>2.7.14</spring.boot.version>
 		<!--
 		DKF: if you update spring.boot.version, also update the annotation
 		  processor binding in Eclipse for SpiNNaker-allocserv:
@@ -53,20 +52,22 @@ limitations under the License.
 		  Failure to do this leads to strange misbehaviour in tooltips when
 		  editing application.yml
 		-->
-		<spring.security.version>5.8.4</spring.security.version>
+		<spring.security.version>5.8.5</spring.security.version>
 
 		<cxf.version>3.6.1</cxf.version>
 		<jackson.version>2.15.2</jackson.version>
 		<jackson.doc.version>2.14</jackson.doc.version>
 		<sqlite.version>3.42.0.0</sqlite.version>
-		<keycloak.version>21.1.2</keycloak.version>
-		<swagger.version>5.1.0</swagger.version>
+		<keycloak.version>22.0.1</keycloak.version>
+		<swagger.version>5.2.0</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.3</jython.version>
 		<error-prone.version>2.18.0</error-prone.version>
 		<picocli.version>4.7.4</picocli.version>
-		<mysql.version>8.0.33</mysql.version>
+		<mysql.version>8.1.0</mysql.version>
 		<testcontainers.version>1.18.3</testcontainers.version>
+		<javax.ws.version>2.1.1</javax.ws.version>
+		<resteasy.version>6.2.4.Final</resteasy.version>
 	</properties>
 
 	<dependencyManagement>
@@ -113,6 +114,13 @@ limitations under the License.
 				<scope>test</scope>
 			</dependency>
 			<dependency>
+				<!-- Override definition in log4j-->
+				<groupId>org.junit.platform</groupId>
+				<artifactId>junit-platform-commons</artifactId>
+				<version>${junit.platform.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
 				<groupId>org.hamcrest</groupId>
 				<artifactId>java-hamcrest</artifactId>
 				<version>2.0.0.0</version>
@@ -139,6 +147,16 @@ limitations under the License.
 				<artifactId>SpiNNaker-comms</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<dependency>
+	            <groupId>uk.ac.manchester.spinnaker</groupId>
+	            <artifactId>SpiNNaker-nmpimodel</artifactId>
+	            <version>${project.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>uk.ac.manchester.spinnaker</groupId>
+	            <artifactId>SpiNNaker-nmpiexec</artifactId>
+	            <version>${project.version}</version>
+	        </dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
@@ -217,6 +235,11 @@ limitations under the License.
 				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>${javax.ws.version}</version>
+            </dependency>
+			<dependency>
 				<groupId>org.json</groupId>
 				<artifactId>json</artifactId>
 				<version>20230618</version>
@@ -244,7 +267,7 @@ limitations under the License.
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
-				<version>3.12.0</version>
+				<version>3.13.0</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-cli</groupId>
@@ -330,7 +353,7 @@ limitations under the License.
 			<dependency>
 				<groupId>org.java-websocket</groupId>
 				<artifactId>Java-WebSocket</artifactId>
-				<version>1.5.3</version>
+				<version>1.5.4</version>
 			</dependency>
 			<dependency>
 				<groupId>jakarta.validation</groupId>
@@ -354,10 +377,61 @@ limitations under the License.
 			    <version>${mysql.version}</version>
 			</dependency>
 			<dependency>
+			    <groupId>org.hobsoft.spring</groupId>
+			    <artifactId>spring-rest-template-logger</artifactId>
+			    <version>2.0.0</version>
+			</dependency>
+			<dependency>
 				<groupId>com.github.stefanbirkner</groupId>
 				<artifactId>system-lambda</artifactId>
 				<version>1.2.1</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+                <groupId>org.rauschig</groupId>
+                <artifactId>jarchivelib</artifactId>
+                <version>1.2.0</version>
+            </dependency>
+             <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-client</artifactId>
+                <version>${resteasy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>1.16.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ini4j</groupId>
+                <artifactId>ini4j</artifactId>
+                <version>0.5.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jgit</groupId>
+                <artifactId>org.eclipse.jgit</artifactId>
+                <version>6.6.0.202305301015-r</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>httpclient</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>net.java.dev.vcc.thirdparty</groupId>
+                <artifactId>xen-api</artifactId>
+                <version>6.2.0-3.1</version>
+            </dependency>
+            <dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-rs-client</artifactId>
+				<version>${cxf.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter</artifactId>
+				<version>${spring.boot.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -790,6 +864,9 @@ limitations under the License.
 		<module>SpiNNaker-front-end</module>
 		<module>SpiNNaker-allocserv</module>
 		<module>SpiNNaker-py2json</module>
+		<module>SpiNNaker-nmpiserv</module>
+		<module>SpiNNaker-nmpimodel</module>
+		<module>SpiNNaker-nmpiexec</module>
 	</modules>
 	<name>SpiNNaker Java Host</name>
 	<description>Implementation of the host software for SpiNNaker in Java.</description>

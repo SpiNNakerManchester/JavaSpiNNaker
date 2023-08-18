@@ -57,9 +57,28 @@ public class CreateJobRequest {
 	 * What group will the job be accounted against; the owner <em>must</em> be
 	 * a member of the group. If {@code null}, the single group that the owner
 	 * is a member of will be used (with it being an error for that to not exist
-	 * or not be unique).
+	 * or not be unique).  Only one of group, {@link #nmpiCollab} or
+	 * {@link #nmpiJobId} must be {@code non-null}, but all can be {@code null}.
 	 */
 	public String group;
+
+	/**
+	 * Which NMPI Collab the job will be accounted against; the owner
+	 * <em>must</em> be a member of the Collab. A session will be created in
+	 * the Collab and this will be accounted against. Only one of
+	 * {@link #group}, nmpiCollab or {@link #nmpiJobId} must be
+	 * {@code non-null}, but all can be {@code null}.
+	 */
+	public String nmpiCollab;
+
+	/**
+	 * Which NMPI Job the job will be accounted against; the owner <em>must</em>
+	 * be able to update the NMPI Job.  Only the quota of the NMPI Job will be
+	 * updated at the end of the job, as will the local quota of the Collab of
+	 * the NMPI Job.  Only one of {@link #group}, {@link #nmpiCollab} or
+	 * nmpiJobId must be {@code non-null}, but all can be {@code null}.
+	 */
+	public Integer nmpiJobId;
 
 	/**
 	 * How long after a keepalive message will the job be auto-deleted?
@@ -131,17 +150,14 @@ public class CreateJobRequest {
 
 	@Keep
 	@JsonIgnore
-	@AssertTrue(message = "only at most one of num-boards, dimensions and "
-			+ "board should be given")
+	@AssertTrue(
+			message = "either specify num-boards or dimensions and/or board")
 	private boolean isOverLocated() {
 		int count = 0;
 		if (nonNull(numBoards)) {
 			count++;
 		}
-		if (nonNull(dimensions)) {
-			count++;
-		}
-		if (nonNull(board)) {
+		if (nonNull(dimensions) || nonNull(board)) {
 			count++;
 		}
 		return count <= 1;
@@ -159,8 +175,9 @@ public class CreateJobRequest {
 		 * Really ought to be validated against config, but we've not got the
 		 * config at this point.
 		 */
-		return keepaliveInterval.compareTo(MAX_KEEPALIVE) <= 0
-				&& keepaliveInterval.compareTo(MIN_KEEPALIVE) >= 0;
+		return keepaliveInterval == null
+				|| (keepaliveInterval.compareTo(MAX_KEEPALIVE) <= 0
+					&& keepaliveInterval.compareTo(MIN_KEEPALIVE) >= 0);
 	}
 
 	/** Describes a request for an allocation of given dimensions. */

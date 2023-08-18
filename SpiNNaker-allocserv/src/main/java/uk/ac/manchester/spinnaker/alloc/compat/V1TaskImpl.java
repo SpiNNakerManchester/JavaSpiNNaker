@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -53,7 +54,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
-import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
@@ -63,6 +63,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateNumBoards;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.compat.Utils.Notifier;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
+import uk.ac.manchester.spinnaker.alloc.model.JobListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
@@ -91,6 +92,12 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 @Component
 @Prototype
 class V1TaskImpl extends V1CompatTask {
+
+	/**
+	 * We are compatible with spalloc-server release version 5.0.0.
+	 */
+	public static final String VERSION = "5.0.0";
+
 	private static final int LOTS = 10000;
 
 	private static final Logger log = getLogger(V1CompatService.class);
@@ -98,10 +105,6 @@ class V1TaskImpl extends V1CompatTask {
 	private final Map<Integer, Future<Void>> jobNotifiers = new HashMap<>();
 
 	private final Map<String, Future<Void>> machNotifiers = new HashMap<>();
-
-	/** The service version information. */
-	@Autowired
-	private ServiceVersion version;
 
 	/** The overall service properties. */
 	@Autowired
@@ -111,12 +114,11 @@ class V1TaskImpl extends V1CompatTask {
 	@Autowired
 	private SpallocAPI spalloc;
 
-	/** The epoch manager. */
-	@Autowired
-	private Epochs epochs;
-
 	@Autowired
 	private CompatHelper helper;
+
+	@Autowired
+	private Epochs epochs;
 
 	/** Encoded form of our special permissions token. */
 	private Permit permit;
@@ -151,7 +153,7 @@ class V1TaskImpl extends V1CompatTask {
 
 	@Override
 	protected final String version() {
-		return version.getVersion().toString();
+		return VERSION;
 	}
 
 	@Override
@@ -205,7 +207,7 @@ class V1TaskImpl extends V1CompatTask {
 		}).orElse(false));
 		js.setReason(job.getReason().orElse(""));
 		js.setStartTime(timestamp(job.getStartTime()));
-		js.setState(state(job));
+		js.setState(state(job.getState()));
 		return js.build();
 	}
 
@@ -298,8 +300,9 @@ class V1TaskImpl extends V1CompatTask {
 		var keepalive = parseKeepalive((Number) kwargs.get("keepalive"));
 		var machineName = (String) kwargs.get("machine");
 		var ts = tags(kwargs.get("tags"), isNull(machineName));
-		var result = permit.authorize(() -> spalloc.createJob(permit.name,
-				groupName, create, machineName, ts, keepalive, cmd));
+		var result = permit.authorize(() -> spalloc.createJobInGroup(
+				permit.name, groupName, create, machineName, ts, keepalive,
+				cmd));
 		result.ifPresent(
 				j -> log.info(
 						"made compatibility-mode job {} "
@@ -335,6 +338,7 @@ class V1TaskImpl extends V1CompatTask {
 	}
 
 	@Component
+	@SuppressWarnings("checkstyle:finalclass")
 	private static class CompatHelper extends DatabaseAwareBean {
 		/** The core spalloc service. */
 		@Autowired
@@ -342,24 +346,22 @@ class V1TaskImpl extends V1CompatTask {
 
 		private JobDescription[] listJobs(V1TaskImpl task) {
 			// Messy; hits the database many times
-			return spalloc.getJobs(false, LOTS, 0).jobs().stream()
-					.map(job -> buildJobDescription(task,
-							// NB: convert partial job description to full
-							spalloc.getJob(task.permit, job.getId())
-									.orElseThrow(IllegalStateException::new)))
+			return spalloc.listJobs(task.permit).stream()
+					.map(job -> buildJobDescription(task, job))
 					.collect(collectToArray(JobDescription[]::new));
 		}
 
 		private static JobDescription buildJobDescription(V1TaskImpl task,
-				Job job) {
+				JobListEntryRecord job) {
 			var jd = new JobDescription.Builder();
 			jd.setJobID(job.getId());
-			jd.setOwner("");
-			jd.setKeepAlive(timestamp(job.getKeepaliveTimestamp()));
-			jd.setKeepAliveHost(job.getKeepaliveHost().orElse(""));
-			jd.setReason(job.getReason().orElse(""));
-			jd.setStartTime(timestamp(job.getStartTime()));
-			jd.setState(state(job));
+			jd.setOwner(job.getOwner().orElse("<Hidden>"));
+			jd.setKeepAlive(job.getKeepaliveInterval().getSeconds());
+			jd.setKeepAliveHost(job.getHost().orElse("<Hidden>"));
+			jd.setReason("");
+			jd.setStartTime(
+					(double) job.getCreationTimestamp().getEpochSecond());
+			jd.setState(state(job.getState()));
 			job.getOriginalRequest().map(task::parseCommand).ifPresent(cmd -> {
 				// In order to get here, this must be safe
 				// Validation was when job was created
@@ -368,13 +370,16 @@ class V1TaskImpl extends V1CompatTask {
 				jd.setArgs(args);
 				jd.setKwargs(cmd.getKwargs());
 				// Override shrouded owner from above
-				jd.setOwner(cmd.getKwargs().get("owner").toString());
+				Object owner = cmd.getKwargs().get("owner");
+				if (owner != null) {
+					jd.setOwner(owner.toString());
+				}
 			});
-			job.getMachine().ifPresent(sm -> {
-				jd.setMachine(sm.getMachine().getName());
-				jd.setBoards(sm.getBoards());
-				jd.setPower(sm.getPower() == ON);
-			});
+			jd.setMachine(job.getMachineName());
+			jd.setPower(job.isPowered());
+			jd.setBoards(job.getBoards().stream().map(
+					b -> new BoardCoordinates(b.getX(), b.getY(), b.getZ()))
+					.collect(Collectors.toList()));
 			return jd.build();
 		}
 
@@ -411,37 +416,63 @@ class V1TaskImpl extends V1CompatTask {
 		if (nonNull(jobId)) {
 			var job = getJob(jobId);
 			job.access(host());
-		}
-		manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
-			var actual = permit.authorize(() -> {
-				spalloc.getJobs(false, LOTS, 0).waitForChange(
-						mainProps.getCompat().getNotifyWaitTime());
-				return spalloc.getJobs(false, LOTS, 0).ids();
+			manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
+				if (job.waitForChange(
+						mainProps.getCompat().getNotifyWaitTime())) {
+					writeJobNotification(List.of(jobId));
+				}
 			});
-			if (nonNull(jobId)) {
-				actual.retainAll(List.of(jobId));
-			}
-			writeJobNotification(actual);
-		});
+		} else {
+			manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
+				var actual = permit.authorize(() -> {
+					return spalloc.getJobs(false, LOTS, 0).getChanged(
+							mainProps.getCompat().getNotifyWaitTime());
+				});
+				if (actual.size() > 0) {
+					writeJobNotification(
+							actual.stream().collect(Collectors.toList()));
+				}
+			});
+		}
 	}
 
 	@Override
-	protected final void notifyMachine(String machine, boolean wantNotify)
+	protected final void notifyMachine(String machineName, boolean wantNotify)
 			throws TaskException {
-		if (nonNull(machine)) {
-			// Validate
-			getMachine(machine);
+		if (nonNull(machineName)) {
+			var machine = getMachine(machineName);
+			manageNotifier(machNotifiers, machineName, wantNotify, () -> {
+				if (machine.waitForChange(
+						mainProps.getCompat().getNotifyWaitTime())) {
+					writeMachineNotification(List.of(machineName));
+				}
+			});
+		} else {
+			manageNotifier(machNotifiers, machineName, wantNotify, () -> {
+				List<String> actual = permit.authorize(() -> {
+					var machines = spalloc.getMachines(false);
+					var invMap = machines.values().stream().collect(
+							Collectors.toMap(SpallocAPI.Machine::getId,
+									SpallocAPI.Machine::getName));
+					var mIds = machines.values().stream().map(m -> m.getId())
+							.collect(Collectors.toList());
+					var epoch = epochs.getMachinesEpoch(mIds);
+					try {
+						var changed = epoch.getChanged(
+								mainProps.getCompat().getNotifyWaitTime());
+						return changed.stream()
+								.map(id -> invMap.get(id))
+								.collect(Collectors.toList());
+					} catch (InterruptedException e) {
+						return List.of();
+					}
+				});
+				if (actual.size() > 0) {
+					writeMachineNotification(actual.stream().collect(
+							Collectors.toList()));
+				}
+			});
 		}
-		manageNotifier(machNotifiers, machine, wantNotify, () -> {
-			epochs.getMachineEpoch()
-					.waitForChange(mainProps.getCompat().getNotifyWaitTime());
-			var actual = new ArrayList<>(permit
-					.authorize(() -> spalloc.getMachines(false)).keySet());
-			if (nonNull(machine)) {
-				actual.retainAll(List.of(machine));
-			}
-			writeMachineNotification(actual);
-		});
 	}
 
 	@Override

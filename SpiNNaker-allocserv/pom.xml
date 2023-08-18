@@ -6,7 +6,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    https://www.apache.org/licenses/LICENSE-2.0
+	https://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@ limitations under the License.
 	<parent>
 		<groupId>uk.ac.manchester.spinnaker</groupId>
 		<artifactId>SpiNNaker</artifactId>
-		<version>7.0.0-SNAPSHOT</version>
+		<version>7.1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>SpiNNaker-allocserv</artifactId>
 	<packaging>war</packaging>
@@ -36,6 +36,7 @@ limitations under the License.
 		<start.class>uk.ac.manchester.spinnaker.alloc.ServiceConfig</start.class>
 		<!-- TLS-secured service that we need to talk to at runtime startup. -->
 		<ebrains.wellknown.server>iam.ebrains.eu</ebrains.wellknown.server>
+		<ebrains.wellknown.server.dev>iam-int.ebrains.eu</ebrains.wellknown.server.dev>
 		<!-- https://iam.ebrains.eu/auth/realms/hbp/.well-known/openid-configuration -->
 		<truststore.file>${project.build.directory}/generated-resources/truststore.p12</truststore.file>
 		<truststore.pass>hunter2</truststore.pass>
@@ -179,6 +180,7 @@ limitations under the License.
 							<truststorePassword>${truststore.pass}</truststorePassword>
 							<servers>
 								<server>${ebrains.wellknown.server}:443</server>
+								<server>${ebrains.wellknown.server.dev}:443</server>
 							</servers>
 						</configuration>
 					</execution>
@@ -474,6 +476,10 @@ limitations under the License.
 			<artifactId>spring-context</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.hobsoft.spring</groupId>
+			<artifactId>spring-rest-template-logger</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-slf4j2-impl</artifactId>
 			<scope>runtime</scope>
@@ -484,19 +490,19 @@ limitations under the License.
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-		    <groupId>com.mysql</groupId>
-		    <artifactId>mysql-connector-j</artifactId>
-		    <scope>runtime</scope>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-		    <groupId>org.testcontainers</groupId>
-		    <artifactId>mysql</artifactId>
-		    <scope>test</scope>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>mysql</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>org.testcontainers</groupId>
-		    <artifactId>testcontainers</artifactId>
-		    <scope>test</scope>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
