@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":1,"i1":1,"i2":6,"i3":6,"i4":6,"i5":6};
+<script type="text/javascript">var data = {"i0":1,"i1":1,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -137,6 +137,15 @@ int&nbsp;id,
 </td>
 </tr>
 <tr class="rowColor" id="i3">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../model/QueueJobCompat.html" title="class in uk.ac.manchester.spinnaker.nmpi.model">QueueJobCompat</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getJobs(java.lang.String,java.lang.String,java.util.List)">getJobs</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;apiKey,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hardware,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;&nbsp;status)</code></th>
+<td class="colLast">
+<div class="block">Gets all jobs in the queue.</div>
+</td>
+</tr>
+<tr class="altColor" id="i4">
 <td class="colFirst"><code><a href="../model/QueueNextResponse.html" title="interface in uk.ac.manchester.spinnaker.nmpi.model">QueueNextResponse</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getNextJob(java.lang.String,java.lang.String)">getNextJob</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;apiKey,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hardware)</code></th>
@@ -144,7 +153,7 @@ int&nbsp;id,
 <div class="block">Get the next queue item for a specific hardware system.</div>
 </td>
 </tr>
-<tr class="altColor" id="i4">
+<tr class="rowColor" id="i5">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateJobLog(java.lang.String,int,uk.ac.manchester.spinnaker.nmpi.rest.JobLogOnly)">updateJobLog</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;apiKey,
 int&nbsp;id,
@@ -153,7 +162,7 @@ int&nbsp;id,
 <div class="block">Update the log of a job.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i5">
+<tr class="altColor" id="i6">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateJobStatus(java.lang.String,int,uk.ac.manchester.spinnaker.nmpi.rest.JobStatusOnly)">updateJobStatus</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;apiKey,
 int&nbsp;id,
@@ -179,6 +188,29 @@ int&nbsp;id,
 </a>
 <h2>Method Details</h2>
 <ul class="blockList">
+<li class="blockList">
+<section class="detail">
+<h3><a id="getJobs(java.lang.String,java.lang.String,java.util.List)">getJobs</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/GET.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@GET</a>
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/Path.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Path</a>("jobs/")
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/Produces.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Produces</a>("application/json")
+</span><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../model/QueueJobCompat.html" title="class in uk.ac.manchester.spinnaker.nmpi.model">QueueJobCompat</a>&gt;</span>&nbsp;<span class="memberName">getJobs</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/HeaderParam.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@HeaderParam</a>("x-api-key")
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;apiKey,
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/QueryParam.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@QueryParam</a>("hardware")
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hardware,
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/QueryParam.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@QueryParam</a>("status")
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;&nbsp;status)</span></div>
+<div class="block">Gets all jobs in the queue.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>apiKey</code> - The API key to use.</dd>
+<dd><code>hardware</code> - The hardware to request the jobs for.</dd>
+<dd><code>status</code> - List of accepted statuses.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The list of jobs that meet the criteria.</dd>
+</dl>
+</section>
+</li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getNextJob(java.lang.String,java.lang.String)">getNextJob</a></h3>

@@ -2834,7 +2834,7 @@ loadScripts(document, 'script');</script>
 <li class="blockList">
 <div class="constantsSummary">
 <table>
-<caption><span>uk.ac.manchester.spinnaker.nmpi.nmpi.<a href="uk/ac/manchester/spinnaker/nmpi/nmpi/NMPIQueueManager.html" title="class in uk.ac.manchester.spinnaker.nmpi.nmpi">NMPIQueueManager</a></span><span class="tabEnd">&nbsp;</span></caption>
+<caption><span>uk.ac.manchester.spinnaker.nmpi.nmpi.<a href="uk/ac/manchester/spinnaker/nmpi/nmpi/NMPIQueueManagerCompat.html" title="class in uk.ac.manchester.spinnaker.nmpi.nmpi">NMPIQueueManagerCompat</a></span><span class="tabEnd">&nbsp;</span></caption>
 <thead>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
@@ -2844,31 +2844,75 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><a id="uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManager.STATUS_ERROR">
+<td class="colFirst"><a id="uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManagerCompat.STATUS_ERROR">
 <!--   -->
 </a><code>public&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/nmpi/nmpi/NMPIQueueManager.html#STATUS_ERROR">STATUS_ERROR</a></code></th>
+<th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/nmpi/nmpi/NMPIQueueManagerCompat.html#STATUS_ERROR">STATUS_ERROR</a></code></th>
 <td class="colLast"><code>"error"</code></td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><a id="uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManager.STATUS_FINISHED">
+<td class="colFirst"><a id="uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManagerCompat.STATUS_FINISHED">
 <!--   -->
 </a><code>public&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/nmpi/nmpi/NMPIQueueManager.html#STATUS_FINISHED">STATUS_FINISHED</a></code></th>
+<th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/nmpi/nmpi/NMPIQueueManagerCompat.html#STATUS_FINISHED">STATUS_FINISHED</a></code></th>
 <td class="colLast"><code>"finished"</code></td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><a id="uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManager.STATUS_RUNNING">
+<td class="colFirst"><a id="uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManagerCompat.STATUS_RUNNING">
 <!--   -->
 </a><code>public&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/nmpi/nmpi/NMPIQueueManager.html#STATUS_RUNNING">STATUS_RUNNING</a></code></th>
+<th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/nmpi/nmpi/NMPIQueueManagerCompat.html#STATUS_RUNNING">STATUS_RUNNING</a></code></th>
 <td class="colLast"><code>"running"</code></td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><a id="uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManager.STATUS_VALIDATED">
+<td class="colFirst"><a id="uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManagerCompat.STATUS_VALIDATED">
 <!--   -->
 </a><code>public&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/nmpi/nmpi/NMPIQueueManager.html#STATUS_VALIDATED">STATUS_VALIDATED</a></code></th>
+<th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/nmpi/nmpi/NMPIQueueManagerCompat.html#STATUS_VALIDATED">STATUS_VALIDATED</a></code></th>
+<td class="colLast"><code>"validated"</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+<li class="blockList">
+<div class="constantsSummary">
+<table>
+<caption><span>uk.ac.manchester.spinnaker.nmpi.nmpi.<a href="uk/ac/manchester/spinnaker/nmpi/nmpi/NMPIQueueManagerV3.html" title="class in uk.ac.manchester.spinnaker.nmpi.nmpi">NMPIQueueManagerV3</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Constant Field</th>
+<th class="colLast" scope="col">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><a id="uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManagerV3.STATUS_ERROR">
+<!--   -->
+</a><code>public&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/nmpi/nmpi/NMPIQueueManagerV3.html#STATUS_ERROR">STATUS_ERROR</a></code></th>
+<td class="colLast"><code>"error"</code></td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><a id="uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManagerV3.STATUS_FINISHED">
+<!--   -->
+</a><code>public&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/nmpi/nmpi/NMPIQueueManagerV3.html#STATUS_FINISHED">STATUS_FINISHED</a></code></th>
+<td class="colLast"><code>"finished"</code></td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><a id="uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManagerV3.STATUS_RUNNING">
+<!--   -->
+</a><code>public&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/nmpi/nmpi/NMPIQueueManagerV3.html#STATUS_RUNNING">STATUS_RUNNING</a></code></th>
+<td class="colLast"><code>"running"</code></td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><a id="uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManagerV3.STATUS_VALIDATED">
+<!--   -->
+</a><code>public&nbsp;static&nbsp;final&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><a href="uk/ac/manchester/spinnaker/nmpi/nmpi/NMPIQueueManagerV3.html#STATUS_VALIDATED">STATUS_VALIDATED</a></code></th>
 <td class="colLast"><code>"validated"</code></td>
 </tr>
 </tbody>
