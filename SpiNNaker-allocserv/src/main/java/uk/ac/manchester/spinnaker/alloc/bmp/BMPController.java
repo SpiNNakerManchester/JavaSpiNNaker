@@ -711,16 +711,11 @@ public class BMPController extends DatabaseAwareBean {
 		/** The serial number actually read from the board. */
 		private String readSerial;
 
-		private Blacklist readBlacklist;
-
-		/** The data from the ADC. */
-		private ADCInfo adcInfo;
-
 		/**
 		 * Access the DB to store the serial number information that we
 		 * retrieved. A transaction should already be held.
 		 *
-		 * @param sql
+		 * @param c
 		 *            How to access the DB
 		 * @return Whether we've changed anything
 		 */
@@ -735,11 +730,13 @@ public class BMPController extends DatabaseAwareBean {
 		 * Access the DB to mark the read request as successful and store the
 		 * blacklist that was read. A transaction should already be held.
 		 *
-		 * @param sql
+		 * @param c
 		 *            How to access the DB
+		 * @param readBlacklist
+		 *            The blacklist that was read
 		 * @return Whether we've changed anything
 		 */
-		private void doneReadBlacklist(Connection c) {
+		private void doneReadBlacklist(Connection c, Blacklist readBlacklist) {
 			try (var completed = c.update(COMPLETED_BOARD_INFO_READ)) {
 				log.debug("Completing blacklist read opId {}", opId);
 				completed.call(readBlacklist, opId);
@@ -750,7 +747,7 @@ public class BMPController extends DatabaseAwareBean {
 		 * Access the DB to mark the write request as successful. A transaction
 		 * should already be held.
 		 *
-		 * @param sql
+		 * @param c
 		 *            How to access the DB
 		 * @return Whether we've changed anything
 		 */
@@ -762,10 +759,11 @@ public class BMPController extends DatabaseAwareBean {
 
 		/**
 		 * Access the DB to mark the read request as successful; the actual
-		 * store of the serial data is elsewhere. A transaction should already
+		 * store of the serial data is elsewhere
+		 * ({@link #recordSerialIds(Connection)}). A transaction should already
 		 * be held.
 		 *
-		 * @param sql
+		 * @param c
 		 *            How to access the DB
 		 * @return Whether we've changed anything
 		 */
@@ -782,7 +780,7 @@ public class BMPController extends DatabaseAwareBean {
 		 * @param c
 		 *            The database connection.
 		 */
-		private void doneReadTemps(Connection c) {
+		private void doneReadTemps(Connection c, ADCInfo adcInfo) {
 			try (var completed = c.update(COMPLETED_BOARD_INFO_READ)) {
 				log.debug("Completing temperature read opId {}", opId);
 				completed.call(adcInfo, opId);
@@ -887,11 +885,11 @@ public class BMPController extends DatabaseAwareBean {
 								+ "not equal to actual serial ID '{}'",
 						bmpSerialId, readSerial);
 			}
-			readBlacklist = controller.readBlacklist(board);
-			try (Connection c = getConnection()) {
+			var readBlacklist = controller.readBlacklist(board);
+			try (var c = getConnection()) {
 				c.transaction(() -> {
 					recordSerialIds(c);
-					doneReadBlacklist(c);
+					doneReadBlacklist(c, readBlacklist);
 				});
 			}
 		}
@@ -922,7 +920,7 @@ public class BMPController extends DatabaseAwareBean {
 						bmpSerialId, readSerial));
 			}
 			controller.writeBlacklist(board, requireNonNull(blacklist));
-			try (Connection c = getConnection()) {
+			try (var c = getConnection()) {
 				c.transaction(() -> doneWriteBlacklist(c));
 			}
 		}
@@ -942,7 +940,7 @@ public class BMPController extends DatabaseAwareBean {
 		private void readSerial(SpiNNakerControl controller)
 				throws InterruptedException, ProcessException, IOException {
 			readSerial = controller.readSerial(board);
-			try (Connection c = getConnection()) {
+			try (var c = getConnection()) {
 				c.transaction(() -> {
 					recordSerialIds(c);
 					doneReadSerial(c);
@@ -964,9 +962,9 @@ public class BMPController extends DatabaseAwareBean {
 		 */
 		private void readTemps(SpiNNakerControl controller)
 				throws InterruptedException, ProcessException, IOException {
-			adcInfo = controller.readTemp(board);
-			try (Connection c = getConnection()) {
-				c.transaction(() -> doneReadTemps(c));
+			var adcInfo = controller.readTemp(board);
+			try (var c = getConnection()) {
+				c.transaction(() -> doneReadTemps(c, adcInfo));
 			}
 		}
 
