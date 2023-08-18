@@ -30,8 +30,8 @@ enum BMPInfo {
 	EE_BUF(1),
 	/** CAN status information. */
 	CAN_STATUS(2),
-	/** ADC information. */
-	ADC(3),
+	/** Board status information. */
+	BOARD_STATUS(3),
 	/** IP Address. */
 	IP_ADDR(4),
 	/** Uninitialised vector. 8 words, from {@code uni_vec}. */

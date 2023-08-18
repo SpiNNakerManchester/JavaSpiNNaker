@@ -15,17 +15,23 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
+import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
+
 /**
  * Non-boot operations that may be performed on a BMP.
  *
  * @author Donal Fellows
  */
-public enum BlacklistOperation {
+@UsedInJavadocOnly(ADCInfo.class)
+public enum NonBootOperation {
 	// Careful: values must match SQL (CHECK constraints and queries)
 	/** Read a blacklist from a board's BMP's flash. */
-	READ,
+	READ_BL,
 	/** Write a blacklist to a board's BMP's flash. */
-	WRITE,
+	WRITE_BL,
 	/** Read the serial numbers from a board's BMP. */
-	GET_SERIAL
+	GET_SERIAL,
+	/** Read the {@linkplain ADCInfo temperature data} from a board's BMP. */
+	READ_TEMP
 }
