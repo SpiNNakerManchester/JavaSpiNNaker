@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6,"i13":6,"i14":6,"i15":6,"i16":6,"i17":6,"i18":6,"i19":6,"i20":6,"i21":6,"i22":6,"i23":6,"i24":6};
+<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6,"i13":6,"i14":6,"i15":6,"i16":6,"i17":6,"i18":6,"i19":6,"i20":6,"i21":6,"i22":6,"i23":6,"i24":6,"i25":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -257,19 +257,26 @@ public interface <span class="typeNameLabel">AdminController</span></pre>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#TEMPERATURE_PATH">TEMPERATURE_PATH</a></span></code></th>
+<td class="colLast">
+<div class="block">Path to temperature operations.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#USER_DELETE_PATH">USER_DELETE_PATH</a></span></code></th>
 <td class="colLast">
 <div class="block">Path to single-user-deletion operation.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#USER_PATH">USER_PATH</a></span></code></th>
 <td class="colLast">
 <div class="block">Path to single-user operations.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#USERS_PATH">USERS_PATH</a></span></code></th>
 <td class="colLast">
@@ -419,41 +426,49 @@ int&nbsp;delta,
 </td>
 </tr>
 <tr class="rowColor" id="i15">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getTemperatures(@javax.validation.Validint,org.springframework.ui.ModelMap)">getTemperatures</a></span>&#8203;(@javax.validation.Valid int&nbsp;boardId,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model)</code></th>
+<td class="colLast">
+<div class="block">Get the temperature data for a board.</div>
+</td>
+</tr>
+<tr class="altColor" id="i16">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getUserCreationForm(org.springframework.ui.ModelMap)">getUserCreationForm</a></span>&#8203;(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model)</code></th>
 <td class="colLast">
 <div class="block">Get the form for creating a user.</div>
 </td>
 </tr>
-<tr class="altColor" id="i16">
+<tr class="rowColor" id="i17">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listGroups(org.springframework.ui.ModelMap)">listGroups</a></span>&#8203;(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model)</code></th>
 <td class="colLast">
 <div class="block">List all groups.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i17">
+<tr class="altColor" id="i18">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listUsers(org.springframework.ui.ModelMap)">listUsers</a></span>&#8203;(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model)</code></th>
 <td class="colLast">
 <div class="block">List all users.</div>
 </td>
 </tr>
-<tr class="altColor" id="i18">
+<tr class="rowColor" id="i19">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#machineManagement(org.springframework.ui.ModelMap)">machineManagement</a></span>&#8203;(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model)</code></th>
 <td class="colLast">
 <div class="block">Provide the form for uploading a machine definition.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i19">
+<tr class="altColor" id="i20">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#mainUI(org.springframework.ui.ModelMap)">mainUI</a></span>&#8203;(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model)</code></th>
 <td class="colLast">
 <div class="block">Get supported ops.</div>
 </td>
 </tr>
-<tr class="altColor" id="i20">
+<tr class="rowColor" id="i21">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#removeUserFromGroup(int,int,org.springframework.web.servlet.mvc.support.RedirectAttributes)">removeUserFromGroup</a></span>&#8203;(int&nbsp;id,
 int&nbsp;userid,
@@ -462,7 +477,7 @@ int&nbsp;userid,
 <div class="block">Remove a user from a group.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i21">
+<tr class="altColor" id="i22">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#retagMachine(java.lang.String,java.lang.String)">retagMachine</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotEmpty.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotEmpty</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
 <a href="../model/TagList.html" title="annotation in uk.ac.manchester.spinnaker.alloc.model">@TagList</a> <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;newTags)</code></th>
@@ -470,21 +485,21 @@ int&nbsp;userid,
 <div class="block">Handle the change of the tags of a machine.</div>
 </td>
 </tr>
-<tr class="altColor" id="i22">
+<tr class="rowColor" id="i23">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#showGroupInfo(int)">showGroupInfo</a></span>&#8203;(int&nbsp;id)</code></th>
 <td class="colLast">
 <div class="block">Get info about a particular group.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i23">
+<tr class="altColor" id="i24">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#showUserForm(int)">showUserForm</a></span>&#8203;(int&nbsp;id)</code></th>
 <td class="colLast">
 <div class="block">Show user details.</div>
 </td>
 </tr>
-<tr class="altColor" id="i24">
+<tr class="rowColor" id="i25">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#submitUserForm(int,uk.ac.manchester.spinnaker.alloc.model.UserRecord,org.springframework.ui.ModelMap,java.security.Principal)">submitUserForm</a></span>&#8203;(int&nbsp;id,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../model/UserRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">UserRecord</a>&nbsp;user,
@@ -662,6 +677,17 @@ int&nbsp;userid,
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminController.BLACKLIST_PATH">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="TEMPERATURE_PATH">TEMPERATURE_PATH</a></h3>
+<div class="memberSignature"><span class="modifiers">static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">TEMPERATURE_PATH</span></div>
+<div class="block">Path to temperature operations.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminController.TEMPERATURE_PATH">Constant Field Values</a></dd>
 </dl>
 </section>
 </li>
@@ -1051,6 +1077,24 @@ int&nbsp;id,
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>bldata</code> - The blacklist data.</dd>
+<dd><code>model</code> - Overall model</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the model and view in a future</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getTemperatures(@javax.validation.Validint,org.springframework.ui.ModelMap)">getTemperatures</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/Async.html?is-external=true" title="class or interface in org.springframework.scheduling.annotation" class="externalLink">@Async</a>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/GetMapping.html?is-external=true" title="class or interface in org.springframework.web.bind.annotation" class="externalLink">@GetMapping</a>("/boards/temperature")
+</span><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a>&gt;</span>&nbsp;<span class="memberName">getTemperatures</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/ModelAttribute.html?is-external=true" title="class or interface in org.springframework.web.bind.annotation" class="externalLink">@ModelAttribute</a>("board_id")
+@javax.validation.Valid int&nbsp;boardId,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model)</span></div>
+<div class="block">Get the temperature data for a board.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>boardId</code> - What board to get the data for.</dd>
 <dd><code>model</code> - Overall model</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the model and view in a future</dd>

@@ -90,7 +90,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model"><span class="typeNameLink">ADCInfo</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/model/package-summary.html">uk.ac.manchester.spinnaker.messages.model</a></dt>
 <dd>
-<div class="block">Container for the ADC data thats been retrieved from an FPGA.</div>
+<div class="block">Container for the board status data thats been retrieved from a BMP.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html#%3Cinit%3E(java.nio.ByteBuffer)">ADCInfo(ByteBuffer)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></dt>
 <dd>&nbsp;</dd>
@@ -2058,6 +2058,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html#fan1">fan1</a></span> - Variable in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></dt>
 <dd>
 <div class="block">fan<sub>1</sub> rotation rate.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html#fan2">fan2</a></span> - Variable in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></dt>
+<dd>
+<div class="block">fan<sub>2</sub> rotation rate.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/FECRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">FECRequest</span></a>&lt;<a href="uk/ac/manchester/spinnaker/messages/scp/FECRequest.html" title="type parameter in FECRequest">T</a> extends <a href="uk/ac/manchester/spinnaker/messages/scp/SCPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPResponse</a>&gt; - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
@@ -5652,7 +5656,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/bmp/ReadADC.html" title="class in uk.ac.manchester.spinnaker.messages.bmp"><span class="typeNameLink">ReadADC</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></dt>
 <dd>
-<div class="block">A request for the ADC data from the BMP including voltages and temperature.</div>
+<div class="block">A request for the board status data from the BMP including voltages,
+ temperatures and fan speeds.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/bmp/ReadADC.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">ReadADC(BMPBoard)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.bmp.<a href="uk/ac/manchester/spinnaker/messages/bmp/ReadADC.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadADC</a></dt>
 <dd>&nbsp;</dd>
@@ -7189,6 +7194,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">The value is two bytes long, a <code>short</code>.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html#shutdownFlags">shutdownFlags</a></span> - Variable in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></dt>
+<dd>
+<div class="block">Shutdown flags.</div>
+</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/model/Signal.html" title="enum in uk.ac.manchester.spinnaker.messages.model"><span class="typeNameLink">Signal</span></a> - Enum in <a href="uk/ac/manchester/spinnaker/messages/model/package-summary.html">uk.ac.manchester.spinnaker.messages.model</a></dt>
 <dd>
 <div class="block">SCP Signals.</div>
@@ -7220,6 +7229,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/FillDataType.html#size">size</a></span> - Variable in enum uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/FillDataType.html" title="enum in uk.ac.manchester.spinnaker.transceiver">FillDataType</a></dt>
 <dd>
 <div class="block">The encoding of the fill unit size.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html#SIZE">SIZE</a></span> - Static variable in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></dt>
+<dd>
+<div class="block">The number of bytes the board status structure is encoded as in the BMP.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/FPGAMainRegisters.html#SLEN">SLEN</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/FPGAMainRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a></dt>
 <dd>
@@ -7638,19 +7651,19 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html#tempBottom">tempBottom</a></span> - Variable in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></dt>
 <dd>
-<div class="block">temperature bottom.</div>
+<div class="block">Temperature bottom, in &deg;C.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html#tempExt0">tempExt0</a></span> - Variable in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></dt>
 <dd>
-<div class="block">temperature external<sub>0</sub>.</div>
+<div class="block">Temperature external<sub>0</sub>, in &deg;C.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html#tempExt1">tempExt1</a></span> - Variable in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></dt>
 <dd>
-<div class="block">temperature external<sub>1</sub>.</div>
+<div class="block">Temperature external<sub>1</sub>, in &deg;C.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html#tempTop">tempTop</a></span> - Variable in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></dt>
 <dd>
-<div class="block">temperature top.</div>
+<div class="block">Temperature top, in &deg;C.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/FPGALinkRegisters.html#TFRM">TFRM</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/FPGALinkRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGALinkRegisters</a></dt>
 <dd>
@@ -8734,6 +8747,10 @@ the order they are declared.</div>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/spalloc/SpallocJobAPI.html#waitUntilReady(java.lang.Integer)">waitUntilReady(Integer)</a></span> - Method in interface uk.ac.manchester.spinnaker.spalloc.<a href="uk/ac/manchester/spinnaker/spalloc/SpallocJobAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocJobAPI</a></dt>
 <dd>
 <div class="block">Block until the job is allocated and ready.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html#warningFlags">warningFlags</a></span> - Variable in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></dt>
+<dd>
+<div class="block">Warning flags.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#WATCHDOG">WATCHDOG</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
 <dd>

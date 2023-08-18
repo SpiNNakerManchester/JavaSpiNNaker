@@ -123,17 +123,31 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Double.html?is-external=true" title="class or interface in java.lang" class="externalLink">Double</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">ADCInfo.</span><code><span class="memberNameLink"><a href="../ADCInfo.html#fan2">fan2</a></span></code></th>
+<td class="colLast">
+<div class="block">fan<sub>2</sub> rotation rate.</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">HeapElement.</span><code><span class="memberNameLink"><a href="../HeapElement.html#isFree">isFree</a></span></code></th>
 <td class="colLast">
 <div class="block">True if the block is free.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">HeapElement.</span><code><span class="memberNameLink"><a href="../HeapElement.html#nextAddress">nextAddress</a></span></code></th>
 <td class="colLast">
 <div class="block">A pointer to the next block, or 0 if none.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">ADCInfo.</span><code><span class="memberNameLink"><a href="../ADCInfo.html#shutdownFlags">shutdownFlags</a></span></code></th>
+<td class="colLast">
+<div class="block">Shutdown flags.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -147,28 +161,28 @@ loadScripts(document, 'script');</script>
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">ADCInfo.</span><code><span class="memberNameLink"><a href="../ADCInfo.html#tempBottom">tempBottom</a></span></code></th>
 <td class="colLast">
-<div class="block">temperature bottom.</div>
+<div class="block">Temperature bottom, in &deg;C.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Double.html?is-external=true" title="class or interface in java.lang" class="externalLink">Double</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">ADCInfo.</span><code><span class="memberNameLink"><a href="../ADCInfo.html#tempExt0">tempExt0</a></span></code></th>
 <td class="colLast">
-<div class="block">temperature external<sub>0</sub>.</div>
+<div class="block">Temperature external<sub>0</sub>, in &deg;C.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Double.html?is-external=true" title="class or interface in java.lang" class="externalLink">Double</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">ADCInfo.</span><code><span class="memberNameLink"><a href="../ADCInfo.html#tempExt1">tempExt1</a></span></code></th>
 <td class="colLast">
-<div class="block">temperature external<sub>1</sub>.</div>
+<div class="block">Temperature external<sub>1</sub>, in &deg;C.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">ADCInfo.</span><code><span class="memberNameLink"><a href="../ADCInfo.html#tempTop">tempTop</a></span></code></th>
 <td class="colLast">
-<div class="block">temperature top.</div>
+<div class="block">Temperature top, in &deg;C.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -211,6 +225,13 @@ loadScripts(document, 'script');</script>
 <th class="colSecond" scope="row"><span class="typeNameLabel">ADCInfo.</span><code><span class="memberNameLink"><a href="../ADCInfo.html#voltageSupply">voltageSupply</a></span></code></th>
 <td class="colLast">
 <div class="block">Actual voltage of the main power supply (nominally 12V?).</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">ADCInfo.</span><code><span class="memberNameLink"><a href="../ADCInfo.html#warningFlags">warningFlags</a></span></code></th>
+<td class="colLast">
+<div class="block">Warning flags.</div>
 </td>
 </tr>
 </tbody>

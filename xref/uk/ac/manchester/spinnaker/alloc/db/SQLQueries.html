@@ -2053,600 +2053,631 @@
 <a class="jxr_linenumber" name="L2045" href="#L2045">2045</a> 					+ <span class="jxr_string">"AND boards.bmp_id = :bmp_id"</span>;
 <a class="jxr_linenumber" name="L2046" href="#L2046">2046</a> 
 <a class="jxr_linenumber" name="L2047" href="#L2047">2047</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2048" href="#L2048">2048</a> <em class="jxr_javadoccomment">	 * Set the BMP and physical serial IDs based on the information actually</em>
-<a class="jxr_linenumber" name="L2049" href="#L2049">2049</a> <em class="jxr_javadoccomment">	 * read off the machine. A bit of care is needed because we might not yet</em>
-<a class="jxr_linenumber" name="L2050" href="#L2050">2050</a> <em class="jxr_javadoccomment">	 * have a row for that board.</em>
-<a class="jxr_linenumber" name="L2051" href="#L2051">2051</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2052" href="#L2052">2052</a> <em class="jxr_javadoccomment">	 * @see BMPController</em>
-<a class="jxr_linenumber" name="L2053" href="#L2053">2053</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2054" href="#L2054">2054</a> 	@Parameter(<span class="jxr_string">"board_id"</span>)
-<a class="jxr_linenumber" name="L2055" href="#L2055">2055</a> 	@Parameter(<span class="jxr_string">"bmp_serial_id"</span>)
-<a class="jxr_linenumber" name="L2056" href="#L2056">2056</a> 	@Parameter(<span class="jxr_string">"physical_serial_id"</span>)
-<a class="jxr_linenumber" name="L2057" href="#L2057">2057</a> 	@GeneratesID
-<a class="jxr_linenumber" name="L2058" href="#L2058">2058</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String SET_BOARD_SERIAL_IDS =
-<a class="jxr_linenumber" name="L2059" href="#L2059">2059</a> 			<span class="jxr_string">"INSERT INTO board_serial("</span>
-<a class="jxr_linenumber" name="L2060" href="#L2060">2060</a> 					+ <span class="jxr_string">"board_id, bmp_serial_id, physical_serial_id) "</span>
-<a class="jxr_linenumber" name="L2061" href="#L2061">2061</a> 					+ <span class="jxr_string">"VALUES(:board_id, :bmp_serial_id, :physical_serial_id) "</span>
-<a class="jxr_linenumber" name="L2062" href="#L2062">2062</a> 					+ <span class="jxr_string">"ON DUPLICATE KEY UPDATE "</span>
-<a class="jxr_linenumber" name="L2063" href="#L2063">2063</a> 					+ <span class="jxr_string">"bmp_serial_id = VALUES(bmp_serial_id), "</span>
-<a class="jxr_linenumber" name="L2064" href="#L2064">2064</a> 					+ <span class="jxr_string">"physical_serial_id = VALUES(physical_serial_id)"</span>;
-<a class="jxr_linenumber" name="L2065" href="#L2065">2065</a> 
-<a class="jxr_linenumber" name="L2066" href="#L2066">2066</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2067" href="#L2067">2067</a> <em class="jxr_javadoccomment">	 * Mark a read of a blacklist as completed.</em>
-<a class="jxr_linenumber" name="L2068" href="#L2068">2068</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2069" href="#L2069">2069</a> <em class="jxr_javadoccomment">	 * @see BMPController</em>
-<a class="jxr_linenumber" name="L2070" href="#L2070">2070</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2071" href="#L2071">2071</a> 	@Parameter(<span class="jxr_string">"data"</span>)
-<a class="jxr_linenumber" name="L2072" href="#L2072">2072</a> 	@Parameter(<span class="jxr_string">"op_id"</span>)
-<a class="jxr_linenumber" name="L2073" href="#L2073">2073</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String COMPLETED_BLACKLIST_READ =
-<a class="jxr_linenumber" name="L2074" href="#L2074">2074</a> 			<span class="jxr_string">"UPDATE blacklist_ops SET data = :data, completed = 1 "</span>
-<a class="jxr_linenumber" name="L2075" href="#L2075">2075</a> 					+ <span class="jxr_string">"WHERE op_id = :op_id"</span>;
-<a class="jxr_linenumber" name="L2076" href="#L2076">2076</a> 
-<a class="jxr_linenumber" name="L2077" href="#L2077">2077</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2078" href="#L2078">2078</a> <em class="jxr_javadoccomment">	 * Mark a write of a blacklist as completed.</em>
-<a class="jxr_linenumber" name="L2079" href="#L2079">2079</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2080" href="#L2080">2080</a> <em class="jxr_javadoccomment">	 * @see BMPController</em>
-<a class="jxr_linenumber" name="L2081" href="#L2081">2081</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2082" href="#L2082">2082</a> 	@Parameter(<span class="jxr_string">"op_id"</span>)
-<a class="jxr_linenumber" name="L2083" href="#L2083">2083</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String COMPLETED_BLACKLIST_WRITE =
-<a class="jxr_linenumber" name="L2084" href="#L2084">2084</a> 			<span class="jxr_string">"UPDATE blacklist_ops SET completed = 1 WHERE op_id = :op_id"</span>;
+<a class="jxr_linenumber" name="L2048" href="#L2048">2048</a> <em class="jxr_javadoccomment">	 * Get the list of reads (from the machine) of temperature data to perform.</em>
+<a class="jxr_linenumber" name="L2049" href="#L2049">2049</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2050" href="#L2050">2050</a> <em class="jxr_javadoccomment">	 * @see BMPController</em>
+<a class="jxr_linenumber" name="L2051" href="#L2051">2051</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2052" href="#L2052">2052</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
+<a class="jxr_linenumber" name="L2053" href="#L2053">2053</a> 	@ResultColumn(<span class="jxr_string">"op_id"</span>)
+<a class="jxr_linenumber" name="L2054" href="#L2054">2054</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2055" href="#L2055">2055</a> 	@ResultColumn(<span class="jxr_string">"bmp_serial_id"</span>)
+<a class="jxr_linenumber" name="L2056" href="#L2056">2056</a> 	@ResultColumn(<span class="jxr_string">"board_num"</span>)
+<a class="jxr_linenumber" name="L2057" href="#L2057">2057</a> 	@ResultColumn(<span class="jxr_string">"cabinet"</span>)
+<a class="jxr_linenumber" name="L2058" href="#L2058">2058</a> 	@ResultColumn(<span class="jxr_string">"frame"</span>)
+<a class="jxr_linenumber" name="L2059" href="#L2059">2059</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String GET_TEMP_INFO_REQS =
+<a class="jxr_linenumber" name="L2060" href="#L2060">2060</a> 			<span class="jxr_string">"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, "</span>
+<a class="jxr_linenumber" name="L2061" href="#L2061">2061</a> 					+ <span class="jxr_string">"cabinet, frame FROM blacklist_ops "</span>
+<a class="jxr_linenumber" name="L2062" href="#L2062">2062</a> 					+ <span class="jxr_string">"JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "</span>
+<a class="jxr_linenumber" name="L2063" href="#L2063">2063</a> 					+ <span class="jxr_string">"LEFT JOIN board_serial USING (board_id) "</span>
+<a class="jxr_linenumber" name="L2064" href="#L2064">2064</a> 					+ <span class="jxr_string">"WHERE op = 3 AND NOT completed "</span>
+<a class="jxr_linenumber" name="L2065" href="#L2065">2065</a> 					+ <span class="jxr_string">"AND boards.machine_id = :machine_id"</span>;
+<a class="jxr_linenumber" name="L2066" href="#L2066">2066</a> 
+<a class="jxr_linenumber" name="L2067" href="#L2067">2067</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2068" href="#L2068">2068</a> <em class="jxr_javadoccomment">	 * Set the BMP and physical serial IDs based on the information actually</em>
+<a class="jxr_linenumber" name="L2069" href="#L2069">2069</a> <em class="jxr_javadoccomment">	 * read off the machine. A bit of care is needed because we might not yet</em>
+<a class="jxr_linenumber" name="L2070" href="#L2070">2070</a> <em class="jxr_javadoccomment">	 * have a row for that board.</em>
+<a class="jxr_linenumber" name="L2071" href="#L2071">2071</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2072" href="#L2072">2072</a> <em class="jxr_javadoccomment">	 * @see BMPController</em>
+<a class="jxr_linenumber" name="L2073" href="#L2073">2073</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2074" href="#L2074">2074</a> 	@Parameter(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2075" href="#L2075">2075</a> 	@Parameter(<span class="jxr_string">"bmp_serial_id"</span>)
+<a class="jxr_linenumber" name="L2076" href="#L2076">2076</a> 	@Parameter(<span class="jxr_string">"physical_serial_id"</span>)
+<a class="jxr_linenumber" name="L2077" href="#L2077">2077</a> 	@GeneratesID
+<a class="jxr_linenumber" name="L2078" href="#L2078">2078</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String SET_BOARD_SERIAL_IDS =
+<a class="jxr_linenumber" name="L2079" href="#L2079">2079</a> 			<span class="jxr_string">"INSERT INTO board_serial("</span>
+<a class="jxr_linenumber" name="L2080" href="#L2080">2080</a> 					+ <span class="jxr_string">"board_id, bmp_serial_id, physical_serial_id) "</span>
+<a class="jxr_linenumber" name="L2081" href="#L2081">2081</a> 					+ <span class="jxr_string">"VALUES(:board_id, :bmp_serial_id, :physical_serial_id) "</span>
+<a class="jxr_linenumber" name="L2082" href="#L2082">2082</a> 					+ <span class="jxr_string">"ON DUPLICATE KEY UPDATE "</span>
+<a class="jxr_linenumber" name="L2083" href="#L2083">2083</a> 					+ <span class="jxr_string">"bmp_serial_id = VALUES(bmp_serial_id), "</span>
+<a class="jxr_linenumber" name="L2084" href="#L2084">2084</a> 					+ <span class="jxr_string">"physical_serial_id = VALUES(physical_serial_id)"</span>;
 <a class="jxr_linenumber" name="L2085" href="#L2085">2085</a> 
 <a class="jxr_linenumber" name="L2086" href="#L2086">2086</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2087" href="#L2087">2087</a> <em class="jxr_javadoccomment">	 * Mark a read of serial data as completed. (Text same as</em>
-<a class="jxr_linenumber" name="L2088" href="#L2088">2088</a> <em class="jxr_javadoccomment">	 * {@link #COMPLETED_BLACKLIST_WRITE} for now, but logically distinct.)</em>
-<a class="jxr_linenumber" name="L2089" href="#L2089">2089</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2090" href="#L2090">2090</a> <em class="jxr_javadoccomment">	 * @see BMPController</em>
-<a class="jxr_linenumber" name="L2091" href="#L2091">2091</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2087" href="#L2087">2087</a> <em class="jxr_javadoccomment">	 * Mark a read of a blacklist or ADC data as completed.</em>
+<a class="jxr_linenumber" name="L2088" href="#L2088">2088</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2089" href="#L2089">2089</a> <em class="jxr_javadoccomment">	 * @see BMPController</em>
+<a class="jxr_linenumber" name="L2090" href="#L2090">2090</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2091" href="#L2091">2091</a> 	@Parameter(<span class="jxr_string">"data"</span>)
 <a class="jxr_linenumber" name="L2092" href="#L2092">2092</a> 	@Parameter(<span class="jxr_string">"op_id"</span>)
-<a class="jxr_linenumber" name="L2093" href="#L2093">2093</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String COMPLETED_GET_SERIAL_REQ =
-<a class="jxr_linenumber" name="L2094" href="#L2094">2094</a> 			<span class="jxr_string">"UPDATE blacklist_ops SET completed = 1 WHERE op_id = :op_id"</span>;
-<a class="jxr_linenumber" name="L2095" href="#L2095">2095</a> 
-<a class="jxr_linenumber" name="L2096" href="#L2096">2096</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2097" href="#L2097">2097</a> <em class="jxr_javadoccomment">	 * Mark a read or write of a blacklist as failed, noting the reason.</em>
-<a class="jxr_linenumber" name="L2098" href="#L2098">2098</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2099" href="#L2099">2099</a> <em class="jxr_javadoccomment">	 * @see BMPController</em>
-<a class="jxr_linenumber" name="L2100" href="#L2100">2100</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2101" href="#L2101">2101</a> 	@Parameter(<span class="jxr_string">"failure"</span>)
+<a class="jxr_linenumber" name="L2093" href="#L2093">2093</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String COMPLETED_BOARD_INFO_READ =
+<a class="jxr_linenumber" name="L2094" href="#L2094">2094</a> 			<span class="jxr_string">"UPDATE blacklist_ops SET data = :data, completed = 1 "</span>
+<a class="jxr_linenumber" name="L2095" href="#L2095">2095</a> 					+ <span class="jxr_string">"WHERE op_id = :op_id"</span>;
+<a class="jxr_linenumber" name="L2096" href="#L2096">2096</a> 
+<a class="jxr_linenumber" name="L2097" href="#L2097">2097</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2098" href="#L2098">2098</a> <em class="jxr_javadoccomment">	 * Mark a write of a blacklist as completed.</em>
+<a class="jxr_linenumber" name="L2099" href="#L2099">2099</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2100" href="#L2100">2100</a> <em class="jxr_javadoccomment">	 * @see BMPController</em>
+<a class="jxr_linenumber" name="L2101" href="#L2101">2101</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L2102" href="#L2102">2102</a> 	@Parameter(<span class="jxr_string">"op_id"</span>)
-<a class="jxr_linenumber" name="L2103" href="#L2103">2103</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String FAILED_BLACKLIST_OP = <span class="jxr_string">"UPDATE blacklist_ops "</span>
-<a class="jxr_linenumber" name="L2104" href="#L2104">2104</a> 			+ <span class="jxr_string">"SET failure = :failure, completed = 1 WHERE op_id = :op_id"</span>;
+<a class="jxr_linenumber" name="L2103" href="#L2103">2103</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String COMPLETED_BLACKLIST_WRITE =
+<a class="jxr_linenumber" name="L2104" href="#L2104">2104</a> 			<span class="jxr_string">"UPDATE blacklist_ops SET completed = 1 WHERE op_id = :op_id"</span>;
 <a class="jxr_linenumber" name="L2105" href="#L2105">2105</a> 
 <a class="jxr_linenumber" name="L2106" href="#L2106">2106</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2107" href="#L2107">2107</a> <em class="jxr_javadoccomment">	 * Retrieve a completed request to read or write a blacklist for a board.</em>
-<a class="jxr_linenumber" name="L2108" href="#L2108">2108</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2109" href="#L2109">2109</a> <em class="jxr_javadoccomment">	 * @see MachineStateControl</em>
-<a class="jxr_linenumber" name="L2110" href="#L2110">2110</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2111" href="#L2111">2111</a> 	@Parameter(<span class="jxr_string">"op_id"</span>)
-<a class="jxr_linenumber" name="L2112" href="#L2112">2112</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
-<a class="jxr_linenumber" name="L2113" href="#L2113">2113</a> 	@ResultColumn(<span class="jxr_string">"op"</span>)
-<a class="jxr_linenumber" name="L2114" href="#L2114">2114</a> 	@ResultColumn(<span class="jxr_string">"data"</span>)
-<a class="jxr_linenumber" name="L2115" href="#L2115">2115</a> 	@ResultColumn(<span class="jxr_string">"failure"</span>)
-<a class="jxr_linenumber" name="L2116" href="#L2116">2116</a> 	@SingleRowResult
-<a class="jxr_linenumber" name="L2117" href="#L2117">2117</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String GET_COMPLETED_BLACKLIST_OP =
-<a class="jxr_linenumber" name="L2118" href="#L2118">2118</a> 			<span class="jxr_string">"SELECT board_id, op, data, failure, "</span>
-<a class="jxr_linenumber" name="L2119" href="#L2119">2119</a> 					+ <span class="jxr_string">"failure IS NOT NULL AS failed "</span>
-<a class="jxr_linenumber" name="L2120" href="#L2120">2120</a> 					+ <span class="jxr_string">"FROM blacklist_ops WHERE op_id = :op_id AND completed "</span>
-<a class="jxr_linenumber" name="L2121" href="#L2121">2121</a> 					+ <span class="jxr_string">"LIMIT 1"</span>;
-<a class="jxr_linenumber" name="L2122" href="#L2122">2122</a> 
-<a class="jxr_linenumber" name="L2123" href="#L2123">2123</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2124" href="#L2124">2124</a> <em class="jxr_javadoccomment">	 * Delete a blacklist request.</em>
-<a class="jxr_linenumber" name="L2125" href="#L2125">2125</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2126" href="#L2126">2126</a> <em class="jxr_javadoccomment">	 * @see MachineStateControl</em>
-<a class="jxr_linenumber" name="L2127" href="#L2127">2127</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2128" href="#L2128">2128</a> 	@Parameter(<span class="jxr_string">"op_id"</span>)
-<a class="jxr_linenumber" name="L2129" href="#L2129">2129</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String DELETE_BLACKLIST_OP =
-<a class="jxr_linenumber" name="L2130" href="#L2130">2130</a> 			<span class="jxr_string">"DELETE FROM blacklist_ops WHERE op_id = :op_id"</span>;
-<a class="jxr_linenumber" name="L2131" href="#L2131">2131</a> 
-<a class="jxr_linenumber" name="L2132" href="#L2132">2132</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2133" href="#L2133">2133</a> <em class="jxr_javadoccomment">	 * Insert a request to read a board's blacklist.</em>
-<a class="jxr_linenumber" name="L2134" href="#L2134">2134</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2135" href="#L2135">2135</a> <em class="jxr_javadoccomment">	 * @see MachineStateControl</em>
-<a class="jxr_linenumber" name="L2136" href="#L2136">2136</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2137" href="#L2137">2137</a> 	@Parameter(<span class="jxr_string">"board_id"</span>)
-<a class="jxr_linenumber" name="L2138" href="#L2138">2138</a> 	@GeneratesID
-<a class="jxr_linenumber" name="L2139" href="#L2139">2139</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String CREATE_BLACKLIST_READ =
-<a class="jxr_linenumber" name="L2140" href="#L2140">2140</a> 			<span class="jxr_string">"INSERT INTO blacklist_ops(board_id, op, completed) "</span>
-<a class="jxr_linenumber" name="L2141" href="#L2141">2141</a> 					+ <span class="jxr_string">"VALUES(:board_id, 0, 0)"</span>;
-<a class="jxr_linenumber" name="L2142" href="#L2142">2142</a> 
-<a class="jxr_linenumber" name="L2143" href="#L2143">2143</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2144" href="#L2144">2144</a> <em class="jxr_javadoccomment">	 * Insert a request to write a board's blacklist.</em>
-<a class="jxr_linenumber" name="L2145" href="#L2145">2145</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2146" href="#L2146">2146</a> <em class="jxr_javadoccomment">	 * @see MachineStateControl</em>
-<a class="jxr_linenumber" name="L2147" href="#L2147">2147</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2148" href="#L2148">2148</a> 	@Parameter(<span class="jxr_string">"board_id"</span>)
-<a class="jxr_linenumber" name="L2149" href="#L2149">2149</a> 	@Parameter(<span class="jxr_string">"blacklist"</span>)
-<a class="jxr_linenumber" name="L2150" href="#L2150">2150</a> 	@GeneratesID
-<a class="jxr_linenumber" name="L2151" href="#L2151">2151</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String CREATE_BLACKLIST_WRITE =
-<a class="jxr_linenumber" name="L2152" href="#L2152">2152</a> 			<span class="jxr_string">"INSERT INTO blacklist_ops(board_id, op, completed, data) "</span>
-<a class="jxr_linenumber" name="L2153" href="#L2153">2153</a> 					+ <span class="jxr_string">"VALUES(:board_id, 1, 0, :blacklist)"</span>;
-<a class="jxr_linenumber" name="L2154" href="#L2154">2154</a> 
-<a class="jxr_linenumber" name="L2155" href="#L2155">2155</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2156" href="#L2156">2156</a> <em class="jxr_javadoccomment">	 * Insert a request to read a board's serial information.</em>
-<a class="jxr_linenumber" name="L2157" href="#L2157">2157</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2158" href="#L2158">2158</a> <em class="jxr_javadoccomment">	 * @see MachineStateControl</em>
-<a class="jxr_linenumber" name="L2159" href="#L2159">2159</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2160" href="#L2160">2160</a> 	@Parameter(<span class="jxr_string">"board_id"</span>)
-<a class="jxr_linenumber" name="L2161" href="#L2161">2161</a> 	@GeneratesID
-<a class="jxr_linenumber" name="L2162" href="#L2162">2162</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String CREATE_SERIAL_READ_REQ =
-<a class="jxr_linenumber" name="L2163" href="#L2163">2163</a> 			<span class="jxr_string">"INSERT INTO blacklist_ops(board_id, op, completed) "</span>
-<a class="jxr_linenumber" name="L2164" href="#L2164">2164</a> 					+ <span class="jxr_string">"VALUES(:board_id, 2, 0)"</span>;
-<a class="jxr_linenumber" name="L2165" href="#L2165">2165</a> 
-<a class="jxr_linenumber" name="L2166" href="#L2166">2166</a> 
-<a class="jxr_linenumber" name="L2167" href="#L2167">2167</a> 
-<a class="jxr_linenumber" name="L2168" href="#L2168">2168</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2169" href="#L2169">2169</a> <em class="jxr_javadoccomment">	 * Read historical allocations to be written to the historical data DB.</em>
-<a class="jxr_linenumber" name="L2170" href="#L2170">2170</a> <em class="jxr_javadoccomment">	 * Only allocations that are already completed will ever get read here.</em>
-<a class="jxr_linenumber" name="L2171" href="#L2171">2171</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2172" href="#L2172">2172</a> <em class="jxr_javadoccomment">	 * @see AllocatorTask#tombstone()</em>
-<a class="jxr_linenumber" name="L2173" href="#L2173">2173</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2174" href="#L2174">2174</a> 	@Parameter(<span class="jxr_string">"grace_period"</span>)
-<a class="jxr_linenumber" name="L2175" href="#L2175">2175</a> 	@ResultColumn(<span class="jxr_string">"alloc_id"</span>)
-<a class="jxr_linenumber" name="L2176" href="#L2176">2176</a> 	@ResultColumn(<span class="jxr_string">"job_id"</span>)
-<a class="jxr_linenumber" name="L2177" href="#L2177">2177</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
-<a class="jxr_linenumber" name="L2178" href="#L2178">2178</a> 	@ResultColumn(<span class="jxr_string">"alloc_timestamp"</span>)
-<a class="jxr_linenumber" name="L2179" href="#L2179">2179</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String READ_HISTORICAL_ALLOCS =
-<a class="jxr_linenumber" name="L2180" href="#L2180">2180</a> 			<span class="jxr_string">"SELECT	alloc_id, job_id, board_id, alloc_timestamp "</span>
-<a class="jxr_linenumber" name="L2181" href="#L2181">2181</a> 			+ <span class="jxr_string">"FROM old_board_allocations JOIN jobs USING (job_id) "</span>
-<a class="jxr_linenumber" name="L2182" href="#L2182">2182</a> 			+ <span class="jxr_string">"WHERE jobs.death_timestamp + :grace_period &lt; UNIX_TIMESTAMP()"</span>;
-<a class="jxr_linenumber" name="L2183" href="#L2183">2183</a> 
-<a class="jxr_linenumber" name="L2184" href="#L2184">2184</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2185" href="#L2185">2185</a> <em class="jxr_javadoccomment">	 * Read historical jobs to be written to the historical data DB.</em>
-<a class="jxr_linenumber" name="L2186" href="#L2186">2186</a> <em class="jxr_javadoccomment">	 * Only jobs that are already completed will ever get read here.</em>
-<a class="jxr_linenumber" name="L2187" href="#L2187">2187</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2188" href="#L2188">2188</a> 	@Parameter(<span class="jxr_string">"grace_period"</span>)
-<a class="jxr_linenumber" name="L2189" href="#L2189">2189</a> 	@ResultColumn(<span class="jxr_string">"job_id"</span>)
-<a class="jxr_linenumber" name="L2190" href="#L2190">2190</a> 	@ResultColumn(<span class="jxr_string">"machine_id"</span>)
-<a class="jxr_linenumber" name="L2191" href="#L2191">2191</a> 	@ResultColumn(<span class="jxr_string">"owner"</span>)
-<a class="jxr_linenumber" name="L2192" href="#L2192">2192</a> 	@ResultColumn(<span class="jxr_string">"create_timestamp"</span>)
-<a class="jxr_linenumber" name="L2193" href="#L2193">2193</a> 	@ResultColumn(<span class="jxr_string">"width"</span>)
-<a class="jxr_linenumber" name="L2194" href="#L2194">2194</a> 	@ResultColumn(<span class="jxr_string">"height"</span>)
-<a class="jxr_linenumber" name="L2195" href="#L2195">2195</a> 	@ResultColumn(<span class="jxr_string">"depth"</span>)
-<a class="jxr_linenumber" name="L2196" href="#L2196">2196</a> 	@ResultColumn(<span class="jxr_string">"allocated_root"</span>)
-<a class="jxr_linenumber" name="L2197" href="#L2197">2197</a> 	@ResultColumn(<span class="jxr_string">"keepalive_interval"</span>)
-<a class="jxr_linenumber" name="L2198" href="#L2198">2198</a> 	@ResultColumn(<span class="jxr_string">"keepalive_host"</span>)
-<a class="jxr_linenumber" name="L2199" href="#L2199">2199</a> 	@ResultColumn(<span class="jxr_string">"death_reason"</span>)
-<a class="jxr_linenumber" name="L2200" href="#L2200">2200</a> 	@ResultColumn(<span class="jxr_string">"death_timestamp"</span>)
-<a class="jxr_linenumber" name="L2201" href="#L2201">2201</a> 	@ResultColumn(<span class="jxr_string">"original_request"</span>)
-<a class="jxr_linenumber" name="L2202" href="#L2202">2202</a> 	@ResultColumn(<span class="jxr_string">"allocation_timestamp"</span>)
-<a class="jxr_linenumber" name="L2203" href="#L2203">2203</a> 	@ResultColumn(<span class="jxr_string">"allocation_size"</span>)
-<a class="jxr_linenumber" name="L2204" href="#L2204">2204</a> 	@ResultColumn(<span class="jxr_string">"machine_name"</span>)
-<a class="jxr_linenumber" name="L2205" href="#L2205">2205</a> 	@ResultColumn(<span class="jxr_string">"user_name"</span>)
-<a class="jxr_linenumber" name="L2206" href="#L2206">2206</a> 	@ResultColumn(<span class="jxr_string">"group_id"</span>)
-<a class="jxr_linenumber" name="L2207" href="#L2207">2207</a> 	@ResultColumn(<span class="jxr_string">"group_name"</span>)
-<a class="jxr_linenumber" name="L2208" href="#L2208">2208</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String READ_HISTORICAL_JOBS =
-<a class="jxr_linenumber" name="L2209" href="#L2209">2209</a> 			<span class="jxr_string">"SELECT job_id, machine_id, owner, create_timestamp, "</span>
-<a class="jxr_linenumber" name="L2210" href="#L2210">2210</a> 			+ <span class="jxr_string">"jobs.width as width, jobs.height as height, jobs.depth as depth,"</span>
-<a class="jxr_linenumber" name="L2211" href="#L2211">2211</a> 			+ <span class="jxr_string">"allocated_root, keepalive_interval, keepalive_host, "</span>
-<a class="jxr_linenumber" name="L2212" href="#L2212">2212</a> 			+ <span class="jxr_string">"death_reason, death_timestamp, original_request, "</span>
-<a class="jxr_linenumber" name="L2213" href="#L2213">2213</a> 			+ <span class="jxr_string">"allocation_timestamp, allocation_size, "</span>
-<a class="jxr_linenumber" name="L2214" href="#L2214">2214</a> 			+ <span class="jxr_string">"machine_name, user_name, group_id, group_name "</span>
-<a class="jxr_linenumber" name="L2215" href="#L2215">2215</a> 			+ <span class="jxr_string">"FROM jobs "</span>
-<a class="jxr_linenumber" name="L2216" href="#L2216">2216</a> 			+ <span class="jxr_string">"JOIN user_groups USING (group_id) "</span>
-<a class="jxr_linenumber" name="L2217" href="#L2217">2217</a> 			+ <span class="jxr_string">"JOIN machines USING (machine_id) "</span>
-<a class="jxr_linenumber" name="L2218" href="#L2218">2218</a> 			+ <span class="jxr_string">"JOIN user_info ON jobs.owner = user_info.user_id "</span>
-<a class="jxr_linenumber" name="L2219" href="#L2219">2219</a> 			+ <span class="jxr_string">"WHERE death_timestamp + :grace_period &lt; UNIX_TIMESTAMP()"</span>;
-<a class="jxr_linenumber" name="L2220" href="#L2220">2220</a> 
-<a class="jxr_linenumber" name="L2221" href="#L2221">2221</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2222" href="#L2222">2222</a> <em class="jxr_javadoccomment">	 * Write to the historical allocations database.</em>
-<a class="jxr_linenumber" name="L2223" href="#L2223">2223</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2224" href="#L2224">2224</a> 	@Parameter(<span class="jxr_string">"alloc_id"</span>)
-<a class="jxr_linenumber" name="L2225" href="#L2225">2225</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
-<a class="jxr_linenumber" name="L2226" href="#L2226">2226</a> 	@Parameter(<span class="jxr_string">"board_id"</span>)
-<a class="jxr_linenumber" name="L2227" href="#L2227">2227</a> 	@Parameter(<span class="jxr_string">"allocation_timestamp"</span>)
-<a class="jxr_linenumber" name="L2228" href="#L2228">2228</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String WRITE_HISTORICAL_ALLOCS =
-<a class="jxr_linenumber" name="L2229" href="#L2229">2229</a> 			<span class="jxr_string">"INSERT IGNORE INTO board_allocations( "</span>
-<a class="jxr_linenumber" name="L2230" href="#L2230">2230</a> 			+ <span class="jxr_string">"alloc_id, job_id, board_id, allocation_timestamp) "</span>
-<a class="jxr_linenumber" name="L2231" href="#L2231">2231</a> 			+ <span class="jxr_string">"VALUES(:alloc_id, :job_id, :board_id, :allocation_timestamp)"</span>;
-<a class="jxr_linenumber" name="L2232" href="#L2232">2232</a> 
-<a class="jxr_linenumber" name="L2233" href="#L2233">2233</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2234" href="#L2234">2234</a> <em class="jxr_javadoccomment">	 * Write to the historical jobs database.</em>
-<a class="jxr_linenumber" name="L2235" href="#L2235">2235</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2236" href="#L2236">2236</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
-<a class="jxr_linenumber" name="L2237" href="#L2237">2237</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
-<a class="jxr_linenumber" name="L2238" href="#L2238">2238</a> 	@Parameter(<span class="jxr_string">"owner"</span>)
-<a class="jxr_linenumber" name="L2239" href="#L2239">2239</a> 	@Parameter(<span class="jxr_string">"create_timestamp"</span>)
-<a class="jxr_linenumber" name="L2240" href="#L2240">2240</a> 	@Parameter(<span class="jxr_string">"width"</span>)
-<a class="jxr_linenumber" name="L2241" href="#L2241">2241</a> 	@Parameter(<span class="jxr_string">"height"</span>)
-<a class="jxr_linenumber" name="L2242" href="#L2242">2242</a> 	@Parameter(<span class="jxr_string">"depth"</span>)
-<a class="jxr_linenumber" name="L2243" href="#L2243">2243</a> 	@Parameter(<span class="jxr_string">"root_id"</span>)
-<a class="jxr_linenumber" name="L2244" href="#L2244">2244</a> 	@Parameter(<span class="jxr_string">"keepalive_interval"</span>)
-<a class="jxr_linenumber" name="L2245" href="#L2245">2245</a> 	@Parameter(<span class="jxr_string">"keepalive_host"</span>)
-<a class="jxr_linenumber" name="L2246" href="#L2246">2246</a> 	@Parameter(<span class="jxr_string">"death_reason"</span>)
-<a class="jxr_linenumber" name="L2247" href="#L2247">2247</a> 	@Parameter(<span class="jxr_string">"death_timestamp"</span>)
-<a class="jxr_linenumber" name="L2248" href="#L2248">2248</a> 	@Parameter(<span class="jxr_string">"original_request"</span>)
-<a class="jxr_linenumber" name="L2249" href="#L2249">2249</a> 	@Parameter(<span class="jxr_string">"allocation_timestamp"</span>)
-<a class="jxr_linenumber" name="L2250" href="#L2250">2250</a> 	@Parameter(<span class="jxr_string">"allocation_size"</span>)
-<a class="jxr_linenumber" name="L2251" href="#L2251">2251</a> 	@Parameter(<span class="jxr_string">"machine_name"</span>)
-<a class="jxr_linenumber" name="L2252" href="#L2252">2252</a> 	@Parameter(<span class="jxr_string">"owner_name"</span>)
-<a class="jxr_linenumber" name="L2253" href="#L2253">2253</a> 	@Parameter(<span class="jxr_string">"group_id"</span>)
-<a class="jxr_linenumber" name="L2254" href="#L2254">2254</a> 	@Parameter(<span class="jxr_string">"group_name"</span>)
-<a class="jxr_linenumber" name="L2255" href="#L2255">2255</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String WRITE_HISTORICAL_JOBS =
-<a class="jxr_linenumber" name="L2256" href="#L2256">2256</a> 			<span class="jxr_string">"INSERT IGNORE INTO jobs( "</span>
-<a class="jxr_linenumber" name="L2257" href="#L2257">2257</a> 			+ <span class="jxr_string">"job_id, machine_id, owner, create_timestamp, "</span>
-<a class="jxr_linenumber" name="L2258" href="#L2258">2258</a> 			+ <span class="jxr_string">"width, height, depth, root_id, "</span>
-<a class="jxr_linenumber" name="L2259" href="#L2259">2259</a> 			+ <span class="jxr_string">"keepalive_interval, keepalive_host, "</span>
-<a class="jxr_linenumber" name="L2260" href="#L2260">2260</a> 			+ <span class="jxr_string">"death_reason, death_timestamp, "</span>
-<a class="jxr_linenumber" name="L2261" href="#L2261">2261</a> 			+ <span class="jxr_string">"original_request, allocation_timestamp, allocation_size, "</span>
-<a class="jxr_linenumber" name="L2262" href="#L2262">2262</a> 			+ <span class="jxr_string">"machine_name, owner_name, group_id, group_name) "</span>
-<a class="jxr_linenumber" name="L2263" href="#L2263">2263</a> 			+ <span class="jxr_string">"VALUES(:job_id, :machine_id, :owner, :create_timestamp, "</span>
-<a class="jxr_linenumber" name="L2264" href="#L2264">2264</a> 			+ <span class="jxr_string">":width, :height, :depth, :root_id, "</span>
-<a class="jxr_linenumber" name="L2265" href="#L2265">2265</a> 			+ <span class="jxr_string">":keepalive_interval, :keepalive_host, "</span>
-<a class="jxr_linenumber" name="L2266" href="#L2266">2266</a> 			+ <span class="jxr_string">":death_reason, :death_timestamp, "</span>
-<a class="jxr_linenumber" name="L2267" href="#L2267">2267</a> 			+ <span class="jxr_string">":original_request, :allocation_timestamp, :allocation_size, "</span>
-<a class="jxr_linenumber" name="L2268" href="#L2268">2268</a> 			+ <span class="jxr_string">":machine_name, :owner_name, :group_id, :group_name)"</span>;
-<a class="jxr_linenumber" name="L2269" href="#L2269">2269</a> 
-<a class="jxr_linenumber" name="L2270" href="#L2270">2270</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2271" href="#L2271">2271</a> <em class="jxr_javadoccomment">	 * Set the NMPI session for a Job.</em>
-<a class="jxr_linenumber" name="L2272" href="#L2272">2272</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2273" href="#L2273">2273</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
-<a class="jxr_linenumber" name="L2274" href="#L2274">2274</a> 	@Parameter(<span class="jxr_string">"session_id"</span>)
-<a class="jxr_linenumber" name="L2275" href="#L2275">2275</a> 	@Parameter(<span class="jxr_string">"quota_units"</span>)
-<a class="jxr_linenumber" name="L2276" href="#L2276">2276</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String SET_JOB_SESSION =
-<a class="jxr_linenumber" name="L2277" href="#L2277">2277</a> 			<span class="jxr_string">"INSERT IGNORE INTO job_nmpi_session ( "</span>
-<a class="jxr_linenumber" name="L2278" href="#L2278">2278</a> 			+ <span class="jxr_string">"job_id, session_id, quota_units) "</span>
-<a class="jxr_linenumber" name="L2279" href="#L2279">2279</a> 			+ <span class="jxr_string">"VALUES(:job_id, :session_id, :quota_units)"</span>;
-<a class="jxr_linenumber" name="L2280" href="#L2280">2280</a> 
-<a class="jxr_linenumber" name="L2281" href="#L2281">2281</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2282" href="#L2282">2282</a> <em class="jxr_javadoccomment">	 * Set the NMPI Job for a Job.</em>
-<a class="jxr_linenumber" name="L2283" href="#L2283">2283</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2284" href="#L2284">2284</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
-<a class="jxr_linenumber" name="L2285" href="#L2285">2285</a> 	@Parameter(<span class="jxr_string">"nmpi_job_id"</span>)
-<a class="jxr_linenumber" name="L2286" href="#L2286">2286</a> 	@Parameter(<span class="jxr_string">"quota_units"</span>)
-<a class="jxr_linenumber" name="L2287" href="#L2287">2287</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String SET_JOB_NMPI_JOB =
-<a class="jxr_linenumber" name="L2288" href="#L2288">2288</a> 			<span class="jxr_string">"INSERT IGNORE INTO job_nmpi_job ( "</span>
-<a class="jxr_linenumber" name="L2289" href="#L2289">2289</a> 			+ <span class="jxr_string">"job_id, nmpi_job_id, quota_units) "</span>
-<a class="jxr_linenumber" name="L2290" href="#L2290">2290</a> 			+ <span class="jxr_string">"VALUES(:job_id, :nmpi_job_id, :quota_units)"</span>;
-<a class="jxr_linenumber" name="L2291" href="#L2291">2291</a> 
-<a class="jxr_linenumber" name="L2292" href="#L2292">2292</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2293" href="#L2293">2293</a> <em class="jxr_javadoccomment">	 * Get the NMPI Session for a Job.</em>
-<a class="jxr_linenumber" name="L2294" href="#L2294">2294</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2295" href="#L2295">2295</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
-<a class="jxr_linenumber" name="L2296" href="#L2296">2296</a> 	@ResultColumn(<span class="jxr_string">"session_id"</span>)
-<a class="jxr_linenumber" name="L2297" href="#L2297">2297</a> 	@ResultColumn(<span class="jxr_string">"quota_units"</span>)
-<a class="jxr_linenumber" name="L2298" href="#L2298">2298</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String GET_JOB_SESSION =
-<a class="jxr_linenumber" name="L2299" href="#L2299">2299</a> 			<span class="jxr_string">"SELECT session_id, quota_units FROM job_nmpi_session "</span>
-<a class="jxr_linenumber" name="L2300" href="#L2300">2300</a> 			+ <span class="jxr_string">"WHERE job_id=:job_id"</span>;
-<a class="jxr_linenumber" name="L2301" href="#L2301">2301</a> 
-<a class="jxr_linenumber" name="L2302" href="#L2302">2302</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2303" href="#L2303">2303</a> <em class="jxr_javadoccomment">	 * Get the NMPI Job for a Job.</em>
-<a class="jxr_linenumber" name="L2304" href="#L2304">2304</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2305" href="#L2305">2305</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
-<a class="jxr_linenumber" name="L2306" href="#L2306">2306</a> 	@ResultColumn(<span class="jxr_string">"nmpi_job_id"</span>)
-<a class="jxr_linenumber" name="L2307" href="#L2307">2307</a> 	@ResultColumn(<span class="jxr_string">"quota_units"</span>)
-<a class="jxr_linenumber" name="L2308" href="#L2308">2308</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String GET_JOB_NMPI_JOB =
-<a class="jxr_linenumber" name="L2309" href="#L2309">2309</a> 			<span class="jxr_string">"SELECT nmpi_job_id, quota_units FROM job_nmpi_job "</span>
-<a class="jxr_linenumber" name="L2310" href="#L2310">2310</a> 			+ <span class="jxr_string">"WHERE job_id=:job_id"</span>;
+<a class="jxr_linenumber" name="L2107" href="#L2107">2107</a> <em class="jxr_javadoccomment">	 * Mark a read of serial data as completed. (Text same as</em>
+<a class="jxr_linenumber" name="L2108" href="#L2108">2108</a> <em class="jxr_javadoccomment">	 * {@link #COMPLETED_BLACKLIST_WRITE} for now, but logically distinct.)</em>
+<a class="jxr_linenumber" name="L2109" href="#L2109">2109</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2110" href="#L2110">2110</a> <em class="jxr_javadoccomment">	 * @see BMPController</em>
+<a class="jxr_linenumber" name="L2111" href="#L2111">2111</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2112" href="#L2112">2112</a> 	@Parameter(<span class="jxr_string">"op_id"</span>)
+<a class="jxr_linenumber" name="L2113" href="#L2113">2113</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String COMPLETED_GET_SERIAL_REQ =
+<a class="jxr_linenumber" name="L2114" href="#L2114">2114</a> 			<span class="jxr_string">"UPDATE blacklist_ops SET completed = 1 WHERE op_id = :op_id"</span>;
+<a class="jxr_linenumber" name="L2115" href="#L2115">2115</a> 
+<a class="jxr_linenumber" name="L2116" href="#L2116">2116</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2117" href="#L2117">2117</a> <em class="jxr_javadoccomment">	 * Mark a read or write of a blacklist as failed, noting the reason.</em>
+<a class="jxr_linenumber" name="L2118" href="#L2118">2118</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2119" href="#L2119">2119</a> <em class="jxr_javadoccomment">	 * @see BMPController</em>
+<a class="jxr_linenumber" name="L2120" href="#L2120">2120</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2121" href="#L2121">2121</a> 	@Parameter(<span class="jxr_string">"failure"</span>)
+<a class="jxr_linenumber" name="L2122" href="#L2122">2122</a> 	@Parameter(<span class="jxr_string">"op_id"</span>)
+<a class="jxr_linenumber" name="L2123" href="#L2123">2123</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String FAILED_BLACKLIST_OP = <span class="jxr_string">"UPDATE blacklist_ops "</span>
+<a class="jxr_linenumber" name="L2124" href="#L2124">2124</a> 			+ <span class="jxr_string">"SET failure = :failure, completed = 1 WHERE op_id = :op_id"</span>;
+<a class="jxr_linenumber" name="L2125" href="#L2125">2125</a> 
+<a class="jxr_linenumber" name="L2126" href="#L2126">2126</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2127" href="#L2127">2127</a> <em class="jxr_javadoccomment">	 * Retrieve a completed request to read or write a BMP-related data for a</em>
+<a class="jxr_linenumber" name="L2128" href="#L2128">2128</a> <em class="jxr_javadoccomment">	 * board.</em>
+<a class="jxr_linenumber" name="L2129" href="#L2129">2129</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2130" href="#L2130">2130</a> <em class="jxr_javadoccomment">	 * @see MachineStateControl</em>
+<a class="jxr_linenumber" name="L2131" href="#L2131">2131</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2132" href="#L2132">2132</a> 	@Parameter(<span class="jxr_string">"op_id"</span>)
+<a class="jxr_linenumber" name="L2133" href="#L2133">2133</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2134" href="#L2134">2134</a> 	@ResultColumn(<span class="jxr_string">"op"</span>)
+<a class="jxr_linenumber" name="L2135" href="#L2135">2135</a> 	@ResultColumn(<span class="jxr_string">"data"</span>)
+<a class="jxr_linenumber" name="L2136" href="#L2136">2136</a> 	@ResultColumn(<span class="jxr_string">"failure"</span>)
+<a class="jxr_linenumber" name="L2137" href="#L2137">2137</a> 	@SingleRowResult
+<a class="jxr_linenumber" name="L2138" href="#L2138">2138</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String GET_COMPLETED_BLACKLIST_OP =
+<a class="jxr_linenumber" name="L2139" href="#L2139">2139</a> 			<span class="jxr_string">"SELECT board_id, op, data, failure, "</span>
+<a class="jxr_linenumber" name="L2140" href="#L2140">2140</a> 					+ <span class="jxr_string">"failure IS NOT NULL AS failed "</span>
+<a class="jxr_linenumber" name="L2141" href="#L2141">2141</a> 					+ <span class="jxr_string">"FROM blacklist_ops WHERE op_id = :op_id AND completed "</span>
+<a class="jxr_linenumber" name="L2142" href="#L2142">2142</a> 					+ <span class="jxr_string">"LIMIT 1"</span>;
+<a class="jxr_linenumber" name="L2143" href="#L2143">2143</a> 
+<a class="jxr_linenumber" name="L2144" href="#L2144">2144</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2145" href="#L2145">2145</a> <em class="jxr_javadoccomment">	 * Delete a blacklist request.</em>
+<a class="jxr_linenumber" name="L2146" href="#L2146">2146</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2147" href="#L2147">2147</a> <em class="jxr_javadoccomment">	 * @see MachineStateControl</em>
+<a class="jxr_linenumber" name="L2148" href="#L2148">2148</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2149" href="#L2149">2149</a> 	@Parameter(<span class="jxr_string">"op_id"</span>)
+<a class="jxr_linenumber" name="L2150" href="#L2150">2150</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String DELETE_BLACKLIST_OP =
+<a class="jxr_linenumber" name="L2151" href="#L2151">2151</a> 			<span class="jxr_string">"DELETE FROM blacklist_ops WHERE op_id = :op_id"</span>;
+<a class="jxr_linenumber" name="L2152" href="#L2152">2152</a> 
+<a class="jxr_linenumber" name="L2153" href="#L2153">2153</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2154" href="#L2154">2154</a> <em class="jxr_javadoccomment">	 * Insert a request to read a board's blacklist.</em>
+<a class="jxr_linenumber" name="L2155" href="#L2155">2155</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2156" href="#L2156">2156</a> <em class="jxr_javadoccomment">	 * @see MachineStateControl</em>
+<a class="jxr_linenumber" name="L2157" href="#L2157">2157</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2158" href="#L2158">2158</a> 	@Parameter(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2159" href="#L2159">2159</a> 	@GeneratesID
+<a class="jxr_linenumber" name="L2160" href="#L2160">2160</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String CREATE_BLACKLIST_READ =
+<a class="jxr_linenumber" name="L2161" href="#L2161">2161</a> 			<span class="jxr_string">"INSERT INTO blacklist_ops(board_id, op, completed) "</span>
+<a class="jxr_linenumber" name="L2162" href="#L2162">2162</a> 					+ <span class="jxr_string">"VALUES(:board_id, 0, 0)"</span>;
+<a class="jxr_linenumber" name="L2163" href="#L2163">2163</a> 
+<a class="jxr_linenumber" name="L2164" href="#L2164">2164</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2165" href="#L2165">2165</a> <em class="jxr_javadoccomment">	 * Insert a request to write a board's blacklist.</em>
+<a class="jxr_linenumber" name="L2166" href="#L2166">2166</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2167" href="#L2167">2167</a> <em class="jxr_javadoccomment">	 * @see MachineStateControl</em>
+<a class="jxr_linenumber" name="L2168" href="#L2168">2168</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2169" href="#L2169">2169</a> 	@Parameter(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2170" href="#L2170">2170</a> 	@Parameter(<span class="jxr_string">"blacklist"</span>)
+<a class="jxr_linenumber" name="L2171" href="#L2171">2171</a> 	@GeneratesID
+<a class="jxr_linenumber" name="L2172" href="#L2172">2172</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String CREATE_BLACKLIST_WRITE =
+<a class="jxr_linenumber" name="L2173" href="#L2173">2173</a> 			<span class="jxr_string">"INSERT INTO blacklist_ops(board_id, op, completed, data) "</span>
+<a class="jxr_linenumber" name="L2174" href="#L2174">2174</a> 					+ <span class="jxr_string">"VALUES(:board_id, 1, 0, :blacklist)"</span>;
+<a class="jxr_linenumber" name="L2175" href="#L2175">2175</a> 
+<a class="jxr_linenumber" name="L2176" href="#L2176">2176</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2177" href="#L2177">2177</a> <em class="jxr_javadoccomment">	 * Insert a request to read a board's serial information.</em>
+<a class="jxr_linenumber" name="L2178" href="#L2178">2178</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2179" href="#L2179">2179</a> <em class="jxr_javadoccomment">	 * @see MachineStateControl</em>
+<a class="jxr_linenumber" name="L2180" href="#L2180">2180</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2181" href="#L2181">2181</a> 	@Parameter(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2182" href="#L2182">2182</a> 	@GeneratesID
+<a class="jxr_linenumber" name="L2183" href="#L2183">2183</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String CREATE_SERIAL_READ_REQ =
+<a class="jxr_linenumber" name="L2184" href="#L2184">2184</a> 			<span class="jxr_string">"INSERT INTO blacklist_ops(board_id, op, completed) "</span>
+<a class="jxr_linenumber" name="L2185" href="#L2185">2185</a> 					+ <span class="jxr_string">"VALUES(:board_id, 2, 0)"</span>;
+<a class="jxr_linenumber" name="L2186" href="#L2186">2186</a> 
+<a class="jxr_linenumber" name="L2187" href="#L2187">2187</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2188" href="#L2188">2188</a> <em class="jxr_javadoccomment">	 * Insert a request to read a board's temperature data.</em>
+<a class="jxr_linenumber" name="L2189" href="#L2189">2189</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2190" href="#L2190">2190</a> <em class="jxr_javadoccomment">	 * @see MachineStateControl</em>
+<a class="jxr_linenumber" name="L2191" href="#L2191">2191</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2192" href="#L2192">2192</a> 	@Parameter(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2193" href="#L2193">2193</a> 	@GeneratesID
+<a class="jxr_linenumber" name="L2194" href="#L2194">2194</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String CREATE_TEMP_READ_REQ =
+<a class="jxr_linenumber" name="L2195" href="#L2195">2195</a> 			<span class="jxr_string">"INSERT INTO blacklist_ops(board_id, op, completed) "</span>
+<a class="jxr_linenumber" name="L2196" href="#L2196">2196</a> 					+ <span class="jxr_string">"VALUES(:board_id, 3, 0)"</span>;
+<a class="jxr_linenumber" name="L2197" href="#L2197">2197</a> 
+<a class="jxr_linenumber" name="L2198" href="#L2198">2198</a> 
+<a class="jxr_linenumber" name="L2199" href="#L2199">2199</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2200" href="#L2200">2200</a> <em class="jxr_javadoccomment">	 * Read historical allocations to be written to the historical data DB.</em>
+<a class="jxr_linenumber" name="L2201" href="#L2201">2201</a> <em class="jxr_javadoccomment">	 * Only allocations that are already completed will ever get read here.</em>
+<a class="jxr_linenumber" name="L2202" href="#L2202">2202</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2203" href="#L2203">2203</a> <em class="jxr_javadoccomment">	 * @see AllocatorTask#tombstone()</em>
+<a class="jxr_linenumber" name="L2204" href="#L2204">2204</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2205" href="#L2205">2205</a> 	@Parameter(<span class="jxr_string">"grace_period"</span>)
+<a class="jxr_linenumber" name="L2206" href="#L2206">2206</a> 	@ResultColumn(<span class="jxr_string">"alloc_id"</span>)
+<a class="jxr_linenumber" name="L2207" href="#L2207">2207</a> 	@ResultColumn(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L2208" href="#L2208">2208</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2209" href="#L2209">2209</a> 	@ResultColumn(<span class="jxr_string">"alloc_timestamp"</span>)
+<a class="jxr_linenumber" name="L2210" href="#L2210">2210</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String READ_HISTORICAL_ALLOCS =
+<a class="jxr_linenumber" name="L2211" href="#L2211">2211</a> 			<span class="jxr_string">"SELECT	alloc_id, job_id, board_id, alloc_timestamp "</span>
+<a class="jxr_linenumber" name="L2212" href="#L2212">2212</a> 			+ <span class="jxr_string">"FROM old_board_allocations JOIN jobs USING (job_id) "</span>
+<a class="jxr_linenumber" name="L2213" href="#L2213">2213</a> 			+ <span class="jxr_string">"WHERE jobs.death_timestamp + :grace_period &lt; UNIX_TIMESTAMP()"</span>;
+<a class="jxr_linenumber" name="L2214" href="#L2214">2214</a> 
+<a class="jxr_linenumber" name="L2215" href="#L2215">2215</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2216" href="#L2216">2216</a> <em class="jxr_javadoccomment">	 * Read historical jobs to be written to the historical data DB.</em>
+<a class="jxr_linenumber" name="L2217" href="#L2217">2217</a> <em class="jxr_javadoccomment">	 * Only jobs that are already completed will ever get read here.</em>
+<a class="jxr_linenumber" name="L2218" href="#L2218">2218</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2219" href="#L2219">2219</a> 	@Parameter(<span class="jxr_string">"grace_period"</span>)
+<a class="jxr_linenumber" name="L2220" href="#L2220">2220</a> 	@ResultColumn(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L2221" href="#L2221">2221</a> 	@ResultColumn(<span class="jxr_string">"machine_id"</span>)
+<a class="jxr_linenumber" name="L2222" href="#L2222">2222</a> 	@ResultColumn(<span class="jxr_string">"owner"</span>)
+<a class="jxr_linenumber" name="L2223" href="#L2223">2223</a> 	@ResultColumn(<span class="jxr_string">"create_timestamp"</span>)
+<a class="jxr_linenumber" name="L2224" href="#L2224">2224</a> 	@ResultColumn(<span class="jxr_string">"width"</span>)
+<a class="jxr_linenumber" name="L2225" href="#L2225">2225</a> 	@ResultColumn(<span class="jxr_string">"height"</span>)
+<a class="jxr_linenumber" name="L2226" href="#L2226">2226</a> 	@ResultColumn(<span class="jxr_string">"depth"</span>)
+<a class="jxr_linenumber" name="L2227" href="#L2227">2227</a> 	@ResultColumn(<span class="jxr_string">"allocated_root"</span>)
+<a class="jxr_linenumber" name="L2228" href="#L2228">2228</a> 	@ResultColumn(<span class="jxr_string">"keepalive_interval"</span>)
+<a class="jxr_linenumber" name="L2229" href="#L2229">2229</a> 	@ResultColumn(<span class="jxr_string">"keepalive_host"</span>)
+<a class="jxr_linenumber" name="L2230" href="#L2230">2230</a> 	@ResultColumn(<span class="jxr_string">"death_reason"</span>)
+<a class="jxr_linenumber" name="L2231" href="#L2231">2231</a> 	@ResultColumn(<span class="jxr_string">"death_timestamp"</span>)
+<a class="jxr_linenumber" name="L2232" href="#L2232">2232</a> 	@ResultColumn(<span class="jxr_string">"original_request"</span>)
+<a class="jxr_linenumber" name="L2233" href="#L2233">2233</a> 	@ResultColumn(<span class="jxr_string">"allocation_timestamp"</span>)
+<a class="jxr_linenumber" name="L2234" href="#L2234">2234</a> 	@ResultColumn(<span class="jxr_string">"allocation_size"</span>)
+<a class="jxr_linenumber" name="L2235" href="#L2235">2235</a> 	@ResultColumn(<span class="jxr_string">"machine_name"</span>)
+<a class="jxr_linenumber" name="L2236" href="#L2236">2236</a> 	@ResultColumn(<span class="jxr_string">"user_name"</span>)
+<a class="jxr_linenumber" name="L2237" href="#L2237">2237</a> 	@ResultColumn(<span class="jxr_string">"group_id"</span>)
+<a class="jxr_linenumber" name="L2238" href="#L2238">2238</a> 	@ResultColumn(<span class="jxr_string">"group_name"</span>)
+<a class="jxr_linenumber" name="L2239" href="#L2239">2239</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String READ_HISTORICAL_JOBS =
+<a class="jxr_linenumber" name="L2240" href="#L2240">2240</a> 			<span class="jxr_string">"SELECT job_id, machine_id, owner, create_timestamp, "</span>
+<a class="jxr_linenumber" name="L2241" href="#L2241">2241</a> 			+ <span class="jxr_string">"jobs.width as width, jobs.height as height, jobs.depth as depth,"</span>
+<a class="jxr_linenumber" name="L2242" href="#L2242">2242</a> 			+ <span class="jxr_string">"allocated_root, keepalive_interval, keepalive_host, "</span>
+<a class="jxr_linenumber" name="L2243" href="#L2243">2243</a> 			+ <span class="jxr_string">"death_reason, death_timestamp, original_request, "</span>
+<a class="jxr_linenumber" name="L2244" href="#L2244">2244</a> 			+ <span class="jxr_string">"allocation_timestamp, allocation_size, "</span>
+<a class="jxr_linenumber" name="L2245" href="#L2245">2245</a> 			+ <span class="jxr_string">"machine_name, user_name, group_id, group_name "</span>
+<a class="jxr_linenumber" name="L2246" href="#L2246">2246</a> 			+ <span class="jxr_string">"FROM jobs "</span>
+<a class="jxr_linenumber" name="L2247" href="#L2247">2247</a> 			+ <span class="jxr_string">"JOIN user_groups USING (group_id) "</span>
+<a class="jxr_linenumber" name="L2248" href="#L2248">2248</a> 			+ <span class="jxr_string">"JOIN machines USING (machine_id) "</span>
+<a class="jxr_linenumber" name="L2249" href="#L2249">2249</a> 			+ <span class="jxr_string">"JOIN user_info ON jobs.owner = user_info.user_id "</span>
+<a class="jxr_linenumber" name="L2250" href="#L2250">2250</a> 			+ <span class="jxr_string">"WHERE death_timestamp + :grace_period &lt; UNIX_TIMESTAMP()"</span>;
+<a class="jxr_linenumber" name="L2251" href="#L2251">2251</a> 
+<a class="jxr_linenumber" name="L2252" href="#L2252">2252</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2253" href="#L2253">2253</a> <em class="jxr_javadoccomment">	 * Write to the historical allocations database.</em>
+<a class="jxr_linenumber" name="L2254" href="#L2254">2254</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2255" href="#L2255">2255</a> 	@Parameter(<span class="jxr_string">"alloc_id"</span>)
+<a class="jxr_linenumber" name="L2256" href="#L2256">2256</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L2257" href="#L2257">2257</a> 	@Parameter(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2258" href="#L2258">2258</a> 	@Parameter(<span class="jxr_string">"allocation_timestamp"</span>)
+<a class="jxr_linenumber" name="L2259" href="#L2259">2259</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String WRITE_HISTORICAL_ALLOCS =
+<a class="jxr_linenumber" name="L2260" href="#L2260">2260</a> 			<span class="jxr_string">"INSERT IGNORE INTO board_allocations( "</span>
+<a class="jxr_linenumber" name="L2261" href="#L2261">2261</a> 			+ <span class="jxr_string">"alloc_id, job_id, board_id, allocation_timestamp) "</span>
+<a class="jxr_linenumber" name="L2262" href="#L2262">2262</a> 			+ <span class="jxr_string">"VALUES(:alloc_id, :job_id, :board_id, :allocation_timestamp)"</span>;
+<a class="jxr_linenumber" name="L2263" href="#L2263">2263</a> 
+<a class="jxr_linenumber" name="L2264" href="#L2264">2264</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2265" href="#L2265">2265</a> <em class="jxr_javadoccomment">	 * Write to the historical jobs database.</em>
+<a class="jxr_linenumber" name="L2266" href="#L2266">2266</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2267" href="#L2267">2267</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L2268" href="#L2268">2268</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
+<a class="jxr_linenumber" name="L2269" href="#L2269">2269</a> 	@Parameter(<span class="jxr_string">"owner"</span>)
+<a class="jxr_linenumber" name="L2270" href="#L2270">2270</a> 	@Parameter(<span class="jxr_string">"create_timestamp"</span>)
+<a class="jxr_linenumber" name="L2271" href="#L2271">2271</a> 	@Parameter(<span class="jxr_string">"width"</span>)
+<a class="jxr_linenumber" name="L2272" href="#L2272">2272</a> 	@Parameter(<span class="jxr_string">"height"</span>)
+<a class="jxr_linenumber" name="L2273" href="#L2273">2273</a> 	@Parameter(<span class="jxr_string">"depth"</span>)
+<a class="jxr_linenumber" name="L2274" href="#L2274">2274</a> 	@Parameter(<span class="jxr_string">"root_id"</span>)
+<a class="jxr_linenumber" name="L2275" href="#L2275">2275</a> 	@Parameter(<span class="jxr_string">"keepalive_interval"</span>)
+<a class="jxr_linenumber" name="L2276" href="#L2276">2276</a> 	@Parameter(<span class="jxr_string">"keepalive_host"</span>)
+<a class="jxr_linenumber" name="L2277" href="#L2277">2277</a> 	@Parameter(<span class="jxr_string">"death_reason"</span>)
+<a class="jxr_linenumber" name="L2278" href="#L2278">2278</a> 	@Parameter(<span class="jxr_string">"death_timestamp"</span>)
+<a class="jxr_linenumber" name="L2279" href="#L2279">2279</a> 	@Parameter(<span class="jxr_string">"original_request"</span>)
+<a class="jxr_linenumber" name="L2280" href="#L2280">2280</a> 	@Parameter(<span class="jxr_string">"allocation_timestamp"</span>)
+<a class="jxr_linenumber" name="L2281" href="#L2281">2281</a> 	@Parameter(<span class="jxr_string">"allocation_size"</span>)
+<a class="jxr_linenumber" name="L2282" href="#L2282">2282</a> 	@Parameter(<span class="jxr_string">"machine_name"</span>)
+<a class="jxr_linenumber" name="L2283" href="#L2283">2283</a> 	@Parameter(<span class="jxr_string">"owner_name"</span>)
+<a class="jxr_linenumber" name="L2284" href="#L2284">2284</a> 	@Parameter(<span class="jxr_string">"group_id"</span>)
+<a class="jxr_linenumber" name="L2285" href="#L2285">2285</a> 	@Parameter(<span class="jxr_string">"group_name"</span>)
+<a class="jxr_linenumber" name="L2286" href="#L2286">2286</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String WRITE_HISTORICAL_JOBS =
+<a class="jxr_linenumber" name="L2287" href="#L2287">2287</a> 			<span class="jxr_string">"INSERT IGNORE INTO jobs( "</span>
+<a class="jxr_linenumber" name="L2288" href="#L2288">2288</a> 			+ <span class="jxr_string">"job_id, machine_id, owner, create_timestamp, "</span>
+<a class="jxr_linenumber" name="L2289" href="#L2289">2289</a> 			+ <span class="jxr_string">"width, height, depth, root_id, "</span>
+<a class="jxr_linenumber" name="L2290" href="#L2290">2290</a> 			+ <span class="jxr_string">"keepalive_interval, keepalive_host, "</span>
+<a class="jxr_linenumber" name="L2291" href="#L2291">2291</a> 			+ <span class="jxr_string">"death_reason, death_timestamp, "</span>
+<a class="jxr_linenumber" name="L2292" href="#L2292">2292</a> 			+ <span class="jxr_string">"original_request, allocation_timestamp, allocation_size, "</span>
+<a class="jxr_linenumber" name="L2293" href="#L2293">2293</a> 			+ <span class="jxr_string">"machine_name, owner_name, group_id, group_name) "</span>
+<a class="jxr_linenumber" name="L2294" href="#L2294">2294</a> 			+ <span class="jxr_string">"VALUES(:job_id, :machine_id, :owner, :create_timestamp, "</span>
+<a class="jxr_linenumber" name="L2295" href="#L2295">2295</a> 			+ <span class="jxr_string">":width, :height, :depth, :root_id, "</span>
+<a class="jxr_linenumber" name="L2296" href="#L2296">2296</a> 			+ <span class="jxr_string">":keepalive_interval, :keepalive_host, "</span>
+<a class="jxr_linenumber" name="L2297" href="#L2297">2297</a> 			+ <span class="jxr_string">":death_reason, :death_timestamp, "</span>
+<a class="jxr_linenumber" name="L2298" href="#L2298">2298</a> 			+ <span class="jxr_string">":original_request, :allocation_timestamp, :allocation_size, "</span>
+<a class="jxr_linenumber" name="L2299" href="#L2299">2299</a> 			+ <span class="jxr_string">":machine_name, :owner_name, :group_id, :group_name)"</span>;
+<a class="jxr_linenumber" name="L2300" href="#L2300">2300</a> 
+<a class="jxr_linenumber" name="L2301" href="#L2301">2301</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2302" href="#L2302">2302</a> <em class="jxr_javadoccomment">	 * Set the NMPI session for a Job.</em>
+<a class="jxr_linenumber" name="L2303" href="#L2303">2303</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2304" href="#L2304">2304</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L2305" href="#L2305">2305</a> 	@Parameter(<span class="jxr_string">"session_id"</span>)
+<a class="jxr_linenumber" name="L2306" href="#L2306">2306</a> 	@Parameter(<span class="jxr_string">"quota_units"</span>)
+<a class="jxr_linenumber" name="L2307" href="#L2307">2307</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String SET_JOB_SESSION =
+<a class="jxr_linenumber" name="L2308" href="#L2308">2308</a> 			<span class="jxr_string">"INSERT IGNORE INTO job_nmpi_session ( "</span>
+<a class="jxr_linenumber" name="L2309" href="#L2309">2309</a> 			+ <span class="jxr_string">"job_id, session_id, quota_units) "</span>
+<a class="jxr_linenumber" name="L2310" href="#L2310">2310</a> 			+ <span class="jxr_string">"VALUES(:job_id, :session_id, :quota_units)"</span>;
 <a class="jxr_linenumber" name="L2311" href="#L2311">2311</a> 
-<a class="jxr_linenumber" name="L2312" href="#L2312">2312</a> 	<em class="jxr_comment">// SQL loaded from files because it is too complicated otherwise!</em>
-<a class="jxr_linenumber" name="L2313" href="#L2313">2313</a> 
-<a class="jxr_linenumber" name="L2314" href="#L2314">2314</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2315" href="#L2315">2315</a> <em class="jxr_javadoccomment">	 * Find a rectangle of triads of boards that may be allocated. The</em>
-<a class="jxr_linenumber" name="L2316" href="#L2316">2316</a> <em class="jxr_javadoccomment">	 * {@code max_dead_boards} gives the amount of allowance for non-allocatable</em>
-<a class="jxr_linenumber" name="L2317" href="#L2317">2317</a> <em class="jxr_javadoccomment">	 * resources to be made within the rectangle.</em>
-<a class="jxr_linenumber" name="L2318" href="#L2318">2318</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2319" href="#L2319">2319</a> <em class="jxr_javadoccomment">	 * @see AllocatorTask</em>
-<a class="jxr_linenumber" name="L2320" href="#L2320">2320</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2321" href="#L2321">2321</a> 	@Parameter(<span class="jxr_string">"width"</span>)
-<a class="jxr_linenumber" name="L2322" href="#L2322">2322</a> 	@Parameter(<span class="jxr_string">"height"</span>)
-<a class="jxr_linenumber" name="L2323" href="#L2323">2323</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
-<a class="jxr_linenumber" name="L2324" href="#L2324">2324</a> 	@Parameter(<span class="jxr_string">"max_dead_boards"</span>)
-<a class="jxr_linenumber" name="L2325" href="#L2325">2325</a> 	@ResultColumn(<span class="jxr_string">"id"</span>)
-<a class="jxr_linenumber" name="L2326" href="#L2326">2326</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
-<a class="jxr_linenumber" name="L2327" href="#L2327">2327</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
-<a class="jxr_linenumber" name="L2328" href="#L2328">2328</a> 	@ResultColumn(<span class="jxr_string">"z"</span>)
-<a class="jxr_linenumber" name="L2329" href="#L2329">2329</a> 	@ResultColumn(<span class="jxr_string">"available"</span>)
-<a class="jxr_linenumber" name="L2330" href="#L2330">2330</a> 	@Value(<span class="jxr_string">"classpath:queries/find_rectangle.sql"</span>)
-<a class="jxr_linenumber" name="L2331" href="#L2331">2331</a> 	<strong class="jxr_keyword">protected</strong> Resource findRectangle;
+<a class="jxr_linenumber" name="L2312" href="#L2312">2312</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2313" href="#L2313">2313</a> <em class="jxr_javadoccomment">	 * Set the NMPI Job for a Job.</em>
+<a class="jxr_linenumber" name="L2314" href="#L2314">2314</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2315" href="#L2315">2315</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L2316" href="#L2316">2316</a> 	@Parameter(<span class="jxr_string">"nmpi_job_id"</span>)
+<a class="jxr_linenumber" name="L2317" href="#L2317">2317</a> 	@Parameter(<span class="jxr_string">"quota_units"</span>)
+<a class="jxr_linenumber" name="L2318" href="#L2318">2318</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String SET_JOB_NMPI_JOB =
+<a class="jxr_linenumber" name="L2319" href="#L2319">2319</a> 			<span class="jxr_string">"INSERT IGNORE INTO job_nmpi_job ( "</span>
+<a class="jxr_linenumber" name="L2320" href="#L2320">2320</a> 			+ <span class="jxr_string">"job_id, nmpi_job_id, quota_units) "</span>
+<a class="jxr_linenumber" name="L2321" href="#L2321">2321</a> 			+ <span class="jxr_string">"VALUES(:job_id, :nmpi_job_id, :quota_units)"</span>;
+<a class="jxr_linenumber" name="L2322" href="#L2322">2322</a> 
+<a class="jxr_linenumber" name="L2323" href="#L2323">2323</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2324" href="#L2324">2324</a> <em class="jxr_javadoccomment">	 * Get the NMPI Session for a Job.</em>
+<a class="jxr_linenumber" name="L2325" href="#L2325">2325</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2326" href="#L2326">2326</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L2327" href="#L2327">2327</a> 	@ResultColumn(<span class="jxr_string">"session_id"</span>)
+<a class="jxr_linenumber" name="L2328" href="#L2328">2328</a> 	@ResultColumn(<span class="jxr_string">"quota_units"</span>)
+<a class="jxr_linenumber" name="L2329" href="#L2329">2329</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String GET_JOB_SESSION =
+<a class="jxr_linenumber" name="L2330" href="#L2330">2330</a> 			<span class="jxr_string">"SELECT session_id, quota_units FROM job_nmpi_session "</span>
+<a class="jxr_linenumber" name="L2331" href="#L2331">2331</a> 			+ <span class="jxr_string">"WHERE job_id=:job_id"</span>;
 <a class="jxr_linenumber" name="L2332" href="#L2332">2332</a> 
 <a class="jxr_linenumber" name="L2333" href="#L2333">2333</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2334" href="#L2334">2334</a> <em class="jxr_javadoccomment">	 * Find a rectangle of triads of boards rooted at a specific board that may</em>
-<a class="jxr_linenumber" name="L2335" href="#L2335">2335</a> <em class="jxr_javadoccomment">	 * be allocated. The {@code max_dead_boards} gives the amount of allowance</em>
-<a class="jxr_linenumber" name="L2336" href="#L2336">2336</a> <em class="jxr_javadoccomment">	 * for non-allocatable resources to be made within the rectangle.</em>
-<a class="jxr_linenumber" name="L2337" href="#L2337">2337</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2338" href="#L2338">2338</a> <em class="jxr_javadoccomment">	 * @see AllocatorTask</em>
-<a class="jxr_linenumber" name="L2339" href="#L2339">2339</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2340" href="#L2340">2340</a> 	@Parameter(<span class="jxr_string">"board_id"</span>)
-<a class="jxr_linenumber" name="L2341" href="#L2341">2341</a> 	@Parameter(<span class="jxr_string">"width"</span>)
-<a class="jxr_linenumber" name="L2342" href="#L2342">2342</a> 	@Parameter(<span class="jxr_string">"height"</span>)
-<a class="jxr_linenumber" name="L2343" href="#L2343">2343</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
-<a class="jxr_linenumber" name="L2344" href="#L2344">2344</a> 	@Parameter(<span class="jxr_string">"max_dead_boards"</span>)
-<a class="jxr_linenumber" name="L2345" href="#L2345">2345</a> 	@ResultColumn(<span class="jxr_string">"id"</span>)
-<a class="jxr_linenumber" name="L2346" href="#L2346">2346</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
-<a class="jxr_linenumber" name="L2347" href="#L2347">2347</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
-<a class="jxr_linenumber" name="L2348" href="#L2348">2348</a> 	@ResultColumn(<span class="jxr_string">"z"</span>)
-<a class="jxr_linenumber" name="L2349" href="#L2349">2349</a> 	@ResultColumn(<span class="jxr_string">"available"</span>)
-<a class="jxr_linenumber" name="L2350" href="#L2350">2350</a> 	@SingleRowResult
-<a class="jxr_linenumber" name="L2351" href="#L2351">2351</a> 	@Value(<span class="jxr_string">"classpath:queries/find_rectangle_at.sql"</span>)
-<a class="jxr_linenumber" name="L2352" href="#L2352">2352</a> 	<strong class="jxr_keyword">protected</strong> Resource findRectangleAt;
-<a class="jxr_linenumber" name="L2353" href="#L2353">2353</a> 
-<a class="jxr_linenumber" name="L2354" href="#L2354">2354</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2355" href="#L2355">2355</a> <em class="jxr_javadoccomment">	 * Find an allocatable board with a specific board ID. (This will have been</em>
-<a class="jxr_linenumber" name="L2356" href="#L2356">2356</a> <em class="jxr_javadoccomment">	 * previously converted from some other form of board coordinates.)</em>
-<a class="jxr_linenumber" name="L2357" href="#L2357">2357</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2358" href="#L2358">2358</a> <em class="jxr_javadoccomment">	 * @see AllocatorTask</em>
-<a class="jxr_linenumber" name="L2359" href="#L2359">2359</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2360" href="#L2360">2360</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
-<a class="jxr_linenumber" name="L2361" href="#L2361">2361</a> 	@Parameter(<span class="jxr_string">"board_id"</span>)
-<a class="jxr_linenumber" name="L2362" href="#L2362">2362</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
-<a class="jxr_linenumber" name="L2363" href="#L2363">2363</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
-<a class="jxr_linenumber" name="L2364" href="#L2364">2364</a> 	@ResultColumn(<span class="jxr_string">"z"</span>)
-<a class="jxr_linenumber" name="L2365" href="#L2365">2365</a> 	@SingleRowResult
-<a class="jxr_linenumber" name="L2366" href="#L2366">2366</a> 	@Value(<span class="jxr_string">"classpath:queries/find_location.sql"</span>)
-<a class="jxr_linenumber" name="L2367" href="#L2367">2367</a> 	<strong class="jxr_keyword">protected</strong> Resource findLocation;
-<a class="jxr_linenumber" name="L2368" href="#L2368">2368</a> 
-<a class="jxr_linenumber" name="L2369" href="#L2369">2369</a> 	<em class="jxr_javadoccomment">/** Create a request to change the power status of a board. */</em>
-<a class="jxr_linenumber" name="L2370" href="#L2370">2370</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L2334" href="#L2334">2334</a> <em class="jxr_javadoccomment">	 * Get the NMPI Job for a Job.</em>
+<a class="jxr_linenumber" name="L2335" href="#L2335">2335</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2336" href="#L2336">2336</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L2337" href="#L2337">2337</a> 	@ResultColumn(<span class="jxr_string">"nmpi_job_id"</span>)
+<a class="jxr_linenumber" name="L2338" href="#L2338">2338</a> 	@ResultColumn(<span class="jxr_string">"quota_units"</span>)
+<a class="jxr_linenumber" name="L2339" href="#L2339">2339</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String GET_JOB_NMPI_JOB =
+<a class="jxr_linenumber" name="L2340" href="#L2340">2340</a> 			<span class="jxr_string">"SELECT nmpi_job_id, quota_units FROM job_nmpi_job "</span>
+<a class="jxr_linenumber" name="L2341" href="#L2341">2341</a> 			+ <span class="jxr_string">"WHERE job_id=:job_id"</span>;
+<a class="jxr_linenumber" name="L2342" href="#L2342">2342</a> 
+<a class="jxr_linenumber" name="L2343" href="#L2343">2343</a> 	<em class="jxr_comment">// SQL loaded from files because it is too complicated otherwise!</em>
+<a class="jxr_linenumber" name="L2344" href="#L2344">2344</a> 
+<a class="jxr_linenumber" name="L2345" href="#L2345">2345</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2346" href="#L2346">2346</a> <em class="jxr_javadoccomment">	 * Find a rectangle of triads of boards that may be allocated. The</em>
+<a class="jxr_linenumber" name="L2347" href="#L2347">2347</a> <em class="jxr_javadoccomment">	 * {@code max_dead_boards} gives the amount of allowance for non-allocatable</em>
+<a class="jxr_linenumber" name="L2348" href="#L2348">2348</a> <em class="jxr_javadoccomment">	 * resources to be made within the rectangle.</em>
+<a class="jxr_linenumber" name="L2349" href="#L2349">2349</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2350" href="#L2350">2350</a> <em class="jxr_javadoccomment">	 * @see AllocatorTask</em>
+<a class="jxr_linenumber" name="L2351" href="#L2351">2351</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2352" href="#L2352">2352</a> 	@Parameter(<span class="jxr_string">"width"</span>)
+<a class="jxr_linenumber" name="L2353" href="#L2353">2353</a> 	@Parameter(<span class="jxr_string">"height"</span>)
+<a class="jxr_linenumber" name="L2354" href="#L2354">2354</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
+<a class="jxr_linenumber" name="L2355" href="#L2355">2355</a> 	@Parameter(<span class="jxr_string">"max_dead_boards"</span>)
+<a class="jxr_linenumber" name="L2356" href="#L2356">2356</a> 	@ResultColumn(<span class="jxr_string">"id"</span>)
+<a class="jxr_linenumber" name="L2357" href="#L2357">2357</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
+<a class="jxr_linenumber" name="L2358" href="#L2358">2358</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
+<a class="jxr_linenumber" name="L2359" href="#L2359">2359</a> 	@ResultColumn(<span class="jxr_string">"z"</span>)
+<a class="jxr_linenumber" name="L2360" href="#L2360">2360</a> 	@ResultColumn(<span class="jxr_string">"available"</span>)
+<a class="jxr_linenumber" name="L2361" href="#L2361">2361</a> 	@Value(<span class="jxr_string">"classpath:queries/find_rectangle.sql"</span>)
+<a class="jxr_linenumber" name="L2362" href="#L2362">2362</a> 	<strong class="jxr_keyword">protected</strong> Resource findRectangle;
+<a class="jxr_linenumber" name="L2363" href="#L2363">2363</a> 
+<a class="jxr_linenumber" name="L2364" href="#L2364">2364</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2365" href="#L2365">2365</a> <em class="jxr_javadoccomment">	 * Find a rectangle of triads of boards rooted at a specific board that may</em>
+<a class="jxr_linenumber" name="L2366" href="#L2366">2366</a> <em class="jxr_javadoccomment">	 * be allocated. The {@code max_dead_boards} gives the amount of allowance</em>
+<a class="jxr_linenumber" name="L2367" href="#L2367">2367</a> <em class="jxr_javadoccomment">	 * for non-allocatable resources to be made within the rectangle.</em>
+<a class="jxr_linenumber" name="L2368" href="#L2368">2368</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2369" href="#L2369">2369</a> <em class="jxr_javadoccomment">	 * @see AllocatorTask</em>
+<a class="jxr_linenumber" name="L2370" href="#L2370">2370</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L2371" href="#L2371">2371</a> 	@Parameter(<span class="jxr_string">"board_id"</span>)
-<a class="jxr_linenumber" name="L2372" href="#L2372">2372</a> 	@Parameter(<span class="jxr_string">"from_state"</span>)
-<a class="jxr_linenumber" name="L2373" href="#L2373">2373</a> 	@Parameter(<span class="jxr_string">"to_state"</span>)
-<a class="jxr_linenumber" name="L2374" href="#L2374">2374</a> 	@Parameter(<span class="jxr_string">"power"</span>)
-<a class="jxr_linenumber" name="L2375" href="#L2375">2375</a> 	@Parameter(<span class="jxr_string">"fpga_n"</span>)
-<a class="jxr_linenumber" name="L2376" href="#L2376">2376</a> 	@Parameter(<span class="jxr_string">"fpga_e"</span>)
-<a class="jxr_linenumber" name="L2377" href="#L2377">2377</a> 	@Parameter(<span class="jxr_string">"fpga_se"</span>)
-<a class="jxr_linenumber" name="L2378" href="#L2378">2378</a> 	@Parameter(<span class="jxr_string">"fpga_s"</span>)
-<a class="jxr_linenumber" name="L2379" href="#L2379">2379</a> 	@Parameter(<span class="jxr_string">"fpga_w"</span>)
-<a class="jxr_linenumber" name="L2380" href="#L2380">2380</a> 	@Parameter(<span class="jxr_string">"fpga_nw"</span>)
-<a class="jxr_linenumber" name="L2381" href="#L2381">2381</a> 	@GeneratesID
-<a class="jxr_linenumber" name="L2382" href="#L2382">2382</a> 	@Value(<span class="jxr_string">"classpath:queries/issue_change_for_job.sql"</span>)
-<a class="jxr_linenumber" name="L2383" href="#L2383">2383</a> 	<strong class="jxr_keyword">protected</strong> Resource issueChangeForJob;
+<a class="jxr_linenumber" name="L2372" href="#L2372">2372</a> 	@Parameter(<span class="jxr_string">"width"</span>)
+<a class="jxr_linenumber" name="L2373" href="#L2373">2373</a> 	@Parameter(<span class="jxr_string">"height"</span>)
+<a class="jxr_linenumber" name="L2374" href="#L2374">2374</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
+<a class="jxr_linenumber" name="L2375" href="#L2375">2375</a> 	@Parameter(<span class="jxr_string">"max_dead_boards"</span>)
+<a class="jxr_linenumber" name="L2376" href="#L2376">2376</a> 	@ResultColumn(<span class="jxr_string">"id"</span>)
+<a class="jxr_linenumber" name="L2377" href="#L2377">2377</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
+<a class="jxr_linenumber" name="L2378" href="#L2378">2378</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
+<a class="jxr_linenumber" name="L2379" href="#L2379">2379</a> 	@ResultColumn(<span class="jxr_string">"z"</span>)
+<a class="jxr_linenumber" name="L2380" href="#L2380">2380</a> 	@ResultColumn(<span class="jxr_string">"available"</span>)
+<a class="jxr_linenumber" name="L2381" href="#L2381">2381</a> 	@SingleRowResult
+<a class="jxr_linenumber" name="L2382" href="#L2382">2382</a> 	@Value(<span class="jxr_string">"classpath:queries/find_rectangle_at.sql"</span>)
+<a class="jxr_linenumber" name="L2383" href="#L2383">2383</a> 	<strong class="jxr_keyword">protected</strong> Resource findRectangleAt;
 <a class="jxr_linenumber" name="L2384" href="#L2384">2384</a> 
 <a class="jxr_linenumber" name="L2385" href="#L2385">2385</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2386" href="#L2386">2386</a> <em class="jxr_javadoccomment">	 * Count the number of &lt;em&gt;connected&lt;/em&gt; boards (i.e., have at least one</em>
-<a class="jxr_linenumber" name="L2387" href="#L2387">2387</a> <em class="jxr_javadoccomment">	 * path over enabled links to the root board of the allocation) within a</em>
-<a class="jxr_linenumber" name="L2388" href="#L2388">2388</a> <em class="jxr_javadoccomment">	 * rectangle of triads. The triads are taken as being full depth.</em>
-<a class="jxr_linenumber" name="L2389" href="#L2389">2389</a> <em class="jxr_javadoccomment">	 * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L2390" href="#L2390">2390</a> <em class="jxr_javadoccomment">	 * Ideally this would be part of {@link #findRectangle}, but both that query</em>
-<a class="jxr_linenumber" name="L2391" href="#L2391">2391</a> <em class="jxr_javadoccomment">	 * and this one are entirely complicated enough already! Also, we don't</em>
-<a class="jxr_linenumber" name="L2392" href="#L2392">2392</a> <em class="jxr_javadoccomment">	 * expect to have this query reject many candidate allocations.</em>
-<a class="jxr_linenumber" name="L2393" href="#L2393">2393</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2394" href="#L2394">2394</a> <em class="jxr_javadoccomment">	 * @see AllocatorTask</em>
-<a class="jxr_linenumber" name="L2395" href="#L2395">2395</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2396" href="#L2396">2396</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
-<a class="jxr_linenumber" name="L2397" href="#L2397">2397</a> 	@Parameter(<span class="jxr_string">"x"</span>)
-<a class="jxr_linenumber" name="L2398" href="#L2398">2398</a> 	@Parameter(<span class="jxr_string">"y"</span>)
-<a class="jxr_linenumber" name="L2399" href="#L2399">2399</a> 	@Parameter(<span class="jxr_string">"width"</span>)
-<a class="jxr_linenumber" name="L2400" href="#L2400">2400</a> 	@Parameter(<span class="jxr_string">"height"</span>)
-<a class="jxr_linenumber" name="L2401" href="#L2401">2401</a> 	@ResultColumn(<span class="jxr_string">"connected_size"</span>)
-<a class="jxr_linenumber" name="L2402" href="#L2402">2402</a> 	@SingleRowResult
-<a class="jxr_linenumber" name="L2403" href="#L2403">2403</a> 	@Value(<span class="jxr_string">"classpath:queries/allocation_connected.sql"</span>)
-<a class="jxr_linenumber" name="L2404" href="#L2404">2404</a> 	<strong class="jxr_keyword">protected</strong> Resource countConnected;
-<a class="jxr_linenumber" name="L2405" href="#L2405">2405</a> 
-<a class="jxr_linenumber" name="L2406" href="#L2406">2406</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2407" href="#L2407">2407</a> <em class="jxr_javadoccomment">	 * Get the links on the perimeter of the allocation to a job. The perimeter</em>
-<a class="jxr_linenumber" name="L2408" href="#L2408">2408</a> <em class="jxr_javadoccomment">	 * is defined as being the links between a board that is part of the</em>
-<a class="jxr_linenumber" name="L2409" href="#L2409">2409</a> <em class="jxr_javadoccomment">	 * allocation and a board that is not; it's &lt;em&gt;not&lt;/em&gt; a geometric</em>
-<a class="jxr_linenumber" name="L2410" href="#L2410">2410</a> <em class="jxr_javadoccomment">	 * definition, but rather a relational algebraic one.</em>
-<a class="jxr_linenumber" name="L2411" href="#L2411">2411</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2412" href="#L2412">2412</a> <em class="jxr_javadoccomment">	 * @see AllocatorTask</em>
-<a class="jxr_linenumber" name="L2413" href="#L2413">2413</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2414" href="#L2414">2414</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
-<a class="jxr_linenumber" name="L2415" href="#L2415">2415</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
-<a class="jxr_linenumber" name="L2416" href="#L2416">2416</a> 	@ResultColumn(<span class="jxr_string">"direction"</span>)
-<a class="jxr_linenumber" name="L2417" href="#L2417">2417</a> 	@Value(<span class="jxr_string">"classpath:queries/perimeter.sql"</span>)
-<a class="jxr_linenumber" name="L2418" href="#L2418">2418</a> 	<strong class="jxr_keyword">protected</strong> Resource getPerimeterLinks;
-<a class="jxr_linenumber" name="L2419" href="#L2419">2419</a> 
-<a class="jxr_linenumber" name="L2420" href="#L2420">2420</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2421" href="#L2421">2421</a> <em class="jxr_javadoccomment">	 * Locate a board (using a full set of coordinates) based on global chip</em>
-<a class="jxr_linenumber" name="L2422" href="#L2422">2422</a> <em class="jxr_javadoccomment">	 * coordinates.</em>
-<a class="jxr_linenumber" name="L2423" href="#L2423">2423</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2424" href="#L2424">2424</a> <em class="jxr_javadoccomment">	 * @see Spalloc</em>
-<a class="jxr_linenumber" name="L2425" href="#L2425">2425</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2426" href="#L2426">2426</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
-<a class="jxr_linenumber" name="L2427" href="#L2427">2427</a> 	@Parameter(<span class="jxr_string">"x"</span>)
-<a class="jxr_linenumber" name="L2428" href="#L2428">2428</a> 	@Parameter(<span class="jxr_string">"y"</span>)
-<a class="jxr_linenumber" name="L2429" href="#L2429">2429</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
-<a class="jxr_linenumber" name="L2430" href="#L2430">2430</a> 	@ResultColumn(<span class="jxr_string">"address"</span>)
-<a class="jxr_linenumber" name="L2431" href="#L2431">2431</a> 	@ResultColumn(<span class="jxr_string">"bmp_id"</span>)
-<a class="jxr_linenumber" name="L2432" href="#L2432">2432</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
-<a class="jxr_linenumber" name="L2433" href="#L2433">2433</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
-<a class="jxr_linenumber" name="L2434" href="#L2434">2434</a> 	@ResultColumn(<span class="jxr_string">"z"</span>)
-<a class="jxr_linenumber" name="L2435" href="#L2435">2435</a> 	@ResultColumn(<span class="jxr_string">"job_id"</span>)
-<a class="jxr_linenumber" name="L2436" href="#L2436">2436</a> 	@ResultColumn(<span class="jxr_string">"machine_name"</span>)
-<a class="jxr_linenumber" name="L2437" href="#L2437">2437</a> 	@ResultColumn(<span class="jxr_string">"cabinet"</span>)
-<a class="jxr_linenumber" name="L2438" href="#L2438">2438</a> 	@ResultColumn(<span class="jxr_string">"frame"</span>)
-<a class="jxr_linenumber" name="L2439" href="#L2439">2439</a> 	@ResultColumn(<span class="jxr_string">"board_num"</span>)
-<a class="jxr_linenumber" name="L2440" href="#L2440">2440</a> 	@ResultColumn(<span class="jxr_string">"chip_x"</span>)
-<a class="jxr_linenumber" name="L2441" href="#L2441">2441</a> 	@ResultColumn(<span class="jxr_string">"chip_y"</span>)
-<a class="jxr_linenumber" name="L2442" href="#L2442">2442</a> 	@ResultColumn(<span class="jxr_string">"board_chip_x"</span>)
-<a class="jxr_linenumber" name="L2443" href="#L2443">2443</a> 	@ResultColumn(<span class="jxr_string">"board_chip_y"</span>)
-<a class="jxr_linenumber" name="L2444" href="#L2444">2444</a> 	@ResultColumn(<span class="jxr_string">"job_root_chip_x"</span>)
-<a class="jxr_linenumber" name="L2445" href="#L2445">2445</a> 	@ResultColumn(<span class="jxr_string">"job_root_chip_y"</span>)
-<a class="jxr_linenumber" name="L2446" href="#L2446">2446</a> 	@SingleRowResult
-<a class="jxr_linenumber" name="L2447" href="#L2447">2447</a> 	@Value(<span class="jxr_string">"classpath:queries/find_board_by_global_chip.sql"</span>)
-<a class="jxr_linenumber" name="L2448" href="#L2448">2448</a> 	<strong class="jxr_keyword">protected</strong> Resource findBoardByGlobalChip;
-<a class="jxr_linenumber" name="L2449" href="#L2449">2449</a> 
-<a class="jxr_linenumber" name="L2450" href="#L2450">2450</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2451" href="#L2451">2451</a> <em class="jxr_javadoccomment">	 * Locate a board (using a full set of coordinates) based on</em>
-<a class="jxr_linenumber" name="L2452" href="#L2452">2452</a> <em class="jxr_javadoccomment">	 * allocation-local chip coordinates.</em>
-<a class="jxr_linenumber" name="L2453" href="#L2453">2453</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2454" href="#L2454">2454</a> <em class="jxr_javadoccomment">	 * @see Spalloc</em>
-<a class="jxr_linenumber" name="L2455" href="#L2455">2455</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2456" href="#L2456">2456</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
-<a class="jxr_linenumber" name="L2457" href="#L2457">2457</a> 	@Parameter(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2386" href="#L2386">2386</a> <em class="jxr_javadoccomment">	 * Find an allocatable board with a specific board ID. (This will have been</em>
+<a class="jxr_linenumber" name="L2387" href="#L2387">2387</a> <em class="jxr_javadoccomment">	 * previously converted from some other form of board coordinates.)</em>
+<a class="jxr_linenumber" name="L2388" href="#L2388">2388</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2389" href="#L2389">2389</a> <em class="jxr_javadoccomment">	 * @see AllocatorTask</em>
+<a class="jxr_linenumber" name="L2390" href="#L2390">2390</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2391" href="#L2391">2391</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
+<a class="jxr_linenumber" name="L2392" href="#L2392">2392</a> 	@Parameter(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2393" href="#L2393">2393</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
+<a class="jxr_linenumber" name="L2394" href="#L2394">2394</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
+<a class="jxr_linenumber" name="L2395" href="#L2395">2395</a> 	@ResultColumn(<span class="jxr_string">"z"</span>)
+<a class="jxr_linenumber" name="L2396" href="#L2396">2396</a> 	@SingleRowResult
+<a class="jxr_linenumber" name="L2397" href="#L2397">2397</a> 	@Value(<span class="jxr_string">"classpath:queries/find_location.sql"</span>)
+<a class="jxr_linenumber" name="L2398" href="#L2398">2398</a> 	<strong class="jxr_keyword">protected</strong> Resource findLocation;
+<a class="jxr_linenumber" name="L2399" href="#L2399">2399</a> 
+<a class="jxr_linenumber" name="L2400" href="#L2400">2400</a> 	<em class="jxr_javadoccomment">/** Create a request to change the power status of a board. */</em>
+<a class="jxr_linenumber" name="L2401" href="#L2401">2401</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L2402" href="#L2402">2402</a> 	@Parameter(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2403" href="#L2403">2403</a> 	@Parameter(<span class="jxr_string">"from_state"</span>)
+<a class="jxr_linenumber" name="L2404" href="#L2404">2404</a> 	@Parameter(<span class="jxr_string">"to_state"</span>)
+<a class="jxr_linenumber" name="L2405" href="#L2405">2405</a> 	@Parameter(<span class="jxr_string">"power"</span>)
+<a class="jxr_linenumber" name="L2406" href="#L2406">2406</a> 	@Parameter(<span class="jxr_string">"fpga_n"</span>)
+<a class="jxr_linenumber" name="L2407" href="#L2407">2407</a> 	@Parameter(<span class="jxr_string">"fpga_e"</span>)
+<a class="jxr_linenumber" name="L2408" href="#L2408">2408</a> 	@Parameter(<span class="jxr_string">"fpga_se"</span>)
+<a class="jxr_linenumber" name="L2409" href="#L2409">2409</a> 	@Parameter(<span class="jxr_string">"fpga_s"</span>)
+<a class="jxr_linenumber" name="L2410" href="#L2410">2410</a> 	@Parameter(<span class="jxr_string">"fpga_w"</span>)
+<a class="jxr_linenumber" name="L2411" href="#L2411">2411</a> 	@Parameter(<span class="jxr_string">"fpga_nw"</span>)
+<a class="jxr_linenumber" name="L2412" href="#L2412">2412</a> 	@GeneratesID
+<a class="jxr_linenumber" name="L2413" href="#L2413">2413</a> 	@Value(<span class="jxr_string">"classpath:queries/issue_change_for_job.sql"</span>)
+<a class="jxr_linenumber" name="L2414" href="#L2414">2414</a> 	<strong class="jxr_keyword">protected</strong> Resource issueChangeForJob;
+<a class="jxr_linenumber" name="L2415" href="#L2415">2415</a> 
+<a class="jxr_linenumber" name="L2416" href="#L2416">2416</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2417" href="#L2417">2417</a> <em class="jxr_javadoccomment">	 * Count the number of &lt;em&gt;connected&lt;/em&gt; boards (i.e., have at least one</em>
+<a class="jxr_linenumber" name="L2418" href="#L2418">2418</a> <em class="jxr_javadoccomment">	 * path over enabled links to the root board of the allocation) within a</em>
+<a class="jxr_linenumber" name="L2419" href="#L2419">2419</a> <em class="jxr_javadoccomment">	 * rectangle of triads. The triads are taken as being full depth.</em>
+<a class="jxr_linenumber" name="L2420" href="#L2420">2420</a> <em class="jxr_javadoccomment">	 * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L2421" href="#L2421">2421</a> <em class="jxr_javadoccomment">	 * Ideally this would be part of {@link #findRectangle}, but both that query</em>
+<a class="jxr_linenumber" name="L2422" href="#L2422">2422</a> <em class="jxr_javadoccomment">	 * and this one are entirely complicated enough already! Also, we don't</em>
+<a class="jxr_linenumber" name="L2423" href="#L2423">2423</a> <em class="jxr_javadoccomment">	 * expect to have this query reject many candidate allocations.</em>
+<a class="jxr_linenumber" name="L2424" href="#L2424">2424</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2425" href="#L2425">2425</a> <em class="jxr_javadoccomment">	 * @see AllocatorTask</em>
+<a class="jxr_linenumber" name="L2426" href="#L2426">2426</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2427" href="#L2427">2427</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
+<a class="jxr_linenumber" name="L2428" href="#L2428">2428</a> 	@Parameter(<span class="jxr_string">"x"</span>)
+<a class="jxr_linenumber" name="L2429" href="#L2429">2429</a> 	@Parameter(<span class="jxr_string">"y"</span>)
+<a class="jxr_linenumber" name="L2430" href="#L2430">2430</a> 	@Parameter(<span class="jxr_string">"width"</span>)
+<a class="jxr_linenumber" name="L2431" href="#L2431">2431</a> 	@Parameter(<span class="jxr_string">"height"</span>)
+<a class="jxr_linenumber" name="L2432" href="#L2432">2432</a> 	@ResultColumn(<span class="jxr_string">"connected_size"</span>)
+<a class="jxr_linenumber" name="L2433" href="#L2433">2433</a> 	@SingleRowResult
+<a class="jxr_linenumber" name="L2434" href="#L2434">2434</a> 	@Value(<span class="jxr_string">"classpath:queries/allocation_connected.sql"</span>)
+<a class="jxr_linenumber" name="L2435" href="#L2435">2435</a> 	<strong class="jxr_keyword">protected</strong> Resource countConnected;
+<a class="jxr_linenumber" name="L2436" href="#L2436">2436</a> 
+<a class="jxr_linenumber" name="L2437" href="#L2437">2437</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2438" href="#L2438">2438</a> <em class="jxr_javadoccomment">	 * Get the links on the perimeter of the allocation to a job. The perimeter</em>
+<a class="jxr_linenumber" name="L2439" href="#L2439">2439</a> <em class="jxr_javadoccomment">	 * is defined as being the links between a board that is part of the</em>
+<a class="jxr_linenumber" name="L2440" href="#L2440">2440</a> <em class="jxr_javadoccomment">	 * allocation and a board that is not; it's &lt;em&gt;not&lt;/em&gt; a geometric</em>
+<a class="jxr_linenumber" name="L2441" href="#L2441">2441</a> <em class="jxr_javadoccomment">	 * definition, but rather a relational algebraic one.</em>
+<a class="jxr_linenumber" name="L2442" href="#L2442">2442</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2443" href="#L2443">2443</a> <em class="jxr_javadoccomment">	 * @see AllocatorTask</em>
+<a class="jxr_linenumber" name="L2444" href="#L2444">2444</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2445" href="#L2445">2445</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L2446" href="#L2446">2446</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2447" href="#L2447">2447</a> 	@ResultColumn(<span class="jxr_string">"direction"</span>)
+<a class="jxr_linenumber" name="L2448" href="#L2448">2448</a> 	@Value(<span class="jxr_string">"classpath:queries/perimeter.sql"</span>)
+<a class="jxr_linenumber" name="L2449" href="#L2449">2449</a> 	<strong class="jxr_keyword">protected</strong> Resource getPerimeterLinks;
+<a class="jxr_linenumber" name="L2450" href="#L2450">2450</a> 
+<a class="jxr_linenumber" name="L2451" href="#L2451">2451</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2452" href="#L2452">2452</a> <em class="jxr_javadoccomment">	 * Locate a board (using a full set of coordinates) based on global chip</em>
+<a class="jxr_linenumber" name="L2453" href="#L2453">2453</a> <em class="jxr_javadoccomment">	 * coordinates.</em>
+<a class="jxr_linenumber" name="L2454" href="#L2454">2454</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2455" href="#L2455">2455</a> <em class="jxr_javadoccomment">	 * @see Spalloc</em>
+<a class="jxr_linenumber" name="L2456" href="#L2456">2456</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2457" href="#L2457">2457</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
 <a class="jxr_linenumber" name="L2458" href="#L2458">2458</a> 	@Parameter(<span class="jxr_string">"x"</span>)
 <a class="jxr_linenumber" name="L2459" href="#L2459">2459</a> 	@Parameter(<span class="jxr_string">"y"</span>)
 <a class="jxr_linenumber" name="L2460" href="#L2460">2460</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
 <a class="jxr_linenumber" name="L2461" href="#L2461">2461</a> 	@ResultColumn(<span class="jxr_string">"address"</span>)
-<a class="jxr_linenumber" name="L2462" href="#L2462">2462</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
-<a class="jxr_linenumber" name="L2463" href="#L2463">2463</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
-<a class="jxr_linenumber" name="L2464" href="#L2464">2464</a> 	@ResultColumn(<span class="jxr_string">"z"</span>)
-<a class="jxr_linenumber" name="L2465" href="#L2465">2465</a> 	@ResultColumn(<span class="jxr_string">"job_id"</span>)
-<a class="jxr_linenumber" name="L2466" href="#L2466">2466</a> 	@ResultColumn(<span class="jxr_string">"machine_name"</span>)
-<a class="jxr_linenumber" name="L2467" href="#L2467">2467</a> 	@ResultColumn(<span class="jxr_string">"cabinet"</span>)
-<a class="jxr_linenumber" name="L2468" href="#L2468">2468</a> 	@ResultColumn(<span class="jxr_string">"frame"</span>)
-<a class="jxr_linenumber" name="L2469" href="#L2469">2469</a> 	@ResultColumn(<span class="jxr_string">"board_num"</span>)
-<a class="jxr_linenumber" name="L2470" href="#L2470">2470</a> 	@ResultColumn(<span class="jxr_string">"chip_x"</span>)
-<a class="jxr_linenumber" name="L2471" href="#L2471">2471</a> 	@ResultColumn(<span class="jxr_string">"chip_y"</span>)
-<a class="jxr_linenumber" name="L2472" href="#L2472">2472</a> 	@ResultColumn(<span class="jxr_string">"board_chip_x"</span>)
-<a class="jxr_linenumber" name="L2473" href="#L2473">2473</a> 	@ResultColumn(<span class="jxr_string">"board_chip_y"</span>)
-<a class="jxr_linenumber" name="L2474" href="#L2474">2474</a> 	@SingleRowResult
-<a class="jxr_linenumber" name="L2475" href="#L2475">2475</a> 	@Value(<span class="jxr_string">"classpath:queries/find_board_by_job_chip.sql"</span>)
-<a class="jxr_linenumber" name="L2476" href="#L2476">2476</a> 	<strong class="jxr_keyword">protected</strong> Resource findBoardByJobChip;
-<a class="jxr_linenumber" name="L2477" href="#L2477">2477</a> 
-<a class="jxr_linenumber" name="L2478" href="#L2478">2478</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2479" href="#L2479">2479</a> <em class="jxr_javadoccomment">	 * Locate a board (using a full set of coordinates) based on logical triad</em>
-<a class="jxr_linenumber" name="L2480" href="#L2480">2480</a> <em class="jxr_javadoccomment">	 * coordinates.</em>
-<a class="jxr_linenumber" name="L2481" href="#L2481">2481</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2482" href="#L2482">2482</a> <em class="jxr_javadoccomment">	 * @see Spalloc</em>
-<a class="jxr_linenumber" name="L2483" href="#L2483">2483</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2484" href="#L2484">2484</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
-<a class="jxr_linenumber" name="L2485" href="#L2485">2485</a> 	@Parameter(<span class="jxr_string">"x"</span>)
-<a class="jxr_linenumber" name="L2486" href="#L2486">2486</a> 	@Parameter(<span class="jxr_string">"y"</span>)
-<a class="jxr_linenumber" name="L2487" href="#L2487">2487</a> 	@Parameter(<span class="jxr_string">"z"</span>)
-<a class="jxr_linenumber" name="L2488" href="#L2488">2488</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
-<a class="jxr_linenumber" name="L2489" href="#L2489">2489</a> 	@ResultColumn(<span class="jxr_string">"address"</span>)
-<a class="jxr_linenumber" name="L2490" href="#L2490">2490</a> 	@ResultColumn(<span class="jxr_string">"bmp_id"</span>)
-<a class="jxr_linenumber" name="L2491" href="#L2491">2491</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
-<a class="jxr_linenumber" name="L2492" href="#L2492">2492</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
-<a class="jxr_linenumber" name="L2493" href="#L2493">2493</a> 	@ResultColumn(<span class="jxr_string">"z"</span>)
-<a class="jxr_linenumber" name="L2494" href="#L2494">2494</a> 	@ResultColumn(<span class="jxr_string">"job_id"</span>)
-<a class="jxr_linenumber" name="L2495" href="#L2495">2495</a> 	@ResultColumn(<span class="jxr_string">"machine_name"</span>)
-<a class="jxr_linenumber" name="L2496" href="#L2496">2496</a> 	@ResultColumn(<span class="jxr_string">"cabinet"</span>)
-<a class="jxr_linenumber" name="L2497" href="#L2497">2497</a> 	@ResultColumn(<span class="jxr_string">"frame"</span>)
-<a class="jxr_linenumber" name="L2498" href="#L2498">2498</a> 	@ResultColumn(<span class="jxr_string">"board_num"</span>)
-<a class="jxr_linenumber" name="L2499" href="#L2499">2499</a> 	@ResultColumn(<span class="jxr_string">"chip_x"</span>)
-<a class="jxr_linenumber" name="L2500" href="#L2500">2500</a> 	@ResultColumn(<span class="jxr_string">"chip_y"</span>)
-<a class="jxr_linenumber" name="L2501" href="#L2501">2501</a> 	@ResultColumn(<span class="jxr_string">"board_chip_x"</span>)
-<a class="jxr_linenumber" name="L2502" href="#L2502">2502</a> 	@ResultColumn(<span class="jxr_string">"board_chip_y"</span>)
-<a class="jxr_linenumber" name="L2503" href="#L2503">2503</a> 	@SingleRowResult
-<a class="jxr_linenumber" name="L2504" href="#L2504">2504</a> 	@Value(<span class="jxr_string">"classpath:queries/find_board_by_logical_coords.sql"</span>)
-<a class="jxr_linenumber" name="L2505" href="#L2505">2505</a> 	<strong class="jxr_keyword">protected</strong> Resource findBoardByLogicalCoords;
-<a class="jxr_linenumber" name="L2506" href="#L2506">2506</a> 
-<a class="jxr_linenumber" name="L2507" href="#L2507">2507</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2508" href="#L2508">2508</a> <em class="jxr_javadoccomment">	 * Locate a board (using a full set of coordinates) based on physical</em>
-<a class="jxr_linenumber" name="L2509" href="#L2509">2509</a> <em class="jxr_javadoccomment">	 * cabinet-frame-board coordinates.</em>
-<a class="jxr_linenumber" name="L2510" href="#L2510">2510</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2511" href="#L2511">2511</a> <em class="jxr_javadoccomment">	 * @see Spalloc</em>
-<a class="jxr_linenumber" name="L2512" href="#L2512">2512</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2513" href="#L2513">2513</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
-<a class="jxr_linenumber" name="L2514" href="#L2514">2514</a> 	@Parameter(<span class="jxr_string">"cabinet"</span>)
-<a class="jxr_linenumber" name="L2515" href="#L2515">2515</a> 	@Parameter(<span class="jxr_string">"frame"</span>)
-<a class="jxr_linenumber" name="L2516" href="#L2516">2516</a> 	@Parameter(<span class="jxr_string">"board"</span>)
-<a class="jxr_linenumber" name="L2517" href="#L2517">2517</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
-<a class="jxr_linenumber" name="L2518" href="#L2518">2518</a> 	@ResultColumn(<span class="jxr_string">"address"</span>)
-<a class="jxr_linenumber" name="L2519" href="#L2519">2519</a> 	@ResultColumn(<span class="jxr_string">"bmp_id"</span>)
-<a class="jxr_linenumber" name="L2520" href="#L2520">2520</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
-<a class="jxr_linenumber" name="L2521" href="#L2521">2521</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
-<a class="jxr_linenumber" name="L2522" href="#L2522">2522</a> 	@ResultColumn(<span class="jxr_string">"z"</span>)
-<a class="jxr_linenumber" name="L2523" href="#L2523">2523</a> 	@ResultColumn(<span class="jxr_string">"job_id"</span>)
-<a class="jxr_linenumber" name="L2524" href="#L2524">2524</a> 	@ResultColumn(<span class="jxr_string">"machine_name"</span>)
-<a class="jxr_linenumber" name="L2525" href="#L2525">2525</a> 	@ResultColumn(<span class="jxr_string">"cabinet"</span>)
-<a class="jxr_linenumber" name="L2526" href="#L2526">2526</a> 	@ResultColumn(<span class="jxr_string">"frame"</span>)
-<a class="jxr_linenumber" name="L2527" href="#L2527">2527</a> 	@ResultColumn(<span class="jxr_string">"board_num"</span>)
-<a class="jxr_linenumber" name="L2528" href="#L2528">2528</a> 	@ResultColumn(<span class="jxr_string">"chip_x"</span>)
-<a class="jxr_linenumber" name="L2529" href="#L2529">2529</a> 	@ResultColumn(<span class="jxr_string">"chip_y"</span>)
-<a class="jxr_linenumber" name="L2530" href="#L2530">2530</a> 	@ResultColumn(<span class="jxr_string">"board_chip_x"</span>)
-<a class="jxr_linenumber" name="L2531" href="#L2531">2531</a> 	@ResultColumn(<span class="jxr_string">"board_chip_y"</span>)
-<a class="jxr_linenumber" name="L2532" href="#L2532">2532</a> 	@SingleRowResult
-<a class="jxr_linenumber" name="L2533" href="#L2533">2533</a> 	@Value(<span class="jxr_string">"classpath:queries/find_board_by_physical_coords.sql"</span>)
-<a class="jxr_linenumber" name="L2534" href="#L2534">2534</a> 	<strong class="jxr_keyword">protected</strong> Resource findBoardByPhysicalCoords;
-<a class="jxr_linenumber" name="L2535" href="#L2535">2535</a> 
-<a class="jxr_linenumber" name="L2536" href="#L2536">2536</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2537" href="#L2537">2537</a> <em class="jxr_javadoccomment">	 * Locate a board (using a full set of coordinates) based on the IP address</em>
-<a class="jxr_linenumber" name="L2538" href="#L2538">2538</a> <em class="jxr_javadoccomment">	 * of its ethernet chip.</em>
-<a class="jxr_linenumber" name="L2539" href="#L2539">2539</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2540" href="#L2540">2540</a> <em class="jxr_javadoccomment">	 * @see Spalloc</em>
-<a class="jxr_linenumber" name="L2541" href="#L2541">2541</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2542" href="#L2542">2542</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
-<a class="jxr_linenumber" name="L2543" href="#L2543">2543</a> 	@Parameter(<span class="jxr_string">"address"</span>)
-<a class="jxr_linenumber" name="L2544" href="#L2544">2544</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
-<a class="jxr_linenumber" name="L2545" href="#L2545">2545</a> 	@ResultColumn(<span class="jxr_string">"address"</span>)
-<a class="jxr_linenumber" name="L2546" href="#L2546">2546</a> 	@ResultColumn(<span class="jxr_string">"bmp_id"</span>)
-<a class="jxr_linenumber" name="L2547" href="#L2547">2547</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
-<a class="jxr_linenumber" name="L2548" href="#L2548">2548</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
-<a class="jxr_linenumber" name="L2549" href="#L2549">2549</a> 	@ResultColumn(<span class="jxr_string">"z"</span>)
-<a class="jxr_linenumber" name="L2550" href="#L2550">2550</a> 	@ResultColumn(<span class="jxr_string">"job_id"</span>)
-<a class="jxr_linenumber" name="L2551" href="#L2551">2551</a> 	@ResultColumn(<span class="jxr_string">"machine_name"</span>)
-<a class="jxr_linenumber" name="L2552" href="#L2552">2552</a> 	@ResultColumn(<span class="jxr_string">"cabinet"</span>)
-<a class="jxr_linenumber" name="L2553" href="#L2553">2553</a> 	@ResultColumn(<span class="jxr_string">"frame"</span>)
-<a class="jxr_linenumber" name="L2554" href="#L2554">2554</a> 	@ResultColumn(<span class="jxr_string">"board_num"</span>)
-<a class="jxr_linenumber" name="L2555" href="#L2555">2555</a> 	@ResultColumn(<span class="jxr_string">"chip_x"</span>)
-<a class="jxr_linenumber" name="L2556" href="#L2556">2556</a> 	@ResultColumn(<span class="jxr_string">"chip_y"</span>)
-<a class="jxr_linenumber" name="L2557" href="#L2557">2557</a> 	@ResultColumn(<span class="jxr_string">"board_chip_x"</span>)
-<a class="jxr_linenumber" name="L2558" href="#L2558">2558</a> 	@ResultColumn(<span class="jxr_string">"board_chip_y"</span>)
-<a class="jxr_linenumber" name="L2559" href="#L2559">2559</a> 	@SingleRowResult
-<a class="jxr_linenumber" name="L2560" href="#L2560">2560</a> 	@Value(<span class="jxr_string">"classpath:queries/find_board_by_ip_address.sql"</span>)
-<a class="jxr_linenumber" name="L2561" href="#L2561">2561</a> 	<strong class="jxr_keyword">protected</strong> Resource findBoardByIPAddress;
-<a class="jxr_linenumber" name="L2562" href="#L2562">2562</a> 
-<a class="jxr_linenumber" name="L2563" href="#L2563">2563</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2564" href="#L2564">2564</a> <em class="jxr_javadoccomment">	 * Get jobs on a machine that have changes that can be processed. (A policy</em>
-<a class="jxr_linenumber" name="L2565" href="#L2565">2565</a> <em class="jxr_javadoccomment">	 * of how long after switching a board on or off is applied.)</em>
-<a class="jxr_linenumber" name="L2566" href="#L2566">2566</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2567" href="#L2567">2567</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
-<a class="jxr_linenumber" name="L2568" href="#L2568">2568</a> 	@ResultColumn(<span class="jxr_string">"job_id"</span>)
-<a class="jxr_linenumber" name="L2569" href="#L2569">2569</a> 	@Value(<span class="jxr_string">"classpath:queries/get_jobs_with_changes.sql"</span>)
-<a class="jxr_linenumber" name="L2570" href="#L2570">2570</a> 	<strong class="jxr_keyword">protected</strong> Resource getJobsWithChanges;
-<a class="jxr_linenumber" name="L2571" href="#L2571">2571</a> 
-<a class="jxr_linenumber" name="L2572" href="#L2572">2572</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2573" href="#L2573">2573</a> <em class="jxr_javadoccomment">	 * Get the set of boards at some coordinates within a triad rectangle that</em>
-<a class="jxr_linenumber" name="L2574" href="#L2574">2574</a> <em class="jxr_javadoccomment">	 * are connected (i.e., have at least one path over enableable links) to the</em>
-<a class="jxr_linenumber" name="L2575" href="#L2575">2575</a> <em class="jxr_javadoccomment">	 * root board.</em>
-<a class="jxr_linenumber" name="L2576" href="#L2576">2576</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L2577" href="#L2577">2577</a> <em class="jxr_javadoccomment">	 * @see AllocatorTask</em>
-<a class="jxr_linenumber" name="L2578" href="#L2578">2578</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2579" href="#L2579">2579</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
-<a class="jxr_linenumber" name="L2580" href="#L2580">2580</a> 	@Parameter(<span class="jxr_string">"x"</span>)
-<a class="jxr_linenumber" name="L2581" href="#L2581">2581</a> 	@Parameter(<span class="jxr_string">"y"</span>)
-<a class="jxr_linenumber" name="L2582" href="#L2582">2582</a> 	@Parameter(<span class="jxr_string">"z"</span>)
-<a class="jxr_linenumber" name="L2583" href="#L2583">2583</a> 	@Parameter(<span class="jxr_string">"width"</span>)
-<a class="jxr_linenumber" name="L2584" href="#L2584">2584</a> 	@Parameter(<span class="jxr_string">"height"</span>)
-<a class="jxr_linenumber" name="L2585" href="#L2585">2585</a> 	@Parameter(<span class="jxr_string">"depth"</span>)
-<a class="jxr_linenumber" name="L2586" href="#L2586">2586</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
-<a class="jxr_linenumber" name="L2587" href="#L2587">2587</a> 	@Value(<span class="jxr_string">"classpath:queries/connected_boards_at_coords.sql"</span>)
-<a class="jxr_linenumber" name="L2588" href="#L2588">2588</a> 	<strong class="jxr_keyword">protected</strong> Resource getConnectedBoards;
-<a class="jxr_linenumber" name="L2589" href="#L2589">2589</a> 
-<a class="jxr_linenumber" name="L2590" href="#L2590">2590</a> 	<em class="jxr_javadoccomment">/** Get the links of a machine that have been disabled. */</em>
-<a class="jxr_linenumber" name="L2591" href="#L2591">2591</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
-<a class="jxr_linenumber" name="L2592" href="#L2592">2592</a> 	@ResultColumn(<span class="jxr_string">"board_1_x"</span>)
-<a class="jxr_linenumber" name="L2593" href="#L2593">2593</a> 	@ResultColumn(<span class="jxr_string">"board_1_y"</span>)
-<a class="jxr_linenumber" name="L2594" href="#L2594">2594</a> 	@ResultColumn(<span class="jxr_string">"board_1_z"</span>)
-<a class="jxr_linenumber" name="L2595" href="#L2595">2595</a> 	@ResultColumn(<span class="jxr_string">"board_1_c"</span>)
-<a class="jxr_linenumber" name="L2596" href="#L2596">2596</a> 	@ResultColumn(<span class="jxr_string">"board_1_f"</span>)
-<a class="jxr_linenumber" name="L2597" href="#L2597">2597</a> 	@ResultColumn(<span class="jxr_string">"board_1_b"</span>)
-<a class="jxr_linenumber" name="L2598" href="#L2598">2598</a> 	@ResultColumn(<span class="jxr_string">"board_1_addr"</span>)
-<a class="jxr_linenumber" name="L2599" href="#L2599">2599</a> 	@ResultColumn(<span class="jxr_string">"dir_1"</span>)
-<a class="jxr_linenumber" name="L2600" href="#L2600">2600</a> 	@ResultColumn(<span class="jxr_string">"board_2_x"</span>)
-<a class="jxr_linenumber" name="L2601" href="#L2601">2601</a> 	@ResultColumn(<span class="jxr_string">"board_2_y"</span>)
-<a class="jxr_linenumber" name="L2602" href="#L2602">2602</a> 	@ResultColumn(<span class="jxr_string">"board_2_z"</span>)
-<a class="jxr_linenumber" name="L2603" href="#L2603">2603</a> 	@ResultColumn(<span class="jxr_string">"board_2_c"</span>)
-<a class="jxr_linenumber" name="L2604" href="#L2604">2604</a> 	@ResultColumn(<span class="jxr_string">"board_2_f"</span>)
-<a class="jxr_linenumber" name="L2605" href="#L2605">2605</a> 	@ResultColumn(<span class="jxr_string">"board_2_b"</span>)
-<a class="jxr_linenumber" name="L2606" href="#L2606">2606</a> 	@ResultColumn(<span class="jxr_string">"board_2_addr"</span>)
-<a class="jxr_linenumber" name="L2607" href="#L2607">2607</a> 	@ResultColumn(<span class="jxr_string">"dir_2"</span>)
-<a class="jxr_linenumber" name="L2608" href="#L2608">2608</a> 	@Value(<span class="jxr_string">"classpath:queries/get_dead_links.sql"</span>)
-<a class="jxr_linenumber" name="L2609" href="#L2609">2609</a> 	<strong class="jxr_keyword">protected</strong> Resource getDeadLinks;
-<a class="jxr_linenumber" name="L2610" href="#L2610">2610</a> 
-<a class="jxr_linenumber" name="L2611" href="#L2611">2611</a> 	<em class="jxr_javadoccomment">/** Get the list of allocation tasks. */</em>
-<a class="jxr_linenumber" name="L2612" href="#L2612">2612</a> 	@Parameter(<span class="jxr_string">"job_state"</span>)
-<a class="jxr_linenumber" name="L2613" href="#L2613">2613</a> 	@ResultColumn(<span class="jxr_string">"req_id"</span>)
-<a class="jxr_linenumber" name="L2614" href="#L2614">2614</a> 	@ResultColumn(<span class="jxr_string">"job_id"</span>)
-<a class="jxr_linenumber" name="L2615" href="#L2615">2615</a> 	@ResultColumn(<span class="jxr_string">"num_boards"</span>)
-<a class="jxr_linenumber" name="L2616" href="#L2616">2616</a> 	@ResultColumn(<span class="jxr_string">"width"</span>)
-<a class="jxr_linenumber" name="L2617" href="#L2617">2617</a> 	@ResultColumn(<span class="jxr_string">"height"</span>)
-<a class="jxr_linenumber" name="L2618" href="#L2618">2618</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
-<a class="jxr_linenumber" name="L2619" href="#L2619">2619</a> 	@ResultColumn(<span class="jxr_string">"machine_id"</span>)
-<a class="jxr_linenumber" name="L2620" href="#L2620">2620</a> 	@ResultColumn(<span class="jxr_string">"max_dead_boards"</span>)
-<a class="jxr_linenumber" name="L2621" href="#L2621">2621</a> 	@ResultColumn(<span class="jxr_string">"max_width"</span>)
-<a class="jxr_linenumber" name="L2622" href="#L2622">2622</a> 	@ResultColumn(<span class="jxr_string">"max_height"</span>)
-<a class="jxr_linenumber" name="L2623" href="#L2623">2623</a> 	@ResultColumn(<span class="jxr_string">"job_state"</span>)
-<a class="jxr_linenumber" name="L2624" href="#L2624">2624</a> 	@ResultColumn(<span class="jxr_string">"importance"</span>)
-<a class="jxr_linenumber" name="L2625" href="#L2625">2625</a> 	@Value(<span class="jxr_string">"classpath:queries/get_allocation_tasks.sql"</span>)
-<a class="jxr_linenumber" name="L2626" href="#L2626">2626</a> 	<strong class="jxr_keyword">protected</strong> Resource getAllocationTasks;
-<a class="jxr_linenumber" name="L2627" href="#L2627">2627</a> 
-<a class="jxr_linenumber" name="L2628" href="#L2628">2628</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2629" href="#L2629">2629</a> <em class="jxr_javadoccomment">	 * Get enabled boards with at least as many reported problems as a given</em>
-<a class="jxr_linenumber" name="L2630" href="#L2630">2630</a> <em class="jxr_javadoccomment">	 * threshold.</em>
-<a class="jxr_linenumber" name="L2631" href="#L2631">2631</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2632" href="#L2632">2632</a> 	@Parameter(<span class="jxr_string">"threshold"</span>)
-<a class="jxr_linenumber" name="L2633" href="#L2633">2633</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
-<a class="jxr_linenumber" name="L2634" href="#L2634">2634</a> 	@ResultColumn(<span class="jxr_string">"num_reports"</span>)
-<a class="jxr_linenumber" name="L2635" href="#L2635">2635</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
-<a class="jxr_linenumber" name="L2636" href="#L2636">2636</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
-<a class="jxr_linenumber" name="L2637" href="#L2637">2637</a> 	@ResultColumn(<span class="jxr_string">"z"</span>)
-<a class="jxr_linenumber" name="L2638" href="#L2638">2638</a> 	@ResultColumn(<span class="jxr_string">"address"</span>)
-<a class="jxr_linenumber" name="L2639" href="#L2639">2639</a> 	@Value(<span class="jxr_string">"classpath:queries/get_reported_boards.sql"</span>)
-<a class="jxr_linenumber" name="L2640" href="#L2640">2640</a> 	<strong class="jxr_keyword">protected</strong> Resource getReportedBoards;
-<a class="jxr_linenumber" name="L2641" href="#L2641">2641</a> }
+<a class="jxr_linenumber" name="L2462" href="#L2462">2462</a> 	@ResultColumn(<span class="jxr_string">"bmp_id"</span>)
+<a class="jxr_linenumber" name="L2463" href="#L2463">2463</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
+<a class="jxr_linenumber" name="L2464" href="#L2464">2464</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
+<a class="jxr_linenumber" name="L2465" href="#L2465">2465</a> 	@ResultColumn(<span class="jxr_string">"z"</span>)
+<a class="jxr_linenumber" name="L2466" href="#L2466">2466</a> 	@ResultColumn(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L2467" href="#L2467">2467</a> 	@ResultColumn(<span class="jxr_string">"machine_name"</span>)
+<a class="jxr_linenumber" name="L2468" href="#L2468">2468</a> 	@ResultColumn(<span class="jxr_string">"cabinet"</span>)
+<a class="jxr_linenumber" name="L2469" href="#L2469">2469</a> 	@ResultColumn(<span class="jxr_string">"frame"</span>)
+<a class="jxr_linenumber" name="L2470" href="#L2470">2470</a> 	@ResultColumn(<span class="jxr_string">"board_num"</span>)
+<a class="jxr_linenumber" name="L2471" href="#L2471">2471</a> 	@ResultColumn(<span class="jxr_string">"chip_x"</span>)
+<a class="jxr_linenumber" name="L2472" href="#L2472">2472</a> 	@ResultColumn(<span class="jxr_string">"chip_y"</span>)
+<a class="jxr_linenumber" name="L2473" href="#L2473">2473</a> 	@ResultColumn(<span class="jxr_string">"board_chip_x"</span>)
+<a class="jxr_linenumber" name="L2474" href="#L2474">2474</a> 	@ResultColumn(<span class="jxr_string">"board_chip_y"</span>)
+<a class="jxr_linenumber" name="L2475" href="#L2475">2475</a> 	@ResultColumn(<span class="jxr_string">"job_root_chip_x"</span>)
+<a class="jxr_linenumber" name="L2476" href="#L2476">2476</a> 	@ResultColumn(<span class="jxr_string">"job_root_chip_y"</span>)
+<a class="jxr_linenumber" name="L2477" href="#L2477">2477</a> 	@SingleRowResult
+<a class="jxr_linenumber" name="L2478" href="#L2478">2478</a> 	@Value(<span class="jxr_string">"classpath:queries/find_board_by_global_chip.sql"</span>)
+<a class="jxr_linenumber" name="L2479" href="#L2479">2479</a> 	<strong class="jxr_keyword">protected</strong> Resource findBoardByGlobalChip;
+<a class="jxr_linenumber" name="L2480" href="#L2480">2480</a> 
+<a class="jxr_linenumber" name="L2481" href="#L2481">2481</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2482" href="#L2482">2482</a> <em class="jxr_javadoccomment">	 * Locate a board (using a full set of coordinates) based on</em>
+<a class="jxr_linenumber" name="L2483" href="#L2483">2483</a> <em class="jxr_javadoccomment">	 * allocation-local chip coordinates.</em>
+<a class="jxr_linenumber" name="L2484" href="#L2484">2484</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2485" href="#L2485">2485</a> <em class="jxr_javadoccomment">	 * @see Spalloc</em>
+<a class="jxr_linenumber" name="L2486" href="#L2486">2486</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2487" href="#L2487">2487</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L2488" href="#L2488">2488</a> 	@Parameter(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2489" href="#L2489">2489</a> 	@Parameter(<span class="jxr_string">"x"</span>)
+<a class="jxr_linenumber" name="L2490" href="#L2490">2490</a> 	@Parameter(<span class="jxr_string">"y"</span>)
+<a class="jxr_linenumber" name="L2491" href="#L2491">2491</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2492" href="#L2492">2492</a> 	@ResultColumn(<span class="jxr_string">"address"</span>)
+<a class="jxr_linenumber" name="L2493" href="#L2493">2493</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
+<a class="jxr_linenumber" name="L2494" href="#L2494">2494</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
+<a class="jxr_linenumber" name="L2495" href="#L2495">2495</a> 	@ResultColumn(<span class="jxr_string">"z"</span>)
+<a class="jxr_linenumber" name="L2496" href="#L2496">2496</a> 	@ResultColumn(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L2497" href="#L2497">2497</a> 	@ResultColumn(<span class="jxr_string">"machine_name"</span>)
+<a class="jxr_linenumber" name="L2498" href="#L2498">2498</a> 	@ResultColumn(<span class="jxr_string">"cabinet"</span>)
+<a class="jxr_linenumber" name="L2499" href="#L2499">2499</a> 	@ResultColumn(<span class="jxr_string">"frame"</span>)
+<a class="jxr_linenumber" name="L2500" href="#L2500">2500</a> 	@ResultColumn(<span class="jxr_string">"board_num"</span>)
+<a class="jxr_linenumber" name="L2501" href="#L2501">2501</a> 	@ResultColumn(<span class="jxr_string">"chip_x"</span>)
+<a class="jxr_linenumber" name="L2502" href="#L2502">2502</a> 	@ResultColumn(<span class="jxr_string">"chip_y"</span>)
+<a class="jxr_linenumber" name="L2503" href="#L2503">2503</a> 	@ResultColumn(<span class="jxr_string">"board_chip_x"</span>)
+<a class="jxr_linenumber" name="L2504" href="#L2504">2504</a> 	@ResultColumn(<span class="jxr_string">"board_chip_y"</span>)
+<a class="jxr_linenumber" name="L2505" href="#L2505">2505</a> 	@SingleRowResult
+<a class="jxr_linenumber" name="L2506" href="#L2506">2506</a> 	@Value(<span class="jxr_string">"classpath:queries/find_board_by_job_chip.sql"</span>)
+<a class="jxr_linenumber" name="L2507" href="#L2507">2507</a> 	<strong class="jxr_keyword">protected</strong> Resource findBoardByJobChip;
+<a class="jxr_linenumber" name="L2508" href="#L2508">2508</a> 
+<a class="jxr_linenumber" name="L2509" href="#L2509">2509</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2510" href="#L2510">2510</a> <em class="jxr_javadoccomment">	 * Locate a board (using a full set of coordinates) based on logical triad</em>
+<a class="jxr_linenumber" name="L2511" href="#L2511">2511</a> <em class="jxr_javadoccomment">	 * coordinates.</em>
+<a class="jxr_linenumber" name="L2512" href="#L2512">2512</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2513" href="#L2513">2513</a> <em class="jxr_javadoccomment">	 * @see Spalloc</em>
+<a class="jxr_linenumber" name="L2514" href="#L2514">2514</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2515" href="#L2515">2515</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
+<a class="jxr_linenumber" name="L2516" href="#L2516">2516</a> 	@Parameter(<span class="jxr_string">"x"</span>)
+<a class="jxr_linenumber" name="L2517" href="#L2517">2517</a> 	@Parameter(<span class="jxr_string">"y"</span>)
+<a class="jxr_linenumber" name="L2518" href="#L2518">2518</a> 	@Parameter(<span class="jxr_string">"z"</span>)
+<a class="jxr_linenumber" name="L2519" href="#L2519">2519</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2520" href="#L2520">2520</a> 	@ResultColumn(<span class="jxr_string">"address"</span>)
+<a class="jxr_linenumber" name="L2521" href="#L2521">2521</a> 	@ResultColumn(<span class="jxr_string">"bmp_id"</span>)
+<a class="jxr_linenumber" name="L2522" href="#L2522">2522</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
+<a class="jxr_linenumber" name="L2523" href="#L2523">2523</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
+<a class="jxr_linenumber" name="L2524" href="#L2524">2524</a> 	@ResultColumn(<span class="jxr_string">"z"</span>)
+<a class="jxr_linenumber" name="L2525" href="#L2525">2525</a> 	@ResultColumn(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L2526" href="#L2526">2526</a> 	@ResultColumn(<span class="jxr_string">"machine_name"</span>)
+<a class="jxr_linenumber" name="L2527" href="#L2527">2527</a> 	@ResultColumn(<span class="jxr_string">"cabinet"</span>)
+<a class="jxr_linenumber" name="L2528" href="#L2528">2528</a> 	@ResultColumn(<span class="jxr_string">"frame"</span>)
+<a class="jxr_linenumber" name="L2529" href="#L2529">2529</a> 	@ResultColumn(<span class="jxr_string">"board_num"</span>)
+<a class="jxr_linenumber" name="L2530" href="#L2530">2530</a> 	@ResultColumn(<span class="jxr_string">"chip_x"</span>)
+<a class="jxr_linenumber" name="L2531" href="#L2531">2531</a> 	@ResultColumn(<span class="jxr_string">"chip_y"</span>)
+<a class="jxr_linenumber" name="L2532" href="#L2532">2532</a> 	@ResultColumn(<span class="jxr_string">"board_chip_x"</span>)
+<a class="jxr_linenumber" name="L2533" href="#L2533">2533</a> 	@ResultColumn(<span class="jxr_string">"board_chip_y"</span>)
+<a class="jxr_linenumber" name="L2534" href="#L2534">2534</a> 	@SingleRowResult
+<a class="jxr_linenumber" name="L2535" href="#L2535">2535</a> 	@Value(<span class="jxr_string">"classpath:queries/find_board_by_logical_coords.sql"</span>)
+<a class="jxr_linenumber" name="L2536" href="#L2536">2536</a> 	<strong class="jxr_keyword">protected</strong> Resource findBoardByLogicalCoords;
+<a class="jxr_linenumber" name="L2537" href="#L2537">2537</a> 
+<a class="jxr_linenumber" name="L2538" href="#L2538">2538</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2539" href="#L2539">2539</a> <em class="jxr_javadoccomment">	 * Locate a board (using a full set of coordinates) based on physical</em>
+<a class="jxr_linenumber" name="L2540" href="#L2540">2540</a> <em class="jxr_javadoccomment">	 * cabinet-frame-board coordinates.</em>
+<a class="jxr_linenumber" name="L2541" href="#L2541">2541</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2542" href="#L2542">2542</a> <em class="jxr_javadoccomment">	 * @see Spalloc</em>
+<a class="jxr_linenumber" name="L2543" href="#L2543">2543</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2544" href="#L2544">2544</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
+<a class="jxr_linenumber" name="L2545" href="#L2545">2545</a> 	@Parameter(<span class="jxr_string">"cabinet"</span>)
+<a class="jxr_linenumber" name="L2546" href="#L2546">2546</a> 	@Parameter(<span class="jxr_string">"frame"</span>)
+<a class="jxr_linenumber" name="L2547" href="#L2547">2547</a> 	@Parameter(<span class="jxr_string">"board"</span>)
+<a class="jxr_linenumber" name="L2548" href="#L2548">2548</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2549" href="#L2549">2549</a> 	@ResultColumn(<span class="jxr_string">"address"</span>)
+<a class="jxr_linenumber" name="L2550" href="#L2550">2550</a> 	@ResultColumn(<span class="jxr_string">"bmp_id"</span>)
+<a class="jxr_linenumber" name="L2551" href="#L2551">2551</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
+<a class="jxr_linenumber" name="L2552" href="#L2552">2552</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
+<a class="jxr_linenumber" name="L2553" href="#L2553">2553</a> 	@ResultColumn(<span class="jxr_string">"z"</span>)
+<a class="jxr_linenumber" name="L2554" href="#L2554">2554</a> 	@ResultColumn(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L2555" href="#L2555">2555</a> 	@ResultColumn(<span class="jxr_string">"machine_name"</span>)
+<a class="jxr_linenumber" name="L2556" href="#L2556">2556</a> 	@ResultColumn(<span class="jxr_string">"cabinet"</span>)
+<a class="jxr_linenumber" name="L2557" href="#L2557">2557</a> 	@ResultColumn(<span class="jxr_string">"frame"</span>)
+<a class="jxr_linenumber" name="L2558" href="#L2558">2558</a> 	@ResultColumn(<span class="jxr_string">"board_num"</span>)
+<a class="jxr_linenumber" name="L2559" href="#L2559">2559</a> 	@ResultColumn(<span class="jxr_string">"chip_x"</span>)
+<a class="jxr_linenumber" name="L2560" href="#L2560">2560</a> 	@ResultColumn(<span class="jxr_string">"chip_y"</span>)
+<a class="jxr_linenumber" name="L2561" href="#L2561">2561</a> 	@ResultColumn(<span class="jxr_string">"board_chip_x"</span>)
+<a class="jxr_linenumber" name="L2562" href="#L2562">2562</a> 	@ResultColumn(<span class="jxr_string">"board_chip_y"</span>)
+<a class="jxr_linenumber" name="L2563" href="#L2563">2563</a> 	@SingleRowResult
+<a class="jxr_linenumber" name="L2564" href="#L2564">2564</a> 	@Value(<span class="jxr_string">"classpath:queries/find_board_by_physical_coords.sql"</span>)
+<a class="jxr_linenumber" name="L2565" href="#L2565">2565</a> 	<strong class="jxr_keyword">protected</strong> Resource findBoardByPhysicalCoords;
+<a class="jxr_linenumber" name="L2566" href="#L2566">2566</a> 
+<a class="jxr_linenumber" name="L2567" href="#L2567">2567</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2568" href="#L2568">2568</a> <em class="jxr_javadoccomment">	 * Locate a board (using a full set of coordinates) based on the IP address</em>
+<a class="jxr_linenumber" name="L2569" href="#L2569">2569</a> <em class="jxr_javadoccomment">	 * of its ethernet chip.</em>
+<a class="jxr_linenumber" name="L2570" href="#L2570">2570</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2571" href="#L2571">2571</a> <em class="jxr_javadoccomment">	 * @see Spalloc</em>
+<a class="jxr_linenumber" name="L2572" href="#L2572">2572</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2573" href="#L2573">2573</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
+<a class="jxr_linenumber" name="L2574" href="#L2574">2574</a> 	@Parameter(<span class="jxr_string">"address"</span>)
+<a class="jxr_linenumber" name="L2575" href="#L2575">2575</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2576" href="#L2576">2576</a> 	@ResultColumn(<span class="jxr_string">"address"</span>)
+<a class="jxr_linenumber" name="L2577" href="#L2577">2577</a> 	@ResultColumn(<span class="jxr_string">"bmp_id"</span>)
+<a class="jxr_linenumber" name="L2578" href="#L2578">2578</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
+<a class="jxr_linenumber" name="L2579" href="#L2579">2579</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
+<a class="jxr_linenumber" name="L2580" href="#L2580">2580</a> 	@ResultColumn(<span class="jxr_string">"z"</span>)
+<a class="jxr_linenumber" name="L2581" href="#L2581">2581</a> 	@ResultColumn(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L2582" href="#L2582">2582</a> 	@ResultColumn(<span class="jxr_string">"machine_name"</span>)
+<a class="jxr_linenumber" name="L2583" href="#L2583">2583</a> 	@ResultColumn(<span class="jxr_string">"cabinet"</span>)
+<a class="jxr_linenumber" name="L2584" href="#L2584">2584</a> 	@ResultColumn(<span class="jxr_string">"frame"</span>)
+<a class="jxr_linenumber" name="L2585" href="#L2585">2585</a> 	@ResultColumn(<span class="jxr_string">"board_num"</span>)
+<a class="jxr_linenumber" name="L2586" href="#L2586">2586</a> 	@ResultColumn(<span class="jxr_string">"chip_x"</span>)
+<a class="jxr_linenumber" name="L2587" href="#L2587">2587</a> 	@ResultColumn(<span class="jxr_string">"chip_y"</span>)
+<a class="jxr_linenumber" name="L2588" href="#L2588">2588</a> 	@ResultColumn(<span class="jxr_string">"board_chip_x"</span>)
+<a class="jxr_linenumber" name="L2589" href="#L2589">2589</a> 	@ResultColumn(<span class="jxr_string">"board_chip_y"</span>)
+<a class="jxr_linenumber" name="L2590" href="#L2590">2590</a> 	@SingleRowResult
+<a class="jxr_linenumber" name="L2591" href="#L2591">2591</a> 	@Value(<span class="jxr_string">"classpath:queries/find_board_by_ip_address.sql"</span>)
+<a class="jxr_linenumber" name="L2592" href="#L2592">2592</a> 	<strong class="jxr_keyword">protected</strong> Resource findBoardByIPAddress;
+<a class="jxr_linenumber" name="L2593" href="#L2593">2593</a> 
+<a class="jxr_linenumber" name="L2594" href="#L2594">2594</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2595" href="#L2595">2595</a> <em class="jxr_javadoccomment">	 * Get jobs on a machine that have changes that can be processed. (A policy</em>
+<a class="jxr_linenumber" name="L2596" href="#L2596">2596</a> <em class="jxr_javadoccomment">	 * of how long after switching a board on or off is applied.)</em>
+<a class="jxr_linenumber" name="L2597" href="#L2597">2597</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2598" href="#L2598">2598</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
+<a class="jxr_linenumber" name="L2599" href="#L2599">2599</a> 	@ResultColumn(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L2600" href="#L2600">2600</a> 	@Value(<span class="jxr_string">"classpath:queries/get_jobs_with_changes.sql"</span>)
+<a class="jxr_linenumber" name="L2601" href="#L2601">2601</a> 	<strong class="jxr_keyword">protected</strong> Resource getJobsWithChanges;
+<a class="jxr_linenumber" name="L2602" href="#L2602">2602</a> 
+<a class="jxr_linenumber" name="L2603" href="#L2603">2603</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2604" href="#L2604">2604</a> <em class="jxr_javadoccomment">	 * Get the set of boards at some coordinates within a triad rectangle that</em>
+<a class="jxr_linenumber" name="L2605" href="#L2605">2605</a> <em class="jxr_javadoccomment">	 * are connected (i.e., have at least one path over enableable links) to the</em>
+<a class="jxr_linenumber" name="L2606" href="#L2606">2606</a> <em class="jxr_javadoccomment">	 * root board.</em>
+<a class="jxr_linenumber" name="L2607" href="#L2607">2607</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L2608" href="#L2608">2608</a> <em class="jxr_javadoccomment">	 * @see AllocatorTask</em>
+<a class="jxr_linenumber" name="L2609" href="#L2609">2609</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2610" href="#L2610">2610</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
+<a class="jxr_linenumber" name="L2611" href="#L2611">2611</a> 	@Parameter(<span class="jxr_string">"x"</span>)
+<a class="jxr_linenumber" name="L2612" href="#L2612">2612</a> 	@Parameter(<span class="jxr_string">"y"</span>)
+<a class="jxr_linenumber" name="L2613" href="#L2613">2613</a> 	@Parameter(<span class="jxr_string">"z"</span>)
+<a class="jxr_linenumber" name="L2614" href="#L2614">2614</a> 	@Parameter(<span class="jxr_string">"width"</span>)
+<a class="jxr_linenumber" name="L2615" href="#L2615">2615</a> 	@Parameter(<span class="jxr_string">"height"</span>)
+<a class="jxr_linenumber" name="L2616" href="#L2616">2616</a> 	@Parameter(<span class="jxr_string">"depth"</span>)
+<a class="jxr_linenumber" name="L2617" href="#L2617">2617</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2618" href="#L2618">2618</a> 	@Value(<span class="jxr_string">"classpath:queries/connected_boards_at_coords.sql"</span>)
+<a class="jxr_linenumber" name="L2619" href="#L2619">2619</a> 	<strong class="jxr_keyword">protected</strong> Resource getConnectedBoards;
+<a class="jxr_linenumber" name="L2620" href="#L2620">2620</a> 
+<a class="jxr_linenumber" name="L2621" href="#L2621">2621</a> 	<em class="jxr_javadoccomment">/** Get the links of a machine that have been disabled. */</em>
+<a class="jxr_linenumber" name="L2622" href="#L2622">2622</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
+<a class="jxr_linenumber" name="L2623" href="#L2623">2623</a> 	@ResultColumn(<span class="jxr_string">"board_1_x"</span>)
+<a class="jxr_linenumber" name="L2624" href="#L2624">2624</a> 	@ResultColumn(<span class="jxr_string">"board_1_y"</span>)
+<a class="jxr_linenumber" name="L2625" href="#L2625">2625</a> 	@ResultColumn(<span class="jxr_string">"board_1_z"</span>)
+<a class="jxr_linenumber" name="L2626" href="#L2626">2626</a> 	@ResultColumn(<span class="jxr_string">"board_1_c"</span>)
+<a class="jxr_linenumber" name="L2627" href="#L2627">2627</a> 	@ResultColumn(<span class="jxr_string">"board_1_f"</span>)
+<a class="jxr_linenumber" name="L2628" href="#L2628">2628</a> 	@ResultColumn(<span class="jxr_string">"board_1_b"</span>)
+<a class="jxr_linenumber" name="L2629" href="#L2629">2629</a> 	@ResultColumn(<span class="jxr_string">"board_1_addr"</span>)
+<a class="jxr_linenumber" name="L2630" href="#L2630">2630</a> 	@ResultColumn(<span class="jxr_string">"dir_1"</span>)
+<a class="jxr_linenumber" name="L2631" href="#L2631">2631</a> 	@ResultColumn(<span class="jxr_string">"board_2_x"</span>)
+<a class="jxr_linenumber" name="L2632" href="#L2632">2632</a> 	@ResultColumn(<span class="jxr_string">"board_2_y"</span>)
+<a class="jxr_linenumber" name="L2633" href="#L2633">2633</a> 	@ResultColumn(<span class="jxr_string">"board_2_z"</span>)
+<a class="jxr_linenumber" name="L2634" href="#L2634">2634</a> 	@ResultColumn(<span class="jxr_string">"board_2_c"</span>)
+<a class="jxr_linenumber" name="L2635" href="#L2635">2635</a> 	@ResultColumn(<span class="jxr_string">"board_2_f"</span>)
+<a class="jxr_linenumber" name="L2636" href="#L2636">2636</a> 	@ResultColumn(<span class="jxr_string">"board_2_b"</span>)
+<a class="jxr_linenumber" name="L2637" href="#L2637">2637</a> 	@ResultColumn(<span class="jxr_string">"board_2_addr"</span>)
+<a class="jxr_linenumber" name="L2638" href="#L2638">2638</a> 	@ResultColumn(<span class="jxr_string">"dir_2"</span>)
+<a class="jxr_linenumber" name="L2639" href="#L2639">2639</a> 	@Value(<span class="jxr_string">"classpath:queries/get_dead_links.sql"</span>)
+<a class="jxr_linenumber" name="L2640" href="#L2640">2640</a> 	<strong class="jxr_keyword">protected</strong> Resource getDeadLinks;
+<a class="jxr_linenumber" name="L2641" href="#L2641">2641</a> 
+<a class="jxr_linenumber" name="L2642" href="#L2642">2642</a> 	<em class="jxr_javadoccomment">/** Get the list of allocation tasks. */</em>
+<a class="jxr_linenumber" name="L2643" href="#L2643">2643</a> 	@Parameter(<span class="jxr_string">"job_state"</span>)
+<a class="jxr_linenumber" name="L2644" href="#L2644">2644</a> 	@ResultColumn(<span class="jxr_string">"req_id"</span>)
+<a class="jxr_linenumber" name="L2645" href="#L2645">2645</a> 	@ResultColumn(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L2646" href="#L2646">2646</a> 	@ResultColumn(<span class="jxr_string">"num_boards"</span>)
+<a class="jxr_linenumber" name="L2647" href="#L2647">2647</a> 	@ResultColumn(<span class="jxr_string">"width"</span>)
+<a class="jxr_linenumber" name="L2648" href="#L2648">2648</a> 	@ResultColumn(<span class="jxr_string">"height"</span>)
+<a class="jxr_linenumber" name="L2649" href="#L2649">2649</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2650" href="#L2650">2650</a> 	@ResultColumn(<span class="jxr_string">"machine_id"</span>)
+<a class="jxr_linenumber" name="L2651" href="#L2651">2651</a> 	@ResultColumn(<span class="jxr_string">"max_dead_boards"</span>)
+<a class="jxr_linenumber" name="L2652" href="#L2652">2652</a> 	@ResultColumn(<span class="jxr_string">"max_width"</span>)
+<a class="jxr_linenumber" name="L2653" href="#L2653">2653</a> 	@ResultColumn(<span class="jxr_string">"max_height"</span>)
+<a class="jxr_linenumber" name="L2654" href="#L2654">2654</a> 	@ResultColumn(<span class="jxr_string">"job_state"</span>)
+<a class="jxr_linenumber" name="L2655" href="#L2655">2655</a> 	@ResultColumn(<span class="jxr_string">"importance"</span>)
+<a class="jxr_linenumber" name="L2656" href="#L2656">2656</a> 	@Value(<span class="jxr_string">"classpath:queries/get_allocation_tasks.sql"</span>)
+<a class="jxr_linenumber" name="L2657" href="#L2657">2657</a> 	<strong class="jxr_keyword">protected</strong> Resource getAllocationTasks;
+<a class="jxr_linenumber" name="L2658" href="#L2658">2658</a> 
+<a class="jxr_linenumber" name="L2659" href="#L2659">2659</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2660" href="#L2660">2660</a> <em class="jxr_javadoccomment">	 * Get enabled boards with at least as many reported problems as a given</em>
+<a class="jxr_linenumber" name="L2661" href="#L2661">2661</a> <em class="jxr_javadoccomment">	 * threshold.</em>
+<a class="jxr_linenumber" name="L2662" href="#L2662">2662</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2663" href="#L2663">2663</a> 	@Parameter(<span class="jxr_string">"threshold"</span>)
+<a class="jxr_linenumber" name="L2664" href="#L2664">2664</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
+<a class="jxr_linenumber" name="L2665" href="#L2665">2665</a> 	@ResultColumn(<span class="jxr_string">"num_reports"</span>)
+<a class="jxr_linenumber" name="L2666" href="#L2666">2666</a> 	@ResultColumn(<span class="jxr_string">"x"</span>)
+<a class="jxr_linenumber" name="L2667" href="#L2667">2667</a> 	@ResultColumn(<span class="jxr_string">"y"</span>)
+<a class="jxr_linenumber" name="L2668" href="#L2668">2668</a> 	@ResultColumn(<span class="jxr_string">"z"</span>)
+<a class="jxr_linenumber" name="L2669" href="#L2669">2669</a> 	@ResultColumn(<span class="jxr_string">"address"</span>)
+<a class="jxr_linenumber" name="L2670" href="#L2670">2670</a> 	@Value(<span class="jxr_string">"classpath:queries/get_reported_boards.sql"</span>)
+<a class="jxr_linenumber" name="L2671" href="#L2671">2671</a> 	<strong class="jxr_keyword">protected</strong> Resource getReportedBoards;
+<a class="jxr_linenumber" name="L2672" href="#L2672">2672</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2023 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

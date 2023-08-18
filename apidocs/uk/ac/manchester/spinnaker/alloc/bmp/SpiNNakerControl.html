@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6};
+<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -189,13 +189,20 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor" id="i5">
+<td class="colFirst"><code><a href="../../messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readTemp(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readTemp</a></span>&#8203;(<a href="../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Read the temperature data from the given board.</div>
+</td>
+</tr>
+<tr class="altColor" id="i6">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setLinkOff(uk.ac.manchester.spinnaker.alloc.bmp.Link)">setLinkOff</a></span>&#8203;(<a href="Link.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">Link</a>&nbsp;link)</code></th>
 <td class="colLast">
 <div class="block">Turns a link off.</div>
 </td>
 </tr>
-<tr class="altColor" id="i6">
+<tr class="rowColor" id="i7">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeBlacklist(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklist</a></span>&#8203;(<a href="../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
 <a href="../../messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a>&nbsp;blacklist)</code></th>
@@ -292,6 +299,26 @@ loadScripts(document, 'script');</script>
 <dd><code>board</code> - The board to read from.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The serial number.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If a BMP sends a failure message.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If network I/O fails or we reach the limit on retries.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If we're interrupted.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="readTemp(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readTemp</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="../../messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></span>&nbsp;<span class="memberName">readTemp</span>&#8203;(<span class="arguments"><a href="../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</span>
+          throws <span class="exceptions"><a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
+<div class="block">Read the temperature data from the given board.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>board</code> - The board to read from.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The temperature (and fan speed and voltage) data.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If a BMP sends a failure message.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If network I/O fails or we reach the limit on retries.</dd>

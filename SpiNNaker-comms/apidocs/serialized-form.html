@@ -120,6 +120,105 @@ loadScripts(document, 'script');</script>
 <h2 title="Package">Package&nbsp;uk.ac.manchester.spinnaker.messages.model</h2>
 <ul class="blockList">
 <li class="blockList">
+<section class="serializedClassDetails"><a id="uk.ac.manchester.spinnaker.messages.model.ADCInfo">
+<!--   -->
+</a>
+<h3>Class <a href="uk/ac/manchester/spinnaker/messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">uk.ac.manchester.spinnaker.messages.model.ADCInfo</a> extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a> implements Serializable</h3>
+<dl class="nameValue">
+<dt>serialVersionUID:</dt>
+<dd>8245655123474028462L</dd>
+</dl>
+<ul class="blockList">
+<li class="blockList">
+<section class="detail">
+<h4>Serialized Fields</h4>
+<ul class="blockList">
+<li class="blockList">
+<h5>fan0</h5>
+<pre><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Double.html?is-external=true" title="class or interface in java.lang" class="externalLink">Double</a> fan0</pre>
+<div class="block">fan<sub>0</sub> rotation rate.</div>
+</li>
+<li class="blockList">
+<h5>fan1</h5>
+<pre><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Double.html?is-external=true" title="class or interface in java.lang" class="externalLink">Double</a> fan1</pre>
+<div class="block">fan<sub>1</sub> rotation rate.</div>
+</li>
+<li class="blockList">
+<h5>fan2</h5>
+<pre><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Double.html?is-external=true" title="class or interface in java.lang" class="externalLink">Double</a> fan2</pre>
+<div class="block">fan<sub>2</sub> rotation rate.</div>
+</li>
+<li class="blockList">
+<h5>shutdownFlags</h5>
+<pre>int shutdownFlags</pre>
+<div class="block">Shutdown flags. See <code>check_status()</code> in <code>bmp_main.c</code>. If
+ non-zero, the board is very unhappy with its status, and will be flashing
+ an LED rapidly.</div>
+</li>
+<li class="blockList">
+<h5>tempBottom</h5>
+<pre>double tempBottom</pre>
+<div class="block">Temperature bottom, in &deg;C.</div>
+</li>
+<li class="blockList">
+<h5>tempExt0</h5>
+<pre><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Double.html?is-external=true" title="class or interface in java.lang" class="externalLink">Double</a> tempExt0</pre>
+<div class="block">Temperature external<sub>0</sub>, in &deg;C. Only meaningful when data
+ was obtained from a BMP that manages a frame.</div>
+</li>
+<li class="blockList">
+<h5>tempExt1</h5>
+<pre><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Double.html?is-external=true" title="class or interface in java.lang" class="externalLink">Double</a> tempExt1</pre>
+<div class="block">Temperature external<sub>1</sub>, in &deg;C. Only meaningful when data
+ was obtained from a BMP that manages a frame.</div>
+</li>
+<li class="blockList">
+<h5>tempTop</h5>
+<pre>double tempTop</pre>
+<div class="block">Temperature top, in &deg;C.</div>
+</li>
+<li class="blockList">
+<h5>voltage12a</h5>
+<pre>double voltage12a</pre>
+<div class="block">Actual voltage of the 1.2V<sub>a</sub> supply rail.</div>
+</li>
+<li class="blockList">
+<h5>voltage12b</h5>
+<pre>double voltage12b</pre>
+<div class="block">Actual voltage of the 1.2V<sub>b</sub> supply rail.</div>
+</li>
+<li class="blockList">
+<h5>voltage12c</h5>
+<pre>double voltage12c</pre>
+<div class="block">Actual voltage of the 1.2V<sub>c</sub> supply rail.</div>
+</li>
+<li class="blockList">
+<h5>voltage18</h5>
+<pre>double voltage18</pre>
+<div class="block">Actual voltage of the 1.8V supply rail.</div>
+</li>
+<li class="blockList">
+<h5>voltage33</h5>
+<pre>double voltage33</pre>
+<div class="block">Actual voltage of the 3.3V supply rail.</div>
+</li>
+<li class="blockList">
+<h5>voltageSupply</h5>
+<pre>double voltageSupply</pre>
+<div class="block">Actual voltage of the main power supply (nominally 12V?).</div>
+</li>
+<li class="blockList">
+<h5>warningFlags</h5>
+<pre>int warningFlags</pre>
+<div class="block">Warning flags. See <code>check_status()</code> in <code>bmp_main.c</code>.</div>
+</li>
+</ul>
+</section>
+</li>
+</ul>
+</section>
+</li>
+<li class="blockList">
 <section class="serializedClassDetails"><a id="uk.ac.manchester.spinnaker.messages.model.Blacklist">
 <!--   -->
 </a>

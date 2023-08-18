@@ -344,10 +344,6 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminControllerImpl.html#blacklistFetch(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">blacklistFetch(AdminController.BlacklistData, ModelMap)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminControllerImpl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminControllerImpl</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="uk/ac/manchester/spinnaker/alloc/bmp/BlacklistOperation.html" title="enum in uk.ac.manchester.spinnaker.alloc.bmp"><span class="typeNameLink">BlacklistOperation</span></a> - Enum in <a href="uk/ac/manchester/spinnaker/alloc/bmp/package-summary.html">uk.ac.manchester.spinnaker.alloc.bmp</a></dt>
-<dd>
-<div class="block">Non-boot operations that may be performed on a BMP.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html#blacklistPush(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">blacklistPush(AdminController.BlacklistData, ModelMap)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminController</a></dt>
 <dd>
 <div class="block">Push the blacklist for a board to the machine.</div>
@@ -655,13 +651,13 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.CompatibilityProperties.html#%3Cinit%3E(boolean,int,java.lang.String,int,java.lang.String,java.lang.String,java.time.Duration,java.time.Duration,java.time.Duration,java.time.Duration)">CompatibilityProperties(boolean, int, String, int, String, String, Duration, Duration, Duration, Duration)</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.CompatibilityProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.CompatibilityProperties</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#COMPLETED_BLACKLIST_READ">COMPLETED_BLACKLIST_READ</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
-<dd>
-<div class="block">Mark a read of a blacklist as completed.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#COMPLETED_BLACKLIST_WRITE">COMPLETED_BLACKLIST_WRITE</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
 <dd>
 <div class="block">Mark a write of a blacklist as completed.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#COMPLETED_BOARD_INFO_READ">COMPLETED_BOARD_INFO_READ</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
+<dd>
+<div class="block">Mark a read of a blacklist or ADC data as completed.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#COMPLETED_GET_SERIAL_REQ">COMPLETED_GET_SERIAL_REQ</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
 <dd>
@@ -766,6 +762,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#CREATE_SERIAL_READ_REQ">CREATE_SERIAL_READ_REQ</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
 <dd>
 <div class="block">Insert a request to read a board's serial information.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#CREATE_TEMP_READ_REQ">CREATE_TEMP_READ_REQ</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
+<dd>
+<div class="block">Insert a request to read a board's temperature data.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#CREATE_USER">CREATE_USER</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
 <dd>
@@ -1590,7 +1590,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_COMPLETED_BLACKLIST_OP">GET_COMPLETED_BLACKLIST_OP</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
 <dd>
-<div class="block">Retrieve a completed request to read or write a blacklist for a board.</div>
+<div class="block">Retrieve a completed request to read or write a BMP-related data for a
+ board.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_CONSOLIDATION_TARGETS">GET_CONSOLIDATION_TARGETS</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
 <dd>
@@ -1714,7 +1715,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get the coordinates of the root chip of a board.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/BlacklistOperation.html#GET_SERIAL">GET_SERIAL</a></span> - uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/BlacklistOperation.html" title="enum in uk.ac.manchester.spinnaker.alloc.bmp">BlacklistOperation</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/NonBootOperation.html#GET_SERIAL">GET_SERIAL</a></span> - uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/NonBootOperation.html" title="enum in uk.ac.manchester.spinnaker.alloc.bmp">NonBootOperation</a></dt>
 <dd>
 <div class="block">Read the serial numbers from a board's BMP.</div>
 </dd>
@@ -1730,6 +1731,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_TAGS">GET_TAGS</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
 <dd>
 <div class="block">Get a machine's tags.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_TEMP_INFO_REQS">GET_TEMP_INFO_REQS</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
+<dd>
+<div class="block">Get the list of reads (from the machine) of temperature data to perform.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_USER_AUTHORITIES">GET_USER_AUTHORITIES</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
 <dd>
@@ -2739,6 +2744,12 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/MachineListEntryRecord.html#getTags()">getTags()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/MachineListEntryRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">MachineListEntryRecord</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/MachineTagging.html#getTags()">getTags()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/MachineTagging.html" title="class in uk.ac.manchester.spinnaker.alloc.model">MachineTagging</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html#getTemperatures(@javax.validation.Validint,org.springframework.ui.ModelMap)">getTemperatures(@javax.validation.Valid int, ModelMap)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminController</a></dt>
+<dd>
+<div class="block">Get the temperature data for a board.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminControllerImpl.html#getTemperatures(int,org.springframework.ui.ModelMap)">getTemperatures(int, ModelMap)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminControllerImpl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminControllerImpl</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.CompatibilityProperties.html#getThreadPoolSize()">getThreadPoolSize()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.CompatibilityProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.CompatibilityProperties</a></dt>
 <dd>&nbsp;</dd>
@@ -3833,14 +3844,14 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html#%3Cinit%3E()">MachineStateControl()</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.BlacklistException.html" title="class in uk.ac.manchester.spinnaker.alloc.admin"><span class="typeNameLink">MachineStateControl.BlacklistException</span></a> - Exception in <a href="uk/ac/manchester/spinnaker/alloc/admin/package-summary.html">uk.ac.manchester.spinnaker.alloc.admin</a></dt>
-<dd>
-<div class="block">Exception thrown when blacklists can't be read from or written to the
- machine.</div>
-</dd>
 <dt><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin"><span class="typeNameLink">MachineStateControl.BoardState</span></a> - Class in <a href="uk/ac/manchester/spinnaker/alloc/admin/package-summary.html">uk.ac.manchester.spinnaker.alloc.admin</a></dt>
 <dd>
 <div class="block">Access to the enablement-state of a board.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.MachineStateException.html" title="class in uk.ac.manchester.spinnaker.alloc.admin"><span class="typeNameLink">MachineStateControl.MachineStateException</span></a> - Exception in <a href="uk/ac/manchester/spinnaker/alloc/admin/package-summary.html">uk.ac.manchester.spinnaker.alloc.admin</a></dt>
+<dd>
+<div class="block">Exception thrown when the machine state can't be read from or written to
+ a BMP.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/alloc/model/MachineTagging.html" title="class in uk.ac.manchester.spinnaker.alloc.model"><span class="typeNameLink">MachineTagging</span></a> - Class in <a href="uk/ac/manchester/spinnaker/alloc/model/package-summary.html">uk.ac.manchester.spinnaker.alloc.model</a></dt>
 <dd>
@@ -4018,6 +4029,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="uk/ac/manchester/spinnaker/alloc/nmpi/NMPIv3API.html" title="interface in uk.ac.manchester.spinnaker.alloc.nmpi"><span class="typeNameLink">NMPIv3API</span></a> - Interface in <a href="uk/ac/manchester/spinnaker/alloc/nmpi/package-summary.html">uk.ac.manchester.spinnaker.alloc.nmpi</a></dt>
 <dd>
 <div class="block">The REST API for the NMPI Service.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/alloc/bmp/NonBootOperation.html" title="enum in uk.ac.manchester.spinnaker.alloc.bmp"><span class="typeNameLink">NonBootOperation</span></a> - Enum in <a href="uk/ac/manchester/spinnaker/alloc/bmp/package-summary.html">uk.ac.manchester.spinnaker.alloc.bmp</a></dt>
+<dd>
+<div class="block">Non-boot operations that may be performed on a BMP.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineDefinitionLoader.Link.html#north">north</a></span> - uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineDefinitionLoader.Link.html" title="enum in uk.ac.manchester.spinnaker.alloc.admin">MachineDefinitionLoader.Link</a></dt>
 <dd>
@@ -4355,7 +4370,7 @@ loadScripts(document, 'script');</script>
 </a>
 <h2 class="title">R</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/BlacklistOperation.html#READ">READ</a></span> - uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/BlacklistOperation.html" title="enum in uk.ac.manchester.spinnaker.alloc.bmp">BlacklistOperation</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/NonBootOperation.html#READ_BL">READ_BL</a></span> - uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/NonBootOperation.html" title="enum in uk.ac.manchester.spinnaker.alloc.bmp">NonBootOperation</a></dt>
 <dd>
 <div class="block">Read a blacklist from a board's BMP's flash.</div>
 </dd>
@@ -4366,6 +4381,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#READ_HISTORICAL_JOBS">READ_HISTORICAL_JOBS</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
 <dd>
 <div class="block">Read historical jobs to be written to the historical data DB.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/NonBootOperation.html#READ_TEMP">READ_TEMP</a></span> - uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/NonBootOperation.html" title="enum in uk.ac.manchester.spinnaker.alloc.bmp">NonBootOperation</a></dt>
+<dd>
+<div class="block">Read the <a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/messages/model/ADCInfo.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.messages.model" class="externalLink">temperature data</a> from a board's BMP.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html#readAllBoardSerialNumbers(java.lang.String)">readAllBoardSerialNumbers(String)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl</a></dt>
 <dd>
@@ -4405,6 +4424,14 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControl.html#readSerial(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readSerial(BMPBoard)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControl.html" title="interface in uk.ac.manchester.spinnaker.alloc.bmp">SpiNNakerControl</a></dt>
 <dd>
 <div class="block">Read a BMP serial number from the given board.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControl.html#readTemp(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readTemp(BMPBoard)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControl.html" title="interface in uk.ac.manchester.spinnaker.alloc.bmp">SpiNNakerControl</a></dt>
+<dd>
+<div class="block">Read the temperature data from the given board.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html#readTemperatureFromMachine(int)">readTemperatureFromMachine(int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl</a></dt>
+<dd>
+<div class="block">Given a board, read its temperature data off the machine.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/JobState.html#READY">READY</a></span> - uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/JobState.html" title="enum in uk.ac.manchester.spinnaker.alloc.model">JobState</a></dt>
 <dd>
@@ -5395,6 +5422,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">An exception that a task operation may throw.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html#TEMPERATURE_PATH">TEMPERATURE_PATH</a></span> - Static variable in interface uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminController</a></dt>
+<dd>
+<div class="block">Path to temperature operations.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/ServiceConfig.html#threadPoolTaskExecutor(int)">threadPoolTaskExecutor(int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/ServiceConfig.html" title="class in uk.ac.manchester.spinnaker.alloc">ServiceConfig</a></dt>
 <dd>
 <div class="block">The thread pool.</div>
@@ -5730,7 +5761,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the enum constant of this type with the specified name.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/BlacklistOperation.html#valueOf(java.lang.String)">valueOf(String)</a></span> - Static method in enum uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/BlacklistOperation.html" title="enum in uk.ac.manchester.spinnaker.alloc.bmp">BlacklistOperation</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/NonBootOperation.html#valueOf(java.lang.String)">valueOf(String)</a></span> - Static method in enum uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/NonBootOperation.html" title="enum in uk.ac.manchester.spinnaker.alloc.bmp">NonBootOperation</a></dt>
 <dd>
 <div class="block">Returns the enum constant of this type with the specified name.</div>
 </dd>
@@ -5763,7 +5794,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns an array containing the constants of this enum type, in
 the order they are declared.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/BlacklistOperation.html#values()">values()</a></span> - Static method in enum uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/BlacklistOperation.html" title="enum in uk.ac.manchester.spinnaker.alloc.bmp">BlacklistOperation</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/NonBootOperation.html#values()">values()</a></span> - Static method in enum uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/NonBootOperation.html" title="enum in uk.ac.manchester.spinnaker.alloc.bmp">NonBootOperation</a></dt>
 <dd>
 <div class="block">Returns an array containing the constants of this enum type, in
 the order they are declared.</div>
@@ -5916,7 +5947,7 @@ the order they are declared.</div>
 <dd>
 <div class="block">Rectangle width.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/BlacklistOperation.html#WRITE">WRITE</a></span> - uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/BlacklistOperation.html" title="enum in uk.ac.manchester.spinnaker.alloc.bmp">BlacklistOperation</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/NonBootOperation.html#WRITE_BL">WRITE_BL</a></span> - uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/NonBootOperation.html" title="enum in uk.ac.manchester.spinnaker.alloc.bmp">NonBootOperation</a></dt>
 <dd>
 <div class="block">Write a blacklist to a board's BMP's flash.</div>
 </dd>

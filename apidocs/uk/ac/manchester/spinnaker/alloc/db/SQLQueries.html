@@ -199,16 +199,16 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#COMPLETED_BLACKLIST_READ">COMPLETED_BLACKLIST_READ</a></span></code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#COMPLETED_BLACKLIST_WRITE">COMPLETED_BLACKLIST_WRITE</a></span></code></th>
 <td class="colLast">
-<div class="block">Mark a read of a blacklist as completed.</div>
+<div class="block">Mark a write of a blacklist as completed.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#COMPLETED_BLACKLIST_WRITE">COMPLETED_BLACKLIST_WRITE</a></span></code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#COMPLETED_BOARD_INFO_READ">COMPLETED_BOARD_INFO_READ</a></span></code></th>
 <td class="colLast">
-<div class="block">Mark a write of a blacklist as completed.</div>
+<div class="block">Mark a read of a blacklist or ADC data as completed.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -285,131 +285,138 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#CREATE_TEMP_READ_REQ">CREATE_TEMP_READ_REQ</a></span></code></th>
+<td class="colLast">
+<div class="block">Insert a request to read a board's temperature data.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#CREATE_USER">CREATE_USER</a></span></code></th>
 <td class="colLast">
 <div class="block">Create a user.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DEALLOCATE_BMP_BOARDS_JOB">DEALLOCATE_BMP_BOARDS_JOB</a></span></code></th>
 <td class="colLast">
 <div class="block">Tell the boards of a job that they're no longer allocated to the job.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DECREMENT_QUOTA">DECREMENT_QUOTA</a></span></code></th>
 <td class="colLast">
 <div class="block">Reduce a group's quota on a machine by a specified amount.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DELETE_ALLOC_RECORD">DELETE_ALLOC_RECORD</a></span></code></th>
 <td class="colLast">
 <div class="block">Actually delete an allocation record.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DELETE_BLACKLIST_OP">DELETE_BLACKLIST_OP</a></span></code></th>
 <td class="colLast">
 <div class="block">Delete a blacklist request.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DELETE_GROUP">DELETE_GROUP</a></span></code></th>
 <td class="colLast">
 <div class="block">Delete a single group record and returns the name of the deleted group.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DELETE_JOB_RECORD">DELETE_JOB_RECORD</a></span></code></th>
 <td class="colLast">
 <div class="block">Actually delete a job record.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DELETE_MACHINE_TAGS">DELETE_MACHINE_TAGS</a></span></code></th>
 <td class="colLast">
 <div class="block">Delete all tags for a machine.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DELETE_TASK">DELETE_TASK</a></span></code></th>
 <td class="colLast">
 <div class="block">Delete an allocation task.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DELETE_USER">DELETE_USER</a></span></code></th>
 <td class="colLast">
 <div class="block">Delete a user.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DESTROY_JOB">DESTROY_JOB</a></span></code></th>
 <td class="colLast">
 <div class="block">Mark a job as dead.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#FAILED_BLACKLIST_OP">FAILED_BLACKLIST_OP</a></span></code></th>
 <td class="colLast">
 <div class="block">Mark a read or write of a blacklist as failed, noting the reason.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#FIND_BOARD_BY_ID">FIND_BOARD_BY_ID</a></span></code></th>
 <td class="colLast">
 <div class="block">Get a board's full coordinate info given it's ID.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#FIND_BOARD_BY_NAME_AND_CFB">FIND_BOARD_BY_NAME_AND_CFB</a></span></code></th>
 <td class="colLast">
 <div class="block">Get a board's ID given it's physical coordinates.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#FIND_BOARD_BY_NAME_AND_IP_ADDRESS">FIND_BOARD_BY_NAME_AND_IP_ADDRESS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get a board's ID given it's IP address.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#FIND_BOARD_BY_NAME_AND_XYZ">FIND_BOARD_BY_NAME_AND_XYZ</a></span></code></th>
 <td class="colLast">
 <div class="block">Get a board's ID given it's triad coordinates.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#FIND_EXPIRED_JOBS">FIND_EXPIRED_JOBS</a></span></code></th>
 <td class="colLast">
 <div class="block">Find jobs that have expired their keepalive interval.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#FIND_FREE_BOARD">FIND_FREE_BOARD</a></span></code></th>
 <td class="colLast">
 <div class="block">Find a single free board.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findBoardByGlobalChip">findBoardByGlobalChip</a></span></code></th>
 <td class="colLast">
@@ -417,7 +424,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  coordinates.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findBoardByIPAddress">findBoardByIPAddress</a></span></code></th>
 <td class="colLast">
@@ -425,7 +432,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  of its ethernet chip.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findBoardByJobChip">findBoardByJobChip</a></span></code></th>
 <td class="colLast">
@@ -433,7 +440,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  allocation-local chip coordinates.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findBoardByLogicalCoords">findBoardByLogicalCoords</a></span></code></th>
 <td class="colLast">
@@ -441,7 +448,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  coordinates.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findBoardByPhysicalCoords">findBoardByPhysicalCoords</a></span></code></th>
 <td class="colLast">
@@ -449,21 +456,21 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  cabinet-frame-board coordinates.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findLocation">findLocation</a></span></code></th>
 <td class="colLast">
 <div class="block">Find an allocatable board with a specific board ID.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findRectangle">findRectangle</a></span></code></th>
 <td class="colLast">
 <div class="block">Find a rectangle of triads of boards that may be allocated.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findRectangleAt">findRectangleAt</a></span></code></th>
 <td class="colLast">
@@ -471,168 +478,169 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  be allocated.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#FINISHED_PENDING">FINISHED_PENDING</a></span></code></th>
 <td class="colLast">
 <div class="block">Delete a request to change the power of a board.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_ALL_BMP_BOARDS">GET_ALL_BMP_BOARDS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get all the boards of a BMP.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_ALL_BMPS">GET_ALL_BMPS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get all the BMPs.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_ALL_BOARDS">GET_ALL_BOARDS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get all the boards (and related info) of a machine.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_ALL_BOARDS_OF_ALL_MACHINES">GET_ALL_BOARDS_OF_ALL_MACHINES</a></span></code></th>
 <td class="colLast">
 <div class="block">Get all the boards (and related info) known to the service.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_ALL_MACHINES">GET_ALL_MACHINES</a></span></code></th>
 <td class="colLast">
 <div class="block">Get basic information about all machines.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_AVAILABLE_BOARD_NUMBERS">GET_AVAILABLE_BOARD_NUMBERS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the boards that are available for allocation.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_BLACKLIST_READS">GET_BLACKLIST_READS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the list of reads (from the machine) of blacklist data to perform.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_BLACKLIST_WRITES">GET_BLACKLIST_WRITES</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the list of writes (to the machine) of blacklist data to perform.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_BLACKLISTED_CHIPS">GET_BLACKLISTED_CHIPS</a></span></code></th>
 <td class="colLast">
 <div class="block">Read the blacklisted chips for a board.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_BLACKLISTED_CORES">GET_BLACKLISTED_CORES</a></span></code></th>
 <td class="colLast">
 <div class="block">Read the blacklisted cores for a board.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_BLACKLISTED_LINKS">GET_BLACKLISTED_LINKS</a></span></code></th>
 <td class="colLast">
 <div class="block">Read the blacklisted links for a board.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_BMP_ADDRESS">GET_BMP_ADDRESS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the address of the BMP of the root board of the machine.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_BMP_BOARD_NUMBERS">GET_BMP_BOARD_NUMBERS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the boards of a BMP that can be used.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_BOARD_ADDRESS">GET_BOARD_ADDRESS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the address of the root chip of a board.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_BOARD_BY_COORDS">GET_BOARD_BY_COORDS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get a board's ID by its coordinates.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_BOARD_CONNECT_INFO">GET_BOARD_CONNECT_INFO</a></span></code></th>
 <td class="colLast">
 <div class="block">Get connection info for board allocated to a job.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_BOARD_JOB">GET_BOARD_JOB</a></span></code></th>
 <td class="colLast">
 <div class="block">Get What job is allocated to a board.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_BOARD_NUMBERS">GET_BOARD_NUMBERS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the boards of a machine that can be used.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_BOARD_POWER_INFO">GET_BOARD_POWER_INFO</a></span></code></th>
 <td class="colLast">
 <div class="block">Get whether a board is powered.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_BOARD_REPORTS">GET_BOARD_REPORTS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the problem reports about a board.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_CHANGES">GET_CHANGES</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the requests to change the power of boards on a BMP.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_COMPLETED_BLACKLIST_OP">GET_COMPLETED_BLACKLIST_OP</a></span></code></th>
 <td class="colLast">
-<div class="block">Retrieve a completed request to read or write a blacklist for a board.</div>
+<div class="block">Retrieve a completed request to read or write a BMP-related data for a
+ board.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_CONSOLIDATION_TARGETS">GET_CONSOLIDATION_TARGETS</a></span></code></th>
 <td class="colLast">
@@ -640,42 +648,42 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  consolidated into the main quota table.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_CURRENT_USAGE">GET_CURRENT_USAGE</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the current non-consolidated usage for a group.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_DEAD_BOARDS">GET_DEAD_BOARDS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the boards (and related info) of a machine that have been disabled.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_FUNCTIONING_FIELD">GET_FUNCTIONING_FIELD</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the value of a board's <code>functioning</code> column.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_GROUP_BY_ID">GET_GROUP_BY_ID</a></span></code></th>
 <td class="colLast">
 <div class="block">Get a group by it's ID.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_GROUP_BY_NAME">GET_GROUP_BY_NAME</a></span></code></th>
 <td class="colLast">
 <div class="block">Get a group by it's name.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_GROUP_BY_NAME_AND_MEMBER">GET_GROUP_BY_NAME_AND_MEMBER</a></span></code></th>
 <td class="colLast">
@@ -683,175 +691,175 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  of.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_GROUP_NAMES_OF_USER">GET_GROUP_NAMES_OF_USER</a></span></code></th>
 <td class="colLast">
 <div class="block">List all the groups that a user is a member of and that have quota left.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_GROUP_QUOTA">GET_GROUP_QUOTA</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the quota for a group.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_JOB">GET_JOB</a></span></code></th>
 <td class="colLast">
 <div class="block">Get basic information about a specific job.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_JOB_BOARD_COORDS">GET_JOB_BOARD_COORDS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the coords of boards assigned to a job.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_JOB_BOARDS">GET_JOB_BOARDS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get what boards are allocated to a job.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_JOB_CHIP_DIMENSIONS">GET_JOB_CHIP_DIMENSIONS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the chip dimensions of a job.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_JOB_IDS">GET_JOB_IDS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get basic information about jobs.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_JOB_NMPI_JOB">GET_JOB_NMPI_JOB</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the NMPI Job for a Job.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_JOB_SESSION">GET_JOB_SESSION</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the NMPI Session for a Job.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_JOB_USAGE_AND_QUOTA">GET_JOB_USAGE_AND_QUOTA</a></span></code></th>
 <td class="colLast">
 <div class="block">Get usage of a job and the quota against which that applies.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_LIVE_BOARDS">GET_LIVE_BOARDS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the boards (and related info) of a machine that are in service.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_LIVE_JOB_IDS">GET_LIVE_JOB_IDS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get basic information about live jobs.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_LOCAL_USER_DETAILS">GET_LOCAL_USER_DETAILS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get a local user's basic details.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_MACHINE_BY_ID">GET_MACHINE_BY_ID</a></span></code></th>
 <td class="colLast">
 <div class="block">Get basic information about a specific machine.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_MACHINE_JOBS">GET_MACHINE_JOBS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get basic info about active jobs on a machine.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_MACHINE_REPORTS">GET_MACHINE_REPORTS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the problem reports about boards in a machine.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_MACHINE_WRAPS">GET_MACHINE_WRAPS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get whether a machine wraps in horizontal or vertical directions.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_MEMBERSHIP">GET_MEMBERSHIP</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the details from a specific membership.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_MEMBERSHIPS_OF_USER">GET_MEMBERSHIPS_OF_USER</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the memberships of a user.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_NAMED_MACHINE">GET_NAMED_MACHINE</a></span></code></th>
 <td class="colLast">
 <div class="block">Get basic information about a specific machine.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_ROOT_BMP_ADDRESS">GET_ROOT_BMP_ADDRESS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the address of the BMP of the root board of the machine.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_ROOT_COORDS">GET_ROOT_COORDS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the coordinates of a board.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_ROOT_OF_BOARD">GET_ROOT_OF_BOARD</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the coordinates of the root chip of a board.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_SERIAL_INFO_REQS">GET_SERIAL_INFO_REQS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the list of reads (from the machine) of serial data to perform.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_SUM_BOARDS_POWERED">GET_SUM_BOARDS_POWERED</a></span></code></th>
 <td class="colLast">
@@ -859,11 +867,18 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  on.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_TAGS">GET_TAGS</a></span></code></th>
 <td class="colLast">
 <div class="block">Get a machine's tags.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GET_TEMP_INFO_REQS">GET_TEMP_INFO_REQS</a></span></code></th>
+<td class="colLast">
+<div class="block">Get the list of reads (from the machine) of temperature data to perform.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -3366,6 +3381,20 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
+<h3><a id="GET_TEMP_INFO_REQS">GET_TEMP_INFO_REQS</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("machine_id")
+<a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("op_id") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("board_id") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("bmp_serial_id") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("board_num") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("cabinet") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("frame")
+</span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GET_TEMP_INFO_REQS</span></div>
+<div class="block">Get the list of reads (from the machine) of temperature data to perform.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../bmp/BMPController.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp"><code>BMPController</code></a>, 
+<a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.GET_TEMP_INFO_REQS">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
 <h3><a id="SET_BOARD_SERIAL_IDS">SET_BOARD_SERIAL_IDS</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("board_id") <a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("bmp_serial_id") <a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("physical_serial_id")
 <a href="../../storage/GeneratesID.html" title="annotation in uk.ac.manchester.spinnaker.storage">@GeneratesID</a>
@@ -3382,14 +3411,14 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="COMPLETED_BLACKLIST_READ">COMPLETED_BLACKLIST_READ</a></h3>
+<h3><a id="COMPLETED_BOARD_INFO_READ">COMPLETED_BOARD_INFO_READ</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("data") <a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("op_id")
-</span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">COMPLETED_BLACKLIST_READ</span></div>
-<div class="block">Mark a read of a blacklist as completed.</div>
+</span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">COMPLETED_BOARD_INFO_READ</span></div>
+<div class="block">Mark a read of a blacklist or ADC data as completed.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../bmp/BMPController.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp"><code>BMPController</code></a>, 
-<a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.COMPLETED_BLACKLIST_READ">Constant Field Values</a></dd>
+<a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.COMPLETED_BOARD_INFO_READ">Constant Field Values</a></dd>
 </dl>
 </section>
 </li>
@@ -3440,7 +3469,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("board_id") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("op") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("data") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("failure")
 <a href="../../storage/SingleRowResult.html" title="annotation in uk.ac.manchester.spinnaker.storage">@SingleRowResult</a>
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GET_COMPLETED_BLACKLIST_OP</span></div>
-<div class="block">Retrieve a completed request to read or write a blacklist for a board.</div>
+<div class="block">Retrieve a completed request to read or write a BMP-related data for a
+ board.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../admin/MachineStateControl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin"><code>MachineStateControl</code></a>, 
@@ -3500,6 +3530,20 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../admin/MachineStateControl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin"><code>MachineStateControl</code></a>, 
 <a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.CREATE_SERIAL_READ_REQ">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="CREATE_TEMP_READ_REQ">CREATE_TEMP_READ_REQ</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("board_id")
+<a href="../../storage/GeneratesID.html" title="annotation in uk.ac.manchester.spinnaker.storage">@GeneratesID</a>
+</span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">CREATE_TEMP_READ_REQ</span></div>
+<div class="block">Insert a request to read a board's temperature data.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../admin/MachineStateControl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin"><code>MachineStateControl</code></a>, 
+<a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.CREATE_TEMP_READ_REQ">Constant Field Values</a></dd>
 </dl>
 </section>
 </li>
