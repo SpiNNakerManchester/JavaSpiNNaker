@@ -48,6 +48,8 @@ import uk.ac.manchester.spinnaker.nmpi.machinemanager.SpallocJavaMachineManagerI
 import uk.ac.manchester.spinnaker.nmpi.machinemanager.SpallocMachineManagerImpl;
 import uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine;
 import uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManager;
+import uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManagerV3;
+import uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManagerCompat;
 import uk.ac.manchester.spinnaker.nmpi.rest.OutputManager;
 import uk.ac.manchester.spinnaker.nmpi.rest.utils.NullExceptionMapper;
 import uk.ac.manchester.spinnaker.nmpi.status.Icinga2StatusMonitorManagerImpl;
@@ -174,6 +176,9 @@ public class RemoteSpinnakerBeans {
 	@Value("${status.update.type}")
 	private StatusServiceType statusType;
 
+	@Value("${nmpi.compat}")
+	private boolean compatNmpi;
+
 	/**
 	 * The machine manager; direct or via spalloc.
 	 *
@@ -197,7 +202,10 @@ public class RemoteSpinnakerBeans {
 	 */
 	@Bean
 	public NMPIQueueManager queueManager() {
-		return new NMPIQueueManager();
+		if (compatNmpi) {
+			return new NMPIQueueManagerCompat();
+		}
+		return new NMPIQueueManagerV3();
 	}
 
 	/**
