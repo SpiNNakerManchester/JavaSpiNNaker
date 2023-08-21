@@ -29,21 +29,18 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.JobParameters;
  * {@link JobParameters} instance.
  */
 public class JobProcessFactory {
-
-	/**
-	 * The thread group of the factory.
-	 */
+	/** The thread group of the factory. */
 	private final ThreadGroup threadGroup;
 
 	/**
 	 * Create a factory.
 	 *
-	 * @param threadGroupParam
+	 * @param threadGroup
 	 *            The thread group for the factory. All threads created by the
 	 *            factory will be within this group.
 	 */
-	public JobProcessFactory(final ThreadGroup threadGroupParam) {
-		this.threadGroup = threadGroupParam;
+	public JobProcessFactory(final ThreadGroup threadGroup) {
+		this.threadGroup = threadGroup;
 	}
 
 	/**
@@ -137,9 +134,12 @@ public class JobProcessFactory {
 	/**
 	 * Set a static field in an object.
 	 *
-	 * @param clazz The class of the object
-	 * @param fieldName The name of the field to set
-	 * @param value The value to set the field to
+	 * @param clazz
+	 *            The class of the object
+	 * @param fieldName
+	 *            The name of the field to set
+	 * @param value
+	 *            The value to set the field to
 	 */
 	@SuppressWarnings("unused")
 	private static void setField(final Class<?> clazz, final String fieldName,
@@ -157,9 +157,12 @@ public class JobProcessFactory {
 	/**
 	 * Set a field in an instance.
 	 *
-	 * @param instance The instance
-	 * @param fieldName The name of the field
-	 * @param value The value to set
+	 * @param instance
+	 *            The instance
+	 * @param fieldName
+	 *            The name of the field
+	 * @param value
+	 *            The value to set
 	 */
 	private static void setField(final Object instance, final String fieldName,
 			final Object value) {

@@ -330,7 +330,8 @@ public class CreateJob {
 	/**
 	 * Set the group of the request.
 	 *
-	 * @param group The group to set.
+	 * @param group
+	 *            The group to set.
 	 * @return {@code this} (fluent interface)
 	 */
 	@CanIgnoreReturnValue
@@ -343,7 +344,8 @@ public class CreateJob {
 	/**
 	 * Set the collab of the request.
 	 *
-	 * @param collab The collab to set.
+	 * @param collab
+	 *            The collab to set.
 	 * @return {@code this} (fluent interface)
 	 */
 	@CanIgnoreReturnValue
@@ -356,7 +358,8 @@ public class CreateJob {
 	/**
 	 * Set the NMPI Job of the request.
 	 *
-	 * @param nmpiJob The NMPI Job to set.
+	 * @param nmpiJob
+	 *            The NMPI Job to set.
 	 * @return {@code this} (fluent interface)
 	 */
 	@CanIgnoreReturnValue

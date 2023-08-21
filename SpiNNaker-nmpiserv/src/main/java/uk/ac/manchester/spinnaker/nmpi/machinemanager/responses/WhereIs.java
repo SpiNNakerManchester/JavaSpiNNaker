@@ -67,11 +67,11 @@ public class WhereIs {
 	/**
 	 * Sets the job chip.
 	 *
-	 * @param jobChipParam
+	 * @param jobChip
 	 *            the job chip to set
 	 */
-	public void setJobChip(final int[] jobChipParam) {
-		this.jobChip = jobChipParam;
+	public void setJobChip(final int[] jobChip) {
+		this.jobChip = jobChip;
 	}
 
 	/**
@@ -86,11 +86,11 @@ public class WhereIs {
 	/**
 	 * Sets the job id.
 	 *
-	 * @param jobIdParam
+	 * @param jobId
 	 *            the job id to set
 	 */
-	public void setJobId(final int jobIdParam) {
-		this.jobId = jobIdParam;
+	public void setJobId(final int jobId) {
+		this.jobId = jobId;
 	}
 
 	/**
@@ -105,11 +105,11 @@ public class WhereIs {
 	/**
 	 * Sets the chip.
 	 *
-	 * @param chipParam
+	 * @param chip
 	 *            the chip to set
 	 */
-	public void setChip(final int[] chipParam) {
-		this.chip = chipParam;
+	public void setChip(final int[] chip) {
+		this.chip = chip;
 	}
 
 	/**
@@ -124,11 +124,11 @@ public class WhereIs {
 	/**
 	 * Sets the logical.
 	 *
-	 * @param logicalParam
+	 * @param logical
 	 *            the logical to set
 	 */
-	public void setLogical(final int[] logicalParam) {
-		this.logical = logicalParam;
+	public void setLogical(final int[] logical) {
+		this.logical = logical;
 	}
 
 	/**
@@ -143,11 +143,11 @@ public class WhereIs {
 	/**
 	 * Sets the machine.
 	 *
-	 * @param machineParam
+	 * @param machine
 	 *            the machine to set
 	 */
-	public void setMachine(final String machineParam) {
-		this.machine = machineParam;
+	public void setMachine(final String machine) {
+		this.machine = machine;
 	}
 
 	/**
@@ -162,11 +162,11 @@ public class WhereIs {
 	/**
 	 * Sets the board chip.
 	 *
-	 * @param boardChipParam
+	 * @param boardChip
 	 *            the board chip to set
 	 */
-	public void setBoardChip(final int[] boardChipParam) {
-		this.boardChip = boardChipParam;
+	public void setBoardChip(final int[] boardChip) {
+		this.boardChip = boardChip;
 	}
 
 	/**
@@ -181,10 +181,10 @@ public class WhereIs {
 	/**
 	 * Sets the physical.
 	 *
-	 * @param physicalParam
+	 * @param physical
 	 *            the physical to set
 	 */
-	public void setPhysical(final int[] physicalParam) {
-		this.physical = physicalParam;
+	public void setPhysical(final int[] physical) {
+		this.physical = physical;
 	}
 }

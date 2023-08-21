@@ -19,13 +19,13 @@ package uk.ac.manchester.spinnaker.nmpi.rest;
  * A Job where only the log is set (to allow log updates).
  */
 public class JobLogOnly {
-
 	private String log;
 
 	/**
 	 * Create a job with only a log.
 	 *
-	 * @param log The log to set.
+	 * @param log
+	 *            The log to set.
 	 */
 	public JobLogOnly(String log) {
 		this.log = log;
@@ -43,7 +43,8 @@ public class JobLogOnly {
 	/**
 	 * Set the log.
 	 *
-	 * @param log The log to set
+	 * @param log
+	 *            The log to set
 	 */
 	public void setLog(String log) {
 		this.log = log;

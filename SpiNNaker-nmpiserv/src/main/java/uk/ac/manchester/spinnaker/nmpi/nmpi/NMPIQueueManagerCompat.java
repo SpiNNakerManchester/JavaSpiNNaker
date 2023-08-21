@@ -55,35 +55,22 @@ import uk.ac.manchester.spinnaker.nmpi.rest.NMPIQueueCompat;
  * Manages the NMPI queue, receiving jobs and submitting them to be run.
  */
 public class NMPIQueueManagerCompat implements NMPIQueueManager {
-
-	/**
-	 * Job status when finished.
-	 */
+	/** Job status when finished. */
 	public static final String STATUS_FINISHED = "finished";
 
-	/**
-	 * Job status when in the queue but the executer hasn't started.
-	 */
+	/** Job status when in the queue but the executer hasn't started. */
 	public static final String STATUS_VALIDATED = "validated";
 
-	/**
-	 * Job status when running.
-	 */
+	/** Job status when running. */
 	public static final String STATUS_RUNNING = "running";
 
-	/**
-	 * Job status when in error.
-	 */
+	/** Job status when in error. */
 	public static final String STATUS_ERROR = "error";
 
-	/**
-	 * The amount of time to sleep when an empty queue is detected.
-	 */
+	/** The amount of time to sleep when an empty queue is detected. */
 	private static final int EMPTY_QUEUE_SLEEP_MS = 10000;
 
-	/**
-	 * Header for APIKey authentication.
-	 */
+	/** Header for APIKey authentication. */
 	private static final String NMPI_AUTH = "ApiKey";
 
 	/** The queue to get jobs from. */
@@ -101,9 +88,7 @@ public class NMPIQueueManagerCompat implements NMPIQueueManager {
 	/** The log of the job so far. */
 	private final Map<Integer, StringBuilder> jobLog = new HashMap<>();
 
-	/**
-	 * Logger.
-	 */
+	/** Logger. */
 	private static final Logger logger = getLogger(NMPIQueueManager.class);
 
 	/** The hardware identifier for the queue. */
@@ -186,7 +171,8 @@ public class NMPIQueueManagerCompat implements NMPIQueueManager {
 	/**
 	 * Process the response from the service.
 	 *
-	 * @param response The response to process
+	 * @param response
+	 *            The response to process
 	 */
 	private void processResponse(final QueueNextResponse response) {
 		if (response instanceof QueueEmpty) {
@@ -201,7 +187,8 @@ public class NMPIQueueManagerCompat implements NMPIQueueManager {
 	/**
 	 * Process the response of a Job.
 	 *
-	 * @param job The job to process
+	 * @param job
+	 *            The job to process
 	 */
 	private void processResponse(final Job job) {
 		synchronized (jobCache) {

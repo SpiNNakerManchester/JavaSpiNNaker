@@ -89,7 +89,10 @@ public class BoardRecord {
 		return id;
 	}
 
-	/** @param id The board ID. */
+	/**
+	 * @param id
+	 *            The board ID.
+	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
@@ -104,7 +107,10 @@ public class BoardRecord {
 		return machineName;
 	}
 
-	/** @param machineName The machine name. */
+	/**
+	 * @param machineName
+	 *            The machine name.
+	 */
 	public void setMachineName(String machineName) {
 		this.machineName = machineName;
 	}
@@ -114,7 +120,10 @@ public class BoardRecord {
 		return x;
 	}
 
-	/** @param x The board X coordinate. */
+	/**
+	 * @param x
+	 *            The board X coordinate.
+	 */
 	public void setX(Integer x) {
 		this.x = x;
 	}
@@ -124,7 +133,10 @@ public class BoardRecord {
 		return y;
 	}
 
-	/** @param y The board Y coordinate. */
+	/**
+	 * @param y
+	 *            The board Y coordinate.
+	 */
 	public void setY(Integer y) {
 		this.y = y;
 	}
@@ -134,7 +146,10 @@ public class BoardRecord {
 		return z;
 	}
 
-	/** @param z The board Z coordinate. */
+	/**
+	 * @param z
+	 *            The board Z coordinate.
+	 */
 	public void setZ(Integer z) {
 		this.z = z;
 	}
@@ -149,7 +164,10 @@ public class BoardRecord {
 		return cabinet;
 	}
 
-	/** @param cabinet The cabinet number. */
+	/**
+	 * @param cabinet
+	 *            The cabinet number.
+	 */
 	public void setCabinet(Integer cabinet) {
 		this.cabinet = cabinet;
 	}
@@ -159,7 +177,10 @@ public class BoardRecord {
 		return frame;
 	}
 
-	/** @param frame The frame number. */
+	/**
+	 * @param frame
+	 *            The frame number.
+	 */
 	public void setFrame(Integer frame) {
 		this.frame = frame;
 	}
@@ -169,7 +190,10 @@ public class BoardRecord {
 		return board;
 	}
 
-	/** @param board The board number. */
+	/**
+	 * @param board
+	 *            The board number.
+	 */
 	public void setBoard(Integer board) {
 		this.board = board;
 	}
@@ -184,7 +208,10 @@ public class BoardRecord {
 		return ipAddress;
 	}
 
-	/** @param ipAddress The board's IP address. */
+	/**
+	 * @param ipAddress
+	 *            The board's IP address.
+	 */
 	public void setIpAddress(String ipAddress) {
 		this.ipAddress = ipAddress;
 	}
@@ -216,7 +243,10 @@ public class BoardRecord {
 		return nonNull(enabled);
 	}
 
-	/** @param enabled Whether the board is enabled. */
+	/**
+	 * @param enabled
+	 *            Whether the board is enabled.
+	 */
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
@@ -231,7 +261,10 @@ public class BoardRecord {
 		return nonNull(jobId);
 	}
 
-	/** @param jobId The ID of the job allocated to the board. */
+	/**
+	 * @param jobId
+	 *            The ID of the job allocated to the board.
+	 */
 	public void setJobId(Integer jobId) {
 		this.jobId = jobId;
 	}
@@ -241,7 +274,10 @@ public class BoardRecord {
 		return lastPowerOn;
 	}
 
-	/** @param lastPowerOn When the board was last powered on. */
+	/**
+	 * @param lastPowerOn
+	 *            When the board was last powered on.
+	 */
 	public void setLastPowerOn(Instant lastPowerOn) {
 		this.lastPowerOn = lastPowerOn;
 	}
@@ -251,7 +287,10 @@ public class BoardRecord {
 		return lastPowerOff;
 	}
 
-	/** @param lastPowerOff When the board was last powered off. */
+	/**
+	 * @param lastPowerOff
+	 *            When the board was last powered off.
+	 */
 	public void setLastPowerOff(Instant lastPowerOff) {
 		this.lastPowerOff = lastPowerOff;
 	}
@@ -264,7 +303,10 @@ public class BoardRecord {
 		return reports;
 	}
 
-	/** @param reports The reports associated with this board. */
+	/**
+	 * @param reports
+	 *            The reports associated with this board.
+	 */
 	public void setReports(List<BoardIssueReport> reports) {
 		this.reports = nonNull(reports) ? List.copyOf(reports) : List.of();
 	}
@@ -274,7 +316,10 @@ public class BoardRecord {
 		return powered;
 	}
 
-	/** @param power Whether this board is powered on. */
+	/**
+	 * @param power
+	 *            Whether this board is powered on.
+	 */
 	public void setPowered(boolean power) {
 		powered = power;
 	}
@@ -284,7 +329,10 @@ public class BoardRecord {
 		return bmpSerial;
 	}
 
-	/** @param bmpSerial The BMP serial number. */
+	/**
+	 * @param bmpSerial
+	 *            The BMP serial number.
+	 */
 	public void setBmpSerial(String bmpSerial) {
 		this.bmpSerial = bmpSerial;
 	}
@@ -294,7 +342,10 @@ public class BoardRecord {
 		return physicalSerial;
 	}
 
-	/** @param physicalSerial The physical board serial number. */
+	/**
+	 * @param physicalSerial
+	 *            The physical board serial number.
+	 */
 	public void setPhysicalSerial(String physicalSerial) {
 		this.physicalSerial = physicalSerial;
 	}

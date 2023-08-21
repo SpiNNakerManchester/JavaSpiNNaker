@@ -79,100 +79,68 @@ import uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine;
 import uk.ac.manchester.spinnaker.nmpi.rest.utils.PropertyBasedDeserialiser;
 
 /**
- * A machine manager that interfaces to the spalloc service.
+ * A machine manager that interfaces to the old spalloc service.
  */
 public class SpallocMachineManagerImpl implements MachineManager {
-
-	/**
-	 * The default version of a machine.
-	 */
+	/** The default version of a machine. */
 	private static final String MACHINE_VERSION = "5";
 
-	/**
-	 * The tag indicating the machine should be picked by default.
-	 */
+	/** The tag indicating the machine should be picked by default. */
 	private static final String DEFAULT_TAG = "default";
 
-	/**
-	 * The keep-alive period in seconds.
-	 */
+	/** The keep-alive period in seconds. */
 	private static final int PERIOD = 5;
 
-	/**
-	 * The scaling from width in triads to width in chips.
-	 */
+	/** The scaling from width in triads to width in chips. */
 	private static final int MACHINE_WIDTH_FACTOR = 12;
 
-	/**
-	 * The scaling from height in triads to height in chips.
-	 */
+	/** The scaling from height in triads to height in chips. */
 	private static final int MACHINE_HEIGHT_FACTOR = 12;
 
-	/**
-	 * The number of times to retry a spalloc request.
-	 */
+	/** The number of times to retry a spalloc request. */
 	private static final int N_RETRIES = 3;
 
-	/**
-	 * The time to wait for a response from spalloc.
-	 */
+	/** The time to wait for a response from spalloc. */
 	private static final long TIMEOUT_SECONDS = 1;
 
-	/**
-	 * The spalloc server address.
-	 */
+	/** The spalloc server address. */
 	@Value("${spalloc.server}")
 	private String ipAddress;
 
-	/**
-	 * The spalloc server port.
-	 */
+	/** The spalloc server port. */
 	@Value("${spalloc.port}")
 	private int port;
 
-	/**
-	 * The owner to give spalloc jobs from this client.
-	 */
+	/** The owner to give spalloc jobs from this client. */
 	@Value("${spalloc.user.name}")
 	private String owner;
 
-	/**
-	 * Unmarshaller of objects.
-	 */
+	/** Unmarshaller of objects. */
 	private final ObjectMapper mapper = new ObjectMapper();
 
-	/**
-	 * The machines that have been allocated by job ID.
-	 */
+	/** The machines that have been allocated by job ID. */
 	private final Map<Integer, SpinnakerMachine> machinesAllocated =
 			new HashMap<>();
 
-	/**
-	 * A map from machine to job.
-	 */
+	/** A map from machine to job. */
 	private final Map<SpinnakerMachine, SpallocJob> jobByMachine =
 			new HashMap<>();
 
-	/**
-	 * The state of the spalloc job by job ID.
-	 */
+	/** The state of the spalloc job by job ID. */
 	private final Map<Integer, JobState> machineState = new HashMap<>();
 
-	/**
-	 * Logging.
-	 */
+	/** Logging. */
 	private static final Logger logger =
 			getLogger(SpallocMachineManagerImpl.class);
 
-	/**
-	 * Communication management.
-	 */
+	/** Communication management. */
 	private final Comms comms = new Comms();
 
-	/**
-	 * True when the manager is finished with.
-	 */
+	/** True when the manager is finished with. */
 	private volatile boolean done = false;
+
+	/** Thread pool. */
+	private ScheduledExecutorService scheduler;
 
 	/**
 	 * Deserialiser for spalloc responses.
@@ -203,11 +171,6 @@ public class SpallocMachineManagerImpl implements MachineManager {
 	}
 
 	/**
-	 * Thread pool.
-	 */
-	private ScheduledExecutorService scheduler;
-
-	/**
 	 * Launch this manager's threads.
 	 */
 	@PostConstruct
@@ -233,63 +196,53 @@ public class SpallocMachineManagerImpl implements MachineManager {
 	 * Communications API wrapper.
 	 */
 	class Comms {
-
 		/**
 		 * Internal exception for a timeout.
 		 */
 		class TimeoutException extends IOException {
-
 			private static final long serialVersionUID = 1L;
 
 			/**
 			 * Create an exception indicating a timeout happened.
 			 *
-			 * @param message The message of the exception
+			 * @param message
+			 *            The message of the exception
 			 */
 			TimeoutException(final String message) {
 				super(message);
 			}
 		}
 
-		/**
-		 * The responses from spalloc to be read.
-		 */
+		/** The responses from spalloc to be read. */
 		private final BlockingQueue<Response> responses =
 				new LinkedBlockingQueue<>();
 
-		/**
-		 * The notifications from spalloc to be raised.
-		 */
+		/** The notifications from spalloc to be raised. */
 		private final BlockingQueue<JobsChangedResponse> notifications =
 				new LinkedBlockingQueue<>();
 
-		/**
-		 * Connection to server.
-		 */
+		/** Connection to server. */
 		private Socket socket;
 
-		/**
-		 * Reader from server.
-		 */
+		/** Reader from server. */
 		private BufferedReader reader;
 
-		/**
-		 * Writer to server.
-		 */
+		/** Writer to server. */
 		private PrintWriter writer;
 
-		/**
-		 * True if connected.
-		 */
+		/** True if connected. */
 		private volatile boolean connected = false;
 
 		/**
 		 * Get the next response.
 		 *
-		 * @param responseType The type expected.
-		 * @param <T> The type of the response.
+		 * @param responseType
+		 *            The type expected.
+		 * @param <T>
+		 *            The type of the response.
 		 * @return The decoded response, or null if cancelled.
-		 * @throws IOException If the response failed to be read.
+		 * @throws IOException
+		 *             If the response failed to be read.
 		 */
 		private <T> T getNextResponse(final Class<T> responseType)
 				throws IOException {
@@ -334,8 +287,10 @@ public class SpallocMachineManagerImpl implements MachineManager {
 		/**
 		 * Write the given command as a request to the server.
 		 *
-		 * @param request The request to issue
-		 * @throws IOException If an error occurs
+		 * @param request
+		 *            The request to issue
+		 * @throws IOException
+		 *             If an error occurs
 		 */
 		private void writeRequest(final Command<?> request) throws IOException {
 			var message = mapper.writeValueAsString(request);
@@ -347,7 +302,8 @@ public class SpallocMachineManagerImpl implements MachineManager {
 		/**
 		 * Read a response from the server.
 		 *
-		 * @throws IOException if an error occurred
+		 * @throws IOException
+		 *             if an error occurred
 		 */
 		private void readResponse() throws IOException {
 			// Note, assumes one response per line
@@ -515,10 +471,7 @@ public class SpallocMachineManagerImpl implements MachineManager {
 	 * Interface to an existing spalloc job.
 	 */
 	final class SpallocJob {
-
-		/**
-		 * Used for the Hash code.
-		 */
+		/** Used for the Hash code. */
 		private static final int MAGIC = 0xbadf00d;
 
 		/** The spalloc job ID. */
@@ -641,7 +594,8 @@ public class SpallocMachineManagerImpl implements MachineManager {
 	 * Get the machines known to the Spalloc server.
 	 *
 	 * @return The known machines
-	 * @throws IOException If anything goes wrong
+	 * @throws IOException
+	 *             If anything goes wrong
 	 */
 	final Machine[] listMachines() throws IOException {
 		return comms.sendRequest(new ListMachinesCommand(), Machine[].class);
@@ -670,8 +624,10 @@ public class SpallocMachineManagerImpl implements MachineManager {
 	/**
 	 * Update the state of a job and notify any listeners.
 	 *
-	 * @param job The job to get the state of
-	 * @throws IOException If there is an error getting the state
+	 * @param job
+	 *            The job to get the state of
+	 * @throws IOException
+	 *             If there is an error getting the state
 	 */
 	private void updateJobState(final SpallocJob job) throws IOException {
 		final JobState state;
@@ -696,9 +652,11 @@ public class SpallocMachineManagerImpl implements MachineManager {
 	/**
 	 * Get the machine of the job.
 	 *
-	 * @param job The job
+	 * @param job
+	 *            The job
 	 * @return The machine of the job
-	 * @throws IOException If an I/O error occurs
+	 * @throws IOException
+	 *             If an I/O error occurs
 	 */
 	private SpinnakerMachine getMachineForJob(final SpallocJob job)
 			throws IOException {
@@ -711,10 +669,13 @@ public class SpallocMachineManagerImpl implements MachineManager {
 	/**
 	 * Wait for a job to reach one of a given set of states.
 	 *
-	 * @param job The job
-	 * @param states The states to wait for
+	 * @param job
+	 *            The job
+	 * @param states
+	 *            The states to wait for
 	 * @return The state the job has reached
-	 * @throws IOException If an I/O error occurs
+	 * @throws IOException
+	 *             If an I/O error occurs
 	 */
 	private JobState waitForStates(final SpallocJob job,
 			final Integer... states) throws IOException {

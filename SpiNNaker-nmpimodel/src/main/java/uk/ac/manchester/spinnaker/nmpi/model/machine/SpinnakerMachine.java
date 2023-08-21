@@ -164,29 +164,28 @@ public class SpinnakerMachine
 	/**
 	 * Creates a new SpiNNaker Machine description.
 	 *
-	 * @param machineNameParam
+	 * @param machineName
 	 *            The name of the machine
-	 * @param versionParam
+	 * @param version
 	 *            The version of the machine
-	 * @param widthParam
+	 * @param width
 	 *            The width of the machine, in chips
-	 * @param heightParam
+	 * @param height
 	 *            The width of the machine, in chips
-	 * @param numBoardsParam
+	 * @param numBoards
 	 *            The number of boards in the machine
-	 * @param bmpDetailsParam
+	 * @param bmpDetails
 	 *            How to contact the machine's Board Management Processor
 	 */
-	public SpinnakerMachine(
-			final String machineNameParam, final String versionParam,
-			final int widthParam, final int heightParam,
-			final int numBoardsParam, final String bmpDetailsParam) {
-		this.machineName = machineNameParam;
-		this.version = versionParam;
-		this.width = widthParam;
-		this.height = heightParam;
-		this.nBoards = numBoardsParam;
-		this.bmpDetails = bmpDetailsParam;
+	public SpinnakerMachine(final String machineName, final String version,
+			final int width, final int height, final int numBoards,
+			final String bmpDetails) {
+		this.machineName = machineName;
+		this.version = version;
+		this.width = width;
+		this.height = height;
+		this.nBoards = numBoards;
+		this.bmpDetails = bmpDetails;
 	}
 
 	/**
@@ -201,11 +200,11 @@ public class SpinnakerMachine
 	/**
 	 * Sets the name of the machine.
 	 *
-	 * @param machineNameParam
+	 * @param machineName
 	 *            The name of the machine
 	 */
-	public void setMachineName(final String machineNameParam) {
-		this.machineName = machineNameParam;
+	public void setMachineName(final String machineName) {
+		this.machineName = machineName;
 	}
 
 	/**
@@ -220,11 +219,11 @@ public class SpinnakerMachine
 	/**
 	 * Sets the version of the machine.
 	 *
-	 * @param versionParam
+	 * @param version
 	 *            The version of the machine
 	 */
-	public void setVersion(final String versionParam) {
-		this.version = versionParam;
+	public void setVersion(final String version) {
+		this.version = version;
 	}
 
 	/**
@@ -239,11 +238,11 @@ public class SpinnakerMachine
 	/**
 	 * Sets the width of the machine in chips.
 	 *
-	 * @param widthParam
+	 * @param width
 	 *            The width of the machine
 	 */
-	public void setWidth(final int widthParam) {
-		this.width = widthParam;
+	public void setWidth(final int width) {
+		this.width = width;
 	}
 
 	/**
@@ -258,11 +257,11 @@ public class SpinnakerMachine
 	/**
 	 * Sets the height of the machine in chips.
 	 *
-	 * @param heightParam
+	 * @param height
 	 *            The height of the machine
 	 */
-	public void setHeight(final int heightParam) {
-		this.height = heightParam;
+	public void setHeight(final int height) {
+		this.height = height;
 	}
 
 	/** @return width &times; height */
@@ -282,11 +281,11 @@ public class SpinnakerMachine
 	/**
 	 * Sets the number of boards in the machine.
 	 *
-	 * @param nBoardsParam
+	 * @param nBoards
 	 *            The number of boards in the machine
 	 */
-	public void setnBoards(final int nBoardsParam) {
-		this.nBoards = nBoardsParam;
+	public void setnBoards(final int nBoards) {
+		this.nBoards = nBoards;
 	}
 
 	/**
@@ -301,11 +300,11 @@ public class SpinnakerMachine
 	/**
 	 * Sets the BMP details of the machine.
 	 *
-	 * @param bmpDetailsParam
+	 * @param bmpDetails
 	 *            The BMP details of the machine
 	 */
-	public void setBmpDetails(final String bmpDetailsParam) {
-		this.bmpDetails = bmpDetailsParam;
+	public void setBmpDetails(final String bmpDetails) {
+		this.bmpDetails = bmpDetails;
 	}
 
 	/**

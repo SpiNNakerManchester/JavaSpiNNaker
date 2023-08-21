@@ -25,12 +25,12 @@ import uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine;
  * A service for managing SpiNNaker boards in a machine.
  */
 public interface MachineManager extends AutoCloseable {
-
 	/**
 	 * Gets the machines that this manager allocates from.
 	 *
 	 * @return collection of machines
-	 * @throws IOException if there is communication error.
+	 * @throws IOException
+	 *             if there is communication error.
 	 */
 	List<SpinnakerMachine> getMachines() throws IOException;
 
@@ -44,7 +44,8 @@ public interface MachineManager extends AutoCloseable {
 	 * @param jobId
 	 *            The ID of the NMPI job.
 	 * @return a machine.
-	 * @throws IOException if there is communication error.
+	 * @throws IOException
+	 *             if there is communication error.
 	 */
 	SpinnakerMachine getNextAvailableMachine(int nBoards, String owner,
 			int jobId) throws IOException;
@@ -55,7 +56,8 @@ public interface MachineManager extends AutoCloseable {
 	 * @param machine
 	 *            The machine handle
 	 * @return true if the machine is available.
-	 * @throws IOException if there is communication error.
+	 * @throws IOException
+	 *             if there is communication error.
 	 */
 	boolean isMachineAvailable(SpinnakerMachine machine) throws IOException;
 
@@ -67,7 +69,8 @@ public interface MachineManager extends AutoCloseable {
 	 * @param waitTime
 	 *            Maximum wait time (in milliseconds)
 	 * @return Whether the machine state has changed.
-	 * @throws IOException if there is communication error.
+	 * @throws IOException
+	 *             if there is communication error.
 	 */
 	boolean waitForMachineStateChange(SpinnakerMachine machine, int waitTime)
 			throws IOException;
@@ -77,7 +80,8 @@ public interface MachineManager extends AutoCloseable {
 	 *
 	 * @param machine
 	 *            The machine handle
-	 * @throws IOException if there is communication error.
+	 * @throws IOException
+	 *             if there is communication error.
 	 */
 	void releaseMachine(SpinnakerMachine machine) throws IOException;
 
@@ -88,7 +92,8 @@ public interface MachineManager extends AutoCloseable {
 	 *            The machine handle
 	 * @param powerOn
 	 *            True to power a machine on, false to turn it off.
-	 * @throws IOException if there is communication error.
+	 * @throws IOException
+	 *             if there is communication error.
 	 */
 	void setMachinePower(SpinnakerMachine machine, boolean powerOn)
 			throws IOException;
@@ -103,7 +108,8 @@ public interface MachineManager extends AutoCloseable {
 	 * @param y
 	 *            The virtual Y coordinate of the chip
 	 * @return The chip location description
-	 * @throws IOException if there is communication error.
+	 * @throws IOException
+	 *             if there is communication error.
 	 */
 	ChipCoordinates getChipCoordinates(SpinnakerMachine machine, int x, int y)
 			throws IOException;

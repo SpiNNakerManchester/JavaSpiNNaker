@@ -20,10 +20,8 @@ import uk.ac.manchester.spinnaker.alloc.db.Row;
 
 /**
  * A Board and a BMP.
- *
  */
 public class BoardAndBMP {
-
 	/** The board identifier. */
 	public final int boardId;
 
@@ -33,7 +31,8 @@ public class BoardAndBMP {
 	/**
 	 * Make a new Board-and-BMP from a database query.
 	 *
-	 * @param result The database query results to read from.
+	 * @param result
+	 *            The database query results to read from.
 	 */
 	public BoardAndBMP(Row result) {
 		this.boardId = result.getInt("board_id");
@@ -44,5 +43,4 @@ public class BoardAndBMP {
 		this.boardId = bs.board;
 		this.bmp = new BMPAndMachine(bs);
 	}
-
 }

@@ -66,39 +66,25 @@ import uk.ac.manchester.spinnaker.nmpiexec.utils.ThreadUtils;
  * A process for running PyNN jobs.
  */
 public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
-	/**
-	 * The error level that represents a signal.
-	 */
+	/** The error level that represents a signal. */
 	private static final int MIN_SIGNAL_OFFSET = 128;
 
-	/**
-	 * The section of the config where the machine is contained.
-	 */
+	/** The section of the config where the machine is contained. */
 	private static final String SECTION = "Machine";
 
-	/**
-	 * The command to call to run the process.
-	 */
+	/** The command to call to run the process. */
 	private static final String SUBPROCESS_RUNNER = "python";
 
-	/**
-	 * The command to call to run the setup process.
-	 */
+	/** The command to call to run the setup process. */
 	private static final String SETUP_RUNNER = "bash";
 
-	/**
-	 * The time to wait for the process to finish.
-	 */
+	/** The time to wait for the process to finish. */
 	private static final int FINALIZATION_DELAY = 1000;
 
-	/**
-	 * The set of ignored file extensions in the outputs.
-	 */
+	/** The set of ignored file extensions in the outputs. */
 	private static final Set<String> IGNORED_EXTENSIONS = new HashSet<>();
 
-	/**
-	 * The set of ignored directories in the outputs.
-	 */
+	/** The set of ignored directories in the outputs. */
 	private static final Set<String> IGNORED_DIRECTORIES = new HashSet<>();
 
 	/** The timeout for running jobs, in <em>hours.</em> */
@@ -107,9 +93,7 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 	/** The parameter to request a change in the timeout (also in hours). */
 	private static final String TIMEOUT_PARAMETER = "timeout";
 
-	/**
-	 * A pattern for finding arguments of the command to execute.
-	 */
+	/** A pattern for finding arguments of the command to execute. */
 	private static final Pattern ARGUMENT_FINDER =
 			Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
 
@@ -119,9 +103,7 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 		IGNORED_DIRECTORIES.add("reports");
 	}
 
-	/**
-	 * Provenance data items to be added to final provenance data.
-	 */
+	/** Provenance data items to be added to final provenance data. */
 	private static final String[] PROVENANCE_ITEMS_TO_ADD = new String[]{
 		"version_data/.*", "router_provenance/total_multi_cast_sent_packets",
 		"router_provenance/total_created_packets",
@@ -129,40 +111,29 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 		"router_provenance/total_missed_dropped_packets",
 		"router_provenance/total_lost_dropped_packets"};
 
-	/**
-	 * The directory where the process is executed.
-	 */
+	/** The directory where the process is executed. */
 	private File workingDirectory = null;
 
-	/**
-	 * The current status of the process.
-	 */
+	/** The current status of the process. */
 	private Status status = null;
 
-	/**
-	 * Any error that the process has exited with.
-	 */
+	/** Any error that the process has exited with. */
 	private Throwable error = null;
 
-	/**
-	 * Output files from the process.
-	 */
+	/** Output files from the process. */
 	private final List<File> outputs = new ArrayList<>();
 
-	/**
-	 * Provenance items of the process.
-	 */
+	/** Provenance items of the process. */
 	private final List<ProvenanceItem> provenance = new ArrayList<>();
 
-	/**
-	 * A thread group for the log monitoring.
-	 */
+	/** A thread group for the log monitoring. */
 	private ThreadGroup threadGroup;
 
 	/**
 	 * Gathers files in a directory and sub-directories.
 	 *
-	 * @param directory The directory to find files in.
+	 * @param directory
+	 *            The directory to find files in.
 	 * @return The set of files found.
 	 */
 	private static Set<File> gatherFiles(final File directory) {
@@ -451,23 +422,22 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 	/**
 	 * Gather the provenance information from the job's reports directory.
 	 *
-	 * @param workingDirectoryParam
+	 * @param workingDirectory
 	 *            The job's working directory.
 	 * @throws IOException
 	 *             If anything goes wrong with I/O.
 	 * @throws JAXBException
 	 *             If anything goes wrong with deserialisation of XML.
 	 */
-	private void gatherProvenance(final File workingDirectoryParam)
+	private void gatherProvenance(final File workingDirectory)
 			throws IOException {
-
 		// Find the reports folder
-		final var reportsFolder = new File(workingDirectoryParam, "reports");
+		final var reportsFolder = new File(workingDirectory, "reports");
 		if (reportsFolder.isDirectory()) {
 
 			// Create a zip file of the reports
 			try (var reportsZip = new ZipOutputStream(new FileOutputStream(
-					new File(workingDirectoryParam, "reports.zip")))) {
+					new File(workingDirectory, "reports.zip")))) {
 				// Gather items into the reports zip, keeping an eye out for
 				// the "provenance data" folder
 				zipProvenance(reportsZip, reportsFolder, "reports");
@@ -519,35 +489,27 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 	 * Thread for copying a {@link Reader} to a {@link LogWriter}.
 	 */
 	class ReaderLogWriter extends Thread implements AutoCloseable {
-
-		/**
-		 * The reader to read from.
-		 */
+		/** The reader to read from. */
 		private final BufferedReader reader;
 
-		/**
-		 * The writer to write to.
-		 */
+		/** The writer to write to. */
 		private final LogWriter writer;
 
-		/**
-		 * True when running, False to stop.
-		 */
+		/** True when running, False to stop. */
 		private boolean running;
 
 		/**
 		 * Creates a new ReaderLogWriter with another reader.
 		 *
-		 * @param readerParam
+		 * @param reader
 		 *            The reader to read from
-		 * @param writerParam
+		 * @param writer
 		 *            The writer to write to
 		 */
-		ReaderLogWriter(
-				final Reader readerParam, final LogWriter writerParam) {
+		ReaderLogWriter(final Reader reader, final LogWriter writer) {
 			super(threadGroup, "Reader Log Writer");
-			this.reader = buffer(readerParam);
-			this.writer = requireNonNull(writerParam);
+			this.reader = buffer(reader);
+			this.writer = requireNonNull(writer);
 			setDaemon(true);
 		}
 
@@ -557,12 +519,11 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 		 *
 		 * @param input
 		 *            The input stream to read from.
-		 * @param writerParam
+		 * @param writer
 		 *            The writer to write to.
 		 */
-		ReaderLogWriter(final InputStream input,
-				final LogWriter writerParam) {
-			this(new InputStreamReader(input), writerParam);
+		ReaderLogWriter(final InputStream input, final LogWriter writer) {
+			this(new InputStreamReader(input), writer);
 		}
 
 		@Override
@@ -588,7 +549,8 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 		/**
 		 * Perform the copying of the stream.
 		 *
-		 * @throws IOException If there is an error copying
+		 * @throws IOException
+		 *             If there is an error copying
 		 */
 		private void copyStream() throws IOException {
 			while (!interrupted()) {

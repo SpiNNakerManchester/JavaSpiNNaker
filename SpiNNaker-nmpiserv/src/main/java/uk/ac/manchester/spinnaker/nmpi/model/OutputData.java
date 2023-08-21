@@ -23,15 +23,10 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.DataItem;
  * The output data from a Job.
  */
 public class OutputData {
-
-	/**
-	 * The repository.
-	 */
+	/** The repository. */
 	private String repository;
 
-	/**
-	 * The files of the repository.
-	 */
+	/** The files of the repository. */
 	private List<DataItem> files;
 
 	/**
@@ -44,10 +39,11 @@ public class OutputData {
 	/**
 	 * Make an instance for a repository.
 	 *
-	 * @param repositoryParam The name of the repository.
+	 * @param repository
+	 *            The name of the repository.
 	 */
-	public OutputData(final String repositoryParam) {
-		this.repository = repositoryParam;
+	public OutputData(final String repository) {
+		this.repository = repository;
 	}
 
 	/**
@@ -62,7 +58,8 @@ public class OutputData {
 	/**
 	 * Set the repository.
 	 *
-	 * @param repository The repository to set.
+	 * @param repository
+	 *            The repository to set.
 	 */
 	public void setRepository(String repository) {
 		this.repository = repository;
@@ -80,7 +77,8 @@ public class OutputData {
 	/**
 	 * Set the files.
 	 *
-	 * @param files The files to set.
+	 * @param files
+	 *            The files to set.
 	 */
 	public void setFiles(List<DataItem> files) {
 		this.files = files;

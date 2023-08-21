@@ -46,19 +46,13 @@ import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 @Consumes(WILDCARD)
 @Produces(WILDCARD)
 public class CustomJacksonJsonProvider extends JacksonJsonProvider {
-	/**
-	 * Mapper objects of this provider.
-	 */
+	/** Mapper objects of this provider. */
 	private final Set<ObjectMapper> registeredMappers = new HashSet<>();
 
-	/**
-	 * The module of the provider.
-	 */
+	/** The module of the provider. */
 	private final SimpleModule module = new SimpleModule();
 
-	/**
-	 * The date-time module of the provider.
-	 */
+	/** The date-time module of the provider. */
 	private final JodaModule jodaModule = new JodaModule();
 
 	/**
@@ -78,8 +72,11 @@ public class CustomJacksonJsonProvider extends JacksonJsonProvider {
 
 	/**
 	 * Register a new mapper.
-	 * @param type The class of the mapper
-	 * @param mediaType The media type to handle
+	 *
+	 * @param type
+	 *            The class of the mapper
+	 * @param mediaType
+	 *            The media type to handle
 	 */
 	private void registerMapper(final Class<?> type,
 			final MediaType mediaType) {

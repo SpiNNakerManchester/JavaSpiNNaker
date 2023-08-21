@@ -196,14 +196,18 @@ public abstract class UDPTransceiver implements Closeable {
 
 	/**
 	 * Wrap any IOException thrown into an UncheckedIOException.
-	 * @param <T> Type of result
-	 * @param s Produces result or throws.
-	 * @return Result of s
-	 * @throws UncheckedIOException If supplier throws IOException
+	 *
+	 * @param <T>
+	 *            Type of result
+	 * @param op
+	 *            Produces result or throws.
+	 * @return Result of op
+	 * @throws UncheckedIOException
+	 *             If supplier throws IOException
 	 */
-	private static <T> T wrap(ThrowingSupplier<T> s) {
+	private static <T> T wrap(ThrowingSupplier<T> op) {
 		try {
-			return s.get();
+			return op.get();
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
@@ -211,14 +215,18 @@ public abstract class UDPTransceiver implements Closeable {
 
 	/**
 	 * Unwrap any UncheckedIOException thrown as its IOException.
-	 * @param <T> Type of result
-	 * @param s Produces result or throws.
-	 * @return Result of s
-	 * @throws IOException If supplier throws UncheckedIOException
+	 *
+	 * @param <T>
+	 *            Type of result
+	 * @param op
+	 *            Produces result or throws.
+	 * @return Result of op
+	 * @throws IOException
+	 *             If supplier throws UncheckedIOException
 	 */
-	private static <T> T unwrap(Supplier<T> s) throws IOException {
+	private static <T> T unwrap(Supplier<T> op) throws IOException {
 		try {
-			return s.get();
+			return op.get();
 		} catch (UncheckedIOException e) {
 			throw e.getCause();
 		}

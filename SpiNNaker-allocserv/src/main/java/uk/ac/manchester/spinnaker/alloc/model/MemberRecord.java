@@ -69,7 +69,10 @@ public class MemberRecord {
 		return groupId;
 	}
 
-	/** @param groupId The ID of the group that this is a membership of. */
+	/**
+	 * @param groupId
+	 *            The ID of the group that this is a membership of.
+	 */
 	public void setGroupId(int groupId) {
 		this.groupId = groupId;
 	}
@@ -79,7 +82,10 @@ public class MemberRecord {
 		return groupName;
 	}
 
-	/** @param groupName The name of the group that this is a membership of. */
+	/**
+	 * @param groupName
+	 *            The name of the group that this is a membership of.
+	 */
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
 	}
@@ -89,7 +95,10 @@ public class MemberRecord {
 		return groupUrl;
 	}
 
-	/** @param groupUrl The URL for the group that this is a membership of. */
+	/**
+	 * @param groupUrl
+	 *            The URL for the group that this is a membership of.
+	 */
 	public void setGroupUrl(URI groupUrl) {
 		this.groupUrl = groupUrl;
 	}
@@ -99,7 +108,10 @@ public class MemberRecord {
 		return userId;
 	}
 
-	/** @param userId The ID of the user that this is a membership of. */
+	/**
+	 * @param userId
+	 *            The ID of the user that this is a membership of.
+	 */
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}
@@ -109,7 +121,10 @@ public class MemberRecord {
 		return userName;
 	}
 
-	/** @param userName The name of the user that this is a membership of. */
+	/**
+	 * @param userName
+	 *            The name of the user that this is a membership of.
+	 */
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
@@ -119,7 +134,10 @@ public class MemberRecord {
 		return userUrl;
 	}
 
-	/** @param userUrl The URL for the user that this is a membership of. */
+	/**
+	 * @param userUrl
+	 *            The URL for the user that this is a membership of.
+	 */
 	public void setUserUrl(URI userUrl) {
 		this.userUrl = userUrl;
 	}

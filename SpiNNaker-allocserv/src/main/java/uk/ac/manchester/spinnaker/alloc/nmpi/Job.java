@@ -22,34 +22,23 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  * A NMPI job.
  */
 public class Job {
-
-	/**
-	 * The ID of the job.
-	 */
+	/** The ID of the job. */
 	private Integer id;
 
-	/**
-	 * The ID of the collaboratory in which the job is created.
-	 */
+	/** The ID of the collaboratory in which the job is created. */
 	private String collab;
 
-	/**
-	 * The status of the job.
-	 */
+	/** The status of the job. */
 	private String status;
 
-	/**
-	 * The ID of the user which created the job.
-	 */
+	/** The ID of the user which created the job. */
 	private String userId;
 
-	/**
-	 * A count of how much resource has been used by the job.
-	 */
+	/** A count of how much resource has been used by the job. */
 	private ResourceUsage resourceUsage;
 
 	/**
-	 * Get the id.
+	 * Get the ID of the job.
 	 *
 	 * @return the id
 	 */
@@ -60,14 +49,15 @@ public class Job {
 	/**
 	 * Sets the id.
 	 *
-	 * @param idParam the id to set
+	 * @param id
+	 *            the id to set
 	 */
-	public void setId(final Integer idParam) {
-		this.id = idParam;
+	public void setId(final Integer id) {
+		this.id = id;
 	}
 
 	/**
-	 * Get the collab.
+	 * Get the ID of the collaboratory in which the job is created.
 	 *
 	 * @return the collab
 	 */
@@ -78,14 +68,15 @@ public class Job {
 	/**
 	 * Sets the collab.
 	 *
-	 * @param collab the collab to set
+	 * @param collab
+	 *            the collab to set
 	 */
 	public void setCollab(final String collab) {
 		this.collab = collab;
 	}
 
 	/**
-	 * Get the status.
+	 * Get the status of the job.
 	 *
 	 * @return the status
 	 */
@@ -96,14 +87,15 @@ public class Job {
 	/**
 	 * Sets the status.
 	 *
-	 * @param statusParam the status to set
+	 * @param status
+	 *            the status to set
 	 */
-	public void setStatus(final String statusParam) {
-		this.status = statusParam;
+	public void setStatus(final String status) {
+		this.status = status;
 	}
 
 	/**
-	 * Get the userId.
+	 * Get the ID of the user which created the job.
 	 *
 	 * @return the userId
 	 */
@@ -114,14 +106,15 @@ public class Job {
 	/**
 	 * Sets the userId.
 	 *
-	 * @param userIdParam the userId to set
+	 * @param userId
+	 *            the userId to set
 	 */
-	public void setUserId(final String userIdParam) {
-		this.userId = userIdParam;
+	public void setUserId(final String userId) {
+		this.userId = userId;
 	}
 
 	/**
-	 * Get the resourceUsage.
+	 * Get the count of how much resource has been used by the job.
 	 *
 	 * @return the resourceUsage
 	 */
@@ -132,20 +125,22 @@ public class Job {
 	/**
 	 * Sets the resourceUsage.
 	 *
-	 * @param resourceUsageParam the resourceUsage to set
+	 * @param resourceUsage
+	 *            the resourceUsage to set
 	 */
-	public void setResourceUsage(final ResourceUsage resourceUsageParam) {
-		this.resourceUsage = resourceUsageParam;
+	public void setResourceUsage(final ResourceUsage resourceUsage) {
+		this.resourceUsage = resourceUsage;
 	}
 
 	/**
-	 * Used for JSON serialisation;
-	 * ignores other properties we don't care about.
+	 * Used for JSON serialisation; ignores other properties we don't care
+	 * about.
 	 *
 	 * @param name
 	 *            The parameter to set.
 	 * @param value
 	 *            The value to set it to.
+	 * @hidden
 	 */
 	@JsonAnySetter
 	public void set(final String name, final Object value) {

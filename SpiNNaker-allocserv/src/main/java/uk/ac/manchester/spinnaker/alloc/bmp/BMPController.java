@@ -206,7 +206,8 @@ public class BMPController extends DatabaseAwareBean {
 	/**
 	 * Trigger the execution of the workers for the given BMPs now.
 	 *
-	 * @param bmps A list of BMPs that have changed.
+	 * @param bmps
+	 *            A list of BMPs that have changed.
 	 */
 	public void triggerSearch(Collection<Integer> bmps) {
 		for (var b : bmps) {

@@ -583,6 +583,10 @@ limitations under the License.
 								<title>Allocation Service</title>
 								<packages>uk.ac.manchester.spinnaker.alloc*</packages>
 							</group>
+							<group>
+								<title>NMPI Service</title>
+								<packages>uk.ac.manchester.spinnaker.nmpi*</packages>
+							</group>
 						</groups>
 						<!-- One of the ugly things is that we can't use standard package version numbers in these URLs -->
 						<links>

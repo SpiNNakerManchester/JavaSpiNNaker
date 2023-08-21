@@ -136,7 +136,8 @@ public class RequestFailedException extends RuntimeException {
 		private static final long serialVersionUID = 3774531853141947270L;
 
 		/**
-		 * @param message What message to use to say "its gone away".
+		 * @param message
+		 *            What message to use to say "its gone away".
 		 */
 		public ItsGone(String message) {
 			super(GONE, message);
@@ -148,15 +149,18 @@ public class RequestFailedException extends RuntimeException {
 		private static final long serialVersionUID = 5991697173204757030L;
 
 		/**
-		 * @param message What message to use to say "not found".
+		 * @param message
+		 *            What message to use to say "not found".
 		 */
 		public NotFound(String message) {
 			super(NOT_FOUND, message);
 		}
 
 		/**
-		 * @param message What message to use to say "not found".
-		 * @param cause Why we are sending the message.
+		 * @param message
+		 *            What message to use to say "not found".
+		 * @param cause
+		 *            Why we are sending the message.
 		 */
 		public NotFound(String message, Throwable cause) {
 			super(NOT_FOUND, message, cause);
@@ -168,7 +172,8 @@ public class RequestFailedException extends RuntimeException {
 		private static final long serialVersionUID = 7916573155067333350L;
 
 		/**
-		 * @param message What message to use to say "bad arguments".
+		 * @param message
+		 *            What message to use to say "bad arguments".
 		 */
 		public BadArgs(String message) {
 			super(BAD_REQUEST, message, null);

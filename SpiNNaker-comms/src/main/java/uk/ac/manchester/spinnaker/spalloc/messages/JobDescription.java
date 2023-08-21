@@ -224,7 +224,8 @@ public final class JobDescription {
 		private String keepAliveHost;
 
 		/**
-		 * @param jobID The job's identifier.
+		 * @param jobID
+		 *            The job's identifier.
 		 */
 		@JsonProperty("job_id")
 		public void setJobID(int jobID) {

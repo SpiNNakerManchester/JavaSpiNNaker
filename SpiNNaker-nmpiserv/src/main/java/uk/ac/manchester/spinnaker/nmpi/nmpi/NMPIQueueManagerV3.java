@@ -54,36 +54,23 @@ import uk.ac.manchester.spinnaker.nmpi.rest.NMPIQueue;
  * Manages the NMPI queue, receiving jobs and submitting them to be run.
  */
 public class NMPIQueueManagerV3 implements NMPIQueueManager {
-
-	/**
-	 * Job status when finished.
-	 */
+	/** Job status when finished. */
 	public static final String STATUS_FINISHED = "finished";
 
-	/**
-	 * Job status when in the queue but the executer hasn't started.
-	 */
+	/** Job status when in the queue but the executer hasn't started. */
 	public static final String STATUS_VALIDATED = "validated";
 
-	/**
-	 * Job status when running.
-	 */
+	/** Job status when running. */
 	public static final String STATUS_RUNNING = "running";
 
-	/**
-	 * Job status when in error.
-	 */
+	/** Job status when in error. */
 	public static final String STATUS_ERROR = "error";
 
-	/**
-	 * The name of the repository for the service.
-	 */
+	/** The name of the repository for the service. */
 	private static final String REPOSITORY =
 			"SpiNNaker Manchester temporary storage";
 
-	/**
-	 * The amount of time to sleep when an empty queue is detected.
-	 */
+	/** The amount of time to sleep when an empty queue is detected. */
 	private static final int EMPTY_QUEUE_SLEEP_MS = 10000;
 
 	/** The queue to get jobs from. */
@@ -101,9 +88,7 @@ public class NMPIQueueManagerV3 implements NMPIQueueManager {
 	/** The log of the job so far. */
 	private final Map<Integer, StringBuilder> jobLog = new HashMap<>();
 
-	/**
-	 * Logger.
-	 */
+	/** Logger. */
 	private static final Logger logger = getLogger(NMPIQueueManager.class);
 
 	/** The hardware identifier for the queue. */
@@ -175,7 +160,8 @@ public class NMPIQueueManagerV3 implements NMPIQueueManager {
 	/**
 	 * Process the response from the service.
 	 *
-	 * @param response The response to process
+	 * @param response
+	 *            The response to process
 	 */
 	private void processResponse(final QueueNextResponse response) {
 		if (response instanceof QueueEmpty) {
@@ -190,7 +176,8 @@ public class NMPIQueueManagerV3 implements NMPIQueueManager {
 	/**
 	 * Process the response of a Job.
 	 *
-	 * @param job The job to process
+	 * @param job
+	 *            The job to process
 	 */
 	private void processResponse(final Job job) {
 		synchronized (jobCache) {
