@@ -84,123 +84,78 @@ import uk.ac.manchester.spinnaker.nmpi.status.StatusMonitorManager;
 @Service("service")
 // TODO needs security; Role = JobEngine
 public class JobManager implements NMPIQueueListener, JobManagerInterface {
-
-	/**
-	 * Assumed number of chips on a board.
-	 */
+	/** Assumed number of chips on a board. */
 	private static final double CHIPS_PER_BOARD = 48.0;
 
-	/**
-	 * Assumed number of cores usable per chip.
-	 */
+	/** Assumed number of cores usable per chip. */
 	private static final double CORES_PER_CHIP = 15.0;
 
-	/**
-	 * Default number of boards to request.
-	 */
+	/** Default number of boards to request. */
 	private static final int DEFAULT_N_BOARDS = 3;
 
-	/**
-	 * Number of milliseconds per second.
-	 */
+	/** Number of milliseconds per second. */
 	private static final double MILLISECONDS_PER_SECOND = 1000.0;
 
-	/**
-	 * Threshold before the number of boards is scaled up.
-	 */
+	/** Threshold before the number of boards is scaled up. */
 	private static final double SCALE_UP_THRESHOLD = 0.1;
 
-	/**
-	 * Seconds between status updates.
-	 */
+	/** Seconds between status updates. */
 	public static final int STATUS_UPDATE_PERIOD = 10;
 
-	/**
-	 * The machine manager.
-	 */
+	/** The machine manager. */
 	@Autowired
 	private MachineManager machineManager;
 
-	/**
-	 * The NMPI queue manager.
-	 */
+	/** The NMPI queue manager. */
 	@Autowired
 	private NMPIQueueManager queueManager;
 
-	/**
-	 * The output manager.
-	 */
+	/** The output manager. */
 	@Autowired
 	private OutputManager outputManager;
 
-	/**
-	 * The status updater.
-	 */
+	/** The status updater. */
 	@Autowired
 	private StatusMonitorManager statusMonitorManager;
 
-	/**
-	 * The base URL of the REST service.
-	 */
+	/** The base URL of the REST service. */
 	private final URL baseUrl;
 
-	/**
-	 * The Job Execution factory.
-	 */
+	/** The Job Execution factory. */
 	@Autowired
 	private JobExecuterFactory jobExecuterFactory;
 
-	/**
-	 * True if jobs should be restarted on failure.
-	 */
+	/** True if jobs should be restarted on failure. */
 	@Value("${restartJobExecutorOnFailure}")
 	private boolean restartJobExecuterOnFailure;
 
-	/**
-	 * The name of the setup script.
-	 */
+	/** The name of the setup script. */
 	@Value("${setupScript}")
 	private Resource setupScript;
 
-	/**
-	 * Logging.
-	 */
+	/** Logging. */
 	private static final Logger logger = getLogger(JobManager.class);
 
-	/**
-	 * Job ID &rarr; Machine(s) allocated.
-	 */
+	/** Job ID &rarr; Machine(s) allocated. */
 	private final Map<Integer, List<SpinnakerMachine>> allocatedMachines =
 			new HashMap<>();
 
-	/**
-	 * Executor ID &rarr; Executor.
-	 */
+	/** Executor ID &rarr; Executor. */
 	private final Map<String, JobExecuter> jobExecuters = new HashMap<>();
 
-	/**
-	 * Executor ID &rarr; Job ID.
-	 */
+	/** Executor ID &rarr; Job ID. */
 	private final Map<String, Job> executorJobId = new HashMap<>();
 
-	/**
-	 * Job ID &rarr; Directory of temporary output files.
-	 */
+	/** Job ID &rarr; Directory of temporary output files. */
 	private final Map<Integer, File> jobOutputTempFiles = new HashMap<>();
 
-	/**
-	 * Job ID &rarr; Job Provenance data.
-	 */
+	/** Job ID &rarr; Job Provenance data. */
 	private final Map<Integer, ObjectNode> jobProvenance = new HashMap<>();
 
-	/**
-	 * Job ID &rarr; Job owner.
-	 */
+	/** Job ID &rarr; Job owner. */
 	private final Map<Integer, String> jobOwner = new HashMap<>();
 
-	/**
-	 * Thread group for the executor.
-	 */
+	/** Thread group for the executor. */
 	private ThreadGroup threadGroup;
 
 	/**
@@ -213,16 +168,19 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	/**
 	 * Create a job manager.
 	 *
-	 * @param baseUrlParam The URL of the REST service of the manager.
+	 * @param baseUrl
+	 *            The URL of the REST service of the manager.
 	 */
-	public JobManager(final URL baseUrlParam) {
-		this.baseUrl = requireNonNull(baseUrlParam);
-		logger.info("Base URL is {}", baseUrlParam);
+	public JobManager(final URL baseUrl) {
+		this.baseUrl = requireNonNull(baseUrl);
+		logger.info("Base URL is {}", baseUrl);
 	}
 
 	/**
 	 * Start the manager's worker threads.
-	 * @throws IOException If we get an error starting a job.
+	 *
+	 * @throws IOException
+	 *             If we get an error starting a job.
 	 */
 	@PostConstruct
 	private void startManager() throws IOException {
@@ -275,9 +233,10 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	 * You need to hold the lock on {@link #jobExecuters} when running this
 	 * method.
 	 *
-	 * @param job The job to execute
-	 *
-	 * @throws IOException If there is an error starting the job
+	 * @param job
+	 *            The job to execute
+	 * @throws IOException
+	 *             If there is an error starting the job
 	 */
 	private void launchExecuter(final Job job) throws IOException {
 		final var executer =
@@ -375,7 +334,8 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	 * @param remove
 	 *            Whether the machine found should be removed or not.
 	 * @return The machine found
-	 * @throws WebApplicationException if machine not found
+	 * @throws WebApplicationException
+	 *             if machine not found
 	 */
 	private SpinnakerMachine findMachine(final int id,
 			final String machineName, final boolean remove) {
@@ -438,9 +398,12 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	/**
 	 * Get a machine to run the job on.
 	 *
-	 * @param id The ID of the job
-	 * @param user The user to run the job as
-	 * @param nBoardsToRequest The number of boards to request
+	 * @param id
+	 *            The ID of the job
+	 * @param user
+	 *            The user to run the job as
+	 * @param nBoardsToRequest
+	 *            The number of boards to request
 	 * @return The machine allocated
 	 */
 	private SpinnakerMachine allocateMachineForJob(final int id,
@@ -460,7 +423,9 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 
 	/**
 	 * Get the list of machines currently allocated to a job.
-	 * @param id The id of the job.
+	 *
+	 * @param id
+	 *            The id of the job.
 	 * @return The list of machines for the job.
 	 */
 	private List<SpinnakerMachine> getMachineForJob(final int id) {
@@ -570,12 +535,17 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	/**
 	 * Get the output data items for a job from a list of outputs.
 	 *
-	 * @param projectId The ID of the project of the job
-	 * @param id The ID of the job
-	 * @param baseFile The base file location for the files
-	 * @param outputs The output files
+	 * @param projectId
+	 *            The ID of the project of the job
+	 * @param id
+	 *            The ID of the job
+	 * @param baseFile
+	 *            The base file location for the files
+	 * @param outputs
+	 *            The output files
 	 * @return The list of data items.
-	 * @throws IOException If there was an error dealing with a file.
+	 * @throws IOException
+	 *             If there was an error dealing with a file.
 	 */
 	private List<DataItem> getOutputFiles(final String projectId, final int id,
 			final String baseFile, final List<String> outputs)
@@ -639,7 +609,8 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	/**
 	 * Get the provenance for a job.
 	 *
-	 * @param id The ID of the job
+	 * @param id
+	 *            The ID of the job
 	 * @return The provenance as a JSON data item
 	 */
 	private ObjectNode getProvenance(final int id) {
@@ -683,7 +654,8 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	/**
 	 * Release the machines allocated to a job.
 	 *
-	 * @param id The ID of the job
+	 * @param id
+	 *            The ID of the job
 	 * @return {@code true} if there were machines removed by this.
 	 */
 	private boolean releaseAllocatedMachines(final int id) {
@@ -729,8 +701,10 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	/**
 	 * Convert a remote exception to a local one.
 	 *
-	 * @param error The error message.
-	 * @param stackTrace The stack trace.
+	 * @param error
+	 *            The error message.
+	 * @param stackTrace
+	 *            The stack trace.
 	 * @return The exception.
 	 */
 	private Exception reconstructRemoteException(final String error,

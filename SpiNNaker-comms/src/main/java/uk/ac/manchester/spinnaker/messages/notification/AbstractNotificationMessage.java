@@ -46,7 +46,10 @@ public abstract class AbstractNotificationMessage
 		command = NotificationMessageCode.get(buffer.getShort() & MAX_COMMAND);
 	}
 
-	/** @param command The command code of the message. */
+	/**
+	 * @param command
+	 *            The command code of the message.
+	 */
 	public AbstractNotificationMessage(NotificationMessageCode command) {
 		this.command = command;
 	}

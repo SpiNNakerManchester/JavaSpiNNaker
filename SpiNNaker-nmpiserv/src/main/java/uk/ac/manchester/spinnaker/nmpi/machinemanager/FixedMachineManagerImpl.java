@@ -32,24 +32,16 @@ import uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine;
  * A manager of directly-connected SpiNNaker machines.
  */
 public class FixedMachineManagerImpl implements MachineManager {
-	/**
-	 * The queue of available machines.
-	 */
+	/** The queue of available machines. */
 	private final Set<SpinnakerMachine> machinesAvailable = new HashSet<>();
 
-	/**
-	 * The set of machine allocated.
-	 */
+	/** The set of machine allocated. */
 	private final Set<SpinnakerMachine> machinesAllocated = new HashSet<>();
 
-	/**
-	 * Lock to avoid concurrent modification in different threads.
-	 */
+	/** Lock to avoid concurrent modification in different threads. */
 	private final Object lock = new Object();
 
-	/**
-	 * True when the manager is finished.
-	 */
+	/** True when the manager is finished. */
 	private boolean done = false;
 
 	/**
@@ -97,7 +89,8 @@ public class FixedMachineManagerImpl implements MachineManager {
 	/**
 	 * Get a machine with at least the given number of boards.
 	 *
-	 * @param nBoards The number of boards required.
+	 * @param nBoards
+	 *            The number of boards required.
 	 * @return A machine big enough, or null of none.
 	 */
 	private SpinnakerMachine getLargeEnoughMachine(final int nBoards) {

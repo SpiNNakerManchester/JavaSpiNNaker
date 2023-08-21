@@ -24,10 +24,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DockerInspectResponse {
-
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public class State {
-
 		@JsonProperty("Running")
 		private boolean running;
 
@@ -39,7 +37,8 @@ public class DockerInspectResponse {
 		}
 
 		/**
-		 * @param running whether it is running
+		 * @param running
+		 *            whether it is running
 		 */
 		public void setRunning(boolean running) {
 			this.running = running;
@@ -57,7 +56,8 @@ public class DockerInspectResponse {
 	}
 
 	/**
-	 * @param state the state to set
+	 * @param state
+	 *            the state to set
 	 */
 	public void setState(State state) {
 		this.state = state;

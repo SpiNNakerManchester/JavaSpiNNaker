@@ -23,7 +23,6 @@ import uk.ac.manchester.spinnaker.nmpi.model.QueueJobCompat;
  * A list of Jobs.
  */
 public class JobListCompat {
-
 	private List<QueueJobCompat> objects;
 
 	/**
@@ -34,10 +33,10 @@ public class JobListCompat {
 	}
 
 	/**
-	 * @param objects the jobs to set
+	 * @param objects
+	 *            the jobs to set
 	 */
 	public void setObjects(List<QueueJobCompat> objects) {
 		this.objects = objects;
 	}
-
 }

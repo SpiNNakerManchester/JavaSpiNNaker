@@ -26,7 +26,6 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.Job;
  * Manages the NMPI queue, receiving jobs and submitting them to be run.
  */
 public interface NMPIQueueManager {
-
 	/**
 	 * Get jobs that are marked as running or in progress in some form.
 	 * @return A list of jobs.

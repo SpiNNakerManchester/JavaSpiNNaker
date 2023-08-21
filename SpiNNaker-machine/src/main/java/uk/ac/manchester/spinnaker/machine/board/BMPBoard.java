@@ -30,7 +30,10 @@ public final class BMPBoard {
 	@ValidBoardNumber
 	public final int board;
 
-	/** @param board The board number. */
+	/**
+	 * @param board
+	 *            The board number.
+	 */
 	public BMPBoard(int board) {
 		this.board = board;
 	}

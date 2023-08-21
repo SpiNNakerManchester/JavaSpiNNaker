@@ -21,10 +21,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  * A reference to some data to be moved into or out of a {@link Job}.
  */
 public class DataItem {
-
-	/**
-	 * The item URL.
-	 */
+	/** The item URL. */
 	private String url;
 
 	/**
@@ -38,11 +35,11 @@ public class DataItem {
 	 * Make an instance that wraps a URL. The meaning of the URL depends on the
 	 * usage of the data item.
 	 *
-	 * @param urlParam
+	 * @param url
 	 *            The URL to wrap.
 	 */
-	public DataItem(final String urlParam) {
-		this.url = urlParam;
+	public DataItem(final String url) {
+		this.url = url;
 	}
 
 	/**
@@ -57,17 +54,21 @@ public class DataItem {
 	/**
 	 * Set the URL of the item of data.
 	 *
-	 * @param urlParam The URL
+	 * @param url
+	 *            The URL
 	 */
-	public void setUrl(final String urlParam) {
-		this.url = urlParam;
+	public void setUrl(final String url) {
+		this.url = url;
 	}
 
 	/**
 	 * Setter that ignores other properties.
 	 *
-	 * @param key The key of the property
-	 * @param value The value of the property
+	 * @param key
+	 *            The key of the property
+	 * @param value
+	 *            The value of the property
+	 * @hidden
 	 */
 	@JsonAnySetter
 	public void ignoreExtra(final String key, final String value) {

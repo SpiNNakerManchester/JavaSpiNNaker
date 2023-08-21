@@ -47,9 +47,12 @@ public enum EIEIOType {
 	public final long maxValue;
 
 	/**
-	 * @param value the value
-	 * @param keyBytes the number of bytes per key
-	 * @param payloadBytes the number of bytes per value
+	 * @param value
+	 *            the value
+	 * @param keyBytes
+	 *            the number of bytes per key
+	 * @param payloadBytes
+	 *            the number of bytes per value
 	 */
 	EIEIOType(int value, int keyBytes, int payloadBytes) {
 		this.value = value;

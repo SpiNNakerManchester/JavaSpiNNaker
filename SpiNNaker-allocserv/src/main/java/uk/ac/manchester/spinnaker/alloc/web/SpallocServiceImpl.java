@@ -145,10 +145,14 @@ public class SpallocServiceImpl extends BackgroundSupport
 	/**
 	 * Adds in the {@code Link:} header with general paging info.
 	 *
-	 * @param value The core response.
-	 * @param ui    Information about URIs
-	 * @param start The start offset.
-	 * @param limit The size of chunk.
+	 * @param value
+	 *            The core response.
+	 * @param ui
+	 *            Information about URIs
+	 * @param start
+	 *            The start offset.
+	 * @param limit
+	 *            The size of chunk.
 	 * @return Annotated response.
 	 */
 	private Response wrapPaging(ListJobsResponse value, UriInfo ui, int start,
@@ -214,11 +218,13 @@ public class SpallocServiceImpl extends BackgroundSupport
 	 * nmpiJobId) from req to determine the spalloc call to make (also
 	 * acceptable if all are null).
 	 *
-	 * @param req The request details.
-	 * @param crds The request credentials.
+	 * @param req
+	 *            The request details.
+	 * @param crds
+	 *            The request credentials.
 	 * @return The job created.
-	 * @throws JsonProcessingException If there is an error converting the
-	 *     request into bytes.
+	 * @throws JsonProcessingException
+	 *             If there is an error converting the request into bytes.
 	 */
 	private Optional<SpallocAPI.Job> createJob(CreateJobRequest req,
 			CreateDescriptor crds) throws JsonProcessingException {

@@ -45,20 +45,22 @@ import uk.ac.manchester.spinnaker.nmpi.rest.utils.PropertyBasedDeserialiser;
  */
 @Path("/api/v2")
 public interface NMPIQueueCompat {
-
 	/**
 	 * Gets all jobs in the queue.
-	 * @param authHeader The authorization header.
-	 * @param hardware The hardware to request the jobs for.
-	 * @param status The accepted status.
+	 *
+	 * @param authHeader
+	 *            The authorization header.
+	 * @param hardware
+	 *            The hardware to request the jobs for.
+	 * @param status
+	 *            The accepted status.
 	 * @return The list of jobs that meet the criteria.
 	 * @return
 	 */
 	@GET
 	@Path("queue/")
 	@Produces("application/json")
-	JobListCompat getJobs(
-			@HeaderParam("Authorization") String authHeader,
+	JobListCompat getJobs(@HeaderParam("Authorization") String authHeader,
 			@QueryParam("hardware") String hardware,
 			@QueryParam("status") String status);
 
@@ -128,11 +130,13 @@ public interface NMPIQueueCompat {
 
 	/**
 	 * Get a client for the API.
-	 * @param url The URL to connect to.
+	 *
+	 * @param url
+	 *            The URL to connect to.
 	 * @return A proxy of the API.
 	 */
 	static NMPIQueueCompat createClient(String url) {
-		ObjectMapper mapper = new ObjectMapper();
+		var mapper = new ObjectMapper();
 		mapper.setPropertyNamingStrategy(SNAKE_CASE);
 		return JAXRSClientFactory.create(url, NMPIQueueCompat.class,
 				List.of(createProvider()));

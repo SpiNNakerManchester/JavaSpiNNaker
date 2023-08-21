@@ -98,7 +98,10 @@ public final class GroupRecord {
 		return groupName;
 	}
 
-	/** @param groupName The group's name. */
+	/**
+	 * @param groupName
+	 *            The group's name.
+	 */
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
 	}
@@ -108,7 +111,10 @@ public final class GroupRecord {
 		return Optional.ofNullable(quota);
 	}
 
-	/** @param quota The quota of the group in board-seconds, if one exists. */
+	/**
+	 * @param quota
+	 *            The quota of the group in board-seconds, if one exists.
+	 */
 	public void setQuota(Long quota) {
 		this.quota = quota;
 	}
@@ -127,7 +133,10 @@ public final class GroupRecord {
 		return members;
 	}
 
-	/** @param members The members of the group. */
+	/**
+	 * @param members
+	 *            The members of the group.
+	 */
 	public void setMembers(Map<String, URI> members) {
 		this.members = unmodifiableMap(members);
 	}

@@ -67,15 +67,23 @@ class GitPyNNJobParametersFactory extends JobParametersFactory {
 	/**
 	 * Constructs the parameters by checking out the git repository.
 	 *
-	 * @param job The job to get the parameters of
-	 * @param workingDirectory The directory where the job should be run
-	 * @param experimentDescription The git URL
-	 * @param setupScript The setup script to run
+	 * @param job
+	 *            The job to get the parameters of
+	 * @param workingDirectory
+	 *            The directory where the job should be run
+	 * @param experimentDescription
+	 *            The git URL
+	 * @param setupScript
+	 *            The setup script to run
 	 * @return The constructed parameters
-	 * @throws GitAPIException If there is a general problem using Git
-	 * @throws InvalidRemoteException If there is a problem with the repository
-	 * @throws TransportException If there is a problem in communication
-	 * @throws URISyntaxException If the URI syntax is incorrect
+	 * @throws GitAPIException
+	 *             If there is a general problem using Git
+	 * @throws InvalidRemoteException
+	 *             If there is a problem with the repository
+	 * @throws TransportException
+	 *             If there is a problem in communication
+	 * @throws URISyntaxException
+	 *             If the URI syntax is incorrect
 	 */
 	private JobParameters constructParameters(final Job job,
 			final File workingDirectory, final String experimentDescription,

@@ -19,7 +19,10 @@ package uk.ac.manchester.spinnaker.spalloc.exceptions;
 public class JobDestroyedException extends Exception {
 	private static final long serialVersionUID = 6082560756316191208L;
 
-	/** @param destroyReason The reason why the job was destroyed. */
+	/**
+	 * @param destroyReason
+	 *            The reason why the job was destroyed.
+	 */
 	public JobDestroyedException(String destroyReason) {
 		super(destroyReason);
 	}

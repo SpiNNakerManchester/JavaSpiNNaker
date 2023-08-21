@@ -57,11 +57,16 @@ public class BMPConnectionData {
 	public final Integer portNumber;
 
 	/**
-	 * @param cabinet The number of the cabinet containing the frame.
-	 * @param frame The number of the frame containing the boards.
-	 * @param ipAddress The address of the BMP.
-	 * @param boards The boards controlled by the BMP.
-	 * @param portNumber The BMP's port.
+	 * @param cabinet
+	 *            The number of the cabinet containing the frame.
+	 * @param frame
+	 *            The number of the frame containing the boards.
+	 * @param ipAddress
+	 *            The address of the BMP.
+	 * @param boards
+	 *            The boards controlled by the BMP.
+	 * @param portNumber
+	 *            The BMP's port.
 	 */
 	public BMPConnectionData(int cabinet, int frame, InetAddress ipAddress,
 			Collection<Integer> boards, Integer portNumber) {
@@ -73,10 +78,14 @@ public class BMPConnectionData {
 	}
 
 	/**
-	 * @param coords The coordinates of the BMP.
-	 * @param ipAddress The address of the BMP.
-	 * @param boards The boards controlled by the BMP.
-	 * @param portNumber The BMP's port.
+	 * @param coords
+	 *            The coordinates of the BMP.
+	 * @param ipAddress
+	 *            The address of the BMP.
+	 * @param boards
+	 *            The boards controlled by the BMP.
+	 * @param portNumber
+	 *            The BMP's port.
 	 */
 	public BMPConnectionData(BMPCoords coords, InetAddress ipAddress,
 			Collection<Integer> boards, Integer portNumber) {

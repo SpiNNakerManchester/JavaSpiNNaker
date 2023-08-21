@@ -23,7 +23,9 @@ public class KeyDataElement implements AbstractDataElement {
 
 	/**
 	 * Create a data element.
-	 * @param key The key in the element.
+	 *
+	 * @param key
+	 *            The key in the element.
 	 */
 	public KeyDataElement(int key) {
 		this.key = key;
