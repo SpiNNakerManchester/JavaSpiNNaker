@@ -46,34 +46,37 @@
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment"> * Interface to the Icinga2 API for status monitoring.</em>
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">interface</strong> <a name="Icinga2" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/rest/Icinga2.html#Icinga2">Icinga2</a> {
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment">	 * Update the status of a service or host.</em>
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment">	 * @param authHeader The authorization header value to authenticate with</em>
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment">	 * @param result The result of a status check to update with.</em>
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment">	 * @return The response from the server as a String.</em>
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  	@Produces(APPLICATION_JSON)
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  	@Consumes(APPLICATION_JSON)
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  	@POST
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  	@Path(<span class="jxr_string">"/v1/actions/process-check-result"</span>)
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  	Map&lt;String, Object&gt; processCheckResult(
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  			@HeaderParam(<span class="jxr_string">"Authorization"</span>) String authHeader,
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  			Icinga2CheckResult result);
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>  	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment">	 * Get a client for the API.</em>
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment">	 * @param url The URL to connect to.</em>
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment">	 * @return A proxy of the API.</em>
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  	<strong class="jxr_keyword">static</strong> <a name="Icinga2" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/rest/Icinga2.html#Icinga2">Icinga2</a> createClient(String url) {
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  		ObjectMapper mapper = <strong class="jxr_keyword">new</strong> ObjectMapper();
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  		mapper.setPropertyNamingStrategy(SNAKE_CASE);
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  		<strong class="jxr_keyword">return</strong> JAXRSClientFactory.create(url, Icinga2.<strong class="jxr_keyword">class</strong>,
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  				List.of(<strong class="jxr_keyword">new</strong> JacksonJsonProvider()));
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  	}
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>  }
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment">	 * Update the status of a service or host.</em>
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment">	 * @param authHeader</em>
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment">	 *            The authorization header value to authenticate with</em>
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment">	 * @param result</em>
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment">	 *            The result of a status check to update with.</em>
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment">	 * @return The response from the server as a String.</em>
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  	@Produces(APPLICATION_JSON)
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  	@Consumes(APPLICATION_JSON)
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  	@POST
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  	@Path(<span class="jxr_string">"/v1/actions/process-check-result"</span>)
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  	Map&lt;String, Object&gt; processCheckResult(
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  			@HeaderParam(<span class="jxr_string">"Authorization"</span>) String authHeader,
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  			Icinga2CheckResult result);
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment">	 * Get a client for the API.</em>
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment">	 * @param url</em>
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment">	 *            The URL to connect to.</em>
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <em class="jxr_javadoccomment">	 * @return A proxy of the API.</em>
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  	<strong class="jxr_keyword">static</strong> <a name="Icinga2" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/rest/Icinga2.html#Icinga2">Icinga2</a> createClient(String url) {
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  		<strong class="jxr_keyword">var</strong> mapper = <strong class="jxr_keyword">new</strong> ObjectMapper();
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  		mapper.setPropertyNamingStrategy(SNAKE_CASE);
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  		<strong class="jxr_keyword">return</strong> JAXRSClientFactory.create(url, Icinga2.<strong class="jxr_keyword">class</strong>,
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  				List.of(<strong class="jxr_keyword">new</strong> JacksonJsonProvider()));
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  	}
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2023 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

@@ -258,39 +258,40 @@
 <a class="jxr_linenumber" name="L250" href="#L250">250</a> <em class="jxr_javadoccomment">	 * The status monitor manager.</em>
 <a class="jxr_linenumber" name="L251" href="#L251">251</a> <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="L252" href="#L252">252</a> <em class="jxr_javadoccomment">	 * @return bean</em>
-<a class="jxr_linenumber" name="L253" href="#L253">253</a> <em class="jxr_javadoccomment">	 * @throws RuntimeException If the status type is unknown</em>
-<a class="jxr_linenumber" name="L254" href="#L254">254</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L255" href="#L255">255</a> 	@Bean
-<a class="jxr_linenumber" name="L256" href="#L256">256</a> 	<strong class="jxr_keyword">public</strong> <a name="StatusMonitorManager" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/status/StatusMonitorManager.html#StatusMonitorManager">StatusMonitorManager</a> statusMonitorManager() {
-<a class="jxr_linenumber" name="L257" href="#L257">257</a> 		<strong class="jxr_keyword">if</strong> (updateStatus) {
-<a class="jxr_linenumber" name="L258" href="#L258">258</a> 			<strong class="jxr_keyword">if</strong> (statusType == StatusServiceType.STATUS_CAKE) {
-<a class="jxr_linenumber" name="L259" href="#L259">259</a> 				<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="StatusCakeStatusMonitorManagerImpl" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/status/StatusCakeStatusMonitorManagerImpl.html#StatusCakeStatusMonitorManagerImpl">StatusCakeStatusMonitorManagerImpl</a>();
-<a class="jxr_linenumber" name="L260" href="#L260">260</a> 			} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (statusType == StatusServiceType.ICINGA2) {
-<a class="jxr_linenumber" name="L261" href="#L261">261</a> 				<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="Icinga2StatusMonitorManagerImpl" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/status/Icinga2StatusMonitorManagerImpl.html#Icinga2StatusMonitorManagerImpl">Icinga2StatusMonitorManagerImpl</a>();
-<a class="jxr_linenumber" name="L262" href="#L262">262</a> 			} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L263" href="#L263">263</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(
-<a class="jxr_linenumber" name="L264" href="#L264">264</a> 						<span class="jxr_string">"Unknown status service type: "</span> + statusType);
-<a class="jxr_linenumber" name="L265" href="#L265">265</a> 			}
-<a class="jxr_linenumber" name="L266" href="#L266">266</a> 		}
-<a class="jxr_linenumber" name="L267" href="#L267">267</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="NullStatusMonitorManagerImpl" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/status/NullStatusMonitorManagerImpl.html#NullStatusMonitorManagerImpl">NullStatusMonitorManagerImpl</a>();
-<a class="jxr_linenumber" name="L268" href="#L268">268</a> 	}
-<a class="jxr_linenumber" name="L269" href="#L269">269</a> 
-<a class="jxr_linenumber" name="L270" href="#L270">270</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L271" href="#L271">271</a> <em class="jxr_javadoccomment">	 * The JAX-RS interface.</em>
-<a class="jxr_linenumber" name="L272" href="#L272">272</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L273" href="#L273">273</a> <em class="jxr_javadoccomment">	 * @return bean</em>
-<a class="jxr_linenumber" name="L274" href="#L274">274</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L275" href="#L275">275</a> 	@Bean
-<a class="jxr_linenumber" name="L276" href="#L276">276</a> 	<strong class="jxr_keyword">public</strong> Server jaxRsServer() {
-<a class="jxr_linenumber" name="L277" href="#L277">277</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">var</strong> factory = <strong class="jxr_keyword">new</strong> JAXRSServerFactoryBean();
-<a class="jxr_linenumber" name="L278" href="#L278">278</a> 		factory.setAddress(restPath);
-<a class="jxr_linenumber" name="L279" href="#L279">279</a> 		factory.setBus(ctx.getBean(SpringBus.<strong class="jxr_keyword">class</strong>));
-<a class="jxr_linenumber" name="L280" href="#L280">280</a> 		factory.setServiceBeans(asList(outputManager(), jobManager()));
-<a class="jxr_linenumber" name="L281" href="#L281">281</a> 		factory.setProviders(
-<a class="jxr_linenumber" name="L282" href="#L282">282</a> 				asList(<strong class="jxr_keyword">new</strong> JacksonJsonProvider(), <strong class="jxr_keyword">new</strong> <a name="NullExceptionMapper" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/rest/utils/NullExceptionMapper.html#NullExceptionMapper">NullExceptionMapper</a>()));
-<a class="jxr_linenumber" name="L283" href="#L283">283</a> 		<strong class="jxr_keyword">return</strong> factory.create();
-<a class="jxr_linenumber" name="L284" href="#L284">284</a> 	}
-<a class="jxr_linenumber" name="L285" href="#L285">285</a> }
+<a class="jxr_linenumber" name="L253" href="#L253">253</a> <em class="jxr_javadoccomment">	 * @throws RuntimeException</em>
+<a class="jxr_linenumber" name="L254" href="#L254">254</a> <em class="jxr_javadoccomment">	 *             If the status type is unknown</em>
+<a class="jxr_linenumber" name="L255" href="#L255">255</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L256" href="#L256">256</a> 	@Bean
+<a class="jxr_linenumber" name="L257" href="#L257">257</a> 	<strong class="jxr_keyword">public</strong> <a name="StatusMonitorManager" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/status/StatusMonitorManager.html#StatusMonitorManager">StatusMonitorManager</a> statusMonitorManager() {
+<a class="jxr_linenumber" name="L258" href="#L258">258</a> 		<strong class="jxr_keyword">if</strong> (updateStatus) {
+<a class="jxr_linenumber" name="L259" href="#L259">259</a> 			<strong class="jxr_keyword">if</strong> (statusType == StatusServiceType.STATUS_CAKE) {
+<a class="jxr_linenumber" name="L260" href="#L260">260</a> 				<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="StatusCakeStatusMonitorManagerImpl" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/status/StatusCakeStatusMonitorManagerImpl.html#StatusCakeStatusMonitorManagerImpl">StatusCakeStatusMonitorManagerImpl</a>();
+<a class="jxr_linenumber" name="L261" href="#L261">261</a> 			} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (statusType == StatusServiceType.ICINGA2) {
+<a class="jxr_linenumber" name="L262" href="#L262">262</a> 				<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="Icinga2StatusMonitorManagerImpl" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/status/Icinga2StatusMonitorManagerImpl.html#Icinga2StatusMonitorManagerImpl">Icinga2StatusMonitorManagerImpl</a>();
+<a class="jxr_linenumber" name="L263" href="#L263">263</a> 			} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L264" href="#L264">264</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(
+<a class="jxr_linenumber" name="L265" href="#L265">265</a> 						<span class="jxr_string">"Unknown status service type: "</span> + statusType);
+<a class="jxr_linenumber" name="L266" href="#L266">266</a> 			}
+<a class="jxr_linenumber" name="L267" href="#L267">267</a> 		}
+<a class="jxr_linenumber" name="L268" href="#L268">268</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="NullStatusMonitorManagerImpl" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/status/NullStatusMonitorManagerImpl.html#NullStatusMonitorManagerImpl">NullStatusMonitorManagerImpl</a>();
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> 	}
+<a class="jxr_linenumber" name="L270" href="#L270">270</a> 
+<a class="jxr_linenumber" name="L271" href="#L271">271</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L272" href="#L272">272</a> <em class="jxr_javadoccomment">	 * The JAX-RS interface.</em>
+<a class="jxr_linenumber" name="L273" href="#L273">273</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L274" href="#L274">274</a> <em class="jxr_javadoccomment">	 * @return bean</em>
+<a class="jxr_linenumber" name="L275" href="#L275">275</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L276" href="#L276">276</a> 	@Bean
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> 	<strong class="jxr_keyword">public</strong> Server jaxRsServer() {
+<a class="jxr_linenumber" name="L278" href="#L278">278</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">var</strong> factory = <strong class="jxr_keyword">new</strong> JAXRSServerFactoryBean();
+<a class="jxr_linenumber" name="L279" href="#L279">279</a> 		factory.setAddress(restPath);
+<a class="jxr_linenumber" name="L280" href="#L280">280</a> 		factory.setBus(ctx.getBean(SpringBus.<strong class="jxr_keyword">class</strong>));
+<a class="jxr_linenumber" name="L281" href="#L281">281</a> 		factory.setServiceBeans(asList(outputManager(), jobManager()));
+<a class="jxr_linenumber" name="L282" href="#L282">282</a> 		factory.setProviders(
+<a class="jxr_linenumber" name="L283" href="#L283">283</a> 				asList(<strong class="jxr_keyword">new</strong> JacksonJsonProvider(), <strong class="jxr_keyword">new</strong> <a name="NullExceptionMapper" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/rest/utils/NullExceptionMapper.html#NullExceptionMapper">NullExceptionMapper</a>()));
+<a class="jxr_linenumber" name="L284" href="#L284">284</a> 		<strong class="jxr_keyword">return</strong> factory.create();
+<a class="jxr_linenumber" name="L285" href="#L285">285</a> 	}
+<a class="jxr_linenumber" name="L286" href="#L286">286</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2023 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

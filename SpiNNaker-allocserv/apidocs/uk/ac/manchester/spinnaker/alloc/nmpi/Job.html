@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -145,77 +145,68 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getCollab()">getCollab</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Get the collab.</div>
+<div class="block">Get the ID of the collaboratory in which the job is created.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getId()">getId</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Get the id.</div>
+<div class="block">Get the ID of the job.</div>
 </td>
 </tr>
 <tr class="altColor" id="i2">
 <td class="colFirst"><code><a href="ResourceUsage.html" title="class in uk.ac.manchester.spinnaker.alloc.nmpi">ResourceUsage</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getResourceUsage()">getResourceUsage</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Get the resourceUsage.</div>
+<div class="block">Get the count of how much resource has been used by the job.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getStatus()">getStatus</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Get the status.</div>
+<div class="block">Get the status of the job.</div>
 </td>
 </tr>
 <tr class="altColor" id="i4">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getUserId()">getUserId</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Get the userId.</div>
+<div class="block">Get the ID of the user which created the job.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i5">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#set(java.lang.String,java.lang.Object)">set</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&nbsp;value)</code></th>
-<td class="colLast">
-<div class="block">Used for JSON serialisation;
- ignores other properties we don't care about.</div>
-</td>
-</tr>
-<tr class="altColor" id="i6">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setCollab(java.lang.String)">setCollab</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;collab)</code></th>
 <td class="colLast">
 <div class="block">Sets the collab.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i7">
+<tr class="altColor" id="i6">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setId(java.lang.Integer)">setId</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;idParam)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setId(java.lang.Integer)">setId</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;id)</code></th>
 <td class="colLast">
 <div class="block">Sets the id.</div>
 </td>
 </tr>
-<tr class="altColor" id="i8">
+<tr class="rowColor" id="i7">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setResourceUsage(uk.ac.manchester.spinnaker.alloc.nmpi.ResourceUsage)">setResourceUsage</a></span>&#8203;(<a href="ResourceUsage.html" title="class in uk.ac.manchester.spinnaker.alloc.nmpi">ResourceUsage</a>&nbsp;resourceUsageParam)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setResourceUsage(uk.ac.manchester.spinnaker.alloc.nmpi.ResourceUsage)">setResourceUsage</a></span>&#8203;(<a href="ResourceUsage.html" title="class in uk.ac.manchester.spinnaker.alloc.nmpi">ResourceUsage</a>&nbsp;resourceUsage)</code></th>
 <td class="colLast">
 <div class="block">Sets the resourceUsage.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i9">
+<tr class="altColor" id="i8">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setStatus(java.lang.String)">setStatus</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;statusParam)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setStatus(java.lang.String)">setStatus</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;status)</code></th>
 <td class="colLast">
 <div class="block">Sets the status.</div>
 </td>
 </tr>
-<tr class="altColor" id="i10">
+<tr class="rowColor" id="i9">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setUserId(java.lang.String)">setUserId</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;userIdParam)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setUserId(java.lang.String)">setUserId</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;userId)</code></th>
 <td class="colLast">
 <div class="block">Sets the userId.</div>
 </td>
@@ -262,7 +253,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="getId()">getId</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></span>&nbsp;<span class="memberName">getId</span>()</div>
-<div class="block">Get the id.</div>
+<div class="block">Get the ID of the job.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the id</dd>
@@ -272,11 +263,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="setId(java.lang.Integer)">setId</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setId</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;idParam)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setId</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;id)</span></div>
 <div class="block">Sets the id.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>idParam</code> - the id to set</dd>
+<dd><code>id</code> - the id to set</dd>
 </dl>
 </section>
 </li>
@@ -284,7 +275,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="getCollab()">getCollab</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getCollab</span>()</div>
-<div class="block">Get the collab.</div>
+<div class="block">Get the ID of the collaboratory in which the job is created.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the collab</dd>
@@ -306,7 +297,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="getStatus()">getStatus</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getStatus</span>()</div>
-<div class="block">Get the status.</div>
+<div class="block">Get the status of the job.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the status</dd>
@@ -316,11 +307,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="setStatus(java.lang.String)">setStatus</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setStatus</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;statusParam)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setStatus</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;status)</span></div>
 <div class="block">Sets the status.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>statusParam</code> - the status to set</dd>
+<dd><code>status</code> - the status to set</dd>
 </dl>
 </section>
 </li>
@@ -328,7 +319,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="getUserId()">getUserId</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getUserId</span>()</div>
-<div class="block">Get the userId.</div>
+<div class="block">Get the ID of the user which created the job.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the userId</dd>
@@ -338,11 +329,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="setUserId(java.lang.String)">setUserId</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setUserId</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;userIdParam)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setUserId</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;userId)</span></div>
 <div class="block">Sets the userId.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>userIdParam</code> - the userId to set</dd>
+<dd><code>userId</code> - the userId to set</dd>
 </dl>
 </section>
 </li>
@@ -350,7 +341,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="getResourceUsage()">getResourceUsage</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="ResourceUsage.html" title="class in uk.ac.manchester.spinnaker.alloc.nmpi">ResourceUsage</a></span>&nbsp;<span class="memberName">getResourceUsage</span>()</div>
-<div class="block">Get the resourceUsage.</div>
+<div class="block">Get the count of how much resource has been used by the job.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the resourceUsage</dd>
@@ -360,25 +351,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="setResourceUsage(uk.ac.manchester.spinnaker.alloc.nmpi.ResourceUsage)">setResourceUsage</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setResourceUsage</span>&#8203;(<span class="arguments"><a href="ResourceUsage.html" title="class in uk.ac.manchester.spinnaker.alloc.nmpi">ResourceUsage</a>&nbsp;resourceUsageParam)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setResourceUsage</span>&#8203;(<span class="arguments"><a href="ResourceUsage.html" title="class in uk.ac.manchester.spinnaker.alloc.nmpi">ResourceUsage</a>&nbsp;resourceUsage)</span></div>
 <div class="block">Sets the resourceUsage.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>resourceUsageParam</code> - the resourceUsage to set</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="set(java.lang.String,java.lang.Object)">set</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">set</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&nbsp;value)</span></div>
-<div class="block">Used for JSON serialisation;
- ignores other properties we don't care about.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>name</code> - The parameter to set.</dd>
-<dd><code>value</code> - The value to set it to.</dd>
+<dd><code>resourceUsage</code> - the resourceUsage to set</dd>
 </dl>
 </section>
 </li>

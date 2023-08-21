@@ -123,10 +123,10 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine,uk.ac.manchester.spinnaker.nmpi.model.job.JobParameters,int,java.lang.String)">JobSpecification</a></span>&#8203;(<a href="../machine/SpinnakerMachine.html" title="class in uk.ac.manchester.spinnaker.nmpi.model.machine">SpinnakerMachine</a>&nbsp;machineParam,
-<a href="JobParameters.html" title="interface in uk.ac.manchester.spinnaker.nmpi.model.job">JobParameters</a>&nbsp;parametersParam,
-int&nbsp;idParam,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;urlParam)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine,uk.ac.manchester.spinnaker.nmpi.model.job.JobParameters,int,java.lang.String)">JobSpecification</a></span>&#8203;(<a href="../machine/SpinnakerMachine.html" title="class in uk.ac.manchester.spinnaker.nmpi.model.machine">SpinnakerMachine</a>&nbsp;machine,
+<a href="JobParameters.html" title="interface in uk.ac.manchester.spinnaker.nmpi.model.job">JobParameters</a>&nbsp;parameters,
+int&nbsp;id,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;url)</code></th>
 <td class="colLast">
 <div class="block">Create the specification for running a job.</div>
 </td>
@@ -158,54 +158,54 @@ int&nbsp;idParam,
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getId()">getId</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Get the id.</div>
+<div class="block">Get the ID of the job.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code><a href="../machine/SpinnakerMachine.html" title="class in uk.ac.manchester.spinnaker.nmpi.model.machine">SpinnakerMachine</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMachine()">getMachine</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Get the machine.</div>
+<div class="block">Get the machine to run the job on.</div>
 </td>
 </tr>
 <tr class="altColor" id="i2">
 <td class="colFirst"><code><a href="JobParameters.html" title="interface in uk.ac.manchester.spinnaker.nmpi.model.job">JobParameters</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getParameters()">getParameters</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Get the parameters.</div>
+<div class="block">Get the parameters of the job.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getUrl()">getUrl</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Get the URL.</div>
+<div class="block">Get the URL of the job to send results and status to.</div>
 </td>
 </tr>
 <tr class="altColor" id="i4">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setId(int)">setId</a></span>&#8203;(int&nbsp;idParam)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setId(int)">setId</a></span>&#8203;(int&nbsp;id)</code></th>
 <td class="colLast">
-<div class="block">Sets the id.</div>
+<div class="block">Sets the ID.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i5">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setMachine(uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine)">setMachine</a></span>&#8203;(<a href="../machine/SpinnakerMachine.html" title="class in uk.ac.manchester.spinnaker.nmpi.model.machine">SpinnakerMachine</a>&nbsp;machineParam)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setMachine(uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine)">setMachine</a></span>&#8203;(<a href="../machine/SpinnakerMachine.html" title="class in uk.ac.manchester.spinnaker.nmpi.model.machine">SpinnakerMachine</a>&nbsp;machine)</code></th>
 <td class="colLast">
 <div class="block">Sets the machine.</div>
 </td>
 </tr>
 <tr class="altColor" id="i6">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setParameters(uk.ac.manchester.spinnaker.nmpi.model.job.JobParameters)">setParameters</a></span>&#8203;(<a href="JobParameters.html" title="interface in uk.ac.manchester.spinnaker.nmpi.model.job">JobParameters</a>&nbsp;parametersParam)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setParameters(uk.ac.manchester.spinnaker.nmpi.model.job.JobParameters)">setParameters</a></span>&#8203;(<a href="JobParameters.html" title="interface in uk.ac.manchester.spinnaker.nmpi.model.job">JobParameters</a>&nbsp;parameters)</code></th>
 <td class="colLast">
 <div class="block">Sets the parameters.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i7">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setUrl(java.lang.String)">setUrl</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;urlParam)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setUrl(java.lang.String)">setUrl</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;url)</code></th>
 <td class="colLast">
 <div class="block">Sets the URL.</div>
 </td>
@@ -242,17 +242,17 @@ int&nbsp;idParam,
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine,uk.ac.manchester.spinnaker.nmpi.model.job.JobParameters,int,java.lang.String)">JobSpecification</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">JobSpecification</span>&#8203;(<span class="arguments"><a href="../machine/SpinnakerMachine.html" title="class in uk.ac.manchester.spinnaker.nmpi.model.machine">SpinnakerMachine</a>&nbsp;machineParam,
-<a href="JobParameters.html" title="interface in uk.ac.manchester.spinnaker.nmpi.model.job">JobParameters</a>&nbsp;parametersParam,
-int&nbsp;idParam,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;urlParam)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">JobSpecification</span>&#8203;(<span class="arguments"><a href="../machine/SpinnakerMachine.html" title="class in uk.ac.manchester.spinnaker.nmpi.model.machine">SpinnakerMachine</a>&nbsp;machine,
+<a href="JobParameters.html" title="interface in uk.ac.manchester.spinnaker.nmpi.model.job">JobParameters</a>&nbsp;parameters,
+int&nbsp;id,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;url)</span></div>
 <div class="block">Create the specification for running a job.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>machineParam</code> - The machine to run the job on.</dd>
-<dd><code>parametersParam</code> - The parameters to the job.</dd>
-<dd><code>idParam</code> - The ID of the job.</dd>
-<dd><code>urlParam</code> - The URL</dd>
+<dd><code>machine</code> - The machine to run the job on.</dd>
+<dd><code>parameters</code> - The parameters to the job.</dd>
+<dd><code>id</code> - The ID of the job.</dd>
+<dd><code>url</code> - The URL of the job to send results and status to.</dd>
 </dl>
 </section>
 </li>
@@ -270,7 +270,7 @@ int&nbsp;idParam,
 <section class="detail">
 <h3><a id="getMachine()">getMachine</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="../machine/SpinnakerMachine.html" title="class in uk.ac.manchester.spinnaker.nmpi.model.machine">SpinnakerMachine</a></span>&nbsp;<span class="memberName">getMachine</span>()</div>
-<div class="block">Get the machine.</div>
+<div class="block">Get the machine to run the job on.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the machine</dd>
@@ -280,11 +280,11 @@ int&nbsp;idParam,
 <li class="blockList">
 <section class="detail">
 <h3><a id="setMachine(uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine)">setMachine</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setMachine</span>&#8203;(<span class="arguments"><a href="../machine/SpinnakerMachine.html" title="class in uk.ac.manchester.spinnaker.nmpi.model.machine">SpinnakerMachine</a>&nbsp;machineParam)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setMachine</span>&#8203;(<span class="arguments"><a href="../machine/SpinnakerMachine.html" title="class in uk.ac.manchester.spinnaker.nmpi.model.machine">SpinnakerMachine</a>&nbsp;machine)</span></div>
 <div class="block">Sets the machine.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>machineParam</code> - the machine to set</dd>
+<dd><code>machine</code> - the machine to set</dd>
 </dl>
 </section>
 </li>
@@ -292,7 +292,7 @@ int&nbsp;idParam,
 <section class="detail">
 <h3><a id="getParameters()">getParameters</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="JobParameters.html" title="interface in uk.ac.manchester.spinnaker.nmpi.model.job">JobParameters</a></span>&nbsp;<span class="memberName">getParameters</span>()</div>
-<div class="block">Get the parameters.</div>
+<div class="block">Get the parameters of the job.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the parameters</dd>
@@ -302,11 +302,11 @@ int&nbsp;idParam,
 <li class="blockList">
 <section class="detail">
 <h3><a id="setParameters(uk.ac.manchester.spinnaker.nmpi.model.job.JobParameters)">setParameters</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setParameters</span>&#8203;(<span class="arguments"><a href="JobParameters.html" title="interface in uk.ac.manchester.spinnaker.nmpi.model.job">JobParameters</a>&nbsp;parametersParam)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setParameters</span>&#8203;(<span class="arguments"><a href="JobParameters.html" title="interface in uk.ac.manchester.spinnaker.nmpi.model.job">JobParameters</a>&nbsp;parameters)</span></div>
 <div class="block">Sets the parameters.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>parametersParam</code> - the parameters to set</dd>
+<dd><code>parameters</code> - the parameters to set</dd>
 </dl>
 </section>
 </li>
@@ -314,7 +314,7 @@ int&nbsp;idParam,
 <section class="detail">
 <h3><a id="getId()">getId</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getId</span>()</div>
-<div class="block">Get the id.</div>
+<div class="block">Get the ID of the job.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the id</dd>
@@ -324,11 +324,11 @@ int&nbsp;idParam,
 <li class="blockList">
 <section class="detail">
 <h3><a id="setId(int)">setId</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setId</span>&#8203;(<span class="arguments">int&nbsp;idParam)</span></div>
-<div class="block">Sets the id.</div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setId</span>&#8203;(<span class="arguments">int&nbsp;id)</span></div>
+<div class="block">Sets the ID.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>idParam</code> - the id to set</dd>
+<dd><code>id</code> - the id to set</dd>
 </dl>
 </section>
 </li>
@@ -336,7 +336,7 @@ int&nbsp;idParam,
 <section class="detail">
 <h3><a id="getUrl()">getUrl</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getUrl</span>()</div>
-<div class="block">Get the URL.</div>
+<div class="block">Get the URL of the job to send results and status to.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the URL</dd>
@@ -346,11 +346,11 @@ int&nbsp;idParam,
 <li class="blockList">
 <section class="detail">
 <h3><a id="setUrl(java.lang.String)">setUrl</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setUrl</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;urlParam)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setUrl</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;url)</span></div>
 <div class="block">Sets the URL.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>urlParam</code> - the URL to set</dd>
+<dd><code>url</code> - the URL to set</dd>
 </dl>
 </section>
 </li>

@@ -56,28 +56,32 @@
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  		}
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  	}
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment">	* Constructs the parameters by writing the script into a local file.</em>
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_javadoccomment">	*</em>
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment">	* @param job The job to construct parameters for</em>
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">	* @param workingDirectory The directory where the job should be started</em>
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment">	* @param setupScript The setup script to run</em>
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment">	* @return The parameters created</em>
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment">	* @throws IOException If the file can't be found to write</em>
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment">	*/</em>
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  	<strong class="jxr_keyword">private</strong> <a name="JobParameters" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/model/job/JobParameters.html#JobParameters">JobParameters</a> constructParameters(<strong class="jxr_keyword">final</strong> <a name="Job" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/model/job/nmpi/Job.html#Job">Job</a> job,
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>  			<strong class="jxr_keyword">final</strong> File workingDirectory, <strong class="jxr_keyword">final</strong> String setupScript)
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  			<strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">var</strong> scriptFile = <strong class="jxr_keyword">new</strong> File(workingDirectory, DEFAULT_SCRIPT_NAME);
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> writer = <strong class="jxr_keyword">new</strong> PrintWriter(scriptFile, UTF_8)) {
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  			writer.print(job.getCode());
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  		}
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>  		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="PyNNJobParameters" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/model/job/pynn/PyNNJobParameters.html#PyNNJobParameters">PyNNJobParameters</a>(workingDirectory.getAbsolutePath(),
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>  				setupScript, DEFAULT_SCRIPT_NAME + SYSTEM_ARG,
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  				job.getHardwareConfig());
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>  	}
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>  }
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment">	 * Constructs the parameters by writing the script into a local file.</em>
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment">	 * @param job</em>
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">	 *            The job to construct parameters for</em>
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment">	 * @param workingDirectory</em>
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment">	 *            The directory where the job should be started</em>
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment">	 * @param setupScript</em>
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment">	 *            The setup script to run</em>
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment">	 * @return The parameters created</em>
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment">	 * @throws IOException</em>
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment">	 *             If the file can't be found to write</em>
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  	<strong class="jxr_keyword">private</strong> <a name="JobParameters" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/model/job/JobParameters.html#JobParameters">JobParameters</a> constructParameters(<strong class="jxr_keyword">final</strong> <a name="Job" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/model/job/nmpi/Job.html#Job">Job</a> job,
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  			<strong class="jxr_keyword">final</strong> File workingDirectory, <strong class="jxr_keyword">final</strong> String setupScript)
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  			<strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">var</strong> scriptFile = <strong class="jxr_keyword">new</strong> File(workingDirectory, DEFAULT_SCRIPT_NAME);
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> writer = <strong class="jxr_keyword">new</strong> PrintWriter(scriptFile, UTF_8)) {
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  			writer.print(job.getCode());
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  		}
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="PyNNJobParameters" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/model/job/pynn/PyNNJobParameters.html#PyNNJobParameters">PyNNJobParameters</a>(workingDirectory.getAbsolutePath(),
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  				setupScript, DEFAULT_SCRIPT_NAME + SYSTEM_ARG,
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  				job.getHardwareConfig());
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  	}
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2023 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

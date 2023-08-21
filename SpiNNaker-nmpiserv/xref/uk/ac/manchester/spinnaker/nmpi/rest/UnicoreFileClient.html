@@ -70,16 +70,18 @@
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment">	 * Get a client for the API.</em>
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment">	 * @param url The URL to connect to.</em>
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">	 * @return A proxy of the API.</em>
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>  	<strong class="jxr_keyword">static</strong> <a name="UnicoreFileClient" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/rest/UnicoreFileClient.html#UnicoreFileClient">UnicoreFileClient</a> createClient(String url) {
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>  		ObjectMapper mapper = <strong class="jxr_keyword">new</strong> ObjectMapper();
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  		mapper.setPropertyNamingStrategy(SNAKE_CASE);
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>  		<strong class="jxr_keyword">return</strong> JAXRSClientFactory.create(url, UnicoreFileClient.<strong class="jxr_keyword">class</strong>,
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>  				List.of(<strong class="jxr_keyword">new</strong> JacksonJsonProvider()));
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>  	}
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>  }
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">	 * @param url</em>
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment">	 *            The URL to connect to.</em>
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  <em class="jxr_javadoccomment">	 * @return A proxy of the API.</em>
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  	<strong class="jxr_keyword">static</strong> <a name="UnicoreFileClient" href="../../../../../../uk/ac/manchester/spinnaker/nmpi/rest/UnicoreFileClient.html#UnicoreFileClient">UnicoreFileClient</a> createClient(String url) {
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  		<strong class="jxr_keyword">var</strong> mapper = <strong class="jxr_keyword">new</strong> ObjectMapper();
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  		mapper.setPropertyNamingStrategy(SNAKE_CASE);
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  		<strong class="jxr_keyword">return</strong> JAXRSClientFactory.create(url, UnicoreFileClient.<strong class="jxr_keyword">class</strong>,
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  				List.of(<strong class="jxr_keyword">new</strong> JacksonJsonProvider()));
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  	}
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2023 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>
