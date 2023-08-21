@@ -33,8 +33,8 @@ import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 
+import uk.ac.manchester.spinnaker.nmpi.model.NMPILog;
 import uk.ac.manchester.spinnaker.nmpi.model.QueueEmpty;
-import uk.ac.manchester.spinnaker.nmpi.model.QueueJob;
 import uk.ac.manchester.spinnaker.nmpi.model.QueueJobCompat;
 import uk.ac.manchester.spinnaker.nmpi.model.QueueNextResponse;
 import uk.ac.manchester.spinnaker.nmpi.rest.utils.CustomJacksonJsonProvider;
@@ -43,95 +43,98 @@ import uk.ac.manchester.spinnaker.nmpi.rest.utils.PropertyBasedDeserialiser;
 /**
  * The REST API for the HBP Neuromorphic Platform Interface queue.
  */
-public interface NMPIQueue {
+@Path("/api/v2")
+public interface NMPIQueueCompat {
 
 	/**
 	 * Gets all jobs in the queue.
-	 * @param apiKey The API key to use.
+	 * @param authHeader The authorization header.
 	 * @param hardware The hardware to request the jobs for.
-	 * @param status List of accepted statuses.
+	 * @param status The accepted status.
 	 * @return The list of jobs that meet the criteria.
+	 * @return
 	 */
 	@GET
-	@Path("jobs/")
+	@Path("queue/")
 	@Produces("application/json")
-	List<QueueJobCompat> getJobs(
-			@HeaderParam("x-api-key") String apiKey,
+	JobListCompat getJobs(
+			@HeaderParam("Authorization") String authHeader,
 			@QueryParam("hardware") String hardware,
-			@QueryParam("status") List<String> status);
+			@QueryParam("status") String status);
 
 	/**
 	 * Get the next queue item for a specific hardware system.
 	 *
-	 * @param apiKey
-	 *            The API key to use.
+	 * @param authHeader
+	 *            The authorization header.
 	 * @param hardware
 	 *            The hardware ID.
 	 * @return The queue item.
 	 */
 	@GET
-	@Path("jobs/next/{hardware}")
+	@Path("queue/submitted/next/{hardware}/")
 	@Produces("application/json")
-	QueueNextResponse getNextJob(@HeaderParam("x-api-key") String apiKey,
+	QueueNextResponse getNextJob(
+			@HeaderParam("Authorization") String authHeader,
 			@PathParam("hardware") String hardware);
 
 	/**
 	 * Update the log of a job.
 	 *
-	 * @param apiKey
-	 *            The API key to use.
+	 * @param authHeader
+	 *            The authorization header.
 	 * @param id
 	 *            The queue ID
 	 * @param log
 	 *            the Job Log.
 	 */
 	@PUT
-	@Path("jobs/{id}")
+	@Path("log/{id}")
 	@Consumes("application/json")
-	void updateJobLog(@HeaderParam("x-api-key") String apiKey,
-			@PathParam("id") int id, JobLogOnly log);
+	void updateJobLog(@HeaderParam("Authorization") String authHeader,
+			@PathParam("id") int id, NMPILog log);
 
 	/**
 	 * Update the status of a job.
 	 *
-	 * @param apiKey
-	 *            The API key to use.
+	 * @param authHeader
+	 *            The authorization header.
 	 * @param id
 	 *            The queue ID
 	 * @param status
 	 *            the Job Status.
 	 */
 	@PUT
-	@Path("jobs/{id}")
+	@Path("queue/{id}")
 	@Consumes("application/json")
-	void updateJobStatus(@HeaderParam("x-api-key") String apiKey,
-			@PathParam("id") int id, JobStatusOnly status);
+	void updateJobStatus(@HeaderParam("Authorization") String authHeader,
+			@PathParam("id") int id, JobStatusOnlyCompat status);
 
 	/**
 	 * Set a job when done.
 	 *
-	 * @param apiKey
-	 *            The API key to use.
+	 * @param authHeader
+	 *            The authorization header.
 	 * @param id
 	 *            The queue ID
 	 * @param job
 	 *            The details to update
 	 */
 	@PUT
-	@Path("jobs/{id}")
+	@Path("queue/{id}")
 	@Consumes("application/json")
-	void finishJob(@HeaderParam("x-api-key") String apiKey,
-			@PathParam("id") int id, JobDone job);
+	void finishJob(@HeaderParam("Authorization") String authHeader,
+			@PathParam("id") int id, JobDoneCompat job);
 
 	/**
 	 * Get a client for the API.
 	 * @param url The URL to connect to.
 	 * @return A proxy of the API.
 	 */
-	static NMPIQueue createClient(String url) {
+	static NMPIQueueCompat createClient(String url) {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setPropertyNamingStrategy(SNAKE_CASE);
-		return JAXRSClientFactory.create(url, NMPIQueue.class,
+		return JAXRSClientFactory.create(url, NMPIQueueCompat.class,
 				List.of(createProvider()));
 	}
 
@@ -144,7 +147,7 @@ public interface NMPIQueue {
 	static JacksonJsonProvider createProvider() {
 		var provider = new CustomJacksonJsonProvider();
 		provider.addDeserialiser(QueueNextResponse.class,
-				new NMPIQueueResponseDeserialiser());
+				new NMPIQueueResponseDeserialiserCompat());
 		return provider;
 	}
 }
@@ -153,14 +156,14 @@ public interface NMPIQueue {
  * How to understand messages coming from the queue.
  */
 @SuppressWarnings("serial")
-class NMPIQueueResponseDeserialiser
+class NMPIQueueResponseDeserialiserCompat
 		extends PropertyBasedDeserialiser<QueueNextResponse> {
 	/**
 	 * Make a deserialiser.
 	 */
-	NMPIQueueResponseDeserialiser() {
+	NMPIQueueResponseDeserialiserCompat() {
 		super(QueueNextResponse.class);
-		register("id", QueueJob.class);
+		register("id", QueueJobCompat.class);
 		register("warning", QueueEmpty.class);
 	}
 }

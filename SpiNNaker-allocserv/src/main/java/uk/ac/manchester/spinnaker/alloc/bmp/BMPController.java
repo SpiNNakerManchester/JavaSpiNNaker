@@ -21,9 +21,10 @@ import static java.lang.Thread.sleep;
 import static java.time.Instant.now;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.bmp.BlacklistOperation.GET_SERIAL;
-import static uk.ac.manchester.spinnaker.alloc.bmp.BlacklistOperation.READ;
-import static uk.ac.manchester.spinnaker.alloc.bmp.BlacklistOperation.WRITE;
+import static uk.ac.manchester.spinnaker.alloc.bmp.NonBootOperation.GET_SERIAL;
+import static uk.ac.manchester.spinnaker.alloc.bmp.NonBootOperation.READ_BL;
+import static uk.ac.manchester.spinnaker.alloc.bmp.NonBootOperation.READ_TEMP;
+import static uk.ac.manchester.spinnaker.alloc.bmp.NonBootOperation.WRITE_BL;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
@@ -68,6 +69,7 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
+import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException.CallerProcessException;
@@ -667,12 +669,13 @@ public class BMPController extends DatabaseAwareBean {
 	}
 
 	/**
-	 * A request to read or write a blacklist.
+	 * A request to read or write information on a BMP. Includes blacklists,
+	 * serial numbers, temperature data, etc.
 	 *
 	 * @author Donal Fellows
 	 */
-	private final class BlacklistRequest extends Request {
-		private final BlacklistOperation op;
+	private final class BoardRequest extends Request {
+		private final NonBootOperation op;
 
 		private final int opId;
 
@@ -688,14 +691,14 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final int machineId;
 
-		private BlacklistRequest(int bmpId, BlacklistOperation op, Row row) {
+		private BoardRequest(int bmpId, NonBootOperation op, Row row) {
 			super(bmpId);
 			this.op = op;
 			opId = row.getInt("op_id");
 			boardId = row.getInt("board_id");
 			bmp = new BMPCoords(row.getInt("cabinet"), row.getInt("frame"));
 			board = new BMPBoard(row.getInt("board_num"));
-			if (op == WRITE) {
+			if (op == WRITE_BL) {
 				blacklist = row.getSerial("data", Blacklist.class);
 			} else {
 				blacklist = null;
@@ -707,13 +710,11 @@ public class BMPController extends DatabaseAwareBean {
 		/** The serial number actually read from the board. */
 		private String readSerial;
 
-		private Blacklist readBlacklist;
-
 		/**
 		 * Access the DB to store the serial number information that we
 		 * retrieved. A transaction should already be held.
 		 *
-		 * @param sql
+		 * @param c
 		 *            How to access the DB
 		 * @return Whether we've changed anything
 		 */
@@ -728,12 +729,14 @@ public class BMPController extends DatabaseAwareBean {
 		 * Access the DB to mark the read request as successful and store the
 		 * blacklist that was read. A transaction should already be held.
 		 *
-		 * @param sql
+		 * @param c
 		 *            How to access the DB
+		 * @param readBlacklist
+		 *            The blacklist that was read
 		 * @return Whether we've changed anything
 		 */
-		private void doneRead(Connection c) {
-			try (var completed = c.update(COMPLETED_BLACKLIST_READ)) {
+		private void doneReadBlacklist(Connection c, Blacklist readBlacklist) {
+			try (var completed = c.update(COMPLETED_BOARD_INFO_READ)) {
 				log.debug("Completing blacklist read opId {}", opId);
 				completed.call(readBlacklist, opId);
 			}
@@ -743,27 +746,43 @@ public class BMPController extends DatabaseAwareBean {
 		 * Access the DB to mark the write request as successful. A transaction
 		 * should already be held.
 		 *
-		 * @param sql
+		 * @param c
 		 *            How to access the DB
 		 * @return Whether we've changed anything
 		 */
-		private void doneWrite(Connection c) {
+		private void doneWriteBlacklist(Connection c) {
 			try (var completed = c.update(COMPLETED_BLACKLIST_WRITE)) {
 				completed.call(opId);
 			}
 		}
 
 		/**
-		 * Access the DB to mark the write request as successful. A transaction
-		 * should already be held.
+		 * Access the DB to mark the read request as successful; the actual
+		 * store of the serial data is elsewhere
+		 * ({@link #recordSerialIds(Connection)}). A transaction should already
+		 * be held.
 		 *
-		 * @param sql
+		 * @param c
 		 *            How to access the DB
 		 * @return Whether we've changed anything
 		 */
 		private void doneReadSerial(Connection c) {
 			try (var completed = c.update(COMPLETED_GET_SERIAL_REQ)) {
 				completed.call(opId);
+			}
+		}
+
+		/**
+		 * Access the DB to mark the read request as successful and store the
+		 * ADC info that was read. A transaction should be held.
+		 *
+		 * @param c
+		 *            The database connection.
+		 */
+		private void doneReadTemps(Connection c, ADCInfo adcInfo) {
+			try (var completed = c.update(COMPLETED_BOARD_INFO_READ)) {
+				log.debug("Completing temperature read opId {}", opId);
+				completed.call(adcInfo, opId);
 			}
 		}
 
@@ -816,14 +835,17 @@ public class BMPController extends DatabaseAwareBean {
 				throws InterruptedException {
 			return bmpAction(() -> {
 				switch (op) {
-				case WRITE:
+				case WRITE_BL:
 					writeBlacklist(controller);
 					break;
-				case READ:
+				case READ_BL:
 					readBlacklist(controller);
 					break;
 				case GET_SERIAL:
 					readSerial(controller);
+					break;
+				case READ_TEMP:
+					readTemps(controller);
 					break;
 				default:
 					throw new IllegalArgumentException();
@@ -862,11 +884,11 @@ public class BMPController extends DatabaseAwareBean {
 								+ "not equal to actual serial ID '{}'",
 						bmpSerialId, readSerial);
 			}
-			readBlacklist = controller.readBlacklist(board);
-			try (Connection c = getConnection()) {
+			var readBlacklist = controller.readBlacklist(board);
+			try (var c = getConnection()) {
 				c.transaction(() -> {
 					recordSerialIds(c);
-					doneRead(c);
+					doneReadBlacklist(c, readBlacklist);
 				});
 			}
 		}
@@ -897,8 +919,8 @@ public class BMPController extends DatabaseAwareBean {
 						bmpSerialId, readSerial));
 			}
 			controller.writeBlacklist(board, requireNonNull(blacklist));
-			try (Connection c = getConnection()) {
-				c.transaction(() -> doneWrite(c));
+			try (var c = getConnection()) {
+				c.transaction(() -> doneWriteBlacklist(c));
 			}
 		}
 
@@ -917,7 +939,7 @@ public class BMPController extends DatabaseAwareBean {
 		private void readSerial(SpiNNakerControl controller)
 				throws InterruptedException, ProcessException, IOException {
 			readSerial = controller.readSerial(board);
-			try (Connection c = getConnection()) {
+			try (var c = getConnection()) {
 				c.transaction(() -> {
 					recordSerialIds(c);
 					doneReadSerial(c);
@@ -925,9 +947,29 @@ public class BMPController extends DatabaseAwareBean {
 			}
 		}
 
+		/**
+		 * Process an action to read some temperature data.
+		 *
+		 * @param controller
+		 *            How to actually reach the BMP.
+		 * @throws InterruptedException
+		 *             If interrupted.
+		 * @throws IOException
+		 *             If the network is unhappy.
+		 * @throws ProcessException
+		 *             If the BMP rejects a message.
+		 */
+		private void readTemps(SpiNNakerControl controller)
+				throws InterruptedException, ProcessException, IOException {
+			var adcInfo = controller.readTemp(board);
+			try (var c = getConnection()) {
+				c.transaction(() -> doneReadTemps(c, adcInfo));
+			}
+		}
+
 		@Override
 		public String toString() {
-			var sb = new StringBuilder("BlacklistRequest(for ");
+			var sb = new StringBuilder("BoardRequest(for ");
 			sb.append("bmp=").append(bmp);
 			sb.append(",board=").append(boardId);
 			sb.append(",op=").append(op);
@@ -995,9 +1037,13 @@ public class BMPController extends DatabaseAwareBean {
 		public synchronized void run() {
 			log.trace("Searching for changes on BMP {}", bmpId);
 
-			var changes = getRequestedOperations();
-			for (var change : changes) {
-				change.processRequest(control);
+			try {
+				var changes = getRequestedOperations();
+				for (var change : changes) {
+					change.processRequest(control);
+				}
+			} catch (Exception e) {
+				log.error("unhandled exception for BMP '{}'", bmpId, e);
 			}
 		}
 
@@ -1015,7 +1061,8 @@ public class BMPController extends DatabaseAwareBean {
 					var getPowerRequests = c.query(GET_CHANGES);
 					var getBlacklistReads = c.query(GET_BLACKLIST_READS);
 					var getBlacklistWrites = c.query(GET_BLACKLIST_WRITES);
-					var getReadSerialInfos = c.query(GET_SERIAL_INFO_REQS)) {
+					var getReadSerialInfos = c.query(GET_SERIAL_INFO_REQS);
+					var getReadTemps = c.query(GET_TEMP_INFO_REQS)) {
 				c.transaction(false, () -> {
 					// Batch power requests by job
 					var powerChanges = new LinkedList<>(
@@ -1037,18 +1084,19 @@ public class BMPController extends DatabaseAwareBean {
 					// Leave these until quiet
 					if (requests.isEmpty()) {
 						requests.addAll(getBlacklistReads.call(
-								row -> new BlacklistRequest(bmpId, READ, row),
+								row -> new BoardRequest(bmpId, READ_BL, row),
 								bmpId));
 					}
 					if (requests.isEmpty()) {
 						requests.addAll(getBlacklistWrites.call(
-								row -> new BlacklistRequest(bmpId, WRITE, row),
+								row -> new BoardRequest(bmpId, WRITE_BL, row),
 								bmpId));
-					}
-					if (requests.isEmpty()) {
-						requests.addAll(getReadSerialInfos
-								.call(row -> new BlacklistRequest(bmpId,
-										GET_SERIAL, row), bmpId));
+						requests.addAll(getReadSerialInfos.call(
+								row -> new BoardRequest(bmpId, GET_SERIAL, row),
+								bmpId));
+						requests.addAll(getReadTemps.call(
+								row -> new BoardRequest(bmpId, READ_TEMP, row),
+								bmpId));
 					}
 				});
 			} catch (Exception e) {

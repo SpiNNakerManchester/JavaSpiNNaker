@@ -416,9 +416,8 @@ CREATE TABLE IF NOT EXISTS blacklist_ops (
 	board_id INTEGER UNIQUE NOT NULL,
 		FOREIGN KEY (board_id)
 		REFERENCES boards(board_id) ON DELETE RESTRICT,
-	op INTEGER NOT NULL			-- What we plan to do (BlacklistOperations ID)
-		CONSTRAINT blacklist_ops_op CHECK (op IN (0, 1, 2)),
-	data BLOB,				-- The serialized blacklist info; JAVA format!
+	op INTEGER NOT NULL,		-- What we plan to do (NonBootOperations ID)
+	data BLOB,					-- The serialized blacklist info; JAVA format!
 	completed INTEGER NOT NULL DEFAULT (0)
 		CONSTRAINT blacklist_ops_completed CHECK (completed IN (0, 1)),
 	failure BLOB				-- The serialized exception on failure; JAVA format!
