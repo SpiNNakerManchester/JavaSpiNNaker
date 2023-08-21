@@ -62,7 +62,9 @@ public interface UnicoreFileClient {
 
 	/**
 	 * Get a client for the API.
-	 * @param url The URL to connect to.
+	 *
+	 * @param url
+	 *            The URL to connect to.
 	 * @return A proxy of the API.
 	 */
 	static UnicoreFileClient createClient(String url) {

@@ -70,7 +70,7 @@ public interface NMPIQueueManager {
 	 *            The ID of the job
 	 * @param logToAppend
 	 *            Any additional log messages to append to the existing log
-	 *            (null if none)
+	 *            ({@code null} if none)
 	 * @param outputs
 	 *            The outputs of the job (null if none)
 	 * @param provenance
@@ -86,7 +86,7 @@ public interface NMPIQueueManager {
 	 *            The ID of the job
 	 * @param logToAppend
 	 *            Any additional log messages to append to the existing log
-	 *            (null if none)
+	 *            ({@code null} if none)
 	 * @param outputs
 	 *            Any outputs generated, or null if none
 	 * @param error
