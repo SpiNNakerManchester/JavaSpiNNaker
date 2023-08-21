@@ -22,10 +22,7 @@ import java.util.List;
  * Represents a stack trace provided remotely.
  */
 public class RemoteStackTrace {
-
-	/**
-	 * The elements of the stack trace.
-	 */
+	/** The elements of the stack trace. */
 	private List<RemoteStackTraceElement> elements = new ArrayList<>();
 
 	/**
@@ -50,11 +47,11 @@ public class RemoteStackTrace {
 	/**
 	 * Create a basic remote stack trace from a list of elements.
 	 *
-	 * @param elementsParam
+	 * @param elements
 	 *            The elements to make the stack trace from.
 	 */
-	public RemoteStackTrace(List<RemoteStackTraceElement> elementsParam) {
-		this.elements = elementsParam;
+	public RemoteStackTrace(List<RemoteStackTraceElement> elements) {
+		this.elements = elements;
 	}
 
 	/**
@@ -69,9 +66,10 @@ public class RemoteStackTrace {
 	/**
 	 * Set the elements.
 	 *
-	 * @param elementsParam The elements to set
+	 * @param elements
+	 *            The elements to set
 	 */
-	public void setElements(List<RemoteStackTraceElement> elementsParam) {
-		this.elements = elementsParam;
+	public void setElements(List<RemoteStackTraceElement> elements) {
+		this.elements = elements;
 	}
 }

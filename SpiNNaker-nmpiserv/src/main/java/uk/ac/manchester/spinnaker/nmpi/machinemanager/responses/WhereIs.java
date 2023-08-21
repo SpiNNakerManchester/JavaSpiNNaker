@@ -52,11 +52,11 @@ public class WhereIs {
 	/**
 	 * Sets the job chip.
 	 *
-	 * @param jobChipParam
+	 * @param jobChip
 	 *            the job chip to set
 	 */
-	void setJobChip(int[] jobChipParam) {
-		this.jobChip = jobChipParam;
+	void setJobChip(int[] jobChip) {
+		this.jobChip = jobChip;
 	}
 
 	/**
@@ -71,11 +71,11 @@ public class WhereIs {
 	/**
 	 * Sets the job id.
 	 *
-	 * @param jobIdParam
+	 * @param jobId
 	 *            the job id to set
 	 */
-	void setJobId(int jobIdParam) {
-		this.jobId = jobIdParam;
+	void setJobId(int jobId) {
+		this.jobId = jobId;
 	}
 
 	/**
@@ -90,11 +90,11 @@ public class WhereIs {
 	/**
 	 * Sets the chip.
 	 *
-	 * @param chipParam
+	 * @param chip
 	 *            the chip to set
 	 */
-	void setChip(int[] chipParam) {
-		this.chip = chipParam;
+	void setChip(int[] chip) {
+		this.chip = chip;
 	}
 
 	/**
@@ -109,11 +109,11 @@ public class WhereIs {
 	/**
 	 * Sets the logical.
 	 *
-	 * @param logicalParam
+	 * @param logical
 	 *            the logical to set
 	 */
-	void setLogical(int[] logicalParam) {
-		this.logical = logicalParam;
+	void setLogical(int[] logical) {
+		this.logical = logical;
 	}
 
 	/**
@@ -128,11 +128,11 @@ public class WhereIs {
 	/**
 	 * Sets the machine.
 	 *
-	 * @param machineParam
+	 * @param machine
 	 *            the machine to set
 	 */
-	void setMachine(String machineParam) {
-		this.machine = machineParam;
+	void setMachine(String machine) {
+		this.machine = machine;
 	}
 
 	/**
@@ -147,11 +147,11 @@ public class WhereIs {
 	/**
 	 * Sets the board chip.
 	 *
-	 * @param boardChipParam
+	 * @param boardChip
 	 *            the board chip to set
 	 */
-	void setBoardChip(int[] boardChipParam) {
-		this.boardChip = boardChipParam;
+	void setBoardChip(int[] boardChip) {
+		this.boardChip = boardChip;
 	}
 
 	/**
@@ -166,10 +166,10 @@ public class WhereIs {
 	/**
 	 * Sets the physical.
 	 *
-	 * @param physicalParam
+	 * @param physical
 	 *            the physical to set
 	 */
-	void setPhysical(int[] physicalParam) {
-		this.physical = physicalParam;
+	void setPhysical(int[] physical) {
+		this.physical = physical;
 	}
 }

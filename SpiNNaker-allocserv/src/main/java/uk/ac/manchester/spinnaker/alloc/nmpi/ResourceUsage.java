@@ -20,14 +20,10 @@ package uk.ac.manchester.spinnaker.alloc.nmpi;
  * An NMPI Resource Usage object.
  */
 public class ResourceUsage {
-	/**
-	 * The resource usage in board seconds.
-	 */
+	/** The resource usage in board seconds. */
 	public static final String BOARD_SECONDS = "board-seconds";
 
-	/**
-	 * The resource usage in core hours.
-	 */
+	/** The resource usage in core hours. */
 	public static final String CORE_HOURS = "core-hours";
 
 	private double value;
@@ -36,6 +32,7 @@ public class ResourceUsage {
 
 	/**
 	 * Get the value of the usage.
+	 *
 	 * @return The value.
 	 */
 	public double getValue() {
@@ -44,7 +41,9 @@ public class ResourceUsage {
 
 	/**
 	 * Set the value of the usage.
-	 * @param value The value to set.
+	 *
+	 * @param value
+	 *            The value to set.
 	 */
 	public void setValue(double value) {
 		this.value = value;
@@ -52,6 +51,7 @@ public class ResourceUsage {
 
 	/**
 	 * Get the units of the usage.
+	 *
 	 * @return The units.
 	 */
 	public String getUnits() {
@@ -60,7 +60,9 @@ public class ResourceUsage {
 
 	/**
 	 * Set the units of the usage.
-	 * @param units The units to set.
+	 *
+	 * @param units
+	 *            The units to set.
 	 */
 	public void setUnits(String units) {
 		this.units = units;

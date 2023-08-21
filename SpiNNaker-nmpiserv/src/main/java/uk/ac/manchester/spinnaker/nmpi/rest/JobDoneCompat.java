@@ -43,8 +43,10 @@ public class JobDoneCompat {
 	/**
 	 * Create a job with only a status.
 	 *
-	 * @param id The job id.
-	 * @param status The status to set.
+	 * @param id
+	 *            The job id.
+	 * @param status
+	 *            The status to set.
 	 */
 	public JobDoneCompat(int id, String status) {
 		this.id = id;
@@ -63,7 +65,8 @@ public class JobDoneCompat {
 	/**
 	 * Set the status.
 	 *
-	 * @param status The status to set
+	 * @param status
+	 *            The status to set
 	 */
 	public void setStatus(String status) {
 		this.status = status;
@@ -81,14 +84,15 @@ public class JobDoneCompat {
 	/**
 	 * Sets the timestampCompletion.
 	 *
-	 * @param timestampCompletionParam the timestampCompletion to set
+	 * @param timestampCompletion
+	 *            the timestampCompletion to set
 	 */
-	public void setTimestampCompletion(DateTime timestampCompletionParam) {
-		this.timestampCompletion = timestampCompletionParam;
+	public void setTimestampCompletion(DateTime timestampCompletion) {
+		this.timestampCompletion = timestampCompletion;
 	}
 
 	/**
-	 * Get the outputData.
+	 * Get the output data items.
 	 *
 	 * @return the outputData
 	 */
@@ -99,10 +103,11 @@ public class JobDoneCompat {
 	/**
 	 * Sets the outputData.
 	 *
-	 * @param outputDataParam the outputData to set
+	 * @param outputData
+	 *            the outputData to set
 	 */
-	public void setOutputData(List<DataItem> outputDataParam) {
-		this.outputData = outputDataParam;
+	public void setOutputData(List<DataItem> outputData) {
+		this.outputData = outputData;
 	}
 
 	/**
@@ -117,10 +122,11 @@ public class JobDoneCompat {
 	/**
 	 * Sets the provenance.
 	 *
-	 * @param provenanceParam the provenance to set
+	 * @param provenance
+	 *            the provenance to set
 	 */
-	public void setProvenance(ObjectNode provenanceParam) {
-		this.provenance = provenanceParam;
+	public void setProvenance(ObjectNode provenance) {
+		this.provenance = provenance;
 	}
 
 	/**
@@ -135,7 +141,8 @@ public class JobDoneCompat {
 	/**
 	 * Set the id.
 	 *
-	 * @param id The id
+	 * @param id
+	 *            The id
 	 */
 	public void setId(int id) {
 		this.id = id;

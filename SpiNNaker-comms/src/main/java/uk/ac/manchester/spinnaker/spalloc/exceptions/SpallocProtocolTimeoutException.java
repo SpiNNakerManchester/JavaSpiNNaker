@@ -22,15 +22,18 @@ public class SpallocProtocolTimeoutException extends IOException {
 	private static final long serialVersionUID = -3573271239107837119L;
 
 	/**
-	 * @param msg The message of the exception
-	 * @param cause The cause of the exception
+	 * @param msg
+	 *            The message of the exception
+	 * @param cause
+	 *            The cause of the exception
 	 */
 	public SpallocProtocolTimeoutException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
 
 	/**
-	 * @param msg The message of the exception
+	 * @param msg
+	 *            The message of the exception
 	 */
 	public SpallocProtocolTimeoutException(String msg) {
 		super(msg);

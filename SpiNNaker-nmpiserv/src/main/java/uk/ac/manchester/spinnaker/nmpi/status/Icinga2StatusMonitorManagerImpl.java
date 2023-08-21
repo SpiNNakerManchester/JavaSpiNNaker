@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.nmpi.status;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
 import javax.annotation.PostConstruct;
@@ -34,7 +33,6 @@ import uk.ac.manchester.spinnaker.nmpi.rest.Icinga2;
 
 /**
  * Status monitor manager that reports to Icinga.
- *
  */
 public class Icinga2StatusMonitorManagerImpl implements StatusMonitorManager {
 	/** The status to report - always 0 if reporting as OK. */
@@ -78,14 +76,9 @@ public class Icinga2StatusMonitorManagerImpl implements StatusMonitorManager {
 
 	/**
 	 * Initialise the service.
-	 *
-	 * @throws UnsupportedEncodingException
-	 *             if the
-	 * @throws MalformedURLException
-	 *             if the URL isn't a URL
 	 */
 	@PostConstruct
-	private void init() throws UnsupportedEncodingException {
+	private void init() {
 		var userPassString = username + ":" + password;
 		var userPassEnc = Base64.encode(userPassString.getBytes(US_ASCII));
 		authHeader = "Basic " + userPassEnc;

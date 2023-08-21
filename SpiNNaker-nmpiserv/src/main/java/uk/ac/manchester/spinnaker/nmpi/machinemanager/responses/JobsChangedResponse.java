@@ -38,9 +38,10 @@ public final class JobsChangedResponse implements Response {
 	/**
 	 * Set the jobs that have changed.
 	 *
-	 * @param jobsChangedParam The list of job ids
+	 * @param jobsChanged
+	 *            The list of job ids
 	 */
-	void setJobsChanged(List<Integer> jobsChangedParam) {
-		this.jobsChanged = jobsChangedParam;
+	void setJobsChanged(List<Integer> jobsChanged) {
+		this.jobsChanged = jobsChanged;
 	}
 }

@@ -50,7 +50,10 @@ public abstract sealed class NotificationMessage implements SerializableMessage
 		command = NotificationMessageCode.get(buffer.getShort() & MAX_COMMAND);
 	}
 
-	/** @param command The command code of the message. */
+	/**
+	 * @param command
+	 *            The command code of the message.
+	 */
 	public NotificationMessage(NotificationMessageCode command) {
 		this.command = command;
 	}

@@ -37,10 +37,11 @@ public final class ExceptionResponse implements Response {
 	/**
 	 * Set the exception to report.
 	 *
-	 * @param exceptionParam The exception to set
+	 * @param exception
+	 *            The exception to set
 	 */
 	@JsonSetter("exception")
-	void setException(JsonNode exceptionParam) {
-		this.exception = exceptionParam.toString();
+	void setException(JsonNode exception) {
+		this.exception = exception.toString();
 	}
 }

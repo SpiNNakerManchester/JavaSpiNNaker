@@ -24,13 +24,11 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
  */
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class JobResourceUpdate {
-	/**
-	 * A count of how much resource has been used by the job.
-	 */
+	/** A count of how much resource has been used by the job. */
 	private ResourceUsage resourceUsage;
 
 	/**
-	 * Get a count of how much resource has been used by the job.
+	 * Get the count of how much resource has been used by the job.
 	 *
 	 * @return the resource usage
 	 */

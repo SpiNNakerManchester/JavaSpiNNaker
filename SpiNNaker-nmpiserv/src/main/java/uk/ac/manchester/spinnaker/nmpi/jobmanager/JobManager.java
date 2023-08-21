@@ -168,16 +168,19 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	/**
 	 * Create a job manager.
 	 *
-	 * @param baseUrlParam The URL of the REST service of the manager.
+	 * @param baseUrl
+	 *            The URL of the REST service of the manager.
 	 */
-	public JobManager(URL baseUrlParam) {
-		this.baseUrl = requireNonNull(baseUrlParam);
-		logger.info("Base URL is {}", baseUrlParam);
+	public JobManager(URL baseUrl) {
+		this.baseUrl = requireNonNull(baseUrl);
+		logger.info("Base URL is {}", baseUrl);
 	}
 
 	/**
 	 * Start the manager's worker threads.
-	 * @throws IOException If we get an error starting a job.
+	 *
+	 * @throws IOException
+	 *             If we get an error starting a job.
 	 */
 	@PostConstruct
 	private void startManager() throws IOException {
@@ -232,7 +235,6 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	 *
 	 * @param job
 	 *            The job to execute
-	 *
 	 * @throws IOException
 	 *             If there is an error starting the job
 	 */

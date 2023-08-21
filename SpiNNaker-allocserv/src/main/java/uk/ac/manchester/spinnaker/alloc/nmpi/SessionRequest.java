@@ -28,29 +28,20 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
  */
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SessionRequest {
-
-	/**
-	 * The ID of the collaboratory to create the session in.
-	 */
+	/** The ID of the collaboratory to create the session in. */
 	private String collab;
 
-	/**
-	 * The ID of the user who is requesting the creation.
-	 */
+	/** The ID of the user who is requesting the creation. */
 	private String userId;
 
-	/**
-	 * The hardware platform to create the session in.
-	 */
+	/** The hardware platform to create the session in. */
 	private String hardwarePlatform;
 
-	/**
-	 * The specified configuration of the hardware to use.
-	 */
+	/** The specified configuration of the hardware to use. */
 	private Map<String, String> hardwareConfig = new HashMap<>();
 
 	/**
-	 * Get the collab.
+	 * Get the ID of the collaboratory to create the session in.
 	 *
 	 * @return the collab.
 	 */
@@ -61,14 +52,15 @@ public class SessionRequest {
 	/**
 	 * Sets the collab.
 	 *
-	 * @param collab the collab to set
+	 * @param collab
+	 *            the collab to set
 	 */
 	public void setCollab(String collab) {
 		this.collab = collab;
 	}
 
 	/**
-	 * Get the userId.
+	 * Get the ID of the user who is requesting the creation.
 	 *
 	 * @return the userId
 	 */
@@ -79,48 +71,52 @@ public class SessionRequest {
 	/**
 	 * Sets the userId.
 	 *
-	 * @param userIdParam the userId to set
+	 * @param userId
+	 *            the userId to set
 	 */
-	public void setUserId(String userIdParam) {
-		this.userId = userIdParam;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	/**
-	 * @return the Hardware Platform
+	 * @return the hardware platform to create the session in.
 	 */
 	public String getHardwarePlatform() {
 		return hardwarePlatform;
 	}
 
 	/**
-	 * @param hardwarePlatform the Hardware Platform to set
+	 * @param hardwarePlatform
+	 *            the Hardware Platform to set
 	 */
 	public void setHardwarePlatform(String hardwarePlatform) {
 		this.hardwarePlatform = hardwarePlatform;
 	}
 
 	/**
-	 * @return the Hardware Configuration
+	 * @return the specified configuration of the hardware to use.
 	 */
 	public Map<String, String> getHardwareConfig() {
 		return hardwareConfig;
 	}
 
 	/**
-	 * @param hardwareConfig the Hardware Configuration to set
+	 * @param hardwareConfig
+	 *            the Hardware Configuration to set
 	 */
 	public void setHardwareConfig(Map<String, String> hardwareConfig) {
 		this.hardwareConfig = hardwareConfig;
 	}
 
 	/**
-	 * Used for JSON serialisation;
-	 * ignores other properties we don't care about.
+	 * Used for JSON serialisation; ignores other properties we don't care
+	 * about.
 	 *
 	 * @param name
 	 *            The parameter to set.
 	 * @param value
 	 *            The value to set it to.
+	 * @hidden
 	 */
 	@JsonAnySetter
 	void set(String name, Object value) {

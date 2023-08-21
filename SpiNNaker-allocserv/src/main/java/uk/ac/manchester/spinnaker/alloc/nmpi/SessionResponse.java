@@ -52,6 +52,7 @@ public class SessionResponse {
 	 *            The parameter to set.
 	 * @param value
 	 *            The value to set it to.
+	 * @hidden
 	 */
 	@JsonAnySetter
 	void set(String name, Object value) {

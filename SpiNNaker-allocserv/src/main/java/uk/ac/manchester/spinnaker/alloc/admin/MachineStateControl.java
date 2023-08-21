@@ -210,7 +210,10 @@ public class MachineStateControl extends DatabaseAwareBean {
 			});
 		}
 
-		/** @param newValue The allocatable state to set the board to. */
+		/**
+		 * @param newValue
+		 *            The allocatable state to set the board to.
+		 */
 		public void setState(boolean newValue) {
 			execute(conn -> {
 				try (var u = conn.update(SET_FUNCTIONING_FIELD)) {

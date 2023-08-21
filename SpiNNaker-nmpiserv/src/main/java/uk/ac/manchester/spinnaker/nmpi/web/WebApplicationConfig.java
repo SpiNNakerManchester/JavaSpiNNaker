@@ -88,11 +88,10 @@ public class WebApplicationConfig implements WebApplicationInitializer {
 	 */
 	private ContextLoaderListener getContextLoaderListener(
 			PropertySource<?> properties) {
-		var annotationConfig = new AnnotationConfigWebApplicationContext();
-		annotationConfig.getEnvironment().getPropertySources()
-				.addFirst(properties);
-		annotationConfig.register(RemoteSpinnakerBeans.class);
-		return new ContextLoaderListener(annotationConfig);
+		var context = new AnnotationConfigWebApplicationContext();
+		context.getEnvironment().getPropertySources().addFirst(properties);
+		context.register(RemoteSpinnakerBeans.class);
+		return new ContextLoaderListener(context);
 	}
 
 	/**

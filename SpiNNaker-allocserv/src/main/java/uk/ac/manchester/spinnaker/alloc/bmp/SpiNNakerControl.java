@@ -159,7 +159,8 @@ public interface SpiNNakerControl {
 	/**
 	 * Ping the given boards.
 	 *
-	 * @param boards The boards to ping.
+	 * @param boards
+	 *            The boards to ping.
 	 */
 	void ping(List<BMPBoard> boards);
 

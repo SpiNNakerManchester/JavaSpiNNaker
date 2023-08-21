@@ -145,10 +145,14 @@ public class SpallocServiceImpl extends BackgroundSupport
 	/**
 	 * Adds in the {@code Link:} header with general paging info.
 	 *
-	 * @param value The core response.
-	 * @param ui    Information about URIs
-	 * @param start The start offset.
-	 * @param limit The size of chunk.
+	 * @param value
+	 *            The core response.
+	 * @param ui
+	 *            Information about URIs
+	 * @param start
+	 *            The start offset.
+	 * @param limit
+	 *            The size of chunk.
 	 * @return Annotated response.
 	 */
 	private Response wrapPaging(ListJobsResponse value, UriInfo ui, int start,

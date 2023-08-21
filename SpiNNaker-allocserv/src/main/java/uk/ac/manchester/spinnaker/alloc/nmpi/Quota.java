@@ -22,29 +22,20 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  * A NMPI collab quota.
  */
 public class Quota {
-
-	/**
-	 * The total amount of quota assigned.
-	 */
+	/** The total amount of quota assigned. */
 	private double limit;
 
-	/**
-	 * The usage of the quota assigned.
-	 */
+	/** The usage of the quota assigned. */
 	private double usage;
 
-	/**
-	 * The platform that the quota is assigned to.
-	 */
+	/** The platform that the quota is assigned to. */
 	private String platform;
 
-	/**
-	 * The units in which the quota is measured.
-	 */
+	/** The units in which the quota is measured. */
 	private String units;
 
 	/**
-	 * @return the limit.
+	 * @return the total amount of quota assigned.
 	 */
 	public double getLimit() {
 		return limit;
@@ -59,7 +50,7 @@ public class Quota {
 	}
 
 	/**
-	 * @return the usage.
+	 * @return the usage of the quota assigned.
 	 */
 	public double getUsage() {
 		return usage;
@@ -74,7 +65,7 @@ public class Quota {
 	}
 
 	/**
-	 * @return the platform.
+	 * @return the platform that the quota is assigned to.
 	 */
 	public String getPlatform() {
 		return platform;
@@ -89,7 +80,7 @@ public class Quota {
 	}
 
 	/**
-	 * @return the units.
+	 * @return the units in which the quota is measured.
 	 */
 	public String getUnits() {
 		return units;
@@ -111,6 +102,7 @@ public class Quota {
 	 *            The parameter to set.
 	 * @param value
 	 *            The value to set it to.
+	 * @hidden
 	 */
 	@JsonAnySetter
 	void set(String name, Object value) {

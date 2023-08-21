@@ -83,7 +83,10 @@ public class MachineListEntryRecord {
 		return id;
 	}
 
-	/** @param id the machine ID */
+	/**
+	 * @param id
+	 *            the machine ID
+	 */
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -93,7 +96,10 @@ public class MachineListEntryRecord {
 		return name;
 	}
 
-	/** @param name the machine name */
+	/**
+	 * @param name
+	 *            the machine name
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -103,7 +109,10 @@ public class MachineListEntryRecord {
 		return Optional.ofNullable(detailsUrl);
 	}
 
-	/** @param detailsUrl where to go for more details */
+	/**
+	 * @param detailsUrl
+	 *            where to go for more details
+	 */
 	public void setDetailsUrl(URI detailsUrl) {
 		this.detailsUrl = detailsUrl;
 	}
@@ -113,7 +122,10 @@ public class MachineListEntryRecord {
 		return numBoards;
 	}
 
-	/** @param numBoards the number of boards in the machine */
+	/**
+	 * @param numBoards
+	 *            the number of boards in the machine
+	 */
 	public void setNumBoards(int numBoards) {
 		this.numBoards = numBoards;
 	}
@@ -123,7 +135,10 @@ public class MachineListEntryRecord {
 		return numInUse;
 	}
 
-	/** @param numInUse the number of boards in use */
+	/**
+	 * @param numInUse
+	 *            the number of boards in use
+	 */
 	public void setNumInUse(int numInUse) {
 		this.numInUse = numInUse;
 	}
@@ -133,7 +148,10 @@ public class MachineListEntryRecord {
 		return numJobs;
 	}
 
-	/** @param numJobs the number of jobs running on the machine */
+	/**
+	 * @param numJobs
+	 *            the number of jobs running on the machine
+	 */
 	public void setNumJobs(int numJobs) {
 		this.numJobs = numJobs;
 	}
@@ -143,7 +161,10 @@ public class MachineListEntryRecord {
 		return tags;
 	}
 
-	/** @param tags the machine's tags */
+	/**
+	 * @param tags
+	 *            the machine's tags
+	 */
 	public void setTags(List<String> tags) {
 		this.tags = copy(tags);
 	}

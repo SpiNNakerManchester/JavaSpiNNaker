@@ -31,19 +31,13 @@ public abstract sealed class Command<A>
 		GetJobStateCommand, JobKeepAliveCommand, ListMachinesCommand,
 		NoNotifyJobCommand, NotifyJobCommand, PowerOffJobBoardsCommand,
 		PowerOnJobBoardsCommand, WhereIsCommand {
-	/**
-	 * The name of the command.
-	 */
+	/** The name of the command. */
 	private final String command;
 
-	/**
-	 * The arguments to the command.
-	 */
+	/** The positional arguments to the command. */
 	private final List<A> args = new ArrayList<>();
 
-	/**
-	 * The KW Args to be passed to the command.
-	 */
+	/** The keyword args to be passed to the command. */
 	private final Map<String, Object> kwargs = new HashMap<>();
 
 	/**
@@ -74,11 +68,11 @@ public abstract sealed class Command<A>
 	/**
 	 * Create a command.
 	 *
-	 * @param commandParam
+	 * @param command
 	 *            The command token.
 	 */
-	public Command(String commandParam) {
-		this.command = commandParam;
+	protected Command(String command) {
+		this.command = command;
 	}
 
 	/**

@@ -44,10 +44,11 @@ public class Connection {
 	/**
 	 * Set the chip connected to.
 	 *
-	 * @param chipParam The chip to set
+	 * @param chip
+	 *            The chip to set
 	 */
-	void setChip(Chip chipParam) {
-		this.chip = chipParam;
+	void setChip(Chip chip) {
+		this.chip = chip;
 	}
 
 	/**
@@ -62,9 +63,10 @@ public class Connection {
 	/**
 	 * Set the host name connected to.
 	 *
-	 * @param hostnameParam The host name to set
+	 * @param hostname
+	 *            The host name to set
 	 */
-	void setHostname(String hostnameParam) {
-		this.hostname = hostnameParam;
+	void setHostname(String hostname) {
+		this.hostname = hostname;
 	}
 }

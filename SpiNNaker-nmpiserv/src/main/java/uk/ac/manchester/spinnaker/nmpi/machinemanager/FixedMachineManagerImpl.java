@@ -35,7 +35,6 @@ import uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine;
  */
 public final class FixedMachineManagerImpl implements MachineManager {
 	/** The queue of available machines. */
-	@GuardedBy("lock")
 	private final Set<SpinnakerMachine> machinesAvailable = new HashSet<>();
 
 	/** The set of machine allocated. */

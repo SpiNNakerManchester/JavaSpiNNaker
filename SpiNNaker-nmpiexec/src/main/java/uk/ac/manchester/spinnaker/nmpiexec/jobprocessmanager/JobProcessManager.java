@@ -135,9 +135,7 @@ class JobProcessRunner {
 	/** The interval at which the log is updated. */
 	private static final int UPDATE_INTERVAL = 500;
 
-	/**
-	 * The maximum size of cached log messages before a forced send is done.
-	 */
+	/** The maximum size of cached log messages before a forced send is done. */
 	private static final int MAX_LOG_CACHED = 1000000;
 
 	/** Default parameters for getting a machine. */
@@ -238,32 +236,30 @@ class JobProcessRunner {
 	/**
 	 * Create an object that manages the running of a single job.
 	 *
-	 * @param serverUrlParam
+	 * @param serverUrl
 	 *            The URL to the server, used for writing back results.
-	 * @param deleteOnExitParam
+	 * @param deleteOnExit
 	 *            Whether to delete the job's resources on termination.
-	 * @param isLocalParam
+	 * @param isLocal
 	 *            Whether the job is local.
-	 * @param executerIdParam
+	 * @param executerId
 	 *            The ID of the executer.
-	 * @param liveUploadOutputParam
+	 * @param liveUploadOutput
 	 *            Whether to do live upload of output data.
-	 * @param requestMachineParam
+	 * @param requestMachine
 	 *            Whether to request a machine.
-	 * @param authTokenParam
-	 *            The authorisation token for the server.
 	 */
-	JobProcessRunner(String serverUrlParam, boolean deleteOnExitParam,
-			boolean isLocalParam, String executerIdParam,
-			boolean liveUploadOutputParam, boolean requestMachineParam) {
-		this.serverUrl =
-				requireNonNull(serverUrlParam, "--serverUrl must be specified");
-		this.executerId = requireNonNull(executerIdParam,
-				"--executerId must be specified");
-		this.deleteOnExit = deleteOnExitParam;
-		this.isLocal = isLocalParam;
-		this.liveUploadOutput = liveUploadOutputParam;
-		this.requestMachine = requestMachineParam;
+	JobProcessRunner(String serverUrl, boolean deleteOnExit,
+			boolean isLocal, String executerId,
+			boolean liveUploadOutput, boolean requestMachine) {
+		this.serverUrl = requireNonNull(
+				serverUrl, "--serverUrl must be specified");
+		this.executerId = requireNonNull(
+				executerId, "--executerId must be specified");
+		this.deleteOnExit = deleteOnExit;
+		this.isLocal = isLocal;
+		this.liveUploadOutput = liveUploadOutput;
+		this.requestMachine = requestMachine;
 	}
 
 	/**
@@ -323,7 +319,8 @@ class JobProcessRunner {
 	/**
 	 * Report a job failure.
 	 *
-	 * @param error The error of the failure.
+	 * @param error
+	 *            The error of the failure.
 	 */
 	private void reportFailure(Throwable error) {
 		if (isNull(jobManager) || isNull(job)) {
@@ -490,11 +487,11 @@ class Machine {
 	/**
 	 * Create a machine known by object.
 	 *
-	 * @param machineParam
+	 * @param machine
 	 *            The machine object.
 	 */
-	Machine(SpinnakerMachine machineParam) {
-		this.machine = machineParam;
+	Machine(SpinnakerMachine machine) {
+		this.machine = machine;
 	}
 
 	/**
@@ -555,7 +552,8 @@ abstract class JobManagerLogWriter implements LogWriter {
 	/**
 	 * Adds a message to the cache.
 	 *
-	 * @param message The message to add
+	 * @param message
+	 *            The message to add
 	 */
 	protected synchronized void appendCache(String message) {
 		cached.append(message);

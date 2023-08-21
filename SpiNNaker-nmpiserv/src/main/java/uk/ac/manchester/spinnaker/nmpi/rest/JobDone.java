@@ -39,7 +39,8 @@ public class JobDone {
 	/**
 	 * Create a job with only a status.
 	 *
-	 * @param status The status to set.
+	 * @param status
+	 *            The status to set.
 	 */
 	public JobDone(String status) {
 		this.status = status;
@@ -57,7 +58,8 @@ public class JobDone {
 	/**
 	 * Set the status.
 	 *
-	 * @param status The status to set
+	 * @param status
+	 *            The status to set
 	 */
 	public void setStatus(String status) {
 		this.status = status;
@@ -75,11 +77,12 @@ public class JobDone {
 	/**
 	 * Sets the timestampCompletion.
 	 *
-	 * @param timestampCompletionParam the timestampCompletion to set
+	 * @param timestampCompletion
+	 *            the timestampCompletion to set
 	 */
 	public void setTimestampCompletion(
-			final DateTime timestampCompletionParam) {
-		this.timestampCompletion = timestampCompletionParam;
+			final DateTime timestampCompletion) {
+		this.timestampCompletion = timestampCompletion;
 	}
 
 	/**
@@ -94,10 +97,11 @@ public class JobDone {
 	/**
 	 * Sets the outputData.
 	 *
-	 * @param outputDataParam the outputData to set
+	 * @param outputData
+	 *            the outputData to set
 	 */
-	public void setOutputData(OutputData outputDataParam) {
-		this.outputData = outputDataParam;
+	public void setOutputData(OutputData outputData) {
+		this.outputData = outputData;
 	}
 
 	/**
@@ -112,9 +116,10 @@ public class JobDone {
 	/**
 	 * Sets the provenance.
 	 *
-	 * @param provenanceParam the provenance to set
+	 * @param provenance
+	 *            the provenance to set
 	 */
-	public void setProvenance(ObjectNode provenanceParam) {
-		this.provenance = provenanceParam;
+	public void setProvenance(ObjectNode provenance) {
+		this.provenance = provenance;
 	}
 }

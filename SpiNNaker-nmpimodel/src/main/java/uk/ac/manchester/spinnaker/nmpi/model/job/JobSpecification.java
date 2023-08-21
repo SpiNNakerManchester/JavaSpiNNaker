@@ -23,25 +23,16 @@ import uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine;
  * using sPyNNaker.
  */
 public class JobSpecification {
-
-	/**
-	 * The machine to execute the job on.
-	 */
+	/** The machine to execute the job on. */
 	private SpinnakerMachine machine;
 
-	/**
-	 * The parameters of the job.
-	 */
+	/** The parameters of the job. */
 	private JobParameters parameters;
 
-	/**
-	 * The ID of the job.
-	 */
+	/** The ID of the job. */
 	private int id;
 
-	/**
-	 * The URL of the job to send results and status to.
-	 */
+	/** The URL of the job to send results and status to. */
 	private String url;
 
 	/**
@@ -54,25 +45,25 @@ public class JobSpecification {
 	/**
 	 * Create the specification for running a job.
 	 *
-	 * @param machineParam
+	 * @param machine
 	 *            The machine to run the job on.
-	 * @param parametersParam
+	 * @param parameters
 	 *            The parameters to the job.
-	 * @param idParam
+	 * @param id
 	 *            The ID of the job.
-	 * @param urlParam
-	 *            The URL
+	 * @param url
+	 *            The URL of the job to send results and status to.
 	 */
-	public JobSpecification(SpinnakerMachine machineParam,
-			JobParameters parametersParam, int idParam, String urlParam) {
-		this.machine = machineParam;
-		this.parameters = parametersParam;
-		this.id = idParam;
-		this.url = urlParam;
+	public JobSpecification(SpinnakerMachine machine, JobParameters parameters,
+			int id, String url) {
+		this.machine = machine;
+		this.parameters = parameters;
+		this.id = id;
+		this.url = url;
 	}
 
 	/**
-	 * Get the machine.
+	 * Get the machine to run the job on.
 	 *
 	 * @return the machine
 	 */
@@ -83,14 +74,15 @@ public class JobSpecification {
 	/**
 	 * Sets the machine.
 	 *
-	 * @param machineParam the machine to set
+	 * @param machine
+	 *            the machine to set
 	 */
-	public void setMachine(SpinnakerMachine machineParam) {
-		this.machine = machineParam;
+	public void setMachine(SpinnakerMachine machine) {
+		this.machine = machine;
 	}
 
 	/**
-	 * Get the parameters.
+	 * Get the parameters of the job.
 	 *
 	 * @return the parameters
 	 */
@@ -101,14 +93,15 @@ public class JobSpecification {
 	/**
 	 * Sets the parameters.
 	 *
-	 * @param parametersParam the parameters to set
+	 * @param parameters
+	 *            the parameters to set
 	 */
-	public void setParameters(JobParameters parametersParam) {
-		this.parameters = parametersParam;
+	public void setParameters(JobParameters parameters) {
+		this.parameters = parameters;
 	}
 
 	/**
-	 * Get the id.
+	 * Get the ID of the job.
 	 *
 	 * @return the id
 	 */
@@ -117,16 +110,17 @@ public class JobSpecification {
 	}
 
 	/**
-	 * Sets the id.
+	 * Sets the ID.
 	 *
-	 * @param idParam the id to set
+	 * @param id
+	 *            the id to set
 	 */
-	public void setId(int idParam) {
-		this.id = idParam;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	/**
-	 * Get the URL.
+	 * Get the URL of the job to send results and status to.
 	 *
 	 * @return the URL
 	 */
@@ -137,9 +131,10 @@ public class JobSpecification {
 	/**
 	 * Sets the URL.
 	 *
-	 * @param urlParam the URL to set
+	 * @param url
+	 *            the URL to set
 	 */
-	public void setUrl(String urlParam) {
-		this.url = urlParam;
+	public void setUrl(String url) {
+		this.url = url;
 	}
 }

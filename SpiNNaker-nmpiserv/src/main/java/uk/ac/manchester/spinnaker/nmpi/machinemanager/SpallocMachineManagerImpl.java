@@ -77,7 +77,7 @@ import uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine;
 import uk.ac.manchester.spinnaker.nmpi.rest.utils.PropertyBasedDeserialiser;
 
 /**
- * A machine manager that interfaces to the spalloc service.
+ * A machine manager that interfaces to the old spalloc service.
  */
 public final class SpallocMachineManagerImpl implements MachineManager {
 	/** The default version of a machine. */
@@ -137,6 +137,9 @@ public final class SpallocMachineManagerImpl implements MachineManager {
 	/** True when the manager is finished with. */
 	private volatile boolean done = false;
 
+	/** Thread pool. */
+	private ScheduledExecutorService scheduler;
+
 	/**
 	 * Deserialiser for spalloc responses.
 	 */
@@ -164,11 +167,6 @@ public final class SpallocMachineManagerImpl implements MachineManager {
 		mapper.setPropertyNamingStrategy(SNAKE_CASE);
 		mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
-
-	/**
-	 * Thread pool.
-	 */
-	private ScheduledExecutorService scheduler;
 
 	/**
 	 * Launch this manager's threads.

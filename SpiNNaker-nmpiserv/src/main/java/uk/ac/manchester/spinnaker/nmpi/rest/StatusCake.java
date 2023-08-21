@@ -30,33 +30,34 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
  * Interface to StatusCake API.
- *
  */
 public interface StatusCake {
-
 	/**
 	 * Send a push update.
 	 *
-	 * @param primaryKey The key of the update.
-	 * @param testID The ID of the test within the set.
-	 * @param time The "time" or any performance of the status.
+	 * @param primaryKey
+	 *            The key of the update.
+	 * @param testID
+	 *            The ID of the test within the set.
+	 * @param time
+	 *            The "time" or any performance of the status.
 	 */
 	@GET
 	@Path("")
 	void pushUpdate(@QueryParam("PK") String primaryKey,
-			@QueryParam("TestID") String testID,
-			@QueryParam("time") int time);
+			@QueryParam("TestID") String testID, @QueryParam("time") int time);
 
 	/**
 	 * Get a client for the API.
-	 * @param url The URL to connect to.
+	 *
+	 * @param url
+	 *            The URL to connect to.
 	 * @return A proxy of the API.
 	 */
 	static StatusCake createClient(String url) {
-		ObjectMapper mapper = new ObjectMapper();
+		var mapper = new ObjectMapper();
 		mapper.setPropertyNamingStrategy(SNAKE_CASE);
 		return JAXRSClientFactory.create(url, StatusCake.class,
 				List.of(new JacksonJsonProvider()));
 	}
-
 }

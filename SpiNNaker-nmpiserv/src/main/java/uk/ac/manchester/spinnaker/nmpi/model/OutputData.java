@@ -39,10 +39,11 @@ public class OutputData {
 	/**
 	 * Make an instance for a repository.
 	 *
-	 * @param repositoryParam The name of the repository.
+	 * @param repository
+	 *            The name of the repository.
 	 */
-	public OutputData(String repositoryParam) {
-		this.repository = repositoryParam;
+	public OutputData(String repository) {
+		this.repository = repository;
 	}
 
 	/**
@@ -57,9 +58,10 @@ public class OutputData {
 	/**
 	 * Set the repository.
 	 *
-	 * @param repository The repository to set.
+	 * @param repository
+	 *            The repository to set.
 	 */
-	public void setRepository(String repository) {
+	void setRepository(String repository) {
 		this.repository = repository;
 	}
 
@@ -75,7 +77,8 @@ public class OutputData {
 	/**
 	 * Set the files.
 	 *
-	 * @param files The files to set.
+	 * @param files
+	 *            The files to set.
 	 */
 	public void setFiles(List<DataItem> files) {
 		this.files = files;

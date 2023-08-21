@@ -46,10 +46,11 @@ public class JobMachineInfo {
 	/**
 	 * Set the width of the machine.
 	 *
-	 * @param widthParam The width in chips
+	 * @param width
+	 *            The width in chips
 	 */
-	void setWidth(int widthParam) {
-		this.width = widthParam;
+	void setWidth(int width) {
+		this.width = width;
 	}
 
 	/**
@@ -64,10 +65,11 @@ public class JobMachineInfo {
 	/**
 	 * Set the height of the machine.
 	 *
-	 * @param heightParam The height in chips
+	 * @param height
+	 *            The height in chips
 	 */
-	void setHeight(int heightParam) {
-		this.height = heightParam;
+	void setHeight(int height) {
+		this.height = height;
 	}
 
 	/**
@@ -82,10 +84,11 @@ public class JobMachineInfo {
 	/**
 	 * Set the connection to the machine.
 	 *
-	 * @param connectionsParam The connections to set
+	 * @param connections
+	 *            The connections to set
 	 */
-	void setConnections(List<Connection> connectionsParam) {
-		this.connections = connectionsParam;
+	void setConnections(List<Connection> connections) {
+		this.connections = connections;
 	}
 
 	/**
@@ -100,9 +103,10 @@ public class JobMachineInfo {
 	/**
 	 * Set the name of the machine.
 	 *
-	 * @param machineNameParam The name to set
+	 * @param machineName
+	 *            The name to set
 	 */
-	void setMachineName(String machineNameParam) {
-		this.machineName = machineNameParam;
+	void setMachineName(String machineName) {
+		this.machineName = machineName;
 	}
 }

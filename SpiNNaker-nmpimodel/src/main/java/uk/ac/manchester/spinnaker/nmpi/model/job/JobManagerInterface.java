@@ -316,7 +316,8 @@ public interface JobManagerInterface {
 	 * Get the setup script to be executed.
 	 *
 	 * @return a response containing the setup script
-	 * @throws IOException if something goes wrong
+	 * @throws IOException
+	 *             if something goes wrong
 	 */
 	@GET
 	@Path(SETUP_SCRIPT)

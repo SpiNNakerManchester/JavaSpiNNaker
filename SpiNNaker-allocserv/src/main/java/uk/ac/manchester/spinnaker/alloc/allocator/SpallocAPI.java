@@ -994,7 +994,8 @@ public interface SpallocAPI {
 		List<Job> jobs();
 
 		/**
-		 * @param duration How long to wait for a change.
+		 * @param duration
+		 *            How long to wait for a change.
 		 * @return The set of jobs that have changed.
 		 */
 		Collection<Integer> getChanged(Duration duration);
@@ -1013,19 +1014,13 @@ public interface SpallocAPI {
 		/** @return The name of the machine. Unique. */
 		String getName();
 
-		/**
-		 * @return The tags associated with the machine.
-		 */
+		/** @return The tags associated with the machine. */
 		Set<String> getTags();
 
-		/**
-		 * @return The width of the machine.
-		 */
+		/** @return The width of the machine. */
 		int getWidth();
 
-		/**
-		 * @return The height of the machine.
-		 */
+		/** @return The height of the machine. */
 		int getHeight();
 
 		/** @return Whether the machine wraps in the horizontal direction. */
@@ -1102,14 +1097,10 @@ public interface SpallocAPI {
 		 */
 		String getRootBoardBMPAddress();
 
-		/**
-		 * @return The boards supported by the machine.
-		 */
+		/** @return The boards supported by the machine. */
 		List<Integer> getBoardNumbers();
 
-		/**
-		 * @return The IDs of boards currently available to be allocated.
-		 */
+		/** @return The IDs of boards currently available to be allocated. */
 		List<Integer> getAvailableBoards();
 
 		/**

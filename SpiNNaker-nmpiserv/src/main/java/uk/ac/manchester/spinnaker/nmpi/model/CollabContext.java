@@ -55,11 +55,11 @@ public class CollabContext {
 	/**
 	 * Set the ID of the application.
 	 *
-	 * @param appIdParam
+	 * @param appId
 	 *            The ID to set
 	 */
-	void setAppId(String appIdParam) {
-		this.appId = appIdParam;
+	void setAppId(String appId) {
+		this.appId = appId;
 	}
 
 	/**
@@ -74,11 +74,11 @@ public class CollabContext {
 	/**
 	 * Set the collab of the application.
 	 *
-	 * @param collabParam
+	 * @param collab
 	 *            The collab to set
 	 */
-	void setCollab(Collab collabParam) {
-		this.collab = collabParam;
+	void setCollab(Collab collab) {
+		this.collab = collab;
 	}
 
 	/**
@@ -93,11 +93,11 @@ public class CollabContext {
 	/**
 	 * Set the context of the application.
 	 *
-	 * @param contextParam
+	 * @param context
 	 *            The context to set
 	 */
-	void setContext(String contextParam) {
-		this.context = contextParam;
+	void setContext(String context) {
+		this.context = context;
 	}
 
 	/**
@@ -112,11 +112,11 @@ public class CollabContext {
 	/**
 	 * Set the ID of the context.
 	 *
-	 * @param idParam
+	 * @param id
 	 *            The ID
 	 */
-	void setId(int idParam) {
-		this.id = idParam;
+	void setId(int id) {
+		this.id = id;
 	}
 
 	/**
@@ -131,11 +131,11 @@ public class CollabContext {
 	/**
 	 * Set the name of the context.
 	 *
-	 * @param nameParam
+	 * @param name
 	 *            The name to set
 	 */
-	void setName(String nameParam) {
-		this.name = nameParam;
+	void setName(String name) {
+		this.name = name;
 	}
 
 	/**
@@ -150,11 +150,11 @@ public class CollabContext {
 	/**
 	 * Set the index of this item in order.
 	 *
-	 * @param orderIndexParam
+	 * @param orderIndex
 	 *            The index to set
 	 */
-	void setOrderIndex(int orderIndexParam) {
-		this.orderIndex = orderIndexParam;
+	void setOrderIndex(int orderIndex) {
+		this.orderIndex = orderIndex;
 	}
 
 	/**
@@ -169,11 +169,11 @@ public class CollabContext {
 	/**
 	 * Set the parent of this item.
 	 *
-	 * @param parentParam
+	 * @param parent
 	 *            The parent to set
 	 */
-	void setParent(int parentParam) {
-		this.parent = parentParam;
+	void setParent(int parent) {
+		this.parent = parent;
 	}
 
 	/**
@@ -188,10 +188,10 @@ public class CollabContext {
 	/**
 	 * Set the type of this item.
 	 *
-	 * @param typeParam
+	 * @param type
 	 *            The type to set
 	 */
-	void setType(String typeParam) {
-		this.type = typeParam;
+	void setType(String type) {
+		this.type = type;
 	}
 }

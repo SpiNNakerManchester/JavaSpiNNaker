@@ -135,8 +135,10 @@ public abstract class Utils {
 	 * @param props
 	 *            Where is the trust store and how should we load it?
 	 * @return The trust store. Note that this is not installed into anything.
-	 * @throws GeneralSecurityException If the trust store contains bad info.
-	 * @throws IOException If the trust store can't be read at all.
+	 * @throws GeneralSecurityException
+	 *             If the trust store contains bad info.
+	 * @throws IOException
+	 *             If the trust store can't be read at all.
 	 */
 	public static KeyStore loadTrustStore(OpenIDProperties props)
 			throws GeneralSecurityException, IOException {

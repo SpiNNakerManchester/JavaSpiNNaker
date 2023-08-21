@@ -35,11 +35,11 @@ public class DataItem {
 	 * Make an instance that wraps a URL. The meaning of the URL depends on the
 	 * usage of the data item.
 	 *
-	 * @param urlParam
+	 * @param url
 	 *            The URL to wrap.
 	 */
-	public DataItem(String urlParam) {
-		this.url = urlParam;
+	public DataItem(String url) {
+		this.url = url;
 	}
 
 	/**
@@ -54,11 +54,11 @@ public class DataItem {
 	/**
 	 * Set the URL of the item of data.
 	 *
-	 * @param urlParam
+	 * @param url
 	 *            The URL
 	 */
-	public void setUrl(String urlParam) {
-		this.url = urlParam;
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 	/**
@@ -68,6 +68,7 @@ public class DataItem {
 	 *            The key of the property
 	 * @param value
 	 *            The value of the property
+	 * @hidden
 	 */
 	@JsonAnySetter
 	public void ignoreExtra(String key, String value) {

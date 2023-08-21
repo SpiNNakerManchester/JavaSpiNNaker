@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import uk.ac.manchester.spinnaker.nmpi.rest.StatusCake;
 
 /**
- * Status monitor manager that uses StatusCake service.
+ * Status monitor manager that uses the StatusCake service.
  */
 public class StatusCakeStatusMonitorManagerImpl
 		implements StatusMonitorManager {
@@ -57,8 +57,8 @@ public class StatusCakeStatusMonitorManagerImpl
 
 	@Override
 	public void updateStatus(int runningJobs, int nBoardsInUse) {
-		logger.debug("Updating to Status Cake - "
-				+ "runningJobs = {}, nBoardsInUse = {}",
+		logger.debug(
+				"Updating to Status Cake - runningJobs = {}, nBoardsInUse = {}",
 				runningJobs, nBoardsInUse);
 		try {
 			statusCake.pushUpdate(primaryKey, testID, nBoardsInUse);

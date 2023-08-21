@@ -167,15 +167,15 @@ public final class XenVMExecuterFactory implements JobExecuterFactory {
 		/**
 		 * Make a connection to the Xen server.
 		 *
-		 * @param idParam
+		 * @param id
 		 *            The ID of the connection.
 		 * @throws XenAPIException
 		 *             something went wrong
 		 * @throws XmlRpcException
 		 *             something went wrong
 		 */
-		XenConnection(String idParam) throws XenAPIException, XmlRpcException {
-			this.id = idParam;
+		XenConnection(String id) throws XenAPIException, XmlRpcException {
+			this.id = id;
 			conn = new Connection(xenServerUrl);
 			loginWithPassword(conn, username, password);
 		}
@@ -444,7 +444,7 @@ public final class XenVMExecuterFactory implements JobExecuterFactory {
 		/**
 		 * Instantiate a connector.
 		 *
-		 * @param jobManagerParam
+		 * @param jobManager
 		 *            The job manager.
 		 * @param baseUrl
 		 *            the service root URL.
@@ -453,9 +453,9 @@ public final class XenVMExecuterFactory implements JobExecuterFactory {
 		 * @throws IOException
 		 *             something went wrong
 		 */
-		Executer(JobManager jobManagerParam, URL baseUrl)
+		Executer(JobManager jobManager, URL baseUrl)
 				throws XmlRpcException, IOException {
-			this.jobManager = jobManagerParam;
+			this.jobManager = jobManager;
 			uuid = randomUUID().toString();
 			jobProcessManagerUrl =
 					new URL(baseUrl, "job/" + JOB_PROCESS_MANAGER);
@@ -570,7 +570,8 @@ public final class XenVMExecuterFactory implements JobExecuterFactory {
 		/**
 		 * Run the VM.
 		 *
-		 * @param conn The connection to Xen
+		 * @param conn
+		 *            The connection to Xen
 		 */
 		private void runInVm(XenConnection conn) {
 			String action = null;

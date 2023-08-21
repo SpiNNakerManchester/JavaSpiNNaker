@@ -60,10 +60,11 @@ public class JobState {
 	/**
 	 * Set the state of the job in the queue.
 	 *
-	 * @param stateParam The state to set
+	 * @param state
+	 *            The state to set
 	 */
-	void setState(int stateParam) {
-		this.state = stateParam;
+	void setState(int state) {
+		this.state = state;
 	}
 
 	/**
@@ -78,10 +79,11 @@ public class JobState {
 	/**
 	 * Set the power state of the job.
 	 *
-	 * @param powerParam True for on, False for off
+	 * @param power
+	 *            True for on, False for off
 	 */
-	void setPower(Boolean powerParam) {
-		this.power = powerParam;
+	void setPower(Boolean power) {
+		this.power = power;
 	}
 
 	/**
@@ -96,10 +98,11 @@ public class JobState {
 	/**
 	 * Set the number of seconds to keep alive.
 	 *
-	 * @param keepAliveParam The number of seconds to set
+	 * @param keepAlive
+	 *            The number of seconds to set
 	 */
-	void setKeepAlive(double keepAliveParam) {
-		this.keepAlive = keepAliveParam;
+	void setKeepAlive(double keepAlive) {
+		this.keepAlive = keepAlive;
 	}
 
 	/**
@@ -114,9 +117,10 @@ public class JobState {
 	/**
 	 * Set the reason for the job being destroyed.
 	 *
-	 * @param reasonParam The reason to set.
+	 * @param reason
+	 *            The reason to set.
 	 */
-	void setReason(String reasonParam) {
-		this.reason = reasonParam;
+	void setReason(String reason) {
+		this.reason = reason;
 	}
 }

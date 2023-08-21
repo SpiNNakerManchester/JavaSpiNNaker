@@ -33,7 +33,8 @@ public class JobListCompat {
 	}
 
 	/**
-	 * @param objects the jobs to set
+	 * @param objects
+	 *            the jobs to set
 	 */
 	public void setObjects(List<QueueJobCompat> objects) {
 		this.objects = objects;

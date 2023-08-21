@@ -44,10 +44,11 @@ public class Chip {
 	/**
 	 * Set the x-coordinate of the chip.
 	 *
-	 * @param xParam The x-coordinate of the chip
+	 * @param x
+	 *            The x-coordinate of the chip
 	 */
-	void setX(int xParam) {
-		this.x = xParam;
+	void setX(int x) {
+		this.x = x;
 	}
 
 	/**
@@ -62,9 +63,10 @@ public class Chip {
 	/**
 	 * Set the y-coordinate of the chip.
 	 *
-	 * @param yParam The y-coordinate of the chip
+	 * @param y
+	 *            The y-coordinate of the chip
 	 */
-	void setY(int yParam) {
-		this.y = yParam;
+	void setY(int y) {
+		this.y = y;
 	}
 }

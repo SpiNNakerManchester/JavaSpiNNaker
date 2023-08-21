@@ -83,7 +83,7 @@ public final class LocalJobExecuterFactory implements JobExecuterFactory {
 	private final ThreadGroup threadGroup;
 
 	/** The directory in which the executor should start. */
-	private File jobExecuterDirectory = null;
+	private File jobExecuterDirectory;
 
 	/** Logging. */
 	private static final Logger logger = getLogger(Executer.class);
@@ -176,20 +176,20 @@ public final class LocalJobExecuterFactory implements JobExecuterFactory {
 		/**
 		 * Create a JobExecuter.
 		 *
-		 * @param jobManagerParam
+		 * @param jobManager
 		 *            The job manager that wanted an executer made.
-		 * @param argumentsParam
+		 * @param arguments
 		 *            The arguments to use
-		 * @param idParam
+		 * @param id
 		 *            The id of the executer
 		 * @throws IOException
 		 *             If there is an error creating the log file
 		 */
-		Executer(JobManager jobManagerParam, List<String> argumentsParam,
-				String idParam) throws IOException {
-			this.jobManager = jobManagerParam;
-			this.arguments = argumentsParam;
-			this.id = idParam;
+		Executer(JobManager jobManager, List<String> arguments, String id)
+				throws IOException {
+			this.jobManager = jobManager;
+			this.arguments = arguments;
+			this.id = id;
 			javaExec = getJavaExec();
 		}
 
@@ -283,8 +283,8 @@ public final class LocalJobExecuterFactory implements JobExecuterFactory {
 		 * Gets an OutputStream which writes to the process stdin.
 		 *
 		 * @return An OutputStream
-		 * @throws IOException If the output stream of the process can't be
-		 *     obtained
+		 * @throws IOException
+		 *             If the output stream of the process can't be obtained
 		 */
 		OutputStream getProcessOutputStream() throws IOException {
 			synchronized (this) {

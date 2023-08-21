@@ -42,7 +42,8 @@ public abstract class SpinnakerRequest implements SerializableMessage {
 	public final SDPHeader sdpHeader;
 
 	/**
-	 * @param sdpHeader The SDP header of the message.
+	 * @param sdpHeader
+	 *            The SDP header of the message.
 	 */
 	protected SpinnakerRequest(SDPHeader sdpHeader) {
 		this.sdpHeader = requireNonNull(sdpHeader);

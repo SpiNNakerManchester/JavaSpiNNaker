@@ -37,6 +37,9 @@ import uk.ac.manchester.spinnaker.alloc.client.SpallocClientFactory;
 import uk.ac.manchester.spinnaker.alloc.client.State;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
+/**
+ * A machine manager that interfaces to the new spalloc service.
+ */
 public final class SpallocJavaMachineManagerImpl implements MachineManager {
 	/** The version to use for the boards. */
 	private static final String VERSION = "5";

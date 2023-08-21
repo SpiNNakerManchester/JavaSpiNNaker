@@ -26,8 +26,10 @@ public class JobStatusOnlyCompat {
 	/**
 	 * Create a job with only a status.
 	 *
-	 * @param id The job id.
-	 * @param status The status to set.
+	 * @param id
+	 *            The job id.
+	 * @param status
+	 *            The status to set.
 	 */
 	public JobStatusOnlyCompat(int id, String status) {
 		this.id = id;
@@ -46,7 +48,8 @@ public class JobStatusOnlyCompat {
 	/**
 	 * Set the status.
 	 *
-	 * @param status The status to set
+	 * @param status
+	 *            The status to set
 	 */
 	public void setStatus(String status) {
 		this.status = status;
@@ -64,7 +67,8 @@ public class JobStatusOnlyCompat {
 	/**
 	 * Set the id.
 	 *
-	 * @param id The id
+	 * @param id
+	 *            The id
 	 */
 	public void setId(int id) {
 		this.id = id;

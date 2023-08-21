@@ -37,10 +37,11 @@ public class Collab {
 	/**
 	 * Set the content field.
 	 *
-	 * @param contentParam The value to set.
+	 * @param content
+	 *            The value to set.
 	 */
-	void setContent(String contentParam) {
-		this.content = contentParam;
+	void setContent(String content) {
+		this.content = content;
 	}
 
 	/**
@@ -55,9 +56,10 @@ public class Collab {
 	/**
 	 * Set the ID of the collab.
 	 *
-	 * @param idParam The collab ID
+	 * @param id
+	 *            The collab ID
 	 */
-	void setId(int idParam) {
-		this.id = idParam;
+	void setId(int id) {
+		this.id = id;
 	}
 }

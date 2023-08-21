@@ -402,21 +402,21 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 	/**
 	 * Gather the provenance information from the job's reports directory.
 	 *
-	 * @param workingDirectoryParam
+	 * @param workingDirectory
 	 *            The job's working directory.
 	 * @throws IOException
 	 *             If anything goes wrong with I/O.
 	 * @throws JAXBException
 	 *             If anything goes wrong with deserialisation of XML.
 	 */
-	private void gatherProvenance(File workingDirectoryParam)
+	private void gatherProvenance(File workingDirectory)
 			throws IOException {
 		// Find the reports folder
-		var reportsFolder = new File(workingDirectoryParam, "reports");
+		var reportsFolder = new File(workingDirectory, "reports");
 		if (reportsFolder.isDirectory()) {
 			// Create a zip file of the reports
 			try (var reportsZip = new ZipOutputStream(new FileOutputStream(
-					new File(workingDirectoryParam, "reports.zip")))) {
+					new File(workingDirectory, "reports.zip")))) {
 				// Gather items into the reports zip, keeping an eye out for
 				// the "provenance data" folder
 				zipProvenance(reportsZip, reportsFolder, "reports");
@@ -480,15 +480,15 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 		/**
 		 * Creates a new ReaderLogWriter with another reader.
 		 *
-		 * @param readerParam
+		 * @param reader
 		 *            The reader to read from
-		 * @param writerParam
+		 * @param writer
 		 *            The writer to write to
 		 */
-		ReaderLogWriter(Reader readerParam, LogWriter writerParam) {
+		ReaderLogWriter(Reader reader, LogWriter writer) {
 			super(threadGroup, "Reader Log Writer");
-			this.reader = buffer(readerParam);
-			this.writer = requireNonNull(writerParam);
+			this.reader = buffer(reader);
+			this.writer = requireNonNull(writer);
 			setDaemon(true);
 		}
 
@@ -498,12 +498,11 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 		 *
 		 * @param input
 		 *            The input stream to read from.
-		 * @param writerParam
+		 * @param writer
 		 *            The writer to write to.
 		 */
-		ReaderLogWriter(InputStream input,
-				LogWriter writerParam) {
-			this(new InputStreamReader(input), writerParam);
+		ReaderLogWriter(InputStream input, LogWriter writer) {
+			this(new InputStreamReader(input), writer);
 		}
 
 		@Override

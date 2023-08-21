@@ -32,11 +32,11 @@ public class JobMachineAllocated {
 	/**
 	 * Create an instance.
 	 *
-	 * @param allocatedParam
+	 * @param allocated
 	 *            Whether the job was allocated.
 	 */
-	public JobMachineAllocated(boolean allocatedParam) {
-		this.allocated = allocatedParam;
+	public JobMachineAllocated(boolean allocated) {
+		this.allocated = allocated;
 	}
 
 	/**
@@ -51,9 +51,10 @@ public class JobMachineAllocated {
 	/**
 	 * Set the job allocation status.
 	 *
-	 * @param allocatedParam The allocation status
+	 * @param allocated
+	 *            The allocation status
 	 */
-	public void setAllocated(boolean allocatedParam) {
-		this.allocated = allocatedParam;
+	public void setAllocated(boolean allocated) {
+		this.allocated = allocated;
 	}
 }

@@ -1180,7 +1180,8 @@ public class AllocatorTask extends DatabaseAwareBean
 	/**
 	 * Reset a job after a failure on a BMP.
 	 *
-	 * @param jobId The identifier of the job to reset.
+	 * @param jobId
+	 *            The identifier of the job to reset.
 	 */
 	@SuppressWarnings("FutureReturnValueIgnored")
 	public void resetPowerOnFailure(int jobId) {

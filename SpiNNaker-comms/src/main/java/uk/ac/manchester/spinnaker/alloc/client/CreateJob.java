@@ -47,10 +47,7 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  * @author Donal Fellows
  */
 public final class CreateJob {
-
-	/**
-	 * The default keep-alive interval.
-	 */
+	/** The default keep-alive interval. */
 	public static final Duration DEFAULT_KEEPALIVE = Duration.ofMinutes(1);
 
 	private Duration keepaliveInterval = DEFAULT_KEEPALIVE;
@@ -175,7 +172,10 @@ public final class CreateJob {
 			return x;
 		}
 
-		/** @param x The triad X coordinate. */
+		/**
+		 * @param x
+		 *            The triad X coordinate.
+		 */
 		public void setX(Integer x) {
 			this.x = x;
 		}
@@ -185,7 +185,10 @@ public final class CreateJob {
 			return y;
 		}
 
-		/** @param y The triad Y coordinate. */
+		/**
+		 * @param y
+		 *            The triad Y coordinate.
+		 */
 		public void setY(Integer y) {
 			this.y = y;
 		}
@@ -195,7 +198,10 @@ public final class CreateJob {
 			return z;
 		}
 
-		/** @param z The triad Z coordinate. */
+		/**
+		 * @param z
+		 *            The triad Z coordinate.
+		 */
 		public void setZ(Integer z) {
 			this.z = z;
 		}
@@ -205,7 +211,10 @@ public final class CreateJob {
 			return cabinet;
 		}
 
-		/** @param cabinet The cabinet number. */
+		/**
+		 * @param cabinet
+		 *            The cabinet number.
+		 */
 		public void setCabinet(Integer cabinet) {
 			this.cabinet = cabinet;
 		}
@@ -215,7 +224,10 @@ public final class CreateJob {
 			return frame;
 		}
 
-		/** @param frame The frame number. */
+		/**
+		 * @param frame
+		 *            The frame number.
+		 */
 		public void setFrame(Integer frame) {
 			this.frame = frame;
 		}
@@ -225,7 +237,10 @@ public final class CreateJob {
 			return board;
 		}
 
-		/** @param board The board number. */
+		/**
+		 * @param board
+		 *            The board number.
+		 */
 		public void setBoard(Integer board) {
 			this.board = board;
 		}
@@ -235,7 +250,10 @@ public final class CreateJob {
 			return address;
 		}
 
-		/** @param address The board IP address. */
+		/**
+		 * @param address
+		 *            The board IP address.
+		 */
 		public void setAddress(String address) {
 			this.address = address;
 		}
@@ -385,7 +403,10 @@ public final class CreateJob {
 		return dimensions;
 	}
 
-	/** @param dimensions The size of rectangle of boards to request. */
+	/**
+	 * @param dimensions
+	 *            The size of rectangle of boards to request.
+	 */
 	public void setDimensions(Dimensions dimensions) {
 		this.dimensions = dimensions;
 	}
@@ -395,7 +416,10 @@ public final class CreateJob {
 		return board;
 	}
 
-	/** @param board The address of the specific board to request. */
+	/**
+	 * @param board
+	 *            The address of the specific board to request.
+	 */
 	public void setBoard(SpecificBoard board) {
 		this.board = board;
 	}
@@ -473,14 +497,15 @@ public final class CreateJob {
 	/**
 	 * Set the owner of the job to something other than the user requesting.
 	 * Only works when the user has this permission.
-	 * @param owner The new owner.
+	 *
+	 * @param owner
+	 *            The new owner.
 	 */
 	public void setOwner(String owner) {
 		this.owner = owner;
 	}
 
 	/**
-	 *
 	 * @return The group the quota for the job should be allocated against.
 	 */
 	public String getGroup() {
@@ -488,8 +513,8 @@ public final class CreateJob {
 	}
 
 	/**
-	 *
-	 * @param group The group the quota for the job should be allocated against.
+	 * @param group
+	 *            The group the quota for the job should be allocated against.
 	 */
 	public void setGroup(String group) {
 		this.group = group;
@@ -505,9 +530,9 @@ public final class CreateJob {
 	}
 
 	/**
-	 *
-	 * @param nmpiCollab The collaboratory that the quota for the job should be
-	 *                   allocated against.
+	 * @param nmpiCollab
+	 *            The collaboratory that the quota for the job should be
+	 *            allocated against.
 	 */
 	public void setNmpiCollab(String nmpiCollab) {
 		this.nmpiCollab = nmpiCollab;
@@ -521,8 +546,8 @@ public final class CreateJob {
 	}
 
 	/**
-	 *
-	 * @param nmpiJobId The NMPI job that the quota should be allocated against.
+	 * @param nmpiJobId
+	 *            The NMPI job that the quota should be allocated against.
 	 */
 	public void setNmpiJobId(Integer nmpiJobId) {
 		this.nmpiJobId = nmpiJobId;

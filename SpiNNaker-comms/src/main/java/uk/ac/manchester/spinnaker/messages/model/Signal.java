@@ -64,8 +64,10 @@ public enum Signal {
 			makeEnumBackingMap(values(), v -> v.value);
 
 	/**
-	 * @param value the value
-	 * @param type the type
+	 * @param value
+	 *            the value
+	 * @param type
+	 *            the type
 	 */
 	Signal(int value, Type type) {
 		this.value = (byte) value;

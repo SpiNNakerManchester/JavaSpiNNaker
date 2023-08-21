@@ -23,7 +23,7 @@ public final class QueueEmpty implements QueueNextResponse {
 	private String warning;
 
 	/**
-	 * Get the warning.
+	 * Get any warning returned.
 	 *
 	 * @return The warning
 	 */
@@ -34,9 +34,10 @@ public final class QueueEmpty implements QueueNextResponse {
 	/**
 	 * Set the warning.
 	 *
-	 * @param warningParam The warning to set
+	 * @param warning
+	 *            The warning to set
 	 */
-	void setWarning(String warningParam) {
-		this.warning = warningParam;
+	void setWarning(String warning) {
+		this.warning = warning;
 	}
 }

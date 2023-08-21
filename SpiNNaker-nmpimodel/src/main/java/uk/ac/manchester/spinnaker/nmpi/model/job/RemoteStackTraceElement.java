@@ -19,25 +19,16 @@ package uk.ac.manchester.spinnaker.nmpi.model.job;
  * Represents a stack trace provided remotely.
  */
 public class RemoteStackTraceElement {
-
-	/**
-	 * The name of the class of the element.
-	 */
+	/** The name of the class of the element. */
 	private String className;
 
-	/**
-	 * The name of the method of the element.
-	 */
+	/** The name of the method of the element. */
 	private String methodName;
 
-	/**
-	 * The name of the file of the element.
-	 */
+	/** The name of the file of the element. */
 	private String fileName;
 
-	/**
-	 * The line number of the element.
-	 */
+	/** The line number of the element. */
 	private int lineNumber;
 
 	/**
@@ -62,7 +53,7 @@ public class RemoteStackTraceElement {
 	}
 
 	/**
-	 * Get the className.
+	 * Get the name of the class of the element.
 	 *
 	 * @return the className
 	 */
@@ -73,14 +64,15 @@ public class RemoteStackTraceElement {
 	/**
 	 * Sets the className.
 	 *
-	 * @param classNameParam the className to set
+	 * @param className
+	 *            the className to set
 	 */
-	public void setClassName(String classNameParam) {
-		this.className = classNameParam;
+	public void setClassName(String className) {
+		this.className = className;
 	}
 
 	/**
-	 * Get the methodName.
+	 * Get the name of the method of the element.
 	 *
 	 * @return the methodName
 	 */
@@ -91,14 +83,15 @@ public class RemoteStackTraceElement {
 	/**
 	 * Sets the methodName.
 	 *
-	 * @param methodNameParam the methodName to set
+	 * @param methodName
+	 *            the methodName to set
 	 */
-	public void setMethodName(String methodNameParam) {
-		this.methodName = methodNameParam;
+	public void setMethodName(String methodName) {
+		this.methodName = methodName;
 	}
 
 	/**
-	 * Get the fileName.
+	 * Get the name of the file of the element.
 	 *
 	 * @return the fileName
 	 */
@@ -109,14 +102,15 @@ public class RemoteStackTraceElement {
 	/**
 	 * Sets the fileName.
 	 *
-	 * @param fileNameParam the fileName to set
+	 * @param fileName
+	 *            the fileName to set
 	 */
-	public void setFileName(String fileNameParam) {
-		this.fileName = fileNameParam;
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 
 	/**
-	 * Get the lineNumber.
+	 * Get the line number of the element.
 	 *
 	 * @return the lineNumber
 	 */
@@ -127,10 +121,11 @@ public class RemoteStackTraceElement {
 	/**
 	 * Sets the lineNumber.
 	 *
-	 * @param lineNumberParam the lineNumber to set
+	 * @param lineNumber
+	 *            the lineNumber to set
 	 */
-	public void setLineNumber(int lineNumberParam) {
-		this.lineNumber = lineNumberParam;
+	public void setLineNumber(int lineNumber) {
+		this.lineNumber = lineNumber;
 	}
 
 	/**

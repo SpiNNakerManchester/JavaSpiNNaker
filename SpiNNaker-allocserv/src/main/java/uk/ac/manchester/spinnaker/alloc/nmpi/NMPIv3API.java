@@ -129,7 +129,7 @@ public interface NMPIv3API {
 	 * @return A proxy of the API.
 	 */
 	static NMPIv3API createClient(String url) {
-		ObjectMapper mapper = new ObjectMapper();
+		var mapper = new ObjectMapper();
 		mapper.setPropertyNamingStrategy(SNAKE_CASE);
 		return JAXRSClientFactory.create(url, NMPIv3API.class,
 				List.of(new JacksonJsonProvider()));

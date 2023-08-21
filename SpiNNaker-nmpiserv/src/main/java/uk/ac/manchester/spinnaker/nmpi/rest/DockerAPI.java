@@ -41,16 +41,11 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
  * Interface to the Docker API.
  */
 public interface DockerAPI {
-
-	/**
-	 * The docker output stream format.
-	 */
+	/** The docker output stream format. */
 	String APPLICATION_VND_DOCKER_RAW_STREAM =
 			"application/vnd.docker.raw-stream";
 
-	/**
-	 * The number of bytes in the log header that are unused.
-	 */
+	/** The number of bytes in the log header that are unused. */
 	int HEADER_UNUSED_BYTES = 4;
 
 	/**
@@ -181,8 +176,7 @@ public interface DockerAPI {
 				output.append(new String(text));
 			}
 		} catch (EOFException e) {
-			// Do nothing
+			return output.toString();
 		}
-		return output.toString();
 	}
 }

@@ -34,18 +34,18 @@ public class ChipCoordinates {
 	/**
 	 * Create a new set of ChipCoordinates.
 	 *
-	 * @param cabinetParam
+	 * @param cabinet
 	 *            The cabinet containing the frame containing the board
 	 *            containing the chip.
-	 * @param frameParam
+	 * @param frame
 	 *            The frame containing the board containing the chip.
-	 * @param boardParam
+	 * @param board
 	 *            The board containing the chip.
 	 */
-	public ChipCoordinates(int cabinetParam, int frameParam, int boardParam) {
-		this.cabinet = cabinetParam;
-		this.frame = frameParam;
-		this.board = boardParam;
+	public ChipCoordinates(int cabinet, int frame, int board) {
+		this.cabinet = cabinet;
+		this.frame = frame;
+		this.board = board;
 	}
 
 	/**

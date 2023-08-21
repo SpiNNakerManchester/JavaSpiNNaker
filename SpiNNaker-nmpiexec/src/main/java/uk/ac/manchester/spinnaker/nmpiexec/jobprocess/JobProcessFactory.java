@@ -35,12 +35,12 @@ public class JobProcessFactory {
 	/**
 	 * Create a factory.
 	 *
-	 * @param threadGroupParam
+	 * @param threadGroup
 	 *            The thread group for the factory. All threads created by the
 	 *            factory will be within this group.
 	 */
-	public JobProcessFactory(ThreadGroup threadGroupParam) {
-		this.threadGroup = threadGroupParam;
+	public JobProcessFactory(ThreadGroup threadGroup) {
+		this.threadGroup = threadGroup;
 	}
 
 	/**

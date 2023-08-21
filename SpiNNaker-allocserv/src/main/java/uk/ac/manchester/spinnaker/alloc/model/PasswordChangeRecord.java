@@ -70,7 +70,8 @@ public class PasswordChangeRecord {
 	}
 
 	/**
-	 * @param userId the user id
+	 * @param userId
+	 *            the user id
 	 */
 	public void setUserId(int userId) {
 		this.userId = userId;
@@ -84,7 +85,8 @@ public class PasswordChangeRecord {
 	}
 
 	/**
-	 * @param username the username
+	 * @param username
+	 *            the username
 	 */
 	public void setUsername(String username) {
 		this.username = username;
@@ -99,7 +101,8 @@ public class PasswordChangeRecord {
 	}
 
 	/**
-	 * @param password the old password
+	 * @param password
+	 *            the old password
 	 */
 	public void setOldPassword(String password) {
 		this.oldPassword = password;
@@ -114,7 +117,8 @@ public class PasswordChangeRecord {
 	}
 
 	/**
-	 * @param newPassword the first copy of the new password
+	 * @param newPassword
+	 *            the first copy of the new password
 	 */
 	public void setNewPassword(String newPassword) {
 		this.newPassword = newPassword;
@@ -129,7 +133,8 @@ public class PasswordChangeRecord {
 	}
 
 	/**
-	 * @param newPassword2 the second copy of the new password
+	 * @param newPassword2
+	 *            the second copy of the new password
 	 */
 	public void setNewPassword2(String newPassword2) {
 		this.newPassword2 = newPassword2;
@@ -142,8 +147,7 @@ public class PasswordChangeRecord {
 	}
 
 	/** @return whether the two copies of the new password are the same */
-	@AssertTrue(
-			message = "second copy of new password must be same as first")
+	@AssertTrue(message = "second copy of new password must be same as first")
 	public boolean isNewPasswordMatched() {
 		return newPassword.equals(newPassword2);
 	}

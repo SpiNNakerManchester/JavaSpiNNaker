@@ -214,6 +214,12 @@ public class NMPIQueueManagerV3 implements NMPIQueueManager {
 		}
 	}
 
+	/**
+	 * Process the response of a Job.
+	 *
+	 * @param job
+	 *            The job to process
+	 */
 	private void processResponse(Job job) {
 		synchronized (jobCache) {
 			jobCache.put(job.getId(), job);

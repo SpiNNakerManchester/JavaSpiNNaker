@@ -89,7 +89,10 @@ public class MachineTagging {
 		return url;
 	}
 
-	/** @param url The URL to the page about the machine. */
+	/**
+	 * @param url
+	 *            The URL to the page about the machine.
+	 */
 	public void setUrl(URI url) {
 		this.url = url;
 	}
@@ -99,12 +102,18 @@ public class MachineTagging {
 		return tags.stream().collect(joining(", "));
 	}
 
-	/** @param tags The tags of the machine. */
+	/**
+	 * @param tags
+	 *            The tags of the machine.
+	 */
 	void setTags(Set<String> tags) {
 		this.tags = tags;
 	}
 
-	/** @param tags The tags of the machine. */
+	/**
+	 * @param tags
+	 *            The tags of the machine.
+	 */
 	public void setTags(List<String> tags) {
 		for (var tag : tags) {
 			this.tags.add(tag);

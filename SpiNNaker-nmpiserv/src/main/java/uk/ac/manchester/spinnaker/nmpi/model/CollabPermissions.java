@@ -40,10 +40,11 @@ public class CollabPermissions {
 	/**
 	 * Set delete permission.
 	 *
-	 * @param deleteParam Whether to give permission
+	 * @param delete
+	 *            Whether to give permission
 	 */
-	void setDelete(boolean deleteParam) {
-		this.delete = deleteParam;
+	void setDelete(boolean delete) {
+		this.delete = delete;
 	}
 
 	/**
@@ -59,9 +60,10 @@ public class CollabPermissions {
 	/**
 	 * Set update permission.
 	 *
-	 * @param updateParam Whether permission is given
+	 * @param update
+	 *            Whether permission is given
 	 */
-	void setUpdate(boolean updateParam) {
-		this.update = updateParam;
+	void setUpdate(boolean update) {
+		this.update = update;
 	}
 }

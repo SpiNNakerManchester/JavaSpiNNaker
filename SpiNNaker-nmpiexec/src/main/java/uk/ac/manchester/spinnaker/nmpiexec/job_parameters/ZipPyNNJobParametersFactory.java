@@ -74,9 +74,7 @@ final class ZipPyNNJobParametersFactory extends JobParametersFactory {
 		}
 	}
 
-	/**
-	 * The supported compression types.
-	 */
+	/** The supported compression types. */
 	private static final List<CompressionType> SUPPORTED_TYPES =
 			List.of(BZIP2, GZIP);
 

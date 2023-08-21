@@ -226,7 +226,8 @@ public class RemoteSpinnakerBeans {
 	 * The status monitor manager.
 	 *
 	 * @return bean
-	 * @throws RuntimeException If the status type is unknown
+	 * @throws RuntimeException
+	 *             If the status type is unknown
 	 */
 	@Bean
 	public StatusMonitorManager statusMonitorManager() {

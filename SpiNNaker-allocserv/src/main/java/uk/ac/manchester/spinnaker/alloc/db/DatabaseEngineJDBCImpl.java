@@ -74,9 +74,12 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 	/**
 	 * Create a new JDBC Database API.
 	 *
-	 * @param jdbcTemplate The connection to the main database.
-	 * @param tombstoneJdbcTemplate The connection to the historical database.
-	 * @param transactionManager The transaction manager.
+	 * @param jdbcTemplate
+	 *            The connection to the main database.
+	 * @param tombstoneJdbcTemplate
+	 *            The connection to the historical database.
+	 * @param transactionManager
+	 *            The transaction manager.
 	 */
 	@Autowired
 	public DatabaseEngineJDBCImpl(

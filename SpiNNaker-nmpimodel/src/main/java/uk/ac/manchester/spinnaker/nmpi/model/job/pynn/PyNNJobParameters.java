@@ -47,22 +47,21 @@ public class PyNNJobParameters implements JobParameters {
 	/**
 	 * Create a description of the job parameters for a PyNN job.
 	 *
-	 * @param workingDirectoryParam
+	 * @param workingDirectory
 	 *            The working directory to use.
-	 * @param setupScriptParam
+	 * @param setupScript
 	 *            The setup script to run before execution
-	 * @param userScriptParam
+	 * @param userScript
 	 *            The user script to run.
-	 * @param hardwareConfigurationParam
+	 * @param hardwareConfiguration
 	 *            The hardware configuration desired.
 	 */
-	public PyNNJobParameters(String workingDirectoryParam,
-			String setupScriptParam, String userScriptParam,
-			Map<String, Object> hardwareConfigurationParam) {
-		this.workingDirectory = workingDirectoryParam;
-		this.userScript = userScriptParam;
-		this.setupScript = setupScriptParam;
-		this.hardwareConfiguration = hardwareConfigurationParam;
+	public PyNNJobParameters(String workingDirectory, String setupScript,
+			String userScript, Map<String, Object> hardwareConfiguration) {
+		this.workingDirectory = workingDirectory;
+		this.userScript = userScript;
+		this.setupScript = setupScript;
+		this.hardwareConfiguration = hardwareConfiguration;
 	}
 
 	/**
@@ -77,11 +76,11 @@ public class PyNNJobParameters implements JobParameters {
 	/**
 	 * Sets the workingDirectory.
 	 *
-	 * @param workingDirectoryParam
+	 * @param workingDirectory
 	 *            the workingDirectory to set
 	 */
-	public void setWorkingDirectory(String workingDirectoryParam) {
-		this.workingDirectory = workingDirectoryParam;
+	public void setWorkingDirectory(String workingDirectory) {
+		this.workingDirectory = workingDirectory;
 	}
 
 	/**
@@ -96,11 +95,11 @@ public class PyNNJobParameters implements JobParameters {
 	/**
 	 * Set the setup script.
 	 *
-	 * @param setupScriptParam
+	 * @param setupScript
 	 *            the script
 	 */
-	public void setSetupScript(String setupScriptParam) {
-		this.setupScript = setupScriptParam;
+	public void setSetupScript(String setupScript) {
+		this.setupScript = setupScript;
 	}
 
 	/**
@@ -115,11 +114,11 @@ public class PyNNJobParameters implements JobParameters {
 	/**
 	 * Sets the user script.
 	 *
-	 * @param userScriptParam
+	 * @param userScript
 	 *            the script to set
 	 */
-	public void setUserScript(String userScriptParam) {
-		this.userScript = userScriptParam;
+	public void setUserScript(String userScript) {
+		this.userScript = userScript;
 	}
 
 	/**
@@ -134,11 +133,11 @@ public class PyNNJobParameters implements JobParameters {
 	/**
 	 * Sets the hardwareConfiguration.
 	 *
-	 * @param hardwareConfigurationParam
+	 * @param hardwareConfiguration
 	 *            the hardwareConfiguration to set
 	 */
 	public void setHardwareConfiguration(
-			Map<String, Object> hardwareConfigurationParam) {
-		this.hardwareConfiguration = hardwareConfigurationParam;
+			Map<String, Object> hardwareConfiguration) {
+		this.hardwareConfiguration = hardwareConfiguration;
 	}
 }

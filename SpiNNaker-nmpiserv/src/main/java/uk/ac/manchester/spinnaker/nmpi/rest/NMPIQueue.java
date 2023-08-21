@@ -44,19 +44,21 @@ import uk.ac.manchester.spinnaker.nmpi.rest.utils.PropertyBasedDeserialiser;
  * The REST API for the HBP Neuromorphic Platform Interface queue.
  */
 public interface NMPIQueue {
-
 	/**
 	 * Gets all jobs in the queue.
-	 * @param apiKey The API key to use.
-	 * @param hardware The hardware to request the jobs for.
-	 * @param status List of accepted statuses.
+	 *
+	 * @param apiKey
+	 *            The API key to use.
+	 * @param hardware
+	 *            The hardware to request the jobs for.
+	 * @param status
+	 *            List of accepted statuses.
 	 * @return The list of jobs that meet the criteria.
 	 */
 	@GET
 	@Path("jobs/")
 	@Produces("application/json")
-	List<QueueJobCompat> getJobs(
-			@HeaderParam("x-api-key") String apiKey,
+	List<QueueJobCompat> getJobs(@HeaderParam("x-api-key") String apiKey,
 			@QueryParam("hardware") String hardware,
 			@QueryParam("status") List<String> status);
 
@@ -131,7 +133,7 @@ public interface NMPIQueue {
 	 * @return A proxy of the API.
 	 */
 	static NMPIQueue createClient(String url) {
-		ObjectMapper mapper = new ObjectMapper();
+		var mapper = new ObjectMapper();
 		mapper.setPropertyNamingStrategy(SNAKE_CASE);
 		return JAXRSClientFactory.create(url, NMPIQueue.class,
 				List.of(createProvider()));

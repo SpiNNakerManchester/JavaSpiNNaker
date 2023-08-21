@@ -44,7 +44,8 @@ public class NMPILog {
 	/**
 	 * Set the content.
 	 *
-	 * @param content The content to set
+	 * @param content
+	 *            The content to set
 	 */
 	public void setContent(String content) {
 		this.buffer = new StringBuilder(content);

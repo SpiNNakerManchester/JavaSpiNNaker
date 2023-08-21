@@ -41,9 +41,10 @@ public class ListMachinesResponse {
 	/**
 	 * Set the list of machines.
 	 *
-	 * @param machinesParam The list of machines to set
+	 * @param machines
+	 *            The list of machines to set
 	 */
-	void setMachines(List<Machine> machinesParam) {
-		this.machines = machinesParam;
+	void setMachines(List<Machine> machines) {
+		this.machines = machines;
 	}
 }

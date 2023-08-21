@@ -130,20 +130,20 @@ public class OutputManagerImpl implements OutputManager {
 		/**
 		 * Create a new lock for a directory.
 		 *
-		 * @param dirParam
+		 * @param dir
 		 *            The directory to lock
 		 */
-		JobLock(File dirParam) {
-			this.dir = dirParam;
+		JobLock(File dir) {
+			this.dir = dir;
 
 			LockToken lock;
 			synchronized (synchronizers) {
-				if (!synchronizers.containsKey(dirParam)) {
+				if (!synchronizers.containsKey(dir)) {
 					// Constructed pre-locked
-					synchronizers.put(dirParam, new LockToken());
+					synchronizers.put(dir, new LockToken());
 					return;
 				}
-				lock = synchronizers.get(dirParam);
+				lock = synchronizers.get(dir);
 			}
 
 			lock.waitForUnlock();
@@ -163,17 +163,19 @@ public class OutputManagerImpl implements OutputManager {
 	/**
 	 * Instantiate the output manager.
 	 *
-	 * @param baseServerUrlParam
+	 * @param baseServerUrl
 	 *            The base URL of the overall service, used when generating
 	 *            internal URLs.
 	 */
-	public OutputManagerImpl(URL baseServerUrlParam) {
-		this.baseServerUrl = baseServerUrlParam;
+	public OutputManagerImpl(URL baseServerUrl) {
+		this.baseServerUrl = baseServerUrl;
 	}
 
 	/**
 	 * Set the number of days after a job has finished to keep results.
-	 * @param nDaysToKeepResults The number of days to keep the results
+	 *
+	 * @param nDaysToKeepResults
+	 *            The number of days to keep the results
 	 */
 	@Value("${results.purge.days}")
 	void setPurgeTimeout(long nDaysToKeepResults) {

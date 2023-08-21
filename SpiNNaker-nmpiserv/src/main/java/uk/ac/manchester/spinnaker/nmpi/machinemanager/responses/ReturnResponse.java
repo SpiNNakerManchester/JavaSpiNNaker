@@ -37,10 +37,11 @@ public final class ReturnResponse implements Response {
 	/**
 	 * Set the value returned.
 	 *
-	 * @param returnValueParam The value to set
+	 * @param returnValue
+	 *            The value to set
 	 */
 	@JsonSetter("return")
-	void setReturnValue(JsonNode returnValueParam) {
-		this.returnValue = returnValueParam.toString();
+	void setReturnValue(JsonNode returnValue) {
+		this.returnValue = returnValue.toString();
 	}
 }

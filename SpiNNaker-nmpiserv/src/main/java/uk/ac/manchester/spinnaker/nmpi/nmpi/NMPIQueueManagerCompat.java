@@ -207,7 +207,8 @@ public class NMPIQueueManagerCompat implements NMPIQueueManager {
 	/**
 	 * Process the response from the service.
 	 *
-	 * @param response The response to process
+	 * @param response
+	 *            The response to process
 	 */
 	private void processResponse(QueueNextResponse response) {
 		if (response instanceof QueueEmpty) {
@@ -222,7 +223,8 @@ public class NMPIQueueManagerCompat implements NMPIQueueManager {
 	/**
 	 * Process the response of a Job.
 	 *
-	 * @param job The job to process
+	 * @param job
+	 *            The job to process
 	 */
 	private void processResponse(Job job) {
 		synchronized (jobCache) {

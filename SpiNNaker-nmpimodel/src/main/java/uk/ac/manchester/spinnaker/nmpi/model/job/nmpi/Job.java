@@ -49,7 +49,7 @@ public class Job {
 	private String userId;
 
 	/**
-	 * Get the code.
+	 * Get the code to be executed.
 	 *
 	 * @return the code
 	 */
@@ -60,15 +60,15 @@ public class Job {
 	/**
 	 * Sets the code.
 	 *
-	 * @param codeParam
+	 * @param code
 	 *            the code to set
 	 */
-	public void setCode(String codeParam) {
-		this.code = codeParam;
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	/**
-	 * Get the hardwareConfig.
+	 * Get the hardware configuration.
 	 *
 	 * @return the hardwareConfig
 	 */
@@ -79,15 +79,15 @@ public class Job {
 	/**
 	 * Sets the hardwareConfig.
 	 *
-	 * @param hardwareConfigParam
+	 * @param hardwareConfig
 	 *            the hardwareConfig to set
 	 */
-	public void setHardwareConfig(Map<String, Object> hardwareConfigParam) {
-		this.hardwareConfig = hardwareConfigParam;
+	public void setHardwareConfig(Map<String, Object> hardwareConfig) {
+		this.hardwareConfig = hardwareConfig;
 	}
 
 	/**
-	 * Get the hardwarePlatform.
+	 * Get the hardware platform.
 	 *
 	 * @return the hardwarePlatform
 	 */
@@ -98,15 +98,15 @@ public class Job {
 	/**
 	 * Sets the hardwarePlatform.
 	 *
-	 * @param hardwarePlatformParam
+	 * @param hardwarePlatform
 	 *            the hardwarePlatform to set
 	 */
-	public void setHardwarePlatform(String hardwarePlatformParam) {
-		this.hardwarePlatform = hardwarePlatformParam;
+	public void setHardwarePlatform(String hardwarePlatform) {
+		this.hardwarePlatform = hardwarePlatform;
 	}
 
 	/**
-	 * Get the id.
+	 * Get the ID of the job.
 	 *
 	 * @return the id
 	 */
@@ -117,15 +117,15 @@ public class Job {
 	/**
 	 * Sets the id.
 	 *
-	 * @param idParam
+	 * @param id
 	 *            the id to set
 	 */
-	public void setId(Integer idParam) {
-		this.id = idParam;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	/**
-	 * Get the inputData.
+	 * Get the URLs of input data.
 	 *
 	 * @return the inputData
 	 */
@@ -136,15 +136,15 @@ public class Job {
 	/**
 	 * Sets the inputData.
 	 *
-	 * @param inputDataParam
+	 * @param inputData
 	 *            the inputData to set
 	 */
-	public void setInputData(List<DataItem> inputDataParam) {
-		this.inputData = inputDataParam;
+	public void setInputData(List<DataItem> inputData) {
+		this.inputData = inputData;
 	}
 
 	/**
-	 * Get the collab.
+	 * Get the ID of the collaboratory in which the job is created.
 	 *
 	 * @return the collab
 	 */
@@ -155,15 +155,15 @@ public class Job {
 	/**
 	 * Sets the collab.
 	 *
-	 * @param collabParam
+	 * @param collab
 	 *            the collab to set
 	 */
-	public void setCollab(String collabParam) {
-		this.collab = collabParam;
+	public void setCollab(String collab) {
+		this.collab = collab;
 	}
 
 	/**
-	 * Get the command.
+	 * Get the command used to execute the job.
 	 *
 	 * @return the command
 	 */
@@ -174,15 +174,15 @@ public class Job {
 	/**
 	 * Sets the command.
 	 *
-	 * @param commandParam
+	 * @param command
 	 *            the command to set
 	 */
-	public void setCommand(String commandParam) {
-		this.command = commandParam;
+	public void setCommand(String command) {
+		this.command = command;
 	}
 
 	/**
-	 * Get the userId.
+	 * Get the ID of the user who created the job.
 	 *
 	 * @return the userId
 	 */
@@ -193,11 +193,11 @@ public class Job {
 	/**
 	 * Sets the userId.
 	 *
-	 * @param userIdParam
+	 * @param userId
 	 *            the userId to set
 	 */
-	public void setUserId(String userIdParam) {
-		this.userId = userIdParam;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	/**
@@ -207,6 +207,7 @@ public class Job {
 	 *            The parameter to set.
 	 * @param value
 	 *            The value to set it to.
+	 * @hidden
 	 */
 	@JsonAnySetter
 	public void set(String name, Object value) {
