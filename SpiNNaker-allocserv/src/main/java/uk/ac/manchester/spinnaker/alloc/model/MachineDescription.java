@@ -62,7 +62,10 @@ public class MachineDescription {
 		return id;
 	}
 
-	/** @param id the machine ID */
+	/**
+	 * @param id
+	 *            the machine ID
+	 */
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -72,7 +75,10 @@ public class MachineDescription {
 		return name;
 	}
 
-	/** @param name the machine name */
+	/**
+	 * @param name
+	 *            the machine name
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -82,7 +88,10 @@ public class MachineDescription {
 		return width;
 	}
 
-	/** @param width the width of the machine in triads */
+	/**
+	 * @param width
+	 *            the width of the machine in triads
+	 */
 	public void setWidth(int width) {
 		this.width = width;
 	}
@@ -92,7 +101,10 @@ public class MachineDescription {
 		return height;
 	}
 
-	/** @param height the height of the machine in triads */
+	/**
+	 * @param height
+	 *            the height of the machine in triads
+	 */
 	public void setHeight(int height) {
 		this.height = height;
 	}
@@ -102,7 +114,10 @@ public class MachineDescription {
 		return numInUse;
 	}
 
-	/** @param numInUse the number of boards in use */
+	/**
+	 * @param numInUse
+	 *            the number of boards in use
+	 */
 	public void setNumInUse(int numInUse) {
 		this.numInUse = numInUse;
 	}
@@ -112,12 +127,18 @@ public class MachineDescription {
 		return live;
 	}
 
-	/** @param live the in-service boards */
+	/**
+	 * @param live
+	 *            the in-service boards
+	 */
 	public void setLive(List<BoardCoords> live) {
 		this.live = copy(live);
 	}
 
-	/** @param live the in-service boards */
+	/**
+	 * @param live
+	 *            the in-service boards
+	 */
 	public void setLive(MappableIterable<BoardCoords> live) {
 		this.live = copy(live.toList());
 	}
@@ -127,12 +148,18 @@ public class MachineDescription {
 		return dead;
 	}
 
-	/** @param dead the out-of-service boards */
+	/**
+	 * @param dead
+	 *            the out-of-service boards
+	 */
 	public void setDead(List<BoardCoords> dead) {
 		this.dead = copy(dead);
 	}
 
-	/** @param dead the out-of-service boards */
+	/**
+	 * @param dead
+	 *            the out-of-service boards
+	 */
 	public void setDead(MappableIterable<BoardCoords> dead) {
 		this.dead = copy(dead.toList());
 	}
@@ -142,12 +169,18 @@ public class MachineDescription {
 		return jobs;
 	}
 
-	/** @param jobs the machine's jobs */
+	/**
+	 * @param jobs
+	 *            the machine's jobs
+	 */
 	public void setJobs(List<JobInfo> jobs) {
 		this.jobs = copy(jobs);
 	}
 
-	/** @param jobs the machine's jobs */
+	/**
+	 * @param jobs
+	 *            the machine's jobs
+	 */
 	public void setJobs(MappableIterable<JobInfo> jobs) {
 		this.jobs = copy(jobs.toList());
 	}
@@ -157,12 +190,18 @@ public class MachineDescription {
 		return tags;
 	}
 
-	/** @param tags the machine's tags */
+	/**
+	 * @param tags
+	 *            the machine's tags
+	 */
 	public void setTags(List<String> tags) {
 		this.tags = copy(tags);
 	}
 
-	/** @param tags the machine's tags */
+	/**
+	 * @param tags
+	 *            the machine's tags
+	 */
 	public void setTags(MappableIterable<String> tags) {
 		this.tags = copy(tags.toList());
 	}
@@ -175,7 +214,10 @@ public class MachineDescription {
 		return quota;
 	}
 
-	/** @param quota the current user's quota */
+	/**
+	 * @param quota
+	 *            the current user's quota
+	 */
 	public void setQuota(Long quota) {
 		this.quota = Optional.ofNullable(quota);
 	}
@@ -195,17 +237,23 @@ public class MachineDescription {
 			return id;
 		}
 
-		/** @param id the job ID */
+		/**
+		 * @param id
+		 *            the job ID
+		 */
 		public void setId(int id) {
 			this.id = id;
 		}
 
-		/** @return the URL for more detail  */
+		/** @return the URL for more detail */
 		public Optional<URI> getUrl() {
 			return Optional.ofNullable(url);
 		}
 
-		/** @param url the URL for more detail  */
+		/**
+		 * @param url
+		 *            the URL for more detail
+		 */
 		public void setUrl(URI url) {
 			this.url = url;
 		}
@@ -236,7 +284,10 @@ public class MachineDescription {
 			return owner;
 		}
 
-		/** @param owner the owner of the job */
+		/**
+		 * @param owner
+		 *            the owner of the job
+		 */
 		public void setOwner(String owner) {
 			this.owner = Optional.ofNullable(owner);
 		}

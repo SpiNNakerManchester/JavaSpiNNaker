@@ -22,25 +22,16 @@ import java.util.List;
  * connections and its name.
  */
 public class JobMachineInfo {
-
-	/**
-	 * The width of the machine.
-	 */
+	/** The width of the machine. */
 	private int width;
 
-	/**
-	 * The height of the machine.
-	 */
+	/** The height of the machine. */
 	private int height;
 
-	/**
-	 * The connections to the machine.
-	 */
+	/** The connections to the machine. */
 	private List<Connection> connections;
 
-	/**
-	 * The name of the machine.
-	 */
+	/** The name of the machine. */
 	private String machineName;
 
 	/**
@@ -55,10 +46,11 @@ public class JobMachineInfo {
 	/**
 	 * Set the width of the machine.
 	 *
-	 * @param widthParam The width in chips
+	 * @param width
+	 *            The width in chips
 	 */
-	public void setWidth(final int widthParam) {
-		this.width = widthParam;
+	public void setWidth(final int width) {
+		this.width = width;
 	}
 
 	/**
@@ -73,10 +65,11 @@ public class JobMachineInfo {
 	/**
 	 * Set the height of the machine.
 	 *
-	 * @param heightParam The height in chips
+	 * @param height
+	 *            The height in chips
 	 */
-	public void setHeight(final int heightParam) {
-		this.height = heightParam;
+	public void setHeight(final int height) {
+		this.height = height;
 	}
 
 	/**
@@ -91,10 +84,11 @@ public class JobMachineInfo {
 	/**
 	 * Set the connection to the machine.
 	 *
-	 * @param connectionsParam The connections to set
+	 * @param connections
+	 *            The connections to set
 	 */
-	public void setConnections(final List<Connection> connectionsParam) {
-		this.connections = connectionsParam;
+	public void setConnections(final List<Connection> connections) {
+		this.connections = connections;
 	}
 
 	/**
@@ -109,9 +103,10 @@ public class JobMachineInfo {
 	/**
 	 * Set the name of the machine.
 	 *
-	 * @param machineNameParam The name to set
+	 * @param machineName
+	 *            The name to set
 	 */
-	public void setMachineName(final String machineNameParam) {
-		this.machineName = machineNameParam;
+	public void setMachineName(final String machineName) {
+		this.machineName = machineName;
 	}
 }

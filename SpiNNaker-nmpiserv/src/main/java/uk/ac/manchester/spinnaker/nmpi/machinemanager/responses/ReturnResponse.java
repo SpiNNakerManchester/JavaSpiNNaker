@@ -22,10 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  * A response that is the successful result of a request.
  */
 public class ReturnResponse implements Response {
-
-	/**
-	 * The value returned.
-	 */
+	/** The value returned. */
 	private String returnValue;
 
 	/**
@@ -40,10 +37,11 @@ public class ReturnResponse implements Response {
 	/**
 	 * Set the value returned.
 	 *
-	 * @param returnValueParam The value to set
+	 * @param returnValue
+	 *            The value to set
 	 */
 	@JsonSetter("return")
-	public void setReturnValue(final JsonNode returnValueParam) {
-		this.returnValue = returnValueParam.toString();
+	public void setReturnValue(final JsonNode returnValue) {
+		this.returnValue = returnValue.toString();
 	}
 }

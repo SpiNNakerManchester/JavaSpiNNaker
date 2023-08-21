@@ -23,7 +23,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * A request to docker create.
  */
 public class DockerCreateRequest {
-
 	private String image;
 
 	private List<String> cmd;
@@ -42,7 +41,8 @@ public class DockerCreateRequest {
 	}
 
 	/**
-	 * @param image the image to set
+	 * @param image
+	 *            the image to set
 	 */
 	public void setImage(String image) {
 		this.image = image;
@@ -57,7 +57,8 @@ public class DockerCreateRequest {
 	}
 
 	/**
-	 * @param cmd the cmd to set
+	 * @param cmd
+	 *            the cmd to set
 	 */
 	public void setCmd(List<String> cmd) {
 		this.cmd = cmd;

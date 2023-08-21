@@ -62,50 +62,33 @@ import uk.ac.manchester.spinnaker.nmpi.rest.UnicoreFileClient;
  */
 //TODO needs security; Role = OutputHandler
 public class OutputManagerImpl implements OutputManager {
-
-	/**
-	 * Indicates that a file has been removed.
-	 */
+	/** Indicates that a file has been removed. */
 	private static final String PURGED_FILE = ".purged_";
 
-	/**
-	 * The directory to store files in.
-	 */
+	/** The directory to store files in. */
 	@Value("${results.directory}")
 	private File resultsDirectory;
 
-	/**
-	 * The URL of the server.
-	 */
+	/** The URL of the server. */
 	private final URL baseServerUrl;
 
-	/**
-	 * The amount of time results should be kept, in milliseconds.
-	 */
+	/** The amount of time results should be kept, in milliseconds. */
 	private long timeToKeepResults;
 
-	/**
-	 * Map of locks for files.
-	 */
+	/** Map of locks for files. */
 	private final Map<File, LockToken> synchronizers = new HashMap<>();
 
-	/**
-	 * The logger.
-	 */
+	/** The logger. */
 	private static final Logger logger = getLogger(OutputManagerImpl.class);
 
 	/**
 	 * A lock token. Initially locked.
 	 */
 	private static final class LockToken {
-		/**
-		 * True if the token is locked.
-		 */
+		/** True if the token is locked. */
 		private boolean locked = true;
 
-		/**
-		 * True if the token is waiting for a lock.
-		 */
+		/** True if the token is waiting for a lock. */
 		private boolean waiting = false;
 
 		/**
@@ -126,6 +109,7 @@ public class OutputManagerImpl implements OutputManager {
 
 		/**
 		 * Unlock the token.
+		 *
 		 * @return True if the token is waiting again.
 		 */
 		private synchronized boolean unlock() {
@@ -139,26 +123,26 @@ public class OutputManagerImpl implements OutputManager {
 	 * A class to lock a job.
 	 */
 	private class JobLock implements AutoCloseable {
-		/**
-		 * The directory being locked by this token.
-		 */
+		/** The directory being locked by this token. */
 		private File dir;
 
 		/**
 		 * Create a new lock for a directory.
-		 * @param dirParam The directory to lock
+		 *
+		 * @param dir
+		 *            The directory to lock
 		 */
-		JobLock(final File dirParam) {
-			this.dir = dirParam;
+		JobLock(final File dir) {
+			this.dir = dir;
 
 			LockToken lock;
 			synchronized (synchronizers) {
-				if (!synchronizers.containsKey(dirParam)) {
+				if (!synchronizers.containsKey(dir)) {
 					// Constructed pre-locked
-					synchronizers.put(dirParam, new LockToken());
+					synchronizers.put(dir, new LockToken());
 					return;
 				}
-				lock = synchronizers.get(dirParam);
+				lock = synchronizers.get(dir);
 			}
 
 			lock.waitForUnlock();
@@ -178,26 +162,26 @@ public class OutputManagerImpl implements OutputManager {
 	/**
 	 * Instantiate the output manager.
 	 *
-	 * @param baseServerUrlParam
+	 * @param baseServerUrl
 	 *            The base URL of the overall service, used when generating
 	 *            internal URLs.
 	 */
-	public OutputManagerImpl(final URL baseServerUrlParam) {
-		this.baseServerUrl = baseServerUrlParam;
+	public OutputManagerImpl(final URL baseServerUrl) {
+		this.baseServerUrl = baseServerUrl;
 	}
 
 	/**
 	 * Set the number of days after a job has finished to keep results.
-	 * @param nDaysToKeepResults The number of days to keep the results
+	 *
+	 * @param nDaysToKeepResults
+	 *            The number of days to keep the results
 	 */
 	@Value("${results.purge.days}")
 	void setPurgeTimeout(final long nDaysToKeepResults) {
 		timeToKeepResults = MILLISECONDS.convert(nDaysToKeepResults, DAYS);
 	}
 
-	/**
-	 * Periodic execution engine.
-	 */
+	/** Periodic execution engine. */
 	private final ScheduledExecutorService scheduler = newScheduledThreadPool(
 			1);
 
@@ -219,7 +203,9 @@ public class OutputManagerImpl implements OutputManager {
 
 	/**
 	 * Get the project directory for a given project.
-	 * @param projectId The id of the project
+	 *
+	 * @param projectId
+	 *            The id of the project
 	 * @return The directory of the project
 	 */
 	private File getProjectDirectory(final String projectId) {
@@ -288,11 +274,14 @@ public class OutputManagerImpl implements OutputManager {
 
 	/**
 	 * Get a file as a response to a query.
-	 * @param idDirectory The directory of the project
-	 * @param filename The name of the file to be stored
+	 *
+	 * @param idDirectory
+	 *            The directory of the project
+	 * @param filename
+	 *            The name of the file to be stored
 	 * @param download
-	 *     True if the content type should be set to guarantee that the file
-	 *     is downloaded, False to attempt to guess the content type
+	 *            True if the content type should be set to guarantee that the
+	 *            file is downloaded, False to attempt to guess the content type
 	 * @return The response
 	 */
 	private Response getResultFile(final File idDirectory,
@@ -334,7 +323,9 @@ public class OutputManagerImpl implements OutputManager {
 
 	/**
 	 * Get the file that marks a directory as purged.
-	 * @param directory The directory to find the file in
+	 *
+	 * @param directory
+	 *            The directory to find the file in
 	 * @return The purge marker file
 	 */
 	private File getPurgeFile(final File directory) {
@@ -360,12 +351,19 @@ public class OutputManagerImpl implements OutputManager {
 
 	/**
 	 * Upload files in recursive subdirectories to UniCore.
-	 * @param authHeader The authentication to use
-	 * @param directory The directory to start from
-	 * @param fileManager The UniCore client
-	 * @param storageId The id of the UniCore storage
-	 * @param filePath The path in the UniCore storage to upload to
-	 * @throws IOException If something goes wrong
+	 *
+	 * @param authHeader
+	 *            The authentication to use
+	 * @param directory
+	 *            The directory to start from
+	 * @param fileManager
+	 *            The UniCore client
+	 * @param storageId
+	 *            The id of the UniCore storage
+	 * @param filePath
+	 *            The path in the UniCore storage to upload to
+	 * @throws IOException
+	 *             If something goes wrong
 	 */
 	private void recursivelyUploadFiles(final String authHeader,
 			final File directory,
@@ -435,7 +433,9 @@ public class OutputManagerImpl implements OutputManager {
 
 	/**
 	 * Recursively remove a directory.
-	 * @param directory The directory to remove
+	 *
+	 * @param directory
+	 *            The directory to remove
 	 */
 	private void removeDirectory(final File directory) {
 		for (final var file : directory.listFiles()) {
@@ -466,8 +466,11 @@ public class OutputManagerImpl implements OutputManager {
 
 	/**
 	 * Remove project contents that are deemed to have expired.
-	 * @param startTime The current time being considered
-	 * @param projectDirectory The directory containing the project files
+	 *
+	 * @param startTime
+	 *            The current time being considered
+	 * @param projectDirectory
+	 *            The directory containing the project files
 	 * @return True if every job in the project has been removed
 	 */
 	private boolean removeOldProjectDirectoryContents(final long startTime,

@@ -22,15 +22,17 @@ import java.nio.ByteBuffer;
  * A packet with an address.
  */
 public class UDPPacket {
-
 	private final ByteBuffer byteBuffer;
 
 	private final InetSocketAddress address;
 
 	/**
 	 * Create a buffer with an address.
-	 * @param byteBuffer The buffer
-	 * @param address The address
+	 *
+	 * @param byteBuffer
+	 *            The buffer
+	 * @param address
+	 *            The address
 	 */
 	UDPPacket(ByteBuffer byteBuffer, InetSocketAddress address) {
 		this.byteBuffer = byteBuffer;

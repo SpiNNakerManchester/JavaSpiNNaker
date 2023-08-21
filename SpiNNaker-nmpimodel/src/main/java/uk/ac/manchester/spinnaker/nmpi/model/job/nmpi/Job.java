@@ -24,49 +24,32 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  * A NMPI job.
  */
 public class Job {
-
-	/**
-	 * Code to be executed.
-	 */
+	/** Code to be executed. */
 	private String code;
 
-	/**
-	 * The hardware configuration.
-	 */
+	/** The hardware configuration. */
 	private Map<String, Object> hardwareConfig;
 
-	/**
-	 * The hardware platform.
-	 */
+	/** The hardware platform. */
 	private String hardwarePlatform;
 
-	/**
-	 * The ID of the job.
-	 */
+	/** The ID of the job. */
 	private Integer id;
 
-	/**
-	 * URLs of input data.
-	 */
+	/** URLs of input data. */
 	private List<DataItem> inputData;
 
-	/**
-	 * The ID of the collaboratory in which the job is created.
-	 */
+	/** The ID of the collaboratory in which the job is created. */
 	private String collab;
 
-	/**
-	 * The command used to execute the job.
-	 */
+	/** The command used to execute the job. */
 	private String command;
 
-	/**
-	 * The ID of the user which created the job.
-	 */
+	/** The ID of the user which created the job. */
 	private String userId;
 
 	/**
-	 * Get the code.
+	 * Get the code to be executed.
 	 *
 	 * @return the code
 	 */
@@ -77,14 +60,15 @@ public class Job {
 	/**
 	 * Sets the code.
 	 *
-	 * @param codeParam the code to set
+	 * @param code
+	 *            the code to set
 	 */
-	public void setCode(final String codeParam) {
-		this.code = codeParam;
+	public void setCode(final String code) {
+		this.code = code;
 	}
 
 	/**
-	 * Get the hardwareConfig.
+	 * Get the hardware configuration.
 	 *
 	 * @return the hardwareConfig
 	 */
@@ -95,15 +79,16 @@ public class Job {
 	/**
 	 * Sets the hardwareConfig.
 	 *
-	 * @param hardwareConfigParam the hardwareConfig to set
+	 * @param hardwareConfig
+	 *            the hardwareConfig to set
 	 */
 	public void setHardwareConfig(
-			final Map<String, Object> hardwareConfigParam) {
-		this.hardwareConfig = hardwareConfigParam;
+			final Map<String, Object> hardwareConfig) {
+		this.hardwareConfig = hardwareConfig;
 	}
 
 	/**
-	 * Get the hardwarePlatform.
+	 * Get the hardware platform.
 	 *
 	 * @return the hardwarePlatform
 	 */
@@ -114,14 +99,15 @@ public class Job {
 	/**
 	 * Sets the hardwarePlatform.
 	 *
-	 * @param hardwarePlatformParam the hardwarePlatform to set
+	 * @param hardwarePlatform
+	 *            the hardwarePlatform to set
 	 */
-	public void setHardwarePlatform(final String hardwarePlatformParam) {
-		this.hardwarePlatform = hardwarePlatformParam;
+	public void setHardwarePlatform(final String hardwarePlatform) {
+		this.hardwarePlatform = hardwarePlatform;
 	}
 
 	/**
-	 * Get the id.
+	 * Get the ID of the job.
 	 *
 	 * @return the id
 	 */
@@ -132,14 +118,15 @@ public class Job {
 	/**
 	 * Sets the id.
 	 *
-	 * @param idParam the id to set
+	 * @param id
+	 *            the id to set
 	 */
-	public void setId(final Integer idParam) {
-		this.id = idParam;
+	public void setId(final Integer id) {
+		this.id = id;
 	}
 
 	/**
-	 * Get the inputData.
+	 * Get the URLs of input data.
 	 *
 	 * @return the inputData
 	 */
@@ -150,14 +137,15 @@ public class Job {
 	/**
 	 * Sets the inputData.
 	 *
-	 * @param inputDataParam the inputData to set
+	 * @param inputData
+	 *            the inputData to set
 	 */
-	public void setInputData(final List<DataItem> inputDataParam) {
-		this.inputData = inputDataParam;
+	public void setInputData(final List<DataItem> inputData) {
+		this.inputData = inputData;
 	}
 
 	/**
-	 * Get the collab.
+	 * Get the ID of the collaboratory in which the job is created.
 	 *
 	 * @return the collab
 	 */
@@ -168,14 +156,15 @@ public class Job {
 	/**
 	 * Sets the collab.
 	 *
-	 * @param collabParam the collab to set
+	 * @param collab
+	 *            the collab to set
 	 */
-	public void setCollab(final String collabParam) {
-		this.collab = collabParam;
+	public void setCollab(final String collab) {
+		this.collab = collab;
 	}
 
 	/**
-	 * Get the command.
+	 * Get the command used to execute the job.
 	 *
 	 * @return the command
 	 */
@@ -186,14 +175,15 @@ public class Job {
 	/**
 	 * Sets the command.
 	 *
-	 * @param commandParam the command to set
+	 * @param command
+	 *            the command to set
 	 */
-	public void setCommand(final String commandParam) {
-		this.command = commandParam;
+	public void setCommand(final String command) {
+		this.command = command;
 	}
 
 	/**
-	 * Get the userId.
+	 * Get the ID of the user who created the job.
 	 *
 	 * @return the userId
 	 */
@@ -204,10 +194,11 @@ public class Job {
 	/**
 	 * Sets the userId.
 	 *
-	 * @param userIdParam the userId to set
+	 * @param userId
+	 *            the userId to set
 	 */
-	public void setUserId(final String userIdParam) {
-		this.userId = userIdParam;
+	public void setUserId(final String userId) {
+		this.userId = userId;
 	}
 
 	/**
@@ -217,6 +208,7 @@ public class Job {
 	 *            The parameter to set.
 	 * @param value
 	 *            The value to set it to.
+	 * @hidden
 	 */
 	@JsonAnySetter
 	public void set(final String name, final Object value) {

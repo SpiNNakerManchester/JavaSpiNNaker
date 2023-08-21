@@ -37,12 +37,18 @@ public final class MemoryLocation implements Comparable<MemoryLocation> {
 	/** The actual location. */
 	public final int address;
 
-	/** @param address The actual location. */
+	/**
+	 * @param address
+	 *            The actual location.
+	 */
 	public MemoryLocation(int address) {
 		this.address = address;
 	}
 
-	/** @param address The actual location. */
+	/**
+	 * @param address
+	 *            The actual location.
+	 */
 	public MemoryLocation(long address) {
 		this.address = convert(address);
 	}

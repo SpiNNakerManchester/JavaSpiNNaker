@@ -22,91 +22,87 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  * A NMPI collab quota.
  */
 public class Quota {
-
-	/**
-	 * The total amount of quota assigned.
-	 */
+	/** The total amount of quota assigned. */
 	private double limit;
 
-	/**
-	 * The usage of the quota assigned.
-	 */
+	/** The usage of the quota assigned. */
 	private double usage;
 
-	/**
-	 * The platform that the quota is assigned to.
-	 */
+	/** The platform that the quota is assigned to. */
 	private String platform;
 
-	/**
-	 * The units in which the quota is measured.
-	 */
+	/** The units in which the quota is measured. */
 	private String units;
 
 	/**
-	 * @return the limit.
+	 * @return the total amount of quota assigned.
 	 */
 	public double getLimit() {
 		return limit;
 	}
 
 	/**
-	 * @param limit the limit to set.
+	 * @param limit
+	 *            the limit to set.
 	 */
 	public void setLimit(double limit) {
 		this.limit = limit;
 	}
 
 	/**
-	 * @return the usage.
+	 * @return the usage of the quota assigned.
 	 */
 	public double getUsage() {
 		return usage;
 	}
 
 	/**
-	 * @param usage the usage to set.
+	 * @param usage
+	 *            the usage to set.
 	 */
 	public void setUsage(double usage) {
 		this.usage = usage;
 	}
 
 	/**
-	 * @return the platform.
+	 * @return the platform that the quota is assigned to.
 	 */
 	public String getPlatform() {
 		return platform;
 	}
 
 	/**
-	 * @param platform the platform to set.
+	 * @param platform
+	 *            the platform to set.
 	 */
 	public void setPlatform(String platform) {
 		this.platform = platform;
 	}
 
 	/**
-	 * @return the units.
+	 * @return the units in which the quota is measured.
 	 */
 	public String getUnits() {
 		return units;
 	}
 
 	/**
-	 * @param units the units to set.
+	 * @param units
+	 *            the units to set.
 	 */
 	public void setUnits(String units) {
 		this.units = units;
 	}
 
 	/**
-	 * Used for JSON serialisation;
-	 * ignores other properties we don't care about.
+	 * Used for JSON serialisation; ignores other properties we don't care
+	 * about.
 	 *
 	 * @param name
 	 *            The parameter to set.
 	 * @param value
 	 *            The value to set it to.
+	 * @hidden
 	 */
 	@JsonAnySetter
 	public void set(final String name, final Object value) {

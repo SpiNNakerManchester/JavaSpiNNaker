@@ -219,7 +219,8 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @param trustLevel The permissions of the account.
+	 * @param trustLevel
+	 *            The permissions of the account.
 	 */
 	public void setTrustLevel(TrustLevel trustLevel) {
 		this.trustLevel = trustLevel;
@@ -266,7 +267,8 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @param groups The groups that the user is a member of.
+	 * @param groups
+	 *            The groups that the user is a member of.
 	 */
 	public void setGroups(Map<String, URI> groups) {
 		this.groups = groups;
@@ -277,7 +279,10 @@ public final class UserRecord {
 		return openIdSubject;
 	}
 
-	/** @param subject The OpenID subject that this user relates to. */
+	/**
+	 * @param subject
+	 *            The OpenID subject that this user relates to.
+	 */
 	public void setOpenIdSubject(String subject) {
 		this.openIdSubject = subject;
 	}
@@ -288,7 +293,10 @@ public final class UserRecord {
 		return isInternal;
 	}
 
-	/** @param internal Whether this is an internal user. */
+	/**
+	 * @param internal
+	 *            Whether this is an internal user.
+	 */
 	public void setInternal(boolean internal) {
 		this.isInternal = internal;
 	}

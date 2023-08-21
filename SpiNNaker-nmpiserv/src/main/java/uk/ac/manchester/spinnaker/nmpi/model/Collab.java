@@ -19,15 +19,10 @@ package uk.ac.manchester.spinnaker.nmpi.model;
  * POJO describing an HBP Collaboratory.
  */
 public class Collab {
-
-	/**
-	 * The content field.
-	 */
+	/** The content field. */
 	private String content;
 
-	/**
-	 * The collab ID.
-	 */
+	/** The collab ID. */
 	private int id;
 
 	/**
@@ -42,10 +37,11 @@ public class Collab {
 	/**
 	 * Set the content field.
 	 *
-	 * @param contentParam The value to set.
+	 * @param content
+	 *            The value to set.
 	 */
-	public void setContent(final String contentParam) {
-		this.content = contentParam;
+	public void setContent(final String content) {
+		this.content = content;
 	}
 
 	/**
@@ -60,9 +56,10 @@ public class Collab {
 	/**
 	 * Set the ID of the collab.
 	 *
-	 * @param idParam The collab ID
+	 * @param id
+	 *            The collab ID
 	 */
-	public void setId(final int idParam) {
-		this.id = idParam;
+	public void setId(final int id) {
+		this.id = id;
 	}
 }

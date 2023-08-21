@@ -21,9 +21,7 @@ import static java.util.Objects.isNull;
  * A Neuromorphic Platform Interface log core.
  */
 public class NMPILog {
-	/**
-	 * The content of the log.
-	 */
+	/** The content of the log. */
 	private StringBuilder buffer;
 
 	public NMPILog(StringBuilder buffer) {
@@ -46,7 +44,8 @@ public class NMPILog {
 	/**
 	 * Set the content.
 	 *
-	 * @param content The content to set
+	 * @param content
+	 *            The content to set
 	 */
 	public void setContent(final String content) {
 		this.buffer = new StringBuilder(content);

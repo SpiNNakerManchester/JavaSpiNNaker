@@ -34,7 +34,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class GetFPGAResetStatus
 		extends BMPRequest<GetFPGAResetStatus.Response> {
-	/** @param board Which board to get the FPGA reset status of. */
+	/**
+	 * @param board
+	 *            Which board to get the FPGA reset status of.
+	 */
 	public GetFPGAResetStatus(BMPBoard board) {
 		super(board, CMD_READ, IO_PORT_CONTROL_WORD, WORD_SIZE, WORD.value);
 	}

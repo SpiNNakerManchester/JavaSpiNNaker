@@ -269,7 +269,10 @@ public interface AdminController {
 			return name;
 		}
 
-		/** @param name The name of the group to create. */
+		/**
+		 * @param name
+		 *            The name of the group to create.
+		 */
 		public void setName(String name) {
 			this.name = name.strip();
 		}
@@ -283,7 +286,8 @@ public interface AdminController {
 		}
 
 		/**
-		 * @param quota The quota of the group to create, as a {@link String}.
+		 * @param quota
+		 *            The quota of the group to create, as a {@link String}.
 		 */
 		public void setQuota(String quota) {
 			try {
@@ -310,7 +314,10 @@ public interface AdminController {
 			return quotaDefined;
 		}
 
-		/** @param value Whether the group has a quota. */
+		/**
+		 * @param value
+		 *            Whether the group has a quota.
+		 */
 		public void setQuotad(boolean value) {
 			quotaDefined = value;
 		}
@@ -540,7 +547,10 @@ public interface AdminController {
 			return id;
 		}
 
-		/** @param id The board ID. */
+		/**
+		 * @param id
+		 *            The board ID.
+		 */
 		public void setId(int id) {
 			this.id = id;
 		}
@@ -550,7 +560,10 @@ public interface AdminController {
 			return blacklist;
 		}
 
-		/** @param blacklist The text of the blacklist. */
+		/**
+		 * @param blacklist
+		 *            The text of the blacklist.
+		 */
 		public void setBlacklist(String blacklist) {
 			this.blacklist = blacklist;
 		}
@@ -571,7 +584,10 @@ public interface AdminController {
 			return present;
 		}
 
-		/** @param present Whether there is blacklist data present. */
+		/**
+		 * @param present
+		 *            Whether there is blacklist data present.
+		 */
 		public void setPresent(boolean present) {
 			this.present = present;
 		}
