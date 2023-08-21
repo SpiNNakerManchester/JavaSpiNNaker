@@ -1192,6 +1192,18 @@ class DQLTest extends SimpleDBTestBase {
 	}
 
 	@Test
+	void getTempInfoReqs() {
+		try (var q = c.query(GET_TEMP_INFO_REQS)) {
+			//assertEquals(1, q.getNumArguments());
+			//assertEquals(Set.of("board_id", "board_num", "cabinet", "frame",
+			//		"op_id", "bmp_serial_id"), q.getRowColumnNames());
+			c.transaction(() -> {
+				assertEquals(q.call1((row) -> 1, NO_MACHINE), empty());
+			});
+		}
+	}
+
+	@Test
 	void getCompletedBlacklistOp() {
 		try (var q = c.query(GET_COMPLETED_BLACKLIST_OP)) {
 			c.transaction(() -> {

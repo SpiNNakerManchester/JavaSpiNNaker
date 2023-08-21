@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 The University of Manchester
+ * Copyright (c) 2023 The University of Manchester
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,15 @@
  */
 package uk.ac.manchester.spinnaker.nmpi.model;
 
+import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.Job;
+
 /**
- * A response from the queue; can end up being one of a number of items.
+ * A Job that is a response from the queue.
  */
-public sealed interface QueueNextResponse
-		permits QueueJob, QueueJobCompat, QueueEmpty {
-	// Does Nothing
+public final class QueueJobCompat extends Job implements QueueNextResponse {
+
+	public void setCollabId(String collabId) {
+		setCollab(collabId);
+	}
+
 }

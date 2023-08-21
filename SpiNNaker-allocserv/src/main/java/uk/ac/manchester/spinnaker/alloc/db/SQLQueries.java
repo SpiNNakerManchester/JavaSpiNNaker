@@ -368,7 +368,8 @@ public abstract class SQLQueries {
 
 	/** Increases the importance of all current job allocation requests. */
 	protected static final String BUMP_IMPORTANCE = """
-			UPDATE job_request SET importance = importance + priority
+			UPDATE job_request
+			SET importance = importance + priority
 			""";
 
 	/** Get the address of the BMP of the root board of the machine. */
@@ -646,9 +647,11 @@ public abstract class SQLQueries {
 	/** Record the reason for a job being destroyed. */
 	@Parameter("death_reason")
 	@Parameter("job_id")
-	protected static final String NOTE_DESTROY_REASON =
-			"UPDATE jobs SET death_reason = :death_reason "
-					+ "WHERE job_id = :job_id";
+	protected static final String NOTE_DESTROY_REASON = """
+			UPDATE jobs
+			SET death_reason = :death_reason
+			WHERE job_id = :job_id
+			""";
 
 	/**
 	 * Get the number of boards that are allocated to a job that are switched
@@ -2359,6 +2362,30 @@ public abstract class SQLQueries {
 			""";
 
 	/**
+	 * Get the list of reads (from the machine) of temperature data to perform.
+	 *
+	 * @see BMPController
+	 */
+	@Parameter("machine_id")
+	@ResultColumn("op_id")
+	@ResultColumn("board_id")
+	@ResultColumn("bmp_serial_id")
+	@ResultColumn("board_num")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	protected static final String GET_TEMP_INFO_REQS = """
+			SELECT op_id, board_id, board_serial.bmp_serial_id, board_num,
+				cabinet, frame
+			FROM blacklist_ops
+				JOIN boards USING (board_id)
+				JOIN bmp USING (bmp_id)
+				LEFT JOIN board_serial USING (board_id)
+			WHERE op = 3
+				AND NOT completed
+				AND boards.machine_id = :machine_id
+			""";
+
+	/**
 	 * Set the BMP and physical serial IDs based on the information actually
 	 * read off the machine. A bit of care is needed because we might not yet
 	 * have a row for that board.
@@ -2379,13 +2406,13 @@ public abstract class SQLQueries {
 			""";
 
 	/**
-	 * Mark a read of a blacklist as completed.
+	 * Mark a read of a blacklist or ADC data as completed.
 	 *
 	 * @see BMPController
 	 */
 	@Parameter("data")
 	@Parameter("op_id")
-	protected static final String COMPLETED_BLACKLIST_READ = """
+	protected static final String COMPLETED_BOARD_INFO_READ = """
 			UPDATE blacklist_ops
 			SET data = :data, completed = 1
 			WHERE op_id = :op_id
@@ -2430,7 +2457,8 @@ public abstract class SQLQueries {
 			""";
 
 	/**
-	 * Retrieve a completed request to read or write a blacklist for a board.
+	 * Retrieve a completed request to read or write a BMP-related data for a
+	 * board.
 	 *
 	 * @see MachineStateControl
 	 */
@@ -2718,7 +2746,18 @@ public abstract class SQLQueries {
 			RETURNING alloc_id
 			""";
 
-
+	/**
+	 * Insert a request to read a board's temperature data.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("board_id")
+	@GeneratesID
+	protected static final String CREATE_TEMP_READ_REQ = """
+			INSERT INTO blacklist_ops(
+				board_id, op, completed)
+			VALUES(:board_id, 3, 0)
+			""";
 
 	/**
 	 * Read historical allocations to be written to the historical data DB.

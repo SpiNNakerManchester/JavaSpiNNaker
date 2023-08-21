@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 The University of Manchester
+ * Copyright (c) 2023 The University of Manchester
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.manchester.spinnaker.nmpi.model;
+package uk.ac.manchester.spinnaker.nmpi.rest;
+
+import java.util.List;
+
+import uk.ac.manchester.spinnaker.nmpi.model.QueueJobCompat;
 
 /**
- * A response from the queue; can end up being one of a number of items.
+ * A list of Jobs.
  */
-public sealed interface QueueNextResponse
-		permits QueueJob, QueueJobCompat, QueueEmpty {
-	// Does Nothing
+public class JobListCompat {
+	private List<QueueJobCompat> objects;
+
+	/**
+	 * @return the jobs
+	 */
+	public List<QueueJobCompat> getObjects() {
+		return objects;
+	}
+
+	/**
+	 * @param objects the jobs to set
+	 */
+	public void setObjects(List<QueueJobCompat> objects) {
+		this.objects = objects;
+	}
 }

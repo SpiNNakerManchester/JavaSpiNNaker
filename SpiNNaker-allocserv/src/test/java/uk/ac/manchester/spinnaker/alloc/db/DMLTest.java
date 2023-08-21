@@ -800,10 +800,10 @@ class DMLTest extends SimpleDBTestBase {
 	}
 
 	@Test
-	void completedBlacklistRead() {
+	void completedBoardInfoRead() {
 		assumeWritable(c);
 		var bl = new Blacklist("");
-		try (var u = c.update(COMPLETED_BLACKLIST_READ)) {
+		try (var u = c.update(COMPLETED_BOARD_INFO_READ)) {
 			c.transaction(() -> {
 				assertEquals(List.of("data", "op_id"), u.getParameters());
 				assertEquals(0, u.call(bl, NO_BLACKLIST_OP));
@@ -874,6 +874,17 @@ class DMLTest extends SimpleDBTestBase {
 		try (var u = c.update(CREATE_SERIAL_READ_REQ)) {
 			c.transaction(() -> {
 				assertEquals(List.of("board_id"), u.getParameters());
+				assertThrowsFK(() -> u.call(NO_BOARD));
+			});
+		}
+	}
+
+	@Test
+	void createTempReadReq() {
+		assumeWritable(c);
+		try (var u = c.update(CREATE_TEMP_READ_REQ)) {
+			//assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
 				assertThrowsFK(() -> u.call(NO_BOARD));
 			});
 		}
