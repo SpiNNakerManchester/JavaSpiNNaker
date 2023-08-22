@@ -131,6 +131,9 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 		}
 	}
 
+	/**
+	 * Job executor that uses Docker.
+	 */
 	protected final class Executor implements JobExecuter {
 		private final JobManager manager;
 
@@ -195,7 +198,10 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 			} while (res.getState().isRunning() != running);
 		}
 
-		public void waitForExit() {
+		/**
+		 * Monitors the status of the docker container.
+		 */
+		protected void waitForExit() {
 			try {
 				waitForRunning(true);
 				waitForRunning(false);

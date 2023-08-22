@@ -20,12 +20,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * A response to docker inspect.
+ * A response to {@code docker inspect}.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DockerInspectResponse {
+	/**
+	 * Docker container state descriptor.
+	 */
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public class State {
+	public static class State {
 		@JsonProperty("Running")
 		private boolean running;
 
@@ -48,7 +51,7 @@ public class DockerInspectResponse {
 	private State state;
 
 	/**
-	 * @return the state
+	 * @return the state descriptor
 	 */
 	@JsonProperty("State")
 	public State getState() {
@@ -59,7 +62,7 @@ public class DockerInspectResponse {
 	 * @param state
 	 *            the state to set
 	 */
-	public void setState(State state) {
+	void setState(State state) {
 		this.state = state;
 	}
 }
