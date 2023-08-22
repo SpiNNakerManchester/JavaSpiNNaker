@@ -67,7 +67,7 @@ limitations under the License.
 		<mysql.version>8.1.0</mysql.version>
 		<testcontainers.version>1.18.3</testcontainers.version>
 		<javax.ws.version>2.1.1</javax.ws.version>
-		<resteasy.version>6.2.4.Final</resteasy.version>
+		<resteasy.version>6.2.5.Final</resteasy.version>
 	</properties>
 
 	<dependencyManagement>
