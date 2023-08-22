@@ -87,8 +87,11 @@ public class QuotaManager extends DatabaseAwareBean {
 	/** The wrapped NMPI proxy, bound to the API key. */
 	private NMPI nmpi;
 
+	/**
+	 * Make the NMPI access interface.
+	 */
 	@PostConstruct
-	public void createProxy() {
+	private void createProxy() {
 		var nmpiUrl = quotaProps.getNMPIUrl();
 		if (!nmpiUrl.isEmpty()) {
 			nmpi = new NMPI(quotaProps);

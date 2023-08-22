@@ -21,6 +21,13 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.Job;
  * A Job that is a response from the queue.
  */
 public final class QueueJobCompat extends Job implements QueueNextResponse {
+	/**
+	 * Sets the collab ID. Wrapper to handle old API.
+	 *
+	 * @param collabId
+	 *            The ID to set.
+	 * @see Job#setCollab(String)
+	 */
 	public void setCollabId(String collabId) {
 		setCollab(collabId);
 	}

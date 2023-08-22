@@ -24,6 +24,10 @@ public class NMPILog {
 	/** The content of the log. */
 	private StringBuilder buffer;
 
+	/**
+	 * @param buffer
+	 *            The buffer holding the log contents.
+	 */
 	public NMPILog(StringBuilder buffer) {
 		this.buffer = buffer;
 	}
