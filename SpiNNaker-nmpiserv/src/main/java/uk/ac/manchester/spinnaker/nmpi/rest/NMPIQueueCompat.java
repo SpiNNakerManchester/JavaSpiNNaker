@@ -55,7 +55,6 @@ public interface NMPIQueueCompat {
 	 * @param status
 	 *            The accepted status.
 	 * @return The list of jobs that meet the criteria.
-	 * @return
 	 */
 	@GET
 	@Path("queue/")

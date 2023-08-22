@@ -96,6 +96,13 @@ public interface DockerAPI {
 	@Path("/containers/{id}/start")
 	void start(@PathParam("id") String id);
 
+	/**
+	 * Get the state of a container.
+	 *
+	 * @param id
+	 *            The identifier of the container.
+	 * @return The state description.
+	 */
 	@GET
 	@Produces(APPLICATION_JSON)
 	@Path("/containers/{id}/json")

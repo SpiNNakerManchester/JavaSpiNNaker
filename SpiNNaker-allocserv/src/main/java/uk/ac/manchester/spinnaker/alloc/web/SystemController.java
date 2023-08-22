@@ -67,6 +67,12 @@ public interface SystemController {
 	@GetMapping("/")
 	ModelAndView index();
 
+	/**
+	 * Get the login form page. Note that this <em>must</em> be a resource that
+	 * can be accessed without authentication; it is part of the auth flow!
+	 *
+	 * @return View ({@code login.jsp})
+	 */
 	@GetMapping("/login.html")
 	ModelAndView login();
 
