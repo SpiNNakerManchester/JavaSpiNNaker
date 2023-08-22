@@ -41,7 +41,7 @@ limitations under the License.
 		<truststore.file>${project.build.directory}/generated-resources/truststore.p12</truststore.file>
 		<truststore.pass>hunter2</truststore.pass>
 		<npm.command>build</npm.command>
-		<spring-security.version>6.1.2</spring-security.version>
+		<spring-security.version>6.1.3</spring-security.version>
 	</properties>
 
 	<build>
