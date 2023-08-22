@@ -218,7 +218,9 @@ public interface <span class="typeNameLabel">SystemController</span></pre>
 <tr class="rowColor" id="i7">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#login()">login</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Get the login form page.</div>
+</td>
 </tr>
 <tr class="altColor" id="i8">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
@@ -314,6 +316,12 @@ public interface <span class="typeNameLabel">SystemController</span></pre>
 <h3><a id="login()">login</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/GetMapping.html?is-external=true" title="class or interface in org.springframework.web.bind.annotation" class="externalLink">@GetMapping</a>("/login.html")
 </span><span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">login</span>()</div>
+<div class="block">Get the login form page. Note that this <em>must</em> be a resource that
+ can be accessed without authentication; it is part of the auth flow!</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>View (<code>login.jsp</code>)</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">

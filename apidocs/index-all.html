@@ -3042,8 +3042,6 @@ loadScripts(document, 'script');</script>
 <div class="block">Create a JSON provider capable of handling the messages on the NMPI
  queue.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/QuotaManager.html#createProxy()">createProxy()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/QuotaManager.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">QuotaManager</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/Transceiver.html#createScpConnection(uk.ac.manchester.spinnaker.machine.ChipLocation,java.net.InetAddress)">createScpConnection(ChipLocation, InetAddress)</a></span> - Method in class uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/Transceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver">Transceiver</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html#createScpConnection(uk.ac.manchester.spinnaker.machine.ChipLocation,java.net.InetAddress)">createScpConnection(ChipLocation, InetAddress)</a></span> - Method in interface uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></dt>
@@ -3819,7 +3817,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/nmpi/rest/DockerCreateRequest.html" title="class in uk.ac.manchester.spinnaker.nmpi.rest"><span class="typeNameLink">DockerCreateRequest</span></a> - Class in <a href="uk/ac/manchester/spinnaker/nmpi/rest/package-summary.html">uk.ac.manchester.spinnaker.nmpi.rest</a></dt>
 <dd>
-<div class="block">A request to docker create.</div>
+<div class="block">A request to <code>docker create</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/nmpi/rest/DockerCreateRequest.html#%3Cinit%3E(java.lang.String,java.util.List)">DockerCreateRequest(String, List&lt;String&gt;)</a></span> - Constructor for class uk.ac.manchester.spinnaker.nmpi.rest.<a href="uk/ac/manchester/spinnaker/nmpi/rest/DockerCreateRequest.html" title="class in uk.ac.manchester.spinnaker.nmpi.rest">DockerCreateRequest</a></dt>
 <dd>&nbsp;</dd>
@@ -3838,15 +3836,19 @@ loadScripts(document, 'script');</script>
 <div class="block">Create a new docker factory.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/nmpi/jobmanager/DockerExecutorFactory.Executor.html" title="class in uk.ac.manchester.spinnaker.nmpi.jobmanager"><span class="typeNameLink">DockerExecutorFactory.Executor</span></a> - Class in <a href="uk/ac/manchester/spinnaker/nmpi/jobmanager/package-summary.html">uk.ac.manchester.spinnaker.nmpi.jobmanager</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Job executor that uses Docker.</div>
+</dd>
 <dt><a href="uk/ac/manchester/spinnaker/nmpi/rest/DockerInspectResponse.html" title="class in uk.ac.manchester.spinnaker.nmpi.rest"><span class="typeNameLink">DockerInspectResponse</span></a> - Class in <a href="uk/ac/manchester/spinnaker/nmpi/rest/package-summary.html">uk.ac.manchester.spinnaker.nmpi.rest</a></dt>
 <dd>
-<div class="block">A response to docker inspect.</div>
+<div class="block">A response to <code>docker inspect</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/nmpi/rest/DockerInspectResponse.html#%3Cinit%3E()">DockerInspectResponse()</a></span> - Constructor for class uk.ac.manchester.spinnaker.nmpi.rest.<a href="uk/ac/manchester/spinnaker/nmpi/rest/DockerInspectResponse.html" title="class in uk.ac.manchester.spinnaker.nmpi.rest">DockerInspectResponse</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/nmpi/rest/DockerInspectResponse.State.html" title="class in uk.ac.manchester.spinnaker.nmpi.rest"><span class="typeNameLink">DockerInspectResponse.State</span></a> - Class in <a href="uk/ac/manchester/spinnaker/nmpi/rest/package-summary.html">uk.ac.manchester.spinnaker.nmpi.rest</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Docker container state descriptor.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/security/AppAuthTransformationFilter.html#doFilterInternal(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse,javax.servlet.FilterChain)">doFilterInternal(HttpServletRequest, HttpServletResponse, FilterChain)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.security.<a href="uk/ac/manchester/spinnaker/alloc/security/AppAuthTransformationFilter.html" title="class in uk.ac.manchester.spinnaker.alloc.security">AppAuthTransformationFilter</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/DelegatingSCPConnection.html#doReceive(int)">doReceive(int)</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/DelegatingSCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">DelegatingSCPConnection</a></dt>
@@ -9684,7 +9686,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Insert a tag.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/nmpi/rest/DockerAPI.html#inspect(java.lang.String)">inspect(String)</a></span> - Method in interface uk.ac.manchester.spinnaker.nmpi.rest.<a href="uk/ac/manchester/spinnaker/nmpi/rest/DockerAPI.html" title="interface in uk.ac.manchester.spinnaker.nmpi.rest">DockerAPI</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Get the state of a container.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/security/Utils.html#installInjectableTrustStoreAsDefault(java.util.function.Supplier)">installInjectableTrustStoreAsDefault(Supplier&lt;X509TrustManager&gt;)</a></span> - Static method in class uk.ac.manchester.spinnaker.alloc.security.<a href="uk/ac/manchester/spinnaker/alloc/security/Utils.html" title="class in uk.ac.manchester.spinnaker.alloc.security">Utils</a></dt>
 <dd>
 <div class="block">Set up the default SSL context so that we can inject our trust store for
@@ -11284,7 +11288,9 @@ loadScripts(document, 'script');</script>
 <div class="block">The logical (triad) coordinates of the board.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/SystemController.html#login()">login()</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/SystemController.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SystemController</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Get the login form page.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/SystemControllerImpl.html#login()">login()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/SystemControllerImpl.html" title="class in uk.ac.manchester.spinnaker.alloc.web">SystemControllerImpl</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/client/SpallocClientFactory.html#login(java.lang.String,java.lang.String)">login(String, String)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.client.<a href="uk/ac/manchester/spinnaker/alloc/client/SpallocClientFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.client">SpallocClientFactory</a></dt>
@@ -15979,7 +15985,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Set the collab of the application.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/nmpi/model/QueueJobCompat.html#setCollabId(java.lang.String)">setCollabId(String)</a></span> - Method in class uk.ac.manchester.spinnaker.nmpi.model.<a href="uk/ac/manchester/spinnaker/nmpi/model/QueueJobCompat.html" title="class in uk.ac.manchester.spinnaker.nmpi.model">QueueJobCompat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Sets the collab ID.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/nmpi/model/job/nmpi/Job.html#setCommand(java.lang.String)">setCommand(String)</a></span> - Method in class uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.<a href="uk/ac/manchester/spinnaker/nmpi/model/job/nmpi/Job.html" title="class in uk.ac.manchester.spinnaker.nmpi.model.job.nmpi">Job</a></dt>
 <dd>
 <div class="block">Sets the command.</div>
@@ -16773,8 +16781,6 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/JobDescription.html#setState(uk.ac.manchester.spinnaker.alloc.model.JobState)">setState(JobState)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/JobDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model">JobDescription</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/JobListEntryRecord.html#setState(uk.ac.manchester.spinnaker.alloc.model.JobState)">setState(JobState)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/JobListEntryRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">JobListEntryRecord</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/nmpi/rest/DockerInspectResponse.html#setState(uk.ac.manchester.spinnaker.nmpi.rest.DockerInspectResponse.State)">setState(DockerInspectResponse.State)</a></span> - Method in class uk.ac.manchester.spinnaker.nmpi.rest.<a href="uk/ac/manchester/spinnaker/nmpi/rest/DockerInspectResponse.html" title="class in uk.ac.manchester.spinnaker.nmpi.rest">DockerInspectResponse</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/spalloc/messages/JobDescription.Builder.html#setState(uk.ac.manchester.spinnaker.spalloc.messages.State)">setState(State)</a></span> - Method in class uk.ac.manchester.spinnaker.spalloc.messages.<a href="uk/ac/manchester/spinnaker/spalloc/messages/JobDescription.Builder.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">JobDescription.Builder</a></dt>
 <dd>&nbsp;</dd>
@@ -20446,7 +20452,9 @@ the order they are declared.</div>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/Transceiver.html#waitForCoresToBeInState(uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.messages.model.AppID,java.util.EnumSet,java.lang.Integer,int,java.util.EnumSet,int)">waitForCoresToBeInState(CoreSubsets, AppID, EnumSet&lt;CPUState&gt;, Integer, int, EnumSet&lt;CPUState&gt;, int)</a></span> - Method in class uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/Transceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver">Transceiver</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/nmpi/jobmanager/DockerExecutorFactory.Executor.html#waitForExit()">waitForExit()</a></span> - Method in class uk.ac.manchester.spinnaker.nmpi.jobmanager.<a href="uk/ac/manchester/spinnaker/nmpi/jobmanager/DockerExecutorFactory.Executor.html" title="class in uk.ac.manchester.spinnaker.nmpi.jobmanager">DockerExecutorFactory.Executor</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Monitors the status of the docker container.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/nmpi/machinemanager/FixedMachineManagerImpl.html#waitForMachineStateChange(uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine,int)">waitForMachineStateChange(SpinnakerMachine, int)</a></span> - Method in class uk.ac.manchester.spinnaker.nmpi.machinemanager.<a href="uk/ac/manchester/spinnaker/nmpi/machinemanager/FixedMachineManagerImpl.html" title="class in uk.ac.manchester.spinnaker.nmpi.machinemanager">FixedMachineManagerImpl</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/nmpi/machinemanager/MachineManager.html#waitForMachineStateChange(uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine,int)">waitForMachineStateChange(SpinnakerMachine, int)</a></span> - Method in interface uk.ac.manchester.spinnaker.nmpi.machinemanager.<a href="uk/ac/manchester/spinnaker/nmpi/machinemanager/MachineManager.html" title="interface in uk.ac.manchester.spinnaker.nmpi.machinemanager">MachineManager</a></dt>

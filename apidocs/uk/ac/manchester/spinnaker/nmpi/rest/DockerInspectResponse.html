@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10};
+<script type="text/javascript">var data = {"i0":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -94,7 +94,7 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">DockerInspectResponse</span>
 extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
-<div class="block">A response to docker inspect.</div>
+<div class="block">A response to <code>docker inspect</code>.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -116,9 +116,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>class&nbsp;</code></td>
+<td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="DockerInspectResponse.State.html" title="class in uk.ac.manchester.spinnaker.nmpi.rest">DockerInspectResponse.State</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Docker container state descriptor.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -173,11 +175,6 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getState()">getState</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor" id="i1">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setState(uk.ac.manchester.spinnaker.nmpi.rest.DockerInspectResponse.State)">setState</a></span>&#8203;(<a href="DockerInspectResponse.State.html" title="class in uk.ac.manchester.spinnaker.nmpi.rest">DockerInspectResponse.State</a>&nbsp;state)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -222,17 +219,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="DockerInspectResponse.State.html" title="class in uk.ac.manchester.spinnaker.nmpi.rest">DockerInspectResponse.State</a></span>&nbsp;<span class="memberName">getState</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the state</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="setState(uk.ac.manchester.spinnaker.nmpi.rest.DockerInspectResponse.State)">setState</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setState</span>&#8203;(<span class="arguments"><a href="DockerInspectResponse.State.html" title="class in uk.ac.manchester.spinnaker.nmpi.rest">DockerInspectResponse.State</a>&nbsp;state)</span></div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>state</code> - the state to set</dd>
+<dd>the state descriptor</dd>
 </dl>
 </section>
 </li>

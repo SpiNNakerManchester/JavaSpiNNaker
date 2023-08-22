@@ -103,6 +103,7 @@ loadScripts(document, 'script');</script>
 <pre>protected final class <span class="typeNameLabel">DockerExecutorFactory.Executor</span>
 extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>
 implements <a href="JobExecuter.html" title="interface in uk.ac.manchester.spinnaker.nmpi.jobmanager">JobExecuter</a></pre>
+<div class="block">Job executor that uses Docker.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -139,9 +140,11 @@ implements <a href="JobExecuter.html" title="interface in uk.ac.manchester.spinn
 </td>
 </tr>
 <tr class="altColor" id="i2">
-<td class="colFirst"><code>void</code></td>
+<td class="colFirst"><code>protected void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#waitForExit()">waitForExit</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Monitors the status of the docker container.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -195,7 +198,8 @@ implements <a href="JobExecuter.html" title="interface in uk.ac.manchester.spinn
 <li class="blockList">
 <section class="detail">
 <h3><a id="waitForExit()">waitForExit</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">waitForExit</span>()</div>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">waitForExit</span>()</div>
+<div class="block">Monitors the status of the docker container.</div>
 </section>
 </li>
 </ul>
