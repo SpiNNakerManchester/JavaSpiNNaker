@@ -145,10 +145,10 @@ public class AllocatorTask extends DatabaseAwareBean
 	@PostConstruct
 	@SuppressWarnings("FutureReturnValueIgnored")
 	private void init() {
-		scheduler.scheduleAtFixedRate(() -> allocate(),	allocProps.getPeriod());
-		scheduler.scheduleAtFixedRate(() -> expireJobs(),
+		scheduler.scheduleAtFixedRate(this::allocate, allocProps.getPeriod());
+		scheduler.scheduleAtFixedRate(this::expireJobs,
 				keepAliveProps.getExpiryPeriod());
-		scheduler.schedule(() -> tombstone(),
+		scheduler.schedule(this::tombstone,
 				new CronTrigger(historyProps.getSchedule()));
 	}
 

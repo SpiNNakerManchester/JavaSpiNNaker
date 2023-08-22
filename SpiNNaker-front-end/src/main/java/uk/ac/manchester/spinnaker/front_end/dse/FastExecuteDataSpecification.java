@@ -308,11 +308,11 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 * @author Alan Stokes
 	 */
 	private class FastBoardWorker extends BoardWorker implements AutoCloseable {
-		private ThrottledConnection connection;
+		private final ThrottledConnection connection;
 
 		private MissingRecorder missingSequenceNumbers;
 
-		private BoardLocal logContext;
+		private final BoardLocal logContext;
 
 		private Gather gather;
 
@@ -718,8 +718,10 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 
 		BadDataInMessageException(int code, IntBuffer message) {
 			super("unexpected response code: " + toUnsignedLong(code));
-			log.warn("bad message payload: {}", range(0, message.limit())
-					.map(i -> message.get(i)).boxed().collect(toList()));
+			log.warn("bad message payload: {}",
+					range(0, message.limit()).map(message::get)
+							.mapToObj(Integer::toUnsignedString)
+							.collect(toList()));
 		}
 	}
 
@@ -735,8 +737,10 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		CrazySequenceNumberException(int remaining, IntBuffer message) {
 			super("crazy number of missing packets: "
 					+ toUnsignedLong(remaining));
-			log.warn("bad message payload: {}", range(0, message.limit())
-					.map(i -> message.get(i)).boxed().collect(toList()));
+			log.warn("bad message payload: {}",
+					range(0, message.limit()).map(message::get)
+							.mapToObj(Integer::toUnsignedString)
+							.collect(toList()));
 		}
 	}
 }

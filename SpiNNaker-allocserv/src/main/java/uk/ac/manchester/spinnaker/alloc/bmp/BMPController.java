@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
 import static java.lang.String.format;
 import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
+import static java.time.Instant.now;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.bmp.NonBootOperation.GET_SERIAL;
@@ -30,7 +31,6 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -216,7 +216,7 @@ public class BMPController extends DatabaseAwareBean {
 		for (var b : bmps) {
 			var worker = workers.get(b);
 			if (worker != null) {
-				scheduler.schedule(() -> worker.run(), Instant.now());
+				scheduler.schedule(worker::run, now());
 			} else {
 				log.error("Could not find worker for BMP {}", b);
 			}

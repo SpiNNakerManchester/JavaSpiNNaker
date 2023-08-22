@@ -401,7 +401,7 @@ class AllocatorTest extends TestSupport {
 		doTransactionalTest(() -> {
 			assumeTrue(db.isHistoricalDBAvailable());
 
-			try (Connection histConn = db.getHistoricalConnection()) {
+			try (var histConn = db.getHistoricalConnection()) {
 
 				int job = makeQueuedJob(1);
 				conn.update(TEST_SET_JOB_STATE).call(DESTROYED, job);

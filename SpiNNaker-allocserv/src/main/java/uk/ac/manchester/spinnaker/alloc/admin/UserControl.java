@@ -301,7 +301,7 @@ public class UserControl extends DatabaseAwareBean {
 	 */
 	public List<UserRecord> listUsers() {
 		try (var sql = new AllUsersSQL()) {
-			return sql.transactionRead(() -> sql.allUsers());
+			return sql.transactionRead(sql::allUsers);
 		}
 	}
 
@@ -668,7 +668,7 @@ public class UserControl extends DatabaseAwareBean {
 	 */
 	public List<GroupRecord> listGroups() {
 		try (var sql = new GroupsSQL()) {
-			return sql.transactionRead(() -> sql.listGroups());
+			return sql.transactionRead(sql::listGroups);
 		}
 	}
 

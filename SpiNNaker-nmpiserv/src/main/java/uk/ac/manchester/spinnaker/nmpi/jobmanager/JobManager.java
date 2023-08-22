@@ -23,6 +23,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newScheduledThreadPool;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
@@ -46,7 +47,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -187,8 +187,7 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 		threadGroup = new ThreadGroup("NMPI");
 
 		// Start looking for jobs after the startup of the services
-		scheduler.schedule(() -> startJobs(), STATUS_UPDATE_PERIOD,
-				TimeUnit.SECONDS);
+		scheduler.schedule(this::startJobs, STATUS_UPDATE_PERIOD, SECONDS);
 	}
 
 	private void startJobs() {
@@ -196,7 +195,7 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 		// again
 		for (var job : queueManager.getJobs()) {
 			try {
-				addJob((Job) job);
+				addJob(job);
 			} catch (IOException e) {
 				logger.error("Error adding job at startup", e);
 			}
@@ -207,7 +206,7 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 		new Thread(threadGroup, queueManager::processResponsesFromQueue,
 				"QueueManager").start();
 		scheduler.scheduleAtFixedRate(this::updateStatus,
-				0, STATUS_UPDATE_PERIOD, TimeUnit.SECONDS);
+				0, STATUS_UPDATE_PERIOD, SECONDS);
 	}
 
 	/**

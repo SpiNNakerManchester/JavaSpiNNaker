@@ -230,7 +230,7 @@ public class V1CompatService {
 	private boolean acceptConnection() {
 		try {
 			var service = getTask(serv.accept());
-			executor.execute(() -> service.handleConnection());
+			executor.execute(service::handleConnection);
 		} catch (SocketException e) {
 			// Check here; interrupt = shutting down = no errors, please
 			if (interrupted()) {
@@ -290,7 +290,7 @@ public class V1CompatService {
 					throws Exception {
 				var service = taskFactory.getObject(V1CompatService.this,
 						new PipedReader(in), new PipedWriter(out));
-				return executor.submit(() -> service.handleConnection());
+				return executor.submit(service::handleConnection);
 			}
 		};
 	}

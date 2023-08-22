@@ -371,7 +371,7 @@ class V1TaskImpl extends V1CompatTask {
 				jd.setArgs(args);
 				jd.setKwargs(cmd.getKwargs());
 				// Override shrouded owner from above
-				Object owner = cmd.getKwargs().get("owner");
+				var owner = cmd.getKwargs().get("owner");
 				if (owner != null) {
 					jd.setOwner(owner.toString());
 				}
@@ -465,7 +465,7 @@ class V1TaskImpl extends V1CompatTask {
 					try {
 						var changed = epoch.getChanged(
 								mainProps.getCompat().getNotifyWaitTime());
-						return changed.stream().map(id -> invMap.get(id))
+						return changed.stream().map(invMap::get)
 								.collect(toList());
 					} catch (InterruptedException e) {
 						return List.of();

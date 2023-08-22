@@ -42,6 +42,9 @@ import org.springframework.stereotype.Component;
  * <p>
  * The original form of blacklists stores them according to their physical board
  * ID because that's what is easily available during commissioning.
+ * <p>
+ * This class does not need to use locking to guard its internal state; after
+ * the bean enters service, that state is never modified.
  *
  * @author Donal Fellows
  */
