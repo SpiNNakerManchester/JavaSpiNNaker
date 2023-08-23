@@ -21,6 +21,7 @@ import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -119,6 +120,7 @@ public class TransceiverFactory
 	}
 
 	private static class TransceiverFactoryException extends RuntimeException {
+		@Serial
 		private static final long serialVersionUID = 2102592240724419836L;
 
 		TransceiverFactoryException(String msg, Exception e) {

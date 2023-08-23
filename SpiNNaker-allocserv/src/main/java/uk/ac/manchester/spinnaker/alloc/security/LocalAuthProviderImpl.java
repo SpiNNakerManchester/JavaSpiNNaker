@@ -32,6 +32,7 @@ import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 import static uk.ac.manchester.spinnaker.utils.OptionalUtils.ifElse;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -190,6 +191,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	private static final class SetupException extends RuntimeException {
+		@Serial
 		private static final long serialVersionUID = -3915472090182223715L;
 
 		SetupException(String message) {
@@ -337,6 +339,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private static final class PerformedUsernamePasswordAuthenticationToken
 			extends UsernamePasswordAuthenticationToken
 			implements AlreadyDoneMarker {
+		@Serial
 		private static final long serialVersionUID = -3164620207079316329L;
 
 		PerformedUsernamePasswordAuthenticationToken(String name,
@@ -447,6 +450,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private static final class OpenIDDerivedAuthenticationToken
 			extends AbstractAuthenticationToken
 			implements OpenIDUserAware, AlreadyDoneMarker {
+		@Serial
 		private static final long serialVersionUID = 970898019896708267L;
 
 		private final String who;
@@ -703,6 +707,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	@Immutable
 	static final class CollabratoryAuthority extends SimpleGrantedAuthority {
+		@Serial
 		private static final long serialVersionUID = 4964366746649162092L;
 
 		private final String collabratory;
@@ -719,6 +724,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	@Immutable
 	static final class OrganisationAuthority extends SimpleGrantedAuthority {
+		@Serial
 		private static final long serialVersionUID = 8260068770503054502L;
 
 		private final String organisation;

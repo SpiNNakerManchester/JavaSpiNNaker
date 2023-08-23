@@ -36,6 +36,7 @@ import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_J
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 import static uk.ac.manchester.spinnaker.utils.OptionalUtils.apply;
 
+import java.io.Serial;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -1880,6 +1881,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	static class PartialJobException extends IllegalStateException {
+		@Serial
 		private static final long serialVersionUID = 2997856394666135483L;
 
 		PartialJobException() {
@@ -1903,6 +1905,7 @@ class ReportRollbackExn extends RuntimeException {
 }
 
 abstract class GroupsException extends RuntimeException {
+	@Serial
 	private static final long serialVersionUID = 6607077117924279611L;
 
 	GroupsException(String message) {
@@ -1915,6 +1918,7 @@ abstract class GroupsException extends RuntimeException {
 }
 
 class NoSuchGroupException extends GroupsException {
+	@Serial
 	private static final long serialVersionUID = 5193818294198205503L;
 
 	@FormatMethod
@@ -1924,6 +1928,7 @@ class NoSuchGroupException extends GroupsException {
 }
 
 class MultipleGroupsException extends GroupsException {
+	@Serial
 	private static final long serialVersionUID = 6284332340565334236L;
 
 	@FormatMethod

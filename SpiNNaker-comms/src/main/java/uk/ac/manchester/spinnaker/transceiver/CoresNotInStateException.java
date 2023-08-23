@@ -19,6 +19,7 @@ import static java.lang.Float.POSITIVE_INFINITY;
 import static java.lang.String.format;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
+import java.io.Serial;
 import java.util.EnumSet;
 
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
@@ -30,6 +31,7 @@ import uk.ac.manchester.spinnaker.messages.model.CPUState;
  * @author Donal Fellows
  */
 public class CoresNotInStateException extends SpinnmanException {
+	@Serial
 	private static final long serialVersionUID = 1790369744408178478L;
 
 	private static final String OP_TMPL =

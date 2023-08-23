@@ -19,6 +19,7 @@ import static java.lang.String.format;
 import static uk.ac.manchester.spinnaker.transceiver.BMPCommandProcess.BMP_RETRIES;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.List;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -28,6 +29,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
  * Indicates that message sending to a BMP failed for various reasons.
  */
 public final class BMPSendFailedException extends IOException {
+	@Serial
 	private static final long serialVersionUID = -7806549580351626377L;
 
 	BMPSendFailedException(SCPRequest<?> req, HasCoreLocation core,

@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
+import java.io.Serial;
+
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
@@ -26,6 +28,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
  * Encapsulates exceptions from processes which communicate with some core/chip.
  */
 public class ProcessException extends SpinnmanException {
+	@Serial
 	private static final long serialVersionUID = 5198868033333540659L;
 
 	private static final String S = "     "; // five spaces
@@ -164,6 +167,7 @@ public class ProcessException extends SpinnmanException {
 	 * message, indicating that the packet length was wrong.
 	 */
 	public static final class BadPacketLength extends CallerProcessException {
+		@Serial
 		private static final long serialVersionUID = 4329836896716525422L;
 
 		private BadPacketLength(HasCoreLocation core,
@@ -177,6 +181,7 @@ public class ProcessException extends SpinnmanException {
 	 * message, indicating that the checksum was wrong.
 	 */
 	public static final class BadChecksum extends CallerProcessException {
+		@Serial
 		private static final long serialVersionUID = -5660270018252119601L;
 
 		private BadChecksum(HasCoreLocation core,
@@ -191,6 +196,7 @@ public class ProcessException extends SpinnmanException {
 	 * destination.
 	 */
 	public static final class BadCommand extends CallerProcessException {
+		@Serial
 		private static final long serialVersionUID = 2446636059917726286L;
 
 		private BadCommand(HasCoreLocation core,
@@ -204,6 +210,7 @@ public class ProcessException extends SpinnmanException {
 	 * message, indicating that the arguments to the command are wrong.
 	 */
 	public static final class InvalidArguments extends CallerProcessException {
+		@Serial
 		private static final long serialVersionUID = 3907517289211998444L;
 
 		private InvalidArguments(HasCoreLocation core,
@@ -217,6 +224,7 @@ public class ProcessException extends SpinnmanException {
 	 * message, indicating that the SCP port was out of range.
 	 */
 	public static final class BadSCPPort extends CallerProcessException {
+		@Serial
 		private static final long serialVersionUID = -5171910962257032626L;
 
 		private BadSCPPort(HasCoreLocation core,
@@ -231,6 +239,7 @@ public class ProcessException extends SpinnmanException {
 	 * timed out.
 	 */
 	public static final class TimedOut extends TransientProcessException {
+		@Serial
 		private static final long serialVersionUID = -298985937364034661L;
 
 		private TimedOut(HasCoreLocation core,
@@ -245,6 +254,7 @@ public class ProcessException extends SpinnmanException {
 	 * for some reason.
 	 */
 	public static final class NoP2PRoute extends PermanentProcessException {
+		@Serial
 		private static final long serialVersionUID = -6132417061161625508L;
 
 		private NoP2PRoute(HasCoreLocation core,
@@ -258,6 +268,7 @@ public class ProcessException extends SpinnmanException {
 	 * message, indicating that the destination core number was out of range.
 	 */
 	public static final class BadCPUNumber extends CallerProcessException {
+		@Serial
 		private static final long serialVersionUID = 6532417803149087690L;
 
 		private BadCPUNumber(HasCoreLocation core,
@@ -273,6 +284,7 @@ public class ProcessException extends SpinnmanException {
 	 */
 	public static final class DeadDestination
 			extends PermanentProcessException {
+		@Serial
 		private static final long serialVersionUID = -3842030808096451015L;
 
 		private DeadDestination(HasCoreLocation core,
@@ -287,6 +299,7 @@ public class ProcessException extends SpinnmanException {
 	 */
 	public static final class NoBufferAvailable
 			extends TransientProcessException {
+		@Serial
 		private static final long serialVersionUID = 3647501054775981197L;
 
 		private NoBufferAvailable(HasCoreLocation core,
@@ -301,6 +314,7 @@ public class ProcessException extends SpinnmanException {
 	 * messaging failed because the channel open failed.
 	 */
 	public static final class P2PNoReply extends TransientProcessException {
+		@Serial
 		private static final long serialVersionUID = 2196366740196153289L;
 
 		private P2PNoReply(HasCoreLocation core,
@@ -315,6 +329,7 @@ public class ProcessException extends SpinnmanException {
 	 * the inter-SCAMP messaging rejected the message.
 	 */
 	public static final class P2PReject extends TransientProcessException {
+		@Serial
 		private static final long serialVersionUID = -2903670314989693747L;
 
 		private P2PReject(HasCoreLocation core,
@@ -329,6 +344,7 @@ public class ProcessException extends SpinnmanException {
 	 * the inter-SCAMP messaging was busy.
 	 */
 	public static final class P2PBusy extends TransientProcessException {
+		@Serial
 		private static final long serialVersionUID = 4445680981367158468L;
 
 		private P2PBusy(HasCoreLocation core,
@@ -343,6 +359,7 @@ public class ProcessException extends SpinnmanException {
 	 * the inter-SCAMP messaging did not respond.
 	 */
 	public static final class P2PTimedOut extends TransientProcessException {
+		@Serial
 		private static final long serialVersionUID = -7686611958418374003L;
 
 		private P2PTimedOut(HasCoreLocation core,
@@ -357,6 +374,7 @@ public class ProcessException extends SpinnmanException {
 	 */
 	public static final class PacketTransmissionFailed
 			extends TransientProcessException {
+		@Serial
 		private static final long serialVersionUID = 5119831821960433468L;
 
 		private PacketTransmissionFailed(HasCoreLocation core,

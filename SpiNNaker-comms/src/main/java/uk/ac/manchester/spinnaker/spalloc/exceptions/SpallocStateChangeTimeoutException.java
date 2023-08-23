@@ -15,8 +15,11 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.exceptions;
 
+import java.io.Serial;
+
 /** Thrown when a state change takes too long to occur. */
 public class SpallocStateChangeTimeoutException extends Exception {
+	@Serial
 	private static final long serialVersionUID = 4879238794331037892L;
 
 	/** Create an instance. */

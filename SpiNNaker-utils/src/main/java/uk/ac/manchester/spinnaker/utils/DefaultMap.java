@@ -17,6 +17,7 @@ package uk.ac.manchester.spinnaker.utils;
 
 import static java.util.Objects.requireNonNull;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -36,6 +37,7 @@ import java.util.function.Supplier;
  *            The type of values.
  */
 public class DefaultMap<K, V> extends HashMap<K, V> {
+	@Serial
 	private static final long serialVersionUID = -3805864660424802906L;
 
 	/**

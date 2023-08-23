@@ -85,6 +85,7 @@ import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.uri;
 import static uk.ac.manchester.spinnaker.alloc.web.SystemController.USER_MAY_CHANGE_PASSWORD;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.net.URI;
 import java.security.Principal;
 import java.util.HashMap;
@@ -331,6 +332,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	private static class AdminException extends RuntimeException {
+		@Serial
 		private static final long serialVersionUID = 8401068773689159840L;
 
 		AdminException(String message) {
@@ -339,6 +341,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	private static final class NoUser extends AdminException {
+		@Serial
 		private static final long serialVersionUID = 6430674580385445089L;
 
 		private NoUser() {
@@ -347,6 +350,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	private static final class NoGroup extends AdminException {
+		@Serial
 		private static final long serialVersionUID = -4593707687103047377L;
 
 		private NoGroup() {
@@ -355,6 +359,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	private static final class NoBoard extends AdminException {
+		@Serial
 		private static final long serialVersionUID = -4017368969526085002L;
 
 		private NoBoard() {

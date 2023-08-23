@@ -26,6 +26,7 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMa
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -627,6 +628,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 * @author Donal Fellows
 	 */
 	public static class InsertFailedException extends RuntimeException {
+		@Serial
 		private static final long serialVersionUID = -4930512416142843777L;
 
 		InsertFailedException(String table) {

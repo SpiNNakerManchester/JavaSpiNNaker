@@ -31,6 +31,7 @@ import static uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.io.Serial;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -926,6 +927,7 @@ public class TxrxProcess {
 	 * Indicates that a request timed out.
 	 */
 	static class SendTimedOutException extends SocketTimeoutException {
+		@Serial
 		private static final long serialVersionUID = -7911020002602751941L;
 
 		/**
@@ -945,6 +947,7 @@ public class TxrxProcess {
 	 * Indicates that a request could not be sent.
 	 */
 	static class SendFailedException extends IOException {
+		@Serial
 		private static final long serialVersionUID = -5555562816486761027L;
 
 		/**
@@ -969,6 +972,7 @@ public class TxrxProcess {
 	 */
 	static class DuplicateSequenceNumberException
 			extends IllegalThreadStateException {
+		@Serial
 		private static final long serialVersionUID = -4033792283948201730L;
 
 		DuplicateSequenceNumberException() {

@@ -15,6 +15,7 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
+import java.io.Serial;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -126,6 +127,7 @@ public abstract class InetFactory {
 	 */
 	public static class Inet6NotSupportedException
 			extends UnknownHostException {
+		@Serial
 		private static final long serialVersionUID = -7430619278827122304L;
 
 		/**

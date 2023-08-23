@@ -24,6 +24,7 @@ import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 
 import java.io.NotSerializableException;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
@@ -189,6 +190,7 @@ public final class Permit {
 				}
 			}
 
+			@Serial
 			private void writeObject(ObjectOutputStream out)
 					throws NotSerializableException {
 				throw new NotSerializableException("not actually serializable");

@@ -27,6 +27,8 @@ import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.Family.SERVER_ERROR;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.Serial;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -43,6 +45,7 @@ import org.springframework.stereotype.Component;
  * @author Donal Fellows
  */
 public class RequestFailedException extends RuntimeException {
+	@Serial
 	private static final long serialVersionUID = -7522760691720854101L;
 
 	/** The status code. */
@@ -133,6 +136,7 @@ public class RequestFailedException extends RuntimeException {
 
 	/** A resource is no longer believed to exist. */
 	public static class ItsGone extends RequestFailedException {
+		@Serial
 		private static final long serialVersionUID = 3774531853141947270L;
 
 		/**
@@ -146,6 +150,7 @@ public class RequestFailedException extends RuntimeException {
 
 	/** A resource cannot be located. */
 	public static class NotFound extends RequestFailedException {
+		@Serial
 		private static final long serialVersionUID = 5991697173204757030L;
 
 		/**
@@ -169,6 +174,7 @@ public class RequestFailedException extends RuntimeException {
 
 	/** The client provided bad arguments in a request. */
 	public static class BadArgs extends RequestFailedException {
+		@Serial
 		private static final long serialVersionUID = 7916573155067333350L;
 
 		/**
@@ -182,6 +188,7 @@ public class RequestFailedException extends RuntimeException {
 
 	/** The response is empty. */
 	public static class EmptyResponse extends RequestFailedException {
+		@Serial
 		private static final long serialVersionUID = -2944836034264700912L;
 
 		/** Create an instance. */

@@ -20,6 +20,7 @@ import static java.util.Comparator.comparing;
 import static java.util.Comparator.nullsFirst;
 import static java.util.Objects.nonNull;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -31,6 +32,7 @@ import java.util.Objects;
 public class SpinnakerMachine
 		implements Serializable, Comparable<SpinnakerMachine> {
 	/** Serial version UID. */
+	@Serial
 	private static final long serialVersionUID = -2247744763327978524L;
 
 	/** The number of parts that make up a machine description as a string. */

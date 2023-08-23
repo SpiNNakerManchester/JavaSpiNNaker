@@ -15,6 +15,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.security;
 
+import java.io.Serial;
+
 import org.springframework.security.core.GrantedAuthority;
 
 import com.google.errorprone.annotations.Immutable;
@@ -28,6 +30,7 @@ import uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl.Organisat
 @Immutable
 sealed class SimpleGrantedAuthority implements GrantedAuthority
 		permits CollabratoryAuthority, OrganisationAuthority {
+	@Serial
 	private static final long serialVersionUID = 7765648523730760900L;
 
 	private final String role;

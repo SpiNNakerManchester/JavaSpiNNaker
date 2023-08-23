@@ -16,9 +16,11 @@
 package uk.ac.manchester.spinnaker.spalloc.exceptions;
 
 import java.io.IOException;
+import java.io.Serial;
 
 /** Thrown when a network-level problem occurs during protocol handling. */
 public class SpallocProtocolException extends IOException {
+	@Serial
 	private static final long serialVersionUID = -1591596793445886688L;
 
 	/**

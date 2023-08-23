@@ -28,6 +28,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.batch;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.lmap;
 
+import java.io.Serial;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
@@ -463,6 +464,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @author Donal Fellows
 	 */
 	public static final class MachineStateException extends RuntimeException {
+		@Serial
 		private static final long serialVersionUID = -6450838951059318431L;
 
 		private MachineStateException(String msg, Exception exn) {

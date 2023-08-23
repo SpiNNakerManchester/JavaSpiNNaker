@@ -15,10 +15,13 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
+import java.io.Serial;
+
 /**
  * Basic exception from the transceiver.
  */
 public class SpinnmanException extends Exception {
+	@Serial
 	private static final long serialVersionUID = 4307580491294281556L;
 
 	SpinnmanException(String message) {

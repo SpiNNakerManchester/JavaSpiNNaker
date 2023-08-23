@@ -47,6 +47,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 import java.io.Serializable;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -82,6 +83,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * @author Donal Fellows
  */
 public final class Blacklist implements Serializable {
+	@Serial
 	private static final long serialVersionUID = -7759940789892168209L;
 
 	private static final Logger log = getLogger(Blacklist.class);
@@ -518,6 +520,7 @@ public final class Blacklist implements Serializable {
 	 *             If output fails.
 	 * @see ObjectOutputStream#defaultWriteObject()
 	 */
+	@Serial
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.defaultWriteObject();
 		out.writeInt(rawData.remaining());
@@ -542,6 +545,7 @@ public final class Blacklist implements Serializable {
 	 *             if the class of a serialized object could not be found.
 	 * @see ObjectInputStream#defaultReadObject()
 	 */
+	@Serial
 	private void readObject(ObjectInputStream in)
 			throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
