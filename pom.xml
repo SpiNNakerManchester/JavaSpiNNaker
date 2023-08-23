@@ -597,6 +597,7 @@ limitations under the License.
 							<link>https://cxf.apache.org/javadoc/latest-3.0.x/</link>
 							<link>https://errorprone.info/api/latest/</link>
 							<link>https://www.slf4j.org/api/</link>
+							<link>https://www.joda.org/joda-time/apidocs/</link>
 						</links>
 						<offlineLinks>
 							<!-- Internal property used below: See https://issues.apache.org/jira/browse/MNG-7038 and https://stackoverflow.com/a/41387133/301832 -->

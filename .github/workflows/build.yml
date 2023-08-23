@@ -98,6 +98,9 @@ jobs:
         name: spinnaker-exe.jar
         path: SpiNNaker-front-end/target/spinnaker-exe.jar
         retention-days: 5
+    - name: Submit Dependency Snapshot
+      if: matrix.java == 17
+      uses: advanced-security/maven-dependency-submission-action@v3
 
   validate:
     needs: compile
