@@ -15,7 +15,6 @@
  */
 package uk.ac.manchester.spinnaker.storage.sqlite;
 
-import uk.ac.manchester.spinnaker.storage.GeneratesID;
 import uk.ac.manchester.spinnaker.storage.Parameter;
 import uk.ac.manchester.spinnaker.storage.Parameters;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
@@ -37,11 +36,12 @@ abstract class SQL {
 	@Parameter("x")
 	@Parameter("y")
 	@Parameter("processor")
-	@GeneratesID
+	@ResultColumn("core_id")
 	static final String INSERT_LOCATION = """
 			INSERT INTO core(
 				x, y, processor)
 			VALUES(?, ?, ?)
+			RETURNING core_id
 			""";
 
 	/** Find an existing (x,y,p) record. */
@@ -60,11 +60,12 @@ abstract class SQL {
 	@Parameter("core_id")
 	@Parameter("local_region_index")
 	@Parameter("address")
-	@GeneratesID
+	@ResultColumn("region_id")
 	static final String INSERT_REGION = """
 			INSERT INTO region(
 				core_id, local_region_index, address)
 			VALUES (?, ?, ?)
+			RETURNING region_id
 			""";
 
 	/** Find an existing region record. */
@@ -103,11 +104,12 @@ abstract class SQL {
 	@Parameter("region_id")
 	@Parameter("content_to_add")
 	@Parameter("content_len")
-	@GeneratesID
+	@ResultColumn("extra_id")
 	static final String ADD_EXTRA_CONTENT = """
 			INSERT INTO region_extra(
 				region_id, content, content_len)
 			VALUES (?, CAST(? AS BLOB), ?)
+			RETURNING extra_id
 			""";
 
 	/**
