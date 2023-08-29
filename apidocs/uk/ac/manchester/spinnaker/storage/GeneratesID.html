@@ -85,7 +85,15 @@ loadScripts(document, 'script');</script>
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/annotation/Target.html?is-external=true" title="class or interface in java.lang.annotation" class="externalLink">@Target</a>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/annotation/ElementType.html?is-external=true#FIELD" title="class or interface in java.lang.annotation" class="externalLink">FIELD</a>)
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/annotation/Documented.html?is-external=true" title="class or interface in java.lang.annotation" class="externalLink">@Documented</a>
 public @interface <span class="memberNameLabel">GeneratesID</span></pre>
-<div class="block">Used to document that some DML is expected to generate an ID.</div>
+<div class="block">Used to document that some DML is expected to generate an ID.
+ <p>
+ <strong>NB:</strong> Do <em>not</em> use with SQLite from 3.43 onwards. The
+ Xerial driver <em>removed</em> support for
+ <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Statement.html?is-external=true#getGeneratedKeys()" title="class or interface in java.sql" class="externalLink"><code>Statement.getGeneratedKeys()</code></a> in version 3.43.0; use a
+ <code>RETURNING</code> clause instead, and handle via
+ <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/PreparedStatement.html?is-external=true#executeQuery()" title="class or interface in java.sql" class="externalLink"><code>PreparedStatement.executeQuery()</code></a> instead of
+ <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/PreparedStatement.html?is-external=true#executeUpdate()" title="class or interface in java.sql" class="externalLink"><code>PreparedStatement.executeUpdate()</code></a>. This limitation only applies to
+ that driver.</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
 <dd>Donal Fellows</dd>
