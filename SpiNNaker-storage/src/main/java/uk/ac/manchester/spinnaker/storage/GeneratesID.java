@@ -21,14 +21,26 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.sql.Statement;
+
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Used to document that some DML is expected to generate an ID.
+ * <p>
+ * <strong>NB:</strong> Do <em>not</em> use with SQLite from 3.43 onwards. The
+ * Xerial driver <em>removed</em> support for
+ * {@link Statement#getGeneratedKeys()} in version 3.43.0; use a
+ * {@code RETURNING} clause instead, and handle via
+ * {@link Statement#executeQuery()} instead of
+ * {@link Statement#executeUpdate()}. This limitation only applies to that
+ * driver.
  *
  * @author Donal Fellows
  */
 @Retention(SOURCE)
 @Target(FIELD)
 @Documented
+@UsedInJavadocOnly(Statement.class)
 public @interface GeneratesID {
 }
