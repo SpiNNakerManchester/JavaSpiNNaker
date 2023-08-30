@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.nmpi.nmpi;
 import static java.util.Objects.nonNull;
 import static org.joda.time.DateTimeZone.UTC;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.nmpi.ThreadUtils.sleep;
+import static uk.ac.manchester.spinnaker.utils.ThreadUtils.sleep;
 
 import java.io.IOException;
 import java.io.PrintWriter;
