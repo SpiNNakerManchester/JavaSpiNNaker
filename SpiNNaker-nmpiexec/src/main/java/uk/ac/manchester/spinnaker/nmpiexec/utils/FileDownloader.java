@@ -46,7 +46,8 @@ public abstract class FileDownloader {
 	/**
 	 * Get the filename from the content disposition header.
 	 *
-	 * @param contentDisposition The header
+	 * @param contentDisposition
+	 *            The header
 	 * @return The filename
 	 */
 	private static String getFileName(final String contentDisposition) {
@@ -62,9 +63,12 @@ public abstract class FileDownloader {
 	/**
 	 * Create an authenticated connection.
 	 *
-	 * @param url The URL to connect to
-	 * @param userInfo The authentication to use, as username:password
-	 * @throws IOException if an I/O error occurs
+	 * @param url
+	 *            The URL to connect to
+	 * @param userInfo
+	 *            The authentication to use, as username:password
+	 * @throws IOException
+	 *             if an I/O error occurs
 	 * @return The created connection
 	 */
 	private static URLConnection createConnectionWithAuth(final URL url,
@@ -142,13 +146,17 @@ public abstract class FileDownloader {
 	/**
 	 * Get the file to write to.
 	 *
-	 * @param url The URL of the file
-	 * @param workingDirectory The directory to put the file in
-	 * @param defaultFilename The default file name if nothing else can be used
-	 * @param urlConnection The connection where the file has been downloaded
-	 *     from
+	 * @param url
+	 *            The URL of the file
+	 * @param workingDirectory
+	 *            The directory to put the file in
+	 * @param defaultFilename
+	 *            The default file name if nothing else can be used
+	 * @param urlConnection
+	 *            The connection where the file has been downloaded from
 	 * @return The file to write to.
-	 * @throws IOException If the file cannot be created
+	 * @throws IOException
+	 *             If the file cannot be created
 	 */
 	private static File getTargetFile(final URL url,
 			final File workingDirectory, final String defaultFilename,

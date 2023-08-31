@@ -167,7 +167,8 @@ final class GatherDownloadConnection {
 	/**
 	 * Close the connection.
 	 *
-	 * @throws IOException If there is an error closing the connection.
+	 * @throws IOException
+	 *             If there is an error closing the connection.
 	 */
 	void close() throws IOException {
 		connection.close();
@@ -176,12 +177,16 @@ final class GatherDownloadConnection {
 	/**
 	 * Set the IP tag for this connection.
 	 *
-	 * @param txrx The transceiver to use to set the tag.
-	 * @param iptag The tag to set
-	 *
-	 * @throws ProcessException If something goes wrong in the protocol.
-	 * @throws IOException If something goes wrong in the comms.
-	 * @throws InterruptedException If the comms are interrupted.
+	 * @param txrx
+	 *            The transceiver to use to set the tag.
+	 * @param iptag
+	 *            The tag to set
+	 * @throws ProcessException
+	 *             If something goes wrong in the protocol.
+	 * @throws IOException
+	 *             If something goes wrong in the comms.
+	 * @throws InterruptedException
+	 *             If the comms are interrupted.
 	 */
 	void setIPTag(TransceiverInterface txrx, IPTag iptag)
 			throws ProcessException, IOException, InterruptedException {

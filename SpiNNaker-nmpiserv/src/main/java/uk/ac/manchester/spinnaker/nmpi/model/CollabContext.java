@@ -19,45 +19,28 @@ package uk.ac.manchester.spinnaker.nmpi.model;
  * POJO holding the description of a HBP Collaboratory context.
  */
 public class CollabContext {
-
-	/**
-	 * The ID of the APP in the collab.
-	 */
+	/** The ID of the APP in the collab. */
 	private String appId;
 
-	/**
-	 * The collab contained within.
-	 */
+	/** The collab contained within. */
 	private Collab collab;
 
-	/**
-	 * The context string.
-	 */
+	/** The context string. */
 	private String context;
 
-	/**
-	 * The ID of the item.
-	 */
+	/** The ID of the item. */
 	private int id;
 
-	/**
-	 * The name of the item.
-	 */
+	/** The name of the item. */
 	private String name;
 
-	/**
-	 * The order of the item within its group.
-	 */
+	/** The order of the item within its group. */
 	private int orderIndex;
 
-	/**
-	 * The parent of the item.
-	 */
+	/** The parent of the item. */
 	private int parent;
 
-	/**
-	 * The type of the item.
-	 */
+	/** The type of the item. */
 	private String type;
 
 	/**
@@ -72,10 +55,11 @@ public class CollabContext {
 	/**
 	 * Set the ID of the application.
 	 *
-	 * @param appIdParam The ID to set
+	 * @param appId
+	 *            The ID to set
 	 */
-	public void setAppId(final String appIdParam) {
-		this.appId = appIdParam;
+	public void setAppId(final String appId) {
+		this.appId = appId;
 	}
 
 	/**
@@ -90,10 +74,11 @@ public class CollabContext {
 	/**
 	 * Set the collab of the application.
 	 *
-	 * @param collabParam The collab to set
+	 * @param collab
+	 *            The collab to set
 	 */
-	public void setCollab(final Collab collabParam) {
-		this.collab = collabParam;
+	public void setCollab(final Collab collab) {
+		this.collab = collab;
 	}
 
 	/**
@@ -108,10 +93,11 @@ public class CollabContext {
 	/**
 	 * Set the context of the application.
 	 *
-	 * @param contextParam The context to set
+	 * @param context
+	 *            The context to set
 	 */
-	public void setContext(final String contextParam) {
-		this.context = contextParam;
+	public void setContext(final String context) {
+		this.context = context;
 	}
 
 	/**
@@ -126,10 +112,11 @@ public class CollabContext {
 	/**
 	 * Set the ID of the context.
 	 *
-	 * @param idParam The ID
+	 * @param id
+	 *            The ID
 	 */
-	public void setId(final int idParam) {
-		this.id = idParam;
+	public void setId(final int id) {
+		this.id = id;
 	}
 
 	/**
@@ -144,10 +131,11 @@ public class CollabContext {
 	/**
 	 * Set the name of the context.
 	 *
-	 * @param nameParam The name to set
+	 * @param name
+	 *            The name to set
 	 */
-	public void setName(final String nameParam) {
-		this.name = nameParam;
+	public void setName(final String name) {
+		this.name = name;
 	}
 
 	/**
@@ -162,10 +150,11 @@ public class CollabContext {
 	/**
 	 * Set the index of this item in order.
 	 *
-	 * @param orderIndexParam The index to set
+	 * @param orderIndex
+	 *            The index to set
 	 */
-	public void setOrderIndex(final int orderIndexParam) {
-		this.orderIndex = orderIndexParam;
+	public void setOrderIndex(final int orderIndex) {
+		this.orderIndex = orderIndex;
 	}
 
 	/**
@@ -180,10 +169,11 @@ public class CollabContext {
 	/**
 	 * Set the parent of this item.
 	 *
-	 * @param parentParam The parent to set
+	 * @param parent
+	 *            The parent to set
 	 */
-	public void setParent(final int parentParam) {
-		this.parent = parentParam;
+	public void setParent(final int parent) {
+		this.parent = parent;
 	}
 
 	/**
@@ -198,9 +188,10 @@ public class CollabContext {
 	/**
 	 * Set the type of this item.
 	 *
-	 * @param typeParam The type to set
+	 * @param type
+	 *            The type to set
 	 */
-	public void setType(final String typeParam) {
-		this.type = typeParam;
+	public void setType(final String type) {
+		this.type = type;
 	}
 }

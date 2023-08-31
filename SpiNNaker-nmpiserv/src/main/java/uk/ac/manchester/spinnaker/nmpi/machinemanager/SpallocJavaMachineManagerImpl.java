@@ -37,37 +37,27 @@ import uk.ac.manchester.spinnaker.alloc.client.SpallocClientFactory;
 import uk.ac.manchester.spinnaker.alloc.client.State;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
+/**
+ * A machine manager that interfaces to the new spalloc service.
+ */
 public class SpallocJavaMachineManagerImpl implements MachineManager {
-
-	/**
-	 * The version to use for the boards.
-	 */
+	/** The version to use for the boards. */
 	private static final String VERSION = "5";
 
-	/**
-	 * The reason to use when closed.
-	 */
+	/** The reason to use when closed. */
 	private static final String REASON_STOPPING = "RemoteSpiNNaker Stopping";
 
-	/**
-	 * The reason to use when a job is finished.
-	 */
+	/** The reason to use when a job is finished. */
 	private static final String REASON_FINISHED = "Finished";
 
-	/**
-	 * The URI of the spalloc server.
-	 */
+	/** The URI of the spalloc server. */
 	@Value("${spalloc.server}")
 	private URI spallocUri;
 
-	/**
-	 * The spalloc client to use.
-	 */
+	/** The spalloc client to use. */
 	private SpallocClient client;
 
-	/**
-	 * A map between machines and spalloc jobs.
-	 */
+	/** A map between machines and spalloc jobs. */
 	private Map<SpinnakerMachine, SpallocClient.Job> jobMap = new HashMap<>();
 
 	/**
@@ -78,11 +68,11 @@ public class SpallocJavaMachineManagerImpl implements MachineManager {
 
 	@PostConstruct
 	private void setup() throws IOException {
-		String userInfo = spallocUri.getUserInfo();
+		var userInfo = spallocUri.getUserInfo();
 		int splitPoint = userInfo.indexOf(':');
-		String username = userInfo.substring(0, splitPoint);
-		String password = userInfo.substring(splitPoint + 1);
-		URI spalloc = UriBuilder.fromUri(spallocUri).userInfo(null).build();
+		var username = userInfo.substring(0, splitPoint);
+		var password = userInfo.substring(splitPoint + 1);
+		var spalloc = UriBuilder.fromUri(spallocUri).userInfo(null).build();
 		client = new SpallocClientFactory(spalloc).login(username, password);
 	}
 

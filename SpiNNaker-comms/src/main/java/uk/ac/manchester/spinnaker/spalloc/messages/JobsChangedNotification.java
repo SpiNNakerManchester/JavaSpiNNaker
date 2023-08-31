@@ -48,7 +48,10 @@ public class JobsChangedNotification implements Notification {
 		return jobsChanged;
 	}
 
-	/** @param jobsChanged What jobs have changed. */
+	/**
+	 * @param jobsChanged
+	 *            What jobs have changed.
+	 */
 	void setJobsChanged(List<Integer> jobsChanged) {
 		this.jobsChanged = copy(jobsChanged);
 	}

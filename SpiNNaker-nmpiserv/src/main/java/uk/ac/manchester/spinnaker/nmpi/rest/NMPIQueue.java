@@ -26,6 +26,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 
@@ -34,6 +35,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 import uk.ac.manchester.spinnaker.nmpi.model.QueueEmpty;
 import uk.ac.manchester.spinnaker.nmpi.model.QueueJob;
+import uk.ac.manchester.spinnaker.nmpi.model.QueueJobCompat;
 import uk.ac.manchester.spinnaker.nmpi.model.QueueNextResponse;
 import uk.ac.manchester.spinnaker.nmpi.rest.utils.CustomJacksonJsonProvider;
 import uk.ac.manchester.spinnaker.nmpi.rest.utils.PropertyBasedDeserialiser;
@@ -42,6 +44,23 @@ import uk.ac.manchester.spinnaker.nmpi.rest.utils.PropertyBasedDeserialiser;
  * The REST API for the HBP Neuromorphic Platform Interface queue.
  */
 public interface NMPIQueue {
+	/**
+	 * Gets all jobs in the queue.
+	 *
+	 * @param apiKey
+	 *            The API key to use.
+	 * @param hardware
+	 *            The hardware to request the jobs for.
+	 * @param status
+	 *            List of accepted statuses.
+	 * @return The list of jobs that meet the criteria.
+	 */
+	@GET
+	@Path("jobs/")
+	@Produces("application/json")
+	List<QueueJobCompat> getJobs(@HeaderParam("x-api-key") String apiKey,
+			@QueryParam("hardware") String hardware,
+			@QueryParam("status") List<String> status);
 
 	/**
 	 * Get the next queue item for a specific hardware system.
@@ -108,11 +127,13 @@ public interface NMPIQueue {
 
 	/**
 	 * Get a client for the API.
-	 * @param url The URL to connect to.
+	 *
+	 * @param url
+	 *            The URL to connect to.
 	 * @return A proxy of the API.
 	 */
 	static NMPIQueue createClient(String url) {
-		ObjectMapper mapper = new ObjectMapper();
+		var mapper = new ObjectMapper();
 		mapper.setPropertyNamingStrategy(SNAKE_CASE);
 		return JAXRSClientFactory.create(url, NMPIQueue.class,
 				List.of(createProvider()));

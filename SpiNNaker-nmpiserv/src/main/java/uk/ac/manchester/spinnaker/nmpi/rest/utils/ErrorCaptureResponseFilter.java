@@ -38,32 +38,21 @@ import org.slf4j.Logger;
 // Only public because of the annotation
 @Provider
 public class ErrorCaptureResponseFilter implements ClientResponseFilter {
-
-	/**
-	 * The JSON provider of the filter.
-	 */
+	/** The JSON provider of the filter. */
 	private final CustomJacksonJsonProvider provider =
 			new CustomJacksonJsonProvider();
 
-	/**
-	 * Logging.
-	 */
+	/** Logging. */
 	private static final Logger logger =
 			getLogger(ErrorCaptureResponseFilter.class);
 
-	/**
-	 * True if the log should be written.
-	 */
+	/** True if the log should be written. */
 	private volatile boolean writeToLog = true;
 
-	/**
-	 * Level 1 indent.
-	 */
+	/** Level 1 indent. */
 	private static final String INDENT = "    "; // 4 spaces
 
-	/**
-	 * Level 2 intent.
-	 */
+	/** Level 2 intent. */
 	private static final String IND2 = INDENT + INDENT;
 
 	@Override
@@ -96,7 +85,9 @@ public class ErrorCaptureResponseFilter implements ClientResponseFilter {
 
 	/**
 	 * Convert a request to a JSON object.
-	 * @param requestContext The context of the request
+	 *
+	 * @param requestContext
+	 *            The context of the request
 	 * @return A JSON String
 	 */
 	private String getRequestAsJSON(final ClientRequestContext requestContext) {

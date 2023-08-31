@@ -17,7 +17,6 @@ package uk.ac.manchester.spinnaker.storage.sqlite;
 
 import static java.lang.System.arraycopy;
 import static java.lang.System.currentTimeMillis;
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_CONTENT;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_EXTRA_CONTENT;
@@ -81,14 +80,17 @@ public class SQLiteBufferStorage
 				}
 			}
 		}
-		try (var s = conn.prepareStatement(INSERT_LOCATION,
-				RETURN_GENERATED_KEYS)) {
+		try (var s = conn.prepareStatement(INSERT_LOCATION)) {
 			// x, y, processor
 			setArguments(s, core.getX(), core.getY(), core.getP());
-			s.executeUpdate();
-			return getLastKey(s).orElseThrow(() -> new IllegalStateException(
-					"could not make or find recording region core record"));
+			try (var rs = s.executeQuery()) {
+				while (rs.next()) {
+					return rs.getInt("core_id");
+				}
+			}
 		}
+		throw new IllegalStateException(
+				"could not make or find recording region core record");
 	}
 
 	private static int getRecordingRegion(Connection conn, int coreID,
@@ -102,15 +104,18 @@ public class SQLiteBufferStorage
 				}
 			}
 		}
-		try (var s = conn.prepareStatement(INSERT_REGION,
-				RETURN_GENERATED_KEYS)) {
+		try (var s = conn.prepareStatement(INSERT_REGION)) {
 			// core_id, local_region_index, address
 			setArguments(s, coreID, region.regionIndex,
 					region.startAddress.address);
-			s.executeUpdate();
-			return getLastKey(s).orElseThrow(() -> new IllegalStateException(
-					"could not make or find recording region record"));
+			try (var rs = s.executeQuery()) {
+				while (rs.next()) {
+					return rs.getInt("region_id");
+				}
+			}
 		}
+		throw new IllegalStateException(
+				"could not make or find recording region record");
 	}
 
 	private void appendRecordingContents(Connection conn, int regionID,
@@ -132,7 +137,7 @@ public class SQLiteBufferStorage
 
 	private static byte[] read(ByteArrayInputStream chunk, int chunkLen)
 			throws SQLException {
-		byte[] buffer = new byte[chunkLen];
+		var buffer = new byte[chunkLen];
 		int len;
 		try {
 			len = IOUtils.read(chunk, buffer, 0, chunkLen);
@@ -144,7 +149,7 @@ public class SQLiteBufferStorage
 		} else if (len <= 0) {
 			return new byte[0];
 		}
-		byte[] nb = new byte[len];
+		var nb = new byte[len];
 		arraycopy(buffer, 0, nb, 0, len);
 		return nb;
 	}
@@ -169,13 +174,18 @@ public class SQLiteBufferStorage
 		}
 	}
 
-	private void addExtraContentRow(Connection conn, int regionID, int chunkLen,
+	private int addExtraContentRow(Connection conn, int regionID, int chunkLen,
 			ByteArrayInputStream chunk) throws SQLException {
 		try (var s = conn.prepareStatement(ADD_EXTRA_CONTENT)) {
 			// region_id, content
 			setArguments(s, regionID, read(chunk, chunkLen), chunkLen);
-			s.executeUpdate();
+			try (var rs = s.executeQuery()) {
+				while (rs.next()) {
+					return rs.getInt("extra_id");
+				}
+			}
 		}
+		throw new IllegalStateException("no row inserted");
 	}
 
 	private boolean useMainTable(Connection conn, int regionID)

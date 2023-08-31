@@ -24,19 +24,14 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
  */
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SessionResourceUpdate {
-
-	/**
-	 * The status of the job.
-	 */
+	/** The status of the job. */
 	private String status;
 
-	/**
-	 * A count of how much resource has been used by the job.
-	 */
+	/** A count of how much resource has been used by the job. */
 	private ResourceUsage resourceUsage;
 
 	/**
-	 * Get the status.
+	 * Get the status of the job.
 	 *
 	 * @return the status
 	 */
@@ -47,14 +42,15 @@ public class SessionResourceUpdate {
 	/**
 	 * Sets the status.
 	 *
-	 * @param statusParam the status to set
+	 * @param status
+	 *            the status to set
 	 */
-	public void setStatus(final String statusParam) {
-		this.status = statusParam;
+	public void setStatus(final String status) {
+		this.status = status;
 	}
 
 	/**
-	 * Get the resourceUsage.
+	 * Get the count of how much resource has been used by the job.
 	 *
 	 * @return the resourceUsage
 	 */
@@ -65,9 +61,10 @@ public class SessionResourceUpdate {
 	/**
 	 * Sets the resourceUsage.
 	 *
-	 * @param resourceUsageParam the resourceUsage to set
+	 * @param resourceUsage
+	 *            the resourceUsage to set
 	 */
-	public void setResourceUsage(final ResourceUsage resourceUsageParam) {
-		this.resourceUsage = resourceUsageParam;
+	public void setResourceUsage(final ResourceUsage resourceUsage) {
+		this.resourceUsage = resourceUsage;
 	}
 }

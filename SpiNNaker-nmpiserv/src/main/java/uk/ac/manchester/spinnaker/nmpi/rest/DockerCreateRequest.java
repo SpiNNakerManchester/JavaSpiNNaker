@@ -20,21 +20,26 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * A request to docker create.
+ * A request to {@code docker create}.
  */
 public class DockerCreateRequest {
-
 	private String image;
 
 	private List<String> cmd;
 
+	/**
+	 * @param image
+	 *            The image to instantiate.
+	 * @param cmd
+	 *            The command to run (as list of arguments).
+	 */
 	public DockerCreateRequest(String image, List<String> cmd) {
 		this.image = image;
 		this.cmd = cmd;
 	}
 
 	/**
-	 * @return the image
+	 * @return The image to instantiate.
 	 */
 	@JsonProperty("Image")
 	public String getImage() {
@@ -42,14 +47,15 @@ public class DockerCreateRequest {
 	}
 
 	/**
-	 * @param image the image to set
+	 * @param image
+	 *            the image to set
 	 */
 	public void setImage(String image) {
 		this.image = image;
 	}
 
 	/**
-	 * @return the cmd
+	 * @return The command to run (as list of arguments).
 	 */
 	@JsonProperty("Cmd")
 	public List<String> getCmd() {
@@ -57,7 +63,8 @@ public class DockerCreateRequest {
 	}
 
 	/**
-	 * @param cmd the cmd to set
+	 * @param cmd
+	 *            the cmd to set
 	 */
 	public void setCmd(List<String> cmd) {
 		this.cmd = cmd;

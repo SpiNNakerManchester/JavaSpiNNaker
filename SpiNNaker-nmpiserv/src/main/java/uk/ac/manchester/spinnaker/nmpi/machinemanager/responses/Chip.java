@@ -26,15 +26,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({"x", "y"})
 @JsonFormat(shape = ARRAY)
 public class Chip {
-
-	/**
-	 * The x-coordinate of the chip.
-	 */
+	/** The x-coordinate of the chip. */
 	private int x;
 
-	/**
-	 * The y-coordinate of the chip.
-	 */
+	/** The y-coordinate of the chip. */
 	private int y;
 
 	/**
@@ -49,10 +44,11 @@ public class Chip {
 	/**
 	 * Set the x-coordinate of the chip.
 	 *
-	 * @param xParam The x-coordinate of the chip
+	 * @param x
+	 *            The x-coordinate of the chip
 	 */
-	public void setX(final int xParam) {
-		this.x = xParam;
+	public void setX(final int x) {
+		this.x = x;
 	}
 
 	/**
@@ -67,9 +63,10 @@ public class Chip {
 	/**
 	 * Set the y-coordinate of the chip.
 	 *
-	 * @param yParam The y-coordinate of the chip
+	 * @param y
+	 *            The y-coordinate of the chip
 	 */
-	public void setY(final int yParam) {
-		this.y = yParam;
+	public void setY(final int y) {
+		this.y = y;
 	}
 }

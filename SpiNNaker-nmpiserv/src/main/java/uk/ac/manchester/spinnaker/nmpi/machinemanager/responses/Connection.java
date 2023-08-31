@@ -26,15 +26,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({"chip", "hostname"})
 @JsonFormat(shape = ARRAY)
 public class Connection {
-
-	/**
-	 * The chip connected to.
-	 */
+	/** The chip connected to. */
 	private Chip chip;
 
-	/**
-	 * The host name connected to.
-	 */
+	/** The host name connected to. */
 	private String hostname;
 
 	/**
@@ -49,10 +44,11 @@ public class Connection {
 	/**
 	 * Set the chip connected to.
 	 *
-	 * @param chipParam The chip to set
+	 * @param chip
+	 *            The chip to set
 	 */
-	public void setChip(final Chip chipParam) {
-		this.chip = chipParam;
+	public void setChip(final Chip chip) {
+		this.chip = chip;
 	}
 
 	/**
@@ -67,9 +63,10 @@ public class Connection {
 	/**
 	 * Set the host name connected to.
 	 *
-	 * @param hostnameParam The host name to set
+	 * @param hostname
+	 *            The host name to set
 	 */
-	public void setHostname(final String hostnameParam) {
-		this.hostname = hostnameParam;
+	public void setHostname(final String hostname) {
+		this.hostname = hostname;
 	}
 }

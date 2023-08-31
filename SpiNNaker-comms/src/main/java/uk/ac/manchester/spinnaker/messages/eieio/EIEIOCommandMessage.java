@@ -49,7 +49,10 @@ public class EIEIOCommandMessage
 		this.header = new Header(buffer);
 	}
 
-	/** @param command The command in the message. */
+	/**
+	 * @param command
+	 *            The command in the message.
+	 */
 	public EIEIOCommandMessage(EIEIOCommand command) {
 		this.header = new Header(command);
 	}

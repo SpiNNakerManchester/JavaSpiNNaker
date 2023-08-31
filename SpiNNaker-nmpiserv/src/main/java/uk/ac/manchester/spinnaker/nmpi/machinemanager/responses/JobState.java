@@ -36,24 +36,16 @@ public class JobState {
 	/** Job has terminated, see the {@code reason} property for why. */
 	public static final int DESTROYED = 4;
 
-	/**
-	 * The state of the job in the queue (from the above list).
-	 */
+	/** The state of the job in the queue (from the above list). */
 	private int state;
 
-	/**
-	 * The power state of the job.
-	 */
+	/** The power state of the job. */
 	private Boolean power;
 
-	/**
-	 * The number of seconds to keep alive.
-	 */
+	/** The number of seconds to keep alive. */
 	private double keepAlive;
 
-	/**
-	 * The reason for the job being destroyed.
-	 */
+	/** The reason for the job being destroyed. */
 	private String reason;
 
 	/**
@@ -68,10 +60,11 @@ public class JobState {
 	/**
 	 * Set the state of the job in the queue.
 	 *
-	 * @param stateParam The state to set
+	 * @param state
+	 *            The state to set
 	 */
-	public void setState(final int stateParam) {
-		this.state = stateParam;
+	public void setState(final int state) {
+		this.state = state;
 	}
 
 	/**
@@ -86,10 +79,11 @@ public class JobState {
 	/**
 	 * Set the power state of the job.
 	 *
-	 * @param powerParam True for on, False for off
+	 * @param power
+	 *            True for on, False for off
 	 */
-	public void setPower(final Boolean powerParam) {
-		this.power = powerParam;
+	public void setPower(final Boolean power) {
+		this.power = power;
 	}
 
 	/**
@@ -104,10 +98,11 @@ public class JobState {
 	/**
 	 * Set the number of seconds to keep alive.
 	 *
-	 * @param keepAliveParam The number of seconds to set
+	 * @param keepAlive
+	 *            The number of seconds to set
 	 */
-	public void setKeepAlive(final double keepAliveParam) {
-		this.keepAlive = keepAliveParam;
+	public void setKeepAlive(final double keepAlive) {
+		this.keepAlive = keepAlive;
 	}
 
 	/**
@@ -122,9 +117,10 @@ public class JobState {
 	/**
 	 * Set the reason for the job being destroyed.
 	 *
-	 * @param reasonParam The reason to set.
+	 * @param reason
+	 *            The reason to set.
 	 */
-	public void setReason(final String reasonParam) {
-		this.reason = reasonParam;
+	public void setReason(final String reason) {
+		this.reason = reason;
 	}
 }

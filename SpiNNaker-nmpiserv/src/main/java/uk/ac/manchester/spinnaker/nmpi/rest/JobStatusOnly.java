@@ -16,16 +16,16 @@
 package uk.ac.manchester.spinnaker.nmpi.rest;
 
 /**
- * A Job where only the status is set (to allow log updates).
+ * A Job where only the status is set (to allow status updates).
  */
 public class JobStatusOnly {
-
 	private String status;
 
 	/**
 	 * Create a job with only a status.
 	 *
-	 * @param status The status to set.
+	 * @param status
+	 *            The status to set.
 	 */
 	public JobStatusOnly(String status) {
 		this.status = status;
@@ -43,7 +43,8 @@ public class JobStatusOnly {
 	/**
 	 * Set the status.
 	 *
-	 * @param status The status to set
+	 * @param status
+	 *            The status to set
 	 */
 	public void setStatus(String status) {
 		this.status = status;

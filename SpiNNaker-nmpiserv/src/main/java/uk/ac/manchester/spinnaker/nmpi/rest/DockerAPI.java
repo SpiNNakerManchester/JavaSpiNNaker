@@ -41,36 +41,24 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
  * Interface to the Docker API.
  */
 public interface DockerAPI {
-
-	/**
-	 * The docker output stream format.
-	 */
+	/** The docker output stream format. */
 	String APPLICATION_VND_DOCKER_RAW_STREAM =
 			"application/vnd.docker.raw-stream";
 
-	/**
-	 * The number of bytes in the log header that are unused.
-	 */
+	/** The number of bytes in the log header that are unused. */
 	int HEADER_UNUSED_BYTES = 4;
 
 	/**
 	 * Options for waiting.
 	 */
 	enum WaitCondition {
-
-		/**
-		 * Wait for any not running state.
-		 */
+		/** Wait for any not running state. */
 		NOT_RUNNING("not-running"),
 
-		/**
-		 * Wait for the next exit.
-		 */
+		/** Wait for the next exit. */
 		NEXT_EXIT("next-exit"),
 
-		/**
-		 * Wait for the container to be removed.
-		 */
+		/** Wait for the container to be removed. */
 		REMOVED("removed");
 
 		private String value;
@@ -88,7 +76,8 @@ public interface DockerAPI {
 	/**
 	 * Create a new Docker container.
 	 *
-	 * @param request The details of the container to create.
+	 * @param request
+	 *            The details of the container to create.
 	 * @return The response to the container creation request.
 	 */
 	@Produces(APPLICATION_JSON)
@@ -100,12 +89,20 @@ public interface DockerAPI {
 	/**
 	 * Start a Docker container.
 	 *
-	 * @param id The identifier of the container.
+	 * @param id
+	 *            The identifier of the container.
 	 */
 	@POST
 	@Path("/containers/{id}/start")
 	void start(@PathParam("id") String id);
 
+	/**
+	 * Get the state of a container.
+	 *
+	 * @param id
+	 *            The identifier of the container.
+	 * @return The state description.
+	 */
 	@GET
 	@Produces(APPLICATION_JSON)
 	@Path("/containers/{id}/json")
@@ -114,8 +111,10 @@ public interface DockerAPI {
 	/**
 	 * Wait for a Docker container to exit.
 	 *
-	 * @param id The identifier of the container.
-	 * @param condition What we are waiting for.
+	 * @param id
+	 *            The identifier of the container.
+	 * @param condition
+	 *            What we are waiting for.
 	 */
 	@POST
 	@Path("/containers/{id}/wait")
@@ -125,7 +124,8 @@ public interface DockerAPI {
 	/**
 	 * Delete a Docker container.
 	 *
-	 * @param id The identifier of the container.
+	 * @param id
+	 *            The identifier of the container.
 	 */
 	@DELETE
 	@Path("/containers/{id}")
@@ -134,9 +134,12 @@ public interface DockerAPI {
 	/**
 	 * Get the raw logs of the container.
 	 *
-	 * @param id The identifier of the container.
-	 * @param stdout True if STDOUT should be read.
-	 * @param stderr True if STDERR should be read.
+	 * @param id
+	 *            The identifier of the container.
+	 * @param stdout
+	 *            True if STDOUT should be read.
+	 * @param stderr
+	 *            True if STDERR should be read.
 	 * @return The raw data stream. See {@link #readLog} for how this is read.
 	 */
 	@Produces(APPLICATION_VND_DOCKER_RAW_STREAM)
@@ -148,11 +151,13 @@ public interface DockerAPI {
 
 	/**
 	 * Get a client for the API.
-	 * @param url The URL to connect to.
+	 *
+	 * @param url
+	 *            The URL to connect to.
 	 * @return A proxy of the API.
 	 */
 	static DockerAPI createClient(String url) {
-		ObjectMapper mapper = new ObjectMapper();
+		var mapper = new ObjectMapper();
 		return JAXRSClientFactory.create(url, DockerAPI.class,
 				List.of(new JacksonJsonProvider(mapper)));
 	}
@@ -160,25 +165,24 @@ public interface DockerAPI {
 	/**
 	 * Read docker log raw format.
 	 *
-	 * @param data The data returned by {@link #getLog}.
+	 * @param data
+	 *            The data returned by {@link #getLog}.
 	 * @return A decoded String containing all data in order received.
-	 * @throws IOException If an error occurs when reading the log.
+	 * @throws IOException
+	 *             If an error occurs when reading the log.
 	 */
 	static String readLog(byte[] data) throws IOException {
-		DataInputStream input = new DataInputStream(
-				new ByteArrayInputStream(data));
-		StringBuilder output = new StringBuilder();
-		try {
+		var output = new StringBuilder();
+		try (var input = new DataInputStream(new ByteArrayInputStream(data))) {
 			while (true) {
 				input.readFully(new byte[HEADER_UNUSED_BYTES]);
 				int size = input.readInt();
-				byte[] text = new byte[size];
+				var text = new byte[size];
 				input.readFully(text);
 				output.append(new String(text));
 			}
 		} catch (EOFException e) {
-			input.close();
+			return output.toString();
 		}
-		return output.toString();
 	}
 }

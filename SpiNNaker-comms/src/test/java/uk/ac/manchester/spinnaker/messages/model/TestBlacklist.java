@@ -16,20 +16,19 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static org.junit.jupiter.api.Assertions.*;
-import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
 import static uk.ac.manchester.spinnaker.machine.Direction.NORTH;
 import static uk.ac.manchester.spinnaker.machine.Direction.NORTHEAST;
 import static uk.ac.manchester.spinnaker.machine.Direction.SOUTH;
 import static uk.ac.manchester.spinnaker.machine.Direction.SOUTHWEST;
+import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
+import static uk.ac.manchester.spinnaker.messages.model.SerSupport.deserialize;
+import static uk.ac.manchester.spinnaker.messages.model.SerSupport.serialize;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.nio.BufferUnderflowException;
 import java.util.EnumSet;
 import java.util.Map;
@@ -54,22 +53,6 @@ class TestBlacklist {
 
 	private static final String EXAMPLE_BLACKLIST_FILE =
 			"uk/ac/manchester/spinnaker/alloc/bmp/example.blacklist";
-
-	private static byte[] serialize(Object obj) throws IOException {
-		var baos = new ByteArrayOutputStream();
-		try (var oos = new ObjectOutputStream(baos)) {
-			oos.writeObject(obj);
-		}
-		return baos.toByteArray();
-	}
-
-	private static <T> T deserialize(byte[] bytes, Class<T> cls)
-			throws ClassNotFoundException, IOException {
-		var bais = new ByteArrayInputStream(bytes);
-		try (var ois = new ObjectInputStream(bais)) {
-			return cls.cast(ois.readObject());
-		}
-	}
 
 	@Nested
 	class MechanicalSerialization {

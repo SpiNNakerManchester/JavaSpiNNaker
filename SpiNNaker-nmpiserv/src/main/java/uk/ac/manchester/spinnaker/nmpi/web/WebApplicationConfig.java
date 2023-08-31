@@ -43,7 +43,6 @@ import org.springframework.web.filter.DelegatingFilterProxy;
  */
 @SpringBootApplication
 public class WebApplicationConfig implements WebApplicationInitializer {
-
 	/**
 	 * The name of the <i>system property</i> that describes where to load
 	 * configuration properties from.
@@ -51,19 +50,13 @@ public class WebApplicationConfig implements WebApplicationInitializer {
 	public static final String LOCATION_PROPERTY =
 			"remotespinnaker.properties.location";
 
-	/**
-	 * The name of the filter chain.
-	 */
+	/** The name of the filter chain. */
 	private static final String FILTER_NAME = "springSecurityFilterChain";
 
-	/**
-	 * Whether to add the filter or not.
-	 */
+	/** Whether to add the filter or not. */
 	private static final boolean ADD_FILTER = false;
 
-	/**
-	 * Whether to add the servlet or not.
-	 */
+	/** Whether to add the servlet or not. */
 	private static final boolean ADD_SERVLET = true;
 
 	@Override
@@ -88,11 +81,13 @@ public class WebApplicationConfig implements WebApplicationInitializer {
 
 	/**
 	 * Get the context load listener.
-	 * @param properties The properties of the listener
+	 *
+	 * @param properties
+	 *            The properties of the listener
 	 * @return The listener
 	 */
-	private ContextLoaderListener
-			getContextLoaderListener(final PropertySource<?> properties) {
+	private ContextLoaderListener getContextLoaderListener(
+			final PropertySource<?> properties) {
 		final var annotationConfig =
 				new AnnotationConfigWebApplicationContext();
 		annotationConfig.getEnvironment().getPropertySources()
@@ -103,8 +98,11 @@ public class WebApplicationConfig implements WebApplicationInitializer {
 
 	/**
 	 * Add a servlet.
-	 * @param container The servlet context
-	 * @param properties The properties of the servlet
+	 *
+	 * @param container
+	 *            The servlet context
+	 * @param properties
+	 *            The properties of the servlet
 	 */
 	private void addServlet(final ServletContext container,
 			final PropertySource<?> properties) {
@@ -114,7 +112,9 @@ public class WebApplicationConfig implements WebApplicationInitializer {
 
 	/**
 	 * Add a filter chain.
-	 * @param container The context of the chain.
+	 *
+	 * @param container
+	 *            The context of the chain.
 	 */
 	private void addFilterChain(final ServletContext container) {
 		container.addFilter(FILTER_NAME, new DelegatingFilterProxy(FILTER_NAME))
@@ -124,8 +124,10 @@ public class WebApplicationConfig implements WebApplicationInitializer {
 
 	/**
 	 * Get the source of the properties.
+	 *
 	 * @return The property source
-	 * @throws IOException If something goes wrong
+	 * @throws IOException
+	 *             If something goes wrong
 	 */
 	private PropertySource<?> getPropertySource() throws IOException {
 		final var source = new File(getProperty(LOCATION_PROPERTY));

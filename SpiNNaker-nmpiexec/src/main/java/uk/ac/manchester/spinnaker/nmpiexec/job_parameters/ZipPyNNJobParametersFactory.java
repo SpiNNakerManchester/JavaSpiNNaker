@@ -73,19 +73,20 @@ class ZipPyNNJobParametersFactory extends JobParametersFactory {
 		}
 	}
 
-	/**
-	 * The supported compression types.
-	 */
+	/** The supported compression types. */
 	private static final CompressionType[] SUPPORTED_TYPES =
 			new CompressionType[]{BZIP2, GZIP};
 
 	/**
 	 * Extract an archive using auto-detection for the format.
 	 *
-	 * @param output The archive to extract
-	 * @param workingDirectory The directory to extract into
+	 * @param output
+	 *            The archive to extract
+	 * @param workingDirectory
+	 *            The directory to extract into
 	 * @return True if extracted, False if failed
-	 * @throws IOException If there is a general error in extraction
+	 * @throws IOException
+	 *             If there is a general error in extraction
 	 */
 	private boolean extractAutodetectedArchive(final File output,
 			final File workingDirectory) throws IOException {
@@ -101,8 +102,10 @@ class ZipPyNNJobParametersFactory extends JobParametersFactory {
 	/**
 	 * Extract an archive by trying known archive types.
 	 *
-	 * @param workingDirectory The directory to extract into
-	 * @param output The archive to extract
+	 * @param workingDirectory
+	 *            The directory to extract into
+	 * @param output
+	 *            The archive to extract
 	 * @return True if the archive was extracted, False otherwise
 	 */
 	private boolean extractArchiveUsingKnownFormats(final File workingDirectory,
@@ -122,8 +125,10 @@ class ZipPyNNJobParametersFactory extends JobParametersFactory {
 	/**
 	 * Extract an archive by trying internal list of archive types.
 	 *
-	 * @param workingDirectory The directory to extract into
-	 * @param output The archive to extract
+	 * @param workingDirectory
+	 *            The directory to extract into
+	 * @param output
+	 *            The archive to extract
 	 * @return True if the archive was extracted, False otherwise
 	 */
 	private boolean extractTypedArchive(final File workingDirectory,
@@ -145,14 +150,19 @@ class ZipPyNNJobParametersFactory extends JobParametersFactory {
 	/**
 	 * Build the job parameters.
 	 *
-	 * @param job The job to build the parameters for
-	 * @param workingDirectory The directory where the job should be run
-	 * @param url The URL of the archive to use
-	 * @param setupScript The setup script
+	 * @param job
+	 *            The job to build the parameters for
+	 * @param workingDirectory
+	 *            The directory where the job should be run
+	 * @param url
+	 *            The URL of the archive to use
+	 * @param setupScript
+	 *            The setup script
 	 * @return The constructed parameters
-	 * @throws IOException If there is an error with the file
-	 * @throws JobParametersFactoryException If no way to uncompress the file
-	 *     could be found
+	 * @throws IOException
+	 *             If there is an error with the file
+	 * @throws JobParametersFactoryException
+	 *             If no way to uncompress the file could be found
 	 */
 	private JobParameters constructParameters(final Job job,
 			final File workingDirectory, final URL url,

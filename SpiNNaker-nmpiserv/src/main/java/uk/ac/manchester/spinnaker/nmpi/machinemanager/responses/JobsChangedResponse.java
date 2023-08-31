@@ -23,10 +23,7 @@ import java.util.List;
  * A response that describes what jobs have changed state.
  */
 public class JobsChangedResponse implements Response {
-
-	/**
-	 * The list of jobs that have changed.
-	 */
+	/** The list of jobs that have changed. */
 	private List<Integer> jobsChanged = emptyList();
 
 	/**
@@ -41,9 +38,10 @@ public class JobsChangedResponse implements Response {
 	/**
 	 * Set the jobs that have changed.
 	 *
-	 * @param jobsChangedParam The list of job ids
+	 * @param jobsChanged
+	 *            The list of job ids
 	 */
-	public void setJobsChanged(final List<Integer> jobsChangedParam) {
-		this.jobsChanged = jobsChangedParam;
+	public void setJobsChanged(final List<Integer> jobsChanged) {
+		this.jobsChanged = jobsChanged;
 	}
 }

@@ -48,15 +48,19 @@ class DirectPyNNJobParametersFactory extends JobParametersFactory {
 		}
 	}
 
-/**
-	* Constructs the parameters by writing the script into a local file.
-	*
-	* @param job The job to construct parameters for
-	* @param workingDirectory The directory where the job should be started
-	* @param setupScript The setup script to run
-	* @return The parameters created
-	* @throws IOException If the file can't be found to write
-	*/
+	/**
+	 * Constructs the parameters by writing the script into a local file.
+	 *
+	 * @param job
+	 *            The job to construct parameters for
+	 * @param workingDirectory
+	 *            The directory where the job should be started
+	 * @param setupScript
+	 *            The setup script to run
+	 * @return The parameters created
+	 * @throws IOException
+	 *             If the file can't be found to write
+	 */
 	private JobParameters constructParameters(final Job job,
 			final File workingDirectory, final String setupScript)
 			throws IOException {

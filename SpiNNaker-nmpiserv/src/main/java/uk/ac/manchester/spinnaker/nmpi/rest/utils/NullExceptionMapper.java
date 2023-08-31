@@ -34,10 +34,7 @@ import org.slf4j.Logger;
 @Provider
 public class NullExceptionMapper
 		implements ExceptionMapper<NullPointerException> {
-
-	/**
-	 * Log.
-	 */
+	/** Log. */
 	private static final Logger logger = getLogger(NullExceptionMapper.class);
 
 	@Override
