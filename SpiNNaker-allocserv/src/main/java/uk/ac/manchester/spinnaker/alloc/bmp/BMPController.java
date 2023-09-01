@@ -156,6 +156,7 @@ public class BMPController extends DatabaseAwareBean {
 		var sched = new ThreadPoolTaskScheduler();
 		scheduler = sched;
 		sched.setThreadGroupName("BMP");
+		sched.initialize();
 
 		controllerFactory = controllerFactoryBean::getObject;
 		allocator.setBMPController(this);
