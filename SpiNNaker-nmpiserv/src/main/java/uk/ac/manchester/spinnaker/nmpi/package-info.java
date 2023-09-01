@@ -15,5 +15,28 @@
  */
 /**
  * The NMPI service classes.
+ * <p>
+ * The actual key service APIs are:
+ * <ul>
+ * <li>{@link NMPIQueueManager} &mdash; Handles the queue of {@linkplain Job
+ * NMPI jobs}.
+ * <li>{@link JobExecuter} &mdash; Handles the running of a single NMPI job.
+ * Note that job executer implementations ask the queue manager for the job that
+ * they should run.
+ * <li>{@link JobExecuterFactory} &mdash; Creates job executers.
+ * <li>{@link MachineManager} &mdash; Handles the resources on which NMPI jobs
+ * run.
+ * </ul>
  */
+@UsedInJavadocOnly({
+	Job.class, JobExecuter.class, JobExecuterFactory.class,
+	MachineManager.class, NMPIQueueManager.class
+})
 package uk.ac.manchester.spinnaker.nmpi;
+
+import uk.ac.manchester.spinnaker.nmpi.jobmanager.JobExecuter;
+import uk.ac.manchester.spinnaker.nmpi.jobmanager.JobExecuterFactory;
+import uk.ac.manchester.spinnaker.nmpi.machinemanager.MachineManager;
+import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.Job;
+import uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManager;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
