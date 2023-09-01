@@ -28,8 +28,10 @@
  * run.
  * </ul>
  */
-@UsedInJavadocOnly({ NMPIQueueManager.class, Job.class, JobExecuter.class,
-		JobExecuterFactory.class, MachineManager.class })
+@UsedInJavadocOnly({
+	Job.class, JobExecuter.class, JobExecuterFactory.class,
+	MachineManager.class, NMPIQueueManager.class
+})
 package uk.ac.manchester.spinnaker.nmpi;
 
 import uk.ac.manchester.spinnaker.nmpi.jobmanager.JobExecuter;
