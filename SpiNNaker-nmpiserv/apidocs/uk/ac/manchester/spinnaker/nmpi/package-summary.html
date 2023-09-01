@@ -67,32 +67,18 @@ loadScripts(document, 'script');</script>
 <section class="packageDescription"><a id="package.description">
 <!--   -->
 </a>
-<div class="block">The NMPI service classes.</div>
-</section>
-<section class="summary">
-<ul class="blockList">
-<li class="blockList">
-<div class="typeSummary">
-<table>
-<caption><span>Class Summary</span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Class</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<th class="colFirst" scope="row"><a href="ThreadUtils.html" title="class in uk.ac.manchester.spinnaker.nmpi">ThreadUtils</a></th>
-<td class="colLast">
-<div class="block">Utilities for working with threads.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</li>
-</ul>
+<div class="block">The NMPI service classes.
+ <p>
+ The actual key service APIs are:
+ <ul>
+ <li><a href="nmpi/NMPIQueueManager.html" title="interface in uk.ac.manchester.spinnaker.nmpi.nmpi"><code>NMPIQueueManager</code></a> &mdash; Handles the queue of <a href="https://spinnakermanchester.github.io/SpiNNaker-nmpimodel/apidocs/uk/ac/manchester/spinnaker/nmpi/model/job/nmpi/Job.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.nmpi.model.job.nmpi" class="externalLink">NMPI jobs</a>.
+ <li><a href="jobmanager/JobExecuter.html" title="interface in uk.ac.manchester.spinnaker.nmpi.jobmanager"><code>JobExecuter</code></a> &mdash; Handles the running of a single NMPI job.
+ Note that job executer implementations ask the queue manager for the job that
+ they should run.
+ <li><a href="jobmanager/JobExecuterFactory.html" title="interface in uk.ac.manchester.spinnaker.nmpi.jobmanager"><code>JobExecuterFactory</code></a> &mdash; Creates job executers.
+ <li><a href="machinemanager/MachineManager.html" title="interface in uk.ac.manchester.spinnaker.nmpi.machinemanager"><code>MachineManager</code></a> &mdash; Handles the resources on which NMPI jobs
+ run.
+ </ul></div>
 </section>
 </div>
 </main>
