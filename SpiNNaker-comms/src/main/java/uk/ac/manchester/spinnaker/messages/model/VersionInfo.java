@@ -55,7 +55,7 @@ public final class VersionInfo {
 	public final String versionString;
 
 	/** The location of the core where the information was obtained. */
-	public final SDPLocation core;
+	public final SDPLocation location;
 
 	private static final Pattern VERSION_RE = Pattern
 			.compile("(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<revision>\\d+)");
@@ -98,7 +98,7 @@ public final class VersionInfo {
 		physicalCPUID = toUnsignedInt(buffer.get());
 		int y = toUnsignedInt(buffer.get());
 		int x = toUnsignedInt(buffer.get());
-		core = new SDPLocation(x, y, p);
+		location = new SDPLocation(x, y, p);
 		buffer.getShort(); // Ignore 2 bytes
 		int vn = toUnsignedInt(buffer.getShort());
 		buildDate = buffer.getInt();
@@ -138,7 +138,7 @@ public final class VersionInfo {
 
 	@Override
 	public String toString() {
-		return "VersionInfo(" + core + " (phys:" + physicalCPUID
+		return "VersionInfo(" + location + " (phys:" + physicalCPUID
 				+ "), version: " + versionNumber + ", " + name + "/" + hardware
 				+ ", " + ofInstant(ofEpochSecond(buildDate, 0), UTC)
 						.format(ISO_INSTANT)

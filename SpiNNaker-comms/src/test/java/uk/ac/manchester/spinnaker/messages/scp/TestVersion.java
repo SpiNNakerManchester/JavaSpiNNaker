@@ -79,7 +79,7 @@ class TestVersion {
 		assertEquals("sark", ver.name);
 		assertEquals("spinnaker", ver.hardware);
 		assertEquals(new Version(2, 34, 0), ver.versionNumber);
-		assertEquals(new CoreLocation(14, 31, 0), ver.core);
+		assertEquals(new SDPLocation(14, 31, 0), ver.location);
 	}
 
 	@Test
@@ -119,6 +119,6 @@ class TestVersion {
 		assertEquals("SC&MP", response.get().name);
 		assertEquals("SpiNNaker", response.get().hardware);
 		assertEquals(new Version(3, 2, 0), response.get().versionNumber);
-		assertEquals(new CoreLocation(14, 31, 0), response.get().core);
+		assertEquals(new SDPLocation(14, 31, 0), response.get().location);
 	}
 }
