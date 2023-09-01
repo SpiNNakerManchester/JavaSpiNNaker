@@ -83,7 +83,8 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 * @return The SDP header.
 	 */
 	private static SDPHeader header(HasCoreLocation core) {
-		return new SDPHeader(REPLY_EXPECTED, new SDPLocation(core), DEFAULT_PORT);
+		return new SDPHeader(REPLY_EXPECTED, new SDPLocation(core),
+				DEFAULT_PORT);
 	}
 
 	/**

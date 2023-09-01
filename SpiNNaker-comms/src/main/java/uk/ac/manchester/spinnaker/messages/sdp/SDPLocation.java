@@ -189,7 +189,7 @@ public class SDPLocation implements HasCoreLocation, HasBMPLocation {
 	private static class InvalidSDPHeaderUseException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
 
-		public InvalidSDPHeaderUseException(String reason) {
+		InvalidSDPHeaderUseException(String reason) {
 			super(reason);
 		}
 	}

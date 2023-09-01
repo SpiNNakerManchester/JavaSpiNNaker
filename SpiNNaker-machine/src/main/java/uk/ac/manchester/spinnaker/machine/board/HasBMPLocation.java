@@ -25,20 +25,20 @@ public interface HasBMPLocation {
 	 *         coordinate.
 	 */
 	@ValidCabinetNumber
-	public int getCabinet();
+	int getCabinet();
 
 	/**
 	 * @return The frame number of the board. Not actually a processor
 	 *         coordinate.
 	 */
 	@ValidFrameNumber
-	public int getFrame();
+	int getFrame();
 
 	/**
 	 * @return The board number of the board. Not actually a processor ID.
 	 */
 	@ValidBoardNumber
-	public int getBoard();
+	int getBoard();
 
 	/**
 	 * Converts (if required) this to a simple X, Y, P tuple.
