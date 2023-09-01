@@ -21,16 +21,15 @@
  * <li>{@link NMPIQueueManager} &mdash; Handles the queue of {@linkplain Job
  * NMPI jobs}.
  * <li>{@link JobExecuter} &mdash; Handles the running of a single NMPI job.
- * Note that {@linkplain JobProcessManager job executer implementations} ask the
- * queue manager for the job that they should run.
+ * Note that job executer implementations ask the queue manager for the job that
+ * they should run.
  * <li>{@link JobExecuterFactory} &mdash; Creates job executers.
  * <li>{@link MachineManager} &mdash; Handles the resources on which NMPI jobs
  * run.
  * </ul>
  */
 @UsedInJavadocOnly({ NMPIQueueManager.class, Job.class, JobExecuter.class,
-		JobProcessManager.class, JobExecuterFactory.class,
-		MachineManager.class })
+		JobExecuterFactory.class, MachineManager.class })
 package uk.ac.manchester.spinnaker.nmpi;
 
 import uk.ac.manchester.spinnaker.nmpi.jobmanager.JobExecuter;
@@ -38,5 +37,4 @@ import uk.ac.manchester.spinnaker.nmpi.jobmanager.JobExecuterFactory;
 import uk.ac.manchester.spinnaker.nmpi.machinemanager.MachineManager;
 import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.Job;
 import uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManager;
-import uk.ac.manchester.spinnaker.nmpiexec.jobprocessmanager.JobProcessManager;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
