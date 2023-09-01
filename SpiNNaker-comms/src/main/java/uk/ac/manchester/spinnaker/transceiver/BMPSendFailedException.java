@@ -21,7 +21,7 @@ import static uk.ac.manchester.spinnaker.transceiver.BMPCommandProcess.BMP_RETRI
 import java.io.IOException;
 import java.util.List;
 
-import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.board.HasBMPLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 
 /**
@@ -30,12 +30,12 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 public final class BMPSendFailedException extends IOException {
 	private static final long serialVersionUID = -7806549580351626377L;
 
-	BMPSendFailedException(SCPRequest<?> req, HasCoreLocation core,
+	BMPSendFailedException(SCPRequest<?> req, HasBMPLocation bmp,
 			List<String> retryReason) {
 		super(format(
 				"Errors sending request %s (%s) to %d,%d,%d over %d retries:"
 				+ " %s",
-				req.scpRequestHeader.command, req, core.getX(), core.getY(),
-				core.getP(), BMP_RETRIES, retryReason));
+				req.scpRequestHeader.command, req, bmp.getCabinet(),
+				bmp.getFrame(), bmp.getBoard(), BMP_RETRIES, retryReason));
 	}
 }

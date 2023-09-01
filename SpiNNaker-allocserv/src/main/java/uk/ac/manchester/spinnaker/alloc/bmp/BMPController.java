@@ -67,9 +67,9 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
-import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.board.HasBMPLocation;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
@@ -292,7 +292,7 @@ public class BMPController extends DatabaseAwareBean {
 				exn = e;
 				log.error("Requests failed on BMP {}", bmpId, e);
 			} catch (PermanentProcessException e) {
-				log.error("BMP {} on {} is unreachable", e.core, bmpId, e);
+				log.error("BMP {} on {} is unreachable", e.source, bmpId, e);
 				onServiceRemove.accept(e);
 				exn = e;
 			} catch (CallerProcessException e) {
@@ -643,7 +643,7 @@ public class BMPController extends DatabaseAwareBean {
 		private void badBoard(ProcessException failure) {
 			try (var c = getConnection()) {
 				c.transaction(() -> {
-					getBoardId(failure.core).ifPresent(boardId -> {
+					getBoardId(failure.source).ifPresent(boardId -> {
 						// Mark the board as dead right now
 						markBoardAsDead(c, boardId, REPORT_MSG + failure);
 						// Add a report if we can
@@ -661,8 +661,8 @@ public class BMPController extends DatabaseAwareBean {
 		 *            The board address.
 		 * @return The ID, if one can be found.
 		 */
-		private Optional<Integer> getBoardId(HasCoreLocation addr) {
-			return Optional.ofNullable(boardToId.get(addr.getP()));
+		private Optional<Integer> getBoardId(HasBMPLocation addr) {
+			return Optional.ofNullable(boardToId.get(addr.getBoard()));
 		}
 
 		private Integer getBoardId(BMPBoard board) {

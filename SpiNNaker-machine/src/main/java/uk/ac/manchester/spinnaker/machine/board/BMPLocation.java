@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.manchester.spinnaker.messages.bmp;
+package uk.ac.manchester.spinnaker.machine.board;
+
+import static uk.ac.manchester.spinnaker.machine.board.Limits.MAX_FRAME;
+import static uk.ac.manchester.spinnaker.machine.board.Limits.MAX_CABINET;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
-import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
-import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
-import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -29,7 +28,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * @author Donal Fellows
  */
 @UsedInJavadocOnly(CoreLocation.class)
-public final class BMPLocation implements HasCoreLocation {
+public final class BMPLocation implements HasBMPLocation {
 	@ValidCabinetNumber
 	private final int cabinet;
 
@@ -65,29 +64,18 @@ public final class BMPLocation implements HasCoreLocation {
 		this.board = board;
 	}
 
-	/**
-	 * @return The cabinet number of the board. Not actually a processor
-	 *         coordinate.
-	 */
 	@Override
-	public int getX() {
+	public int getCabinet() {
 		return cabinet;
 	}
 
-	/**
-	 * @return The frame number of the board. Not actually a processor
-	 *         coordinate.
-	 */
 	@Override
-	public int getY() {
+	public int getFrame() {
 		return frame;
 	}
 
-	/**
-	 * @return The board number of the board. Not actually a processor ID.
-	 */
 	@Override
-	public int getP() {
+	public int getBoard() {
 		return board;
 	}
 
@@ -103,6 +91,6 @@ public final class BMPLocation implements HasCoreLocation {
 
 	@Override
 	public int hashCode() {
-		return board;
+		return (((board * MAX_FRAME) + frame) * MAX_CABINET) + cabinet;
 	}
 }

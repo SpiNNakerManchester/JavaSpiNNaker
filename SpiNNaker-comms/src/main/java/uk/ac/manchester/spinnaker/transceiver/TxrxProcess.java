@@ -60,6 +60,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
@@ -602,7 +603,7 @@ public class TxrxProcess {
 			}
 
 			@Override
-			public HasCoreLocation getDestination() {
+			public SDPLocation getDestination() {
 				return request.sdpHeader.getDestination();
 			}
 
@@ -968,9 +969,8 @@ public class TxrxProcess {
 		 */
 		SendFailedException(Req req, int numRetries) {
 			super(format(
-					"Errors sending request %s to %d,%d,%d over %d retries: %s",
-					req.getCommand(), req.getDestination().getX(),
-					req.getDestination().getY(), req.getDestination().getP(),
+					"Errors sending request %s to %s over %d retries: %s",
+					req.getCommand(), req.getDestination(),
 					numRetries, req.getRetryReasons()));
 		}
 	}

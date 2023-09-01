@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.model.Version;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
 
 class TestVersion {
 	private static final short PADDING = 0;
@@ -37,7 +38,7 @@ class TestVersion {
 	void testNewVersionRequest() {
 		var verRequest = new GetVersion(new CoreLocation(0, 1, 2));
 		assertEquals(CMD_VER, verRequest.scpRequestHeader.command);
-		assertEquals(new CoreLocation(0, 1, 2),
+		assertEquals(new SDPLocation(0, 1, 2),
 				verRequest.sdpHeader.getDestination());
 	}
 

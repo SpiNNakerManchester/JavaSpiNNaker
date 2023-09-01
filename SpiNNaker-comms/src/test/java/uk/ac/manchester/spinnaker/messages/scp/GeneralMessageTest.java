@@ -61,6 +61,7 @@ import uk.ac.manchester.spinnaker.messages.bmp.WriteFPGARegister;
 import uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer;
 import uk.ac.manchester.spinnaker.messages.bmp.WriteSerialFlash;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
 
 class GeneralMessageTest {
 	private static final AppID APP = new AppID(1);
@@ -84,9 +85,9 @@ class GeneralMessageTest {
 	private int length(SCPRequest<?> req) {
 		// Serialise and get message length
 		var b = allocate(280);
-		req.sdpHeader.setSource(ZERO_ZERO_ZERO);
+		req.sdpHeader.setSource(new SDPLocation(ZERO_ZERO_ZERO));
 		req.sdpHeader.setSourcePort(0);
-		req.sdpHeader.setDestination(ZERO_ZERO_ZERO);
+		req.sdpHeader.setDestination(new SDPLocation(ZERO_ZERO_ZERO));
 		req.sdpHeader.setDestinationPort(0);
 		req.scpRequestHeader.issueSequenceNumber(set);
 		req.addToBuffer(b);

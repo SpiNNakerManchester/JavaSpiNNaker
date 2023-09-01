@@ -25,6 +25,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SpinnakerRequest;
 
 /**
@@ -82,7 +83,7 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 * @return The SDP header.
 	 */
 	private static SDPHeader header(HasCoreLocation core) {
-		return new SDPHeader(REPLY_EXPECTED, core, DEFAULT_PORT);
+		return new SDPHeader(REPLY_EXPECTED, new SDPLocation(core), DEFAULT_PORT);
 	}
 
 	/**
