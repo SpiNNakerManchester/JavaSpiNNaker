@@ -15,18 +15,19 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
-import static java.util.Collections.newSetFromMap;
 import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.time.Duration;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.function.BiConsumer;
 
 import javax.annotation.PostConstruct;
 
@@ -34,6 +35,8 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Manages waiting for values.
@@ -269,18 +272,18 @@ public class Epochs {
  * @author Donal Fellows
  */
 class EpochMap {
-	/*
-	 * This is a wrapper around the map to provide exactly the ops we want
-	 * (including correct synchronization), and just them.
-	 */
-	private final Map<Integer, Set<Epochs.Epoch>> map = new HashMap<>();
+	/** The value in {@link #map} leaves. Shared. Unimportant. */
+	private static final Object OBJ = new Object();
+
+	/** A map from integers to weak sets of epochs. */
+	private final Map<Integer, Map<Epochs.Epoch, Object>> map = new HashMap<>();
 
 	synchronized boolean checkEmptyValues() {
 		return map.entrySet().removeIf(entry -> entry.getValue().isEmpty());
 	}
 
 	void changed(int id) {
-		var items = getSet(id);
+		var items = takeSet(id);
 		if (nonNull(items)) {
 			for (var item : items) {
 				item.updateChanged(id);
@@ -288,14 +291,36 @@ class EpochMap {
 		}
 	}
 
-	private synchronized Set<Epochs.Epoch> getSet(int id) {
-		return map.get(id);
+	/**
+	 * Take the set of epochs for a particular ID.
+	 * <p>
+	 * <strong>CRITICAL TRICKY IMPLEMENTATION POINT!</strong>
+	 * {@link WeakHashMap#forEach(BiConsumer)} does not throw
+	 * {@link ConcurrentModificationException} as it is <em>not</em>
+	 * iterator-based. All the other ways of going through the contents can
+	 * throw if the GC removes an element behind the scenes.
+	 *
+	 * @param id
+	 *            The key into the map.
+	 * @return The removed set of epochs. Empty if the key is absent.
+	 */
+	@UsedInJavadocOnly({
+		BiConsumer.class, ConcurrentModificationException.class
+	})
+	private synchronized Set<Epochs.Epoch> takeSet(Integer id) {
+		var weakmap = map.remove(id);
+		if (weakmap == null) {
+			return null;
+		}
+		// Set.copyOf would be great, but can blow up :-(
+		var result = new HashSet<Epochs.Epoch>();
+		weakmap.forEach((epoch, __) -> result.add(epoch));
+		return result;
 	}
 
 	synchronized void addAll(Epochs.Epoch epoch, List<Integer> ids) {
 		for (var id : ids) {
-			map.computeIfAbsent(id, key -> newSetFromMap(new WeakHashMap<>()))
-					.add(epoch);
+			map.computeIfAbsent(id, key -> new WeakHashMap<>()).put(epoch, OBJ);
 		}
 	}
 
