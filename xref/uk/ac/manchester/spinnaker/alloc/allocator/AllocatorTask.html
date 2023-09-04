@@ -175,7 +175,7 @@
 <a class="jxr_linenumber" name="L167" href="#L167">167</a> 			<strong class="jxr_keyword">var</strong> updated = execute(
 <a class="jxr_linenumber" name="L168" href="#L168">168</a> 					conn -&gt; update(jobId, sourceState, targetState, conn));
 <a class="jxr_linenumber" name="L169" href="#L169">169</a> 			<strong class="jxr_keyword">if</strong> (updated) {
-<a class="jxr_linenumber" name="L170" href="#L170">170</a> 				log.debug(<span class="jxr_string">"advancing job epoch"</span>);
+<a class="jxr_linenumber" name="L170" href="#L170">170</a> 				log.debug(<span class="jxr_string">"advancing job {} epoch"</span>, jobId);
 <a class="jxr_linenumber" name="L171" href="#L171">171</a> 				epochs.jobChanged(jobId);
 <a class="jxr_linenumber" name="L172" href="#L172">172</a> 			}
 <a class="jxr_linenumber" name="L173" href="#L173">173</a> 		} <strong class="jxr_keyword">catch</strong> (DataAccessException e) {
