@@ -398,13 +398,13 @@ public class FirmwareLoader {
 	private void logBMPVersion()
 			throws ProcessException, IOException, InterruptedException {
 		var info = txrx.readBMPVersion(board);
-		// TODO validate which field is which; some of these seem... unlikely
 		log.info("BMP INFO:       {}",
 				format("%s %s at %s:%s (built %s) [C=%s, F=%s, B=%s]",
 						info.name, info.versionNumber, info.hardware,
-						info.core.getP(), Instant.ofEpochSecond(info.buildDate),
-						info.physicalCPUID, info.core.getY(),
-						info.core.getX()));
+						info.physicalCPUID,
+						Instant.ofEpochSecond(info.buildDate),
+						info.location.getCabinet(), info.location.getFrame(),
+						info.location.getBoard()));
 	}
 
 	/**

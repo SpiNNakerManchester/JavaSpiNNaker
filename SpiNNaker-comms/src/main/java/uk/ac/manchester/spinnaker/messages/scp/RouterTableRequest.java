@@ -25,6 +25,7 @@ import com.google.errorprone.annotations.ForOverride;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
 
 /**
  * A command message to an extra monitor control core to manipulate the router
@@ -70,6 +71,7 @@ public abstract class RouterTableRequest extends SCPRequest<EmptyResponse> {
 	 * @return The SDP header.
 	 */
 	static final SDPHeader header(HasCoreLocation core) {
-		return new SDPHeader(REPLY_EXPECTED, core, GATHERER_DATA_SPEED_UP);
+		return new SDPHeader(REPLY_EXPECTED, new SDPLocation(core),
+				GATHERER_DATA_SPEED_UP);
 	}
 }

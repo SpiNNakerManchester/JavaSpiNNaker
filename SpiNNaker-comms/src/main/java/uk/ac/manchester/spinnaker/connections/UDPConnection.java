@@ -49,8 +49,8 @@ import com.google.errorprone.annotations.ForOverride;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 
 import uk.ac.manchester.spinnaker.connections.model.Connection;
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 
 /**
@@ -697,7 +697,7 @@ public abstract class UDPConnection<T> implements Connection {
 		 * REPLY_NOT_EXPECTED flag is set (see scamp-3.c line 728 and 625-644)
 		 */
 		var triggerMessage = new SDPMessage(new SDPHeader(REPLY_NOT_EXPECTED,
-				new CoreLocation(0, 0, 0), RUNNING_COMMAND_SDP_PORT));
+				new SDPLocation(0, 0, 0), RUNNING_COMMAND_SDP_PORT));
 		sendTo(triggerMessage.getMessageData(null), host, SCP_SCAMP_PORT);
 	}
 
