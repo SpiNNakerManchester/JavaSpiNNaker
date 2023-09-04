@@ -205,6 +205,7 @@ public class Epochs {
 		}
 
 		synchronized void updateChanged(int id) {
+			log.debug("Change to {}, id {}", this, id);
 			changed.add(id);
 			notifyAll();
 		}
@@ -235,7 +236,9 @@ public class Epochs {
 		public Collection<Integer> getChanged(Duration timeout)
 				throws InterruptedException {
 			synchronized (this) {
+				log.debug("Waiting for change to {}", this);
 				wait(timeout.toMillis());
+				log.debug("After wait, changed: {}", changed);
 				return Set.copyOf(changed);
 			}
 		}
