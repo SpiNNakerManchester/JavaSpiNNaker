@@ -162,16 +162,16 @@ boolean&nbsp;isBMP)</code></th>
 </td>
 </tr>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag,uk.ac.manchester.spinnaker.machine.HasCoreLocation,int)">SDPHeader</a></span>&#8203;(<a href="SDPHeader.Flag.html" title="enum in uk.ac.manchester.spinnaker.messages.sdp">SDPHeader.Flag</a>&nbsp;flags,
-<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;destination,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag,uk.ac.manchester.spinnaker.messages.sdp.SDPLocation,int)">SDPHeader</a></span>&#8203;(<a href="SDPHeader.Flag.html" title="enum in uk.ac.manchester.spinnaker.messages.sdp">SDPHeader.Flag</a>&nbsp;flags,
+<a href="SDPLocation.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPLocation</a>&nbsp;destination,
 int&nbsp;destinationPort)</code></th>
 <td class="colLast">
 <div class="block">Create a simple header with just the flags and destination set.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag,uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.messages.sdp.SDPPort)">SDPHeader</a></span>&#8203;(<a href="SDPHeader.Flag.html" title="enum in uk.ac.manchester.spinnaker.messages.sdp">SDPHeader.Flag</a>&nbsp;flags,
-<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;destination,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag,uk.ac.manchester.spinnaker.messages.sdp.SDPLocation,uk.ac.manchester.spinnaker.messages.sdp.SDPPort)">SDPHeader</a></span>&#8203;(<a href="SDPHeader.Flag.html" title="enum in uk.ac.manchester.spinnaker.messages.sdp">SDPHeader.Flag</a>&nbsp;flags,
+<a href="SDPLocation.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPLocation</a>&nbsp;destination,
 <a href="SDPPort.html" title="enum in uk.ac.manchester.spinnaker.messages.sdp">SDPPort</a>&nbsp;destinationPort)</code></th>
 <td class="colLast">
 <div class="block">Create a simple header with just the flags and destination set.</div>
@@ -208,7 +208,7 @@ int&nbsp;destinationPort)</code></th>
 </td>
 </tr>
 <tr class="rowColor" id="i1">
-<td class="colFirst"><code><a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></code></td>
+<td class="colFirst"><code><a href="SDPLocation.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPLocation</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getDestination()">getDestination</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -223,7 +223,7 @@ int&nbsp;destinationPort)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i4">
-<td class="colFirst"><code><a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></code></td>
+<td class="colFirst"><code><a href="SDPLocation.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPLocation</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSource()">getSource</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -239,7 +239,7 @@ int&nbsp;destinationPort)</code></th>
 </tr>
 <tr class="rowColor" id="i7">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setDestination(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">setDestination</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;destination)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setDestination(uk.ac.manchester.spinnaker.messages.sdp.SDPLocation)">setDestination</a></span>&#8203;(<a href="SDPLocation.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPLocation</a>&nbsp;destination)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i8">
@@ -251,7 +251,7 @@ int&nbsp;destinationPort)</code></th>
 </tr>
 <tr class="rowColor" id="i9">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSource(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">setSource</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;source)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSource(uk.ac.manchester.spinnaker.messages.sdp.SDPLocation)">setSource</a></span>&#8203;(<a href="SDPLocation.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPLocation</a>&nbsp;source)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i10">
@@ -301,9 +301,9 @@ int&nbsp;destinationPort)</code></th>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag,uk.ac.manchester.spinnaker.machine.HasCoreLocation,int)">SDPHeader</a></h3>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag,uk.ac.manchester.spinnaker.messages.sdp.SDPLocation,int)">SDPHeader</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SDPHeader</span>&#8203;(<span class="arguments"><a href="SDPHeader.Flag.html" title="enum in uk.ac.manchester.spinnaker.messages.sdp">SDPHeader.Flag</a>&nbsp;flags,
-<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;destination,
+<a href="SDPLocation.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPLocation</a>&nbsp;destination,
 int&nbsp;destinationPort)</span></div>
 <div class="block">Create a simple header with just the flags and destination set. Note that
  messages containing this header <i>cannot</i> be sent until a source has
@@ -322,9 +322,9 @@ int&nbsp;destinationPort)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag,uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.messages.sdp.SDPPort)">SDPHeader</a></h3>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag,uk.ac.manchester.spinnaker.messages.sdp.SDPLocation,uk.ac.manchester.spinnaker.messages.sdp.SDPPort)">SDPHeader</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SDPHeader</span>&#8203;(<span class="arguments"><a href="SDPHeader.Flag.html" title="enum in uk.ac.manchester.spinnaker.messages.sdp">SDPHeader.Flag</a>&nbsp;flags,
-<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;destination,
+<a href="SDPLocation.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPLocation</a>&nbsp;destination,
 <a href="SDPPort.html" title="enum in uk.ac.manchester.spinnaker.messages.sdp">SDPPort</a>&nbsp;destinationPort)</span></div>
 <div class="block">Create a simple header with just the flags and destination set. Note that
  messages containing this header <i>cannot</i> be sent until a source has
@@ -389,7 +389,7 @@ boolean&nbsp;isBMP)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getDestination()">getDestination</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></span>&nbsp;<span class="memberName">getDestination</span>()</div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="SDPLocation.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPLocation</a></span>&nbsp;<span class="memberName">getDestination</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>What "chip" is the message going to. Note that there is a special
@@ -400,8 +400,8 @@ boolean&nbsp;isBMP)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setDestination(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">setDestination</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setDestination</span>&#8203;(<span class="arguments"><a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;destination)</span></div>
+<h3><a id="setDestination(uk.ac.manchester.spinnaker.messages.sdp.SDPLocation)">setDestination</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setDestination</span>&#8203;(<span class="arguments"><a href="SDPLocation.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPLocation</a>&nbsp;destination)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>destination</code> - What "chip" is the message going to. Note that there is a
@@ -436,7 +436,7 @@ boolean&nbsp;isBMP)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getSource()">getSource</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></span>&nbsp;<span class="memberName">getSource</span>()</div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="SDPLocation.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPLocation</a></span>&nbsp;<span class="memberName">getSource</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>What "chip" originated the message.</dd>
@@ -445,8 +445,8 @@ boolean&nbsp;isBMP)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setSource(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">setSource</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setSource</span>&#8203;(<span class="arguments"><a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;source)</span></div>
+<h3><a id="setSource(uk.ac.manchester.spinnaker.messages.sdp.SDPLocation)">setSource</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setSource</span>&#8203;(<span class="arguments"><a href="SDPLocation.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPLocation</a>&nbsp;source)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>source</code> - What "chip" originates the message. Note that there is a

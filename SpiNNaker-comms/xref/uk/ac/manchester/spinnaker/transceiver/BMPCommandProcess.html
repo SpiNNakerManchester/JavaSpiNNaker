@@ -46,7 +46,7 @@
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.connections.BMPConnection;
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.connections.ConnectionSelector;
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.board.HasBMPLocation;
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
@@ -367,7 +367,7 @@
 <a class="jxr_linenumber" name="L359" href="#L359">359</a> 				}
 <a class="jxr_linenumber" name="L360" href="#L360">360</a> 			}
 <a class="jxr_linenumber" name="L361" href="#L361">361</a> 
-<a class="jxr_linenumber" name="L362" href="#L362">362</a> 			<strong class="jxr_keyword">private</strong> HasCoreLocation dest() {
+<a class="jxr_linenumber" name="L362" href="#L362">362</a> 			<strong class="jxr_keyword">private</strong> HasBMPLocation dest() {
 <a class="jxr_linenumber" name="L363" href="#L363">363</a> 				<strong class="jxr_keyword">return</strong> request.sdpHeader.getDestination();
 <a class="jxr_linenumber" name="L364" href="#L364">364</a> 			}
 <a class="jxr_linenumber" name="L365" href="#L365">365</a> 		}

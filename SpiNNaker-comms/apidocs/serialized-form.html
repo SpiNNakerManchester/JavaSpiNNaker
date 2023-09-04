@@ -490,16 +490,16 @@ loadScripts(document, 'script');</script>
 <h4>Serialized Fields</h4>
 <ul class="blockList">
 <li class="blockList">
-<h5>core</h5>
-<pre><a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a> core</pre>
-<div class="block">Where does the code believe this exception originated?</div>
-</li>
-<li class="blockList">
 <h5>responseCode</h5>
 <pre><a href="uk/ac/manchester/spinnaker/messages/scp/SCPResult.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPResult</a> responseCode</pre>
 <div class="block">The response that cause this exception to be thrown, if known. Never
  <a href="uk/ac/manchester/spinnaker/messages/scp/SCPResult.html#RC_OK"><code>RC_OK</code></a>; that doesn't cause exceptions! May be
  <code>null</code> if the cause was not identified as an error from SpiNNaker.</div>
+</li>
+<li class="blockList">
+<h5>source</h5>
+<pre><a href="uk/ac/manchester/spinnaker/messages/sdp/SDPLocation.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPLocation</a> source</pre>
+<div class="block">Where does the code believe this exception originated?</div>
 </li>
 </ul>
 </section>

@@ -136,48 +136,42 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.bmp">uk.ac.manchester.spinnaker.messages.bmp</a></th>
-<td class="colLast">
-<div class="block">Messages that talk to the BMP.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.eieio">uk.ac.manchester.spinnaker.messages.eieio</a></th>
 <td class="colLast">
 <div class="block">The messages of the EIEIO protocol.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.model">uk.ac.manchester.spinnaker.messages.model</a></th>
 <td class="colLast">
 <div class="block">Model support classes for the communication messages.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp</a></th>
 <td class="colLast">
 <div class="block">The messages of SpiNNaker Control Protocol (SCP).</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.sdp">uk.ac.manchester.spinnaker.messages.sdp</a></th>
 <td class="colLast">
 <div class="block">Messages sent and received by SDP (the SpiNNaker Datagram Protocol).</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.spalloc">uk.ac.manchester.spinnaker.spalloc</a></th>
 <td class="colLast">
 <div class="block">SpiNNaker old-style machine allocation client.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.spalloc.messages">uk.ac.manchester.spinnaker.spalloc.messages</a></th>
 <td class="colLast">
 <div class="block">Commands to send to Spalloc, and responses received from Spalloc.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver</a></th>
 <td class="colLast">
 <div class="block">How to actually talk to a SpiNNaker machine.</div>
@@ -791,34 +785,6 @@ int&nbsp;nAvailableMulticastEntries,
 </section>
 </li>
 <li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.messages.bmp">
-<!--   -->
-</a>
-<h2>Uses of <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a> in <a href="../../messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></h2>
-<div class="useSummary">
-<table>
-<caption><span>Classes in <a href="../../messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a> that implement <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Class</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/bmp/BMPLocation.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPLocation</a></span></code></th>
-<td class="colLast">
-<div class="block">Like a <a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">core location</a>, but for BMPs.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
-<li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.messages.eieio">
 <!--   -->
 </a>
@@ -1181,6 +1147,27 @@ int&nbsp;tag)</code></th>
 <!--   -->
 </a>
 <h2>Uses of <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a> in <a href="../../messages/sdp/package-summary.html">uk.ac.manchester.spinnaker.messages.sdp</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="../../messages/sdp/package-summary.html">uk.ac.manchester.spinnaker.messages.sdp</a> that implement <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/sdp/SDPLocation.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPLocation</a></span></code></th>
+<td class="colLast">
+<div class="block">Represents a location in an SDP message.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="useSummary">
 <table>
 <caption><span>Methods in <a href="../../messages/sdp/package-summary.html">uk.ac.manchester.spinnaker.messages.sdp</a> with parameters of type <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a></span><span class="tabEnd">&nbsp;</span></caption>

@@ -406,13 +406,13 @@
 <a class="jxr_linenumber" name="L398" href="#L398">398</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> logBMPVersion()
 <a class="jxr_linenumber" name="L399" href="#L399">399</a> 			<strong class="jxr_keyword">throws</strong> ProcessException, IOException, InterruptedException {
 <a class="jxr_linenumber" name="L400" href="#L400">400</a> 		<strong class="jxr_keyword">var</strong> info = txrx.readBMPVersion(board);
-<a class="jxr_linenumber" name="L401" href="#L401">401</a> 		<em class="jxr_comment">// TODO validate which field is which; some of these seem... unlikely</em>
-<a class="jxr_linenumber" name="L402" href="#L402">402</a> 		log.info(<span class="jxr_string">"BMP INFO:       {}"</span>,
-<a class="jxr_linenumber" name="L403" href="#L403">403</a> 				format(<span class="jxr_string">"%s %s at %s:%s (built %s) [C=%s, F=%s, B=%s]"</span>,
-<a class="jxr_linenumber" name="L404" href="#L404">404</a> 						info.name, info.versionNumber, info.hardware,
-<a class="jxr_linenumber" name="L405" href="#L405">405</a> 						info.core.getP(), Instant.ofEpochSecond(info.buildDate),
-<a class="jxr_linenumber" name="L406" href="#L406">406</a> 						info.physicalCPUID, info.core.getY(),
-<a class="jxr_linenumber" name="L407" href="#L407">407</a> 						info.core.getX()));
+<a class="jxr_linenumber" name="L401" href="#L401">401</a> 		log.info(<span class="jxr_string">"BMP INFO:       {}"</span>,
+<a class="jxr_linenumber" name="L402" href="#L402">402</a> 				format(<span class="jxr_string">"%s %s at %s:%s (built %s) [C=%s, F=%s, B=%s]"</span>,
+<a class="jxr_linenumber" name="L403" href="#L403">403</a> 						info.name, info.versionNumber, info.hardware,
+<a class="jxr_linenumber" name="L404" href="#L404">404</a> 						info.physicalCPUID,
+<a class="jxr_linenumber" name="L405" href="#L405">405</a> 						Instant.ofEpochSecond(info.buildDate),
+<a class="jxr_linenumber" name="L406" href="#L406">406</a> 						info.location.getCabinet(), info.location.getFrame(),
+<a class="jxr_linenumber" name="L407" href="#L407">407</a> 						info.location.getBoard()));
 <a class="jxr_linenumber" name="L408" href="#L408">408</a> 	}
 <a class="jxr_linenumber" name="L409" href="#L409">409</a> 
 <a class="jxr_linenumber" name="L410" href="#L410">410</a> 	<em class="jxr_javadoccomment">/**</em>

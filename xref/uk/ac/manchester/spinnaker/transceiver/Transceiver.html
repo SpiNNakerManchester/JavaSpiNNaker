@@ -903,7 +903,7 @@
 <a class="jxr_linenumber" name="L895" href="#L895">895</a> 		<em class="jxr_comment">// Get the details of all the chips</em>
 <a class="jxr_linenumber" name="L896" href="#L896">896</a> 		machine = <strong class="jxr_keyword">new</strong> <a name="GetMachineProcess" href="../../../../../uk/ac/manchester/spinnaker/transceiver/GetMachineProcess.html#GetMachineProcess">GetMachineProcess</a>(scpSelector, ignoreChips, ignoreCores,
 <a class="jxr_linenumber" name="L897" href="#L897">897</a> 				ignoreLinks, maxSDRAMSize, <strong class="jxr_keyword">this</strong>)
-<a class="jxr_linenumber" name="L898" href="#L898">898</a> 						.getMachineDetails(versionInfo.core, dimensions);
+<a class="jxr_linenumber" name="L898" href="#L898">898</a> 						.getMachineDetails(versionInfo.location, dimensions);
 <a class="jxr_linenumber" name="L899" href="#L899">899</a> 
 <a class="jxr_linenumber" name="L900" href="#L900">900</a> 		<em class="jxr_comment">/*</em>
 <a class="jxr_linenumber" name="L901" href="#L901">901</a> <em class="jxr_comment">		 * Ask the machine to check itself and if required to rebuild itself</em>
@@ -1311,7 +1311,7 @@
 <a class="jxr_linenumber" name="L1303" href="#L1303">1303</a> 		<strong class="jxr_keyword">while</strong> (versionInfo == <strong class="jxr_keyword">null</strong> &amp;&amp; triesLeft &gt; 0) {
 <a class="jxr_linenumber" name="L1304" href="#L1304">1304</a> 			<strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L1305" href="#L1305">1305</a> 				versionInfo = getScampVersion();
-<a class="jxr_linenumber" name="L1306" href="#L1306">1306</a> 				<strong class="jxr_keyword">if</strong> (versionInfo.core.asChipLocation().equals(BOOT_CHIP)) {
+<a class="jxr_linenumber" name="L1306" href="#L1306">1306</a> 				<strong class="jxr_keyword">if</strong> (versionInfo.location.asChipLocation().equals(BOOT_CHIP)) {
 <a class="jxr_linenumber" name="L1307" href="#L1307">1307</a> 					versionInfo = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L1308" href="#L1308">1308</a> 					sleep(CONNECTION_CHECK_DELAY);
 <a class="jxr_linenumber" name="L1309" href="#L1309">1309</a> 				}
@@ -1339,7 +1339,7 @@
 <a class="jxr_linenumber" name="L1331" href="#L1331">1331</a> 		<em class="jxr_comment">// The last thing we tried was booting, so try again to get the version</em>
 <a class="jxr_linenumber" name="L1332" href="#L1332">1332</a> 		<strong class="jxr_keyword">if</strong> (versionInfo == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L1333" href="#L1333">1333</a> 			versionInfo = getScampVersion();
-<a class="jxr_linenumber" name="L1334" href="#L1334">1334</a> 			<strong class="jxr_keyword">if</strong> (versionInfo.core.asChipLocation().equals(BOOT_CHIP)) {
+<a class="jxr_linenumber" name="L1334" href="#L1334">1334</a> 			<strong class="jxr_keyword">if</strong> (versionInfo.location.asChipLocation().equals(BOOT_CHIP)) {
 <a class="jxr_linenumber" name="L1335" href="#L1335">1335</a> 				versionInfo = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L1336" href="#L1336">1336</a> 			}
 <a class="jxr_linenumber" name="L1337" href="#L1337">1337</a> 		}
