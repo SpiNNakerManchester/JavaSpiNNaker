@@ -417,21 +417,27 @@ class V1TaskImpl extends V1CompatTask {
 			var job = getJob(jobId);
 			job.access(host());
 			manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
+				log.debug("Looking for changes to {}", job.getId());
 				if (job.waitForChange(
 						mainProps.getCompat().getNotifyWaitTime())) {
+					log.debug("Job {} changed!", jobId);
 					writeJobNotification(List.of(jobId));
 				}
+				log.debug("Stopped looking for changes to {}", jobId);
 			});
 		} else {
 			manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
 				var actual = permit.authorize(() -> {
+					log.debug("Looking for changes to all jobs");
 					return spalloc.getJobs(false, LOTS, 0).getChanged(
 							mainProps.getCompat().getNotifyWaitTime());
 				});
 				if (actual.size() > 0) {
+					log.debug("Jobs {} changed!", actual);
 					writeJobNotification(
 							actual.stream().collect(toList()));
 				}
+				log.debug("Stopped looking for changes to all jobs");
 			});
 		}
 	}

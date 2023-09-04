@@ -36,6 +36,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
+
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -83,9 +85,17 @@ public class Epochs {
 	 * reference map unless removed. This tasklet handles that cleanup.
 	 */
 	private void checkEmpties() {
-		jobs.checkEmptyValues();
-		machines.checkEmptyValues();
-		blacklists.checkEmptyValues();
+		if (jobs.checkEmptyValues()) {
+			log.debug("Job map now contains jobs {}", jobs.getIds());
+		}
+		if (machines.checkEmptyValues()) {
+			log.debug("Machine map now contains machines {}",
+					machines.getIds());
+		}
+		if (blacklists.checkEmptyValues()) {
+			log.debug("Blacklist map now contains boards {}",
+					blacklists.getIds());
+		}
 	}
 
 	/**
@@ -208,6 +218,7 @@ public class Epochs {
 		}
 
 		synchronized void updateChanged(int id) {
+			log.debug("Change to {}, id {}", this, id);
 			changed.add(id);
 			notifyAll();
 		}
@@ -238,7 +249,9 @@ public class Epochs {
 		public Collection<Integer> getChanged(Duration timeout)
 				throws InterruptedException {
 			synchronized (this) {
+				log.debug("Waiting for change to {}", this);
 				wait(timeout.toMillis());
+				log.debug("After wait, changed: {}", changed);
 				return Set.copyOf(changed);
 			}
 		}
@@ -265,29 +278,26 @@ class EpochMap {
 	private static final Object OBJ = new Object();
 
 	/** A map from integers to weak sets of epochs. */
+	@GuardedBy("this")
 	private final Map<Integer, Map<Epochs.Epoch, Object>> map = new HashMap<>();
 
-	synchronized void checkEmptyValues() {
-		map.entrySet().removeIf(entry -> entry.getValue().isEmpty());
+	synchronized boolean checkEmptyValues() {
+		return map.entrySet().removeIf(entry -> entry.getValue().isEmpty());
 	}
 
 	void changed(int id) {
-		var items = removeSet(id);
+		var items = getSet(id);
 		if (nonNull(items)) {
-			for (var item : items) {
-				item.updateChanged(id);
+			synchronized (items) {
+				for (var item : items) {
+					item.updateChanged(id);
+				}
 			}
 		}
 	}
 
 	/**
 	 * Take the set of epochs for a particular ID.
-	 * <p>
-	 * <strong>CRITICAL TRICKY IMPLEMENTATION POINT!</strong>
-	 * {@link WeakHashMap#forEach(BiConsumer)} does not throw
-	 * {@link ConcurrentModificationException} as it is <em>not</em>
-	 * iterator-based. All the other ways of going through the contents can
-	 * throw if the GC removes an element behind the scenes.
 	 *
 	 * @param id
 	 *            The key into the map.
@@ -296,15 +306,14 @@ class EpochMap {
 	@UsedInJavadocOnly({
 		BiConsumer.class, ConcurrentModificationException.class
 	})
-	private synchronized Set<Epochs.Epoch> removeSet(Integer id) {
-		var weakmap = map.remove(id);
+	private synchronized Set<Epochs.Epoch> getSet(Integer id) {
+		var weakmap = map.get(id);
 		if (weakmap == null) {
 			return null;
 		}
-		// Set.copyOf would be great, but can blow up :-(
-		var result = new HashSet<Epochs.Epoch>();
-		weakmap.forEach((epoch, __) -> result.add(epoch));
-		return result;
+		// Copy the set here while still synchronized to avoid
+		// ConcurrentModificationException when updated elsewhere.
+		return Set.copyOf(weakmap.keySet());
 	}
 
 	synchronized void addAll(Epochs.Epoch epoch, List<Integer> ids) {
@@ -313,7 +322,12 @@ class EpochMap {
 		}
 	}
 
+	@SuppressWarnings("GuardedBy")
 	synchronized boolean containsAnyKey(Collection<Integer> ids) {
 		return ids.stream().allMatch(map::containsKey);
+	}
+
+	synchronized Collection<Integer> getIds() {
+		return map.keySet();
 	}
 }
