@@ -272,7 +272,7 @@ class EpochMap {
 	}
 
 	void changed(int id) {
-		var items = removeSet(id);
+		var items = getSet(id);
 		if (nonNull(items)) {
 			for (var item : items) {
 				item.updateChanged(id);
@@ -280,8 +280,8 @@ class EpochMap {
 		}
 	}
 
-	private synchronized Set<Epochs.Epoch> removeSet(int id) {
-		return map.remove(id);
+	private synchronized Set<Epochs.Epoch> getSet(int id) {
+		return map.get(id);
 	}
 
 	synchronized void addAll(Epochs.Epoch epoch, List<Integer> ids) {
