@@ -80,9 +80,17 @@ public class Epochs {
 	 * reference map unless removed. This tasklet handles that cleanup.
 	 */
 	private void checkEmpties() {
-		jobs.checkEmptyValues();
-		machines.checkEmptyValues();
-		blacklists.checkEmptyValues();
+		if (jobs.checkEmptyValues()) {
+			log.debug("Job map now contains jobs {}", jobs.getIds());
+		}
+		if (machines.checkEmptyValues()) {
+			log.debug("Machine map now contains machines {}",
+					machines.getIds());
+		}
+		if (blacklists.checkEmptyValues()) {
+			log.debug("Blacklist map now contains boards {}",
+					blacklists.getIds());
+		}
 	}
 
 	/**
@@ -267,8 +275,8 @@ class EpochMap {
 	 */
 	private final Map<Integer, Set<Epochs.Epoch>> map = new HashMap<>();
 
-	synchronized void checkEmptyValues() {
-		map.entrySet().removeIf(entry -> entry.getValue().isEmpty());
+	synchronized boolean checkEmptyValues() {
+		return map.entrySet().removeIf(entry -> entry.getValue().isEmpty());
 	}
 
 	void changed(int id) {
@@ -293,5 +301,9 @@ class EpochMap {
 
 	synchronized boolean containsAnyKey(Collection<Integer> ids) {
 		return ids.stream().allMatch(map::containsKey);
+	}
+
+	Collection<Integer> getIds() {
+		return map.keySet();
 	}
 }
