@@ -156,14 +156,14 @@ public class BMPController extends DatabaseAwareBean {
 		var sched = new ThreadPoolTaskScheduler();
 		scheduler = sched;
 		sched.setThreadGroupName("BMP");
-		sched.initialize();
 
 		controllerFactory = controllerFactoryBean::getObject;
 		allocator.setBMPController(this);
 
 		// We do the making of workers later in tests
+		List<Worker> madeWorkers = null;
 		if (!serviceControl.isUseDummyBMP()) {
-			makeWorkers();
+			madeWorkers = makeWorkers();
 		}
 
 		// Set the pool size to match the number of workers
@@ -173,14 +173,21 @@ public class BMPController extends DatabaseAwareBean {
 
 		// Launch the scheduler now it is all set up
 		sched.initialize();
+
+		// And now use the scheduler
+		if (madeWorkers != null) {
+			for (var worker : madeWorkers) {
+				scheduler.scheduleAtFixedRate(worker, allocProps.getPeriod());
+			}
+		}
 	}
 
-	private void makeWorkers() {
+	private List<Worker> makeWorkers() {
 		// Make workers
 		try (var c = getConnection();
 				var getBmps = c.query(GET_ALL_BMPS);
 				var getBoards = c.query(GET_ALL_BMP_BOARDS)) {
-			var madeWorkers = c.transaction(false, () -> getBmps.call(row -> {
+			return c.transaction(false, () -> getBmps.call(row -> {
 				var m = spallocCore.getMachine(row.getString("machine_name"),
 						true);
 				var coords = new BMPCoords(row.getInt("cabinet"),
@@ -197,11 +204,6 @@ public class BMPController extends DatabaseAwareBean {
 				workers.put(row.getInt("bmp_id"), worker);
 				return worker;
 			}));
-
-			// Schedule outside the transaction for safety
-			for (var worker : madeWorkers) {
-				scheduler.scheduleAtFixedRate(worker, allocProps.getPeriod());
-			}
 		}
 	}
 
