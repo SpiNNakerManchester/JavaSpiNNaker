@@ -36,6 +36,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
+
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -276,6 +278,7 @@ class EpochMap {
 	private static final Object OBJ = new Object();
 
 	/** A map from integers to weak sets of epochs. */
+	@GuardedBy("this")
 	private final Map<Integer, Map<Epochs.Epoch, Object>> map = new HashMap<>();
 
 	synchronized boolean checkEmptyValues() {
@@ -319,11 +322,12 @@ class EpochMap {
 		}
 	}
 
+	@SuppressWarnings("GuardedBy")
 	synchronized boolean containsAnyKey(Collection<Integer> ids) {
 		return ids.stream().allMatch(map::containsKey);
 	}
 
-	Collection<Integer> getIds() {
+	synchronized Collection<Integer> getIds() {
 		return map.keySet();
 	}
 }
