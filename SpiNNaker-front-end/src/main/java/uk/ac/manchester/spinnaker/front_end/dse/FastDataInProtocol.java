@@ -38,6 +38,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 
 /**
@@ -107,7 +108,7 @@ class FastDataInProtocol {
 	}
 
 	private SDPHeader header() {
-		return new SDPHeader(REPLY_NOT_EXPECTED, gathererCore,
+		return new SDPHeader(REPLY_NOT_EXPECTED, new SDPLocation(gathererCore),
 				GATHERER_DATA_SPEED_UP.value);
 	}
 

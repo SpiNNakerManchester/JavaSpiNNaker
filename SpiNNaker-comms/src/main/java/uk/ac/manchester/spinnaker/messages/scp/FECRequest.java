@@ -22,6 +22,7 @@ import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.RUNNING_COMMAND_SD
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
 
 /**
  * A command message to a core using FrontEndCommon lib's simulation management
@@ -79,7 +80,7 @@ public abstract class FECRequest<T extends SCPResponse> extends SCPRequest<T> {
 	private static SDPHeader header(HasCoreLocation core,
 			boolean replyExpected) {
 		return new SDPHeader(
-				replyExpected ? REPLY_EXPECTED : REPLY_NOT_EXPECTED, core,
-				RUNNING_COMMAND_SDP_PORT);
+				replyExpected ? REPLY_EXPECTED : REPLY_NOT_EXPECTED,
+				new SDPLocation(core), RUNNING_COMMAND_SDP_PORT);
 	}
 }

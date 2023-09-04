@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
-import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.board.HasBMPLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
@@ -359,7 +359,7 @@ class BMPCommandProcess {
 				}
 			}
 
-			private HasCoreLocation dest() {
+			private HasBMPLocation dest() {
 				return request.sdpHeader.getDestination();
 			}
 		}
