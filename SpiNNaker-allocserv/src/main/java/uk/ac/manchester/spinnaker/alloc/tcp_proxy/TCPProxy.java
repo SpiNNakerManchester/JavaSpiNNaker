@@ -16,8 +16,6 @@
 package uk.ac.manchester.spinnaker.alloc.tcp_proxy;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -54,9 +52,11 @@ public class TCPProxy {
 			remote.connect();
 			byte[] buffer = new byte[BUFFER_SIZE];
 			try (var input = client.getInputStream()) {
-
 				while (client.isConnected()) {
 					int bytesRead = input.read(buffer);
+					if (bytesRead == -1) {
+						throw new IOException();
+					}
 					remote.write(buffer, 0, bytesRead);
 				}
 			} catch (IOException e) {
@@ -80,6 +80,9 @@ public class TCPProxy {
 			try (var output = client.getOutputStream()) {
 				while (client.isConnected()) {
 					int bytesRead = remote.read(buffer);
+					if (bytesRead == -1) {
+						throw new IOException();
+					}
 					output.write(buffer, 0, bytesRead);
 				}
 			} catch (IOException e) {
@@ -96,11 +99,11 @@ public class TCPProxy {
 	 * Close the client and ignore any errors.
 	 */
 	private synchronized void forceCloseClient() {
-		System.err.println(
-				"Client " + client.getRemoteSocketAddress() + " left");
 		if (client == null) {
 			return;
 		}
+		System.err.println(
+				"Client " + client.getRemoteSocketAddress() + " left");
 		try {
 			client.close();
 		} catch (IOException e) {
@@ -137,9 +140,7 @@ final class Remote {
 
 	private Socket remote = null;
 
-	private InputStream remoteInput = null;
-
-	private OutputStream remoteOutput = null;
+	private boolean closed = false;
 
 	/**
 	 * Create a remote.
@@ -158,14 +159,13 @@ final class Remote {
 	 * @throws InterruptedException If interrupted.
 	 */
 	synchronized void connect() throws InterruptedException {
-		// Make sure these are closed
-		close();
+		if (remote != null || closed) {
+			return;
+		}
 		System.err.println("Connecting to " + remoteHost + ":" + remotePort);
 		while (true) {
 			try {
 				remote = new Socket(remoteHost, remotePort);
-				remoteInput = remote.getInputStream();
-				remoteOutput = remote.getOutputStream();
 				System.err.println("Connected to "
 						+ remote.getRemoteSocketAddress());
 				return;
@@ -183,14 +183,21 @@ final class Remote {
 	 * @param length The length of the buffer to write, starting at the offset.
 	 * @throws InterruptedException If interrupted.
 	 */
-	synchronized void write(byte[] buffer, int offset, int length)
+	void write(byte[] buffer, int offset, int length)
 			throws InterruptedException {
 		while (true) {
+			while (remote == null) {
+				Thread.sleep(1000);
+			}
 			try {
+				var remoteOutput = remote.getOutputStream();
 				remoteOutput.write(buffer, 0, length);
 				return;
 			} catch (IOException e) {
-				connect();
+				if (!closed) {
+					closeConnections();
+					connect();
+				}
 			}
 		}
 	}
@@ -202,26 +209,44 @@ final class Remote {
 	 * @return The bytes written.
 	 * @throws InterruptedException If interrupted.
 	 */
-	synchronized int read(byte[] buffer) throws InterruptedException {
+	int read(byte[] buffer) throws InterruptedException {
 		while (true) {
+			if (remote == null) {
+				return -1;
+			}
 			try {
-				return remoteInput.read(buffer);
+				var remoteInput = remote.getInputStream();
+				int bytesRead = remoteInput.read(buffer);
+				if (bytesRead == -1) {
+					throw new IOException();
+				}
+				return bytesRead;
 			} catch (IOException e) {
-				connect();
+				if (!closed) {
+					closeConnections();
+					connect();
+				}
 			}
 		}
 	}
 
 	/**
-	 * Close everything.
+	 * Close the connection never to be reopened.
 	 */
-	synchronized void close() {
+	void close() {
+		closed = true;
+		closeConnections();
+	}
+
+	/**
+	 * Close the connections.
+	 */
+	synchronized void closeConnections() {
+		if (remote == null) {
+			return;
+		}
 		forceClose(remote);
-		forceClose(remoteInput);
-		forceClose(remoteOutput);
 		remote = null;
-		remoteInput = null;
-		remoteOutput = null;
 	}
 
 	/**
