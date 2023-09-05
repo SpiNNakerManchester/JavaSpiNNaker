@@ -564,6 +564,11 @@ public class BMPController extends DatabaseAwareBean {
 							powerOffBoards.stream().map(this::getBoardId)
 									.mapToInt(setBoardPowerOff::call).sum();
 
+					// ... even those that we should be powering on ...
+					turnedOff +=
+							powerOnBoards.stream().map(this::getBoardId)
+									.mapToInt(setBoardPowerOff::call).sum();
+
 					// Deallocate the boards on this bmp from the job;
 					// other boards can be deallocated elsewhere.
 					deallocateBoards.call(jobId, bmpId);
